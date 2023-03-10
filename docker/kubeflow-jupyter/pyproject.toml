@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "kubeflow-jupyter"
+version = "0.1.0"
+description = "Base for all kubeflow images."
+authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+jupyterlab = "3.0.17"
+notebook = "6.4.12"
+ipykernel = "5.5.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

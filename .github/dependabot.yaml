@@ -1,0 +1,105 @@
+version: 2
+updates:
+  # ====================================
+  # GITHUB ACTIONS
+  # ====================================
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # ====================================
+  # DOCKER
+  # ====================================
+
+  # fastapi-serve
+
+  - package-ecosystem: "pip"
+    directory: "/docker/fastapi-serve"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # kubeflow base
+
+  - package-ecosystem: "pip"
+    directory: "/docker/kubeflow-base"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # kubeflow data science
+
+  - package-ecosystem: "pip"
+    directory: "/docker/kubeflow-data-science"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # kubeflow jax cpu
+
+  - package-ecosystem: "pip"
+    directory: "/docker/kubeflow-jax-cpu"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # kubeflow jupyter
+
+  - package-ecosystem: "pip"
+    directory: "/docker/kubeflow-jupyter"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # kubeflow numpy
+
+  - package-ecosystem: "pip"
+    directory: "/docker/kubeflow-numpy"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # kubeflow torch cpu
+
+  - package-ecosystem: "pip"
+    directory: "/docker/kubeflow-torch-cpu"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # python base
+
+  - package-ecosystem: "pip"
+    directory: "/docker/python-base"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # ====================================
+  # LIBS
+  # ====================================
+
+  # core lib
+
+  - package-ecosystem: "pip"
+    directory: "/libs/core"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"
+
+  # ====================================
+  # PROJECTS
+  # ====================================
+
+  # KEYBERT
+
+  ## serve
+
+  - package-ecosystem: "pip"
+    directory: "/projects/keybert/serve"
+    schedule:
+      interval: "monthly"
+      target-branch: "stage"

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# NOTE: Clean up unused volumes to avoid container fail silently.
+echo "Cleaning up unused docker images, containers, networks and volumes ..."
+if which docker > /dev/null; then
+    docker system prune --volumes -f
+fi

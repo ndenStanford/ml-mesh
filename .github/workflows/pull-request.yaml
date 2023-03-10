@@ -1,0 +1,147 @@
+name: Label PR and Run Tests / Validation Scripts
+
+on:
+  pull_request:
+    branches:
+      - prod
+      - stage
+    types:
+      - ready_for_review
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: Pull Request ${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  # ===============================================
+  # CODE QUALITY CHECKS
+  # ===============================================
+  run-code-quality-checks:
+    name: PR | Run Code Quality Checks
+    uses: ./.github/workflows/_code-quality.yaml
+    with:
+      environment: ${{ github.base_ref }}
+      pull-request: true
+      timeout: 2
+
+  # ===============================================
+  # TAG PR
+  # ===============================================
+  run-tag:
+    runs-on: ubuntu-20.04
+    name: PR | Tag PR
+    needs: [run-code-quality-checks]
+    outputs:
+      short-sha: ${{ steps.github-sha.outputs.short-sha }}
+    steps:
+      - uses: TimonVS/pr-labeler-action@v4
+        with:
+          configuration-path: .github/pr-labeler.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Environment name
+        id: print-deployment-environment
+        run: echo "Deploying to ${{ github.base_ref }}"
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set short git commit SHA
+        id: github-sha
+        run: |
+          sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+          echo "::set-output name=short-sha::$sha"
+
+  # ===============================================
+  # TEST LIBS
+  # ===============================================
+  run-libs-tests:
+    name: Run libraries unit and integration tests.
+    runs-on: ubuntu-20.04
+    needs: [run-tag]
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ inputs.poetry-version }}
+
+      - name: Install libs dependencies
+        run: |
+          make libs.install-all
+
+      - name: Run lib unit tests
+        run: make libs.test-all
+
+  # ===============================================
+  # DOCKER
+  # ===============================================
+  run-docker:
+    name: Build and Push Core Docker Images.
+    uses: ./.github/workflows/_core-docker.yaml
+    needs: [run-tag, run-libs-tests]
+    strategy:
+      max-parallel: 1
+      matrix:
+        image:
+          - python-base
+          - fastapi-serve
+          - kubeflow-jupyter
+          - kubeflow-torch-cpu
+          - kubeflow-data-science
+    with:
+      environment: ${{ github.ref_name }}
+      image: ${{ matrix.image }}
+      tag: "${{ needs.run-tag.outputs.tag }}"
+      pull-request: true
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+  # ===============================================
+  # PROJECTS
+  # ===============================================
+
+  run-projects:
+    name: Build and Deploy Project Components.
+    uses: ./.github/workflows/_projects.yaml
+    needs: [run-tag, run-libs-tests, run-docker]
+    strategy:
+      max-parallel: 10
+      matrix:
+        poetry-version: ["1.3.2"]
+        projects:
+          # NOTE: list of project components to run
+
+          # KEYBERT-SERVE
+          - name: keybert
+            component: serve
+            integration: false
+            python-version: "3.8.16"
+
+    with:
+      environment: "${{ github.ref_name }}"
+      project: "${{ matrix.projects.name }}"
+      component: "${{ matrix.projects.component }}"
+      tag: "${{ needs.run-tag.outputs.tag }}"
+      integration: "${{ matrix.projects.integration }}"
+      python-version: "${{ matrix.projects.python-version }}"
+      poetry-version: "${{ matrix.poetry-version }}"
+      pull-request: true
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}

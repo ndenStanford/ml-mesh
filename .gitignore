@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -81,9 +80,6 @@ target/
 profile_default/
 ipython_config.py
 
-# pyenv
-.python-version
-
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies
@@ -127,3 +123,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# bazel
+bazel-bin
+bazel-bin/
+bazel-lib
+bazel-lib/
+bazel-out
+bazel-out/
+bazel-testlogs
+bazel-testlogs/
+bazel-ml-mesh
+bazel-ml-mesh/

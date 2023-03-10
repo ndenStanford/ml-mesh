@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euo pipefail
+
+ROOT_DIR=$(dirname pwd)
+
+aws_account_id=$(python3 "${ROOT_DIR}"/bin/get-from-env AWS_ACCOUNT_ID)
+if aws sts get-caller-identity --query Account | grep -q "${aws_account_id}"; then
+    printf "Authenticated with aws\n"
+else
+    printf "Not properly configured or authenticated\n\nPlease provide AWS credentials:\n"
+    aws configure
+fi

@@ -1,0 +1,15 @@
+# Send notifications to the ml team whenever a change occurs to the following files
+
+## MLOPs Own all the things
+
+* @airpr/mlops-engineers @RonsenbergVI
+
+## MLE owns the project implementation
+
+/projects @airpr/ml-engineers
+
+## TODO: associate each project owner with the folder
+
+### keybert
+
+/projects/keybert @sreza1

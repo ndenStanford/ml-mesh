@@ -1,0 +1,55 @@
+name: Run Code Quality Checks
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Environment where code is deployed [prod, stage]"
+      pull-request:
+        required: true
+        default: true
+        type: boolean
+        description: "Indicates whether this worfklow is running for a Pull Request."
+      timeout:
+        default: 30
+        type: number
+        description: "Pre-commit checks timeout in minutes."
+
+jobs:
+  pre-commits:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        if: ${{ inputs.pull-request }}
+        id: get-changed-files
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            all:
+              - added | modified: '**'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: ".python-version"
+
+      - name: Code Quality Checks For Changed Files
+        if: ${{ inputs.pull-request }}
+        id: pre-commit
+        timeout-minutes: ${{ inputs.timeout }}
+        uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --verbose --files ${{ steps.get-changed-files.outputs.all_files }}
+
+      - name: Code Quality Checks For All Files
+        if: ${{ !inputs.pull-request }}
+        id: pre-commit-all
+        timeout-minutes: ${{ inputs.timeout }}
+        uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --verbose --all

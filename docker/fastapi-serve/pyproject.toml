@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "fastapi-serve-cpu"
+version = "0.1.0"
+description = "Core docker image for serving with FastAPI."
+authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+fastapi = "0.92.0"
+pydantic = "1.10.4"
+uvicorn = "0.20.0"
+starlette = "0.25.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

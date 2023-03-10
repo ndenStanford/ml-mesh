@@ -1,0 +1,12 @@
+feature:
+  - "**feature**"
+  - "**enhancement**"
+fix:
+  - "fix**"
+  - "**bugfix**"
+  - "**bug**"
+chore:
+  - "**chore**"
+  - "**patch**"
+dependencies:
+  - "**dependencies**"
