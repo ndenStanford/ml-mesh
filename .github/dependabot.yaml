@@ -8,7 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # ====================================
   # DOCKER
@@ -20,7 +20,7 @@ updates:
     directory: "/docker/fastapi-serve"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # kubeflow base
 
@@ -36,7 +36,7 @@ updates:
     directory: "/docker/kubeflow-data-science"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # kubeflow jax cpu
 
@@ -52,7 +52,7 @@ updates:
     directory: "/docker/kubeflow-jupyter"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # kubeflow numpy
 
@@ -60,7 +60,7 @@ updates:
     directory: "/docker/kubeflow-numpy"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # kubeflow torch cpu
 
@@ -76,7 +76,7 @@ updates:
     directory: "/docker/python-base"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # ====================================
   # LIBS
@@ -88,7 +88,7 @@ updates:
     directory: "/libs/core"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
 
   # ====================================
   # PROJECTS
@@ -102,4 +102,4 @@ updates:
     directory: "/projects/keybert/serve"
     schedule:
       interval: "monthly"
-      target-branch: "stage"
+    target-branch: "stage"
