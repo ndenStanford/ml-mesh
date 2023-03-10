@@ -131,7 +131,6 @@ jobs:
       matrix:
         poetry-version: ["1.3.2"]
         projects:
-          
           # NOTE: list of project components to run
 
           # ========================
