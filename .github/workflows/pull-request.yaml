@@ -134,7 +134,7 @@ jobs:
       environment: "${{ github.ref_name }}"
       project: "${{ matrix.projects.name }}"
       component: "${{ matrix.projects.component }}"
-      tag: "${{ needs.run-tag.outputs.tag }}"
+      tag: "ci-${{ needs.run-tag.outputs.tag }}"
       integration: "${{ matrix.projects.integration }}"
       python-version: "${{ matrix.projects.python-version }}"
       poetry-version: "${{ matrix.poetry-version }}"
