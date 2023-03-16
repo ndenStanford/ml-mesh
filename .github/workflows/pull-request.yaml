@@ -12,7 +12,7 @@ on:
       - reopened
 
 concurrency:
-  group: Pull Request ${{ github.ref_name }}
+  group: Pull Request ${{ github.base_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -98,9 +98,9 @@ jobs:
           - kubeflow-torch-cpu
           - kubeflow-data-science
     with:
-      environment: ${{ github.ref_name }}
+      environment: ${{ github.base_ref }}
       image: ${{ matrix.image }}
-      tag: "${{ needs.run-tag.outputs.tag }}"
+      tag: "ci-${{ needs.run-tag.outputs.tag }}"
       pull-request: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
