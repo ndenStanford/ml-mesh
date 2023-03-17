@@ -1,10 +1,10 @@
 ARG OWNER=onclusiveml
-ARG BASE_IMAGE_NAME=python-base
-ARG BASE_IMAGE_TAG=latest
-ARG BASE_IMAGE_URI=$OWNER/$BASE_IMAGE_NAME
+ARG IMAGE_NAME=python-base
+ARG IMAGE_TAG=latest
+ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 
 # --- production build stage
-FROM $BASE_IMAGE_URI:$BASE_IMAGE_TAG as production
+FROM $BASE_CONTAINER:$IMAGE_TAG as production
 
 ENV USER=app
 ENV HOME="/home/onclusive/${USER}"
