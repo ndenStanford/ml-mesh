@@ -59,4 +59,5 @@ COPY test_neuron_compile.py test_neuron_compile.py
 # run the neuron compilation 'core' test suite as part of development build
 # extended tests are included for reference but not run atm
 RUN mkdir ./output
-RUN pytest -m core
+RUN pytest -m core # 20s
+# RUN pytest -m extended # 11.5mins

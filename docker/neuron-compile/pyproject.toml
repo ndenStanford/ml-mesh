@@ -9,6 +9,9 @@ secondary = true
 transformers = "^4.27.1"
 boto3 = "1.26.77"
 pytest = "7.2.1"
+sacremoses = "^0.0.53"
+sentencepiece = "^0.1.97"
+pillow = "^9.4.0"
 
 [tool.poetry]
 name = "neuron-compile"

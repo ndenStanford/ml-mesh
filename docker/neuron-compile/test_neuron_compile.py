@@ -47,7 +47,7 @@ def test_neuron_compile_torch_graph() -> None:
     torch.jit.save(neuron_net, os.path.join("./output", "neuron_net.pt"))
 
 
-@pytest.mark.core
+@pytest.mark.extended
 @pytest.mark.parametrize(
     "model_name, dynamic_batch_size",
     [
