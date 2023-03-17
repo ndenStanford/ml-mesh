@@ -107,7 +107,7 @@ jobs:
     with:
       environment: ${{ github.base_ref }}
       image: ${{ matrix.image }}
-      tag: "ci-${{ needs.run-tag.outputs.tag }}"
+      tag: "ci-${{ needs.run-tag.outputs.short-sha }}"
       pull-request: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -141,7 +141,7 @@ jobs:
       environment: "${{ github.base_ref }}"
       project: "${{ matrix.projects.name }}"
       component: "${{ matrix.projects.component }}"
-      tag: "ci-${{ needs.run-tag.outputs.tag }}"
+      tag: "ci-${{ needs.run-tag.outputs.short-sha }}"
       integration: "${{ matrix.projects.integration }}"
       python-version: "${{ matrix.projects.python-version }}"
       poetry-version: "${{ matrix.poetry-version }}"
