@@ -3,8 +3,8 @@ ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 
-# --- production build stage
-FROM $BASE_CONTAINER:$IMAGE_TAG as production
+# --- build stage
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
 ENV USER=app
 ENV HOME="/home/onclusive/${USER}"
@@ -38,6 +38,9 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+# --- production stage
+FROM builder as production
+
 # --- test build stage
 FROM production as development
 
@@ -58,6 +61,5 @@ COPY test_neuron_compile.py test_neuron_compile.py
 
 # run the neuron compilation 'core' test suite as part of development build
 # extended tests are included for reference but not run atm
-RUN mkdir ./output
-RUN pytest -m core # 20s
+RUN mkdir ./output && pytest -m core # 20s
 # RUN pytest -m extended # 11.5mins

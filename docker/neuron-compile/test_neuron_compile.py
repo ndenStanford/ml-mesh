@@ -25,7 +25,7 @@ def test_neuron_compile_torch_function() -> None:
 def test_neuron_compile_torch_graph() -> None:
     class Net(torch.nn.Module):
         def __init__(self) -> None:
-            super(Net, self).__init__()
+            super().__init__()
             self.conv = torch.nn.Conv2d(1, 1, 3)
 
         def forward(self, x: torch.Tensor) -> float:

@@ -28,7 +28,7 @@ projects.deploy/%: ## Deploy project component docker image to ECR.
 	docker push  $(OWNER)/$(notdir $@)-$(COMPONENT):${IMAGE_TAG}
 
 projects.start/%: # Start development container of component
-	docker-compose -f projects/$(notdir $@)/docker-compose.dev.yaml --profile $(COMPONENT) up 
+	docker-compose -f projects/$(notdir $@)/docker-compose.dev.yaml --profile $(COMPONENT) up
 
 projects.stop/%: # Stop development container of component
 	docker-compose -f projects/$(notdir $@)/docker-compose.dev.yaml --profile $(COMPONENT) down
