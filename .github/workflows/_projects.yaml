@@ -81,12 +81,17 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version-file: ".python-version"
+
+      - name: Get Poetry version
+        id: get-poetry-version
+        run: |
+          echo "::set-output name=poetry-version::$(cat .poetry-version)"
 
       - name: Setup Poetry
         uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: ${{ inputs.poetry-version }}
+          poetry-version: ${{ steps.get-poetry-version.outputs.poetry-version }}
 
       - name: Install project dependencies
         run: |
