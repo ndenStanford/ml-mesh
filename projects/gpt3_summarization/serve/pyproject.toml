@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "gpt_summarization-serve"
 version = "0.1.0"
-description = "Implementation of GPT3 API."
+description = "Implementation of Summarization API using GPT3.5."
 authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "src"}]
 

@@ -1,6 +1,7 @@
 """Settings."""
 
 from pydantic import BaseSettings
+import os
 
 
 class Settings(BaseSettings):
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     KUBERNETES_IN_POD: bool = False
     LOGGING_LEVEL: str = "info"
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
 
 
 settings = Settings()

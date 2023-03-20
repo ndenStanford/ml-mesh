@@ -5,10 +5,9 @@ from src.settings import settings
 from onclusiveml.core.logger import get_default_logger
 import re
 import openai
-import os
 
 # OpenAI api key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = settings.OPENAI_API_KEY
 
 logger = get_default_logger(__name__)
 
