@@ -14,4 +14,5 @@ class Settings(BaseSettings):
     KUBERNETES_IN_POD: bool = False
     LOGGING_LEVEL: str = "info"
 
+
 settings = Settings()

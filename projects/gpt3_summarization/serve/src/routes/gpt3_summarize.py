@@ -10,7 +10,7 @@ from fastapi import APIRouter, status
 logger = get_default_logger(__name__)
 
 router = APIRouter(
-    prefix="/gpt3_summarize",
+    prefix="/summarize/gpt3",
 )
 
 
@@ -35,7 +35,7 @@ def get_summary(item: Request) -> Response:  # item is an instance of Item class
                     "temperature": item.temperature,
                     "presence_penalty": item.presence_penalty,
                     "frequency_penalty": item.frequency_penalty,
-                    "model": item.model
+                    "model": item.model,
                 }
             }
         ]

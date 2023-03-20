@@ -28,4 +28,4 @@ RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-WORKDIR "${HOME}"
+WORKDIR "${PROJECT_DIR}"
