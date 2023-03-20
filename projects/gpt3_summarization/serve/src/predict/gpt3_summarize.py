@@ -41,33 +41,32 @@ class GPT3SummarizeHandler:
             # get summary
             response = openai.ChatCompletion.create(
                 model=model,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
+                messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
-                temperature=temperature
+                temperature=temperature,
             )
-            summary = response['choices'][0]['message']['content']
+            summary = response["choices"][0]["message"]["content"]
         else:
             # get summary
-            response = openai.Completion.create(model=model,
-                                                prompt=prompt,
-                                                max_tokens=max_tokens,  # default 16
-                                                temperature=temperature
-                                                )
+            response = openai.Completion.create(
+                model=model,
+                prompt=prompt,
+                max_tokens=max_tokens,  # default 16
+                temperature=temperature,
+            )
 
-            summary = response['choices'][0]['text']
+            summary = response["choices"][0]["text"]
 
-        finish_reason = response['choices'][0]['finish_reason']
+        finish_reason = response["choices"][0]["finish_reason"]
 
         return summary, finish_reason
 
     def postprocess(self, text):
-        text = re.sub('\n+', ' ', text)
+        text = re.sub("\n+", " ", text)
         return text
 
     def pre_process(self, text):
-        text = re.sub('\n+', ' ', text)
+        text = re.sub("\n+", " ", text)
         return text
 
 
@@ -99,13 +98,13 @@ def handle(data):
             )
 
         text = _service.pre_process(data["content"])
-        desired_length = data['desired_length']
-        max_tokens = data['max_tokens']
-        top_p = data['top_p']  # may be removed
-        temperature = data['temperature']
-        presence_penalty = data['presence_penalty']  # may be removed
-        frequency_penalty = data['frequency_penalty']  # may be removed
-        model = data['model']
+        desired_length = data["desired_length"]
+        max_tokens = data["max_tokens"]
+        top_p = data["top_p"]  # may be removed
+        temperature = data["temperature"]
+        presence_penalty = data["presence_penalty"]  # may be removed
+        frequency_penalty = data["frequency_penalty"]  # may be removed
+        model = data["model"]
 
         starttime = datetime.datetime.utcnow()
         summary, finish_reason = _service.inference(
