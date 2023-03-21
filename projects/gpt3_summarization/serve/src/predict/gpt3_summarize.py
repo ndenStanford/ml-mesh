@@ -29,11 +29,11 @@ class GPT3SummarizeHandler:
         # append summary prompt
         prompt = (
             "Give an abstractive summary while retaining important quotes of speech in less than "
-            + str(desired_length)
-            + " words: "
-            + "\n"
-            + text
-            + "\n"
+            + str(desired_length)  # noqa: W503
+            + " words: "  # noqa: W503
+            + "\n"  # noqa: W503
+            + text  # noqa: W503
+            + "\n"  # noqa: W503
         )
 
         if model == "gpt-3.5-turbo":
