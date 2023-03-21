@@ -137,6 +137,12 @@ jobs:
             integration: false
             python-version: "3.8.16"
 
+          # KEYBERT-SERVE
+          - name: gpt3_summarization
+            component: serve
+            integration: false
+            python-version: "3.8.16"
+
     with:
       environment: "${{ github.base_ref }}"
       project: "${{ matrix.projects.name }}"

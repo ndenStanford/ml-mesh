@@ -142,6 +142,15 @@ jobs:
             integration: false
             python-version: "3.8.16"
 
+          # ========================
+          # SUMMARIZATION - GPT3
+          # ========================
+          # serve
+          - name: gpt3_summarization
+            component: serve
+            integration: false
+            python-version: "3.8.16"
+
     with:
       environment: "${{ github.ref_name }}"
       project: "${{ matrix.projects.name }}"

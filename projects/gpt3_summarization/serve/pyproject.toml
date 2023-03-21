@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "gpt_summarization-serve"
+name = "gpt3_summarization-serve"
 version = "0.1.0"
-description = "Implementation of Summarization API using GPT3.5."
+description = "Implementation of Summarization API using OpenAI's GPT3 models"
 authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-regex = "2022.10.31"
 openai = "0.27.2"
+regex = "2022.10.31"
 
 core = {path = "../../../libs/core"}
 
