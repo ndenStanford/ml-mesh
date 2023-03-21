@@ -57,10 +57,7 @@ run-docker:
     matrix:
       image:
         - python-base
-        - fastapi-serve
-        - kubeflow-jupyter
-        - kubeflow-torch-cpu
-        - kubeflow-data-science
+        ...
         - <image name>
 ```
 
