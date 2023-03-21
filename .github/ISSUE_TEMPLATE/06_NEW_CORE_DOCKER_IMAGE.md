@@ -45,5 +45,23 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 - [ ] open an issue in [ml-platform](https://github.com/AirPR/ml-platform/blob/prod/.github/ISSUE_TEMPLATE/04_NEW_ECR_REPOSITORY.md) to create a new ECR repository with the name `<image name>`.
 - [ ] get a PR started from your feature branch to `stage`.
+- [ ] add the docker image to the github actions list in both `.github/workflows/deployment.yaml` and `.github/workflows/pull-request.yaml`:
+
+```yaml
+run-docker:
+  name: Build and Push Core Docker Images.
+  uses: ./.github/workflows/_core-docker.yaml
+  needs: [run-tag, run-libs-tests]
+  strategy:
+    max-parallel: 1
+    matrix:
+      image:
+        - python-base
+        - fastapi-serve
+        - kubeflow-jupyter
+        - kubeflow-torch-cpu
+        - kubeflow-data-science
+        - <image name>
+```
 
 ---
