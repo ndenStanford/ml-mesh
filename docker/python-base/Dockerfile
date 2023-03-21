@@ -27,5 +27,3 @@ RUN apt-get update && \
 # python package management setup
 RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
     && python -V
-
-RUN ls -l

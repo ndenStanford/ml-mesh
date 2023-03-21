@@ -54,12 +54,3 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
-
-
-COPY conftest.py conftest.py
-COPY test_neuron_compile.py test_neuron_compile.py
-
-# run the neuron compilation 'core' test suite as part of development build
-# extended tests are included for reference but not run atm
-RUN mkdir ./output && pytest -m core # 20s
-# RUN pytest -m extended # 11.5mins
