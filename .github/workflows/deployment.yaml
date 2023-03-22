@@ -143,7 +143,7 @@ jobs:
             python-version: "3.8.16"
 
           # ========================
-          # SUMMARIZATION - GPT3
+          # GPT3_SUMMARIZATION
           # ========================
           # serve
           - name: gpt3_summarization

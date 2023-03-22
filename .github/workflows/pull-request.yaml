@@ -137,7 +137,7 @@ jobs:
             integration: false
             python-version: "3.8.16"
 
-          # KEYBERT-SERVE
+          # GPT3_SUMMARIZATION-SERVE
           - name: gpt3_summarization
             component: serve
             integration: false
