@@ -98,6 +98,8 @@ jobs:
           make projects.install/${{ inputs.project }} COMPONENT=${{ inputs.component }}
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }}
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
