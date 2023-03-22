@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     """API configuration."""
 
     # Generic settings
-    API_NAME: str = "GPT3 Summarization Prediction"
+    API_NAME: str = "Summarization Prediction"
     API_DESCRIPTION: str = ""
     ENVIRONMENT: str = "stage"
     DEBUG: bool = True

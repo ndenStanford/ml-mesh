@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class Request(BaseModel):
-    """GPT3 request item.
+    """Summarization request item.
 
     Holds the required information to be provided in the payload and their type
 

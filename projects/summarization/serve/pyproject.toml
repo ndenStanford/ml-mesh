@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "gpt3_summarization-serve"
+name = "summarization-serve"
 version = "0.1.0"
 description = "Implementation of Summarization API using OpenAI's GPT3 models"
 authors = ["Syed Reza <syed.reza@onclusive.com>"]

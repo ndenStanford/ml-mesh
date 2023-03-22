@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class Response(BaseModel):
-    """GPT3 response item.
+    """Summarization response item.
 
     Holds the information on expected output at inference
 

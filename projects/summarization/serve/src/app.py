@@ -1,7 +1,7 @@
 """App."""
 
 from onclusiveml.core.logger import get_default_logger
-from src.routes import health_router, gpt3_router
+from src.routes import health_router, summarization_router
 from src.settings import settings
 
 from fastapi import FastAPI
@@ -20,7 +20,7 @@ def create_app():
     logger.debug("Adding routers...")
 
     app.include_router(health_router)
-    app.include_router(gpt3_router)
+    app.include_router(summarization_router)
 
     return app
 

@@ -1,4 +1,4 @@
-"""GPT3 Summarize handler."""
+"""Summarization handler."""
 
 import datetime
 from src.settings import settings
@@ -12,7 +12,7 @@ openai.api_key = settings.OPENAI_API_KEY
 logger = get_default_logger(__name__)
 
 
-class GPT3SummarizeHandler:
+class SummarizeHandler:
     def __init__(self):
         super().__init__()
 
@@ -69,7 +69,7 @@ class GPT3SummarizeHandler:
         return text
 
 
-_service = GPT3SummarizeHandler()
+_service = SummarizeHandler()
 
 
 def handle(data):
