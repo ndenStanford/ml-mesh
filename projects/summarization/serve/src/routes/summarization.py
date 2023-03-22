@@ -1,4 +1,4 @@
-"""GPT3 Summarization prediction."""
+"""Summarization prediction."""
 
 from onclusiveml.core.logger import get_default_logger
 from src.predict.summarize import handle

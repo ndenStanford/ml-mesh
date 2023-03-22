@@ -137,7 +137,7 @@ jobs:
             integration: false
             python-version: "3.8.16"
 
-          # GPT3_SUMMARIZATION-SERVE
+          # SUMMARIZATION-SERVE
           - name: summarization
             component: serve
             integration: false
