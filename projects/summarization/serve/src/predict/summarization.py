@@ -12,7 +12,7 @@ openai.api_key = settings.OPENAI_API_KEY
 logger = get_default_logger(__name__)
 
 
-class SummarizeHandler:
+class SummarizationHandler:
     def __init__(self):
         super().__init__()
 
@@ -69,7 +69,7 @@ class SummarizeHandler:
         return text
 
 
-_service = SummarizeHandler()
+_service = SummarizationHandler()
 
 
 def handle(data):

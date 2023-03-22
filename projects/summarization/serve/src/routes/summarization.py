@@ -1,7 +1,7 @@
 """Summarization prediction."""
 
 from onclusiveml.core.logger import get_default_logger
-from src.predict.summarize import handle
+from src.predict.summarization import handle
 from src.schemas import Request, Response
 
 from fastapi import APIRouter, status
@@ -10,7 +10,7 @@ from fastapi import APIRouter, status
 logger = get_default_logger(__name__)
 
 router = APIRouter(
-    prefix="/summarize/gpt3",
+    prefix="/summarization/gpt3",
 )
 
 
