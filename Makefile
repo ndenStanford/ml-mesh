@@ -15,6 +15,7 @@ IMAGE_TAG?=latest
 ALL_DOCKER_IMGS:= \
 	python-base \
 	neuron-compile \
+	neuron-inference \
 	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \

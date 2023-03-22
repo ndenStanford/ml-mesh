@@ -94,6 +94,7 @@ jobs:
         image:
           - python-base
           - neuron-compile
+          - neuron-inference
           - fastapi-serve
           - kubeflow-jupyter
           - kubeflow-torch-cpu
