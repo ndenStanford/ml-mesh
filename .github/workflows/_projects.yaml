@@ -97,11 +97,6 @@ jobs:
         run: |
           make projects.install/${{ inputs.project }} COMPONENT=${{ inputs.component }}
 
-      - name: Inject OPENAI API key for tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.project == 'gpt3_summarize' && inputs.component == 'serve' }}
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }}
 
