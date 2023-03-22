@@ -19,12 +19,11 @@ RUN apt-get update && \
 RUN echo 'deb https://apt.repos.neuron.amazonaws.com bionic main' >> /etc/apt/sources.list.d/neuron.list
 # hadolint ignore=DL4006
 RUN wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB | apt-key add -
-RUN apt-get update && \
-    rm -rf /var/lib/apt/lists/*
 
 # Install Neuron Driver
 # hadolint ignore=DL3008
-RUN apt-get -yq install --no-install-recommends aws-neuronx-dkms aws-neuronx-tools && \
+RUN apt-get update && \
+    apt-get -yq install --no-install-recommends aws-neuronx-dkms aws-neuronx-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
