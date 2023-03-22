@@ -43,14 +43,3 @@ FROM builder as production
 
 # --- test build stage
 FROM production as development
-
-# install test dependencies
-RUN poetry install \
-    --only dev \
-    --no-root \
-    --no-interaction \
-    --no-ansi && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
