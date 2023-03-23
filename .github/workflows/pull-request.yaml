@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - prod
-      - stage
     types:
       - ready_for_review
       - opened
