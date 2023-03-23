@@ -10,6 +10,11 @@ on:
         required: true
         type: string
         description: "Image to build and test."
+      build-strategy:
+        required: false
+        default: single-stage
+        type: string
+        description: "Build strategy for specified image [single-stage, multi-stage]"
       tag:
         required: true
         type: string
@@ -65,6 +70,7 @@ jobs:
       - name: Build Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          BUILD_STRATEGY=${{ inputs.build-strategy}} \
           IMAGE_TAG="${{ inputs.tag }}" \
           PLATFORM=linux/amd64
 

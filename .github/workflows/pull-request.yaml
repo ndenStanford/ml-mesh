@@ -93,11 +93,13 @@ jobs:
       matrix:
         image:
           - python-base
-          - neuron-compile
           - fastapi-serve
           - kubeflow-jupyter
           - kubeflow-torch-cpu
           - kubeflow-data-science
+        include:
+          - image: neuron-compile
+            build-strategy: multi-stage
     with:
       environment: ${{ github.ref_name }}
       image: ${{ matrix.image }}

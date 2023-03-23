@@ -2,7 +2,7 @@ docker.build/%: DOCKER_BUILD_ARGS?=
 docker.build/%: ## build the latest image for a stack using the system's architecture
 	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture) with $(BUILD_STRATEGY) build strategy"
 
-	if [[ $(BUILD_STRATEGY) == "" ]]; then
+	if [[ $(BUILD_STRATEGY) == "single-stage" ]]; then
 		docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
 				-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
 				-f ./docker/$(notdir $@)/Dockerfile	\
