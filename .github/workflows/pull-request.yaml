@@ -99,6 +99,7 @@ jobs:
       matrix:
         image:
           - python-base
+          - neuron-compile
           - fastapi-serve
           - kubeflow-jupyter
           - kubeflow-torch-cpu

@@ -14,6 +14,7 @@ IMAGE_TAG?=latest
 # all core docker images
 ALL_DOCKER_IMGS:= \
 	python-base \
+	neuron-compile \
 	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \
