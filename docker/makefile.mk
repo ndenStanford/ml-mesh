@@ -1,10 +1,26 @@
 docker.build/%: DOCKER_BUILD_ARGS?=
 docker.build/%: ## build the latest image for a stack using the system's architecture
-	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture)"
-	docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
-			-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
-			-f ./docker/$(notdir $@)/Dockerfile	\
-			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM) --rm --force-rm --no-cache
+	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture) with $(BUILD_STRATEGY) build strategy"
+
+	if [[ $(BUILD_STRATEGY) == "" ]]; then
+		docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
+				-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
+				-f ./docker/$(notdir $@)/Dockerfile	\
+				--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM) --rm --force-rm --no-cache
+	elif [[ $(BUILD_STRATEGY)="multi-stage" ]]; then ## build development stage so that build passes <=> test suite passes
+		
+		docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
+				-t $(OWNER)/$(notdir $@):${IMAGE_TAG}-development \
+				-f ./docker/$(notdir $@)/Dockerfile	\
+				--target development \
+				--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM)
+		
+		docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
+				-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
+				-f ./docker/$(notdir $@)/Dockerfile	\
+				--target production \
+				--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM) --rm --force-rm --no-cache
+	fi
 	@echo -n "built image size:"
 	@docker images $(OWNER)/docker/$(notdir $@):latest --format "{{.Size}}"
 	@echo "::endgroup::"
