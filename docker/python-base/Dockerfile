@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.8.16
 
-FROM python:${PYTHON_VERSION}-slim
+FROM python:${PYTHON_VERSION}-slim as builder
 
 ENV HOME="/home"
 
@@ -27,3 +27,9 @@ RUN apt-get update && \
 # python package management setup
 RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
     && python -V
+
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM production as development

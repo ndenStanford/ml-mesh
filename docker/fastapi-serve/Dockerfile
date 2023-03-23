@@ -3,7 +3,7 @@ ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 
-FROM $BASE_CONTAINER:$IMAGE_TAG
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
 ENV USER=app
 ENV HOME="/home/onclusive/${USER}"
@@ -30,3 +30,9 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
     chown -R "${NB_USER}:users" "${HOME}"
+
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM production as development

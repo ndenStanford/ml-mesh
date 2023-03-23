@@ -80,9 +80,8 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users ./test/ ./test
-RUN mkdir test/output
+RUN chmod +x test/entrypoint.sh && \
+    mkdir test/output
 
 # run compilation and inference test suites
-# hadolint ignore=DL3059
-RUN pytest -m compilation
-# RUN pytest -m inference # disabled for now; enable once the Github Actions self hosted runner issue for Inf1 instances has been resolved
+ENTRYPOINT ["test/entrypoint.sh"]

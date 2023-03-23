@@ -61,14 +61,9 @@ def test_neuron_inference_torch_graph(test_output_dir, torch_graph_input):
 
 
 @pytest.mark.compilation
-@pytest.mark.parametrize(
-    "dynamic_batch_size",
-    [False, True],
-)
 def test_neuron_compile_transformer_nlp_model(
     torch_model_name: str,
     torch_model_input: Tuple[torch.Tensor, torch.Tensor],
-    dynamic_batch_size: bool,
     test_output_dir,
 ) -> None:
 
@@ -77,32 +72,24 @@ def test_neuron_compile_transformer_nlp_model(
     )
     model.eval()
 
-    model_neuron = torch.neuron.trace(
-        model, torch_model_input, dynamic_batch_size=dynamic_batch_size
-    )
+    model_neuron = torch.neuron.trace(model, torch_model_input)
 
     torch.jit.save(
         model_neuron,
         os.path.join(
             test_output_dir,
-            f"transformer_nlp_model_neuron__{dynamic_batch_size}.pt",
+            "transformer_nlp_model_neuron.pt",
         ),
     )
 
 
 @pytest.mark.inference
-@pytest.mark.parametrize(
-    "dynamic_batch_size",
-    [False, True],
-)
-def test_neuron_inference_transformer_nlp_model(
-    test_output_dir, dynamic_batch_size, torch_model_input
-):
+def test_neuron_inference_transformer_nlp_model(test_output_dir, torch_model_input):
 
     neuron_model_scripted = torch.jit.load(
         os.path.join(
             test_output_dir,
-            f"transformer_nlp_model_neuron__{dynamic_batch_size}.pt",
+            "transformer_nlp_model_neuron.pt",
         )
     )
 

@@ -97,9 +97,7 @@ jobs:
           - kubeflow-jupyter
           - kubeflow-torch-cpu
           - kubeflow-data-science
-        include:
-          - image: neuron-compile
-            build-strategy: multi-stage
+          - neuron-compile
     with:
       environment: ${{ github.ref_name }}
       image: ${{ matrix.image }}
