@@ -53,9 +53,3 @@ def torch_model_input(torch_model_name, torch_model_text_input) -> torch.Tensor:
     )
 
     return tokens["input_ids"], tokens["attention_mask"]
-
-
-@pytest.fixture
-def max_length() -> int:
-
-    return 25
