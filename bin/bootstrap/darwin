@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# ===========================================================================
+# BOOTSTRAP - SETUP DEV ENVIRONMENT
+# ===========================================================================
+
+# Bash options for strict error checking
+set -o errexit -o errtrace -o pipefail -o nounset
+
+KERNEL="$(uname -s)"
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+# Installing Darwin package manager
+_install_homebrew(){
+    echo "==> Installing XCode..."
+    xcode-select --install
+
+    echo "==> Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+}
+
+# Installing global dependencies
+_install_global_deps() {
+    echo "==> Installing system dependencies..."
+    brew update
+
+    # check that there are no issue - if yes try to fix them
+    local _bundle_check
+    _bundle_check=$(
+        brew bundle check >/dev/null 2>&1
+        echo $?
+    )
+    if [[ "${_bundle_check}" != "0" ]]; then
+        echo "Installing homebrew dependencies ..."
+        brew bundle --verbose 2>&1 | tee bundle.spec
+        if grep 'Homebrew Bundle failed!' bundle.spec; then
+        exit 1
+        fi
+    fi
+
+    brew cleanup -s
+}
+
+# Installing python
+_install_python(){
+    echo "==> Installing python..."
+    PYTHON_VERSION=$(cat "${ROOT_DIR}"/.python-version)
+    # shellcheck disable=SC2129
+    echo "export PYENV_ROOT=$HOME/.pyenv" >> ~/.bashrc
+    echo "command -v pyenv >/dev/null || export PATH=$PYENV_ROOT/bin:$PATH" >> ~/.bashrc
+    echo "eval $(pyenv init -)" >> ~/.bashrc
+    pyenv install "${PYTHON_VERSION}" -f
+    pyenv global "${PYTHON_VERSION}"
+}
+
+# Installing poetry
+_install_poetry(){
+    echo "==> Install poetry..."
+    POETRY_VERSION=$(cat "${ROOT_DIR}"/.poetry-version)
+    pip3 install "poetry==${POETRY_VERSION}"
+}
+
+# Installing project dependencies
+_install_project_deps(){
+    echo "==> Install project dependencies..."
+    poetry install --directory="${ROOT_DIR}"
+}
+
+_setup_git_hooks(){
+    echo "==> Setup git hooks..."
+    pre-commit install -f --install-hooks
+    pre-commit gc
+}
+
+# Main entrypoint for script.
+main(){
+    if [[ "${KERNEL}" == "Darwin" ]]; then
+        _install_homebrew
+        _install_global_deps
+        _install_python
+        _install_poetry
+        _install_project_deps
+        _setup_git_hooks
+    else
+        echo "Kernel ${KERNEL} is not supported by the script."
+        echo "If your kernel bootrap does not exist, please check the project README for manual installation steps"
+    fi
+}
+
+main

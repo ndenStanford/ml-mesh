@@ -2,7 +2,7 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=kubeflow-jupyter
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -23,4 +23,10 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 EXPOSE 8888
 
+# --- production stage
+FROM builder as production
+
 ENTRYPOINT ["/init"]
+
+# --- test build stage
+FROM builder as development
