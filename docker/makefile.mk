@@ -1,12 +1,11 @@
 docker.build/%: DOCKER_BUILD_ARGS?=
 docker.build/%: ## build the latest image for a stack using the system's architecture
-	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture) with $(BUILD_STRATEGY) build strategy"
+	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture)"
 		
 	@docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
 			-t $(OWNER)/$(notdir $@):${IMAGE_TAG}-development \
 			-f ./docker/$(notdir $@)/Dockerfile	\
 			--target development \
-			--cpuset-cpus 0 \
 			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM)
 
 	@docker run $(OWNER)/$(notdir $@):${IMAGE_TAG}-development
