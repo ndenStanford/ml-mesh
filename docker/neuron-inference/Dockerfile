@@ -64,6 +64,9 @@ RUN poetry install \
 # --- production stage
 FROM builder as production
 
+# --- helper stage for neuron compile test outputs; taken from https://github.com/moby/moby/issues/34482
+FROM ${OWNER}/neuron-compile:${IMAGE_TAG}-development AS neuron-compile-test-outputs
+
 # --- test build stage
 FROM builder as development
 
@@ -80,11 +83,8 @@ RUN poetry install \
 
 # copy over test files, test outputs and entrypoint from neuron-compile development stage
 RUN mkdir test
-COPY --from=seb-local/neuron-compile:latest-development /home/onclusive/app/test/ ./test/
 
-RUN ls -l
-RUN ls -l test
-RUN ls -l test/output
+COPY --from=neuron-compile-test-outputs /home/onclusive/app/test/ ./test/
 
 # overwrite entrypoint with own neuron-inference entrypoint
 COPY --chown=${USER}:users ./test/entrypoint.sh ./test/entrypoint.sh
