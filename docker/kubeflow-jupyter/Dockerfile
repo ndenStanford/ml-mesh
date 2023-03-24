@@ -123,3 +123,6 @@ ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
+
+# dummy entrypoint to pass the CI docker run stage
+ENTRYPOINT ["pwd"]

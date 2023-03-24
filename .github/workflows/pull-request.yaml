@@ -105,6 +105,7 @@ jobs:
           - kubeflow-jupyter
           - kubeflow-torch-cpu
           - kubeflow-data-science
+          - fastapi-serve
     with:
       environment: ${{ github.base_ref }}
       image: ${{ matrix.image }}
