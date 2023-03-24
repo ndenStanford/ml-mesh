@@ -66,3 +66,10 @@ FROM builder as production
 
 # --- test build stage
 FROM builder as development
+
+# copy over test files, test outputs and entrypoint from neuron-compile development stage
+COPY --from=$OWNER/neuron-compile:latest-development ./test ./test
+
+# overwrite entrypoint with own neuron-inference entrypoint
+COPY --chown=${USER}:users ./test/entrypoint.sh ./test/entrypoint.sh
+RUN chmod +x test/entrypoint.sh
