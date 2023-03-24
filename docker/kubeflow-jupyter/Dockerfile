@@ -123,3 +123,5 @@ ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
+
+ENTRYPOINT []
