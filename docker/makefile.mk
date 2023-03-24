@@ -8,7 +8,7 @@ docker.build/%: ## build the latest image for a stack using the system's archite
 			--target development \
 			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM)
 
-	@docker run $(OWNER)/$(notdir $@):${IMAGE_TAG}-development
+	@docker run --device=/dev/neuron0 $(OWNER)/$(notdir $@):${IMAGE_TAG}-development
 	
 	@docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
 			-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \

@@ -67,9 +67,28 @@ FROM builder as production
 # --- test build stage
 FROM builder as development
 
+# install development dependencies
+RUN poetry install \
+    --only dev \
+    --no-root \
+    --no-interaction \
+    --no-ansi && \
+    rm -rf ~/.cache/pypoetry/cache && \
+    rm -rf ~/.cache/pypoetry/artifacts && \
+    poetry cache clear pypi --all -q && \
+    chown -R "${USER}:users" "${HOME}"
+
 # copy over test files, test outputs and entrypoint from neuron-compile development stage
-COPY --from=$OWNER/neuron-compile:latest-development ./test ./test
+RUN mkdir test
+COPY --from=seb-local/neuron-compile:latest-development /home/onclusive/app/test/ ./test/
+
+RUN ls -l
+RUN ls -l test
+RUN ls -l test/output
 
 # overwrite entrypoint with own neuron-inference entrypoint
 COPY --chown=${USER}:users ./test/entrypoint.sh ./test/entrypoint.sh
 RUN chmod +x test/entrypoint.sh
+
+# run compilation and inference test suites
+ENTRYPOINT ["test/entrypoint.sh"]
