@@ -23,10 +23,10 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 EXPOSE 8888
 
-ENTRYPOINT ["/init"]
-
 # --- production stage
 FROM builder as production
 
+ENTRYPOINT ["/init"]
+
 # --- test build stage
-FROM production as development
+FROM builder as development

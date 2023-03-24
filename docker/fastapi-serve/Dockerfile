@@ -35,4 +35,4 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 FROM builder as production
 
 # --- test build stage
-FROM production as development
+FROM builder as development

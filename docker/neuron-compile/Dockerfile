@@ -66,7 +66,7 @@ RUN poetry install \
 FROM builder as production
 
 # --- test build stage
-FROM production as development
+FROM builder as development
 
 # install development dependencies
 RUN poetry install \

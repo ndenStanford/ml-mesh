@@ -116,10 +116,10 @@ USER "${NB_UID}"
 
 EXPOSE 8888
 
-ENTRYPOINT ["/init"]
-
 # --- production stage
 FROM builder as production
 
+ENTRYPOINT ["/init"]
+
 # --- test build stage
-FROM production as development
+FROM builder as development

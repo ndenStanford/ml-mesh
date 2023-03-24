@@ -32,4 +32,4 @@ RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cac
 FROM builder as production
 
 # --- test build stage
-FROM production as development
+FROM builder as development
