@@ -68,11 +68,17 @@ jobs:
           IMAGE_TAG="${{ inputs.tag }}" \
           PLATFORM=linux/amd64
 
-      - name: Push Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
+      - name: Push production build of Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
           make docker.push/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}"
+
+      - name: Push development build of Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
+        run: |
+          make docker.push/${{ inputs.image }} \
+          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          IMAGE_TAG="${{ inputs.tag }}-development"
 
       - name: Tag Docker image with latest | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ !inputs.pull-request }}
