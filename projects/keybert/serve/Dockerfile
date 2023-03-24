@@ -10,8 +10,8 @@ ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 RUN mkdir -p "${HOME}" && \
     mkdir -p "${PROJECT_DIR}" && \
-    chown -R "${NB_USER}:users" "${HOME}" && \
-    chown -R "${NB_USER}:users" "${PROJECT_DIR}"
+    chown -R "${USER}:users" "${HOME}" && \
+    chown -R "${USER}:users" "${PROJECT_DIR}"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
@@ -23,9 +23,9 @@ COPY --chown=${USER}:users libs/ /libs/
 # source
 COPY --chown=${USER}:users "${PROJECT_DIR}/src" "$HOME/src"
 
-WORKDIR "${PROJECT_DIR}"
-
-RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
+RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
+
+WORKDIR "${HOME}"
