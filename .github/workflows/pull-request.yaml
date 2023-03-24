@@ -99,11 +99,11 @@ jobs:
       matrix:
         image:
           - python-base
+          - neuron-compile
           - fastapi-serve
           - kubeflow-jupyter
           - kubeflow-torch-cpu
           - kubeflow-data-science
-          - neuron-compile
     with:
       environment: ${{ github.base_ref }}
       image: ${{ matrix.image }}
