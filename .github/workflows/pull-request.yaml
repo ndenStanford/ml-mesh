@@ -100,9 +100,9 @@ jobs:
         image:
           - python-base
           - neuron-compile
+          - kubeflow-torch-cpu
           - fastapi-serve
           - kubeflow-jupyter
-          - kubeflow-torch-cpu
           - kubeflow-data-science
     with:
       environment: ${{ github.base_ref }}
