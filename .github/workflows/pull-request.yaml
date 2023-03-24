@@ -11,7 +11,7 @@ on:
       - reopened
 
 concurrency:
-  group: Pull Request ${{ github.base_ref }}
+  group: Pull Request ${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
