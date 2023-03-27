@@ -5,7 +5,7 @@ docker.build/%: ## build the latest image for a stack using the system's archite
 	@docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
 			-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
 			-f ./docker/$(notdir $@)/Dockerfile	\
-			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM) --target $(TARGET_BUILD_STAGE)
+			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(BASE_IMAGE_TAG)" --platform=$(PLATFORM) --target $(TARGET_BUILD_STAGE)
 
 	@echo -n "built image size:"
 	@docker images $(OWNER)/docker/$(notdir $@):latest --format "{{.Size}}"
