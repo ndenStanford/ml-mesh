@@ -36,6 +36,7 @@ In order to setup your local development enviroment, please follow these steps:
 
 - [ ] Install core dependencies
 - [ ] Setup your AWS config
+- [ ] Install poetry
 - [ ] Setup your python environment
 - [ ] Install git hooks (optional)
 
@@ -43,15 +44,19 @@ In order to setup your local development enviroment, please follow these steps:
 
 #### Creating a new core docker image
 
-#### Updating an existing core docker image
+In order to add a new core docker image, open a new [issue](./.github/ISSUE_TEMPLATE/06_NEW_CORE_DOCKER_IMAGE.md) and follow the steps outlined in the checklist.
 
 #### Creating a new library
 
-#### Updating an existing library
+In order to add a new library, open a new [issue](./.github/ISSUE_TEMPLATE/05_NEW_LIB.md) and follow the steps outlined in the checklist.
 
 #### Creating a new project
 
+In order to add a new project, open a new [issue](./.github/ISSUE_TEMPLATE/03_NEW_PROJECT.md) and follow the steps outlined in the checklist.
+
 #### Updating an existing project
+
+In order to add a new component to an existing project, open a new [issue](./.github/ISSUE_TEMPLATE/04_NEW_PROJECT_COMPONENT.md) and follow the steps outlined in the checklist.
 
 ## Dependency management
 
@@ -64,12 +69,6 @@ If poetry commands take longer to run, it's a good idea to clear the pypi cache:
 ```bash
 poetry cache clear pypi --all
 ```
-
-## Running unit tests
-
-WIP.
-
-## Upgrading python version
 
 ## Resources
 

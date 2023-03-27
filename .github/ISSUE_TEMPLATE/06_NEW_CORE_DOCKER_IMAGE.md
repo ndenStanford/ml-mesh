@@ -39,7 +39,7 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
-    chown -R "${NB_USER}:users" "${HOME}"
+    chown -R "${USER}:users" "${HOME}"
 
 ```
 
