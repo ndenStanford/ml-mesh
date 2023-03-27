@@ -97,7 +97,14 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        image: [python-base, kubeflow-jupyter, kubeflow-torch-cpu, kubeflow-data-science, fastapi-serve]
+        image:
+          [
+            python-base,
+            kubeflow-jupyter,
+            kubeflow-torch-cpu,
+            kubeflow-data-science,
+            fastapi-serve,
+          ]
         validate-build: [false]
         include:
           - image: neuron-compile
