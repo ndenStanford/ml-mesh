@@ -8,6 +8,7 @@ PLATFORM?=linux/amd64
 COMPONENT?=serve
 DEBUG?=true
 IMAGE_TAG?=latest
+TARGET_BUILD_STAGE?=production
 
 ## VARIABLES
 

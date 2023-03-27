@@ -80,11 +80,5 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users ./test/ ./test
-RUN chmod +x test/entrypoint.sh && \
-    mkdir test/output
 
-# run compilation test suite as part of build to bake outputs into image -> needed by neuron-inference image
-RUN pytest -m compilation;
-
-# run inference test suite
-ENTRYPOINT ["test/entrypoint.sh"]
+RUN mkdir test/output

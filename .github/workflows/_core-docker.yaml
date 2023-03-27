@@ -62,13 +62,28 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+      - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
-          PLATFORM=linux/amd64
+          PLATFORM=linux/amd64 \
+          TARGET_BUILD_STAGE=production
 
-      - name: Push production build of Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
+
+      - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        run: make docker.build/${{ inputs.image }} \
+          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          IMAGE_TAG="${{ inputs.tag }}-development" \
+          PLATFORM=linux/amd64 \
+          TARGET_BUILD_STAGE=development
+
+      - name: Run Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        run: make docker.run/${{ inputs.image }} \
+          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          IMAGE_TAG="${{ inputs.tag }}-development" \
+          DOCKER_RUN_CMD="pytest -m build"
+
+      - name: Push Production Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
           make docker.push/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
