@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - prod
-      - stage
     types:
       - ready_for_review
       - opened
@@ -12,7 +11,7 @@ on:
       - reopened
 
 concurrency:
-  group: Pull Request ${{ github.base_ref }}
+  group: Pull Request ${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -100,6 +99,7 @@ jobs:
       matrix:
         image:
           - python-base
+          - neuron-compile
           - fastapi-serve
           - kubeflow-jupyter
           - kubeflow-torch-cpu

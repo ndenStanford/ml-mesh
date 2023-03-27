@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - prod
-      - stage
 
 concurrency:
   cancel-in-progress: true

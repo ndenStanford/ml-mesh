@@ -1,0 +1,33 @@
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com"
+default = false
+secondary = true
+
+
+[tool.poetry.group.dev.dependencies]
+transformers = "^4.27.1"
+boto3 = "1.26.77"
+pytest = "7.2.1"
+sacremoses = "^0.0.53"
+sentencepiece = "^0.1.97"
+pillow = "^9.4.0"
+
+[tool.poetry]
+name = "neuron-compile"
+version = "0.1.0"
+description = "Core docker image for compiling torch models to neuron-torch"
+authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "1.18.5"
+tensorflow = {version = "1.15.5", source = "aws-neuron"}
+torch = "1.12.1"
+torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
+neuron-cc = {version = "1.13.5.0", source = "aws-neuron"}
+protobuf = "3.20.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
