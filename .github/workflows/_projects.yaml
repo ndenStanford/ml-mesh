@@ -93,19 +93,15 @@ jobs:
         with:
           poetry-version: ${{ steps.get-poetry-version.outputs.poetry-version }}
 
-      - name: Install project dependencies
-        run: |
-          make projects.install/${{ inputs.project }} COMPONENT=${{ inputs.component }}
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        run: make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }}
+        run: make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
-        run: make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }}
-
-      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
+        run: make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         run:
@@ -129,6 +125,7 @@ jobs:
 
       - name: Untag Docker image with latest in remote ECR repo | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
+        continue-on-error: true
         run: |
           make projects.tag/${{ inputs.project }} COMPONENT=${{ inputs.component }} IMAGE_TAG="latest"
 
