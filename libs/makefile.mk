@@ -10,6 +10,7 @@ libs.integration/%: ## Run integration tests for lib
 	python -m pytest libs/$(notdir $@)/onclusiveml/tests/integration -ra -vvv --full-trace --tb=long --capture=no
 
 libs.test/%: libs.unit/% libs.integration/% ## Run the full test suite
+	@echo "Run full test suite for library $(notdir $@)..."
 
 libs.unit-all: $(foreach I, $(ALL_LIBS), libs.unit/$(I)) # run unit test for all libraries
 

@@ -85,7 +85,7 @@ jobs:
           make libs.install-all
 
       - name: Run lib unit tests
-        run: make libs.test-all
+        run: make libs.unit-all
 
   # ===============================================
   # DOCKER
