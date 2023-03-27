@@ -81,14 +81,6 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-# copy over test files, test outputs and entrypoint from neuron-compile development stage
-RUN mkdir test
+COPY --chown=${USER}:users ./test/ ./test
 
-COPY --from=neuron-compile-test-outputs /home/onclusive/app/test/ ./test/
-
-# overwrite entrypoint with own neuron-inference entrypoint
-COPY --chown=${USER}:users ./test/entrypoint.sh ./test/entrypoint.sh
-RUN chmod +x test/entrypoint.sh
-
-# run compilation and inference test suites
-ENTRYPOINT ["test/entrypoint.sh"]
+RUN mkdir test/output
