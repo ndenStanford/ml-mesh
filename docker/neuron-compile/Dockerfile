@@ -80,8 +80,4 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users ./test/ ./test
-RUN chmod +x test/entrypoint.sh && \
-    mkdir test/output
-
-# run compilation and inference test suites
-ENTRYPOINT ["test/entrypoint.sh"]
+RUN mkdir test/output

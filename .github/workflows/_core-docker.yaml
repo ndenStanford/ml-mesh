@@ -80,7 +80,7 @@ jobs:
         run: make docker.run/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}-development" \
-          DOCKER_RUN_CMD=${{ inputs.test_command}}
+          DOCKER_RUN_CMD="pytest -m build"
 
       - name: Push Production Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
