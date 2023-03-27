@@ -110,6 +110,7 @@ jobs:
       image: ${{ matrix.image }}
       tag: "ci-${{ needs.run-tag.outputs.short-sha }}"
       pull-request: true
+      validate-build: ${{ matrix.validate-build }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
