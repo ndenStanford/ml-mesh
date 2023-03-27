@@ -3,21 +3,23 @@ docker.build/%: ## build the latest image for a stack using the system's archite
 	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture)"
 		
 	@docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
-			-t $(OWNER)/$(notdir $@):${IMAGE_TAG}-development \
-			-f ./docker/$(notdir $@)/Dockerfile	\
-			--target development \
-			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM)
-
-	@docker run $(OWNER)/$(notdir $@):${IMAGE_TAG}-development
-	
-	@docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
 			-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
 			-f ./docker/$(notdir $@)/Dockerfile	\
-			--target production \
-			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM) --rm --force-rm --no-cache
+			--build-arg OWNER="$(OWNER)" --build-arg IMAGE_TAG="$(IMAGE_TAG)" --platform=$(PLATFORM) --target $(TARGET_BUILD_STAGE)
 
 	@echo -n "built image size:"
 	@docker images $(OWNER)/docker/$(notdir $@):latest --format "{{.Size}}"
+	@echo "::endgroup::"
+
+docker.run/%: ## run the specified image with optional command
+
+	@echo "::group::Running image $(OWNER)/$(notdir $@):${IMAGE_TAG} as container ..."
+
+	@docker run $(DOCKER_RUN_ARGS) \
+		-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
+		$(DOCKER_RUN_CMD)
+
+	@echo "Completed running of image $(OWNER)/$(notdir $@):${IMAGE_TAG} as container."
 	@echo "::endgroup::"
 
 docker.build-all: $(foreach I, $(ALL_DOCKER_IMGS), docker.build/$(I)) ## build all images
