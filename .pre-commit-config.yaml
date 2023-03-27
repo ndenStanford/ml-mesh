@@ -20,6 +20,7 @@ repos:
     hooks:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
+        exclude: ^(libs/.*/tests/)
 
   # isort
   - repo: https://github.com/pycqa/isort
