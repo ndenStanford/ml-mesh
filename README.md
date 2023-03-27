@@ -62,12 +62,29 @@ In order to add a new component to an existing project, open a new [issue](./.gi
 
 Python is our language of choice. In order to manage versions effectively, we recommend to use [pyenv](https://github.com/pyenv/pyenv). In order to setup your environment with the repository official version.
 
-### Note
+### Common issues
+
+#### Poetry command takes longer to run
 
 If poetry commands take longer to run, it's a good idea to clear the pypi cache:
 
 ```bash
 poetry cache clear pypi --all
+```
+
+#### Docker-compose tries to download images instead of building (MacOS)
+
+The error message is:
+
+```text
+Failed to solve with frontend dockerfile.v0: failed to create LLB definition: pull access denied, repository does not exist or may require authorization: server message: insufficient_scope:
+authorization failed
+```
+
+Run the following command:
+
+```shell
+export DOCKER_BUILDKIT=0
 ```
 
 ## Resources
