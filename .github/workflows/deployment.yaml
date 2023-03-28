@@ -133,12 +133,12 @@ jobs:
           # NOTE: list of project components to run
 
           # ========================
-          # KEYBERT
+          # Keywords extraction
           # ========================
           # serve
-          - name: keybert
+          - name: keywords
             component: serve
-            integration: false
+            integration: true
             python-version: "3.8.16"
 
     with:
