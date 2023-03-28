@@ -75,7 +75,6 @@ jobs:
           PLATFORM=linux/amd64 \
           TARGET_BUILD_STAGE=production
 
-
       - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ inputs.validate-build }}
         run: make docker.build/${{ inputs.image }} \
@@ -97,12 +96,6 @@ jobs:
           make docker.push/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Push development build of Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
-        run: |
-          make docker.push/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}-development"
 
       - name: Tag Docker image with latest | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ !inputs.pull-request }}
