@@ -15,6 +15,7 @@ DOCKER_STAGE?=production
 USE_DOCKER_CACHE?=false
 WITH_DOCKER?=false
 PORT?=8888
+ENVIRONMENT?=ci
 
 ##  DOCKER EXTRA FLAGS
 ifeq ($(USE_DOCKER_CACHE),true)
@@ -32,7 +33,7 @@ ifeq ($(DOCKER_STAGE),production)
 endif
 
 ifeq ($(WITH_DOCKER), true)
-	DOCKER_CMD += docker-compose -f ../docker-compose.dev.yaml run --service-ports $(COMPONENT)
+	DOCKER_CMD += docker-compose -f ../docker-compose.$(ENVIRONMENT).yaml run --service-ports $(COMPONENT)
 endif
 
 ## VARIABLES

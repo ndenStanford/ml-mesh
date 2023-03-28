@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  serve:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      args:
+        PROJECT: keywords
+        COMPONENT: serve
+      target: development
+    ports:
+      - "8888:8888"
+    environment:
+      DOCS_URL: /docs
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+networks:
+  onclusive-net:
