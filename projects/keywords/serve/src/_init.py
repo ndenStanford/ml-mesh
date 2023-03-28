@@ -1,22 +1,25 @@
 """Service initialization."""
+# ML libs
 
-from src.settings import settings
-from onclusiveml.core.logger import get_default_logger
-
-from fastapi import FastAPI
+# ML libs
 from keybert import KeyBERT
+
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
+# Source
+from src.settings import settings
 
 
 logger = get_default_logger(__name__)
 
 
-def init(app: FastAPI) -> None:
+def init() -> None:
     """App initialization."""
     logger.info("Downloading model...")
     _load_models()
-    return app
 
 
-def _load_models():
+def _load_models() -> None:
     """Load models."""
     _ = KeyBERT(settings.MODEL_NAME)

@@ -1,32 +1,47 @@
 """Keybert handler."""
 
+# Standard Library
 import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from src.settings import settings
-from onclusiveml.core.logger import get_default_logger
-
+# ML libs
 from keybert import KeyBERT
+
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
+# Source
+from src.settings import settings
 
 
 logger = get_default_logger(__name__)
 
 
 class KeybertHandler:
-    def __init__(self):
-        super().__init__()
-        self.initialized = False
+
+    _model = KeyBERT(model=settings.MODEL_NAME)
 
     def inference(
         self,
-        text,
-        keyphrase_ngram_range,
-        use_maxsum,
-        use_mmr,
-        diversity,
-        nr_candidates,
-        top_n,
-    ):
-        key_word = self.model.extract_keywords(
+        text: str,
+        keyphrase_ngram_range: Tuple,
+        use_maxsum: bool,
+        use_mmr: bool,
+        diversity: float,
+        nr_candidates: int,
+        top_n: int,
+    ) -> List:
+        """Keybert prediction handler method.
+
+        Args:
+            keyphrase_ngram_range (Tuple):
+            use_maxsum (bool):
+            use_mmr (bool):
+            diversity (float):
+            nr_candidates (int):
+            top_n (int):
+        """
+        return self.model.extract_keywords(
             text,
             keyphrase_ngram_range=keyphrase_ngram_range,
             use_maxsum=use_maxsum,
@@ -35,33 +50,35 @@ class KeybertHandler:
             nr_candidates=nr_candidates,
             top_n=top_n,
         )
-        return key_word
 
-    def postprocess(self, key_word):
+    def postprocess(self, key_word: List[List]) -> Dict[str, List[Union[str, float]]]:
+        """Postprocessing model prediction.
+
+        Args:
+            key_word (List): list of
+        """
         words = [item[0] for item in key_word]
         prob = [item[1] for item in key_word]
         res = {"keywords": words, "probs": prob}
         return res
 
-    def initialize(self):
-        self.model = KeyBERT(model=settings.MODEL_NAME)
-        self.initialized = True
+    @property
+    def model(self) -> KeyBERT:
+        return self._model
 
 
 _service = KeybertHandler()
 
 
-def handle(data):
-
+def handle(data: Any) -> Optional[Dict[str, List[Union[str, float]]]]:
+    """Prediction handler."""
     try:
-        if not _service.initialized:
-            _service.initialize()
 
         if data is None:
             return None
 
         if "body" not in data[0]:
-            logger.error(
+            logger.warning(
                 "Malformed request, content does not contain a body key."
                 "Is your request properly formatted as json?"
             )
@@ -74,7 +91,7 @@ def handle(data):
 
         content = data["content"]
         if content is None or content == "":
-            logger.error(
+            logger.warning(
                 "Content field is empty. This will result in no key words being returned"
             )
 
@@ -84,8 +101,10 @@ def handle(data):
         diversity = data["diversity"]
         nr_candidates = data["nr_candidates"]
         top_n = data["top_n"]
+
         starttime = datetime.datetime.utcnow()
-        key_words = _service.inference(
+
+        keywords = _service.inference(
             content,
             keyphrase_ngram_range,
             use_maxsum,
@@ -102,7 +121,6 @@ def handle(data):
             )
         )
 
-        key_words = _service.postprocess(key_words)
-        return key_words
+        return _service.postprocess(keywords)
     except Exception as e:
         raise e

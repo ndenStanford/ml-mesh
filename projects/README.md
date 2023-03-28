@@ -14,7 +14,7 @@ This folder contains the implmentation of all our machine learning projects. Eac
 | ------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- | --- |
 | IPTC          | Document topic classification     | Text      |         |       |         |       |     |
 | Sentiment     | Document Sentiment classification | Text      |         |       |         |       |     |
-| Keybert       | Keyword extractions from text     | Text      |         |       |         |       | x   |
+| Keywords      | Keyword extractions from text     | Text      |         |       |         |       | x   |
 | Summarization | Text summarization                | Text      |         |       |         |       | x   |
 
 - **keybert**: keyword extraction

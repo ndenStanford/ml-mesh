@@ -1,21 +1,28 @@
 """Keybert predictions."""
 
-from onclusiveml.core.logger import get_default_logger
+# Standard Library
+from typing import Dict, List, Optional, Union
+
+# 3rd party libraries
+from fastapi import APIRouter, status
+
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
+# Source
 from src.predict.keybert import handle
 from src.schemas import Request, Response
-
-from fastapi import APIRouter, status
 
 
 logger = get_default_logger(__name__)
 
 router = APIRouter(
-    prefix="/keybert",
+    prefix="/keywords",
 )
 
 
 @router.post("/predict", response_model=Response, status_code=status.HTTP_200_OK)
-def get_keywords(item: Request) -> Response:  # item is an instance of Item class
+def get_keywords(item: Request) -> Optional[Dict[str, List[Union[str, float]]]]:
     """Returns keywords sorted by relevance.
 
     Args:

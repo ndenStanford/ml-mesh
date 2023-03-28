@@ -1,0 +1,42 @@
+ARG OWNER=onclusiveml
+ARG IMAGE_NAME=fastapi-serve
+ARG IMAGE_TAG=latest
+ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+
+ARG PROJECT
+ARG COMPONENT
+ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+
+ENV HOME="${PROJECT_DIR}"
+
+RUN mkdir -p "${HOME}" && \
+    chown -R "${USER}:users" "${HOME}"
+
+WORKDIR "${HOME}"
+
+# install - poetry requirements
+# hadolint ignore=DL3045
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+
+# copy libraries
+COPY --chown=${USER}:users libs/ libs/
+
+# source
+COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
+
+RUN poetry install --only main --no-root --no-interaction --no-ansi && \
+    rm -rf ~/.cache/pypoetry/cache && \
+    rm -rf ~/.cache/pypoetry/artifacts && \
+    poetry cache clear pypi --all -q && \
+    chown -R "${USER}:users" "${HOME}"
+
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM builder as development
+
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
+
+RUN poetry install --no-interaction
