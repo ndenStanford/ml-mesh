@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "keybert-serve"
+name = "keywords-serve"
 version = "0.1.0"
-description = "Implementation of Keybert API."
+description = "Implementation of Keywords Extraction API."
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 packages = [{include = "src"}]
 

@@ -9,7 +9,7 @@ ENV HOME="${PROJECT_DIR}"
 RUN mkdir -p "${HOME}" && \
     chown -R "${USER}:users" "${HOME}"
 
-WORKDIR "${HOME}"
+WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
@@ -21,11 +21,14 @@ COPY --chown=${USER}:users libs/ libs/
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
-RUN poetry install --only main --no-root --no-interaction --no-ansi && \
+WORKDIR "${HOME}"
+
+RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
+
 
 # --- production stage
 FROM builder as production
@@ -33,6 +36,10 @@ FROM builder as production
 # --- test build stage
 FROM builder as development
 
+WORKDIR "/"
+
 COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 RUN poetry install --no-interaction
+
+WORKDIR "${HOME}"
