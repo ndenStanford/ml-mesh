@@ -19,6 +19,11 @@ on:
         default: true
         type: boolean
         description: "Indicates whether this workflow is running for a Pull Request."
+      validate-build:
+        required: false
+        default: false
+        type: boolean
+        description: "If true, builds development stage and runs its build validation pytest suite marked by 'build'."
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -65,19 +70,23 @@ jobs:
       - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          BASE_IMAGE_TAG="${{ inputs.tag }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           PLATFORM=linux/amd64 \
           TARGET_BUILD_STAGE=production
 
 
       - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ inputs.validate-build }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          BASE_IMAGE_TAG="${{ inputs.tag }}" \
           IMAGE_TAG="${{ inputs.tag }}-development" \
           PLATFORM=linux/amd64 \
           TARGET_BUILD_STAGE=development
 
       - name: Run Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ inputs.validate-build }}
         run: make docker.run/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}-development" \
