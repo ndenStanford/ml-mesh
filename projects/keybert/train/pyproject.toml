@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "train"
+version = "0.1.0"
+description = ""
+authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+transformers = "^4.27.3"
+neptune = "^1.1.1"
+keybert = "^0.7.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
