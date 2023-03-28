@@ -1,8 +1,4 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=fastapi-serve
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+FROM 211212199399.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:v2023.3.2 as builder
 
 ARG PROJECT
 ARG COMPONENT
