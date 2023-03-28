@@ -40,6 +40,6 @@ WORKDIR "/"
 
 COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-RUN poetry install --no-interaction
-
 WORKDIR "${HOME}"
+
+RUN poetry install --no-interaction
