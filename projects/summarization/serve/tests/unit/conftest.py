@@ -12,6 +12,6 @@ def app():
 
 
 @pytest.fixture
-def dependency_test_client(app):
+def client_test(app):
     client = TestClient(app)
     yield client
