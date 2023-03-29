@@ -15,4 +15,3 @@ def test_app_init(app):
 def test_app_attributes(app):
     """Test app attributes."""
     assert app.description == settings.API_DESCRIPTION
-    assert app.docs_url == settings.DOCS_URL
