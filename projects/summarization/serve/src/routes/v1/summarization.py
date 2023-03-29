@@ -1,9 +1,13 @@
 """Summarization prediction."""
 
+# Internal libs
 from onclusiveml.core.logger import get_default_logger
+
+# Source
 from src.predict.summarization import handle
 from src.schemas import Request, Response
 
+# Third party libs
 from fastapi import APIRouter, status
 
 

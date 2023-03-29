@@ -1,9 +1,15 @@
 """Summarization handler."""
 
-import datetime
-from src.settings import settings
-from onclusiveml.core.logger import get_default_logger
 import re
+import datetime
+
+# Source
+from src.settings import settings
+
+# Internal library
+from onclusiveml.core.logger import get_default_logger
+
+# OpenAI library
 import openai
 
 # OpenAI api key
@@ -26,6 +32,18 @@ class SummarizationHandler:
         frequency_penalty,
         model,
     ):
+        """Summarization prediction handler method.
+        Args:
+            text (str):
+            desired_length (int):
+            max_tokens (int):
+            top_p (int):
+            temperature (float):
+            presence_penalty (float):
+            frequency_penalty (float):
+            model (str):
+        """
+
         # append summary prompt
         prompt = (
             "Give an abstractive summary while retaining important quotes of speech in less than "
