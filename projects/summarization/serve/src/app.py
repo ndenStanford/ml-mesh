@@ -1,7 +1,7 @@
 """App."""
 
 # Source
-from src.routes import health_router, summarization_router
+from src.routes import health_router, v1_router
 from src.settings import settings
 
 # 3rd party libraries
@@ -24,7 +24,7 @@ def create_app():
     logger.debug("Adding routers...")
 
     app.include_router(health_router)
-    app.include_router(summarization_router)
+    app.include_router(v1_router)
 
     return app
 
