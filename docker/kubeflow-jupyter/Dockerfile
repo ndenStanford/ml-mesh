@@ -2,7 +2,7 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
 # common environemnt variables
 ENV NB_USER jovyan
@@ -116,4 +116,13 @@ USER "${NB_UID}"
 
 EXPOSE 8888
 
+# --- production stage
+FROM builder as production
+
 ENTRYPOINT ["/init"]
+
+# --- test build stage
+FROM builder as development
+
+# dummy entrypoint to pass the CI docker run stage
+ENTRYPOINT ["pwd"]

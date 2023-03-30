@@ -11,7 +11,7 @@ DEBUG?=true
 IMAGE_TAG?=latest
 DOCKER_EXTRA_FLAGS?=
 DOCKER_CMD?=
-DOCKER_STAGE?=production
+TARGET_BUILD_STAGE?=production
 USE_DOCKER_CACHE?=false
 WITH_DOCKER?=false
 PORT?=8888
@@ -36,12 +36,14 @@ ifeq ($(WITH_DOCKER), true)
 	DOCKER_CMD += docker-compose -f ../docker-compose.$(ENVIRONMENT).yaml run --service-ports $(COMPONENT)
 endif
 
+
 ## VARIABLES
 
 # all core docker images
 ALL_DOCKER_IMGS:= \
 	python-base \
 	neuron-compile \
+	neuron-inference \
 	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \
