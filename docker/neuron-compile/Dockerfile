@@ -80,4 +80,5 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users ./test/ ./test
+
 RUN mkdir test/output

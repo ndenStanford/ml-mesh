@@ -100,6 +100,7 @@ jobs:
         image:
           [
             python-base,
+            neuron-inference,
             kubeflow-jupyter,
             kubeflow-torch-cpu,
             kubeflow-data-science,
