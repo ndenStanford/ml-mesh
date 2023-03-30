@@ -65,7 +65,7 @@ RUN poetry install \
 FROM builder as production
 
 # --- helper stage for neuron compile test outputs; taken from https://github.com/moby/moby/issues/34482
-FROM ${OWNER}/neuron-compile:${IMAGE_TAG}-development AS neuron-compile-test-outputs
+FROM ${OWNER}/neuron-compile:${IMAGE_TAG} AS neuron-compile-test-outputs
 
 # --- test build stage
 FROM builder as development
