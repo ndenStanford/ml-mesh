@@ -84,7 +84,7 @@ jobs:
           make libs.install-all
 
       - name: Run lib unit tests
-        run: make libs.test-all
+        run: make libs.unit-all
 
   # NOTE: runtime of this pipeline is going to grow with the number of projects
   # TODO: @sreza1 optimize runtime of this succession of jobs.
