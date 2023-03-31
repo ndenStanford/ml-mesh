@@ -30,8 +30,18 @@ def test_regression_compiled_hf_pipeline(
     )
 
     compiled_features = compiled_pipeline(test_documents)
+    
+    # hf pipeline is outputting dynamically tokenized documents
+    for embedded_document, compiled_embedded_document in zip(features, compiled_features):
+        embedded_tokens, compiled_embedded_tokens = embedded_document[0], compiled_embedded_document[0]
+        
+        n_tokens = len(embedded_tokens)
+        
+        for token_index in range(n_tokens):
+            embedded_token = embedded_tokens[token_index]
+            compiled_token = compiled_embedded_tokens[token_index]
 
-    np.testing.assert_almost_equal(features, compiled_features)
+            np.testing.assert_almost_equal(embedded_token, compiled_token, decimal=4)
 
 
 def test_regression_compiled_hfbackend(
@@ -80,7 +90,7 @@ def test_regression_compiled_keybert(
 
     keybert = KeyBERT(model=hf_feature_extraction_pipeline)
     keywords = keybert.extract_keywords(
-        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None,latencies=False
+        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None
     )
 
     # keybert with torchscript model backend
@@ -92,7 +102,7 @@ def test_regression_compiled_keybert(
 
     compiled_keybert = KeyBERT(model=compiled_pipeline)
     compiled_keywords = compiled_keybert.extract_keywords(
-        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None,latencies=False
+        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None
     )
 
     assert keywords == compiled_keywords
