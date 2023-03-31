@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  prompt:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: development
+      tags:
+        - "${OWNER-onclusiveml}/prompt-backend:${IMAGE_TAG-latest}"
+        - "${OWNER-onclusiveml}/prompt-backend:latest"
+      args:
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        OWNER: ${OWNER-onclusiveml}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-latest}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "4000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    ports:
+      - "4000:4000"
+    volumes:
+      - type: bind
+        source: backend/src
+        target: /apps/prompt/backend/src
+    environment:
+      ENVIRONMENT: "dev"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY-anything}
+      DOCS_URL: "/docs"
+      API_KEY: 1234
+      DB_HOST: "http://dynamodb:8000"
+    depends_on:
+      - dynamodb
+    networks:
+      - onclusive-net
+
+  dynamodb:
+    image: instructure/dynamo-local-admin
+    expose:
+      - 8000
+      - 8001
+    ports:
+      - 8000:8000
+      - 8001:8001
+    networks:
+      - onclusive-net
+
+networks:
+  onclusive-net:

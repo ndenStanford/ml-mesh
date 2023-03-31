@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "prompt-manager-backend"
+version = "0.1.0"
+description = "Backend for Prompt Manager Tool"
+authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+pynamodb = "5.4.1"
+core = {path = "../../../libs/core"}
+openai = "0.27.2"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
