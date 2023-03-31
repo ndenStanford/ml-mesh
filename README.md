@@ -36,6 +36,7 @@ In order to setup your local development enviroment, please follow these steps:
 
 - [ ] Install core dependencies
 - [ ] Setup your AWS config
+- [ ] Install poetry
 - [ ] Setup your python environment
 - [ ] Install git hooks (optional)
 
@@ -43,21 +44,27 @@ In order to setup your local development enviroment, please follow these steps:
 
 #### Creating a new core docker image
 
-#### Updating an existing core docker image
+In order to add a new core docker image, open a new [issue](./.github/ISSUE_TEMPLATE/06_NEW_CORE_DOCKER_IMAGE.md) and follow the steps outlined in the checklist.
 
 #### Creating a new library
 
-#### Updating an existing library
+In order to add a new library, open a new [issue](./.github/ISSUE_TEMPLATE/05_NEW_LIB.md) and follow the steps outlined in the checklist.
 
 #### Creating a new project
 
+In order to add a new project, open a new [issue](./.github/ISSUE_TEMPLATE/03_NEW_PROJECT.md) and follow the steps outlined in the checklist.
+
 #### Updating an existing project
+
+In order to add a new component to an existing project, open a new [issue](./.github/ISSUE_TEMPLATE/04_NEW_PROJECT_COMPONENT.md) and follow the steps outlined in the checklist.
 
 ## Dependency management
 
 Python is our language of choice. In order to manage versions effectively, we recommend to use [pyenv](https://github.com/pyenv/pyenv). In order to setup your environment with the repository official version.
 
-### Note
+### Common issues
+
+#### Poetry command takes longer to run
 
 If poetry commands take longer to run, it's a good idea to clear the pypi cache:
 
@@ -65,11 +72,20 @@ If poetry commands take longer to run, it's a good idea to clear the pypi cache:
 poetry cache clear pypi --all
 ```
 
-## Running unit tests
+#### Docker-compose tries to download images instead of building (MacOS)
 
-WIP.
+The error message is:
 
-## Upgrading python version
+```text
+Failed to solve with frontend dockerfile.v0: failed to create LLB definition: pull access denied, repository does not exist or may require authorization: server message: insufficient_scope:
+authorization failed
+```
+
+Run the following command:
+
+```shell
+export DOCKER_BUILDKIT=0
+```
 
 ## Resources
 

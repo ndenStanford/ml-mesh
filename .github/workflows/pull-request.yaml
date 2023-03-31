@@ -85,7 +85,7 @@ jobs:
           make libs.install-all
 
       - name: Run lib unit tests
-        run: make libs.test-all
+        run: make libs.unit-all
 
   # ===============================================
   # DOCKER
@@ -138,10 +138,13 @@ jobs:
         projects:
           # NOTE: list of project components to run
 
-          # KEYBERT-SERVE
-          - name: keybert
+          # ========================
+          # Keywords extraction
+          # ========================
+          # serve
+          - name: keywords
             component: serve
-            integration: false
+            integration: true
             python-version: "3.8.16"
 
     with:

@@ -35,4 +35,6 @@ assignees: ""
             python-version: "3.8.16"
 ```
 
+- [ ] update dependabot configuration to keep dependencies up to date.
+
 ---
