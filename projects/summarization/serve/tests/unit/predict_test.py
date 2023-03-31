@@ -1,6 +1,4 @@
 """Predict test."""
-# Third party libs
-from fastapi.testclient import TestClient
 
 # Test input text
 input = """Elon Musk was the second person ever to amass a personal fortune of more than $200 billion, breaching that threshold in January 2021, months after Jeff Bezos.
@@ -9,8 +7,8 @@ Musk, 51, has seen his wealth plummet to $137 billion after Tesla shares tumbled
 The round-number milestone reflects just how high Musk soared during the run-up in asset prices during the easy-money pandemic era. Tesla exceeded a $1 trillion market capitalization for the first time in October 2021, joining the likes of ubiquitous technology companies Apple Inc., Microsoft Corp., Amazon.com Inc. and Google parent Alphabet Inc., even though its electric vehicles represented only a sliver of the overall auto market."""  # noqa: E501
 
 
-def test_non_empty_summarization():
-    response = client.post(
+def test_non_empty_summarization(test_client):
+    response = test_client.post(
         "/v1/summarization/gpt3/predict",
         json={
             "content": input,
@@ -20,8 +18,8 @@ def test_non_empty_summarization():
 
 
 # Test number of tokens is at most 50
-def test_max_token_length_50():
-    response = client.post(
+def test_max_token_length_50(test_client):
+    response = test_client.post(
         "/v1/summarization/gpt3/predict",
         json={
             "content": input,
@@ -32,8 +30,8 @@ def test_max_token_length_50():
 
 
 # test if davinci model used
-def test_max_token_length_davinci():
-    response = client.post(
+def test_max_token_length_davinci(test_client):
+    response = test_client.post(
         "/v1/summarization/gpt3/predict",
         json={
             "content": input,

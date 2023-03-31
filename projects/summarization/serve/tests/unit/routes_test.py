@@ -1,8 +1,8 @@
 """Test routes."""
 
-
 # pass fastAPI app into client
 client = TestClient(app)
+
 
 def test_health_route(test_client):
     """Test health endpoint."""

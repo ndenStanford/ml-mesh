@@ -1,7 +1,9 @@
 """Request model."""
 
-# Third party libs
+# Standard Library
 from typing import Optional
+
+# 3rd party libraries
 from pydantic import BaseModel
 
 

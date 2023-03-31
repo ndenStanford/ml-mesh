@@ -1,6 +1,6 @@
 """Response model."""
 
-# Third party libs
+# 3rd party libraries
 from pydantic import BaseModel
 
 

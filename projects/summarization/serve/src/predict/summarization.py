@@ -1,18 +1,21 @@
 """Summarization handler."""
 
 # Standard Library
-from typing import Any, Dict, List, Optional, Tuple, Union
-import re
 import datetime
+import re
+from typing import Any, Dict, Optional, Tuple
+
+# 3rd party libraries
+# OpenAI library
+import openai
+
+# Internal libraries
+# Internal library
+from onclusiveml.core.logger import get_default_logger
 
 # Source
 from src.settings import settings
 
-# Internal library
-from onclusiveml.core.logger import get_default_logger
-
-# OpenAI library
-import openai
 
 # OpenAI api key
 openai.api_key = settings.OPENAI_API_KEY
@@ -21,18 +24,16 @@ logger = get_default_logger(__name__)
 
 
 class SummarizationHandler:
-    def __init__(self):
-        super().__init__()
-
     def inference(
-        text,
-        desired_length,
-        max_tokens,
-        top_p,
-        temperature,
-        presence_penalty,
-        frequency_penalty,
-        model,
+        self,
+        text: str,
+        desired_length: int,
+        max_tokens: int,
+        top_p: float,
+        temperature: float,
+        presence_penalty: float,
+        frequency_penalty: float,
+        model: str,
     ) -> Tuple[str, str]:
         """Summarization prediction handler method.
         Args:
@@ -45,7 +46,6 @@ class SummarizationHandler:
             frequency_penalty (float):
             model (str):
         """
-
         # append summary prompt
         prompt = (
             "Give an abstractive summary while retaining important quotes of speech in less than "
@@ -80,11 +80,11 @@ class SummarizationHandler:
 
         return summary, finish_reason
 
-    def postprocess(self, text) -> Optional[str]:
+    def postprocess(self, text: str) -> str:
         text = re.sub("\n+", " ", text)
         return text
 
-    def pre_process(self, text) -> Optional[str]:
+    def pre_process(self, text: str) -> str:
         text = re.sub("\n+", " ", text)
         return text
 

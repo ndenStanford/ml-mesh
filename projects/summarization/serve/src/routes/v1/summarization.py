@@ -1,17 +1,21 @@
 """Summarization prediction."""
 
 # Standard lib
-from typing import Dict, List, Optional, Union
 
+# Standard Library
+from typing import Dict, Optional
+
+# 3rd party libraries
+# Third party libs
+from fastapi import APIRouter, status
+
+# Internal libraries
 # Internal libs
 from onclusiveml.core.logger import get_default_logger
 
 # Source
 from src.predict.summarization import handle
 from src.schemas import Request, Response
-
-# Third party libs
-from fastapi import APIRouter, status
 
 
 logger = get_default_logger(__name__)
@@ -22,7 +26,9 @@ router = APIRouter(
 
 
 @router.post("/predict", response_model=Response, status_code=status.HTTP_200_OK)
-def get_summary(item: Request) -> Response:  # item is an instance of Item class
+def get_summary(
+    item: Request,
+) -> Optional[Dict[str, str]]:  # item is an instance of Item class
     """Returns summary of item content.
 
     Args:

@@ -3,7 +3,7 @@
 # Standard Library
 from typing import Optional
 
-# 3rd party libs
+# 3rd party libraries
 from pydantic import BaseSettings
 
 

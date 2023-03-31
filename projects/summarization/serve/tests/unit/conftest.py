@@ -1,6 +1,6 @@
 """Conftest."""
 
-# 3rd party libs
+# 3rd party libraries
 import pytest
 from fastapi.testclient import TestClient
 

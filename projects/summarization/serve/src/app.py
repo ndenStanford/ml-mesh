@@ -1,14 +1,17 @@
 """App."""
 
 # Source
-from src.routes import health_router, v1_router
-from src.settings import settings
 
 # 3rd party libraries
 from fastapi import FastAPI
 
+# Internal libraries
 # Internal library
 from onclusiveml.core.logger import get_default_logger
+
+# Source
+from src.routes import health_router, v1_router
+from src.settings import settings
 
 
 logger = get_default_logger(__name__)
