@@ -3,10 +3,10 @@ ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 
-FROM $BASE_CONTAINER:$IMAGE_TAG
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
 ENV USER=app
-ENV HOME="/home/onclusive/${USER}"
+ENV HOME="/home"
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
@@ -29,4 +29,10 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
-    chown -R "${NB_USER}:users" "${HOME}"
+    chown -R "${USER}:users" "${HOME}"
+
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM builder as development
