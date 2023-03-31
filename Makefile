@@ -22,8 +22,7 @@ ALL_DOCKER_IMGS:= \
 
 # all python libraries
 ALL_LIBS:= \
-	core \
-	keyword
+	core
 
 # all projects
 ALL_PROJECTS:= \
