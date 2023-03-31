@@ -11,7 +11,6 @@ transformers = "^4.27.3"
 neptune = "^1.1.1"
 keybert = "^0.7.0"
 pydantic = "^1.10.7"
-keyword = {path = "../../../libs/keyword"}
 
 [build-system]
 requires = ["poetry-core"]
