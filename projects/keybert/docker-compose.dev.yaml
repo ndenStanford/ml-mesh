@@ -14,9 +14,9 @@ services:
   train:
     profiles: ["train"]
     image: onclusiveml/keybert-train:latest
-    command: ["python", "-m", "register_trained_model.py"]
+    command: ["python", "./src/register_trained_model.py"]
     environment:
-      NEPTUNE_API_TOKEN: "secret_api_token_goes_here"
+      NEPTUNE_API_TOKEN: "service_account_api_token_goes_here"
     hostname: onclusive-ml
     networks: [onclusive-net]
 networks:
