@@ -1,5 +1,8 @@
 """Summarization prediction."""
 
+# Standard lib
+from typing import Dict, List, Optional, Union
+
 # Internal libs
 from onclusiveml.core.logger import get_default_logger
 

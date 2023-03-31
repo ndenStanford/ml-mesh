@@ -1,31 +1,45 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=fastapi-serve
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG
+FROM 211212199399.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:v2023.3.2 as builder
 
 ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
+ENV HOME="${PROJECT_DIR}"
+
 RUN mkdir -p "${HOME}" && \
-    mkdir -p "${PROJECT_DIR}" && \
-    chown -R "${USER}:users" "${HOME}" && \
-    chown -R "${USER}:users" "${PROJECT_DIR}"
+    chown -R "${USER}:users" "${HOME}"
+
+WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${PROJECT_DIR}/poetry.lock" "${PROJECT_DIR}/pyproject.toml" ./
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
-COPY --chown=${USER}:users libs/ /libs/
+COPY --chown=${USER}:users libs/ libs/
 
 # source
-COPY --chown=${USER}:users "${PROJECT_DIR}/src" "$HOME/src"
+COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
-RUN poetry install --no-interaction --no-ansi && \
+WORKDIR "${HOME}"
+
+RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+    poetry cache clear pypi --all -q && \
+    chown -R "${USER}:users" "${HOME}"
 
-WORKDIR "${PROJECT_DIR}"
+
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM builder as development
+
+WORKDIR "/"
+
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
+
+WORKDIR "${HOME}"
+
+RUN poetry install --no-interaction

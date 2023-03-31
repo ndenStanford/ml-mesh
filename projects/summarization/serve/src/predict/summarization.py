@@ -1,5 +1,7 @@
 """Summarization handler."""
 
+# Standard Library
+from typing import Any, Dict, List, Optional, Tuple, Union
 import re
 import datetime
 
@@ -31,7 +33,7 @@ class SummarizationHandler:
         presence_penalty,
         frequency_penalty,
         model,
-    ):
+    ) -> Tuple[str, str]:
         """Summarization prediction handler method.
         Args:
             text (str):
@@ -78,11 +80,11 @@ class SummarizationHandler:
 
         return summary, finish_reason
 
-    def postprocess(self, text):
+    def postprocess(self, text) -> Optional[str]:
         text = re.sub("\n+", " ", text)
         return text
 
-    def pre_process(self, text):
+    def pre_process(self, text) -> Optional[str]:
         text = re.sub("\n+", " ", text)
         return text
 
@@ -90,7 +92,7 @@ class SummarizationHandler:
 _service = SummarizationHandler()
 
 
-def handle(data):
+def handle(data: Any) -> Optional[Dict[str, str]]:
 
     try:
         if data is None:

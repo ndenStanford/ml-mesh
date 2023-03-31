@@ -8,5 +8,5 @@ router = APIRouter()
 
 
 @router.get("/health", status_code=status.HTTP_200_OK)
-async def health():
+async def health() -> str:
     return "OK"

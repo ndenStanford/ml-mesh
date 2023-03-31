@@ -1,5 +1,9 @@
 """Settings."""
 
+# Standard Library
+from typing import Optional
+
+# 3rd party libs
 from pydantic import BaseSettings
 
 
@@ -25,6 +29,9 @@ class Settings(BaseSettings):
 
     # Logging level
     LOGGING_LEVEL: str = "info"
+
+    # documentation endpoint
+    DOCS_URL: Optional[str] = None
 
     # OpenAI api key
     OPENAI_API_KEY: str

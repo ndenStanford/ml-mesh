@@ -11,10 +11,6 @@ services:
       target: development
     ports:
       - "8888:8888"
-    volumes:
-      - type: bind
-        source: serve
-        target: /home/projects/summarization/serve
     environment:
       DOCS_URL: /docs
     hostname: onclusive-ml

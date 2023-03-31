@@ -1,8 +1,10 @@
 """Conftest."""
 
+# 3rd party libs
 import pytest
 from fastapi.testclient import TestClient
 
+# Source
 from src.app import create_app
 
 
@@ -12,6 +14,6 @@ def app():
 
 
 @pytest.fixture
-def client_test(app):
+def test_client(app):
     client = TestClient(app)
     yield client
