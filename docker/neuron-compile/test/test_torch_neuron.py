@@ -1,9 +1,15 @@
+
+# Standard Library
 import os
-import pytest
+from typing import Tuple
+
+# ML libs
 import torch
 import torch.neuron
 from transformers import AutoModelForSequenceClassification
-from typing import Tuple
+
+# 3rd party libraries
+import pytest
 
 
 @pytest.mark.build
@@ -11,10 +17,8 @@ from typing import Tuple
 def test_neuron_compile_torch_function(torch_function_input, test_output_dir) -> None:
     def foo(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return 2 * x + y
-
     # Run `foo` with the provided inputs and record the tensor operations
     traced_foo = torch.neuron.trace(foo, torch_function_input)
-
     # `traced_foo` can now be run with the TorchScript interpreter or saved
     # and loaded in a Python-free environment
     torch.jit.save(traced_foo, os.path.join(test_output_dir, "traced_foo.pt"))
@@ -40,12 +44,10 @@ def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
 
     n = Net()
     n.eval()
-
     # Trace a specific method and construct `ScriptModule` with
     # a single `forward` method
     neuron_forward = torch.neuron.trace(n.forward, torch_graph_input)
     torch.jit.save(neuron_forward, os.path.join(test_output_dir, "neuron_forward.pt"))
-
     # Trace a module (implicitly traces `forward`) and constructs a
     # `ScriptModule` with a single `forward` method
     neuron_net = torch.neuron.trace(n, torch_graph_input)

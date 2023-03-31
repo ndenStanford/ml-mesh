@@ -1,7 +1,13 @@
+
+# Standard Library
 import os
-import pytest
+
+# ML libs
 import torch
 import torch.neuron
+
+# 3rd party libraries
+import pytest
 
 
 @pytest.mark.inference

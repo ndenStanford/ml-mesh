@@ -1,8 +1,14 @@
-import pytest
-import torch
+
+# Standard Library
 import os
-from typing import Tuple, List
+from typing import List, Tuple
+
+# ML libs
+import torch
 from transformers import AutoTokenizer
+
+# 3rd party libraries
+import pytest
 
 
 @pytest.fixture()
