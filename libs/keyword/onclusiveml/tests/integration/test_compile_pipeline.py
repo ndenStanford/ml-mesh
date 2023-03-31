@@ -4,31 +4,17 @@ from keybert import KeyBERT
 import numpy as np
 
 
-def test_scoring_compiled_hf_pipeline(
-    hf_feature_extraction_pipeline,
-    traced_hf_feature_extraction_model,
-    tokenizer_settings,
-    test_documents,
-):
-    """Tests the pipeline with torchscript model backend for executability"""
-
-    compiled_pipeline = compile_pipeline(
-        pipeline=hf_feature_extraction_pipeline,
-        traced_model=traced_hf_feature_extraction_model,
-        tokenizer_settings=tokenizer_settings,
-    )
-
-    compiled_pipeline(test_documents)
-
-
 def test_regression_compiled_hf_pipeline(
     hf_feature_extraction_pipeline,
     traced_hf_feature_extraction_model,
     tokenizer_settings,
     test_documents,
 ):
-    """Regression tests pipeline with torchscript model backend against 'normal' huggingface model
-    backend pipeline. For sequence below the test tokenizer max length of 300, the resulting
+    """Regression testing:
+    - a huggingface pipeline with pytorch model backend VS
+    - a huggingface pipeline with a compiled (neuron) torchscript model backend
+    
+    For sequence below the test tokenizer max length of 300, the resulting
     embedding features should be the same."""
 
     # apply 'normal' pipeline, but make sure its using the same tokenization as the compiled
@@ -48,37 +34,18 @@ def test_regression_compiled_hf_pipeline(
     np.testing.assert_almost_equal(features, compiled_features)
 
 
-def test_scoring_compiled_hfbackend(
-    hf_feature_extraction_pipeline,
-    traced_hf_feature_extraction_model,
-    tokenizer_settings,
-    test_documents,
-):
-    """Tests compatibility of compiled pipeline with the keybert libary's
-    HFTransformerBackend class"""
-
-    # keybert with torchscript model backend
-    compiled_pipeline = compile_pipeline(
-        pipeline=hf_feature_extraction_pipeline,
-        traced_model=traced_hf_feature_extraction_model,
-        tokenizer_settings=tokenizer_settings,
-    )
-
-    compiled_hf_pipeline_backend = HFTransformerBackend(
-        embedding_model=compiled_pipeline
-    )
-
-    compiled_hf_pipeline_backend.embed(test_documents)
-
-
 def test_regression_compiled_hfbackend(
     hf_feature_extraction_pipeline,
     traced_hf_feature_extraction_model,
     tokenizer_settings,
     test_documents,
 ):
-    """Tests regression w.r.t a generic pipeline backend HFTransformerBackend
-    instance"""
+    """Regression testing:
+    - a keybert library HFTransformerBackend with a huggingface pipeline with pytorch model backend VS
+    - a keybert library HFTransformerBackend with a huggingface pipeline with a compiled (neuron) torchscript model backend
+    
+    For sequence below the test tokenizer max length of 300, the resulting
+    embedding features should be the same."""
 
     hf_keybert_backend = HFTransformerBackend(hf_feature_extraction_pipeline)
     embeddings = hf_keybert_backend.embed(test_documents)
@@ -104,12 +71,16 @@ def test_regression_compiled_keybert(
     tokenizer_settings,
     test_documents,
 ):
-    """Tests compatibility of compiled pipeline with the customised
-    HFTransformerBackend class"""
+    """Regression testing:
+    - a keybert library KeyBERT model using a HFTransformerBackend with a huggingface pipeline with pytorch model backend VS
+    - a keybert library KeyBERT model using a HFTransformerBackend with a huggingface pipeline with a compiled (neuron) torchscript model backend
+    
+    For sequence below the test tokenizer max length of 300, the resulting
+    embedding features should be the same."""
 
     keybert = KeyBERT(model=hf_feature_extraction_pipeline)
     keywords = keybert.extract_keywords(
-        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None
+        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None,latencies=False
     )
 
     # keybert with torchscript model backend
@@ -121,7 +92,7 @@ def test_regression_compiled_keybert(
 
     compiled_keybert = KeyBERT(model=compiled_pipeline)
     compiled_keywords = compiled_keybert.extract_keywords(
-        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None
+        test_documents, keyphrase_ngram_range=(1, 1), stop_words=None,latencies=False
     )
 
     assert keywords == compiled_keywords

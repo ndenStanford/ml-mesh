@@ -1,6 +1,7 @@
 import pytest
 from transformers.pipelines import pipeline
 import torch
+import torch.neuron
 
 
 @pytest.fixture

@@ -1,12 +1,13 @@
 from transformers.pipelines import Pipeline
-from torch import ScriptModule, ScriptFunction
+from torch.jit._trace import TopLevelTracedModule
+from torch.jit._script import RecursiveScriptModule
 from transformers.utils.generic import ModelOutput
 from typing import Union, Dict
 
 
 def compile_pipeline(
     pipeline: Pipeline,
-    traced_model: Union[ScriptModule, ScriptFunction],
+    traced_model: Union[TopLevelTracedModule, RecursiveScriptModule], # traced output model type and save->load reimported model type
     tokenizer_settings: Dict,
 ) -> Pipeline:
     """Utility function to take a conventional huggingface transformers pipeline and replace
@@ -31,7 +32,7 @@ def compile_pipeline(
         # so that all inputs are set to a len of 128
         kwargs["max_length"] = tokenizer_settings["max_length"]
         kwargs["truncation"] = tokenizer_settings["truncation"]
-
+        
         return original_tokenizer(*args, **kwargs)
 
     pipeline.tokenizer = fixed_tokenizer
@@ -43,8 +44,17 @@ def compile_pipeline(
     # --- update pipeline's model logic with additional postprocessing required for
     # some pipeline types (e.g. feature-extraction)
     def adaptive_model(*args, **kwargs):
-
-        predictions = traced_model(*args, **kwargs)
+        
+        # assemble model inputs depending on the kwargs keys
+        model_input = [kwargs['input_ids']]
+        
+        if 'attention_mask' in kwargs.keys():
+            model_input.append(kwargs['attention_mask'])
+        
+        if 'token_type_ids' in kwargs.keys():
+            model_input.append(kwargs['token_type_ids'])
+            
+        predictions = traced_model(*model_input)
 
         if isinstance(predictions, dict):
             formatted_predictions = ModelOutput(predictions)
