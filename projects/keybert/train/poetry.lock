@@ -36,18 +36,18 @@ tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy
 
 [[package]]
 name = "boto3"
-version = "1.26.100"
+version = "1.26.103"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.100-py3-none-any.whl", hash = "sha256:b5be5bcffe17d70a72622f8ecbb428df7b11ef8d1facdfa984e94c6fc9fa301b"},
-    {file = "boto3-1.26.100.tar.gz", hash = "sha256:567f03ac638c3a6f4af00d88d081df7d6b8de4d127a26543c4ec1e7509e1a626"},
+    {file = "boto3-1.26.103-py3-none-any.whl", hash = "sha256:c02dd0c4bc5adf70f49361141dba61d8795433a1b60d24e0a8a6bee912b267ee"},
+    {file = "boto3-1.26.103.tar.gz", hash = "sha256:7fa84b8ca6fbb544e4093ad8d91729c61e3526040759c7c3dbaaa34f1862e0b0"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.100,<1.30.0"
+botocore = ">=1.29.103,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -56,14 +56,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.100"
+version = "1.29.103"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.100-py3-none-any.whl", hash = "sha256:d5c4c5bbbbf0ec62a4235ccac1b9bbb579558f7bb3231d7fb6054e1f64d3a623"},
-    {file = "botocore-1.29.100.tar.gz", hash = "sha256:ff6585df3dcef2057be5e54b45d254608d3769d726ea4ccd4e17f77825e5b13d"},
+    {file = "botocore-1.29.103-py3-none-any.whl", hash = "sha256:e020173473b254c913a03c16bef179751095a6331f113d5206ae7d47340abfc2"},
+    {file = "botocore-1.29.103.tar.gz", hash = "sha256:30bd3fffc878cd5724c0e9a18629210da7f1efbcb6e668213a79153cc2dfd474"},
 ]
 
 [package.dependencies]
@@ -546,6 +546,24 @@ gensim = ["gensim (>=3.6.0)"]
 spacy = ["spacy (>=3.0.1)"]
 test = ["black (>=19.3b0)", "flake8 (>=3.6.0)", "pre-commit (>=2.2.0)", "pytest (>=5.4.3)", "pytest-cov (>=2.6.1)"]
 use = ["tensorflow", "tensorflow_hub", "tensorflow_text"]
+
+[[package]]
+name = "keyword"
+version = "0.1.0"
+description = ""
+category = "main"
+optional = false
+python-versions = "^3.8"
+files = []
+develop = false
+
+[package.dependencies]
+keybert = "^0.7.0"
+transformers = "^4.27.3"
+
+[package.source]
+type = "directory"
+url = "../../../libs/keyword"
 
 [[package]]
 name = "lit"
@@ -1407,14 +1425,14 @@ six = ">=1.5"
 
 [[package]]
 name = "pytz"
-version = "2023.2"
+version = "2023.3"
 description = "World timezone definitions, modern and historical"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pytz-2023.2-py2.py3-none-any.whl", hash = "sha256:8a8baaf1e237175b02f5c751eea67168043a749c843989e2b3015aa1ad9db68b"},
-    {file = "pytz-2023.2.tar.gz", hash = "sha256:a27dcf612c05d2ebde626f7d506555f10dfc815b3eddccfaadfc7d99b11c9a07"},
+    {file = "pytz-2023.3-py2.py3-none-any.whl", hash = "sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb"},
+    {file = "pytz-2023.3.tar.gz", hash = "sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588"},
 ]
 
 [[package]]
@@ -2148,14 +2166,14 @@ telegram = ["requests"]
 
 [[package]]
 name = "transformers"
-version = "4.27.3"
+version = "4.27.4"
 description = "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow"
 category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "transformers-4.27.3-py3-none-any.whl", hash = "sha256:d764c351b6d590952ac6104573721abe323b3eabd55e53bae0215c14750d5f13"},
-    {file = "transformers-4.27.3.tar.gz", hash = "sha256:26bff783ad6ed463fe3f0954406e7c30a8313758b6488677827886e48e6bd5a9"},
+    {file = "transformers-4.27.4-py3-none-any.whl", hash = "sha256:ee1979c643093005427a9233af738628cb6f4cd1eaca63a2a4d2228bd5396952"},
+    {file = "transformers-4.27.4.tar.gz", hash = "sha256:5f0f735e6fb081e16db9e412466dbfa32c38231a3edd00def8cdc384c90dde36"},
 ]
 
 [package.dependencies]
@@ -2363,4 +2381,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "d28ced3df509078ef24d03b6e9736aaaf65fd1ff7b9afbc4b5cc718aca48c7f0"
+content-hash = "ea7bfdee030d2e4756ccae137698c2f59f07eb61482e514d54427334670971b3"
