@@ -1,6 +1,6 @@
 """Health endpoint"""
 
-# Third party libs
+# 3rd party libraries
 from fastapi import APIRouter, status
 
 
