@@ -24,14 +24,15 @@ def create_app() -> FastAPI:
         name=settings.API_NAME,
         description=settings.API_DESCRIPTION,
         docs_url=settings.DOCS_URL,
-        on_startup=[init]
+        on_startup=[init],
     )
 
     logger.debug("Adding routers...")
-    
+
     app.include_router(health_router)
     app.include_router(api_router)
 
     return app
+
 
 app = create_app()

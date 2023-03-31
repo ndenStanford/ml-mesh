@@ -1,11 +1,13 @@
 """Text generation from prompt."""
 
-#TODO: [DS-426] Add model module to manage models and call parameters.
+# TODO: [DS-426] Add model module to manage models and call parameters.
 
+# 3rd party libraries
 import openai
 
+# Source
 from src.settings import settings
-from src.prompt.schemas import PromptTemplateSchema
+
 
 def generate_text(prompt: str) -> str:
     """Sends request to generate text."""

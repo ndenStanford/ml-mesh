@@ -2,19 +2,19 @@
 
 # Standard Library
 import json
-from typing import Any, Dict, List, Optional
-import uuid
 from string import Formatter
+from typing import List, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel
 
+# Source
 from src.prompt.tables import PromptTemplateTable
 
 
 class PromptTemplateSchema(BaseModel):
     """Prompt template schema.
-    
+
     This template leverages python templating to generate
     reusable prompt generators.
     """
@@ -26,16 +26,12 @@ class PromptTemplateSchema(BaseModel):
     @property
     def variables(self) -> List[str]:
         """Returns the list of template variables."""
-        return [
-            p for _, p, _, _ in Formatter().parse(self.template) if p is not None
-        ]
-
+        return [p for _, p, _, _ in Formatter().parse(self.template) if p is not None]
 
     def prompt(self, **kwargs) -> str:
         """Generates the prompt from template."""
-        params = { variable: kwargs[variable] for variable in self.variables }
+        params = {variable: kwargs[variable] for variable in self.variables}
         return self.template.format(**params)
-
 
     def save(self) -> "PromptTemplateSchema":
         """Creates a new prompt template or update existing."""
@@ -48,27 +44,30 @@ class PromptTemplateSchema(BaseModel):
         return PromptTemplateSchema(
             id=prompt_dict["id"],
             template=prompt_dict["template"],
-            created_at=prompt_dict["created_at"]
+            created_at=prompt_dict["created_at"],
         )
 
-
-    @classmethod    
+    @classmethod
     def get(cls, id: Optional[str] = None) -> "PromptTemplateSchema":
         """Returns row of the table."""
         if id is None:
-            return list(map(lambda x: PromptTemplateSchema(**json.loads(x.to_json())), list(PromptTemplateTable.scan())))
+            return list(
+                map(
+                    lambda x: PromptTemplateSchema(**json.loads(x.to_json())),
+                    list(PromptTemplateTable.scan()),
+                )
+            )
         return PromptTemplateSchema(**json.loads(PromptTemplateTable.get(id).to_json()))
-
 
     def update(self, **kwargs) -> None:
         """Updates table record."""
         prompt = PromptTemplateTable.get(self.id)
-        prompt.update(actions=[
-                PromptTemplateTable.template.set(kwargs.get('template'))
-            ]
+        prompt.update(
+            actions=[PromptTemplateTable.template.set(kwargs.get("template"))]
         )
 
 
 class PromptTemplateListSchema(BaseModel):
     """List of prompt templates."""
+
     prompts: List[PromptTemplateSchema] = []

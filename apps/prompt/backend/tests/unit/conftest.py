@@ -1,10 +1,15 @@
 """Conftest."""
-from typing import Generator, Any
 
-from src.prompt.tables import PromptTemplateTable
+# Standard Library
+from typing import Any, Generator
+
+# 3rd party libraries
 import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
+
+# Source
+from src.prompt.tables import PromptTemplateTable
 
 
 @pytest.fixture(autouse=True)
@@ -19,6 +24,7 @@ def init_tables() -> Generator[None, None, None]:
 
 @pytest.fixture
 def app() -> FastAPI:
+    # Source
     from src.app import app
 
     return app

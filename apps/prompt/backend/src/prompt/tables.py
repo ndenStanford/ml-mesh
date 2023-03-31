@@ -1,8 +1,9 @@
 """DynamoDB Tables"""
 
-from datetime import datetime, timezone
-from pynamodb.attributes import UTCDateTimeAttribute, UnicodeAttribute
-import uuid
+# 3rd party libraries
+from pynamodb.attributes import UnicodeAttribute
+
+# Source
 from src.db import BaseTable
 
 
@@ -12,6 +13,4 @@ class PromptTemplateTable(BaseTable):
     class Meta(BaseTable.Meta):
         table_name = "prompt_template"
 
-    id = UnicodeAttribute(default=str(uuid.uuid4()), hash_key=True)
     template = UnicodeAttribute(null=False)
-    created_at = UTCDateTimeAttribute(default=datetime.now(timezone.utc), null=False)

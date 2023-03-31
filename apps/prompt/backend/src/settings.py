@@ -32,18 +32,18 @@ class Settings(BaseSettings):
 
     # documentation endpoint
     DOCS_URL: Optional[str] = None
-    
+
     API_KEY: str
-    
-    API_KEY_NAME: str= "x-api-key"
-    
+
+    API_KEY_NAME: str = "x-api-key"
+
     # OpenAI API key
     OPENAI_API_KEY: str
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
-    
-    AWS_REGION: str = 'us-east-1'
-    
+
+    AWS_REGION: str = "us-east-1"
+
     DB_HOST: Optional[str] = None
 
 
