@@ -8,6 +8,8 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
 
   # ====================================
   # DOCKER
@@ -21,6 +23,7 @@ updates:
       interval: "monthly"
       time: "09:00"
       timezone: "Europe/London"
+
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -133,6 +136,7 @@ updates:
 
   ## serve
 
+  # python
   - package-ecosystem: "pip"
     directory: "/projects/keywords/serve"
     schedule:

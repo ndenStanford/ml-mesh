@@ -10,34 +10,35 @@ projects.build/%: ## Build project
 			--build-arg COMPONENT=$(COMPONENT) \
 			--build-arg IMAGE_TAG="$(IMAGE_TAG)" \
 			--platform=$(PLATFORM) \
-			--rm --force-rm --no-cache
+			$(DOCKER_EXTRA_FLAGS) \
+			--rm --force-rm
 	@echo -n "built image size:"
 	@docker images $(OWNER)/$(notdir $@)-$(COMPONENT):latest --format "{{.Size}}"
 	@echo "::endgroup::"
 
-projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
-	echo "Running all tests."
-
-projects.unit/%: ## Run unit tests for project component
-	python -m pytest projects/$(notdir $@)/$(COMPONENT)/tests/unit -ra -vvv --full-trace --tb=long
-
-projects.integration/%: ## Run integration tests for project component
-	python -m pytest projects/$(notdir $@)/$(COMPONENT)/tests/integration -ra -vvv --full-trace --tb=long
+projects.install/%:
+	poetry install --directory=projects/$(notdir $@)/$(COMPONENT)
 
 projects.deploy/%: ## Deploy project component docker image to ECR.
 	docker push  $(OWNER)/$(notdir $@)-$(COMPONENT):${IMAGE_TAG}
-
-projects.start/%: # Start development container of component
-	docker-compose -f projects/$(notdir $@)/docker-compose.dev.yaml --profile $(COMPONENT) up
-
-projects.stop/%: # Stop development container of component
-	docker-compose -f projects/$(notdir $@)/docker-compose.dev.yaml --profile $(COMPONENT) down
-
-projects.install/%:
-	poetry install --directory=projects/$(notdir $@)/$(COMPONENT)
 
 projects.tag/%:
 	docker tag $(OWNER)/$(notdir $@)-$(COMPONENT):${IMAGE_TAG} $(OWNER)/$(notdir $@)-$(COMPONENT):latest
 
 projects.untag/%:
 	aws ecr batch-delete-image --repository-name $(notdir $@)-$(COMPONENT) --image-ids imageTag="latest"
+
+projects.start/%: # Start development container of component
+	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_CMD) uvicorn src.app:app --host 0.0.0.0 --port $(PORT) --reload --log-level "debug"
+
+projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
+	echo "Running all tests."
+
+projects.unit/%: ## Run unit tests for project component
+	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_CMD) pytest tests/unit -ra -vvv --tb=long --capture=no
+
+projects.integration/%: ## Run integration tests for project component
+	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_CMD) pytest tests/integration -ra -vvv --tb=long --capture=no
+
+projects.lock/%:
+	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)
