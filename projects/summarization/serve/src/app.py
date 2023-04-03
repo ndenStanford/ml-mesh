@@ -7,7 +7,7 @@ from fastapi import FastAPI
 
 # Internal libraries
 # Internal library
-from onclusiveml.core.logger import get_default_logger
+from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.routes import health_router, v1_router

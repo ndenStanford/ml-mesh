@@ -11,7 +11,7 @@ from fastapi import APIRouter, status
 
 # Internal libraries
 # Internal libs
-from onclusiveml.core.logger import get_default_logger
+from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.predict.summarization import handle

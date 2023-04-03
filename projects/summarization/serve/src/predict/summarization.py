@@ -11,7 +11,7 @@ import openai
 
 # Internal libraries
 # Internal library
-from onclusiveml.core.logger import get_default_logger
+from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.settings import settings
