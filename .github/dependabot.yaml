@@ -129,12 +129,12 @@ updates:
   # PROJECTS
   # ====================================
 
-  # KEYBERT
+  # KEYWORDS
 
   ## serve
 
   - package-ecosystem: "pip"
-    directory: "/projects/keybert/serve"
+    directory: "/projects/keywords/serve"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -145,7 +145,7 @@ updates:
 
   # docker
   - package-ecosystem: "docker"
-    directory: "/projects/keybert/serve"
+    directory: "/projects/keywords/serve"
     schedule:
       interval: "monthly"
       time: "09:00"
