@@ -15,7 +15,7 @@ class KeyWordTrainSettings(BaseSettings):
     """Default parameter (behaviour) for the training component of the keyword ML project."""
 
     # neptune ai model registry settings
-    NEPTUNE_PROJECT: str = "onclusive/keyword-extraction"
+    NEPTUNE_PROJECT: str = "onclusive/keywords"
     NEPTUNE_MODEL_ID: str = "KEY-KEYBERT"
     NEPTUNE_API_TOKEN: str
 
