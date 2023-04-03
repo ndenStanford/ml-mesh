@@ -1,26 +1,29 @@
-from settings import KEYWORD_TRAIN_SETTINGS
-import neptune
-from transformers import pipeline
-from keybert import KeyBERT
-import os
-from typing import List, Dict, Tuple
+# Standard Library
 import json
+import os
+from typing import Dict, List, Tuple
+
+# ML libs
 import torch
+from keybert import KeyBERT
+from transformers import pipeline
+
+# 3rd party libraries
+import neptune
+from settings import KEYWORD_TRAIN_SETTINGS
+
 
 settings = KEYWORD_TRAIN_SETTINGS.dict()
 
 if not os.path.isdir(settings["LOCAL_OUTPUT_DIR"]):
     os.makedirs(settings["LOCAL_OUTPUT_DIR"])
-
 # --- initialize models
 # get specified huggingface transformer pipeline
 hf_pipeline = pipeline("feature-extraction", settings["HF_MODEL_REFERENCE"])
 hf_tokenizer = hf_pipeline.tokenizer
 hf_model = hf_pipeline.model
-
 # initialize keybert model with huggingface pipeline backend
 keybert_model = KeyBERT(model=hf_pipeline)
-
 # --- create prediction files
 sample_inputs = [
     """Supervised learning is the machine learning task of learning a function that
@@ -73,7 +76,6 @@ sample_inputs = [
          a situaciones no vistas en un
          manera 'razonable' (ver sesgo inductivo).""",
 ]
-
 # tokenizer
 # has max_token_length=512
 # classic tokenizer output dict with keys 'input_ids'->List[Tuple[int]] and
@@ -90,7 +92,6 @@ tokenized_sample_inputs: Dict[str, List[Tuple[int]]] = dict(
 tokenized_sample_inputs_tensor: Dict[str, torch.Tensor] = hf_pipeline.tokenizer(
     sample_inputs, return_tensors="pt", **tokenizer_settings
 )
-
 # hugginface transformer model
 # has n_embed=384
 # torch tensor converted to nested list of dim n_batch x max_token_length x n_embed
@@ -98,7 +99,6 @@ tokenized_sample_inputs_tensor: Dict[str, torch.Tensor] = hf_pipeline.tokenizer(
 hf_model_predictions: List[Tuple[Tuple[float]]] = hf_pipeline.model(
     **tokenized_sample_inputs_tensor
 ).last_hidden_state.tolist()
-
 # huggingface pipeline
 # note: # if not setting padding = max_length, this would give an array as nested lists of
 # dim n_batch x 1 x n_tokens x n_embed = n_batch x 1 x min(n_tokens,512) x 384
@@ -110,20 +110,17 @@ hf_model_predictions: List[Tuple[Tuple[float]]] = hf_pipeline.model(
 hf_pipeline_predictions: List[List[Tuple[float]]] = hf_pipeline(
     sample_inputs, tokenize_kwargs=tokenizer_settings
 )
-
 # keybert model
 # list of tuples (ngram/word, prob)
 keybert_predictions: List[Tuple[str, float]] = keybert_model.extract_keywords(
     sample_inputs, keyphrase_ngram_range=(1, 1), stop_words=None
 )
-
 # --- register model on neptune ai
 model_version = neptune.init_model_version(
     model=settings["NEPTUNE_MODEL_ID"],
     project=settings["NEPTUNE_PROJECT"],
     api_token=settings["NEPTUNE_API_TOKEN"],  # your credentials
 )
-
 # inputs & outputs
 for (data, data_file_reference) in [
     (sample_inputs, "text_inputs"),
@@ -133,7 +130,6 @@ for (data, data_file_reference) in [
     (hf_pipeline_predictions, "hf_pipeline_predictions"),
     (keybert_predictions, "keybert_predictions"),
 ]:
-
     # export locally to make use of neptune ai's uoload method
     test_file_path = os.path.join(
         settings["LOCAL_OUTPUT_DIR"], f"{data_file_reference}.json"
@@ -155,7 +151,6 @@ for (data, data_file_reference) in [
         f"Uploaded {data_file_reference} from local path {test_file_path}",
         f"to meta data path {neptune_data_reference}",
     )
-
 # huggingface artifacts
 for (artifact, artifact_reference) in (
     (
