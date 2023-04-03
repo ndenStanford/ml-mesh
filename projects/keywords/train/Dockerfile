@@ -2,7 +2,7 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG
+FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -47,3 +47,7 @@ RUN poetry install --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q
 
 WORKDIR "${HOME}"
+
+FROM builder as production
+
+FROM builder as development
