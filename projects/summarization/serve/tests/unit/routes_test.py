@@ -1,5 +1,9 @@
 """Test routes."""
 
+# 3rd party libraries
+from fastapi.testclient import TestClient
+
+
 # pass fastAPI app into client
 client = TestClient(app)
 
