@@ -19,6 +19,11 @@ updates:
     directory: "/docker/fastapi-serve"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # kubeflow base
 
@@ -26,6 +31,11 @@ updates:
     directory: "/docker/kubeflow-base"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # kubeflow data science
 
@@ -33,6 +43,11 @@ updates:
     directory: "/docker/kubeflow-data-science"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # kubeflow jax cpu
 
@@ -40,6 +55,11 @@ updates:
     directory: "/docker/kubeflow-jax-cpu"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # kubeflow jupyter
 
@@ -47,6 +67,11 @@ updates:
     directory: "/docker/kubeflow-jupyter"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # kubeflow numpy
 
@@ -54,6 +79,11 @@ updates:
     directory: "/docker/kubeflow-numpy"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # kubeflow torch cpu
 
@@ -61,6 +91,11 @@ updates:
     directory: "/docker/kubeflow-torch-cpu"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # python base
 
@@ -68,6 +103,11 @@ updates:
     directory: "/docker/python-base"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # ====================================
   # LIBS
@@ -79,6 +119,11 @@ updates:
     directory: "/libs/core"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   # ====================================
   # PROJECTS
@@ -92,3 +137,27 @@ updates:
     directory: "/projects/keybert/serve"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # docker
+  - package-ecosystem: "docker"
+    directory: "/projects/keybert/serve"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    registries:
+      - ecr-prod
+
+# REGISTRIES
+
+registries:
+  ecr-prod:
+    type: docker-registry
+    url: https://211212199399.dkr.ecr.us-east-1.amazonaws.com
+    username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
