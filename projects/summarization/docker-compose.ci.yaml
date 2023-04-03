@@ -13,6 +13,7 @@ services:
       - "8888:8888"
     environment:
       DOCS_URL: /docs
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
