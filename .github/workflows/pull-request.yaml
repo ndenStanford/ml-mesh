@@ -147,6 +147,11 @@ jobs:
             integration: true
             python-version: "3.8.16"
 
+          - name: keywords
+            component: train
+            integration: false
+            python-version: "3.8.16"
+
     with:
       environment: "${{ github.base_ref }}"
       project: "${{ matrix.projects.name }}"
