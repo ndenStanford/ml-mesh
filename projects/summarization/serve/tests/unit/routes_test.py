@@ -1,5 +1,7 @@
 """Test routes."""
 
+# 3rd party libraries
+from fastapi import status
 
 def test_health_route(test_client):
     """Test health endpoint."""
