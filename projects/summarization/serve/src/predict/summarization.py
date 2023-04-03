@@ -99,7 +99,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
             return None
 
         if "body" not in data[0]:
-            logger.error(
+            logger.warning(
                 "Malformed request, content does not contain a body key."
                 "Is your request properly formatted as json?"
             )
@@ -112,7 +112,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
 
         content = data["content"]
         if content is None or content == "":
-            logger.error(
+            logger.warning(
                 "Content field is empty. This will result in no summary being returned"
             )
 

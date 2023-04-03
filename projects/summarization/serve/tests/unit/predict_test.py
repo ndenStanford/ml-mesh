@@ -7,6 +7,8 @@ Musk, 51, has seen his wealth plummet to $137 billion after Tesla shares tumbled
 The round-number milestone reflects just how high Musk soared during the run-up in asset prices during the easy-money pandemic era. Tesla exceeded a $1 trillion market capitalization for the first time in October 2021, joining the likes of ubiquitous technology companies Apple Inc., Microsoft Corp., Amazon.com Inc. and Google parent Alphabet Inc., even though its electric vehicles represented only a sliver of the overall auto market."""  # noqa: E501
 
 
+# Test if summary is outputted
+@patch.object(summarization.SummarizationHandler, "inference")
 def test_non_empty_summarization(test_client):
     response = test_client.post(
         "/v1/summarization/gpt3/predict",
@@ -18,6 +20,7 @@ def test_non_empty_summarization(test_client):
 
 
 # Test number of tokens is at most 50
+@patch.object(summarization.SummarizationHandler, "inference")
 def test_max_token_length_50(test_client):
     response = test_client.post(
         "/v1/summarization/gpt3/predict",
@@ -30,6 +33,7 @@ def test_max_token_length_50(test_client):
 
 
 # test if davinci model used
+@patch.object(summarization.SummarizationHandler, "inference")
 def test_max_token_length_davinci(test_client):
     response = test_client.post(
         "/v1/summarization/gpt3/predict",
