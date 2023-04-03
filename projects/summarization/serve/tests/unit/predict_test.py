@@ -3,6 +3,8 @@
 # Standard Library
 from unittest.mock import patch
 
+# Source
+from src.predict import summarization
 
 # Test input text
 input = """Elon Msusk was the second person ever to amass a personal fortune of more than $200 billion, breaching that threshold in January 2021, months after Jeff Bezos.
