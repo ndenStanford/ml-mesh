@@ -63,6 +63,7 @@ jobs:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - name: Check out code
@@ -97,14 +98,10 @@ jobs:
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
