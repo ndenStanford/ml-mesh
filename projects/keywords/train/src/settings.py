@@ -19,7 +19,7 @@ class KeyWordTrainSettings(BaseSettings):
 
     # neptune ai model registry settings
     NEPTUNE_PROJECT: str = "onclusive/keywords"
-    NEPTUNE_MODEL_ID: str = "KEY-KEYBERT"
+    NEPTUNE_MODEL_ID: str = "KEYWORDS-KEYBERT"
     NEPTUNE_API_TOKEN: str
     # model params
     HF_MODEL_REFERENCE: str = (
