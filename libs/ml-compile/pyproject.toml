@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "ml-compile"
+version = "0.1.0"
+description = "Internal library for model compilation utilities, in particular (but not exclusively) for neuron torchscript compilation."
+authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
+readme = "README.md"
+packages = [{include = "ml_compile"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "1.18.5"
+tensorflow = {version = "1.15.5", source = "aws-neuron"}
+protobuf = "3.20.1"
+neuron-cc = {version = "1.13.5.0", source = "aws-neuron"}
+torch = "1.12.1"
+torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
+transformers = "^4.27.2"
+
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
