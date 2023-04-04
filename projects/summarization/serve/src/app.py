@@ -1,12 +1,9 @@
 """App."""
 
-# Source
-
 # 3rd party libraries
 from fastapi import FastAPI
 
 # Internal libraries
-# Internal library
 from onclusiveml.core.logging import get_default_logger
 
 # Source

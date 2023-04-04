@@ -55,7 +55,8 @@ ALL_LIBS:= \
 
 # all projects
 ALL_PROJECTS:= \
-	keybert
+	keybert \
+	summarization
 
 ## SUBFOLDER MAKEFILES
 include libs/makefile.mk

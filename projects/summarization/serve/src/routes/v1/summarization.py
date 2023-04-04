@@ -28,7 +28,7 @@ router = APIRouter(
 @router.post("/predict", response_model=Response, status_code=status.HTTP_200_OK)
 def get_summary(
     item: Request,
-) -> Optional[Dict[str, str]]:  # item is an instance of Item class
+) -> Optional[Dict[str, str]]:
     """Returns summary of item content.
 
     Args:

@@ -41,7 +41,6 @@ class Request(BaseModel):
     max_tokens: Optional[int] = 512
     desired_length: Optional[int] = 100
     temperature: Optional[float] = 0.7
-
     top_p: Optional[float] = 1
     presence_penalty: Optional[float] = 0
     frequency_penalty: Optional[float] = 0
