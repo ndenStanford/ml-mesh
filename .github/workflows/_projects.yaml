@@ -103,6 +103,8 @@ jobs:
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
