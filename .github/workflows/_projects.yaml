@@ -54,6 +54,9 @@ on:
       AWS_ROLE_TO_ASSUME:
         required: true
         description: "AWS IAM role to assume."
+      OPENAI_API_KEY:
+        required: true
+        description: "OPENAI Api key."
 
 jobs:
   deploy:
