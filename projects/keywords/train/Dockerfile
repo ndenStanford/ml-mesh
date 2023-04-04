@@ -1,8 +1,4 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=python-base
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+FROM 211212199399.dkr.ecr.us-east-1.amazonaws.com/python-base:v2023.3.2 as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -46,8 +42,10 @@ RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
+# --- production stage
 WORKDIR "${HOME}"
 
 FROM builder as production
 
+# --- test build stage
 FROM builder as development
