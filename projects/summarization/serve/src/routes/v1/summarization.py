@@ -41,7 +41,7 @@ def get_summary(
         data=[
             {
                 "body": {
-                    "text": item.content,
+                    "content": item.content,
                     "desired_length": item.desired_length,
                     "max_tokens": item.max_tokens,
                     "top_p": item.top_p,
