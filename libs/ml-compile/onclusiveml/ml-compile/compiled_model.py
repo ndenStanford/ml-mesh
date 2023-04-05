@@ -1,7 +1,6 @@
 import os
 import torch
 from transformers import AutoConfig
-from transformers.modeling_outputs import BaseModelOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils.generic import ModelOutput
 from typing import List, Type, Type, Tuple, Dict, Any
@@ -11,7 +10,7 @@ import json
 class CompiledModel(PreTrainedModel):
 
     @classmethod
-    def from_model(cls, model, batch_size: int = 1, max_length: int = None, neuron: bool=True, **tracing_kwargs) -> Type[PreTrainedModel]:
+    def from_model(cls, model: PreTrainedModel, batch_size: int = 1, max_length: int = None, neuron: bool=True, **tracing_kwargs) -> Type[PreTrainedModel]:
         '''Takes a huggingface transformer model, compiles it according to specified
         configuration and returns a fully instantiated CompiledModel instance.
         
@@ -53,6 +52,7 @@ class CompiledModel(PreTrainedModel):
         model_output = self.model(input_ids, attention_mask)
         
         if isinstance(model_output, dict):
+            print('Model output is a dictionary. Converting')
             model_output = ModelOutput(model_output)
             
         return model_output
