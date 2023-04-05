@@ -4,13 +4,14 @@ from transformers import AutoConfig
 from transformers.modeling_outputs import BaseModelOutput
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils.generic import ModelOutput
-from typing import List
+from typing import List, Type, Type, Tuple, Dict, Any
+import json
 
 
 class CompiledModel(PreTrainedModel):
 
     @classmethod
-    def from_model(cls, model, batch_size: int = 1, max_length: int = None, neuron: bool=True, **tracing_kwargs):
+    def from_model(cls, model, batch_size: int = 1, max_length: int = None, neuron: bool=True, **tracing_kwargs) -> Type[PreTrainedModel]:
         '''Takes a huggingface transformer model, compiles it according to specified
         configuration and returns a fully instantiated CompiledModel instance.
         
@@ -39,34 +40,13 @@ class CompiledModel(PreTrainedModel):
         tracing_kwargs['compiler_args']: List[str] = tracing_kwargs.get('compiler_args',['--fast-math','none'])
         
         # trace model and return fuilly functional custom model class instance
-        compiled_model = compile_model(model, batch_size=batch_size, max_length=max_length, neuron=neuron, **tracing_kwargs)
+        traced_model, compilation_specs = compile_model(model, batch_size=batch_size, max_length=max_length, neuron=neuron, **tracing_kwargs)
+        
+        compiled_model = cls(model.config)
+        compiled_model.model = traced_model
+        compiled_model.compilation_specs = compilation_specs
 
         return compiled_model
-
-    # def prepare_inputs_for_generation(
-    #         self,
-    #         input_ids,
-    #         encoder_outputs=None,
-    #         attention_mask=None,
-    #         **kwargs,
-    # ):
-    #     # Pad the inputs for Neuron
-    #     current_length = input_ids.shape[1]
-    #     pad_size = self.config.max_length - current_length
-    #     return dict(
-    #         input_ids=F.pad(input_ids, (0, pad_size)),
-    #         attention_mask=attention_mask,
-    #         encoder_outputs=encoder_outputs.last_hidden_state,
-    #         current_length=torch.tensor(current_length - 1),
-    #     )
-
-    # def get_encoder(self):
-    #     def encode(input_ids, attention_mask, **kwargs):
-    #         output, = self.encoder(input_ids, attention_mask)
-    #         return BaseModelOutput(
-    #             last_hidden_state=output,
-    #         )
-    #     return encode
 
     def forward(self, input_ids, attention_mask, **kwargs):
 
@@ -88,6 +68,9 @@ class CompiledModel(PreTrainedModel):
         os.makedirs(directory, exist_ok=True)
         torch.jit.save(self.model, os.path.join(directory, 'model.pt'))
         self.config.save_pretrained(directory)
+        
+        with open(os.path.join(directory,'compilation_specs.json'),'w') as compilation_specs_file:
+            json.dump(self.compilation_specs,compilation_specs_file)
 
     @classmethod
     def from_pretrained(cls, directory):
@@ -96,9 +79,12 @@ class CompiledModel(PreTrainedModel):
         compiled_model = cls(config)
         compiled_model.model = torch.jit.load(os.path.join(directory, 'model.pt'))
         
+        with open(os.path.join(directory,'compilation_specs.json'),'r') as compilation_specs_file:
+            compiled_model.compilation_specs = json.load(compilation_specs_file)
+        
         return compiled_model
     
-def compile_model(model, batch_size: int, max_length: int,  neuron: bool = True, **tracing_kwargs):
+def compile_model(model, batch_size: int, max_length: int,  neuron: bool = True, **tracing_kwargs) -> Tuple[torch.jit._trace.TopLevelTracedModule, Dict[str,Any]]:
     """Traces a torch hf model to either torchscript or neuron torchscript, 
     then wraps it in the convenience CompiledModel class.
 
@@ -116,14 +102,18 @@ def compile_model(model, batch_size: int, max_length: int,  neuron: bool = True,
         torch.ones((batch_size, max_length), dtype=torch.long) # attention_mask
     )
     
-    print('tracing_kwargs:', tracing_kwargs)
-    
     if neuron:
         traced_model = torch.neuron.trace(model,tracing_inputs, **tracing_kwargs)
     else:
         traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
         
-    compiled_model = CompiledModel(model.config)
-    compiled_model.model = traced_model
+    compilation_specs = {'tracing_kwargs':tracing_kwargs.copy()}
+    compilation_specs.update(
+        {
+            'tracing__batch_size':batch_size,
+            'tracing__max_length':max_length,
+            'tracing__neuron':neuron,
+        }
+    )
     
-    return compiled_model
+    return traced_model, compilation_specs
