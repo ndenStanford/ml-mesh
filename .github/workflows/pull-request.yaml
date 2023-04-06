@@ -55,6 +55,35 @@ jobs:
           sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
           echo "::set-output name=short-sha::$sha"
 
+  #
+  #
+  #
+
+  files-changed:
+    runs-on: ubuntu-20.04
+    name: PR | Files Changed
+    needs: [run-tag]
+    outputs:
+      docker-changed: ${{ steps.get-changed-files.outputs.outputs.docker }}
+      projects-changed: ${{ steps.get-changed-files.outputs.outputs.projects }}
+      apps-changed: ${{ steps.get-changed-files.outputs.apps }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: get-changed-files
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            docker:
+              - added | modified: 'docker/**'
+            projects:
+              - added | modified: 'projects/**'
+            apps:
+              - added | modified: 'apps/**'
+
   # ===============================================
   # TEST LIBS
   # ===============================================
@@ -93,7 +122,8 @@ jobs:
   run-docker:
     name: Build Core Docker Images.
     uses: ./.github/workflows/_core-docker.yaml
-    needs: [run-tag, run-libs-tests]
+    needs: [run-tag, run-libs-tests, files-changed]
+    if: ${{ need.files-changed.docker-changed }}
     strategy:
       max-parallel: 1
       matrix:
@@ -130,7 +160,8 @@ jobs:
   run-projects:
     name: Build and Test Project Components.
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-tag, run-libs-tests, run-docker]
+    needs: [run-tag, run-libs-tests, run-docker, files-changed]
+    if: ${{ need.files-changed.projects-changed }}
     strategy:
       max-parallel: 10
       matrix:
@@ -176,7 +207,8 @@ jobs:
   run-apps:
     name: Build and Test App Components.
     uses: ./.github/workflows/_apps.yaml
-    needs: [run-tag, run-libs-tests, run-docker]
+    needs: [run-tag, run-libs-tests, run-docker, files-changed]
+    if: ${{ need.files-changed.apps-changed }}
     strategy:
       max-parallel: 10
       matrix:
