@@ -81,11 +81,17 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        run: make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} ENVIRONMENT="ci"
+        run: make apps.unit/${{ inputs.app }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          COMPONENT=${{ inputs.component }} \
+          ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
-        run: make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} ENVIRONMENT="ci"
+        run: make apps.integration/${{ inputs.app }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          COMPONENT=${{ inputs.component }} \
+          ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         run: |
