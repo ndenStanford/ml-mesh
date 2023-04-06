@@ -57,6 +57,9 @@ on:
       OPENAI_API_KEY:
         required: true
         description: "OPENAI Api key."
+      NEPTUNE_API_TOKEN:
+        required: true
+        description: "NEPTUNE AI authentication token for API calls."
 
 jobs:
   deploy:
@@ -119,23 +122,3 @@ jobs:
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Tag Docker image with latest | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.pull-request }}
-        run: |
-          make projects.tag/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Untag Docker image with latest in remote ECR repo | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
-        continue-on-error: true
-        run: |
-          make projects.tag/${{ inputs.project }} COMPONENT=${{ inputs.component }} IMAGE_TAG="latest"
-
-      - name: Push Docker image with latest | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
-        run: |
-          make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="latest"
