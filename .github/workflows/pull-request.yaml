@@ -122,7 +122,7 @@ jobs:
     name: Build Core Docker Images.
     uses: ./.github/workflows/_core-docker.yaml
     needs: [run-tag, run-libs-tests, files-changed]
-    if: ${{ needs.files-changed.outputs.docker-changed }}
+    if: ${{ needs.files-changed.outputs.docker-changed == 'true' }}
     strategy:
       max-parallel: 1
       matrix:
@@ -160,7 +160,7 @@ jobs:
     name: Build and Test Project Components.
     uses: ./.github/workflows/_projects.yaml
     needs: [run-tag, run-libs-tests, run-docker, files-changed]
-    if: ${{ needs.files-changed.outputs.projects-changed }}
+    if: ${{ needs.files-changed.outputs.projects-changed == 'true' }}
     strategy:
       max-parallel: 10
       matrix:
@@ -207,7 +207,7 @@ jobs:
     name: Build and Test App Components.
     uses: ./.github/workflows/_apps.yaml
     needs: [run-tag, run-libs-tests, run-docker, files-changed]
-    if: ${{ needs.files-changed.outputs.apps-changed }}
+    if: ${{ needs.files-changed.outputs.apps-changed == 'true' }}
     strategy:
       max-parallel: 10
       matrix:
