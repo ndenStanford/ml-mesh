@@ -147,6 +147,11 @@ jobs:
             integration: true
             python-version: "3.8.16"
 
+          - name: keywords
+            component: train
+            integration: false
+            python-version: "3.8.16"
+
     with:
       environment: "${{ github.base_ref }}"
       project: "${{ matrix.projects.name }}"
@@ -162,6 +167,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
 
   # ===============================================
   # APPS
@@ -202,3 +209,4 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+

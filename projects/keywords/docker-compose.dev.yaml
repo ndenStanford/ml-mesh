@@ -19,6 +19,18 @@ services:
       DOCS_URL: /docs
     hostname: onclusive-ml
     networks: [onclusive-net]
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/train/Dockerfile
+      args:
+        PROJECT: keywords
+        COMPONENT: train
+      target: development
+    environment:
+      NEPTUNE_API_TOKEN: secret_api_token_goes_here
+    hostname: onclusive-ml
+    networks: [onclusive-net]
 
 networks:
   onclusive-net:
