@@ -8,6 +8,9 @@ import json
 
 
 class CompiledModel(PreTrainedModel):
+    '''A fully functional subclass from the huggingface PreTrainedModel using a (neuron-)torchscript model as backend. 
+    Includes ( neuron-)torchscript utilities for automatic tracing of a specified pytorch model or huggingface transformer
+    model. Also supports the persistence of key (neuron-)tracing configuration parameters.'''
 
     @classmethod
     def from_model(cls, model: PreTrainedModel, batch_size: int = 1, max_length: int = None, neuron: bool=True, **tracing_kwargs) -> Type[PreTrainedModel]:
