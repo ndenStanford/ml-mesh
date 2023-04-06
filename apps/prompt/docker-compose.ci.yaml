@@ -96,9 +96,11 @@ services:
     expose:
       - 8000
       - 8001
+      - 8002
     ports:
       - 8000:8000
       - 8001:8001
+      - 8002:8002
     networks:
       - onclusive-net
 
