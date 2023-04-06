@@ -68,14 +68,6 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: DeployManifests
 
-      - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
-
-      - name: Build images
-        run: |
-          docker buildx create --use --driver=docker-container
-          docker buildx bake -f ./docker-compose.ci.yml -f --set *.cache-to="type=gha,mode=max" --set *.cache-from="type=gha" --load
-
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
