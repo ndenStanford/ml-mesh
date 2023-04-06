@@ -83,12 +83,6 @@ jobs:
             apps:
               - added | modified: 'apps/**'
 
-      - name: debug
-        run: |
-          echo ${{ steps.get-changed-files.outputs.apps }}
-          echo ${{ steps.get-changed-files.outputs.docker }}
-          echo ${{ steps.get-changed-files.outputs.projects }}
-
   # ===============================================
   # TEST LIBS
   # ===============================================
@@ -128,7 +122,7 @@ jobs:
     name: Build Core Docker Images.
     uses: ./.github/workflows/_core-docker.yaml
     needs: [run-tag, run-libs-tests, files-changed]
-    if: ${{ needs.files-changed.docker-changed == 'true' }}
+    if: ${{ needs.files-changed.outputs.docker-changed }}
     strategy:
       max-parallel: 1
       matrix:
@@ -166,7 +160,7 @@ jobs:
     name: Build and Test Project Components.
     uses: ./.github/workflows/_projects.yaml
     needs: [run-tag, run-libs-tests, run-docker, files-changed]
-    if: ${{ needs.files-changed.projects-changed == 'true' }}
+    if: ${{ needs.files-changed.outputs.projects-changed }}
     strategy:
       max-parallel: 10
       matrix:
@@ -213,7 +207,7 @@ jobs:
     name: Build and Test App Components.
     uses: ./.github/workflows/_apps.yaml
     needs: [run-tag, run-libs-tests, run-docker, files-changed]
-    if: ${{ needs.files-changed.apps-changed == 'true' }}
+    if: ${{ needs.files-changed.outputs.apps-changed }}
     strategy:
       max-parallel: 10
       matrix:
