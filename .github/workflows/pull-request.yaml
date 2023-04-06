@@ -159,7 +159,7 @@ jobs:
   run-projects:
     name: Build and Test Project Components.
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-tag, run-libs-tests, run-docker, files-changed]
+    needs: [run-tag, run-libs-tests, files-changed]
     if: ${{ needs.files-changed.outputs.projects-changed == 'true' }}
     strategy:
       max-parallel: 10
@@ -206,7 +206,7 @@ jobs:
   run-apps:
     name: Build and Test App Components.
     uses: ./.github/workflows/_apps.yaml
-    needs: [run-tag, run-libs-tests, run-docker, files-changed]
+    needs: [run-tag, run-libs-tests, files-changed]
     if: ${{ needs.files-changed.outputs.apps-changed == 'true' }}
     strategy:
       max-parallel: 10
