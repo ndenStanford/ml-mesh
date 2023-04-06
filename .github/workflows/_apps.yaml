@@ -82,7 +82,7 @@ jobs:
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
-          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }" \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
