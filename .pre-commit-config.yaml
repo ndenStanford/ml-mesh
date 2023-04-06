@@ -12,7 +12,6 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-        args: [--target-version=py38]
         files: ^(libs|projects|apps)/.*\.py$
 
   # Lint: Python
