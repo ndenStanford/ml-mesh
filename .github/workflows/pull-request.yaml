@@ -151,7 +151,7 @@ jobs:
             component: train
             integration: false
             python-version: "3.8.16"
-            
+
           # SUMMARIZATION-SERVE
           - name: summarization
             component: serve
