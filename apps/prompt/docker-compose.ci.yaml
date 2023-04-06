@@ -37,8 +37,6 @@ services:
       DB_HOST: "http://dynamodb:8000"
     depends_on:
       - dynamodb
-    networks:
-      - onclusive-net
 
   backend-unit:
     build:
