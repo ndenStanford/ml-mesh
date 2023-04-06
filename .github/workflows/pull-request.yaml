@@ -55,17 +55,16 @@ jobs:
           sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
           echo "::set-output name=short-sha::$sha"
 
-  #
-  #
-  #
-
+  # ===============================================
+  # CHECK FILES CHANGED
+  # ===============================================
   files-changed:
     runs-on: ubuntu-20.04
     name: PR | Files Changed
     needs: [run-tag]
     outputs:
-      docker-changed: ${{ steps.get-changed-files.outputs.outputs.docker }}
-      projects-changed: ${{ steps.get-changed-files.outputs.outputs.projects }}
+      docker-changed: ${{ steps.get-changed-files.outputs.docker }}
+      projects-changed: ${{ steps.get-changed-files.outputs.projects }}
       apps-changed: ${{ steps.get-changed-files.outputs.apps }}
     steps:
       - name: Check out code
