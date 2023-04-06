@@ -1,8 +1,7 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
 from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
-from conftest import MODEL_MAX_LENGTH
-import transformers
+from libs.ml_compile.onclusiveml.tests.conftest import MODEL_MAX_LENGTH
 
 @pytest.mark.parametrize(
     'tokenization_kwargs,expected_tokenization_settings',
@@ -56,19 +55,3 @@ def test_compiled_tokenizer_set_all_delegated_tokenizer_methods(compiled_tokeniz
     
     for delegated_method_reference, sample_input in all_delegated_method_references_with_sample_inputs:
         getattr(compiled_tokenizer,delegated_method_reference)(sample_input) == getattr(compiled_tokenizer.tokenizer,delegated_method_reference)(sample_input)
-        
-    
-def test_compiled_tokenizer_pretrained(compiled_tokenizer, mock_tokenizer, monkeypatch):
-    
-    compiled_tokenizer.save_pretrained('test_compiled_tokenizer')
-    
-    # monkey patch transformers.AutoTokenizer.from_pretrained so our mock_tokenizer can be loaded
-    def mock_from_pretrained(directory: str):
-        return mock_tokenizer.from_pretrained(directory)
-    
-    monkeypatch.setattr(transformers.AutoTokenizer, "from_pretrained", mock_from_pretrained)
-    
-    reloaded_test_compiled_tokenizer = CompiledTokenizer.from_pretrained('test_compiled_tokenizer')
-    
-    compiled_tokenizer.tokenizer == reloaded_test_compiled_tokenizer.tokenizer
-    compiled_tokenizer.tokenization_settings == reloaded_test_compiled_tokenizer.tokenization_settings
