@@ -83,6 +83,12 @@ jobs:
             apps:
               - added | modified: 'apps/**'
 
+      - name: debug
+        run: |
+          echo ${{ steps.get-changed-files.outputs.apps }}
+          echo ${{ steps.get-changed-files.outputs.docker }}
+          echo ${{ steps.get-changed-files.outputs.projects }}
+
   # ===============================================
   # TEST LIBS
   # ===============================================
