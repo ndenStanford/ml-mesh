@@ -2,10 +2,9 @@ from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast, AutoToken
 from transformers.utils.generic import PaddingStrategy
 import os
 import json
-from typing import List, Union, Any, Dict
+from typing import Union, Any, Dict
 from datetime import datetime as dt
 import shutil
-from functools import partial
     
 class CompiledTokenizer(object):
     '''A wrapper class around huggingface Tokenizer instances that supports reproducible tokenization. Includes extension of 
@@ -63,17 +62,12 @@ class CompiledTokenizer(object):
         ):
             self.set_delegated_tokenizer_method(tokenizer, tokenizer_method_reference)
     
-    def set_delegated_tokenizer_method(self,tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast], tokenizer_method_reference: str):
+    def set_delegated_tokenizer_method(self, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast], tokenizer_method_reference: str):
         
-        # retrieve the target method from the attached huggingface tokenizer object
-        tokenizer_method = getattr(self.tokenizer, tokenizer_method_reference)
+        # retrieve the target method from the attached huggingface tokenizer instance
+        tokenizer_method = getattr(tokenizer, tokenizer_method_reference)
         
-        # # pass the attached huggingface tokenizer object as the "self" argument
-        # delegated_tokenizer_method = partial(tokenizer_method, self.tokenizer)
-        
-        # # attach the modified method to the CompiledTokenizer instance
-        # setattr(self, tokenizer_method_reference, delegated_tokenizer_method)
-        
+        # attach method to CompiledTokenizer instance
         setattr(self, tokenizer_method_reference, tokenizer_method)
     
     @classmethod
