@@ -44,7 +44,11 @@ def get_prompts():
     dependencies=[Security(get_api_key)],
 )
 def get_prompt(id: str):
-    """Retrieves prompt via id"""
+    """Retrieves prompt via id.
+
+    Args:
+        id (str): prompt id
+    """
     try:
         return PromptTemplateSchema.get(id)
     except PromptTemplateTable.DoesNotExist as e:
@@ -57,7 +61,11 @@ def get_prompt(id: str):
     "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
 )
 def create_prompt(template: str):
-    """Creates prompt."""
+    """Creates prompt.
+
+    Args:
+        template (str): prompt template text.
+    """
     prompt = PromptTemplateSchema(template=template)
     return prompt.save()
 
@@ -66,6 +74,12 @@ def create_prompt(template: str):
     "/{id}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
 )
 def update_prompt(id: str, template: str):
+    """Updates prompt.
+
+    Args:
+        id (str): prompt id
+        template (str): prompt template text.
+    """
     prompt = PromptTemplateSchema.get(id)
     prompt.update(template=template)
     return PromptTemplateSchema.get(id)
@@ -74,8 +88,17 @@ def update_prompt(id: str, template: str):
 @router.delete(
     "/{id}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
 )
-def delete_prompts(id: str):
+def delete_prompt(id: str):
+    """Deletes prompt from database.
+
+    Args:
+        id (str): prompt id
+
+    Raises:
+        HTTPException.DoesNotExist if id is not found in table.
+    """
     try:
+        # TODO: for consistency this method should be moved to PromptTemplateSchema
         prompt = PromptTemplateTable.get(id)
         prompt.delete()
         return "deleted"
@@ -91,5 +114,11 @@ def delete_prompts(id: str):
     dependencies=[Security(get_api_key)],
 )
 def generate(id: str, values: Dict[str, Any]):
+    """Generates text using a prompt template.
+
+    Args:
+        id (str): prompt id
+        values (Dict[str, Any]): values to fill in template.
+    """
     prompt_template = PromptTemplateSchema.get(id)
     return {"generated": generate_text(prompt_template.prompt(**values))}
