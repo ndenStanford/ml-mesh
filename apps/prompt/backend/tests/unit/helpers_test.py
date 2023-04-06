@@ -45,6 +45,3 @@ def test_get_api_key_fail():
 
     with pytest.raises(HTTPException):
         asyncio.run(get_api_key(api_key_header="abcd"))
-
-
-ß
