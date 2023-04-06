@@ -1,4 +1,7 @@
-FROM 063759612765.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:v2023.3.1 as builder
+ARG AWS_ACCOUNT_ID
+ARG BASE_IMAGE_TAG
+
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
 
 ARG APP_NAME
 ARG APP_COMPONENT
@@ -41,4 +44,5 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --only dev
+
