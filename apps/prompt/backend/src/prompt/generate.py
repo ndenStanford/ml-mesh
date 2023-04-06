@@ -6,7 +6,10 @@
 import openai
 
 # Source
-from src.settings import settings
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 def generate_text(prompt: str) -> str:

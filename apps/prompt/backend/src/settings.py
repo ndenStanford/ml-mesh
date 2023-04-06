@@ -1,6 +1,7 @@
 """Settings."""
 
 # Standard Library
+from functools import lru_cache
 from typing import Optional
 
 # 3rd party libraries
@@ -11,7 +12,6 @@ class Settings(BaseSettings):
     """API configuration."""
 
     # Generic settings
-
     # api name
     API_NAME: str = "Prompt Manager"
 
@@ -33,8 +33,11 @@ class Settings(BaseSettings):
     # documentation endpoint
     DOCS_URL: Optional[str] = None
 
-    API_KEY: str
+    # initialize database
+    INITIALIZE: bool = True
 
+    # API key for secure endpoints access
+    API_KEY: str
     API_KEY_NAME: str = "x-api-key"
 
     # OpenAI API key
@@ -47,4 +50,7 @@ class Settings(BaseSettings):
     DB_HOST: Optional[str] = None
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> BaseSettings:
+    """Returns instanciated Settings class."""
+    return Settings()
