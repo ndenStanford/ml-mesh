@@ -1,16 +1,17 @@
 version: "3.9"
 
 services:
-  prompt:
+  backend:
     build:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
-      target: development
+      target: ${TARGET_BUILD_STAGE:-development}
       args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        OWNER: ${OWNER-onclusiveml}
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-latest}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.1}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command:
       [
         "uvicorn",
@@ -23,18 +24,86 @@ services:
         "--log-level",
         "debug",
       ]
-    ports:
-      - "4000:4000"
+    profiles: ["backend"]
     volumes:
       - type: bind
         source: backend/src
         target: /apps/prompt/backend/src
+      - type: bind
+        source: backend/tests
+        target: /apps/prompt/backend/tests
+    ports:
+      - "4000:4000"
     environment:
-      ENVIRONMENT: "local"
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY-anything}
-      OPENAI_API_KEY: ${OPENAI_API_KEY-none}
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
       DOCS_URL: "/docs"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+      API_KEY: 1234
+      DB_HOST: "http://dynamodb:8000"
+    depends_on:
+      - dynamodb
+    networks:
+      - onclusive-net
+
+  backend-unit:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: v2023.3.2
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["unit"]
+    volumes:
+      - type: bind
+        source: backend/src
+        target: /apps/prompt/backend/src
+      - type: bind
+        source: backend/tests
+        target: /apps/prompt/backend/tests
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      DOCS_URL: "/docs"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+      API_KEY: 1234
+      DB_HOST: "http://dynamodb:8000"
+    networks:
+      - onclusive-net
+
+  backend-integration:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: v2023.3.2
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
+    profiles: ["integration"]
+    volumes:
+      - type: bind
+        source: backend/src
+        target: /apps/prompt/backend/src
+      - type: bind
+        source: backend/tests
+        target: /apps/prompt/backend/tests
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      DOCS_URL: "/docs"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
       DB_HOST: "http://dynamodb:8000"
     depends_on:
@@ -44,6 +113,7 @@ services:
 
   dynamodb:
     image: instructure/dynamo-local-admin
+    profiles: ["backend", "integration"]
     expose:
       - 8000
       - 8001
