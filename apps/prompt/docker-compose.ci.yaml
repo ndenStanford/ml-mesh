@@ -10,7 +10,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.1}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2ß}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command:
       [
