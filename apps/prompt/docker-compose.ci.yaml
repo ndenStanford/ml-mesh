@@ -85,6 +85,12 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
       DB_HOST: http://dynamodb:8000
+    healthcheck:
+      test: ["CMD", "curl -f http://dynamodb:8000 || exit 1"]
+      interval: 1s
+      retries: 5
+      start_period: 1s
+      timeout: 5s
     depends_on:
       - dynamodb
     networks:
@@ -93,6 +99,7 @@ services:
   dynamodb:
     command: "-jar DynamoDBLocal.jar -sharedDb"
     image: "amazon/dynamodb-local:latest"
+    restart: always
     expose:
       - 8000
     ports:
