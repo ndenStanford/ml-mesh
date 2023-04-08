@@ -99,7 +99,10 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: ["backend", "integration"]
+    profiles:
+      ["backend", "integration"]
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
     healthcheck:
       test: ["CMD-SHELL", "sleep 3s || exit 1"]
       interval: 5s
