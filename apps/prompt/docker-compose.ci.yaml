@@ -26,17 +26,19 @@ services:
       ]
     profiles: ["backend"]
     ports:
-      - "4000:4000"
+      - 4000:4000
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: "/docs"
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
       DB_HOST: "http://dynamodb:8000"
     depends_on:
       - dynamodb
+    networks:
+      - onclusive-net
 
   backend-unit:
     build:
@@ -54,11 +56,13 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: "/docs"
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
       DB_HOST: "http://dynamodb:8000"
+    networks:
+      - onclusive-net
 
   backend-integration:
     build:
@@ -76,27 +80,26 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: "/docs"
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
-      DB_HOST: "http://dynamodb:8000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      DB_HOST: http://dynamodb:8000
     depends_on:
       - dynamodb
+    networks:
+      - onclusive-net
 
   dynamodb:
-    image: instructure/dynamo-local-admin
-    profiles: ["backend", "integration"]
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+    image: "amazon/dynamodb-local:latest"
     expose:
       - 8000
-      - 8001
-      - 8002
     ports:
       - 8000:8000
-      - 8001:8001
-      - 8002:8002
+    profiles: ["backend", "integration"]
+    networks:
+      - onclusive-net
+
+networks:
+  onclusive-net:

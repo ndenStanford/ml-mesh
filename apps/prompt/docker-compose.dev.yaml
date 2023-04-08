@@ -33,11 +33,11 @@ services:
         source: backend/tests
         target: /apps/prompt/backend/tests
     ports:
-      - "4000:4000"
+      - 4000:4000
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: "/docs"
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
@@ -70,7 +70,7 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: "/docs"
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
@@ -101,25 +101,36 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: "/docs"
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
-      DB_HOST: "http://dynamodb:8000"
+      DB_HOST: http://dynamodb:8000
     depends_on:
       - dynamodb
     networks:
       - onclusive-net
 
   dynamodb:
-    image: instructure/dynamo-local-admin
-    profiles: ["backend", "integration"]
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+    image: "amazon/dynamodb-local:latest"
     expose:
       - 8000
-      - 8001
     ports:
       - 8000:8000
+    profiles: ["backend", "integration"]
+    networks:
+      - onclusive-net
+
+  dynamo-admin:
+    image: aaronshaf/dynamodb-admin
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb:8000
+    ports:
       - 8001:8001
+    profiles: ["backend"]
+    depends_on:
+      - dynamodb
     networks:
       - onclusive-net
 
