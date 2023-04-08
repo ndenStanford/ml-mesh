@@ -102,9 +102,9 @@ services:
     profiles: ["backend", "integration"]
     healthcheck:
       test: ["CMD", "curl -f http://localhost:8000 || exit 1"]
-      interval: 1s
+      interval: 2s
       retries: 5
-      start_period: 1s
+      start_period: 5s
       timeout: 5s
     networks:
       - onclusive-net
