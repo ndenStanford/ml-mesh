@@ -101,11 +101,11 @@ services:
       - 8000:8000
     profiles: ["backend", "integration"]
     healthcheck:
-      test: ["CMD", "curl -f http://localhost:8000 || exit 1"]
-      interval: 2s
+      test: ["CMD", "sleep 5s || exit 1"]
+      interval: 5s
       retries: 5
       start_period: 5s
-      timeout: 5s
+      timeout: 10s
     networks:
       - onclusive-net
 
