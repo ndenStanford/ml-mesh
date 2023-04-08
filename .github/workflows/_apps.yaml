@@ -98,7 +98,7 @@ jobs:
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
-          TARGET_BUILD_STAGE="development" \
+          TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
