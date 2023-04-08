@@ -12,10 +12,10 @@ apps.deploy/%: ## Deploy project component docker image to ECR.
 	docker compose -f ./apps/$(notdir apps/$@)/docker-compose.$(ENVIRONMENT).yaml push $(COMPONENT)
 
 apps.start/%: # Start development container of component
-	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml up
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up
 
 apps.stop/%: # Start development container of component
-	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml down
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 
 apps.test/%: apps.unit/% apps.integration/% ## Run all tests for project component
 	echo "Running all tests."
