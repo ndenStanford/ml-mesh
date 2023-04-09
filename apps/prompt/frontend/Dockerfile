@@ -1,14 +1,23 @@
 FROM node:19-alpine AS builder
 
-WORKDIR /frontend
+ARG APP_NAME
+ARG APP_COMPONENT
+ARG APP_DIR="apps/${APP_NAME}/${APP_COMPONENT}"
+
+RUN mkdir -p "${HOME}" && \
+    chown -R "${USER}:users" "${HOME}"
+
+ENV HOME="${APP_DIR}"
+
+WORKDIR "/"
 
 # Copy the package.json and install dependencies
-COPY app/package*.json ./
+COPY --chown=${USER}:users ${HOME}/package*.json ./${HOME}/
+
 RUN npm install
 
-# Copy rest of the files
-COPY app/src ./src/
-COPY app/* ./
+# source
+COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 # Build the project
 RUN npx parcel build src/index.html --no-cache --no-source-maps
