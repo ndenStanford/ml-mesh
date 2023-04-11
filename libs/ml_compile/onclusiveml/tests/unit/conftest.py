@@ -4,7 +4,7 @@ from typing import List
 import pickle
 import os
 from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
-from pydantic import Tuple
+from typing import Tuple
 
 MODEL_MAX_LENGTH = 50
 
@@ -50,7 +50,7 @@ class MockTokenizer(object):
         return text.replace(' .','').replace(' ,',',')
     
     
-    def __call__(self, text: str, padding: str):
+    def __call__(self, text: str, padding: str = None, **kwargs):
         
         split_text = text.split(' ')
         

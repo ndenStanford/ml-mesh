@@ -17,9 +17,7 @@ from libs.ml_compile.onclusiveml.tests.unit.conftest import MODEL_MAX_LENGTH
         )
     ]
 )
-def test_compiled_tokenizer__init(mock_tokenizer, tokenization_kwargs, expected_tokenization_settings):
-    
-    print(expected_tokenization_settings)
+def test_compiled_tokenizer__init(mock_tokenizer, tokenization_kwargs, expected_tokenization_settings, all_delegated_method_references_with_sample_inputs):
     
     compiled_tokenizer = CompiledTokenizer(
         tokenizer=mock_tokenizer,
@@ -28,6 +26,14 @@ def test_compiled_tokenizer__init(mock_tokenizer, tokenization_kwargs, expected_
         
     # validate tokenization settings
     assert compiled_tokenizer.tokenization_settings == expected_tokenization_settings
+    
+    # validate delegated tokenization methods
+    for delegated_method_reference, sample_input in all_delegated_method_references_with_sample_inputs:
+        assert getattr(compiled_tokenizer,delegated_method_reference)(sample_input) == getattr(compiled_tokenizer.tokenizer,delegated_method_reference)(sample_input)
+        
+    # validate configured __call__ method
+    tokenization___call___input = all_delegated_method_references_with_sample_inputs[0][1] # text string for tokenizer() call
+    assert compiled_tokenizer(tokenization___call___input) == compiled_tokenizer.tokenizer(tokenization___call___input,**compiled_tokenizer.tokenization_settings)
     
 @pytest.mark.parametrize(
     'tokenization_kwargs,expected_tokenization_settings',
@@ -41,7 +47,7 @@ def test_compiled_tokenizer__init(mock_tokenizer, tokenization_kwargs, expected_
         )
     ]
 )
-def test_compiled_tokenizer__from_tokenizer(mock_tokenizer, tokenization_kwargs, expected_tokenization_settings):
+def test_compiled_tokenizer__from_tokenizer(mock_tokenizer, tokenization_kwargs, expected_tokenization_settings, all_delegated_method_references_with_sample_inputs):
     
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=mock_tokenizer,
@@ -51,8 +57,16 @@ def test_compiled_tokenizer__from_tokenizer(mock_tokenizer, tokenization_kwargs,
     # validate tokenization settings
     assert compiled_tokenizer.tokenization_settings == expected_tokenization_settings
     
+    # validate delegated tokenization methods
+    for delegated_method_reference, sample_input in all_delegated_method_references_with_sample_inputs:
+        assert getattr(compiled_tokenizer,delegated_method_reference)(sample_input) == getattr(compiled_tokenizer.tokenizer,delegated_method_reference)(sample_input)
+        
+    # validate configured __call__ method
+    tokenization___call___input = all_delegated_method_references_with_sample_inputs[0][1] # text string for tokenizer() call
+    assert compiled_tokenizer(tokenization___call___input) == compiled_tokenizer.tokenizer(tokenization___call___input,**compiled_tokenizer.tokenization_settings)
     
-def test_compiled_tokenizer_pretrained(compiled_tokenizer, mock_tokenizer, monkeypatch):
+    
+def test_compiled_tokenizer_pretrained(compiled_tokenizer, mock_tokenizer, monkeypatch, all_delegated_method_references_with_sample_inputs):
     
     compiled_tokenizer.save_pretrained('test_compiled_tokenizer')
     
@@ -64,11 +78,13 @@ def test_compiled_tokenizer_pretrained(compiled_tokenizer, mock_tokenizer, monke
     
     reloaded_test_compiled_tokenizer = CompiledTokenizer.from_pretrained('test_compiled_tokenizer')
     
-    compiled_tokenizer.tokenizer == reloaded_test_compiled_tokenizer.tokenizer
-    compiled_tokenizer.tokenization_settings == reloaded_test_compiled_tokenizer.tokenization_settings
+    # validate tokenization settings
+    assert compiled_tokenizer.tokenization_settings == reloaded_test_compiled_tokenizer.tokenization_settings
     
-    
-def test_compiled_tokenizer_set_all_delegated_tokenizer_methods(compiled_tokenizer, all_delegated_method_references_with_sample_inputs):
-    
+    # validate delegated tokenization methods
     for delegated_method_reference, sample_input in all_delegated_method_references_with_sample_inputs:
-        getattr(compiled_tokenizer,delegated_method_reference)(sample_input) == getattr(compiled_tokenizer.tokenizer,delegated_method_reference)(sample_input)
+        assert getattr(compiled_tokenizer,delegated_method_reference)(sample_input) == getattr(compiled_tokenizer.tokenizer,delegated_method_reference)(sample_input)
+        
+    # validate configured __call__ method
+    tokenization___call___input = all_delegated_method_references_with_sample_inputs[0][1] # text string for tokenizer() call
+    assert compiled_tokenizer(tokenization___call___input) == compiled_tokenizer.tokenizer(tokenization___call___input,**compiled_tokenizer.tokenization_settings)
