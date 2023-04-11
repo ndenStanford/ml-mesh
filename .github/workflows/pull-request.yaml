@@ -56,6 +56,34 @@ jobs:
           echo "::set-output name=short-sha::$sha"
 
   # ===============================================
+  # CHECK FILES CHANGED
+  # ===============================================
+  files-changed:
+    runs-on: ubuntu-20.04
+    name: PR | Files Changed
+    needs: [run-tag]
+    outputs:
+      docker-changed: ${{ steps.get-changed-files.outputs.docker }}
+      projects-changed: ${{ steps.get-changed-files.outputs.projects }}
+      apps-changed: ${{ steps.get-changed-files.outputs.apps }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: get-changed-files
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            docker:
+              - added | modified: 'docker/**'
+            projects:
+              - added | modified: 'projects/**'
+            apps:
+              - added | modified: 'apps/**'
+
+  # ===============================================
   # TEST LIBS
   # ===============================================
   run-libs-tests:
@@ -91,9 +119,10 @@ jobs:
   # DOCKER
   # ===============================================
   run-docker:
-    name: Build and Push Core Docker Images.
+    name: Build Core Docker Images.
     uses: ./.github/workflows/_core-docker.yaml
-    needs: [run-tag, run-libs-tests]
+    needs: [run-tag, run-libs-tests, files-changed]
+    if: ${{ needs.files-changed.outputs.docker-changed == 'true' }}
     strategy:
       max-parallel: 1
       matrix:
@@ -128,9 +157,10 @@ jobs:
   # ===============================================
 
   run-projects:
-    name: Build and Deploy Project Components.
+    name: Build and Test Project Components.
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-tag, run-libs-tests, run-docker]
+    needs: [run-tag, run-libs-tests, files-changed]
+    if: ${{ needs.files-changed.outputs.projects-changed == 'true' }}
     strategy:
       max-parallel: 10
       matrix:
@@ -168,3 +198,42 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
+  # APPS
+  # ===============================================
+
+  run-apps:
+    name: Build and Test App Components.
+    uses: ./.github/workflows/_apps.yaml
+    needs: [run-tag, run-libs-tests, files-changed]
+    if: ${{ needs.files-changed.outputs.apps-changed == 'true' }}
+    strategy:
+      max-parallel: 10
+      matrix:
+        poetry-version: ["1.3.2"]
+        apps:
+          # NOTE: list of project components to run
+
+          # ========================
+          # Prompt manager
+          # ========================
+          # serve
+          - name: prompt
+            component: backend
+            integration: true
+            python-version: "3.8.16"
+
+    with:
+      environment: "${{ github.base_ref }}"
+      app: "${{ matrix.apps.name }}"
+      component: "${{ matrix.apps.component }}"
+      tag: "ci-${{ needs.run-tag.outputs.short-sha }}"
+      integration: "${{ matrix.apps.integration }}"
+      pull-request: true
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
