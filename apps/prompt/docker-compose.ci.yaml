@@ -102,7 +102,7 @@ services:
     profiles: ["backend", "integration"]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
+      # database is ready to receive requests.
       test: ["CMD-SHELL", "sleep 3s || exit 1"]
       interval: 5s
       retries: 5
