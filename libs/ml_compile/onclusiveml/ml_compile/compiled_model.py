@@ -13,7 +13,16 @@ class CompiledModel(PreTrainedModel):
     model. Also supports the persistence of key (neuron-)tracing configuration parameters.'''
 
     @classmethod
-    def from_model(cls, model: PreTrainedModel, batch_size: int = 1, max_length: int = None, neuron: bool=True, **tracing_kwargs) -> Type[PreTrainedModel]:
+    def from_model(
+        cls, 
+        model: PreTrainedModel, 
+        batch_size: int = 1, 
+        max_length: int = None, 
+        neuron: bool=True,
+        validate_compilation: bool = True, 
+        validation_rtol: float = 1e-02, 
+        validation_atol: float = 1e-02,
+        **tracing_kwargs) -> Type[PreTrainedModel]:
         '''Takes a huggingface transformer model, compiles it according to specified
         configuration and returns a fully instantiated CompiledModel instance.
         
@@ -36,17 +45,26 @@ class CompiledModel(PreTrainedModel):
         # ensure reasonable defaults and required specs for functional neuron tracing
         if max_length is None:
             max_length = model.config.max_position_embeddings
-            
-        tracing_kwargs['dynamic_batch_size']: bool = tracing_kwargs.get('dynamic_batch_size',True)
-        tracing_kwargs['strict']: bool = tracing_kwargs.get('strict',True)
-        tracing_kwargs['compiler_args']: List[str] = tracing_kwargs.get('compiler_args',['--fast-math','none'])
         
+        if neuron is True:
+            tracing_kwargs['dynamic_batch_size']: bool = tracing_kwargs.get('dynamic_batch_size',True)
+            tracing_kwargs['compiler_args']: List[str] = tracing_kwargs.get('compiler_args',['--fast-math','none'])
+    
+        tracing_kwargs['strict']: bool = tracing_kwargs.get('strict',False)
+                
         # trace model and return fuilly functional custom model class instance
-        traced_model, compilation_specs = compile_model(model, batch_size=batch_size, max_length=max_length, neuron=neuron, **tracing_kwargs)
+        traced_model, tracing_inputs, compilation_specs = compile_model(model, batch_size=batch_size, max_length=max_length, neuron=neuron, **tracing_kwargs)
         
         compiled_model = cls(model.config)
         compiled_model.model = traced_model
         compiled_model.compilation_specs = compilation_specs
+        
+        if validate_compilation is True:
+            tracing_inputs_dict = {'input_ids': tracing_inputs[0], 'attention_mask': tracing_inputs[1]}
+            model_output = model(**tracing_inputs_dict)[0]
+            traced_model_output = compiled_model(**tracing_inputs_dict)[0]
+        
+            assert torch.allclose(model_output,traced_model_output, atol=validation_atol, rtol=validation_rtol)
 
         return compiled_model
 
@@ -87,7 +105,13 @@ class CompiledModel(PreTrainedModel):
         
         return compiled_model
     
-def compile_model(model, batch_size: int, max_length: int,  neuron: bool = True, **tracing_kwargs) -> Tuple[torch.jit._trace.TopLevelTracedModule, Dict[str,Any]]:
+def compile_model(
+    model, 
+    batch_size: int, 
+    max_length: int,  
+    neuron: bool = True, 
+    **tracing_kwargs
+    ) -> Tuple[torch.jit._trace.TopLevelTracedModule, Tuple[torch.Tensor, torch.Tensor], Dict[str,Any]]:
     """Traces a torch hf model to either torchscript or neuron torchscript, 
     then wraps it in the convenience CompiledModel class.
 
@@ -101,8 +125,8 @@ def compile_model(model, batch_size: int, max_length: int,  neuron: bool = True,
     
     # generate tracing inputs according to specs
     tracing_inputs = (
-        torch.ones((batch_size, max_length), dtype=torch.long), # input_ids
-        torch.ones((batch_size, max_length), dtype=torch.long) # attention_mask
+        torch.zeros((batch_size, max_length), dtype=torch.long), # input_ids
+        torch.zeros((batch_size, max_length), dtype=torch.long) # attention_mask
     )
     
     if neuron:
@@ -119,4 +143,4 @@ def compile_model(model, batch_size: int, max_length: int,  neuron: bool = True,
         }
     )
     
-    return traced_model, compilation_specs
+    return traced_model, tracing_inputs, compilation_specs
