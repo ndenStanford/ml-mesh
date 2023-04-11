@@ -4,6 +4,7 @@ from typing import List
 import pickle
 import os
 from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
+from pydantic import Tuple
 
 MODEL_MAX_LENGTH = 50
 
