@@ -26,11 +26,15 @@ class CompiledModel(PreTrainedModel):
         '''Takes a huggingface transformer model, compiles it according to specified
         configuration and returns a fully instantiated CompiledModel instance.
         
-        model (_type_): The huggingface pytorch model or pytorch nn.module to compile
-        batch_size (_type_): The size of the batch used for tracing
+        model (PreTrainedModel): The huggingface pytorch model or pytorch nn.module to compile
+        batch_size (int, optional): The size of the batch used for tracing
         max_length (_type_): The number of tokens per record used for tracing, e.g. input sequence length
-        neuron (bool, optional): _description_. If True, uses torch.neuron.trace for compilation,
+        neuron (bool, optional): If True, uses torch.neuron.trace for compilation,
             otherwise uses torch.jit.trace. Defaults to True.
+        validate_compilation (bool, optional): If True, runs a simple regression test comparing the specified model's outputs
+            with the newly compiled model's outputs, using the tracing inputs as pseudo-tokens
+        validation_rtol (float, optional): The relative deviation threshold. Only relevant when validate_compilation=True.
+        validation_atol (float, optional): The absolute deviation threshold. Only relevant when validate_compilation=True.
         **tracing_kwargs:
             dynamic_batching (bool, optional): If True, traced model allows for 
                 variable batch sizes during inference up to the batch_size used during compilation.
