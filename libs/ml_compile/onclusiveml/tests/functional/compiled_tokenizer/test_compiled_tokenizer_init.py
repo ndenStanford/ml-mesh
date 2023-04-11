@@ -1,9 +1,6 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
-from transformers import AutoTokenizer
 from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
-from libs.ml_compile.onclusiveml.tests.functional.conftest import MODEL_MAX_LENGTH
-
 
 @pytest.mark.parametrize(
     'huggingface_model_reference',

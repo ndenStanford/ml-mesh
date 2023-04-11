@@ -13,14 +13,6 @@ def huggingface_tokenizer(huggingface_model_reference: str):
 def huggingface_model_max_length(huggingface_tokenizer):
     
     return huggingface_tokenizer.model_max_length
-    
-@pytest.fixture
-def huggingface_pipeline_tasks() -> List[str]:
-    
-    return [
-        'feature-extraction',
-        'text-classification'
-    ]
 
 @pytest.fixture
 def custom_tokenization_settings_1():
