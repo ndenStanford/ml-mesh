@@ -21,6 +21,9 @@ updates:
     directory: "/docker/fastapi-serve"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -31,6 +34,8 @@ updates:
     directory: "/docker/kubeflow-base"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -41,6 +46,8 @@ updates:
     directory: "/docker/kubeflow-data-science"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -51,6 +58,8 @@ updates:
     directory: "/docker/kubeflow-jax-cpu"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -61,6 +70,8 @@ updates:
     directory: "/docker/kubeflow-jupyter"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -71,6 +82,8 @@ updates:
     directory: "/docker/kubeflow-numpy"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -81,6 +94,8 @@ updates:
     directory: "/docker/kubeflow-torch-cpu"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -91,6 +106,8 @@ updates:
     directory: "/docker/python-base"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -105,6 +122,8 @@ updates:
     directory: "/libs/core"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -113,24 +132,28 @@ updates:
   # PROJECTS
   # ====================================
 
-  # KEYBERT
+  # KEYWORDS
 
   ## serve
 
   # python
   - package-ecosystem: "pip"
-    directory: "/projects/keybert/serve"
+    directory: "/projects/keywords/serve"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
   # docker
   - package-ecosystem: "docker"
-    directory: "/projects/keybert/serve"
+    directory: "/projects/keywords/serve"
     schedule:
       interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
     registries:
       - ecr-prod
 
