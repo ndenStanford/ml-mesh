@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  serve:
+    build:
+      context: ../../
+      dockerfile: projects/summarization/serve/Dockerfile
+      args:
+        PROJECT: summarization
+        COMPONENT: serve
+      target: development
+    ports:
+      - "8888:8888"
+    environment:
+      DOCS_URL: /docs
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+networks:
+  onclusive-net:

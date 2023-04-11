@@ -54,6 +54,9 @@ on:
       AWS_ROLE_TO_ASSUME:
         required: true
         description: "AWS IAM role to assume."
+      OPENAI_API_KEY:
+        required: true
+        description: "OPENAI Api key."
       NEPTUNE_API_TOKEN:
         required: true
         description: "NEPTUNE AI authentication token for API calls."
@@ -66,6 +69,7 @@ jobs:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - name: Check out code

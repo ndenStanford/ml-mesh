@@ -54,7 +54,8 @@ ALL_LIBS:= \
 
 # all projects
 ALL_PROJECTS:= \
-	keybert
+	keywords \
+	summarization
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk
