@@ -1,13 +1,18 @@
 import pytest
-from pydantic import List
+from typing import List
+from transformers import AutoTokenizer
+
+MODEL_MAX_LENGTH = 50
 
 @pytest.fixture
-def huggingface_model_references() -> List[str]:
+def huggingface_tokenizer(huggingface_model_reference: str):
     
-    return (
-        'prajjwal1/bert-tiny'
-        'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
-    )
+    return AutoTokenizer.from_pretrained(huggingface_model_reference)
+
+@pytest.fixture
+def huggingface_model_max_length(huggingface_tokenizer):
+    
+    return huggingface_tokenizer.model_max_length
     
 @pytest.fixture
 def huggingface_pipeline_tasks() -> List[str]:
@@ -16,3 +21,30 @@ def huggingface_pipeline_tasks() -> List[str]:
         'feature-extraction',
         'text-classification'
     ]
+
+@pytest.fixture
+def custom_tokenization_settings_1():
+    
+    return {'padding':'longest', 'truncation': False, 'add_special_tokens': False, 'max_length': 20}
+
+@pytest.fixture
+def custom_tokenization_settings_2():
+    
+    return {'padding':'max_length', 'truncation': True, 'add_special_tokens': True, 'max_length': 100}
+
+@pytest.fixture
+def custom_tokenization_settings_3():
+    
+    return {'padding':'do_not_pad', 'truncation': False, 'add_special_tokens': False, 'max_length': 200}
+    
+@pytest.fixture
+def all_delegated_method_references_with_sample_inputs():
+    
+    return (
+        ('encode_plus','some example text'),
+        ('encode','some example text'),
+        #('decode',None),
+        ('create_token_type_ids_from_sequences',['some','example','text']),
+        #('convert_tokens_to_string',[0,1,2]),
+        ('clean_up_tokenization', 'some ,example text .'),
+    )
