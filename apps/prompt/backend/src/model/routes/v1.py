@@ -54,28 +54,28 @@ def get_model(id: str):
 @router.post(
     "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
 )
-def create_model(model: str):
+def create_model(model_name: str):
     """Creates model.
 
     Args:
-        model (str): model name.
+        model_name (str): model name.
     """
-    model = ModelSchema(model=model)
+    model = ModelSchema(model_name=model_name)
     return model.save()
 
 
 @router.put(
     "/{id}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
 )
-def update_model(id: str, model: str):
+def update_model(id: str, model_name: str):
     """Updates model.
 
     Args:
         id (str): model id
-        model (str): model name.
+        model_name (str): model name.
     """
     model = ModelSchema.get(id)
-    model.update(model=model)
+    model.update(model_name=model_name)
     return ModelSchema.get(id)
 
 
