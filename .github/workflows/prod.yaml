@@ -59,8 +59,11 @@ jobs:
         poetry-version: ["1.3.2"]
         libs:
           - name: core
+            integration: false
 
     with:
+      lib: ${{ matrix.libs.name }}
+      integration: ${{ matrix.libs.integration }}
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
 
