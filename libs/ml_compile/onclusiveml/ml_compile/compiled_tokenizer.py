@@ -1,10 +1,8 @@
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast, AutoTokenizer
-from transformers.utils.generic import PaddingStrategy
+from libs.ml_compile.onclusiveml.ml_compile.compile_utils import duplicate_huggingface_transformer_via_local_cache
 import os
 import json
 from typing import Union, Any, Dict
-from datetime import datetime as dt
-import shutil
     
 class CompiledTokenizer(object):
     '''A wrapper class around huggingface Tokenizer instances that supports reproducible tokenization. Includes extension of 
@@ -14,26 +12,13 @@ class CompiledTokenizer(object):
     
     def __init__(self, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast], **tokenization_kwargs):
         
-        self.tokenizer = self.duplicate_tokenizer_via_local_cache(tokenizer)
+        self.tokenizer = duplicate_huggingface_transformer_via_local_cache(tokenizer)
         self.tokenization_settings = self.get_tokenization_settings(tokenizer, **tokenization_kwargs)
         self.compiled = True
         
         # attach base suite of delegated methods implemented by the hf tokenizer to preserve most of 
         # the common methods and simulate subclassig w.r.t available methods
         self.set_all_delegated_tokenizer_methods(tokenizer)
-        
-    
-    @classmethod
-    def duplicate_tokenizer_via_local_cache(cls, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast]) -> Union[PreTrainedTokenizer,PreTrainedTokenizerFast]:
-        '''Saves and re-imports the passed tokenizer to effectively create a deep copy.'''
-        
-        # export and re-import tokenizer to avoid changing in place
-        local_temp_dir = f'temp_{dt.now().strftime(format="%Y_%m_%d__%H_%M_%s")}'
-        tokenizer.save_pretrained(local_temp_dir)
-        duplicated_tokenizer = tokenizer.from_pretrained(local_temp_dir)
-        shutil.rmtree(local_temp_dir)
-        
-        return duplicated_tokenizer
     
     @classmethod
     def get_tokenization_settings(cls, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast], **tokenization_kwargs) -> Dict[str,Any]:
@@ -42,10 +27,16 @@ class CompiledTokenizer(object):
         
         # ensure reasonable defaults and required specs for deterministic tokenization calls
         tokenization_settings = {}
-        tokenization_settings['padding']: Union[bool, str, PaddingStrategy] = tokenization_kwargs.pop('padding','max_length')
-        tokenization_settings['truncation']: bool = tokenization_kwargs.pop('truncation',True)
+        
+        # ensure constant sequence length of outputs as per 
+        # https://awsdocs-neuron.readthedocs-hosted.com/en/latest/src/examples/tensorflow/huggingface_bert/huggingface_bert.html#Compile-the-model-into-an-AWS-Neuron-Optimized-Model
+        tokenization_settings['padding'] = 'max_length'
+        tokenization_settings['truncation'] = True
+        
+        # ensure reasonable defaults
         tokenization_settings['add_special_tokens']: bool = tokenization_kwargs.pop('add_special_tokens',True)
         tokenization_settings['max_length']: int = tokenization_kwargs.pop('max_length',tokenizer.model_max_length)
+        
         tokenization_settings.update(tokenization_kwargs)
         
         return tokenization_settings

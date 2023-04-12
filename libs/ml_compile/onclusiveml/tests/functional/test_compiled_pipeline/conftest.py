@@ -8,11 +8,6 @@ def huggingface_pipeline(huggingface_pipeline_task: str, huggingface_model_refer
     return pipeline(task=huggingface_pipeline_task, model=huggingface_model_reference)
 
 @pytest.fixture
-def custom_tokenization_settings(max_length: int):
-    
-    return {'padding':'max_length', 'truncation': True, 'add_special_tokens': True, 'max_length': max_length}
-
-@pytest.fixture
 def sample_inputs() -> List[str]:
     
     return [

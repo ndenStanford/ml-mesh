@@ -14,7 +14,7 @@ class CompiledModel(PreTrainedModel):
 
     @classmethod
     def from_model(
-        cls, 
+        cls,
         model: PreTrainedModel, 
         batch_size: int = 1, 
         max_length: int = None, 
