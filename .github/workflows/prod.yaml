@@ -1,8 +1,17 @@
-name: Deployment Workflow
+name: ML-Mesh Prod Worfklow
+
 on:
   push:
     branches:
       - prod
+  pull_request:
+    branches:
+      - prod
+    types:
+      - ready_for_review
+      - opened
+      - synchronize
+      - reopened
 
 concurrency:
   cancel-in-progress: true
@@ -12,46 +21,28 @@ jobs:
   # ===============================================
   # QUALITY CHECKS
   # ===============================================
-  code-quality-checks:
+
+  run-code-quality-checks:
     name: Run Pre-Commit Checks
     uses: ./.github/workflows/_code-quality.yaml
     with:
-      environment: ${{ github.ref_name }}
-      pull-request: false
+      environment: prod
+      pull-request: ${{ github.event_name == 'pull_request' }}
       timeout: 10
 
   # ===============================================
-  # DRAFT RELEASE NOTES
+  # GET REPOSITORY STATE
   # ===============================================
-  run-tag:
-    name: Tag Repository Release.
-    runs-on: ubuntu-20.04
-    needs: [code-quality-checks]
-    outputs:
-      tag: ${{ steps.release-drafter.outputs.tag_name }}
-      name: ${{ steps.release-drafter.outputs.name }}
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
 
-      - name: Get next version
-        id: get-version
-        uses: reecetech/version-increment@2022.10.3
-        with:
-          scheme: calver
-
-      - uses: release-drafter/release-drafter@v5.22.0
-        id: release-drafter
-        with:
-          config-name: release-drafter.yaml
-          publish: true
-          commitish: ${{ github.ref_name }}
-          prerelease: false
-          tag: "v${{ steps.get-version.outputs.version }}"
-          name: "${{ steps.get-version.outputs.version }}"
-          version: "${{ steps.get-version.outputs.version }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run-repository-state:
+    name: Get Repository metadata
+    uses: ./.github/workflows/_repository-stage.yaml
+    needs: [run-code-quality-checks]
+    with:
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      current-branch: ${{ github.ref_name }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ===============================================
   # TEST LIBS
@@ -59,43 +50,28 @@ jobs:
 
   run-libs-tests:
     name: Run libraries unit and integration tests.
-    runs-on: ubuntu-20.04
+    uses: ./.github/workflows/_libs.yaml
     needs: [run-tag]
+
     strategy:
       matrix:
         python-version: ["3.8.16"]
         poetry-version: ["1.3.2"]
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+        libs:
+          - name: core
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Setup Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
-
-      - name: Install libs dependencies
-        run: |
-          make libs.install-all
-
-      - name: Run lib unit tests
-        run: make libs.unit-all
-
-  # NOTE: runtime of this pipeline is going to grow with the number of projects
-  # TODO: @sreza1 optimize runtime of this succession of jobs.
+    with:
+      python-version: ${{ matrix.python-version }}
+      poetry-version: ${{ matrix.poetry-version }}
 
   # ===============================================
   # DOCKER
   # ===============================================
+
   run-docker:
-    name: Build and Push Core Docker Images.
-    uses: ./.github/workflows/_core-docker.yaml
-    needs: [run-tag, run-libs-tests]
+    name: Core Docker Images.
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 1
       matrix:
@@ -113,10 +89,10 @@ jobs:
           - image: neuron-compile
             validate-build: true
     with:
-      environment: ${{ github.ref_name }}
+      environment: prod
       image: ${{ matrix.image }}
-      tag: "${{ needs.run-tag.outputs.tag }}"
-      pull-request: false
+      tag: "${{ needs.run-repository-state.outputs.tag }}"
+      pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -129,10 +105,12 @@ jobs:
   # PROJECTS
   # ===============================================
 
+  # TODO: @sreza1 optimize runtime of this succession of jobs.
+
   run-projects:
-    name: Build and Deploy Project Components.
+    name: ML Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-tag, run-libs-tests, run-docker]
+    needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
       matrix:
@@ -141,9 +119,9 @@ jobs:
           # NOTE: list of project components to run
 
           # ========================
-          # Keywords extraction
+          # KEYWORDS
           # ========================
-          # serve
+
           - name: keywords
             component: serve
             integration: true
@@ -164,14 +142,14 @@ jobs:
             python-version: "3.8.16"
 
     with:
-      environment: "${{ github.ref_name }}"
-      project: "${{ matrix.projects.name }}"
-      component: "${{ matrix.projects.component }}"
-      tag: "${{ needs.run-tag.outputs.tag }}"
-      integration: "${{ matrix.projects.integration }}"
-      python-version: "${{ matrix.projects.python-version }}"
-      poetry-version: "${{ matrix.poetry-version }}"
-      pull-request: false
+      environment: prod
+      project: ${{ matrix.projects.name }}
+      component: ${{ matrix.projects.component }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      integration: ${{ matrix.projects.integration }}
+      python-version: ${{ matrix.projects.python-version }}
+      poetry-version: ${{ matrix.poetry-version }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -186,30 +164,30 @@ jobs:
   # ===============================================
 
   run-apps:
-    name: Build and Deploy App Components.
+    name: Web Applications
     uses: ./.github/workflows/_apps.yaml
-    needs: [run-tag, run-libs-tests, run-docker]
+    needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
       matrix:
-        projects:
-          # NOTE: list of project components to run
+        apps:
+          # NOTE: list of apps components to run
 
           # ========================
           # Prompt manager
           # ========================
-          # serve
+
           - name: prompt
             component: backend
             integration: true
 
     with:
-      environment: "${{ github.base_ref }}"
-      project: "${{ matrix.projects.name }}"
-      component: "${{ matrix.projects.component }}"
-      tag: "ci-${{ needs.run-tag.outputs.short-sha }}"
-      integration: "${{ matrix.projects.integration }}"
-      pull-request: true
+      environment: prod
+      app: ${{ matrix.apps.name }}
+      component: ${{ matrix.apps.component }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      integration: ${{ matrix.apps.integration }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
