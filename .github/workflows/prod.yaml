@@ -36,7 +36,7 @@ jobs:
 
   run-repository-state:
     name: Get Repository metadata
-    uses: ./.github/workflows/_repository-stage.yaml
+    uses: ./.github/workflows/_repository-state.yaml
     needs: [run-code-quality-checks]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
