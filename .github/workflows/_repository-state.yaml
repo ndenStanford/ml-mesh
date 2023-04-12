@@ -51,15 +51,15 @@ jobs:
         if: ${{ inputs.pull-request }}
         run: |
           sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
-          echo "short-sha::$sha" >> $GITHUB_OUTPUT
+          echo "tag=ci-$sha" >> $GITHUB_OUTPUT
 
       - name: Export tag
         id: export-tag
         run: |
           if [[ ${{ inputs.pull-request }} = true ]]; then
-            echo "tag::${{ steps.get-commit-sha.outputs.short-sha }}" >> $GITHUB_OUTPUT
+            echo "tag::${{ steps.get-commit-sha.outputs.tag }}" >> $GITHUB_OUTPUT
           else
-            echo "tag::${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "tag=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Generate Release Notes
