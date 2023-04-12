@@ -14,7 +14,7 @@ import torch.neuron
     'neuron',
     [
         True,
-        #False # regular torchscript
+        False # regular torchscript
     ]
 )
 @pytest.mark.parametrize(
