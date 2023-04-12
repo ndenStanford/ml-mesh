@@ -1,6 +1,8 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
 from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
+from typing import Dict, List
+import torch
 
 @pytest.mark.parametrize(
     'huggingface_model_reference',
@@ -49,5 +51,16 @@ def test_compiled_tokenizer__init(huggingface_tokenizer, tokenization_kwargs, ex
         assert getattr(compiled_tokenizer,delegated_method_reference)(sample_input) == getattr(huggingface_tokenizer,delegated_method_reference)(sample_input)
         
     # validate configured __call__ method
+    
+    # list outputs
     tokenization___call___input = all_delegated_method_references_with_sample_inputs[0][1] # text string for tokenizer() call
-    assert compiled_tokenizer(tokenization___call___input) == compiled_tokenizer.tokenizer(tokenization___call___input,**compiled_tokenizer.tokenization_settings)
+    list_compiled_tokenizer_output: Dict[str,List] = compiled_tokenizer(tokenization___call___input)
+    list_huggingface_tokenizer_output: Dict[str,List] = huggingface_tokenizer(tokenization___call___input,**compiled_tokenizer.tokenization_settings)
+    assert list_compiled_tokenizer_output == list_huggingface_tokenizer_output
+
+    # torch outputs
+    torch_compiled_tokenizer_output: Dict[str,torch.Tensor] = compiled_tokenizer(tokenization___call___input, return_tensors='pt')
+    torch_huggingface_tokenizer_output: Dict[str,torch.Tensor] = huggingface_tokenizer(tokenization___call___input, return_tensors='pt', **compiled_tokenizer.tokenization_settings)
+    
+    for token_type in torch_huggingface_tokenizer_output:
+        torch.all(torch_huggingface_tokenizer_output[token_type].eq(torch_compiled_tokenizer_output[token_type]))

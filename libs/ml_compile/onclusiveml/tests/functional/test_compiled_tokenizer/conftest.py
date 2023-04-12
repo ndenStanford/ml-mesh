@@ -33,8 +33,8 @@ def custom_tokenization_settings_3():
 def all_delegated_method_references_with_sample_inputs():
     
     return (
-        ('encode_plus','some example text'),
-        ('encode','some example text'),
+        ('encode_plus','This is some example text to tokenize. It is used to regression test the compiled tokenizer.'),
+        ('encode','This is some example text to tokenize. It is used to regression test the compiled tokenizer.'),
         #('decode',None),
         ('create_token_type_ids_from_sequences',['some','example','text']),
         #('convert_tokens_to_string',[0,1,2]),

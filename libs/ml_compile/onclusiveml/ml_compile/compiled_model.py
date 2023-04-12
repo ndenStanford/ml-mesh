@@ -134,6 +134,7 @@ def compile_model(
     )
     
     if neuron:
+        import torch_neuron
         traced_model = torch.neuron.trace(model,tracing_inputs, **tracing_kwargs)
     else:
         traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
