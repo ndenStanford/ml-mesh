@@ -29,13 +29,11 @@ def test_get_prompts(mock_prompt_get, test_client):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"prompts": []}
 
-
 def test_get_prompts_unauthenticated(test_client):
     """Test get prompts endpoint unauthenticated."""
     response = test_client.get("/api/v1/prompts")
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {"detail": "Not authenticated"}
-
 
 @pytest.mark.parametrize("id", [1, 124543, "2423"])
 @patch.object(PromptTemplateSchema, "get")

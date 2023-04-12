@@ -9,6 +9,7 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.db import BaseTable
 from src.prompt.tables import PromptTemplateTable
+from src.model.tables import ModelTable
 
 
 logger = get_default_logger(__name__)
@@ -17,7 +18,7 @@ logger = get_default_logger(__name__)
 def init() -> None:
     """App initialization."""
     logger.info("Creating tables...")
-    _create_tables([PromptTemplateTable])
+    _create_tables([PromptTemplateTable,ModelTable])
 
 
 def _create_tables(tables: List[BaseTable]) -> None:
