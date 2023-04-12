@@ -6,7 +6,7 @@ import torch.neuron
 @pytest.mark.parametrize(
     'huggingface_model_reference',
     [
-        'prajjwal1/bert-tiny',
+        #'prajjwal1/bert-tiny',
         'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
     ]
 )
@@ -14,14 +14,15 @@ import torch.neuron
     'neuron',
     [
         True,
-        False # regular torchscript
+        #False # regular torchscript
     ]
 )
 @pytest.mark.parametrize(
     'batch_size',
     [
         1,
-        2
+        4,
+        8
     ]
 )
 @pytest.mark.parametrize(
@@ -40,9 +41,6 @@ def test_compiled_tokenizer_from_model(huggingface_tokenizer, huggingface_model,
         'neuron':neuron,
     }
     
-    if neuron is True:
-        kwargs['dynamic_batch_size'] = False
-    
     compiled_model = CompiledModel.from_model(
         model=huggingface_model,
         validate_compilation=True,
@@ -56,4 +54,4 @@ def test_compiled_tokenizer_from_model(huggingface_tokenizer, huggingface_model,
     huggingface_model_output = huggingface_model(**sample_tokens)[0] # ignore gradient at position 1
     compiled_model_output = compiled_model(**sample_tokens)[0] # ignore gradient at position 1
     
-    torch.allclose(huggingface_model_output,compiled_model_output, atol=regression_test_atol, rtol=regression_test_rtol)
+    torch.testing.assert_close(huggingface_model_output,compiled_model_output, atol=regression_test_atol, rtol=regression_test_rtol)

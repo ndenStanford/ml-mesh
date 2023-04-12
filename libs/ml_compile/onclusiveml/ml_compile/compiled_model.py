@@ -52,6 +52,7 @@ class CompiledModel(PreTrainedModel):
         
         if neuron is True:
             tracing_kwargs['dynamic_batch_size']: bool = tracing_kwargs.get('dynamic_batch_size',True)
+            tracing_kwargs['fallback']: bool = tracing_kwargs.get('fallback',False) # as per https://github.com/aws-neuron/aws-neuron-sdk/issues/613
             tracing_kwargs['compiler_args']: List[str] = tracing_kwargs.get('compiler_args',['--fast-math','none'])
     
         tracing_kwargs['strict']: bool = tracing_kwargs.get('strict',False)
@@ -68,7 +69,7 @@ class CompiledModel(PreTrainedModel):
             model_output = model(**tracing_inputs_dict)[0]
             traced_model_output = compiled_model(**tracing_inputs_dict)[0]
         
-            assert torch.allclose(model_output,traced_model_output, atol=validation_atol, rtol=validation_rtol)
+            torch.testing.assert_close(model_output,traced_model_output, atol=validation_atol, rtol=validation_rtol)
 
         return compiled_model
 

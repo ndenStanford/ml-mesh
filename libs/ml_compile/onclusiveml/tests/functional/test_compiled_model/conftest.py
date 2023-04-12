@@ -18,12 +18,12 @@ def huggingface_model_max_length(huggingface_tokenizer):
     return huggingface_tokenizer.model_max_length
 
 @pytest.fixture
-def sample_inputs(batch_size) -> List[str]:
+def sample_inputs() -> List[str]:
     
     return [
-        'This is a sample input. it has more thant 10 tokens to tokenize.',
+        'This is a short sample input.',
         'This is another sample input. This is to test how the compiled model handles more than one tokenized sample at a time.'
-    ][:batch_size]
+    ] * 3
     
 @pytest.fixture
 def regression_test_atol():
