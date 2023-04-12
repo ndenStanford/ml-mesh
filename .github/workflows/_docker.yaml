@@ -78,6 +78,7 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
