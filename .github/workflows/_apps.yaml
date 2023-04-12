@@ -69,7 +69,7 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -79,7 +79,7 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
@@ -93,21 +93,21 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make apps.unit/${{ inputs.app }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' }}
+        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make apps.integration/${{ inputs.app }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \

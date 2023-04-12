@@ -68,7 +68,7 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -78,11 +78,11 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' }}
+        if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
@@ -90,14 +90,14 @@ jobs:
           TARGET_BUILD_STAGE=development
 
       - name: Run Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' }}
+        if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make docker.run/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
           DOCKER_RUN_CMD="pytest -m build"
 
       - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
@@ -105,7 +105,7 @@ jobs:
           TARGET_BUILD_STAGE=production
 
       - name: Push Production Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !input.pull-request }}
         run: |
           make docker.push/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
