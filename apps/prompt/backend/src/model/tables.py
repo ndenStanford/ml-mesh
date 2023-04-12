@@ -7,10 +7,10 @@ from pynamodb.attributes import UnicodeAttribute
 from src.db import BaseTable
 
 
-class ModelTemplateTable(BaseTable):
+class ModelTable(BaseTable):
     """Dynamodb table for Model."""
 
     class Meta(BaseTable.Meta):
-        table_name = "model_template"
+        table_name = "model"
 
-    template = UnicodeAttribute(null=False)
+    model = UnicodeAttribute(null=False)
