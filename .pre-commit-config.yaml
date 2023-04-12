@@ -28,6 +28,7 @@ repos:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests)
+        args: ["--explicit-package-bases"]
 
   # isort
   - repo: https://github.com/pycqa/isort
