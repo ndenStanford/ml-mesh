@@ -15,6 +15,7 @@ neuron-cc = {version = "1.13.5.0", source = "aws-neuron"}
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
 transformers = "^4.27.2"
+pandas = "^1"
 
 
 [[tool.poetry.source]]
