@@ -12,7 +12,7 @@ on:
         type: string
         description: "Current branch name."
     secrets:
-      GITHUB_TOKEN:
+      GITHUB_TOKEN_:
         required: true
         description: "Github Token to interact with repo."
     outputs:
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
       tag: ${{ steps.export-tag.outputs.tag }}
 

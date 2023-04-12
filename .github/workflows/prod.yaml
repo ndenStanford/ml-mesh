@@ -42,7 +42,7 @@ jobs:
       pull-request: ${{ github.event_name == 'pull_request' }}
       current-branch: ${{ github.ref_name }}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
   # ===============================================
   # TEST LIBS
