@@ -63,4 +63,4 @@ def test_compiled_tokenizer__init(huggingface_tokenizer, tokenization_kwargs, ex
     torch_huggingface_tokenizer_output: Dict[str,torch.Tensor] = huggingface_tokenizer(tokenization___call___input, return_tensors='pt', **compiled_tokenizer.tokenization_settings)
     
     for token_type in torch_huggingface_tokenizer_output:
-        torch.all(torch_huggingface_tokenizer_output[token_type].eq(torch_compiled_tokenizer_output[token_type]))
+        torch.testing.assert_close(torch_huggingface_tokenizer_output[token_type],torch_compiled_tokenizer_output[token_type])

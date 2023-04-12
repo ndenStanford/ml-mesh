@@ -67,7 +67,7 @@ def test_compiled_tokenizer__init(huggingface_tokenizer, tokenization_kwargs, ex
     torch_reloaded_compiled_tokenizer_output: Dict[str,torch.Tensor] = reloaded_compiled_tokenizer(tokenization___call___input, return_tensors='pt')
     
     for token_type in torch_compiled_tokenizer_output:
-        torch.all(torch_reloaded_compiled_tokenizer_output[token_type].eq(torch_compiled_tokenizer_output[token_type]))
+        torch.testing.assert_close(torch_reloaded_compiled_tokenizer_output[token_type],torch_compiled_tokenizer_output[token_type])
     
     # clean up local dir
     shutil.rmtree('test_compiled_tokenizer')
