@@ -51,7 +51,7 @@ jobs:
   run-libs-tests:
     name: Run libraries unit and integration tests.
     uses: ./.github/workflows/_libs.yaml
-    needs: [run-tag]
+    needs: [run-repository-state]
 
     strategy:
       matrix:
