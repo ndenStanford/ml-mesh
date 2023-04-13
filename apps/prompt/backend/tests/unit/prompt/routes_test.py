@@ -1,4 +1,4 @@
-"""Test routes."""
+"""Test routes.x"""
 
 # Standard Library
 from unittest.mock import patch
@@ -8,8 +8,8 @@ import pytest
 from fastapi import status
 
 # Source
-from src.prompt.schemas import PromptTemplateSchema
 from src.model.schemas import ModelSchema
+from src.prompt.schemas import PromptTemplateSchema
 from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
 
@@ -30,11 +30,13 @@ def test_get_prompts(mock_prompt_get, test_client):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"prompts": []}
 
+
 def test_get_prompts_unauthenticated(test_client):
     """Test get prompts endpoint unauthenticated."""
     response = test_client.get("/api/v1/prompts")
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {"detail": "Not authenticated"}
+
 
 @pytest.mark.parametrize("id", [1, 124543, "2423"])
 @patch.object(PromptTemplateSchema, "get")
@@ -224,12 +226,20 @@ def test_generate_text_diff_model(
         ),
     ],
 )
-
 @patch.object(ModelSchema, "get")
 @patch.object(PromptTemplateSchema, "get")
 @patch("openai.ChatCompletion.create")
 def test_generate_text_with_diff_model(
-    mock_openai_chat, mock_prompt_get, mock_model_get, id, template, model_id, model_name, values, generated, test_client
+    mock_openai_chat,
+    mock_prompt_get,
+    mock_model_get,
+    id,
+    template,
+    model_id,
+    model_name,
+    values,
+    generated,
+    test_client,
 ):
     """Test text generation endpoint."""
     settings = get_settings()
@@ -239,7 +249,9 @@ def test_generate_text_with_diff_model(
     mock_model_get.return_value = ModelSchema(id=model_id, model_name=model_name)
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate/model/{model_id}", headers={"x-api-key": "1234"}, json=values
+        f"/api/v1/prompts/{id}/generate/model/{model_id}",
+        headers={"x-api-key": "1234"},
+        json=values,
     )
     # check openai method is called
     mock_openai_chat.assert_called_with(
@@ -257,12 +269,12 @@ def test_generate_text_with_diff_model(
     assert response.json() == {"generated": generated}
 
 
-
 def test_generate_unauthenticated(test_client):
     """Test generate endpoint unauthenticated."""
     response = test_client.post("/api/v1/prompts/1/generate")
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {"detail": "Not authenticated"}
+
 
 def test_generate_with_diff_model_unauthenticated(test_client):
     """Test generate endpoint unauthenticated."""
