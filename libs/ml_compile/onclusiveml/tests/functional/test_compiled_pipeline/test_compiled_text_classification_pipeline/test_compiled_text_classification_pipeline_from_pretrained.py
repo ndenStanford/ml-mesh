@@ -31,7 +31,7 @@ import shutil
         # None, # for 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', this is 512 and takes a long time for neuron tracing
     ]
 )
-def test_compiled_tokenizer_from_model(huggingface_pipeline_task, huggingface_model_reference, huggingface_pipeline, max_length, batch_size, neuron, sample_inputs, regression_test_atol, regression_test_rtol):
+def test_compiled_text_classification_pipeline_from_pretrained(huggingface_pipeline_task, huggingface_model_reference, huggingface_pipeline, max_length, batch_size, neuron, sample_inputs, regression_test_atol, regression_test_rtol):
     
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,
