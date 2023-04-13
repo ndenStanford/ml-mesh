@@ -65,12 +65,9 @@ class CompiledPipeline(object):
         model_tracing_settings (dict): The dictionary equivalent of the CompiledModel.from_model`s 
             **tracing_kwargs.'''
         
-        # avoid manipulating passed pipeline instance in place
-        original_pipeline = duplicate_huggingface_transformer_via_local_cache(pipeline)
-        
         # replace the tokenizer and model components with compiled equivalents
         compiled_pipeline = compile_pipeline(
-            pipeline=original_pipeline,
+            pipeline=pipeline,
             max_length=max_length,
             batch_size=batch_size, 
             neuron=neuron,
@@ -78,12 +75,11 @@ class CompiledPipeline(object):
             validation_rtol=validation_rtol, 
             validation_atol=validation_atol,
             tokenizer_setting=tokenizer_settings,
-            model_tracing_settings=model_tracing_settings,
-            in_place_compilation=True
+            model_tracing_settings=model_tracing_settings
         )
         
         return cls(
-            original_pipeline=original_pipeline,
+            original_pipeline=pipeline,
             compiled_pipeline=compiled_pipeline
         )
         
