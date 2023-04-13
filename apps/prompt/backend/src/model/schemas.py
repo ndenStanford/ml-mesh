@@ -24,11 +24,6 @@ class ModelSchema(BaseModel):
         """Returns the list of model names variables."""
         return [p for _, p, _, _ in Formatter().parse(self.model_name) if p is not None]
 
-    def model(self, **kwargs) -> str:
-        """Generates the model name."""
-        params = {variable: kwargs[variable] for variable in self.variables}
-        return self.model_name.format(**params)
-
     def save(self) -> "ModelSchema":
         """Creates a new model or update existing."""
         # saves new item in table.
