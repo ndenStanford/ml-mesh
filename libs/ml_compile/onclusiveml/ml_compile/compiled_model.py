@@ -5,12 +5,18 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.utils.generic import ModelOutput
 from typing import List, Type, Type, Tuple, Dict, Any
 import json
+from typing import Union
+from pathlib import Path
 
 
 class CompiledModel(PreTrainedModel):
     '''A fully functional subclass from the huggingface PreTrainedModel using a (neuron-)torchscript model as backend. 
-    Includes ( neuron-)torchscript utilities for automatic tracing of a specified pytorch model or huggingface transformer
-    model. Also supports the persistence of key (neuron-)tracing configuration parameters.'''
+    Includes 
+    - the pseduo-constructor method `from_model`: Automatically (neuron-)traces a specified pytorch model
+        or huggingface transformer model and returns a CompiledModel instance. 
+    - Adapted postprocessing for torch.nn.Modules returning dictionaries
+    - canonical export and import methods `save_pretrained` & `from_pretrained`, supporting
+        the persistence of key (neuron-)tracing configuration parameters.'''
 
     @classmethod
     def from_model(
@@ -24,7 +30,8 @@ class CompiledModel(PreTrainedModel):
         validation_atol: float = 1e-02,
         **tracing_kwargs) -> Type[PreTrainedModel]:
         '''Takes a huggingface transformer model, compiles it according to specified
-        configuration and returns a fully instantiated CompiledModel instance.
+        configuration and returns a fully instantiated CompiledModel instance together with
+        the (neuron-)tracing configuration.
         
         model (PreTrainedModel): The huggingface pytorch model or pytorch nn.module to compile
         batch_size (int, optional): The size of the batch used for tracing
@@ -50,20 +57,30 @@ class CompiledModel(PreTrainedModel):
         if max_length is None:
             max_length = model.config.max_position_embeddings
         
+        # for neuron tracing, the following parameters are either required or beneficial
         if neuron is True:
+            # allows for dynamic batch size during inference
             tracing_kwargs['dynamic_batch_size']: bool = tracing_kwargs.get('dynamic_batch_size',True)
-            tracing_kwargs['fallback']: bool = tracing_kwargs.get('fallback',False) # as per https://github.com/aws-neuron/aws-neuron-sdk/issues/613
-            tracing_kwargs['compiler_args']: List[str] = tracing_kwargs.get('compiler_args',['--fast-math','none'])
+            # ensures all ops are getting traced; required when enabling dynamic batching for some models, 
+            # as per https://github.com/aws-neuron/aws-neuron-sdk/issues/613
+            tracing_kwargs['fallback']: bool = tracing_kwargs.get('fallback',False)
+            # required to avoid NaN output at inference for some models
+            tracing_kwargs['compiler_args']: List[str] = tracing_kwargs.get('compiler_args',['--fast-math','none']) 
     
+        # torch.nn.Module s returning dicts can still be traced - see `forward` method
         tracing_kwargs['strict']: bool = tracing_kwargs.get('strict',False)
                 
         # trace model and return fuilly functional custom model class instance
         traced_model, tracing_inputs, compilation_specs = compile_model(model, batch_size=batch_size, max_length=max_length, neuron=neuron, **tracing_kwargs)
         
+        # instatiate the model from config
         compiled_model = cls(model.config)
+        
+        # replace model attribute with traced model & attach compilation config dict
         compiled_model.model = traced_model
         compiled_model.compilation_specs = compilation_specs
         
+        # if desired, run a quick regression test using the tracing inputs: original model vs newly traced model
         if validate_compilation is True:
             tracing_inputs_dict = {'input_ids': tracing_inputs[0], 'attention_mask': tracing_inputs[1]}
             model_output = model(**tracing_inputs_dict)[0]
@@ -73,38 +90,54 @@ class CompiledModel(PreTrainedModel):
 
         return compiled_model
 
-    def forward(self, input_ids, attention_mask, **kwargs):
+    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor = None, **kwargs):
 
+        # traced model requires positional arguments
         model_output = self.model(input_ids, attention_mask)
         
+        # if original model graph returns a dict, convert to data type that can handle both 
+        # - integer and
+        # - string-key based
+        #  indexing
         if isinstance(model_output, dict):
             print('Model output is a dictionary. Converting')
             model_output = ModelOutput(model_output)
             
         return model_output
 
-    @property
-    def device(self):  # Attribute required by beam search
-        return torch.device('cpu')
-
-    def save_pretrained(self, directory):
-        if os.path.isfile(directory):
-            print(f"Provided path ({directory}) should be a directory, not a file")
-            return
-        os.makedirs(directory, exist_ok=True)
-        torch.jit.save(self.model, os.path.join(directory, 'model.pt'))
+    def save_pretrained(self, directory: Union[Path, str]):
+        '''Canonic huggingface transformers export method. Only supports exporting to local file system.
+        
+        directory (Path,str): Directory on local file system to export model artifact to. Will be created
+            if it doesnt exist.'''
+        
+        # export remaining huggingface PreTrainedModel context
         self.config.save_pretrained(directory)
         
+        # export traced model in torchscript format
+        torch.jit.save(self.model, os.path.join(directory, 'model.pt'))
+        
+        # export compilation configuration dict
         with open(os.path.join(directory,'compilation_specs.json'),'w') as compilation_specs_file:
             json.dump(self.compilation_specs,compilation_specs_file)
 
     @classmethod
-    def from_pretrained(cls, directory):
+    def from_pretrained(cls, directory: Union[Path,str]):
+        '''Canonic huggingface transformers import method. Only supports importing from local file system.
+        
+        directory (Path,str): Directory on local file system to import model artifact from.'''
+        
+        # import and instantiate huggingface transformer config
         config = AutoConfig.from_pretrained(directory)
         
+        # use huggingface transformer PreTrainedModel constructor to re-initialize the original model's
+        # class' instance from config
         compiled_model = cls(config)
+        
+        # switch out model attribute with re-imported (neuron-)torchscript model
         compiled_model.model = torch.jit.load(os.path.join(directory, 'model.pt'))
         
+        # re-import and attach compilation configuration dict
         with open(os.path.join(directory,'compilation_specs.json'),'r') as compilation_specs_file:
             compiled_model.compilation_specs = json.load(compilation_specs_file)
         
@@ -117,8 +150,8 @@ def compile_model(
     neuron: bool = True, 
     **tracing_kwargs
     ) -> Tuple[torch.jit._trace.TopLevelTracedModule, Tuple[torch.Tensor, torch.Tensor], Dict[str,Any]]:
-    """Traces a torch hf model to either torchscript or neuron torchscript, 
-    then wraps it in the convenience CompiledModel class.
+    """Utility function for (neuron-)tracing a torch hugginface model to either torchscript or neuron torchscript.
+    Returns the traced model object, the inputs used for tracing and the tracing configuration.
 
     Args:
         model (_type_): The huggingface pytorch model or pytorch nn.module to compile
@@ -126,6 +159,9 @@ def compile_model(
         max_length (_type_): The number of tokens per record used for tracing, e.g. input sequence length
         neuron (bool, optional): _description_. If True, uses torch.neuron.trace for compilation,
             otherwise uses torch.jit.trace. Defaults to True.
+        **tracing_kwargs: Keyword arguments passed onto
+            - the `torch.neuron.trace` method if `neuron`=True
+            - the `torch.jit.trace` method if `neuron`=False
     """
     
     # generate tracing inputs according to specs

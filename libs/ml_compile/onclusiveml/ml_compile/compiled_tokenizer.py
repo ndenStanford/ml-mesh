@@ -3,6 +3,7 @@ from libs.ml_compile.onclusiveml.ml_compile.compile_utils import duplicate_huggi
 import os
 import json
 from typing import Union, Any, Dict
+from pathlib import Path
     
 class CompiledTokenizer(object):
     '''A wrapper class around huggingface Tokenizer instances that supports reproducible tokenization. Includes extension of 
@@ -42,6 +43,8 @@ class CompiledTokenizer(object):
         return tokenization_settings
     
     def set_all_delegated_tokenizer_methods(self, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast]):
+        '''Because of the wrapper nature of this class, we need to re-attached the `tokenizer` attribute's methods
+        to this instance to ensure a genuine huggingface tokenizer experience as much as possible.'''
         
         for tokenizer_method_reference in (
             'encode_plus',
@@ -54,6 +57,7 @@ class CompiledTokenizer(object):
             self.set_delegated_tokenizer_method(tokenizer, tokenizer_method_reference)
     
     def set_delegated_tokenizer_method(self, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast], tokenizer_method_reference: str):
+        '''Utility function to help re-attach the `tokenizer` attribute's methods to this instance.'''
         
         # retrieve the target method from the attached huggingface tokenizer instance
         tokenizer_method = getattr(tokenizer, tokenizer_method_reference)
@@ -63,14 +67,28 @@ class CompiledTokenizer(object):
     
     @classmethod
     def from_tokenizer(cls, tokenizer: Union[PreTrainedTokenizer,PreTrainedTokenizerFast], **tokenization_kwargs):
-        '''Utility method wrapper around the constructor for consistency with the CompiledModel equivalent method.'''
+        '''Utility method wrapper around the constructor for consistency with the CompiledModel equivalent method.
+        
+        tokenizer: (PreTrainedTokenizer,PreTrainedTokenizerFast): The huggingface tokenizer instance to compile.
+        **tokenization_kwargs (Any): (optional) Additional keyword arguments that can be handled by the `tokenizer` instance's 
+            __call__ method. Will automatically be specified when calling the resulting CompiledTokenizer's 
+            __call__ method. Note that the following tokenizer keyword arguments will always be set in a CompiledTokenizer
+            instance to ensure tokenization behaviour that is compatible with the constant token length requirements of a 
+            (neuron-)compiled model:
+                - `padding` = 'max_length'
+                - `truncation` = True
+        '''
         
         return CompiledTokenizer(
             tokenizer=tokenizer,
             **tokenization_kwargs
         )
     
-    def save_pretrained(self, directory):
+    def save_pretrained(self, directory: Union[Path,str]):
+        '''Canonic huggingface transformers export method. Only supports exporting to local file system.
+        
+        directory (Path,str): Directory on local file system to export tokenizer artifact to. Will be created
+            if it doesnt exist.'''
 
         # invoke parent class' instance method
         self.tokenizer.save_pretrained(directory)
@@ -79,14 +97,17 @@ class CompiledTokenizer(object):
             json.dump(self.tokenization_settings,tokenization_settings_file)
             
     @classmethod
-    def from_pretrained(cls, directory, read_tokenization_settings=True):
+    def from_pretrained(cls, directory: Union[Path,str]):
+        '''Canonic huggingface transformers import method. Only supports importing from local file system. 
+        
+        directory (Path,str): Directory on local file system to import tokenizer artifact from.'''
     
-        # invoke parent class' class method
+        # use huggingface utility to read generic tokenizer instance from disk
         tokenizer = AutoTokenizer.from_pretrained(directory)
         
-        if read_tokenization_settings:
-            with open(os.path.join(directory,'tokenization_settings.json'),'r') as compilation_specs_file:
-                tokenization_settings = json.load(compilation_specs_file)
+        # load tokenization settings
+        with open(os.path.join(directory,'tokenization_settings.json'),'r') as compilation_specs_file:
+            tokenization_settings = json.load(compilation_specs_file)
                 
         return CompiledTokenizer(
             tokenizer=tokenizer,
@@ -94,9 +115,15 @@ class CompiledTokenizer(object):
         )
     
     def __call__(self, *args, **kwargs):
-        '''Overwrite the tokenizer's call dunder kwargs with the settings contained in the tokenization_settings attribute. 
+        '''Overwrite the tokenizer's __call__ kwargs with the settings contained in the tokenization_settings attribute. 
         Makes configured tokenization as per compilation arguments the default, i.e. no need to remember the exact padding 
-        and length configurations at the tokenization state.'''
+        and length configurations at the tokenization state.
+        Also useful when this class is being used inside a CompiledPipeline instance. Note that the settings specified in
+        the `tokenization_settings` attribute will always be given priority, and will override any arguments that may be
+        re-specified when calling this method.
+        
+        *args (Any): positional arguments for the `tokenizer` attribute's __call__ method.
+        **kwargs (Any): keyword arguments for `tokenizer` attribute's __call__ method.'''
         
         for tokenization_setting in self.tokenization_settings:
             _ = kwargs.pop(tokenization_setting,None)
