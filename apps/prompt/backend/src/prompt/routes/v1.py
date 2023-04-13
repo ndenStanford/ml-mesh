@@ -13,6 +13,7 @@ from onclusiveml.core.logging import get_default_logger
 from src.helpers import get_api_key
 from src.prompt.generate import generate_text
 from src.prompt.schemas import PromptTemplateListSchema, PromptTemplateSchema
+from src.model.schemas import ModelSchema
 from src.prompt.tables import PromptTemplateTable
 
 
@@ -121,4 +122,21 @@ def generate(id: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     prompt_template = PromptTemplateSchema.get(id)
-    return {"generated": generate_text(prompt_template.prompt(**values))}
+    return {"generated": generate_text(prompt_template.prompt(**values), "gpt-3.5-turbo")}
+
+
+@router.post(
+    "/{id}/generate/model/{model_id}",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Security(get_api_key)],
+)
+def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
+    """Generates text using a prompt template.
+
+    Args:
+        id (str): prompt id
+        values (Dict[str, Any]): values to fill in template.
+    """
+    prompt_template = PromptTemplateSchema.get(id)
+    model = ModelSchema.get(model_id)
+    return {"generated": generate_text(prompt_template.prompt(**values), model.get_model_name())}

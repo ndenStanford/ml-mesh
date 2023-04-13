@@ -9,6 +9,7 @@ from fastapi import status
 
 # Source
 from src.prompt.schemas import PromptTemplateSchema
+from src.model.schemas import ModelSchema
 from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
 
@@ -175,7 +176,7 @@ def test_delete_prompt_unauthenticated(test_client):
 )
 @patch.object(PromptTemplateSchema, "get")
 @patch("openai.ChatCompletion.create")
-def test_generate_text(
+def test_generate_text_diff_model(
     mock_openai_chat, mock_prompt_get, id, template, values, generated, test_client
 ):
     """Test text generation endpoint."""
@@ -202,8 +203,69 @@ def test_generate_text(
     assert response.json() == {"generated": generated}
 
 
+@pytest.mark.parametrize(
+    "id, template, model_id, model_name, values, generated",
+    [
+        (
+            1,
+            "Write me a {count}-verse poem about {topic}",
+            2,
+            "text-davinci-003",
+            {"count": 3, "topic": "machine learning"},
+            "Verse 1:\nIn the world of tech, there's a buzzword we hear,\nIt's called \"machine learning,\" and it's quite clear,\nIt's a way for computers to learn and adapt,\nTo make predictions and improve how they act.\n\nVerse 2:\nFrom speech recognition to self-driving cars,\nMachine learning is taking us far,\nIt can analyze data and find patterns we miss,\nAnd help us solve problems with greater success.\n\nVerse 3:\nIt's not just for tech, it's used in many fields,\nFrom medicine to finance, it yields great yields,\nWith algorithms that can sort through the noise,\nAnd make sense of data that's vast and diverse.\n\nVerse 4:\nAs we move forward, machine learning will grow,\nAnd change how we work, live, and know,\nIt's a tool that will help us achieve,\nAnd make the impossible, possible, we believe.",  # noqa: E501
+        ),
+        (
+            "3",
+            "What's the most popular {type} framework?",
+            "4",
+            "text-curie-001",
+            {"type": "web"},
+            "As an AI language model, I don't have access to current statistics or current trends. However, some of the most popular web frameworks currently include Angular, React, Vue.js, Django, Ruby on Rails, and Flask.",  # noqa: E501
+        ),
+    ],
+)
+
+@patch.object(ModelSchema, "get")
+@patch.object(PromptTemplateSchema, "get")
+@patch("openai.ChatCompletion.create")
+def test_generate_text_with_diff_model(
+    mock_openai_chat, mock_prompt_get, mock_model_get, id, template, model_id, model_name, values, generated, test_client
+):
+    """Test text generation endpoint."""
+    settings = get_settings()
+    # set mock return values
+    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    mock_prompt_get.return_value = PromptTemplateSchema(id=id, template=template)
+    mock_model_get.return_value = ModelSchema(id=model_id, model_name=model_name)
+    # send request to test client
+    response = test_client.post(
+        f"/api/v1/prompts/{id}/generate/model/{model_id}", headers={"x-api-key": "1234"}, json=values
+    )
+    # check openai method is called
+    mock_openai_chat.assert_called_with(
+        model=model_name,
+        messages=[{"role": "user", "content": template.format(**values)}],
+        max_tokens=settings.OPENAI_MAX_TOKENS,
+        temperature=settings.OPENAI_TEMPERATURE,
+    )
+
+    assert mock_model_get.call_count == 1
+    assert mock_prompt_get.call_count == 1
+    assert mock_openai_chat.call_count == 1
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"generated": generated}
+
+
+
 def test_generate_unauthenticated(test_client):
     """Test generate endpoint unauthenticated."""
     response = test_client.post("/api/v1/prompts/1/generate")
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {"detail": "Not authenticated"}
+
+def test_generate_with_diff_model_unauthenticated(test_client):
+    """Test generate endpoint unauthenticated."""
+    response = test_client.post("/api/v1/prompts/1/generate/model/1")
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {"detail": "Not authenticated"}
