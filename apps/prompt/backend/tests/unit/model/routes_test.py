@@ -1,4 +1,4 @@
-"""Test routes."""
+"""Test routes.x"""
 
 # Standard Library
 from unittest.mock import patch
@@ -10,7 +10,6 @@ from fastapi import status
 # Source
 from src.model.schemas import ModelSchema
 from src.model.tables import ModelTable
-from src.settings import get_settings
 
 
 def test_health_route(test_client):
@@ -18,6 +17,7 @@ def test_health_route(test_client):
     response = test_client.get("/health")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == "OK"
+
 
 @patch.object(ModelSchema, "get")
 def test_get_models(mock_model_get, test_client):
@@ -49,6 +49,7 @@ def test_get_model(mock_model_get, id, test_client):
         "id": f"{id}",
         "model_name": "test-model",
     }
+
 
 def test_get_prompt_unauthenticated(test_client):
     """Test get prompt endpoint unauthenticated."""
@@ -119,7 +120,11 @@ def test_update_model(
     assert mock_model_get.call_count == 2
     assert mock_model_update.call_count == 1
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"created_at": None, "id": f"{id}", "model_name": model_name}
+    assert response.json() == {
+        "created_at": None,
+        "id": f"{id}",
+        "model_name": model_name,
+    }
 
 
 def test_update_model_unauthenticated(test_client):
@@ -136,9 +141,7 @@ def test_delete_model(mock_model_delete, mock_model_get, id, test_client):
     """Test delete model endpoint."""
     mock_model_get.return_value = ModelTable(id=id, model_name="test-model")
 
-    response = test_client.delete(
-        f"/api/v1/models/{id}", headers={"x-api-key": "1234"}
-    )
+    response = test_client.delete(f"/api/v1/models/{id}", headers={"x-api-key": "1234"})
 
     assert mock_model_get.call_count == 1
     assert mock_model_get.call_count == 1
