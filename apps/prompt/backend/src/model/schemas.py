@@ -23,7 +23,7 @@ class ModelSchema(BaseModel):
     def variables(self) -> List[str]:
         """Returns the list of model names variables."""
         return [p for _, p, _, _ in Formatter().parse(self.model_name) if p is not None]
-
+    
     def save(self) -> "ModelSchema":
         """Creates a new model or update existing."""
         # saves new item in table.
@@ -54,6 +54,10 @@ class ModelSchema(BaseModel):
         """Updates table record."""
         model = ModelTable.get(self.id)
         model.update(actions=[ModelTable.model_name.set(kwargs.get("model_name"))])
+
+    def get_model_name(self) -> str:
+        """Returns the model name."""
+        return self.model_name
 
 
 class ModelListSchema(BaseModel):
