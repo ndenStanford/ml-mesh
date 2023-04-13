@@ -29,16 +29,16 @@ projects.untag/%:
 	aws ecr batch-delete-image --repository-name $(notdir $@)-$(COMPONENT) --image-ids imageTag="latest"
 
 projects.start/%: # Start development container of component
-	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_CMD) uvicorn src.app:app --host 0.0.0.0 --port $(PORT) --reload --log-level "debug"
+	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_COMPOSE_RUN_CMD) uvicorn src.app:app --host 0.0.0.0 --port $(PORT) --reload --log-level "debug"
 
 projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
 	echo "Running all tests."
 
 projects.unit/%: ## Run unit tests for project component
-	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_CMD) pytest tests/unit -ra -vvv --tb=long --capture=no
+	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_COMPOSE_RUN_CMD) pytest tests/unit -ra -vvv --tb=long --capture=no
 
 projects.integration/%: ## Run integration tests for project component
-	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_CMD) pytest tests/integration -ra -vvv --tb=long --capture=no
+	cd projects/$(notdir $@)/$(COMPONENT) && $(DOCKER_COMPOSE_RUN_CMD) pytest tests/integration -ra -vvv --tb=long --capture=no
 
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)

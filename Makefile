@@ -1,16 +1,15 @@
 ## VARIABLES
-SHELL := /bin/bash
-PWD   = $(shell pwd)
+
+PWD=$(shell pwd)
 AWS_REGION?=us-east-1
 AWS_ACCOUNT_ID?=063759612765
-# NOTE: the AWS ECR owner name is: $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
 OWNER?=onclusiveml
 PLATFORM?=linux/amd64
 COMPONENT?=serve
 DEBUG?=true
 IMAGE_TAG?=latest
 DOCKER_EXTRA_FLAGS?=
-DOCKER_CMD?=
+DOCKER_COMPOSE_RUN_CMD?=
 TARGET_BUILD_STAGE?=production
 USE_DOCKER_CACHE?=false
 WITH_DOCKER?=false
@@ -33,7 +32,7 @@ ifeq ($(DOCKER_STAGE),production)
 endif
 
 ifeq ($(WITH_DOCKER), true)
-	DOCKER_CMD += docker-compose -f ../docker-compose.$(ENVIRONMENT).yaml run --service-ports $(COMPONENT)
+	DOCKER_COMPOSE_RUN_CMD += docker-compose -f ../docker-compose.$(ENVIRONMENT).yaml run --service-ports $(COMPONENT)
 endif
 
 
@@ -55,9 +54,11 @@ ALL_LIBS:= \
 
 # all projects
 ALL_PROJECTS:= \
-	keybert
+	keywords \
+	summarization
 
 ## SUBFOLDER MAKEFILES
+include apps/makefile.mk
 include libs/makefile.mk
 include docker/makefile.mk
 include projects/makefile.mk

@@ -7,12 +7,19 @@ repos:
   # PYTHON
   # =================================
 
+  # python formatter
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        files: ^(libs|projects|apps)/.*\.py$
+
   # Lint: Python
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
     hooks:
       - id: flake8
-        files: ^(libs|docker|projects|tests)/.*\.py$
+        files: ^(libs|docker|apps|projects|tests)/.*\.py$
 
   # static type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -21,21 +28,14 @@ repos:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests)
+        args: ["--explicit-package-bases"]
 
   # isort
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-        files: ^(libs|docker|projects|tests)/.*\.py$
-
-  # python formatter
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-        args: [--target-version=py38]
-        files: ^(libs|projects)/.*\.py$
+        files: ^(libs|docker|apps|projects|tests)/.*\.py$
 
   # Autoformat: YAML, JSON, Markdown, etc.
   - repo: https://github.com/pre-commit/mirrors-prettier

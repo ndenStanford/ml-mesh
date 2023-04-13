@@ -49,13 +49,26 @@ jobs:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      role-duration-seconds: 1200
+      role-session-name: DeployManifests
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - uses: dorny/paths-filter@v2
+        id: get-changed-files
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'docker/${{ inputs.image }}/**'
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -65,10 +78,11 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
@@ -76,13 +90,14 @@ jobs:
           TARGET_BUILD_STAGE=development
 
       - name: Run Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build }}
+        if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.validate-build }}
         run: make docker.run/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
           DOCKER_RUN_CMD="pytest -m build"
 
       - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.build/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
@@ -90,26 +105,8 @@ jobs:
           TARGET_BUILD_STAGE=production
 
       - name: Push Production Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make docker.push/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Tag Docker image with latest | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ !inputs.pull-request }}
-        run: |
-          make docker.tag/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Untag Docker image with latest in remote ECR repo | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
-        run: |
-          make docker.untag/${{ inputs.image }} IMAGE_TAG="latest"
-
-      - name: Push Docker image with latest | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
-        run: |
-          make docker.push/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="latest"

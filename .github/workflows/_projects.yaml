@@ -31,12 +31,10 @@ on:
       python-version:
         required: false
         type: string
-        default: "3.8.16"
         description: "Python version."
       poetry-version:
         required: false
         type: string
-        default: "1.3.2"
         description: "Python version."
     secrets:
       AWS_ACCOUNT_ID:
@@ -54,6 +52,12 @@ on:
       AWS_ROLE_TO_ASSUME:
         required: true
         description: "AWS IAM role to assume."
+      OPENAI_API_KEY:
+        required: true
+        description: "OPENAI Api key."
+      NEPTUNE_API_TOKEN:
+        required: true
+        description: "NEPTUNE AI authentication token for API calls."
 
 jobs:
   deploy:
@@ -63,6 +67,7 @@ jobs:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - name: Check out code
@@ -115,23 +120,3 @@ jobs:
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Tag Docker image with latest | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.pull-request }}
-        run: |
-          make projects.tag/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}"
-
-      - name: Untag Docker image with latest in remote ECR repo | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
-        continue-on-error: true
-        run: |
-          make projects.tag/${{ inputs.project }} COMPONENT=${{ inputs.component }} IMAGE_TAG="latest"
-
-      - name: Push Docker image with latest | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.pull-request && inputs.environment == 'prod' }}
-        run: |
-          make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="latest"
