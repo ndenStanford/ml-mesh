@@ -1,4 +1,4 @@
-"""Text generation from prompt.x"""
+"""Text generation from prompt."""
 
 # TODO: [DS-426] Add model module to manage models and call parameters.
 

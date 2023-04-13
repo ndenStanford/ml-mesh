@@ -1,4 +1,4 @@
-"""Endpoints.x"""
+"""Endpoints."""
 
 # 3rd party libraries
 from fastapi import APIRouter, status

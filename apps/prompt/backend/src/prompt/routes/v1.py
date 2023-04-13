@@ -1,4 +1,4 @@
-"""Keybert predictions.x"""
+"""Keybert predictions."""
 
 # Standard Library
 from typing import Any, Dict
