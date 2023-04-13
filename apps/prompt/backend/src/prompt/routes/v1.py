@@ -1,4 +1,4 @@
-"""Keybert predictions."""
+"""Keybert predictions.x"""
 
 # Standard Library
 from typing import Any, Dict
@@ -11,9 +11,9 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.helpers import get_api_key
+from src.model.schemas import ModelSchema
 from src.prompt.generate import generate_text
 from src.prompt.schemas import PromptTemplateListSchema, PromptTemplateSchema
-from src.model.schemas import ModelSchema
 from src.prompt.tables import PromptTemplateTable
 
 
@@ -122,7 +122,9 @@ def generate(id: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     prompt_template = PromptTemplateSchema.get(id)
-    return {"generated": generate_text(prompt_template.prompt(**values), "gpt-3.5-turbo")}
+    return {
+        "generated": generate_text(prompt_template.prompt(**values), "gpt-3.5-turbo")
+    }
 
 
 @router.post(
@@ -139,4 +141,8 @@ def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
     """
     prompt_template = PromptTemplateSchema.get(id)
     model = ModelSchema.get(model_id)
-    return {"generated": generate_text(prompt_template.prompt(**values), model.get_model_name())}
+    return {
+        "generated": generate_text(
+            prompt_template.prompt(**values), model.get_model_name()
+        )
+    }

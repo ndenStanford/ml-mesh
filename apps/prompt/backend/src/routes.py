@@ -1,11 +1,11 @@
-"""Endpoints."""
+"""Endpoints.x"""
 
 # 3rd party libraries
 from fastapi import APIRouter, status
 
 # Source
-from src.prompt.routes import v1_router as prompt_v1_router
 from src.model.routes import v1_router as model_v1_router
+from src.prompt.routes import v1_router as prompt_v1_router
 
 
 health_router = APIRouter()
