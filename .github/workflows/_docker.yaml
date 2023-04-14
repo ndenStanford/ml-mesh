@@ -64,7 +64,7 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'docker/${{ inputs.image }}/**'
+              - added | modified: 'docker/**'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
