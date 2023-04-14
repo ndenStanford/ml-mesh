@@ -6,6 +6,7 @@ from typing import Any, Dict, Tuple, Type, Union
 
 # ML libs
 import torch
+import torch.neuron
 from transformers import AutoConfig
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils.generic import ModelOutput
@@ -197,9 +198,6 @@ def compile_model(
     )
 
     if neuron:
-        # ML libs
-        import torch.neuron
-
         traced_model = torch.neuron.trace(model, tracing_inputs, **tracing_kwargs)
     else:
         traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
