@@ -55,7 +55,7 @@ def test_create_and_save_neuron_compiled_model(
         ("feature-extraction-model"),  # task: feature-extraction
     ],
 )
-def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir):
+def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir) -> None:
 
     neuron_compiled_model = CompiledModel.from_pretrained(
         os.path.join(test_output_dir, export_handle)
