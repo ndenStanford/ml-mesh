@@ -2,7 +2,6 @@
 
 # Standard Library
 import json
-from string import Formatter
 from typing import List, Optional
 
 # 3rd party libraries

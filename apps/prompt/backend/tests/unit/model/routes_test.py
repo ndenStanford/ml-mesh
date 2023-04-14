@@ -4,12 +4,10 @@
 from unittest.mock import patch
 
 # 3rd party libraries
-import pytest
 from fastapi import status
 
 # Source
 from src.model.schemas import ModelSchema
-from src.model.tables import ModelTable
 
 
 def test_health_route(test_client):
