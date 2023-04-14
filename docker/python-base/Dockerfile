@@ -20,7 +20,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get -y install --no-install-recommends libpq-dev build-essential && \
-    apt-get -y install curl vim procps && \
+    apt-get -y install --no-install-recommends curl vim procps && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

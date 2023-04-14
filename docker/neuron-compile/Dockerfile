@@ -46,7 +46,7 @@ USER app
 # setup workspace
 WORKDIR "${HOME}"
 
-RUN export PATH=/opt/aws/neuron/bin:$PATH
+RUN export PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
 COPY --chown=${USER}:users ./poetry.lock ./pyproject.toml ./
