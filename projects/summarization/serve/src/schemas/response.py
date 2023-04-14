@@ -3,6 +3,9 @@
 # 3rd party libraries
 from pydantic import BaseModel
 
+# Standard Library
+from typing import Optional
+
 
 class Response(BaseModel):
     """Summarization response item.
@@ -19,4 +22,4 @@ class Response(BaseModel):
 
     model: str
     summary: str
-    finish_reason: str
+    finish_reason: Optional[str] = None
