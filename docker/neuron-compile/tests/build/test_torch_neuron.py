@@ -1,4 +1,3 @@
-
 # Standard Library
 import os
 from typing import Tuple
@@ -17,6 +16,7 @@ import pytest
 def test_neuron_compile_torch_function(torch_function_input, test_output_dir) -> None:
     def foo(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return 2 * x + y
+
     # Run `foo` with the provided inputs and record the tensor operations
     traced_foo = torch.neuron.trace(foo, torch_function_input)
     # `traced_foo` can now be run with the TorchScript interpreter or saved
