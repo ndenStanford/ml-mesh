@@ -82,6 +82,6 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ tests
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ ./tests
 
 RUN mkdir tests/output
