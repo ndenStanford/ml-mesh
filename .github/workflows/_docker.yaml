@@ -94,7 +94,7 @@ jobs:
         run: make docker.run/${{ inputs.image }} \
           OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
           IMAGE_TAG="${{ inputs.tag }}" \
-          DOCKER_RUN_CMD="pytest -m build"
+          DOCKER_RUN_CMD="python -m pytest tests/build -m build -ra -vvv --full-trace --tb=long --capture=no"
 
       - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}

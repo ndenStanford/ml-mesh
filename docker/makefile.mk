@@ -2,13 +2,13 @@ docker.build/%: DOCKER_BUILD_ARGS?=
 docker.build/%: ## build the latest image for a stack using the system's architecture
 	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture)"
 		
-	@docker build $(DOCKER_BUILD_ARGS) ./docker/$(notdir $@)	\
+	@docker build $(DOCKER_BUILD_ARGS) . \
 			-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
 			-f ./docker/$(notdir $@)/Dockerfile	\
 			--build-arg OWNER="$(OWNER)" \
 			--build-arg IMAGE_TAG="$(IMAGE_TAG)" \
 			--platform=$(PLATFORM) \
-			--rm --force-rm
+			--rm --force-rm \
 			--target $(TARGET_BUILD_STAGE)
 
 	@echo -n "built image size:"

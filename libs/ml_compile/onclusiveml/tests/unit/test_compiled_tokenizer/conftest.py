@@ -3,7 +3,7 @@ import base64
 from typing import List
 import pickle
 import os
-from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
+from onclusiveml.ml_compile import CompiledTokenizer
 
 MODEL_MAX_LENGTH = 50
 

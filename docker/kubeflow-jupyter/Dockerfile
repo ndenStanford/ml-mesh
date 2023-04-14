@@ -4,6 +4,8 @@ ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
+ENV DOCKER_IMAGE_DIR=docker/kubeflow-jupyter
+
 # common environemnt variables
 ENV NB_USER jovyan
 ENV NB_UID 1000
@@ -92,7 +94,7 @@ USER "${NB_UID}"
 WORKDIR "${HOME}"
 
 # install - poetry requirements
-COPY --chown="${NB_USER}:users" ./poetry.lock ./pyproject.toml ./
+COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/{cache,artifacts}
@@ -101,11 +103,11 @@ RUN poetry cache clear pypi --all -q \
     && chown -R "${NB_USER}:users" "${HOME}"
 
 # s6 - copy scripts
-COPY --chown="${NB_USER}:users" s6 /etc/
+COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/s6 /etc/
 
 USER root
 
-COPY --chown="${NB_USER}:users" .jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \

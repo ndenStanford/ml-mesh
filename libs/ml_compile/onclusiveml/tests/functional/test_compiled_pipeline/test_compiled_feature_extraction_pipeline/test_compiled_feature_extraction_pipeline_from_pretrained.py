@@ -1,5 +1,5 @@
 import pytest
-from libs.ml_compile.onclusiveml.ml_compile import CompiledPipeline
+from onclusiveml.ml_compile import CompiledPipeline
 from typing import List, Tuple
 import numpy as np
 import shutil

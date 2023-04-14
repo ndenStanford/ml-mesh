@@ -6,6 +6,9 @@ ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 # --- build stage
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
+ENV DOCKER_IMAGE_DIR=docker/neuron-compile
+ENV USER=app
+ENV HOME=${HOME}/${USER}
 
 USER root
 
@@ -28,9 +31,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ENV USER=app
-ENV HOME="/home/onclusive/${USER}"
-
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && mkdir -p "${HOME}" \
@@ -41,7 +41,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/share \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
-USER app
+USER ${USER}
 
 # setup workspace
 WORKDIR "${HOME}"
@@ -49,7 +49,10 @@ WORKDIR "${HOME}"
 RUN export PATH=/opt/aws/neuron/bin:$PATH
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ./poetry.lock ./pyproject.toml ./
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
+
+# copy libraries - ensure relative difference '../..' between home app dir and lib as listed in poetry toml
+COPY --chown=${USER}:users libs/ /libs/
 
 # install production dependencies
 RUN poetry install \
@@ -79,6 +82,6 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users ./test/ ./test
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ tests
 
-RUN mkdir test/output
+RUN mkdir tests/output

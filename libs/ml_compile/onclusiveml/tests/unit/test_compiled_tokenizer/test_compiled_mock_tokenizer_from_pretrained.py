@@ -1,7 +1,7 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
 from transformers import AutoTokenizer
-from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
+from onclusiveml.ml_compile import CompiledTokenizer
 import shutil
 
 @pytest.mark.parametrize(

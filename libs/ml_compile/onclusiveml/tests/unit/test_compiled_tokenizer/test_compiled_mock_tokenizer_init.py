@@ -1,7 +1,7 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
-from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
-from libs.ml_compile.onclusiveml.tests.unit.test_compiled_tokenizer.conftest import MODEL_MAX_LENGTH
+from onclusiveml.ml_compile import CompiledTokenizer
+from conftest import MODEL_MAX_LENGTH
 
 @pytest.mark.parametrize(
     'tokenization_kwargs,expected_tokenization_settings',

@@ -1,5 +1,4 @@
 import pytest
-from typing import List
 from transformers import AutoTokenizer
 
 MODEL_MAX_LENGTH = 50

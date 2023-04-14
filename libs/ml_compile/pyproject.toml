@@ -3,8 +3,7 @@ name = "ml-compile"
 version = "0.1.0"
 description = "Internal library for model compilation utilities, in particular (but not exclusively) for neuron torchscript compilation."
 authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
-readme = "README.md"
-packages = [{include = "ml_compile"}]
+packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"

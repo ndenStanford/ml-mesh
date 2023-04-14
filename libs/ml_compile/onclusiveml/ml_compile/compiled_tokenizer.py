@@ -1,5 +1,5 @@
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast, AutoTokenizer
-from libs.ml_compile.onclusiveml.ml_compile.compile_utils import duplicate_huggingface_transformer_via_local_cache
+from .compile_utils import duplicate_huggingface_transformer_via_local_cache
 import os
 import json
 from typing import Union, Any, Dict

@@ -1,8 +1,8 @@
 from transformers.pipelines import Pipeline, pipeline
 from typing import Dict
-from libs.ml_compile.onclusiveml.ml_compile.compile_utils import duplicate_huggingface_transformer_via_local_cache
-from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
-from libs.ml_compile.onclusiveml.ml_compile.compiled_model import CompiledModel
+from .compile_utils import duplicate_huggingface_transformer_via_local_cache
+from .compiled_tokenizer import CompiledTokenizer
+from .compiled_model import CompiledModel
 import os
 import json
 

@@ -6,6 +6,8 @@ ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
 # --- build stage
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
+ENV DOCKER_IMAGE_DIR=docker/neuron-inference
+
 USER root
 
 # get wget and gnupg2 tools
@@ -48,7 +50,7 @@ WORKDIR "${HOME}"
 RUN export PATH=/opt/aws/neuron/bin:$PATH
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ./poetry.lock ./pyproject.toml ./
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
 
 # install production dependencies
 RUN poetry install \
@@ -79,6 +81,6 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users ./test/ ./test
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ ${DOCKER_IMAGE_DIR}/tests
 
-RUN mkdir test/output
+RUN mkdir tests/output

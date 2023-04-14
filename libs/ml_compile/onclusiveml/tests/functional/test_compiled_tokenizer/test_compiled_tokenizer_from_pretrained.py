@@ -1,6 +1,6 @@
 import pytest
 from pytest_lazyfixture import lazy_fixture
-from libs.ml_compile.onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
+from onclusiveml.ml_compile import CompiledTokenizer
 import shutil
 from typing import Dict, List
 import torch

@@ -1,5 +1,5 @@
 import pytest
-from libs.ml_compile.onclusiveml.ml_compile.compiled_model import CompiledModel
+from onclusiveml.ml_compile import CompiledModel
 import torch
 import torch.neuron
 import shutil
