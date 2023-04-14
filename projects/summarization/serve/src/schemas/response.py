@@ -1,5 +1,8 @@
 """Response model."""
 
+# Standard Library
+from typing import Optional
+
 # 3rd party libraries
 from pydantic import BaseModel
 
@@ -19,4 +22,4 @@ class Response(BaseModel):
 
     model: str
     summary: str
-    finish_reason: str
+    finish_reason: Optional[str] = None
