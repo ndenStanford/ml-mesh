@@ -13,7 +13,7 @@ import pytest
 @pytest.fixture()
 def test_output_dir() -> str:
 
-    return os.path.join(".", "test", "output")
+    return os.path.join(".", "tests", "output")
 
 
 @pytest.fixture()
