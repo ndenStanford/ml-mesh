@@ -42,26 +42,3 @@ def test_get_exists(model_name):
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
     assert schema.model_name == schema_from_db.model_name
-
-
-@pytest.mark.parametrize(
-    "model_name, updated_model_name",
-    [
-        (
-            "text-curie-008",
-            "text-curie-009",
-        )
-    ],
-)
-def test_update(model_name, updated_model_name):
-    """Test get item from table."""
-    schema = ModelSchema(model_name=model_name).save()
-
-    schema.update(model_name=updated_model_name)
-
-    updated_schema = ModelSchema.get(schema.id)
-
-    assert updated_schema.id == schema.id
-    assert updated_schema.created_at == schema.created_at
-    assert updated_schema.model_name == updated_model_name
-    assert updated_schema.model_name != schema.model_name

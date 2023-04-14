@@ -12,12 +12,19 @@ settings = get_settings()
 
 logger = get_default_logger(__name__)
 
-list_of_models = settings.LIST_OF_MODELS
-
 
 def fill_table() -> None:
     """Model filling."""
     logger.info("Adding models to model table...")
-    for model_name in list_of_models:
-        model = ModelSchema(model_name=model_name)
-        model.save()
+    list_of_models = settings.LIST_OF_MODELS
+
+    # Saving predifined models into database
+    # If model id doesn't exist, then add model to table
+    for id, model_name in list_of_models.items():
+        try:
+            _ = ModelSchema.get(id)
+        except Exception as e:
+            logger.debug(e)
+            logger.debug("Adding model: {}".format(model_name))
+            model = ModelSchema(id=id, model_name=model_name)
+            model.save()

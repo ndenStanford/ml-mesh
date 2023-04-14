@@ -2,7 +2,7 @@
 
 # Standard Library
 from functools import lru_cache
-from typing import List, Optional
+from typing import Dict, Optional
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -45,7 +45,12 @@ class Settings(BaseSettings):
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
 
-    LIST_OF_MODELS: List[str] = ["gpt-3.5.turbo", "text-davinci-003", "text-curie-001"]
+    # predefined models
+    LIST_OF_MODELS: Dict[str, str] = {
+        "1": "gpt-3.5.turbo",
+        "2": "text-davinci-003",
+        "3": "text-curie-001",
+    }
 
     AWS_REGION: str = "us-east-1"
 
