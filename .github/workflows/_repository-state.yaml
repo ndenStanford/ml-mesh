@@ -1,0 +1,76 @@
+name: Repository state
+on:
+  workflow_call:
+    inputs:
+      pull-request:
+        required: true
+        default: true
+        type: boolean
+        description: "Indicates whether this workflow is running for a Pull Request."
+      current-branch:
+        required: true
+        type: string
+        description: "Current branch name."
+    secrets:
+      GITHUB_TOKEN_:
+        required: true
+        description: "Github Token to interact with repo."
+    outputs:
+      tag:
+        description: "Final tag to attach to images built within the workflow"
+        value: ${{ jobs.get-stage.outputs.tag }}
+
+jobs:
+  get-stage:
+    runs-on: ubuntu-20.04
+    environment: ${{ inputs.environment }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
+    outputs:
+      tag: ${{ steps.export-tag.outputs.tag }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Tag Pull Request
+        uses: TimonVS/pr-labeler-action@v4
+        if: ${{ inputs.pull-request }}
+        with:
+          configuration-path: .github/pr-labeler.yaml
+
+      - name: Get next version
+        if: ${{ !inputs.pull-request }}
+        id: get-version
+        uses: reecetech/version-increment@2022.10.3
+        with:
+          scheme: calver
+
+      - name: Get short commit SHA
+        id: get-commit-sha
+        if: ${{ inputs.pull-request }}
+        run: |
+          sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+          echo "tag=ci-$sha" >> $GITHUB_OUTPUT
+
+      - name: Export tag
+        id: export-tag
+        run: |
+          if [[ ${{ inputs.pull-request }} = true ]]; then
+            echo "tag=${{ steps.get-commit-sha.outputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Release Notes
+        uses: release-drafter/release-drafter@v5.22.0
+        if: ${{ !inputs.pull-request }}
+        id: release-drafter
+        with:
+          config-name: release-drafter.yaml
+          publish: true
+          commitish: ${{ github.ref_name }}
+          prerelease: false
+          tag: v${{ steps.get-version.outputs.version }}
+          name: ${{ steps.get-version.outputs.version }}
+          version: ${{ steps.get-version.outputs.version }}

@@ -3,19 +3,39 @@ ci:
   skip: [hadolint-docker]
 
 repos:
-  # Autoupdate: Python code
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v2.29.0
-    hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
+  # =================================
+  # PYTHON
+  # =================================
 
-  # Autoformat: Python code
+  # python formatter
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
       - id: black
-        args: [--target-version=py38]
+        files: ^(libs|projects|apps)/.*\.py$
+
+  # Lint: Python
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        files: ^(libs|docker|apps|projects|tests)/.*\.py$
+
+  # static type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.991
+    hooks:
+      - id: mypy
+        files: ^(libs|projects)/.*\.py$
+        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests)
+        args: ["--explicit-package-bases"]
+
+  # isort
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        files: ^(libs|docker|apps|projects|tests)/.*\.py$
 
   # Autoformat: YAML, JSON, Markdown, etc.
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -30,14 +50,6 @@ repos:
       - id: hadolint-docker
         entry: hadolint/hadolint:v2.8.0 hadolint
 
-  # Lint: YAML
-  - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.26.3
-    hooks:
-      - id: yamllint
-        args: ["-d {extends: relaxed, rules: {line-length: disable}}", "-s"]
-        files: \.(yaml|yml)$
-
   # Lint: Bash scripts
   - repo: https://github.com/openstack-dev/bashate.git
     rev: 2.1.0
@@ -51,12 +63,6 @@ repos:
     hooks:
       - id: shellcheck
         args: ["-x"]
-
-  # Lint: Python
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
-    hooks:
-      - id: flake8
 
   # Lint: Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
