@@ -27,6 +27,11 @@ def duplicate_huggingface_transformer_via_local_cache(
         duplicated_transformer = pipeline(
             task=huggingface_transformer.task, model=local_temp_dir
         )
+    else:
+        try:
+            duplicated_transformer = huggingface_transformer.from_pretrained(local_temp_dir)
+        except NotImplementedError as e:
+            raise e
 
     shutil.rmtree(local_temp_dir)
 
