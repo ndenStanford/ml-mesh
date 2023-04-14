@@ -8,9 +8,10 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.db import BaseTable
+from src.model._init import fill_table
 from src.model.tables import ModelTable
 from src.prompt.tables import PromptTemplateTable
-from src.model._init import fill_table
+
 
 logger = get_default_logger(__name__)
 

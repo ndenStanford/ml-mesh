@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
 
-    LIST_OF_MODELS: List[str] = ["gpt-3.5.turbo","text-davinci-003","text-curie-001"]
+    LIST_OF_MODELS: List[str] = ["gpt-3.5.turbo", "text-davinci-003", "text-curie-001"]
 
     AWS_REGION: str = "us-east-1"
 
