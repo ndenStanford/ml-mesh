@@ -1,12 +1,7 @@
 """Routes test."""
 
 # 3rd party libraries
-import pytest
 from fastapi import status
-
-# Source
-from src.model.schemas import ModelSchema
-from src.model.tables import ModelTable
 
 
 def test_get_models(test_client, create_models):
