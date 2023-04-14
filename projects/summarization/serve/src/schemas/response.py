@@ -1,10 +1,10 @@
 """Response model."""
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Standard Library
 from typing import Optional
+
+# 3rd party libraries
+from pydantic import BaseModel
 
 
 class Response(BaseModel):
