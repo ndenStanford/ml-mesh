@@ -89,7 +89,7 @@ def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir) ->
 )
 def test_create_and_save_neuron_compiled_pipeline(
     huggingface_model_reference, huggingface_pipeline_task, test_output_dir
-):
+) -> None:
 
     huggingface_pipeline = pipeline(
         task=huggingface_pipeline_task, model=huggingface_model_reference
