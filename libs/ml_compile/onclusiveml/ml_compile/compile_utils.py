@@ -29,7 +29,9 @@ def duplicate_huggingface_transformer_via_local_cache(
         )
     else:
         try:
-            duplicated_transformer = huggingface_transformer.from_pretrained(local_temp_dir)
+            duplicated_transformer = huggingface_transformer.from_pretrained(
+                local_temp_dir
+            )
         except NotImplementedError as e:
             raise e
 
