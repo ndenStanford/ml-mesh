@@ -1,4 +1,4 @@
-"""Keybert predictions."""
+"""Prompt."""
 
 # Standard Library
 from typing import Any, Dict
