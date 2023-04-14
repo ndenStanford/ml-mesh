@@ -12,13 +12,13 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def generate_text(prompt: str, model: str) -> str:
+def generate_text(prompt: str, model_name: str) -> str:
     """Sends request to generate text."""
 
     openai.api_key = settings.OPENAI_API_KEY
 
     response = openai.ChatCompletion.create(
-        model=model,  # "gpt-3.5-turbo",
+        model=model_name,
         messages=[{"role": "user", "content": prompt}],
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
