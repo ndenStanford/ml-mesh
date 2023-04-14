@@ -29,7 +29,7 @@ from onclusiveml.ml_compile import CompiledModel, CompiledPipeline
 )
 def test_create_and_save_neuron_compiled_model(
     huggingface_model_reference, huggingface_model_type, test_output_dir, export_handle
-):
+) -> None:
 
     huggingface_model = huggingface_model_type.from_pretrained(
         huggingface_model_reference
