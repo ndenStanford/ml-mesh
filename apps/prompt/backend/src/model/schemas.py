@@ -19,11 +19,6 @@ class ModelSchema(BaseModel):
     model_name: str
     created_at: Optional[str] = None
 
-    @property
-    def variables(self) -> List[str]:
-        """Returns the list of model names variables."""
-        return [p for _, p, _, _ in Formatter().parse(self.model_name) if p is not None]
-
     def save(self) -> "ModelSchema":
         """Creates a new model or update existing."""
         # saves new item in table.
