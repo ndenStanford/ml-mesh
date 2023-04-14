@@ -83,7 +83,4 @@ RUN poetry install \
 
 COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ ./tests
 
-RUN pwd
-RUN ls -l
-
 RUN mkdir tests/output
