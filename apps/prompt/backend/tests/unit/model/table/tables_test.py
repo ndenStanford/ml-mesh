@@ -14,9 +14,8 @@ def test_base_table():
     assert list(ModelTable._attributes.keys()) == [
         "created_at",
         "id",
-        "max_tokens",
         "model_name",
-        "temperature",
+        "parameters",
     ]
     assert ModelTable._hash_keyname == "id"
 

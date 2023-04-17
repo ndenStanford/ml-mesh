@@ -1,5 +1,9 @@
 """Test schemas."""
 
+# Standard Library
+# Standard library
+import json
+
 # 3rd party libraries
 import pytest
 
@@ -42,8 +46,7 @@ def test_get_exists(model_name):
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
     assert schema.model_name == schema_from_db.model_name
-    assert schema.max_tokens == schema_from_db.max_tokens
-    assert schema.temperature == schema_from_db.temperature
+    assert schema.parameters == schema_from_db.parameters
 
 
 @pytest.mark.parametrize(
@@ -64,7 +67,8 @@ def test_get_exists(model_name):
 def test_get_models_different_params(model_name, max_tokens, temperature):
     """Test get item from table."""
     schema = ModelSchema(
-        model_name=model_name, max_tokens=max_tokens, temperature=temperature
+        model_name=model_name,
+        parameters=json.dumps({"max_tokens": max_tokens, "temperature": temperature}),
     ).save()
 
     schema_from_db = ModelSchema.get(schema.id)
@@ -72,5 +76,5 @@ def test_get_models_different_params(model_name, max_tokens, temperature):
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
     assert schema.model_name == model_name
-    assert schema.max_tokens == max_tokens
-    assert schema.temperature == temperature
+    assert json.loads(schema.parameters)["max_tokens"] == max_tokens
+    assert json.loads(schema.parameters)["temperature"] == temperature

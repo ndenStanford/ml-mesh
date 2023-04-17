@@ -1,6 +1,7 @@
 """Schemas test."""
 
 # Standard Library
+import json
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -27,8 +28,8 @@ def test_init_model_name_schema(mock_save, model_name):
     model = ModelSchema(model_name=model_name)
 
     assert model.model_name == model_name
-    assert model.max_tokens == settings.OPENAI_MAX_TOKENS
-    assert model.temperature == settings.OPENAI_TEMPERATURE
+    assert json.loads(model.parameters)["max_tokens"] == settings.OPENAI_MAX_TOKENS
+    assert json.loads(model.parameters)["temperature"] == settings.OPENAI_TEMPERATURE
     # values only assigned when saved in database
     assert model.id is None
     assert model.created_at is None
@@ -42,7 +43,7 @@ def test_init_model_name_schema(mock_save, model_name):
     ),
 )
 @patch("src.db.Model.save")
-def test_save_model_model_name_schema(mock_save, model_name):
+def test_save_model_schema(mock_save, model_name):
     """Assert model initialization"""
     model_name = ModelSchema(model_name=model_name)
     saved_model_name = model_name.save()
@@ -52,8 +53,7 @@ def test_save_model_model_name_schema(mock_save, model_name):
     assert isinstance(saved_model_name.id, str)
     assert isinstance(saved_model_name.created_at, str)
     assert isinstance(saved_model_name.model_name, str)
-    assert isinstance(saved_model_name.max_tokens, int)
-    assert isinstance(saved_model_name.temperature, float)
+    assert isinstance(saved_model_name.parameters, str)
 
 
 @pytest.mark.parametrize(
@@ -61,14 +61,18 @@ def test_save_model_model_name_schema(mock_save, model_name):
     ["39ba8bf2-3a40-42a2-9ca1-27fa3de39e2b", "69095223-dae8-47ad-a077-150e5c5986db"],
 )
 @patch.object(ModelTable, "get")
-def test_get_model_name_schema_with_id(mock_get, id):
-    """Test retrieve model_name with id."""
+def test_get_model_properties_schema_with_id(mock_get, id):
+    """Test retrieve model properties with id."""
     settings = get_settings()
     mock_get.return_value = ModelTable(
         id=id,
         model_name="model_name",
-        max_tokens=settings.OPENAI_MAX_TOKENS,
-        temperature=settings.OPENAI_TEMPERATURE,
+        parameters=json.dumps(
+            {
+                "max_tokens": settings.OPENAI_MAX_TOKENS,
+                "temperature": settings.OPENAI_TEMPERATURE,
+            }
+        ),
         created_at=datetime.now(timezone.utc),
     )
     _ = ModelSchema.get(id)
