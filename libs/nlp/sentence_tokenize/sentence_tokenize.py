@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 # 3rd party libraries
 import nltk
 
+
 class SentenceTokenize:
     extra_tokens = ["。"]
     other_tokens = [
