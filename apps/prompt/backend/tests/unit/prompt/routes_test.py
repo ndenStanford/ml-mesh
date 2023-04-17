@@ -178,7 +178,7 @@ def test_delete_prompt_unauthenticated(test_client):
 )
 @patch.object(PromptTemplateSchema, "get")
 @patch("openai.ChatCompletion.create")
-def test_generate_text_diff_model(
+def test_generate_text(
     mock_openai_chat, mock_prompt_get, id, template, values, generated, test_client
 ):
     """Test text generation endpoint."""

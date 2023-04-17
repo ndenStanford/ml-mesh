@@ -21,16 +21,19 @@ class ModelSchema(BaseModel):
     id: Optional[str] = None
     model_name: str
     created_at: Optional[str] = None
-    max_tokens: Optional[int] = settings.OPENAI_MAX_TOKENS
-    temperature: Optional[float] = settings.OPENAI_TEMPERATURE
+    parameters: Optional[str] = json.dumps(
+        {
+            "max_tokens": settings.OPENAI_MAX_TOKENS,
+            "temperature": settings.OPENAI_TEMPERATURE,
+        }
+    )
 
     def save(self) -> "ModelSchema":
         """Creates a new model or update existing."""
         # saves new item in table.
         model = ModelTable(
             model_name=self.model_name,
-            max_tokens=self.max_tokens,
-            temperature=self.temperature,
+            parameters=self.parameters,
         )
         model.save()
         model_dict = json.loads(model.to_json())
@@ -38,8 +41,7 @@ class ModelSchema(BaseModel):
             id=model_dict["id"],
             model_name=model_dict["model_name"],
             created_at=model_dict["created_at"],
-            max_tokens=model_dict["max_tokens"],
-            temperature=model_dict["temperature"],
+            parameters=model_dict["parameters"],
         )
 
     @classmethod

@@ -27,8 +27,7 @@ def test_get_model(test_client, create_models):
     assert response.json()["id"] == model.id
     assert response.json()["model_name"] == model.model_name
     assert response.json()["created_at"] == model.created_at
-    assert response.json()["max_tokens"] == model.max_tokens
-    assert response.json()["temperature"] == model.temperature
+    assert response.json()["parameters"] == model.parameters
 
 
 @pytest.mark.parametrize(

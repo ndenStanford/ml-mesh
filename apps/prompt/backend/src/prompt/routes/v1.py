@@ -1,6 +1,7 @@
 """Prompt."""
 
 # Standard Library
+import json
 from typing import Any, Dict
 
 # 3rd party libraries
@@ -139,6 +140,7 @@ def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
 
     Args:
         id (str): prompt id
+        model_id (str): model id
         values (Dict[str, Any]): values to fill in template.
     """
     prompt_template = PromptTemplateSchema.get(id)
@@ -147,7 +149,7 @@ def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
         "generated": generate_text(
             prompt_template.prompt(**values),
             model.model_name,
-            model.max_tokens,
-            model.temperature,
+            int(json.loads(model.parameters)["max_tokens"]),
+            float(json.loads(model.parameters)["temperature"]),
         )
     }

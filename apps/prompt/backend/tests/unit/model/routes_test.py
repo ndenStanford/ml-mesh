@@ -1,6 +1,7 @@
 """Test routes.x"""
 
 # Standard Library
+import json
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -49,8 +50,12 @@ def test_get_model(mock_model_get, id, test_client):
         "created_at": None,
         "id": f"{id}",
         "model_name": "test-model",
-        "max_tokens": settings.OPENAI_MAX_TOKENS,
-        "temperature": settings.OPENAI_TEMPERATURE,
+        "parameters": json.dumps(
+            {
+                "max_tokens": settings.OPENAI_MAX_TOKENS,
+                "temperature": settings.OPENAI_TEMPERATURE,
+            }
+        ),
     }
 
 
