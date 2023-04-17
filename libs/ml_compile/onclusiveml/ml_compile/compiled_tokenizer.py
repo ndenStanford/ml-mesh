@@ -11,8 +11,10 @@ from transformers import (
     PreTrainedTokenizerFast,
 )
 
-# Source
-from .compile_utils import duplicate_huggingface_transformer_via_local_cache
+# Internal libraries
+from onclusiveml.ml_compile.compile_utils import (
+    duplicate_huggingface_transformer_via_local_cache,
+)
 
 
 class CompiledTokenizer(object):

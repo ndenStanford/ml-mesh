@@ -7,10 +7,12 @@ from typing import Any, Dict, Union
 # ML libs
 from transformers.pipelines import Pipeline, pipeline
 
-# Source
-from .compile_utils import duplicate_huggingface_transformer_via_local_cache
-from .compiled_model import CompiledModel
-from .compiled_tokenizer import CompiledTokenizer
+# Internal libraries
+from onclusiveml.ml_compile.compile_utils import (
+    duplicate_huggingface_transformer_via_local_cache,
+)
+from onclusiveml.ml_compile.compiled_model import CompiledModel
+from onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
 
 
 class CompiledPipeline(object):
