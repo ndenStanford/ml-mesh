@@ -42,3 +42,35 @@ def test_get_exists(model_name):
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
     assert schema.model_name == schema_from_db.model_name
+    assert schema.max_tokens == schema_from_db.max_tokens
+    assert schema.temperature == schema_from_db.temperature
+
+
+@pytest.mark.parametrize(
+    "model_name, max_tokens, temperature",
+    [
+        (
+            "model-x",
+            100,
+            0.1,
+        ),
+        (
+            "model-y",
+            312,
+            0.4,
+        ),
+    ],
+)
+def test_get_models_different_params(model_name, max_tokens, temperature):
+    """Test get item from table."""
+    schema = ModelSchema(
+        model_name=model_name, max_tokens=max_tokens, temperature=temperature
+    ).save()
+
+    schema_from_db = ModelSchema.get(schema.id)
+
+    assert schema.id == schema_from_db.id
+    assert schema.created_at == schema_from_db.created_at
+    assert schema.model_name == model_name
+    assert schema.max_tokens == max_tokens
+    assert schema.temperature == temperature

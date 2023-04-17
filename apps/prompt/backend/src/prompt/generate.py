@@ -11,7 +11,9 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def generate_text(prompt: str, model_name: str) -> str:
+def generate_text(
+    prompt: str, model_name: str, max_tokens: int, temperature: float
+) -> str:
     """Sends request to generate text."""
 
     openai.api_key = settings.OPENAI_API_KEY
@@ -26,8 +28,8 @@ def generate_text(prompt: str, model_name: str) -> str:
         response = openai.ChatCompletion.create(
             model=model_name,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=settings.OPENAI_MAX_TOKENS,
-            temperature=settings.OPENAI_TEMPERATURE,
+            max_tokens=max_tokens,
+            temperature=temperature,
         )
         return response["choices"][0]["message"]["content"]
     else:
