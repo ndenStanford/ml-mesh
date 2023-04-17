@@ -18,6 +18,7 @@ def generate_text(prompt: str, model_name: str) -> str:
     # Response based on what model we use
     if (
         model_name == ModelEnum.GPT3_5.value
+        or model_name == ModelEnum.GPT4.value  # noqa: W503
         or model_name == ModelEnum.DAVINCI.value  # noqa: W503
         or model_name == ModelEnum.CURIE.value  # noqa: W503
     ):

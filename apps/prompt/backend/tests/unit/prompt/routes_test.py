@@ -269,6 +269,49 @@ def test_generate_text_with_diff_model(
     assert response.json() == {"generated": generated}
 
 
+@pytest.mark.parametrize(
+    "id, template, model_id, model_name, values",
+    [
+        (
+            1,
+            "Write me a {count}-verse poem about {topic}",
+            2,
+            "model-x",
+            {"count": 3, "topic": "machine learning"},
+        ),
+    ],
+)
+@patch.object(ModelSchema, "get")
+@patch.object(PromptTemplateSchema, "get")
+def test_generate_text_with_diff_model_model_not_found(
+    mock_prompt_get,
+    mock_model_get,
+    id,
+    template,
+    model_id,
+    model_name,
+    values,
+    test_client,
+):
+    """Test text generation endpoint."""
+    # set mock return values
+    mock_prompt_get.return_value = PromptTemplateSchema(id=id, template=template)
+    mock_model_get.return_value = ModelSchema(id=model_id, model_name=model_name)
+    # send request to test client
+    response = test_client.post(
+        f"/api/v1/prompts/{id}/generate/model/{model_id}",
+        headers={"x-api-key": "1234"},
+        json=values,
+    )
+
+    assert mock_model_get.call_count == 1
+    assert mock_prompt_get.call_count == 1
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "generated": "Sorry, the backend for this model is in development"
+    }
+
+
 def test_generate_unauthenticated(test_client):
     """Test generate endpoint unauthenticated."""
     response = test_client.post("/api/v1/prompts/1/generate")
