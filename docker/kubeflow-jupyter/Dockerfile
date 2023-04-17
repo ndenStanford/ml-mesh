@@ -2,10 +2,10 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-ARG DOCKER_IMAGE_DIR=docker/kubeflow-jupyter
 
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
+ARG DOCKER_IMAGE_DIR=docker/kubeflow-jupyter
 
 # common environemnt variables
 ENV NB_USER jovyan

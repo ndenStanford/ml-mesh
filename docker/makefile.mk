@@ -7,6 +7,7 @@ docker.build/%: ## build the latest image for a stack using the system's archite
 			-f ./docker/$(notdir $@)/Dockerfile	\
 			--build-arg OWNER="$(OWNER)" \
 			--build-arg IMAGE_TAG="$(IMAGE_TAG)" \
+			--build-arg DOCKER_IMAGE_DIR=docker/$(notdir $@) \
 			--platform=$(PLATFORM) \
 			--rm --force-rm \
 			--target $(TARGET_BUILD_STAGE)

@@ -2,9 +2,10 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=kubeflow-torch-cpu
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-ARG DOCKER_IMAGE_DIR=docker/kubeflow-data-science
 
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+
+ARG DOCKER_IMAGE_DIR=docker/kubeflow-data-science
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
