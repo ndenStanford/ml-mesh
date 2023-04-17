@@ -1,8 +1,8 @@
 ARG PYTHON_VERSION=3.8.16
+ARG DOCKER_IMAGE_DIR=docker/python-base
 
 FROM python:${PYTHON_VERSION}-slim as builder
 
-ENV DOCKER_IMAGE_DIR=docker/python-base
 ENV HOME="/home"
 
 ENV PYTHONUNBUFFERED=1 \
