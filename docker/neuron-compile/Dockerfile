@@ -2,11 +2,12 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG DOCKER_IMAGE_DIR=docker/neuron-compile
 
 # --- build stage
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR=docker/neuron-compile
+ARG DOCKER_IMAGE_DIR
 
 ENV USER=app
 ENV HOME=${HOME}/${USER}
@@ -68,9 +69,11 @@ RUN poetry install \
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR
 
 # install development dependencies
 RUN poetry install \

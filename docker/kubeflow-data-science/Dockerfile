@@ -2,10 +2,11 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=kubeflow-torch-cpu
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG DOCKER_IMAGE_DIR=docker/kubeflow-data-science
 
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR=docker/kubeflow-data-science
+ARG DOCKER_IMAGE_DIR
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -28,11 +29,13 @@ EXPOSE 8888
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR
 
 # dummy entrypoint to pass the CI docker run stage
 ENTRYPOINT ["pwd"]

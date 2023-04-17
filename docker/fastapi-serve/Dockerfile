@@ -2,10 +2,11 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG DOCKER_IMAGE_DIR=docker/fastapi-serve
 
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR=docker/fastapi-serve
+ARG DOCKER_IMAGE_DIR
 
 ENV USER=app
 ENV HOME="/home"
@@ -35,6 +36,8 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR
