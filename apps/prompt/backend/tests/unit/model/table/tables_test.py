@@ -10,10 +10,13 @@ from src.settings import get_settings
 
 def test_base_table():
     """Test BaseTable object."""
+    # Note keys are returned in alphabetical order
     assert list(ModelTable._attributes.keys()) == [
         "created_at",
         "id",
+        "max_tokens",
         "model_name",
+        "temperature",
     ]
     assert ModelTable._hash_keyname == "id"
 

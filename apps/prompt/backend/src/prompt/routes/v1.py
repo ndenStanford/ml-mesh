@@ -123,7 +123,9 @@ def generate(id: str, values: Dict[str, Any]):
     """
     prompt_template = PromptTemplateSchema.get(id)
     return {
-        "generated": generate_text(prompt_template.prompt(**values), "gpt-3.5-turbo")
+        "generated": generate_text(
+            prompt_template.prompt(**values), "gpt-3.5-turbo", 512, 0.7
+        )
     }
 
 
@@ -143,6 +145,9 @@ def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
     model = ModelSchema.get(model_id)
     return {
         "generated": generate_text(
-            prompt_template.prompt(**values), model.get_model_name()
+            prompt_template.prompt(**values),
+            model.model_name,
+            model.max_tokens,
+            model.temperature,
         )
     }

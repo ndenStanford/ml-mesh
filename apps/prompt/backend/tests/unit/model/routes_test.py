@@ -9,6 +9,7 @@ from fastapi import status
 
 # Source
 from src.model.schemas import ModelSchema
+from src.settings import get_settings
 
 
 def test_health_route(test_client):
@@ -38,6 +39,7 @@ def test_get_models_unauthenticated(test_client):
 @pytest.mark.parametrize("id", [1, 124543, "2423"])
 @patch.object(ModelSchema, "get")
 def test_get_model(mock_model_get, id, test_client):
+    settings = get_settings()
     """Test get model endpoint."""
     mock_model_get.return_value = ModelSchema(id=id, model_name="test-model")
     response = test_client.get(f"/api/v1/models/{id}", headers={"x-api-key": "1234"})
@@ -47,6 +49,8 @@ def test_get_model(mock_model_get, id, test_client):
         "created_at": None,
         "id": f"{id}",
         "model_name": "test-model",
+        "max_tokens": settings.OPENAI_MAX_TOKENS,
+        "temperature": settings.OPENAI_TEMPERATURE,
     }
 
 

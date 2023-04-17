@@ -14,3 +14,5 @@ class ModelTable(BaseTable):
         table_name = "model"
 
     model_name = UnicodeAttribute(null=False)
+    max_tokens = UnicodeAttribute(null=False)
+    temperature = UnicodeAttribute(null=False)

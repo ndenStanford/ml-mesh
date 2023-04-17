@@ -9,6 +9,10 @@ from pydantic import BaseModel
 
 # Source
 from src.model.tables import ModelTable
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 class ModelSchema(BaseModel):
@@ -17,12 +21,16 @@ class ModelSchema(BaseModel):
     id: Optional[str] = None
     model_name: str
     created_at: Optional[str] = None
+    max_tokens: Optional[int] = settings.OPENAI_MAX_TOKENS
+    temperature: Optional[float] = settings.OPENAI_TEMPERATURE
 
     def save(self) -> "ModelSchema":
         """Creates a new model or update existing."""
         # saves new item in table.
         model = ModelTable(
             model_name=self.model_name,
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
         )
         model.save()
         model_dict = json.loads(model.to_json())
@@ -30,6 +38,8 @@ class ModelSchema(BaseModel):
             id=model_dict["id"],
             model_name=model_dict["model_name"],
             created_at=model_dict["created_at"],
+            max_tokens=model_dict["max_tokens"],
+            temperature=model_dict["temperature"],
         )
 
     @classmethod
@@ -43,11 +53,6 @@ class ModelSchema(BaseModel):
                 )
             )
         return ModelSchema(**json.loads(ModelTable.get(id).to_json()))
-
-    def update(self, **kwargs) -> None:
-        """Updates table record."""
-        model = ModelTable.get(self.id)
-        model.update(actions=[ModelTable.model_name.set(kwargs.get("model_name"))])
 
     def get_model_name(self) -> str:
         """Returns the model name."""
