@@ -1,3 +1,6 @@
+# Standard Library
+import shutil
+
 # ML libs
 import torch
 import torch.neuron
@@ -26,7 +29,7 @@ from onclusiveml.ml_compile import CompiledModel
         # and takes a long time for neuron tracing
     ],
 )
-def test_compiled_tokenizer_from_model(
+def compiled_tokenizer_from_pretrained_test(
     huggingface_tokenizer,
     huggingface_model,
     batch_size,
@@ -50,6 +53,9 @@ def test_compiled_tokenizer_from_model(
         validation_rtol=regression_test_rtol,
         **kwargs
     )
+
+    compiled_model.save_pretrained("test_compiled_model")
+    reloaded_compiled_model = CompiledModel.from_pretrained("test_compiled_model")
     # additional, regression based validation with custom tokenizer & inputs
     sample_tokens = huggingface_tokenizer(
         sample_inputs,
@@ -58,16 +64,18 @@ def test_compiled_tokenizer_from_model(
         padding="max_length",
         truncation=True,
     )
-    huggingface_model_output = huggingface_model(**sample_tokens)[
+    compiled_model_output = compiled_model(**sample_tokens)[
         0
     ]  # ignore gradient at position 1
-    compiled_model_output = compiled_model(**sample_tokens)[
+    reloaded_compiled_model_output = reloaded_compiled_model(**sample_tokens)[
         0
     ]  # ignore gradient at position 1
 
     torch.testing.assert_close(
-        huggingface_model_output,
         compiled_model_output,
+        reloaded_compiled_model_output,
         atol=regression_test_atol,
         rtol=regression_test_rtol,
     )
+
+    shutil.rmtree("test_compiled_model")

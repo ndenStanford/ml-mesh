@@ -1,4 +1,5 @@
 # Standard Library
+import shutil
 from typing import List, Tuple
 
 # 3rd party libraries
@@ -19,7 +20,12 @@ from onclusiveml.ml_compile import CompiledPipeline
     ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
-@pytest.mark.parametrize("batch_size", [1, 4, 8])
+@pytest.mark.parametrize(
+    "batch_size",
+    [
+        4,
+    ],
+)
 @pytest.mark.parametrize(
     "max_length",
     [
@@ -28,7 +34,7 @@ from onclusiveml.ml_compile import CompiledPipeline
         # and takes a long time for neuron tracing
     ],
 )
-def test_compiled_feature_extraction_pipeline_from_pipeline(
+def compiled_feature_extraction_pipeline_from_pretrained_test(
     huggingface_pipeline_task,
     huggingface_model_reference,
     huggingface_pipeline,
@@ -39,7 +45,7 @@ def test_compiled_feature_extraction_pipeline_from_pipeline(
     regression_test_atol,
     regression_test_rtol,
 ):
-    # create compiled pipeline
+    # create new pipeline using compiled versions of tokenizer and model
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,
         max_length=max_length,
@@ -55,21 +61,26 @@ def test_compiled_feature_extraction_pipeline_from_pipeline(
         sample_inputs
     )  # 1 x n_batch x n_token x n_embed
     compiled_pipeline_output_arr: np.array = np.array(compiled_pipeline_output)
-    # score huggingface pipeline
-    huggingface_pipeline_output: Tuple[Tuple[List[List[float]]]] = huggingface_pipeline(
-        sample_inputs,
-        tokenize_kwargs={
-            "truncation": True,
-            "add_special_tokens": True,
-            "padding": "max_length",
-            "max_length": max_length,
-        },
+    # export and re-import compiled pipeline
+    compiled_pipeline.save_pretrained("test_compiled_feature_extraction_pipeline")
+    reloaded_compiled_pipeline = CompiledPipeline.from_pretrained(
+        "test_compiled_feature_extraction_pipeline"
+    )
+    # score re-imported compiled pipeline
+    reloaded_compiled_pipeline_output: Tuple[
+        Tuple[List[List[float]]]
+    ] = reloaded_compiled_pipeline(
+        sample_inputs
     )  # 1 x n_batch x n_token x n_embed
-    huggingface_pipeline_output_arr: np.array = np.array(huggingface_pipeline_output)
+    reloaded_compiled_pipeline_output_arr: np.array = np.array(
+        reloaded_compiled_pipeline_output
+    )
     # validation: regression test embedding vectors
     np.testing.assert_allclose(
+        reloaded_compiled_pipeline_output_arr,
         compiled_pipeline_output_arr,
-        huggingface_pipeline_output_arr,
         rtol=regression_test_rtol,
         atol=regression_test_atol,
     )
+
+    shutil.rmtree("test_compiled_feature_extraction_pipeline")

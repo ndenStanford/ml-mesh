@@ -42,7 +42,7 @@ from onclusiveml.ml_compile import CompiledTokenizer
         ),
     ],
 )
-def test_compiled_tokenizer__init(
+def compiled_tokenizer__init_test(
     huggingface_tokenizer,
     tokenization_kwargs,
     expected_tokenization_settings,
