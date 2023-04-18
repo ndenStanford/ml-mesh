@@ -46,4 +46,4 @@ jobs:
 
       - name: Run integration tests
         if: ${{ inputs.integration }}
-        run: make libs.interation/${{ inputs.lib }}
+        run: make libs.integration/${{ inputs.lib }}
