@@ -3,7 +3,6 @@ import pytest
 from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
-from libs.ml_compile.onclusiveml.tests.unit.conftest import MODEL_MAX_LENGTH
 from onclusiveml.ml_compile import CompiledTokenizer
 
 
@@ -12,15 +11,7 @@ from onclusiveml.ml_compile import CompiledTokenizer
     [
         (
             {"setting_1": "A", "setting_2": 10, "setting_3": True},
-            {
-                "setting_1": "A",
-                "setting_2": 10,
-                "setting_3": True,
-                "padding": "max_length",
-                "truncation": True,
-                "add_special_tokens": True,
-                "max_length": MODEL_MAX_LENGTH,
-            },
+            lazy_fixture("input_tokenization_settings")
         ),
         (
             lazy_fixture("custom_tokenization_settings"),
