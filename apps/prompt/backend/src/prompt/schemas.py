@@ -21,6 +21,7 @@ class PromptTemplateSchema(BaseModel):
 
     id: Optional[str] = None
     template: str
+    alias: str
     created_at: Optional[str] = None
 
     @property
@@ -38,12 +39,14 @@ class PromptTemplateSchema(BaseModel):
         # saves new item in table.
         prompt = PromptTemplateTable(
             template=self.template,
+            alias=self.alias,
         )
         prompt.save()
         prompt_dict = json.loads(prompt.to_json())
         return PromptTemplateSchema(
             id=prompt_dict["id"],
             template=prompt_dict["template"],
+            alias=prompt_dict["alias"],
             created_at=prompt_dict["created_at"],
         )
 
