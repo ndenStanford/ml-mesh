@@ -21,3 +21,9 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 # Build the project
 RUN npx parcel build src/index.html --no-cache --no-source-maps
+
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM builder as development

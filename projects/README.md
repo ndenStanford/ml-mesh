@@ -2,11 +2,11 @@
 
 This folder contains the implmentation of all our machine learning projects. Each project is split into a maximum of 5 components:
 
+- ingest
 - prepare
 - train
 - compile
 - serve
-- backfill
 
 ##  Projects
 
