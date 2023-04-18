@@ -28,7 +28,7 @@ from onclusiveml.ml_compile import CompiledTokenizer
         ),
     ],
 )
-def test_compiled_tokenizer__from_tokenizer(
+def compiled_tokenizer__from_tokenizer_test(
     mock_tokenizer,
     tokenization_kwargs,
     expected_tokenization_settings,

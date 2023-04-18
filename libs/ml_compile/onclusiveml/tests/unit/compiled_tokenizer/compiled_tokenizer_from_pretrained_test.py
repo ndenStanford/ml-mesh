@@ -19,7 +19,7 @@ from onclusiveml.ml_compile import CompiledTokenizer
         lazy_fixture("custom_tokenization_settings"),
     ],
 )
-def test_compiled_tokenizer__from_pretrained(
+def compiled_tokenizer__from_pretrained_test(
     mock_tokenizer,
     tokenization_kwargs,
     monkeypatch,
