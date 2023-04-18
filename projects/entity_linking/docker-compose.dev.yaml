@@ -1,0 +1,103 @@
+version: "3.9"
+
+services:
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    build:
+      context: ../../
+      dockerfile: projects/entity_linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: entity_linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity_linking-serve:${IMAGE_TAG}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "9000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["serve"]
+    ports:
+      - 9000:9000
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/entity_linking/serve/src
+    environment:
+      ENVIRONMENT: dev
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # unit tests
+  serve-unit:
+    build:
+      context: ../../
+      dockerfile: projects/entity_linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: entity_linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/entity_linking/serve/src
+      - type: bind
+        source: serve/tests
+        target: /home/projects/entity_linking/serve/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity_linking-serve:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["serve", "unit"]
+    environment:
+      ENVIRONMENT: dev
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  serve-integration:
+    build:
+      context: ../../
+      dockerfile: projects/entity_linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: entity_linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/entity_linking/serve/src
+      - type: bind
+        source: serve/tests
+        target: /home/projects/entity_linking/serve/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity_linking-serve:${IMAGE_TAG:-latest}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["serve", "unit"]
+    environment:
+      ENVIRONMENT: dev
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+networks:
+  onclusive-net:
