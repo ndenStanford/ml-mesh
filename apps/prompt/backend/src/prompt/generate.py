@@ -4,7 +4,7 @@
 import openai
 
 # Source
-from src.model.model_enum import ModelEnum
+from src.model.constants import ModelEnum
 from src.settings import get_settings
 
 
