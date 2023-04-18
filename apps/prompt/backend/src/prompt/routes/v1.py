@@ -62,13 +62,14 @@ def get_prompt(id: str):
 @router.post(
     "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
 )
-def create_prompt(template: str):
+def create_prompt(template: str, alias: str):
     """Creates prompt.
 
     Args:
         template (str): prompt template text.
+        alias (str): alias for template.
     """
-    prompt = PromptTemplateSchema(template=template)
+    prompt = PromptTemplateSchema(template=template, alias=alias)
     return prompt.save()
 
 

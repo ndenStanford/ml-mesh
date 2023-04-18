@@ -14,10 +14,10 @@ from src.prompt.tables import PromptTemplateTable
 
 
 TEST_PROMPTS = [
-    PromptTemplateSchema(template="template1"),
-    PromptTemplateSchema(template="template2"),
-    PromptTemplateSchema(template="template3"),
-    PromptTemplateSchema(template="template4"),
+    PromptTemplateSchema(template="template1", alias="t1"),
+    PromptTemplateSchema(template="template2", alias="t2"),
+    PromptTemplateSchema(template="template3", alias="t3"),
+    PromptTemplateSchema(template="template4", alias="t4"),
 ]
 
 
