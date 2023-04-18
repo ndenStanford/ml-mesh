@@ -112,7 +112,10 @@ class CompiledModel(PreTrainedModel):
         return compiled_model
 
     def forward(
-        self, input_ids: torch.Tensor, attention_mask: torch.Tensor = None, **kwargs: Any
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor = None,
+        **kwargs: Any
     ) -> ModelOutput:
         # traced model requires positional arguments
         model_output = self.model(input_ids, attention_mask)

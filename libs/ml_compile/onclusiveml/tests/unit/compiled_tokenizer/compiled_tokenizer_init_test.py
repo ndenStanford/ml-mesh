@@ -11,7 +11,7 @@ from onclusiveml.ml_compile import CompiledTokenizer
     [
         (
             {"setting_1": "A", "setting_2": 10, "setting_3": True},
-            lazy_fixture("input_tokenization_settings")
+            lazy_fixture("input_tokenization_settings"),
         ),
         (
             lazy_fixture("custom_tokenization_settings"),

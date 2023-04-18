@@ -13,19 +13,21 @@ from onclusiveml.ml_compile import CompiledTokenizer
 
 MODEL_MAX_LENGTH = 50
 
+
 @pytest.fixture
 def input_tokenization_settings():
-    
+
     return {
-                "setting_1": "A",
-                "setting_2": 10,
-                "setting_3": True,
-                "padding": "max_length",
-                "truncation": True,
-                "add_special_tokens": True,
-                "max_length": MODEL_MAX_LENGTH,
-            }
-    
+        "setting_1": "A",
+        "setting_2": 10,
+        "setting_3": True,
+        "padding": "max_length",
+        "truncation": True,
+        "add_special_tokens": True,
+        "max_length": MODEL_MAX_LENGTH,
+    }
+
+
 class MockTokenizer(object):
     """Dummy tokenizer class to help validate attribute and method referencing functionality of
     the CompiledTokenizer class. Mock attributes and methods include:
