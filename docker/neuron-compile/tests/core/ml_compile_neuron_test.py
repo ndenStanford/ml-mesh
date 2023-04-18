@@ -27,7 +27,7 @@ from onclusiveml.ml_compile import CompiledModel, CompiledPipeline
         ("prajjwal1/bert-tiny", AutoModel, "feature-extraction-model"),
     ],
 )
-def test_create_and_save_neuron_compiled_model(
+def create_and_save_neuron_compiled_model_test(
     huggingface_model_reference, huggingface_model_type, test_output_dir, export_handle
 ) -> None:
 
@@ -55,7 +55,7 @@ def test_create_and_save_neuron_compiled_model(
         ("feature-extraction-model"),  # task: feature-extraction
     ],
 )
-def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir):
+def load_and_score_neuron_compiled_model_test(export_handle, test_output_dir):
 
     neuron_compiled_model = CompiledModel.from_pretrained(
         os.path.join(test_output_dir, export_handle)
@@ -87,7 +87,7 @@ def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir):
         ("prajjwal1/bert-tiny", "feature-extraction"),
     ],
 )
-def test_create_and_save_neuron_compiled_pipeline(
+def create_and_save_neuron_compiled_pipeline_test(
     huggingface_model_reference, huggingface_pipeline_task, test_output_dir
 ):
 
@@ -112,7 +112,7 @@ def test_create_and_save_neuron_compiled_pipeline(
 @pytest.mark.parametrize(
     "huggingface_pipeline_task", [("text-classification"), ("feature-extraction")]
 )
-def test_load_and_score_neuron_compiled_pipeline(
+def load_and_score_neuron_compiled_pipeline_test(
     huggingface_pipeline_task, test_output_dir, torch_model_text_input
 ):
 
