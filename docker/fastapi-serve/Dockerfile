@@ -2,8 +2,11 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG DOCKER_IMAGE_DIR=docker/fastapi-serve
 
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+
+ARG DOCKER_IMAGE_DIR
 
 ENV USER=app
 ENV HOME="/home"
@@ -23,7 +26,7 @@ USER app
 WORKDIR "${HOME}"
 
 # install - poetry requirements
-COPY --chown=app:users ./poetry.lock ./pyproject.toml ./
+COPY --chown=app:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
@@ -33,6 +36,8 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR

@@ -61,6 +61,9 @@ jobs:
           - name: core
             integration: false
 
+          - name: ml_compile
+            integration: false
+
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}

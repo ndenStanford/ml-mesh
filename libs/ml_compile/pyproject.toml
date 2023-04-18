@@ -1,20 +1,22 @@
 [tool.poetry]
-name = "neuron-compile"
+name = "ml-compile"
 version = "0.1.0"
-description = "Neuron compilation of a torch based model graph"
-authors = ["Sebastian sebastian.scherer@onclusive.com>"]
-readme = "README.md"
-packages = [{include = "neuron_compile"}]
+description = "Internal library for model compilation utilities, in particular (but not exclusively) for neuron torchscript compilation."
+authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
+packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "3.8.16"
 numpy = "1.18.5"
 tensorflow = {version = "1.15.5", source = "aws-neuron"}
 protobuf = "3.20.1"
 neuron-cc = {version = "1.13.5.0", source = "aws-neuron"}
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
-ml_compile = {path = "../../libs/ml_compile"}
+transformers = "^4.27.2"
+pytest = "7.2.0"
+pandas = "^1.3"
+pytest-lazy-fixture = "0.6.3"
 
 
 [[tool.poetry.source]]
@@ -25,9 +27,7 @@ secondary = true
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.2"
-transformers = "^4.27.2"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
