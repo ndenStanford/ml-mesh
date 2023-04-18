@@ -1,9 +1,9 @@
 # 3rd party libraries
 import pytest
-from conftest import MODEL_MAX_LENGTH
 from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
+from libs.ml_compile.onclusiveml.tests.unit.conftest import MODEL_MAX_LENGTH
 from onclusiveml.ml_compile import CompiledTokenizer
 
 

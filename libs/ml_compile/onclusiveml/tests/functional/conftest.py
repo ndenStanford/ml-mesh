@@ -9,9 +9,6 @@ from transformers.pipelines import pipeline
 import pytest
 
 
-MODEL_MAX_LENGTH = 50
-
-
 @pytest.fixture
 def sample_inputs() -> List[str]:
 
