@@ -33,5 +33,12 @@ class Settings(BaseSettings):
     # documentation endpoint
     DOCS_URL: Optional[str] = None
 
+    # entity fishing endpoint
+    ENTITY_FISHING_ENDPOINT: str = 'https://eks-data-prod.onclusive.com/service/disambiguate'
+
+    # entity recognition endpoint
+    ENTITY_RECOGNITION_ENDPOINT: str = 'https://eks-data-prod.onclusive.com/predictions/ner_neuron_v2'
+
+
 
 settings = Settings()

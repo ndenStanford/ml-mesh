@@ -8,7 +8,7 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src._init import init
-from src.routes import health_router
+from src.routes import health_router, readiness_router, entity_linking_router
 from src.settings import settings
 
 
@@ -30,6 +30,8 @@ def create_app() -> FastAPI:
     logger.debug("Adding routers...")
 
     app.include_router(health_router)
+    app.include_router(entity_linking_router)
+    app.include_router(readiness_router)
 
     return app
 
