@@ -69,6 +69,13 @@ def create_prompt(template: str, alias: str):
         template (str): prompt template text.
         alias (str): alias for template.
     """
+    all_prompts = PromptTemplateSchema.get()
+    for prompt in all_prompts:
+        if alias == prompt.alias:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"{alias} already exists in the database, please provide a unique alias",
+            )
     prompt = PromptTemplateSchema(template=template, alias=alias)
     return prompt.save()
 

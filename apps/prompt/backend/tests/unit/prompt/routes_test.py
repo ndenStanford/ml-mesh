@@ -75,8 +75,12 @@ def test_get_prompt_unauthenticated(test_client):
     ],
 )
 @patch("src.db.Model.save")
-def test_create_prompt(mock_table_save, id, template, alias, test_client):
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt(
+    mock_prompt_get, mock_table_save, id, template, alias, test_client
+):
     """Test get prompt endpoint."""
+    mock_prompt_get.return_value = []
     response = test_client.post(
         f"/api/v1/prompts?template={template}&alias={alias}",
         headers={"x-api-key": "1234"},
@@ -91,6 +95,38 @@ def test_create_prompt(mock_table_save, id, template, alias, test_client):
     assert isinstance(data["created_at"], str)
     assert isinstance(data["template"], str)
     assert isinstance(data["alias"], str)
+
+
+@pytest.mark.parametrize(
+    "id, template, alias",
+    [
+        (1, "I want you to act like {character} from {series}.", "alias 1"),
+    ],
+)
+@patch("src.db.Model.save")
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt_same_alias(
+    mock_prompt_get, mock_table_save, id, template, alias, test_client
+):
+    """Test get prompt endpoint."""
+    mock_prompt_get.return_value = [
+        {
+            "alias": "alias 1",
+            "created_at": "2023-04-19T09:47:43.431922+0000",
+            "id": "3513",
+            "template": "test-tamplate",
+        },
+    ]
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        headers={"x-api-key": "1234"},
+    )
+
+    assert not mock_table_save.called
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.json() == {
+        "detail": "alias 1 already exists in the database, please provide a unique alias name"
+    }
 
 
 def test_create_prompt_unauthenticated(test_client):
