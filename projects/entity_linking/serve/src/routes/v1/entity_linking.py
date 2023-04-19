@@ -1,9 +1,8 @@
 """Entity linking prediction."""
 
-# Standard lib
-
 # Standard Library
 from typing import Dict, Optional
+import re
 
 # 3rd party libraries
 # Third party libs
@@ -14,7 +13,7 @@ from fastapi import APIRouter, status
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.predict.summarization import handle
+from src.predict.entity_fishing import get_entity_linking
 from src.schemas import Request, Response
 
 
@@ -25,7 +24,7 @@ router = APIRouter(
 )
 
 @router.post("/fish", response_model=Response, status_code=status.HTTP_200_OK)
-def entity_fish_wiki(item: Item): # item is an instance of Item class
+def entity_fish_wiki(item: Request) -> Dict[str, Any]: # item is an instance of Item class
     supported_langs = ["en", "fr", "de", "es", "it", "ar","zh","ru","ja","pt","fa","uk","sv", "bn","hi"]
     text = item.content
     text = re.sub('\n+',' ', text)

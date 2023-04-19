@@ -1,4 +1,22 @@
+"""Entity linking prediction."""
 
+# Standard Library
+from typing import Dict, Optional
+
+# 3rd party libraries
+# Third party libs
+from fastapi import APIRouter, status
+
+# Internal libraries
+# Internal libs
+from onclusiveml.core.logging import get_default_logger
+
+# Source
+from src.predict.entity_fishing import get_entity_linking
+from src.schemas import Request, Response
+
+
+logger = get_default_logger(__name__)
 router = APIRouter(
     prefix="/ready",
 )
@@ -14,5 +32,6 @@ async def readycheck():
         return "OK"
     else:
         raise HTTPException(
-            status_code=status.HTTP_500???, detail='API not ready')"
+            status_code=status.HTTP_500???,
+            detail="API not ready",
         )
