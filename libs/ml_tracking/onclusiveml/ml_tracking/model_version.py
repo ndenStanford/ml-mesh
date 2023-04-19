@@ -20,7 +20,20 @@ def upload_file_to_model_version(
     local_file_path: Union[str, Path],
     neptune_data_reference: str,
 ) -> None:
-    """Utility function to upload a file to a specified model version on neptune ai."""
+    """Utility function to upload a file to a specified model version on neptune ai.
+
+    Args:
+        model_version (ModelVersion): The registered neptune model version that this meta data
+            should be attached to
+        local_file_path (Union[str, Path]): The local file path to the file that should be uploaded.
+            Only supports local file systems.
+        neptune_data_reference (str): The pseudo relative file path of the meta data object that
+            will be created. Relative w.r.t to the model version as pseudo root dir.
+
+    Raises:
+        FileExistsError: If the specified `local_file_path` does not point to a valid file, this
+            exception will be raised.
+    """
 
     if not os.path.exists(local_file_path):
         raise FileExistsError(f"Specified file {local_file_path} could not be located.")
@@ -33,13 +46,26 @@ def upload_directory_to_model_version(
     local_directory_path: Union[str, Path],
     neptune_data_reference: str,
 ) -> None:
-    """
-    Utility function to upload a directory to a specified model version on neptune ai.
+    """Utility function to upload an entire directory to a specified model version on neptune ai.
     For each file in the specified directory, the neptune_data_reference value will derived
     according to {neptune_data_reference}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
 
     Might want to add the option to exclude files and subdirectories from uploading in the future.
 
+    Args:
+        model_version (ModelVersion): The registered neptune model version that this meta data
+            should be attached to
+        local_directory_path (Union[str, Path]): The local directory path to the directory whose
+            contents should be uploaded. Only supports local file systems.
+        neptune_data_reference (str): The prefix to each individual file's neptune data reference
+            pseudo path (see description)
+
+    Raises:
+        FileExistsError: If the specified `local_directory_path` does not point to a valid
+            directory, this exception will be raised.
+
+        FileNotFoundError: If the specified `local_directory_path` points to a valid directory,
+            this exception will be raised.
     """
     # catch invalid dir paths
     if not os.path.isdir(local_directory_path):
@@ -84,9 +110,17 @@ def upload_directory_to_model_version(
 def upload_config_to_model_version(
     model_version: ModelVersion, config: Dict, neptune_data_reference: str
 ) -> None:
+    """Utility function that allows uploading of python dictionaries as .json files directly using
+    a local cache.
+
+    Args:
+        model_version (ModelVersion): The registered neptune model version that this meta data
+            should be attached to
+        config (Dict): A dictionary representing some configuration that need to be persisted as
+            model version meta data.
+        neptune_data_reference (str): The pseudo relative file path of the meta data object that
+            will be created. Relative w.r.t to the model version as pseudo root dir.
     """
-    Utility function that allows uploading of python dictionaries as .json files directly using
-    a local cache."""
     # sanity check neptune_data_reference for .json ending - otherwise file won't get displayed
     # as json file on neptune dashboard
     if not neptune_data_reference.endswith(".json"):
@@ -96,11 +130,14 @@ def upload_config_to_model_version(
             f'".json" file ending: {neptune_data_reference_edited}'
         )
         neptune_data_reference = neptune_data_reference_edited
+
     # temporarily save down config as json
     temp_time_stamp = dt.now().strftime("%Y_%m_%d__%H_%M_%s")
     temp_file_path = os.path.join(".", f"temp_neptune_config_{temp_time_stamp}.json")
     with open(temp_file_path, "w") as temp_config_file:
         json.dump(config, temp_config_file)
+
+    logger.debug(f"Saved temporary config file in {temp_file_path}.")
 
     upload_file_to_model_version(
         model_version=model_version,
@@ -109,3 +146,4 @@ def upload_config_to_model_version(
     )
     # remove temporary file
     os.remove(temp_file_path)
+    logger.debug(f"Removed temporary config file from {temp_file_path}.")
