@@ -110,12 +110,7 @@ def test_create_prompt_same_alias(
 ):
     """Test get prompt endpoint."""
     mock_prompt_get.return_value = [
-        {
-            "alias": "alias 1",
-            "created_at": "2023-04-19T09:47:43.431922+0000",
-            "id": "3513",
-            "template": "test-tamplate",
-        },
+        PromptTemplateSchema(template="test-template", alias=alias)
     ]
     response = test_client.post(
         f"/api/v1/prompts?template={template}&alias={alias}",
@@ -125,7 +120,9 @@ def test_create_prompt_same_alias(
     assert not mock_table_save.called
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {
-        "detail": "alias 1 already exists in the database, please provide a unique alias name"
+        "detail": "{} already exists in the database, please provide a unique alias".format(
+            alias
+        )
     }
 
 

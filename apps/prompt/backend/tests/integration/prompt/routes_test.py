@@ -86,7 +86,7 @@ def test_create_prompt_same_alias(test_client, create_prompts, template, alias):
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json() == {
-        "detail": "{} already exists in the database, please provide a unique alias name".format(
+        "detail": "{} already exists in the database, please provide a unique alias".format(
             alias
         )
     }
