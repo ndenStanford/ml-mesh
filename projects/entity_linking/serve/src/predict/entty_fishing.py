@@ -1,21 +1,17 @@
-"""ntity linking handler."""
+"""Entity linking handler."""
 
 # Standard Library
 import datetime
 import re
 from typing import Any, Dict, Optional, Tuple
 
-# 3rd party libraries
-# OpenAI library
-import openai
-
 # Internal libraries
 # Internal library
-from onclusiveml.core.logging import 
+from onclusiveml.core.logging import get_default_logger
 
 from src.settings import settings
 
-def generate_query(text, lang, entities):
+def generate_query(text: str, lang: str, entities: Dict[str, Any]) -> Dict[str, Any]:
     entities_query = [{"rawName": get_entity_text(entity)} for entity in entities]
     query = {
         "text": text,
@@ -27,13 +23,13 @@ def generate_query(text, lang, entities):
     }
     return query
 
-def query_wiki(query):
+def query_wiki(query: Dict[str, Any])-> Dict[str, Any]:
     url =  settings.ENTITY_FISHING_ENDPOINT
     # url =  'https://eks-data-dev-2.onclusive.com/service/disambiguate'
     q = requests.post(url, json = query)
     return q.json()
 
-def get_entity_linking(text, lang = 'en', entities = None):
+def get_entity_linking(text: str, lang: str = 'en', entities = Optional[Dict[str, Any]]) -> Dict[str, Any]:
     #using the NER API to get the result of NER and positions
     if entities is None:
         q = requests.post(settings.ENTITY_RECOGNITION_ENDPOINT, json = {"content": text, "return_pos": True})
@@ -54,13 +50,13 @@ def get_entity_linking(text, lang = 'en', entities = None):
             
     return entities
 
-def get_entity_text(entity):
+def get_entity_text(entity: Dict[str, Any]) -> str:
     entity_text = entity.get('text')
     if entity_text is None:
         entity_text = entity.get('entity_text')
     return entity_text
 
-def get_wiki_id(entity_text, entity_fish_entities):
+def get_wiki_id(entity_text: str, entity_fish_entities: Dict[str, Any]) -> Optional[str]:
     wiki_list = []
     for entity in entity_fish_entities:
         if entity.get('offsetStart'):
@@ -74,7 +70,7 @@ def get_wiki_id(entity_text, entity_fish_entities):
     else:
         return None
 
-def entity_text_match(text_1, text_2):
+def entity_text_match(text_1: str, text_2: str) -> bool:
     if (text_1 in text_2) or (text_2 in text_1):
         return True
     else:
