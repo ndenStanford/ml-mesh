@@ -73,6 +73,15 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - uses: dorny/paths-filter@v2
+        id: get-changed-files
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
