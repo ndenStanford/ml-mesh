@@ -1,6 +1,6 @@
 """Entity linking prediction."""
-
 # Standard Library
+from typing import Optional
 
 # 3rd party libraries
 # Third party libs
@@ -12,10 +12,10 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.predict.entity_fishing import get_entity_linking
-from src.schemas import Request, Response
+
 
 text = "I love living in England."
-lang = 'en'
+lang = "en"
 entities = [{"text": "England"}]
 result = get_entity_linking(text, lang, entities)
 
@@ -24,18 +24,21 @@ router = APIRouter(
     prefix="/ready",
 )
 
+
 @router.get("", status_code=status.HTTP_200_OK)
 @router.get("/", status_code=status.HTTP_200_OK)
-async def readycheck():  
+async def readycheck() -> Optional[str]:
     text = "I love living in England."
-    lang = 'en'
+    lang = "en"
     entities = [{"text": "England"}]
     result = get_entity_linking(text, lang, entities)
-    if result[0].get("text") == 'England' and result[0].get("wiki_link") == 'https://www.wikidata.org/wiki/Q21':
+    if (
+        result[0].get("text") == "England"
+        and result[0].get("wiki_link") == "https://www.wikidata.org/wiki/Q21"
+    ):
         return "OK"
     else:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="API not ready",
         )
-    

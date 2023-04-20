@@ -1,4 +1,5 @@
 """App."""
+
 # 3rd party libraries
 from fastapi import FastAPI
 
@@ -7,7 +8,7 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src._init import init
-from src.routes import health_router, readiness_router, entity_linking_router
+from src.routes import entity_linking_router, health_router, readiness_router
 from src.settings import settings
 
 
@@ -36,7 +37,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-#app
-
-#if __name__ == "__main__":
-#    uvicorn.run(app, host="0.0.0.0", port=8000)

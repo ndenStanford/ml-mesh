@@ -34,11 +34,15 @@ class Settings(BaseSettings):
     DOCS_URL: Optional[str] = None
 
     # entity fishing endpoint
-    ENTITY_FISHING_ENDPOINT: str = 'https://cloud.science-miner.com/nerd/service/disambiguate' # our endpoint does not have load balancer for now
+    # our endpoint does not have load balancer for now
+    ENTITY_FISHING_ENDPOINT: str = (
+        "https://cloud.science-miner.com/nerd/service/disambiguate"
+    )
 
     # entity recognition endpoint
-    ENTITY_RECOGNITION_ENDPOINT: str = 'https://eks-data-prod.onclusive.com/predictions/ner_neuron_v2'
-
+    ENTITY_RECOGNITION_ENDPOINT: str = (
+        "https://eks-data-prod.onclusive.com/predictions/ner_neuron_v2"
+    )
 
 
 settings = Settings()
