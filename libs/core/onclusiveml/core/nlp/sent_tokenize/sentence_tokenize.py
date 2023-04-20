@@ -6,12 +6,17 @@ from typing import Any, Dict, List
 
 # 3rd party libraries
 import nltk
-nltk.download('punkt')
+
+
+nltk.download("punkt")
+
+# Internal libraries
 # import consts
 from onclusiveml.core.nlp.sent_tokenize.consts import TOKENS
 
+
 class SentenceTokenize:
-    
+
     regex = re.compile(r"|".join(TOKENS))
 
     def tokenize(self, content: str, language: str = "english") -> Dict[str, List[Any]]:
