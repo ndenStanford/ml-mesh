@@ -1,8 +1,6 @@
 """Entity linking prediction."""
 
 # Standard Library
-from typing import Dict, Optional
-import requests
 
 # 3rd party libraries
 # Third party libs

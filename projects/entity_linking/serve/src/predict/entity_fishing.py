@@ -1,21 +1,20 @@
 """Entity linking handler."""
 
 # Standard Library
-import datetime
-import re
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 import requests
 from collections import Counter
 
 # Internal libraries
 # Internal library
 from onclusiveml.core.logging import get_default_logger
+from src.schemas import EntityDictInput
 
 from src.settings import settings
 
 logger = get_default_logger(__name__)
 
-def generate_query(text: str, lang: str, entities: Dict[str, Any]) -> Dict[str, Any]:
+def generate_query(text: str, lang: str, entities: EntityDictInput) -> Dict[str, Any]:
     entities_query = [{"rawName": get_entity_text(entity)} for entity in entities]
     query = {
         "text": text,
@@ -29,15 +28,10 @@ def generate_query(text: str, lang: str, entities: Dict[str, Any]) -> Dict[str, 
 
 def query_wiki(query: Dict[str, Any])-> Dict[str, Any]:
     url =  settings.ENTITY_FISHING_ENDPOINT
-    # url =  'https://eks-data-dev-2.onclusive.com/service/disambiguate'
     q = requests.post(url, json = query)
-
-    logger.info(q.status_code)
-    logger.info(url)
-    logger.info(query)
     return q.json()
 
-def get_entity_linking(text: str, lang: str = 'en', entities = Optional[Dict[str, Any]]) -> Dict[str, Any]:
+def get_entity_linking(text: str, lang: str = 'en', entities: EntityDictInput) -> Dict[str, Any]:
     #using the NER API to get the result of NER and positions
     if entities is None:
         q = requests.post(settings.ENTITY_RECOGNITION_ENDPOINT, json = {"content": text, "return_pos": True})

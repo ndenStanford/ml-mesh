@@ -1,7 +1,7 @@
 """Request model."""
 
 # Standard Library
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Optional, List
 from src.schemas.type_dict import EntityDictOutput
 
 # 3rd party libraries
