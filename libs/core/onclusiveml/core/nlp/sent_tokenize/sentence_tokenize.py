@@ -11,7 +11,6 @@ import nltk
 nltk.download("punkt")
 
 # Internal libraries
-# import consts
 from onclusiveml.core.nlp.sent_tokenize.consts import TOKENS
 
 
