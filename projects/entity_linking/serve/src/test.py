@@ -1,12 +1,13 @@
 import requests
 import time
+from src.schemas.request import Request
+from src.routes.v1.entity_linking import entity_fish_wiki
 
 url = 'http://127.0.0.1:8000'
-
 start_time = time.time()
 content = "I love living in England. London is a wonderful city."
 entities = [{"text": "England"}, {"text": "London"}]
-q = requests.post("{}/v1/entity_linking/fish".format(url), json = {"content": content, "entities": entities})
+q = requests.post("{}/entity-linking/fish".format(url), json = {"content": content, "entities": entities})
 assert q.status_code == 200
 print(q.content)
 print("--- %s seconds ---" % (time.time() - start_time))

@@ -1,6 +1,6 @@
 """Init."""
 
-__all__ = ["health_router", "v1_router"]
+__all__ = ["health_router", "entity_linking_router", "readiness_router"]
 
 # Source
 from src.routes.health import router as health_router

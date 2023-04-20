@@ -4,12 +4,16 @@
 import datetime
 import re
 from typing import Any, Dict, Optional, Tuple
+import requests
+from collections import Counter
 
 # Internal libraries
 # Internal library
 from onclusiveml.core.logging import get_default_logger
 
 from src.settings import settings
+
+logger = get_default_logger(__name__)
 
 def generate_query(text: str, lang: str, entities: Dict[str, Any]) -> Dict[str, Any]:
     entities_query = [{"rawName": get_entity_text(entity)} for entity in entities]
@@ -27,6 +31,10 @@ def query_wiki(query: Dict[str, Any])-> Dict[str, Any]:
     url =  settings.ENTITY_FISHING_ENDPOINT
     # url =  'https://eks-data-dev-2.onclusive.com/service/disambiguate'
     q = requests.post(url, json = query)
+
+    logger.info(q.status_code)
+    logger.info(url)
+    logger.info(query)
     return q.json()
 
 def get_entity_linking(text: str, lang: str = 'en', entities = Optional[Dict[str, Any]]) -> Dict[str, Any]:
