@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 # 3rd party libraries
 # Third party libs
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
 # Internal libraries
 # Internal libs
@@ -32,6 +32,6 @@ async def readycheck():
         return "OK"
     else:
         raise HTTPException(
-            status_code=status.HTTP_500???,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="API not ready",
         )
