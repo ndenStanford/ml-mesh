@@ -1,6 +1,7 @@
 """Test routes.x"""
 
 # Standard Library
+import json
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -12,6 +13,9 @@ from src.model.schemas import ModelSchema
 from src.prompt.schemas import PromptTemplateSchema
 from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 def test_health_route(test_client):
@@ -118,7 +122,7 @@ def test_create_prompt_same_alias(
     )
 
     assert not mock_table_save.called
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {
         "detail": "{} already exists in the database, please provide a unique alias".format(
             alias
@@ -241,7 +245,6 @@ def test_generate_text(
     test_client,
 ):
     """Test text generation endpoint."""
-    settings = get_settings()
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     mock_prompt_get.return_value = PromptTemplateSchema(
@@ -303,13 +306,21 @@ def test_generate_text_with_diff_model(
     test_client,
 ):
     """Test text generation endpoint."""
-    settings = get_settings()
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     mock_prompt_get.return_value = PromptTemplateSchema(
         id=id, template=template, alias="test alias"
     )
-    mock_model_get.return_value = ModelSchema(id=model_id, model_name=model_name)
+
+    parameters = json.dumps(
+        {
+            "max_tokens": settings.OPENAI_MAX_TOKENS,
+            "temperature": settings.OPENAI_TEMPERATURE,
+        }
+    )
+    mock_model_get.return_value = ModelSchema(
+        id=model_id, model_name=model_name, parameters=parameters
+    )
     # send request to test client
     response = test_client.post(
         f"/api/v1/prompts/{id}/generate/model/{model_id}",
@@ -361,7 +372,15 @@ def test_generate_text_with_diff_model_model_not_found(
     mock_prompt_get.return_value = PromptTemplateSchema(
         id=id, template=template, alias="test alias"
     )
-    mock_model_get.return_value = ModelSchema(id=model_id, model_name=model_name)
+    parameters = json.dumps(
+        {
+            "max_tokens": settings.OPENAI_MAX_TOKENS,
+            "temperature": settings.OPENAI_TEMPERATURE,
+        }
+    )
+    mock_model_get.return_value = ModelSchema(
+        id=model_id, model_name=model_name, parameters=parameters
+    )
     # send request to test client
     response = test_client.post(
         f"/api/v1/prompts/{id}/generate/model/{model_id}",

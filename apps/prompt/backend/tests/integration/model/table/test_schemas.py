@@ -21,7 +21,13 @@ from src.model.tables import ModelTable
 )
 def test_save(model_name):
     """Test save schema in db."""
-    schema = ModelSchema(model_name=model_name)
+    parameters = json.dumps(
+        {
+            "max_tokens": 10,
+            "temperature": 0.3,
+        }
+    )
+    schema = ModelSchema(model_name=model_name, parameters=parameters)
 
     saved_schema = schema.save()
 
@@ -39,7 +45,13 @@ def test_save(model_name):
 )
 def test_get_exists(model_name):
     """Test get item from table."""
-    schema = ModelSchema(model_name=model_name).save()
+    parameters = json.dumps(
+        {
+            "max_tokens": 200,
+            "temperature": 0.9,
+        }
+    )
+    schema = ModelSchema(model_name=model_name, parameters=parameters).save()
 
     schema_from_db = ModelSchema.get(schema.id)
 

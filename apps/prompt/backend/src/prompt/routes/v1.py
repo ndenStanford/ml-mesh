@@ -12,10 +12,15 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.helpers import get_api_key
+from src.model.constants import ModelEnum
 from src.model.schemas import ModelSchema
 from src.prompt.generate import generate_text
 from src.prompt.schemas import PromptTemplateListSchema, PromptTemplateSchema
 from src.prompt.tables import PromptTemplateTable
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 logger = get_default_logger(__name__)
@@ -73,7 +78,7 @@ def create_prompt(template: str, alias: str):
     for prompt in all_prompts:
         if alias == prompt.alias:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=status.HTTP_409_CONFLICT,
                 detail=f"{alias} already exists in the database, please provide a unique alias",
             )
     prompt = PromptTemplateSchema(template=template, alias=alias)
@@ -133,7 +138,10 @@ def generate(id: str, values: Dict[str, Any]):
     prompt_template = PromptTemplateSchema.get(id)
     return {
         "generated": generate_text(
-            prompt_template.prompt(**values), "gpt-3.5-turbo", 512, 0.7
+            prompt_template.prompt(**values),
+            ModelEnum.GPT3_5.value,
+            settings.OPENAI_MAX_TOKENS,
+            settings.OPENAI_TEMPERATURE,
         )
     }
 

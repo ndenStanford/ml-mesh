@@ -84,7 +84,7 @@ def test_create_prompt_same_alias(test_client, create_prompts, template, alias):
         headers={"x-api-key": "1234"},
     )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {
         "detail": "{} already exists in the database, please provide a unique alias".format(
             alias

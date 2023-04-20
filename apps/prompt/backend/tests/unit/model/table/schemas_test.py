@@ -14,18 +14,22 @@ from src.model.tables import ModelTable
 from src.settings import get_settings
 
 
+settings = get_settings()
+
+
 @pytest.mark.parametrize(
-    "model_name",
-    (
-        "text-davinci-003",
-        "text-curie-001",
-    ),
+    "model_name, max_tokens, temperature",
+    [
+        ("text-davinci-003", settings.OPENAI_MAX_TOKENS, settings.OPENAI_TEMPERATURE),
+        ("text-curie-001", settings.OPENAI_MAX_TOKENS, settings.OPENAI_TEMPERATURE),
+    ],
 )
 @patch("src.db.Model.save")
-def test_init_model_name_schema(mock_save, model_name):
+def test_init_model_name_schema(mock_save, model_name, max_tokens, temperature):
     """Assert model initialization"""
-    settings = get_settings()
-    model = ModelSchema(model_name=model_name)
+    parameters = json.dumps({"max_tokens": max_tokens, "temperature": temperature})
+
+    model = ModelSchema(model_name=model_name, parameters=parameters)
 
     assert model.model_name == model_name
     assert json.loads(model.parameters)["max_tokens"] == settings.OPENAI_MAX_TOKENS
@@ -36,16 +40,17 @@ def test_init_model_name_schema(mock_save, model_name):
 
 
 @pytest.mark.parametrize(
-    "model_name",
-    (
-        "text-davinci-003",
-        "text-curie-001",
-    ),
+    "model_name, max_tokens, temperature",
+    [
+        ("text-davinci-003", settings.OPENAI_MAX_TOKENS, settings.OPENAI_TEMPERATURE),
+        ("text-curie-001", settings.OPENAI_MAX_TOKENS, settings.OPENAI_TEMPERATURE),
+    ],
 )
 @patch("src.db.Model.save")
-def test_save_model_schema(mock_save, model_name):
+def test_save_model_schema(mock_save, model_name, max_tokens, temperature):
     """Assert model initialization"""
-    model_name = ModelSchema(model_name=model_name)
+    parameters = json.dumps({"max_tokens": max_tokens, "temperature": temperature})
+    model_name = ModelSchema(model_name=model_name, parameters=parameters)
     saved_model_name = model_name.save()
 
     mock_save.assert_called_once()
@@ -63,7 +68,6 @@ def test_save_model_schema(mock_save, model_name):
 @patch.object(ModelTable, "get")
 def test_get_model_properties_schema_with_id(mock_get, id):
     """Test retrieve model properties with id."""
-    settings = get_settings()
     mock_get.return_value = ModelTable(
         id=id,
         model_name="model_name",

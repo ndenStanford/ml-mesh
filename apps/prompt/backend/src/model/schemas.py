@@ -21,12 +21,7 @@ class ModelSchema(BaseModel):
     id: Optional[str] = None
     model_name: str
     created_at: Optional[str] = None
-    parameters: Optional[str] = json.dumps(
-        {
-            "max_tokens": settings.OPENAI_MAX_TOKENS,
-            "temperature": settings.OPENAI_TEMPERATURE,
-        }
-    )
+    parameters: Optional[str] = None
 
     def save(self) -> "ModelSchema":
         """Creates a new model or update existing."""

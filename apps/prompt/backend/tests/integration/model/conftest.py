@@ -11,13 +11,17 @@ from starlette.testclient import TestClient
 # Source
 from src.model.schemas import ModelSchema
 from src.model.tables import ModelTable
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 TEST_MODELS = [
-    ModelSchema(model_name="model-1"),
-    ModelSchema(model_name="model-2"),
-    ModelSchema(model_name="model-3"),
-    ModelSchema(model_name="model-4"),
+    ModelSchema(model_name="model-1", parameters=settings.OPENAI_PARAMETERS),
+    ModelSchema(model_name="model-2", parameters=settings.OPENAI_PARAMETERS),
+    ModelSchema(model_name="model-3", parameters=settings.OPENAI_PARAMETERS),
+    ModelSchema(model_name="model-4", parameters=settings.OPENAI_PARAMETERS),
 ]
 
 

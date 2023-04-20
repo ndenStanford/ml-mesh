@@ -1,8 +1,9 @@
 """Settings."""
 
 # Standard Library
+import json
 from functools import lru_cache
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -14,43 +15,40 @@ class Settings(BaseSettings):
     # Generic settings
     # api name
     API_NAME: str = "Prompt Manager"
-
     # api description
     API_DESCRIPTION: str = ""
-
     # api environment
     ENVIRONMENT: str = "dev"
-
     # api debug level
     DEBUG: bool = True
-
     # api runtime
     KUBERNETES_IN_POD: bool = False
-
     # log level
     LOGGING_LEVEL: str = "debug"
-
     # documentation endpoint
     DOCS_URL: Optional[str] = None
-
     # initialize database
     INITIALIZE: bool = True
-
     # API key for secure endpoints access
     API_KEY: str
     API_KEY_NAME: str = "x-api-key"
-
     # OpenAI API key
     OPENAI_API_KEY: str
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
 
+    OPENAI_PARAMETERS = json.dumps(
+        {
+            "max_tokens": OPENAI_MAX_TOKENS,
+            "temperature": OPENAI_TEMPERATURE,
+        }
+    )
     # predefined models
-    LIST_OF_MODELS: Dict[str, str] = {
-        "1": "gpt-3.5.turbo",
-        "2": "text-davinci-003",
-        "3": "text-curie-001",
-        "4": "gpt-4",
+    LIST_OF_MODELS: Dict[str, List[str]] = {
+        "1": ["gpt-3.5.turbo", OPENAI_PARAMETERS],
+        "2": ["text-davinci-003", OPENAI_PARAMETERS],
+        "3": ["text-curie-001", OPENAI_PARAMETERS],
+        "4": ["gpt-4", OPENAI_PARAMETERS],
     }
 
     AWS_REGION: str = "us-east-1"

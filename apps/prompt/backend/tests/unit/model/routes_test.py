@@ -13,6 +13,9 @@ from src.model.schemas import ModelSchema
 from src.settings import get_settings
 
 
+settings = get_settings()
+
+
 def test_health_route(test_client):
     """Test health endpoint."""
     response = test_client.get("/health")
@@ -40,9 +43,16 @@ def test_get_models_unauthenticated(test_client):
 @pytest.mark.parametrize("id", [1, 124543, "2423"])
 @patch.object(ModelSchema, "get")
 def test_get_model(mock_model_get, id, test_client):
-    settings = get_settings()
+    parameters = json.dumps(
+        {
+            "max_tokens": settings.OPENAI_MAX_TOKENS,
+            "temperature": settings.OPENAI_TEMPERATURE,
+        }
+    )
     """Test get model endpoint."""
-    mock_model_get.return_value = ModelSchema(id=id, model_name="test-model")
+    mock_model_get.return_value = ModelSchema(
+        id=id, model_name="test-model", parameters=parameters
+    )
     response = test_client.get(f"/api/v1/models/{id}", headers={"x-api-key": "1234"})
     mock_model_get.assert_called_with(f"{id}")
     assert response.status_code == status.HTTP_200_OK
@@ -50,12 +60,7 @@ def test_get_model(mock_model_get, id, test_client):
         "created_at": None,
         "id": f"{id}",
         "model_name": "test-model",
-        "parameters": json.dumps(
-            {
-                "max_tokens": settings.OPENAI_MAX_TOKENS,
-                "temperature": settings.OPENAI_TEMPERATURE,
-            }
-        ),
+        "parameters": parameters,
     }
 
 
