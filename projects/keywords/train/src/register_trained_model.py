@@ -10,7 +10,9 @@ from transformers import pipeline
 
 # 3rd party libraries
 import neptune
-from settings import KEYWORD_TRAIN_SETTINGS
+
+# Source
+from src.settings import KEYWORD_TRAIN_SETTINGS
 
 
 settings = KEYWORD_TRAIN_SETTINGS.dict()
@@ -177,5 +179,22 @@ for (artifact, artifact_reference) in (
             f"Uploaded {artifact_file_path} to meta data path ",
             f"model/{artifact_reference}/{artifact_file}.",
         )
+    # test params upload
+    # Define and log metadata
+    TEST_PARAMS = {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "config": {"a": 1, "b": 2},
+    }
 
+    model_version["model/test_params"] = TEST_PARAMS  # ?
+    model_version["model/test_text_inputs"] = {"content": sample_inputs}  # ?
+    model_version["model/test_tokenizer_settings"] = tokenizer_settings  # succeeds
+    model_version["model/test_tokenized_inputs"] = tokenized_sample_inputs  # fails
+    model_version["model/test_hf_model_predictions"] = {
+        "content": hf_model_predictions
+    }  # fails
+    # looks like dicts with array type values or
 model_version.stop()
