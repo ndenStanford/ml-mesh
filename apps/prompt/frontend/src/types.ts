@@ -11,6 +11,14 @@ export interface ButtonProps {
   disabled?: boolean;
 }
 
+export interface ToastProps {
+  content: string;
+  action?: {
+    text: string;
+    onClick: () => void;
+  };
+}
+
 export interface IErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
@@ -29,6 +37,7 @@ export interface InputRangeProps {
 
 export interface AppState {
   theme: Theme;
+  showToast: boolean;
 }
 
 export interface PromptsState {

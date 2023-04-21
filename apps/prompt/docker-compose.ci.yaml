@@ -11,7 +11,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command:
       [
         "uvicorn",
@@ -50,7 +50,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: v2023.3.2
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["unit"]
     environment:
@@ -74,7 +74,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: v2023.3.2
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
     environment:
@@ -102,7 +102,7 @@ services:
     profiles: ["backend", "integration"]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
-      # database is ready to receive requests.
+      # databse is ready to receive requests.
       test: ["CMD-SHELL", "sleep 3s || exit 1"]
       interval: 5s
       retries: 5

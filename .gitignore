@@ -176,7 +176,6 @@ jspm_packages/
 typings/
 
 # dependencies
-/node_modules
 /.pnp
 .pnp.js
 
