@@ -1,0 +1,43 @@
+# 3rd party libraries
+import pytest
+
+# Internal libraries
+from onclusiveml.ml_tracking.upload import (
+    upload_directory_to_model_version,
+    upload_file_to_model_version,
+)
+
+
+@pytest.mark.upload
+@pytest.mark.parametrize(
+    "file_name,file_extension",
+    [
+        ("test_file_1", "json"),
+        ("test_file_2", "txt"),
+    ],
+)
+def upload_file_to_model_version_test(
+    test_model_version, test_file_directory_upload, file_name, file_extension
+):
+
+    upload_file_to_model_version(
+        model_version=test_model_version,
+        local_file_path=f"{test_file_directory_upload}/{file_name}.{file_extension}",
+        neptune_data_reference=f"model/{file_name}",
+    )
+
+    test_model_version.stop()
+
+
+@pytest.mark.upload
+def upload_directory_to_model_version_test(
+    test_model_version, test_file_directory_upload
+):
+
+    upload_directory_to_model_version(
+        model_version=test_model_version,
+        local_directory_path=test_file_directory_upload,
+        neptune_data_reference="model/test_file_directory",
+    )
+
+    test_model_version.stop()
