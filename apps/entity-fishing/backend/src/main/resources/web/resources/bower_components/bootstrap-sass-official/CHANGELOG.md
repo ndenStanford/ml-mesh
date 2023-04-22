@@ -60,7 +60,7 @@
 
 ## 2.3.1.1 (yanked)
 
-- Change how image_url is handled internally -_Tristan Harward_
+- Change how image*url is handled internally -\_Tristan Harward*
 - Fix some font variables not having `!default` - _Thomas McDonald_
 
 ## 2.3.0.0

@@ -10,10 +10,11 @@ FROM openjdk:8u275-jdk as builder
 USER root
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
-    JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+    JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8" \
+    HOME_DIR="apps/entity-fishing/backend"
 
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install unzip wget git 
+    apt-get -y --no-install-recommends install unzip wget git
 # Final upgrade + clean
 RUN apt-get update -y && \
     apt-get clean all -y
@@ -53,15 +54,15 @@ RUN ./gradlew clean install --no-daemon  --info --stacktrace
 WORKDIR /opt/
 
 # gradle
-COPY gradle/ ./entity-fishing/gradle/
-COPY gradlew ./entity-fishing/
-COPY gradle.properties ./entity-fishing/
-COPY build.gradle ./entity-fishing/
-COPY settings.gradle ./entity-fishing/
+COPY ${HOME_DIR}/gradle/ ./entity-fishing/gradle/
+COPY ${HOME_DIR}/gradlew ./entity-fishing/
+COPY ${HOME_DIR}/gradle.properties ./entity-fishing/
+COPY ${HOME_DIR}/build.gradle ./entity-fishing/
+COPY ${HOME_DIR}/settings.gradle ./entity-fishing/
 
-COPY data/ ./entity-fishing/data/
-COPY lib/ ./entity-fishing/lib/
-COPY src/ ./entity-fishing/src/
+COPY ${HOME_DIR}/data/ ./entity-fishing/data/
+COPY ${HOME_DIR}/lib/ ./entity-fishing/lib/
+COPY ${HOME_DIR}/src/ ./entity-fishing/src/
 
 WORKDIR /opt/entity-fishing
 RUN ./gradlew clean install -x test
@@ -105,3 +106,8 @@ EXPOSE ${ENTITY_FISHING_PORT_MONITOR}
 # entity-fishing server will be accessible at http://<SERVER ADDRESS>:${ENTITY_FISHING_PORT}
 CMD ["./gradlew", "--no-daemon", "run", "-x", "compileJava", "-x", "processResources", "-x", "classes"]
 
+# --- production stage
+FROM builder as production
+
+# --- test build stage
+FROM builder as development
