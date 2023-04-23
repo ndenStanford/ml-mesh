@@ -12,11 +12,15 @@ export default function Button(props: ButtonProps) {
       disabled={props.disabled}
       role="button"
     >
-      <div
-        className={styles["icon-button-icon"] + ` ${props.noDark && "no-dark"}`}
-      >
-        {props.icon}
-      </div>
+      {props.icon && (
+        <div
+          className={
+            styles["icon-button-icon"] + ` ${props.noDark && "no-dark"}`
+          }
+        >
+          {props.icon}
+        </div>
+      )}
       {props.text && (
         <div className={styles["icon-button-text"]}>{props.text}</div>
       )}

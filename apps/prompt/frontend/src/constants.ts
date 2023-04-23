@@ -15,3 +15,7 @@ export enum Theme {
 }
 
 export const DEFAULT_THEME = Theme.DARK;
+
+export enum APP_MODALS {
+  NEW_PROMPT = "NEW PROMPT",
+}

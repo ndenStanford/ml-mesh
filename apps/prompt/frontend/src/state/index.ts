@@ -2,31 +2,28 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
-import {
-  useDispatch,
-  TypedUseSelectorHook,
-  useSelector as rawUseSelector,
-} from "react-redux";
 import appReducer from "./slices/app";
+import modalsReducer from "./slices/modals";
 import promptsReducer from "./slices/prompts";
-import thunk from "redux-thunk";
 
 const persistConfig = {
   key: "root",
   storage,
 };
 
-const rootReducer = combineReducers({
+const globalReducer = combineReducers({
   app: appReducer,
   prompts: promptsReducer,
+  modals: modalsReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, globalReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== "production",
-  middleware: [thunk],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
 });
 
 export const persistor = persistStore(store);

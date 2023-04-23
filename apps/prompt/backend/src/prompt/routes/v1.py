@@ -12,7 +12,11 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.helpers import get_api_key
 from src.prompt.generate import generate_text
-from src.prompt.schemas import PromptTemplateListSchema, PromptTemplateSchema
+from src.prompt.schemas import (
+    PromptTemplateListSchema,
+    PromptTemplateOutputSchema,
+    PromptTemplateSchema,
+)
 from src.prompt.tables import PromptTemplateTable
 
 
@@ -40,7 +44,7 @@ def get_prompts():
 @router.get(
     "/{id}",
     status_code=status.HTTP_200_OK,
-    response_model=PromptTemplateSchema,
+    response_model=PromptTemplateOutputSchema,
     dependencies=[Security(get_api_key)],
 )
 def get_prompt(id: str):
@@ -50,7 +54,7 @@ def get_prompt(id: str):
         id (str): prompt id
     """
     try:
-        return PromptTemplateSchema.get(id)
+        return PromptTemplateSchema.get(id).to_output()
     except PromptTemplateTable.DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"{str(e)} - (id={str(id)})"

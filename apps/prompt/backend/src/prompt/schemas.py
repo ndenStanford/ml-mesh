@@ -12,6 +12,15 @@ from pydantic import BaseModel
 from src.prompt.tables import PromptTemplateTable
 
 
+class PromptTemplateOutputSchema(BaseModel):
+    """Prompt Template output schema"""
+
+    id: Optional[str] = None
+    template: str
+    created_at: Optional[str] = None
+    variables: List[str] = []
+
+
 class PromptTemplateSchema(BaseModel):
     """Prompt template schema.
 
@@ -26,6 +35,7 @@ class PromptTemplateSchema(BaseModel):
     @property
     def variables(self) -> List[str]:
         """Returns the list of template variables."""
+        print(Formatter().parse(self.template))
         return [p for _, p, _, _ in Formatter().parse(self.template) if p is not None]
 
     def prompt(self, **kwargs) -> str:
@@ -48,16 +58,20 @@ class PromptTemplateSchema(BaseModel):
         )
 
     @classmethod
-    def get(cls, id: Optional[str] = None) -> "PromptTemplateSchema":
+    def get(cls, id: Optional[str] = None) -> PromptTemplateOutputSchema:
         """Returns row of the table."""
         if id is None:
             return list(
                 map(
-                    lambda x: PromptTemplateSchema(**json.loads(x.to_json())),
+                    lambda x: PromptTemplateSchema(
+                        **json.loads(x.to_json())
+                    ).to_output(),
                     list(PromptTemplateTable.scan()),
                 )
             )
-        return PromptTemplateSchema(**json.loads(PromptTemplateTable.get(id).to_json()))
+        return PromptTemplateSchema(
+            **json.loads(PromptTemplateTable.get(id).to_output().to_json())
+        )
 
     def update(self, **kwargs) -> None:
         """Updates table record."""
@@ -66,8 +80,17 @@ class PromptTemplateSchema(BaseModel):
             actions=[PromptTemplateTable.template.set(kwargs.get("template"))]
         )
 
+    def to_output(self) -> PromptTemplateOutputSchema:
+        """Converts internal schema to output schema."""
+        return PromptTemplateOutputSchema(
+            id=self.id,
+            template=self.template,
+            created_at=self.created_at,
+            variables=self.variables,
+        )
+
 
 class PromptTemplateListSchema(BaseModel):
     """List of prompt templates."""
 
-    prompts: List[PromptTemplateSchema] = []
+    prompts: List[PromptTemplateOutputSchema] = []

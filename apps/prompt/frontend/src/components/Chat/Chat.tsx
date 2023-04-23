@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./chat.module.scss";
 import { Button } from "../Button";
 import { Theme } from "../../constants";
-import { GlobalState } from "@/src/types";
+import { ChatProps } from "@/src/types";
 import { ReactComponent as LightIcon } from "../../icons/light.svg";
 import { ReactComponent as AutoIcon } from "../../icons/auto.svg";
 import { ReactComponent as DarkIcon } from "../../icons/dark.svg";
@@ -10,7 +10,7 @@ import { ReactComponent as SendWhiteIcon } from "../../icons/send-white.svg";
 import { useDispatch } from "react-redux";
 import { switchTheme } from "../../state/slices/app";
 
-export default function Chat(props: { state: GlobalState }) {
+export default function Chat(props: ChatProps) {
   const dispatch = useDispatch();
   const handleSwitchTheme = (e: any) => {
     dispatch(switchTheme(e.target.value));
@@ -24,10 +24,10 @@ export default function Chat(props: { state: GlobalState }) {
             <div
               className={`${styles["window-header-main-title"]} ${styles["chat-body-title"]}`}
             >
-              Chat
+              {props.header}
             </div>
             <div className={styles["window-header-sub-title"]}>
-              Send messages with prompt templates.
+              {props.subtitle}
             </div>
           </div>
           <div className={styles["window-actions"]}>
@@ -49,7 +49,7 @@ export default function Chat(props: { state: GlobalState }) {
             </div>
           </div>
         </div>
-        <div className={styles["chat-body"]}></div>
+        <div className={styles["chat-body"]}>{props.children}</div>
         <div className={styles["chat-input-panel"]}>
           <div className={styles["chat-input-panel-inner"]}>
             <textarea className={styles["chat-input"]} />

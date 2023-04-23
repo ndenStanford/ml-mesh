@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { PromptListItemProps, PromptsState } from "@/src/types";
 import { API_URI, API_KEY } from "../../constants";
-import { GlobalState } from "..";
 
 export const getPrompts = createAsyncThunk("prompts/list", async () => {
   const response = await fetch(`${API_URI}/prompts`, {
@@ -18,7 +17,8 @@ export const getPrompts = createAsyncThunk("prompts/list", async () => {
         id: prompt.id,
         alias: prompt.alias,
         template: prompt.template,
-        time: prompt.created_at,
+        variables: prompt.variables,
+        created_at: prompt.created_at,
         selected: prompt.selected,
       };
       return promptItem;
@@ -26,6 +26,23 @@ export const getPrompts = createAsyncThunk("prompts/list", async () => {
   );
   return promptItems;
 });
+
+export const createPrompt = createAsyncThunk(
+  "prompts/create",
+  async (template: string) => {
+    const response = await fetch(`${API_URI}/prompts?template=${template}`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "x-api-key": API_KEY,
+      },
+    });
+    if (response.status !== 201) {
+      console.log("Error fetching");
+    }
+    console.log("Successfully created new prompt.");
+  }
+);
 
 const promptsSlice = createSlice({
   name: "prompts",
@@ -42,6 +59,5 @@ const promptsSlice = createSlice({
   },
 });
 
-export const listPrompts = (state: GlobalState) => state.prompts.list;
 const promptsReducer = promptsSlice.reducer;
 export default promptsReducer;

@@ -10,6 +10,15 @@ set -o errexit -o errtrace -o pipefail -o nounset
 KERNEL="$(uname -s)"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 
+function error() {
+    JOB="$0"              # job name
+    LASTLINE="$1"         # line of error occurrence
+    LASTERR="$2"          # error code
+    echo "ERROR in ${JOB} : line ${LASTLINE} with exit code ${LASTERR}"
+    _setup
+}
+trap 'error ${LINENO} ${?}' ERR
+
 # Installing Darwin package manager
 _install_homebrew(){
     echo "==> Installing XCode..."
@@ -46,9 +55,9 @@ _install_python(){
     echo "==> Installing python..."
     PYTHON_VERSION=$(cat "${ROOT_DIR}"/.python-version)
     # shellcheck disable=SC2129
-    echo "export PYENV_ROOT=$HOME/.pyenv" >> ~/.bashrc
-    echo "command -v pyenv >/dev/null || export PATH=$PYENV_ROOT/bin:$PATH" >> ~/.bashrc
-    echo "eval $(pyenv init -)" >> ~/.bashrc
+    echo "export PYENV_ROOT=$HOME/.pyenv" >> ~/.zprofile
+    echo "command -v pyenv >/dev/null || export PATH=$PYENV_ROOT/bin:$PATH" >> ~/.zprofile
+    echo "eval $(pyenv init -)" >> ~/.zprofile
     pyenv install "${PYTHON_VERSION}" -f
     pyenv global "${PYTHON_VERSION}"
 }
@@ -72,15 +81,19 @@ _setup_git_hooks(){
     pre-commit gc
 }
 
+_setup(){
+    _install_global_deps
+    _install_python
+    _install_poetry
+    _install_project_deps
+    _setup_git_hooks
+}
+
 # Main entrypoint for script.
 main(){
     if [[ "${KERNEL}" == "Darwin" ]]; then
         _install_homebrew
-        _install_global_deps
-        _install_python
-        _install_poetry
-        _install_project_deps
-        _setup_git_hooks
+        _setup
     else
         echo "Kernel ${KERNEL} is not supported by the script."
         echo "If your kernel bootrap does not exist, please check the project README for manual installation steps"

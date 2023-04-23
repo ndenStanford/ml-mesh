@@ -6,23 +6,18 @@ import {
   PromptListItem,
   PromptList,
 } from "./components";
-import { useGlobalSelector } from "./hooks/use-dispatch";
-import { useSelector, useDispatch } from "react-redux";
-import { GlobalState, GlobalDispatch } from "./state";
-import { useGlobalDispatch } from "./hooks/use-dispatch";
-import { listPrompts, getPrompts } from "./state/slices/prompts";
-import { ThunkDispatch } from "@reduxjs/toolkit";
-import { showToast, hideToast } from "./state/slices/app";
+import { useGlobalSelector, useGlobalDispatch } from "./hooks/use-dispatch";
+import { GlobalState } from "./state";
+import { getPrompts, createPrompt } from "./state/slices/prompts";
+import { addModal, hideModal, showModal } from "./state/slices/modals";
+import { APP_MODALS } from "./constants";
 
 export default function App() {
-  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
-  const { app, prompts } = useGlobalSelector((state: GlobalState) => state);
+  const dispatch = useGlobalDispatch();
+  const { app, prompts, modals } = useGlobalSelector(
+    (state: GlobalState) => state
+  );
 
-  const handlePromptListItemOnClick = () => {
-    dispatch(showToast());
-  };
-
-  const promptItems = useSelector(listPrompts);
   const firstRender = useRef(true);
 
   // to run on first render of the application
@@ -30,26 +25,57 @@ export default function App() {
     if (firstRender.current) {
       firstRender.current = false;
       dispatch(getPrompts());
-      dispatch(hideToast());
+      prompts.list.map((item) => dispatch(addModal(item.id)));
+      dispatch(addModal(APP_MODALS.NEW_PROMPT));
     }
   });
 
   return (
     <>
       <Layout state={app}>
-        <SideBar>
+        <SideBar
+          title={"Onclusive Prompt Manager"}
+          subtitle={"Onclusive Machine Learning"}
+          onActionClick={() => {
+            dispatch(showModal(APP_MODALS.NEW_PROMPT));
+          }}
+          hideModal={() => {
+            dispatch(hideModal(APP_MODALS.NEW_PROMPT));
+          }}
+          isNewPromptModalVisible={modals.list[APP_MODALS.NEW_PROMPT]}
+          onModalActionClick={(template: string) => {
+            dispatch(createPrompt(template));
+          }}
+        >
           <PromptList>
-            {promptItems.map((item, _) => (
+            {prompts.list.map((item) => (
               <PromptListItem
-                alias={item.alias}
-                template={item.template}
-                created_at={item.created_at}
-                onClick={handlePromptListItemOnClick}
+                item={{
+                  id: item.id,
+                  alias: item.alias,
+                  template: item.template,
+                  variables: item.variables,
+                  created_at: item.created_at,
+                  selected: item.selected,
+                  onClick: () => {
+                    dispatch(showModal(item.id));
+                  },
+                }}
+                isModalVisible={modals.list[item.id]}
+                hideModal={() => {
+                  dispatch(hideModal(item.id));
+                }}
               />
             ))}
           </PromptList>
         </SideBar>
-        <Chat state={{ app, prompts }} />
+        <Chat
+          header={"Chat"}
+          subtitle={"Send messages with prompt templates."}
+          state={{ app, prompts, modals }}
+        >
+          <></>
+        </Chat>
       </Layout>
     </>
   );

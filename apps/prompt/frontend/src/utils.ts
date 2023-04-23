@@ -1,5 +1,4 @@
 import { Theme } from "./constants";
-import { ChatSessionState } from "./types";
 import { DEFAULT_THEME } from "./constants";
 
 export function toggleTheme(theme: Theme): Theme {
@@ -25,13 +24,13 @@ export function setTheme(theme: Theme): Theme {
     'meta[name="theme-color"]:not([media])'
   );
 
-  if (theme === Theme.AUTO) {
+  if (theme === Theme.LIGHT) {
     document.body.classList.add("light");
   }
-  if (theme === Theme.LIGHT) {
+  if (theme === Theme.DARK) {
     document.body.classList.add("dark");
   }
-  if (theme === Theme.DARK) {
+  if (theme === Theme.AUTO) {
     metaDescriptionDark?.setAttribute("content", "#151515");
     metaDescriptionLight?.setAttribute("content", "#fafafa");
   }
@@ -42,14 +41,4 @@ export function setTheme(theme: Theme): Theme {
 export function updateTheme(theme: Theme): Theme {
   const newTheme = toggleTheme(theme);
   return setTheme(newTheme);
-}
-
-export function createDefaultSession(): ChatSessionState {
-  const createDate = new Date().toLocaleString();
-
-  return {
-    id: Date.now(),
-    messages: [],
-    lastUpdate: createDate,
-  };
 }
