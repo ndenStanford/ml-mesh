@@ -35,6 +35,94 @@ def test_model_version():
 
 
 @pytest.fixture
+def test_captured_directories_for_upload_expected(
+    test_file_directory_upload, exclude, neptune_attribute_path
+):
+
+    neptune_attribute_prefix = (
+        "" if not neptune_attribute_path else f"{neptune_attribute_path}/"
+    )
+
+    result = [
+        (
+            os.path.join(
+                test_file_directory_upload, "test_file_subdirectory", "test_file_3.yaml"
+            ),
+            f"{neptune_attribute_prefix}test_file_subdirectory/test_file_3.yaml",
+        ),
+        (
+            os.path.join(test_file_directory_upload, "test_file_1.json"),
+            f"{neptune_attribute_prefix}test_file_1.json",
+        ),
+        (
+            os.path.join(test_file_directory_upload, "test_file_2.txt"),
+            f"{neptune_attribute_prefix}test_file_2.txt",
+        ),
+    ]
+
+    if exclude == [".", "__"]:
+        pass
+    elif exclude == []:
+        result.append(
+            (
+                os.path.join(test_file_directory_upload, "__excluded_test_file.txt"),
+                f"{neptune_attribute_prefix}__excluded_test_file.txt",
+            )
+        )
+        result.append(
+            (
+                os.path.join(test_file_directory_upload, ".excluded_test_file.json"),
+                f"{neptune_attribute_prefix}.excluded_test_file.json",
+            )
+        )
+        result.append(
+            (
+                os.path.join(
+                    test_file_directory_upload,
+                    "test_file_subdirectory",
+                    "__excluded_test_file.yaml",
+                ),
+                f"{neptune_attribute_prefix}test_file_subdirectory/__excluded_test_file.yaml",
+            )
+        )
+        result.append(
+            (
+                os.path.join(
+                    test_file_directory_upload,
+                    "test_file_subdirectory",
+                    ".excluded_test_file.yaml",
+                ),
+                f"{neptune_attribute_prefix}test_file_subdirectory/.excluded_test_file.yaml",
+            )
+        )
+        result.append(
+            (
+                os.path.join(
+                    test_file_directory_upload,
+                    "__excluded_test_subdirectory",
+                    "__excluded_test_file.txt",
+                ),
+                f"{neptune_attribute_prefix}__excluded_test_subdirectory/__excluded_test_file.txt",
+            )
+        )
+        result.append(
+            (
+                os.path.join(
+                    test_file_directory_upload,
+                    ".excluded_test_subdirectory",
+                    ".excluded_test_file.json",
+                ),
+                f"{neptune_attribute_prefix}.excluded_test_subdirectory/.excluded_test_file.json",
+            )
+        )
+
+    else:
+        raise ValueError('Only [] and [".","__"] are supported by integration tests!')
+
+    return result
+
+
+@pytest.fixture
 def test_config_expected():
 
     return {
