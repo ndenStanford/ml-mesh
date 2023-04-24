@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ml-compile"
+name = "ml-tracking"
 version = "0.1.0"
 description = "Internal library for model tracking utilities using the neptune ai platform."
 authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
@@ -9,10 +9,8 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 neptune = "^1.1.1"
 pytest = "7.2.0"
-pytest-lazy-fixture = "0.6.3"
+pytest-order = "^1.1.0"
 
-
-[tool.poetry.group.dev.dependencies]
 
 [build-system]
 requires = ["poetry>=0.12"]

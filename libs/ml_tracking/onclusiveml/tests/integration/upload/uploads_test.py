@@ -10,6 +10,7 @@ from onclusiveml.ml_tracking.upload import (
 )
 
 
+@pytest.mark.order(1)
 @pytest.mark.upload
 @pytest.mark.parametrize(
     "file_name,file_extension",
@@ -31,6 +32,7 @@ def upload_file_to_model_version_test(
     test_model_version.stop()
 
 
+@pytest.mark.order(1)
 @pytest.mark.upload
 @pytest.mark.parametrize(
     "neptune_attribute_path", ["", "some_attribute_path", "some/nested/attribute/path"]
@@ -54,6 +56,7 @@ def capture_directory_for_upload_test(
     )
 
 
+@pytest.mark.order(1)
 @pytest.mark.upload
 def upload_directory_to_model_version_test(
     test_model_version, test_file_directory_upload
@@ -68,6 +71,7 @@ def upload_directory_to_model_version_test(
     test_model_version.stop()
 
 
+@pytest.mark.order(1)
 @pytest.mark.upload
 def upload_config_to_model_version_test(test_model_version, test_config_expected):
 

@@ -14,6 +14,7 @@ from onclusiveml.ml_tracking.download import (
 from onclusiveml.ml_tracking.upload import capture_directory_for_upload
 
 
+@pytest.mark.order(2)
 @pytest.mark.download
 @pytest.mark.parametrize(
     "file_name,file_extension",
@@ -41,6 +42,7 @@ def download_file_from_model_version_test(
     os.remove(local_file_path)
 
 
+@pytest.mark.order(2)
 @pytest.mark.download
 def download_directory_from_model_version_test(
     test_model_version, test_file_directory_download, test_file_directory_upload
@@ -84,8 +86,9 @@ def download_directory_from_model_version_test(
     shutil.rmtree(test_file_directory_download)
 
 
+@pytest.mark.order(2)
 @pytest.mark.download
-def fetch_config_to_model_version_test(test_model_version, test_config_expected):
+def download_config_to_model_version_test(test_model_version, test_config_expected):
 
     test_config_actual = download_config_from_model_version(
         model_version=test_model_version, neptune_attribute_path="test_config"
