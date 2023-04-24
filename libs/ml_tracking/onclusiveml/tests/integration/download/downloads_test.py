@@ -1,5 +1,6 @@
 # Standard Library
 import os
+import shutil
 
 # 3rd party libraries
 import pytest
@@ -25,14 +26,19 @@ def download_file_from_model_version_test(
     test_model_version, test_file_directory_download, file_name, file_extension
 ):
 
+    local_file_path = os.path.join(
+        test_file_directory_download,
+        f"{file_name}_downloaded.{file_extension}",
+    )
+
     download_file_from_model_version(
         model_version=test_model_version,
         neptune_attribute_path=f"model/{file_name}",
-        local_file_path=os.path.join(
-            test_file_directory_download,
-            f"{file_name}_downloaded.{file_extension}",
-        ),
+        local_file_path=local_file_path,
     )
+
+    # clean up
+    os.remove(local_file_path)
 
 
 @pytest.mark.download
@@ -48,12 +54,12 @@ def download_directory_from_model_version_test(
     # assemble expected, comparable ground truth download content
     # capture original upload dir content
     upload_directory_content = capture_directory_for_upload(
-        local_directory_path=test_file_directory_download, neptune_attribute_path=""
+        local_directory_path=test_file_directory_upload, neptune_attribute_path=""
     )
     # retain the relative filepaths only for comparison purposes
     directory_content_expected = set(
         [
-            os.path.relpath(item[0], test_file_directory_download)
+            os.path.relpath(item[0], test_file_directory_upload)
             for item in upload_directory_content
         ]
     )
@@ -73,6 +79,9 @@ def download_directory_from_model_version_test(
     )
 
     assert set(directory_content_actual) == set(directory_content_expected)
+
+    # clean up
+    shutil.rmtree(test_file_directory_download)
 
 
 @pytest.mark.download
