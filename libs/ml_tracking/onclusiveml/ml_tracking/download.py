@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Union
 
 # 3rd party libraries
+from neptune.attributes.atoms.file import File
 from neptune.metadata_containers.model_version import ModelVersion
-from neptune.types import File
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -68,13 +68,18 @@ def _extract_file_attributes(value: Any) -> Union[File, Dict]:
         Iterator[Any]: Either a File instance or a dictionary
     """ """"""
 
-    for v in value.values():
+    for k, v in value.items():
 
         if isinstance(v, dict):
+            logger.debug(
+                f"Value of key {k} is type Dict. Adding recursion level for {v}."
+            )
             yield from _extract_file_attributes(v)
         elif isinstance(v, File):
+            logger.debug(f"Value of key {k} is File. Yielding {v}.")
             yield v
         else:
+            logger.debug(f"Value of key {k} is of type {type(v)}. Skipping.")
             continue
 
 

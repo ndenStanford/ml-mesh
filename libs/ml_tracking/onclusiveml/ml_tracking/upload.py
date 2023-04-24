@@ -63,13 +63,22 @@ def upload_file_to_model_version(
 
 
 def capture_directory_for_upload(
-    local_directory_path: Union[str, Path], neptune_attribute_path: str
+    local_directory_path: Union[str, Path],
+    neptune_attribute_path: str,
+    exclude: List[str] = ["__", "."],
 ) -> List[Tuple[str, str]]:
-    """Utility function that scans a specified directory on local disk, captures all files and
+    """
+    Utility function that scans a specified directory on local disk, captures all files and
     transforms their respective relative file paths into neptune attribute references.
 
     Args:
-        local_directory_path (Union[str, Path]): _description_
+        local_directory_path (Union[str, Path]): The path to the local directory whose content
+            needs to be captured and prepped for uploading to neptune
+        neptune_attribute_path (str): The attribute path prefix that should be applied to all files
+            captured. The neptune attribute path equivalent to the files' local file paths' local
+            directory prefix.
+        exclude (List[str], optional): Prefixes for files and directories to be excluded. Defaults
+            to ('__','.').
 
     Returns:
         List[Tuple[str, str]]: A list of tuples:
@@ -80,7 +89,23 @@ def capture_directory_for_upload(
 
     local_paths_and_attribute_references: List[Tuple[str, str]] = []
     # nested subdirectories and files of any recursion depth should be supported
-    for file_directory_path, _, file_names in os.walk(local_directory_path):
+    for file_directory_path, subdirs, file_names in os.walk(
+        local_directory_path, topdown=True
+    ):
+
+        # reduce effort by dynamically removing irrelevant files & dirs, as per
+        # https://stackoverflow.com/questions/13454164/os-walk-without-hidden-folders
+        if exclude:
+            exclude_tuple = tuple(exclude)
+            file_names = [
+                filename
+                for filename in file_names
+                if not filename.startswith(exclude_tuple)
+            ]
+            subdirs[:] = [
+                subdir for subdir in subdirs if not subdir.startswith(exclude_tuple)
+            ]
+
         for file_name in file_names:
             # get file path relative to specified local directory & replace OS separators with '/'s
             local_file_path = os.path.join(file_directory_path, file_name)
@@ -107,12 +132,11 @@ def upload_directory_to_model_version(
     model_version: ModelVersion,
     local_directory_path: Union[str, Path],
     neptune_attribute_path: str,
+    exclude: List[str] = ["__", "."],
 ) -> None:
     """Utility function to upload an entire directory to a specified model version on neptune ai.
     For each file in the specified directory, the neptune_attribute_path value will derived
     according to {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
-
-    Might want to add the option to exclude files and subdirectories from uploading in the future.
 
     Upload counterpart to the `download.download_directory_from_model_version` method.
 
@@ -123,6 +147,8 @@ def upload_directory_to_model_version(
             contents should be uploaded. Only supports local file systems.
         neptune_attribute_path (str): The prefix to each individual file's neptune data reference
             pseudo path (see description)
+        exclude (List[str], optional): Prefixes for files and directories to be excluded. Defaults
+            to ['__','.'].
 
     Raises:
         FileExistsError: If the specified `local_directory_path` does not point to a valid
@@ -147,7 +173,7 @@ def upload_directory_to_model_version(
         logger.debug(f"Uploading the following files: {files_considered_for_upload}")
 
     local_paths_and_attribute_references = capture_directory_for_upload(
-        local_directory_path, neptune_attribute_path
+        local_directory_path, neptune_attribute_path, exclude
     )
 
     for (
