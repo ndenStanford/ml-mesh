@@ -1,11 +1,13 @@
 # Standard Library
+import json
 import os
+from datetime import datetime as dt
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Union
 
 # 3rd party libraries
-from neptune.attributes.atoms.file import File
 from neptune.metadata_containers.model_version import ModelVersion
+from neptune.types import File
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -20,6 +22,8 @@ def download_file_from_model_version(
     local_file_path: Union[str, Path],
 ) -> None:
     """Utility function to download a file from a specified model version on neptune ai.
+
+    Download counterpart to the `upload.upload_file_to_model_version` method.
 
     Args:
         model_version (ModelVersion): The registered neptune model version that this meta data
@@ -36,7 +40,15 @@ def download_file_from_model_version(
     if os.path.exists(local_file_path):
         raise FileExistsError(f"Specified file {local_file_path} already exists.")
 
+    logger.debug(
+        f"Downloading file {neptune_attribute_path} into local file {local_file_path}."
+    )
+
     model_version[neptune_attribute_path].download(local_file_path)
+
+    logger.debug(
+        f"Downloaded file {neptune_attribute_path} into local file {local_file_path}."
+    )
 
 
 def _extract_file_attributes(value: Any) -> Union[File, Dict]:
@@ -190,7 +202,6 @@ def capture_directory_for_download(
     model_version_file_attributes = list(
         _extract_file_attributes(model_version.get_structure())
     )
-
     # derive the neptune data references with and without file extensions for relevant File
     # attributes only
     neptune_attribute_paths = _derive_and_filter_neptune_attribute_paths(
@@ -223,6 +234,8 @@ def download_directory_from_model_version(
     according to {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
 
     Might want to add the option to exclude files and subdirectories from uploading in the future.
+
+    Download counterpart to the `upload.upload_directory_to_model_version` method.
 
     Args:
         model_version (ModelVersion): The registered neptune model version that this meta data
@@ -269,3 +282,40 @@ def download_directory_from_model_version(
             f"Downloaded file attribute referenced by {neptune_attribute_path} to local path ",
         )
         logger.info(f"{local_file_path}.")
+
+
+def download_config_from_model_version(
+    model_version: ModelVersion, neptune_attribute_path: str
+) -> Dict:
+    """Utility function that fetches .json type File attributes from a specified neptune model
+    version. Downloads the file into a temporary file on local disk and removes it once the object
+    has been loaded into the python session.
+
+    Download counterpart to the `upload.upload_config_to_model_version` method.
+
+    Args:
+        model_version (ModelVersion): The registered neptune model version that this config should
+        be attached to
+        config (Dict): The configuration dictionary that should be uploaded
+        neptune_attribute_path (str): The pseudo relative file path of the meta data object that
+            will be created. Relative w.r.t to the model version as pseudo root dir.
+    """
+
+    temp_file_name = f"{dt.now().strftime('%Y-%m-%d_%H-%M-%S.%f')}.json"
+
+    download_file_from_model_version(
+        model_version=model_version,
+        neptune_attribute_path=neptune_attribute_path,
+        local_file_path=temp_file_name,
+    )
+
+    with open(temp_file_name, "r") as temp_file:
+        config_file = json.load(temp_file)
+
+    logger.debug(f"Removing temp config file {temp_file_name}")
+
+    os.remove(temp_file_name)
+
+    logger.debug(f"Removed temp config file {temp_file_name}")
+
+    return config_file

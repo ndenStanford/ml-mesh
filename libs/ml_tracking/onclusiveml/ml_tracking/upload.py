@@ -1,10 +1,12 @@
 # Standard Library
+import json
 import os
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 # 3rd party libraries
 from neptune.metadata_containers.model_version import ModelVersion
+from neptune.types import File
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -15,10 +17,13 @@ logger = get_default_logger(__name__)
 
 def upload_file_to_model_version(
     model_version: ModelVersion,
-    local_file_path: Union[str, Path],
     neptune_attribute_path: str,
+    local_file_path: Union[str, Path] = "",
+    file_object: File = None,
 ) -> None:
     """Utility function to upload a file to a specified model version on neptune ai.
+
+    Upload counterpart to the `download.download_file_from_model_version` method.
 
     Args:
         model_version (ModelVersion): The registered neptune model version that this meta data
@@ -33,10 +38,28 @@ def upload_file_to_model_version(
             exception will be raised.
     """
 
-    if not os.path.exists(local_file_path):
-        raise FileExistsError(f"Specified file {local_file_path} could not be located.")
+    if not local_file_path and not file_object:
+        raise ValueError(
+            "At least one of `local_file_path` or `file_object` must be provided."
+        )
 
-    model_version[neptune_attribute_path].upload(local_file_path)
+    if local_file_path:
+        if not os.path.exists(local_file_path):
+            raise FileExistsError(
+                f"Specified file {local_file_path} could not be located."
+            )
+        else:
+            file_object = File.from_path(local_file_path)
+
+    logger.debug(
+        f"Uploading file {local_file_path} into attribute {neptune_attribute_path}."
+    )
+
+    model_version[neptune_attribute_path].upload(file_object)
+
+    logger.debug(
+        f"Uploaded file {local_file_path} into attribute {neptune_attribute_path}."
+    )
 
 
 def capture_directory_for_upload(
@@ -56,7 +79,6 @@ def capture_directory_for_upload(
     """
 
     local_paths_and_attribute_references: List[Tuple[str, str]] = []
-
     # nested subdirectories and files of any recursion depth should be supported
     for file_directory_path, _, file_names in os.walk(local_directory_path):
         for file_name in file_names:
@@ -91,6 +113,8 @@ def upload_directory_to_model_version(
     according to {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
 
     Might want to add the option to exclude files and subdirectories from uploading in the future.
+
+    Upload counterpart to the `download.download_directory_from_model_version` method.
 
     Args:
         model_version (ModelVersion): The registered neptune model version that this meta data
@@ -139,3 +163,34 @@ def upload_directory_to_model_version(
 
         logger.debug(f"Uploaded file {local_file_path} to neptune data reference")
         logger.debug(f"{directory_file_neptune_attribute_path}")
+
+
+def upload_config_to_model_version(
+    model_version: ModelVersion, config: Dict, neptune_attribute_path: str
+) -> None:
+    """Utility function that uploads Dict types as .json objects directly to neptune's model version
+    registry without having to go via local files or caches.
+
+    Upload counterpart to the `download.download_config_from_model_version` method.
+
+    Args:
+        model_version (ModelVersion): The registered neptune model version that this config should
+        be attached to
+        config (Dict): The configuration dictionary that should be uploaded
+        neptune_attribute_path (str): The pseudo relative file path of the meta data object that
+            will be created. Relative w.r.t to the model version as pseudo root dir.
+    """
+
+    config_json = json.dumps(config, indent=4)
+
+    logger.debug(f"JSON of config file: {config_json}")
+
+    config_file = File.from_content(content=config_json, extension="json")
+
+    upload_file_to_model_version(
+        model_version=model_version,
+        neptune_attribute_path=neptune_attribute_path,
+        file_object=config_file,
+    )
+
+    return

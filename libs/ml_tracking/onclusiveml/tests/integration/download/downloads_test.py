@@ -6,6 +6,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.ml_tracking.download import (
+    download_config_from_model_version,
     download_directory_from_model_version,
     download_file_from_model_version,
 )
@@ -43,3 +44,13 @@ def download_directory_from_model_version_test(
         local_directory_path=test_file_directory_download,
         neptune_attribute_path="model/test_file_directory",
     )
+
+
+@pytest.mark.download
+def fetch_config_to_model_version_test(test_model_version, test_config_expected):
+
+    test_config_actual = download_config_from_model_version(
+        model_version=test_model_version, neptune_attribute_path="test_config"
+    )
+
+    assert test_config_actual == test_config_expected

@@ -15,7 +15,7 @@ def test_file_directory_upload():
 @pytest.fixture()
 def test_file_directory_download(test_file_directory_upload):
 
-    path = f"{test_file_directory_upload}_download"
+    path = f"{test_file_directory_upload}_downloaded"
 
     if not os.path.isdir(path):
         os.makedirs(path)
@@ -35,7 +35,7 @@ def test_model_version():
 
 
 @pytest.fixture
-def test_config():
+def test_config_expected():
 
     return {
         "letter": "a",

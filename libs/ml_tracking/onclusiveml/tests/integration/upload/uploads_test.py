@@ -3,6 +3,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.ml_tracking.upload import (
+    upload_config_to_model_version,
     upload_directory_to_model_version,
     upload_file_to_model_version,
 )
@@ -41,3 +42,13 @@ def upload_directory_to_model_version_test(
     )
 
     test_model_version.stop()
+
+
+@pytest.mark.upload
+def upload_config_to_model_version_test(test_model_version, test_config_expected):
+
+    upload_config_to_model_version(
+        model_version=test_model_version,
+        config=test_config_expected,
+        neptune_attribute_path="test_config",
+    )
