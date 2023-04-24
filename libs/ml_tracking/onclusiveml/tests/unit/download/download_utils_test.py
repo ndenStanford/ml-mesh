@@ -3,12 +3,11 @@ import os
 
 # 3rd party libraries
 import pytest
-from neptune.attributes.atoms.file import File
 
 # Internal libraries
 from onclusiveml.ml_tracking.download import (
-    _convert_neptune_data_path_to_local_path,
-    _derive_and_filter_file_neptune_data_paths,
+    _convert_neptune_attribute_path_to_local_path,
+    _derive_and_filter_neptune_attribute_paths,
     _extract_file_attributes,
 )
 
@@ -30,35 +29,27 @@ def extract_file_attributes_test(
     assert actual == expected
 
 
-@pytest.mark.parametrize("neptune_reference_prefix", ["c", ""])
-def derive_and_filter_file_neptune_data_paths_test(
+@pytest.mark.parametrize("neptune_attribute_prefix", ["c", ""])
+def derive_and_filter_neptune_attributes_paths_test(
     test_extracted_file_attributes_expected,
-    neptune_reference_prefix,
-    test_extension,
-    monkeypatch,
-    test_derive_and_filter_file_neptune_data_paths_expected,
+    neptune_attribute_prefix,
+    test_derive_and_filter_neptune_attribute_paths_expected,
 ):
-    # mock up the `fetch_extension` method
-    def mock_fetch_extension(self):
 
-        return test_extension
-
-    monkeypatch.setattr(File, "fetch_extension", mock_fetch_extension)
-
-    test_derive_and_filter_file_neptune_data_paths_actual = (
-        _derive_and_filter_file_neptune_data_paths(
+    test_derive_and_filter_neptune_attribute_paths_actual = (
+        _derive_and_filter_neptune_attribute_paths(
             test_extracted_file_attributes_expected,
-            neptune_reference_prefix=neptune_reference_prefix,
+            neptune_attribute_prefix=neptune_attribute_prefix,
         )
     )
 
-    assert set(test_derive_and_filter_file_neptune_data_paths_actual) == set(
-        test_derive_and_filter_file_neptune_data_paths_expected
+    assert set(test_derive_and_filter_neptune_attribute_paths_actual) == set(
+        test_derive_and_filter_neptune_attribute_paths_expected
     )
 
 
 @pytest.mark.parametrize(
-    "neptune_data_path,neptune_reference_prefix,local_directory_path,local_path_expected",
+    "neptune_attribute_path,neptune_attribute_prefix,local_directory_path,local_path_expected",
     [
         ("a/b/c", "a/b", ".", os.path.join(".", "c")),
         ("a/b/c", "", ".", os.path.join(".", "a", "b", "c")),
@@ -68,15 +59,15 @@ def derive_and_filter_file_neptune_data_paths_test(
     ],
 )
 def convert_neptune_data_path_to_local_path_test(
-    neptune_data_path,
-    neptune_reference_prefix,
+    neptune_attribute_path,
+    neptune_attribute_prefix,
     local_directory_path,
     local_path_expected,
 ):
 
-    local_path_actual = _convert_neptune_data_path_to_local_path(
-        neptune_data_path=neptune_data_path,
-        neptune_reference_prefix=neptune_reference_prefix,
+    local_path_actual = _convert_neptune_attribute_path_to_local_path(
+        neptune_attribute_path=neptune_attribute_path,
+        neptune_attribute_prefix=neptune_attribute_prefix,
         local_directory_path=local_directory_path,
     )
 

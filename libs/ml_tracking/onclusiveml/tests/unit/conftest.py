@@ -30,22 +30,14 @@ def test_extracted_file_attributes_expected():
 
 
 @pytest.fixture
-def test_extension():
+def test_derive_and_filter_neptune_attribute_paths_expected(neptune_attribute_prefix):
 
-    return "test_ext"
+    result = ["c/d/e", "c/g"]
 
-
-@pytest.fixture
-def test_derive_and_filter_file_neptune_data_paths_expected(
-    neptune_reference_prefix, test_extension
-):
-
-    result = [("c/d/e", f"c/d/e.{test_extension}"), ("c/g", f"c/g.{test_extension}")]
-
-    if neptune_reference_prefix == "c":
+    if neptune_attribute_prefix == "c":
         return result
-    elif neptune_reference_prefix == "":
-        result.insert(0, ("b", f"b.{test_extension}"))
+    elif neptune_attribute_prefix == "":
+        result.insert(0, "b")
         return result
     else:
         raise ValueError('Only values "c" and "" are suppported by this fixture.')

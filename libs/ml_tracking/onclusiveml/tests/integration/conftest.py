@@ -17,7 +17,7 @@ def test_file_directory_download(test_file_directory_upload):
 
     path = f"{test_file_directory_upload}_download"
 
-    if not os.path.isdir():
+    if not os.path.isdir(path):
         os.makedirs(path)
 
     return path

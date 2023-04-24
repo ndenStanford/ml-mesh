@@ -16,7 +16,7 @@ logger = get_default_logger(__name__)
 def upload_file_to_model_version(
     model_version: ModelVersion,
     local_file_path: Union[str, Path],
-    neptune_data_reference: str,
+    neptune_attribute_path: str,
 ) -> None:
     """Utility function to upload a file to a specified model version on neptune ai.
 
@@ -25,7 +25,7 @@ def upload_file_to_model_version(
             should be attached to
         local_file_path (Union[str, Path]): The local file path to the file that should be uploaded.
             Only supports local file systems.
-        neptune_data_reference (str): The pseudo relative file path of the meta data object that
+        neptune_attribute_path (str): The pseudo relative file path of the meta data object that
             will be created. Relative w.r.t to the model version as pseudo root dir.
 
     Raises:
@@ -36,11 +36,11 @@ def upload_file_to_model_version(
     if not os.path.exists(local_file_path):
         raise FileExistsError(f"Specified file {local_file_path} could not be located.")
 
-    model_version[neptune_data_reference].upload(local_file_path)
+    model_version[neptune_attribute_path].upload(local_file_path)
 
 
 def capture_directory_for_upload(
-    local_directory_path: Union[str, Path], neptune_data_reference: str
+    local_directory_path: Union[str, Path], neptune_attribute_path: str
 ) -> List[Tuple[str, str]]:
     """Utility function that scans a specified directory on local disk, captures all files and
     transforms their respective relative file paths into neptune attribute references.
@@ -62,20 +62,20 @@ def capture_directory_for_upload(
         for file_name in file_names:
             # get file path relative to specified local directory & replace OS separators with '/'s
             local_file_path = os.path.join(file_directory_path, file_name)
-            file_neptune_data_reference = os.path.relpath(
+            file_neptune_attribute_path = os.path.relpath(
                 local_file_path, local_directory_path
             ).replace(os.sep, "/")
             # prepend file's neptune data reference with specified directory level neptune data
             # reference
-            if neptune_data_reference:
-                directory_file_neptune_data_reference = (
-                    f"{neptune_data_reference}/{file_neptune_data_reference}"
+            if neptune_attribute_path:
+                directory_file_neptune_attribute_path = (
+                    f"{neptune_attribute_path}/{file_neptune_attribute_path}"
                 )
             else:
-                directory_file_neptune_data_reference = file_neptune_data_reference
+                directory_file_neptune_attribute_path = file_neptune_attribute_path
 
             local_paths_and_attribute_references.append(
-                (local_file_path, directory_file_neptune_data_reference)
+                (local_file_path, directory_file_neptune_attribute_path)
             )
 
     return local_paths_and_attribute_references
@@ -84,11 +84,11 @@ def capture_directory_for_upload(
 def upload_directory_to_model_version(
     model_version: ModelVersion,
     local_directory_path: Union[str, Path],
-    neptune_data_reference: str,
+    neptune_attribute_path: str,
 ) -> None:
     """Utility function to upload an entire directory to a specified model version on neptune ai.
-    For each file in the specified directory, the neptune_data_reference value will derived
-    according to {neptune_data_reference}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
+    For each file in the specified directory, the neptune_attribute_path value will derived
+    according to {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
 
     Might want to add the option to exclude files and subdirectories from uploading in the future.
 
@@ -97,7 +97,7 @@ def upload_directory_to_model_version(
             should be attached to
         local_directory_path (Union[str, Path]): The local directory path to the directory whose
             contents should be uploaded. Only supports local file systems.
-        neptune_data_reference (str): The prefix to each individual file's neptune data reference
+        neptune_attribute_path (str): The prefix to each individual file's neptune data reference
             pseudo path (see description)
 
     Raises:
@@ -123,19 +123,19 @@ def upload_directory_to_model_version(
         logger.debug(f"Uploading the following files: {files_considered_for_upload}")
 
     local_paths_and_attribute_references = capture_directory_for_upload(
-        local_directory_path, neptune_data_reference
+        local_directory_path, neptune_attribute_path
     )
 
     for (
         local_file_path,
-        directory_file_neptune_data_reference,
+        directory_file_neptune_attribute_path,
     ) in local_paths_and_attribute_references:
         # upload file
         upload_file_to_model_version(
             model_version=model_version,
             local_file_path=local_file_path,
-            neptune_data_reference=directory_file_neptune_data_reference,
+            neptune_attribute_path=directory_file_neptune_attribute_path,
         )
 
         logger.debug(f"Uploaded file {local_file_path} to neptune data reference")
-        logger.debug(f"{directory_file_neptune_data_reference}")
+        logger.debug(f"{directory_file_neptune_attribute_path}")

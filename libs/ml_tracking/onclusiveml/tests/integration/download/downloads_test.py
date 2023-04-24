@@ -25,7 +25,7 @@ def download_file_from_model_version_test(
 
     download_file_from_model_version(
         model_version=test_model_version,
-        neptune_data_reference=f"model/{file_name}",
+        neptune_attribute_path=f"model/{file_name}",
         local_file_path=os.path.join(
             test_file_directory_download,
             f"{file_name}_downloaded.{file_extension}",
@@ -41,5 +41,5 @@ def download_directory_from_model_version_test(
     download_directory_from_model_version(
         model_version=test_model_version,
         local_directory_path=test_file_directory_download,
-        neptune_data_reference="model/test_file_directory",
+        neptune_attribute_path="model/test_file_directory",
     )

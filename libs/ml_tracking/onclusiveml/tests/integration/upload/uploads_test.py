@@ -23,7 +23,7 @@ def upload_file_to_model_version_test(
     upload_file_to_model_version(
         model_version=test_model_version,
         local_file_path=f"{test_file_directory_upload}/{file_name}.{file_extension}",
-        neptune_data_reference=f"model/{file_name}",
+        neptune_attribute_path=f"model/{file_name}",
     )
 
     test_model_version.stop()
@@ -37,7 +37,7 @@ def upload_directory_to_model_version_test(
     upload_directory_to_model_version(
         model_version=test_model_version,
         local_directory_path=test_file_directory_upload,
-        neptune_data_reference="model/test_file_directory",
+        neptune_attribute_path="model/test_file_directory",
     )
 
     test_model_version.stop()
