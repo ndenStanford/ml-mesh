@@ -41,13 +41,13 @@ def download_file_from_model_version(
         raise FileExistsError(f"Specified file {local_file_path} already exists.")
 
     logger.debug(
-        f"Downloading file {neptune_attribute_path} into local file {local_file_path}."
+        f"Downloading File attribute {neptune_attribute_path} into local file {local_file_path}."
     )
 
     model_version[neptune_attribute_path].download(local_file_path)
 
     logger.debug(
-        f"Downloaded file {neptune_attribute_path} into local file {local_file_path}."
+        f"Downloaded File attribute {neptune_attribute_path} into local file {local_file_path}."
     )
 
 
@@ -216,14 +216,14 @@ def capture_directory_for_download(
     # convert the neptune file paths into valid local paths; retain the neptune file references
     neptune_attribute_and_local_paths = [
         (
-            neptune_attribute_path,
+            neptune_attribute_path_i,
             _convert_neptune_attribute_path_to_local_path(
-                neptune_attribute_path=neptune_attribute_path,
+                neptune_attribute_path=neptune_attribute_path_i,
                 neptune_attribute_prefix=neptune_attribute_path,
                 local_directory_path=local_directory_path,
             ),
         )
-        for neptune_attribute_path in neptune_attribute_paths
+        for neptune_attribute_path_i in neptune_attribute_paths
     ]
 
     return neptune_attribute_and_local_paths
@@ -274,19 +274,14 @@ def download_directory_from_model_version(
     )
     # apply the file level download function for all File instances retrieved
     for (
-        neptune_attribute_path,
-        local_file_path,
+        neptune_attribute_path_i,
+        local_file_path_i,
     ) in neptune_attribute_and_local_paths:
         download_file_from_model_version(
             model_version=model_version,
-            neptune_attribute_path=neptune_attribute_path,
-            local_file_path=local_file_path,
+            neptune_attribute_path=neptune_attribute_path_i,
+            local_file_path=local_file_path_i,
         )
-
-        logger.info(
-            f"Downloaded file attribute referenced by {neptune_attribute_path} to local path ",
-        )
-        logger.info(f"{local_file_path}.")
 
 
 def download_config_from_model_version(
