@@ -11,6 +11,12 @@ from transformers import AutoConfig
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils.generic import ModelOutput
 
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
+
+logger = get_default_logger(__name__, level=20)
+
 
 class CompiledModel(PreTrainedModel):
     """A fully functional subclass from the huggingface PreTrainedModel using a
@@ -124,7 +130,7 @@ class CompiledModel(PreTrainedModel):
         # - string-key based
         #  indexing
         if isinstance(model_output, dict):
-            print("Model output is a dictionary. Converting")
+            logger.debug("Model output is a dictionary. Converting")
             model_output = ModelOutput(model_output)
 
         return model_output
