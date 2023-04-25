@@ -2,7 +2,7 @@
 
 # Internal libraries
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenize
-import pytest
+
 
 def sentence_tokenize_test():
     text = """Elon Musk was the second person ever to amass a personal fortune of more than $200 billion, breaching that threshold in January 2021, months after Jeff Bezos.
