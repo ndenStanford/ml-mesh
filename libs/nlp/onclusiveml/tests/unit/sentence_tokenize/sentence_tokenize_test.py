@@ -1,7 +1,7 @@
 """sentence tokenize test."""
 
 # Internal libraries
-from onclusiveml.nlp.sentence_tokenize import SentenceTokenize
+from onclusiveml.nlp import SentenceTokenize
 
 
 def sentence_tokenize_test():
