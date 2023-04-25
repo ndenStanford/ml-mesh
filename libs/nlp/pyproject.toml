@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "core"
+name = "nlp"
 version = "0.1.0"
-description = "Core library"
-authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
+description = "NLP library"
+authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
@@ -10,6 +10,7 @@ python = "3.8.16"
 pytest = "7.2.0"
 typing-extensions = "4.5.0"
 pydantic = "1.10.4"
+nltk = "^3.8.1"
 
 
 [tool.poetry.dev-dependencies]
