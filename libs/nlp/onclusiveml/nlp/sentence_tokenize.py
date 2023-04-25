@@ -11,7 +11,7 @@ import nltk
 nltk.download("punkt")
 
 # Internal libraries
-from onclusiveml.core.nlp.sent_tokenize.consts import TOKENS
+from onclusiveml.nlp.consts import TOKENS
 
 
 class SentenceTokenize:

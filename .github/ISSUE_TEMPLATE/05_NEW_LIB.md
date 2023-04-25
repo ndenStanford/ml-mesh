@@ -13,6 +13,6 @@ assignees: ""
 - [ ] add the subfolders `onclusiveml/<library name>`, `onclusiveml/tests/unit` and `onclusiveml/tests/integration`.
 - [ ] initialise the project by running the command `poetry init`.
 - [ ] register new library in `Makefile` variable `ALL_LIBS`
-- [ ] get a PR started from your feature branch to `stage`
+- [ ] get a PR started from your feature branch to `prod`
 
 ---
