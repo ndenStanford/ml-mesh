@@ -50,7 +50,9 @@ ALL_DOCKER_IMGS:= \
 
 # all python libraries
 ALL_LIBS:= \
-	core
+	core \
+	ml_compile \
+	nlp
 
 # all projects
 ALL_PROJECTS:= \
