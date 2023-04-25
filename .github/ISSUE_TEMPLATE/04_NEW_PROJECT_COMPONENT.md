@@ -12,7 +12,7 @@ assignees: ""
 - [ ] create a new folder `projects/<project name>/` with the component name (prepare, train, compile, serve or display).
 - [ ] add the subfolders `src`, `tests/unit` and `tests/integration`.
 - [ ] initialise the project by running the command `poetry init`.
-- [ ] get a PR started from your feature branch to `prod`
+- [ ] get a PR started from your feature branch to `stage`
 - [ ] open an issue in [ml-platform](https://github.com/AirPR/ml-platform/blob/prod/.github/ISSUE_TEMPLATE/04_NEW_ECR_REPOSITORY.md) to create a new ECR repository with the name `<project name>-<component>`
 - [ ] add the docker image to the github actions list in both `.github/workflows/deployment.yaml` and `.github/workflows/pull-request.yaml`:
 
