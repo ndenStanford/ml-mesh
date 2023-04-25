@@ -6,6 +6,14 @@ import pytest
 from neptune import ModelVersion
 
 
+# create a new model version every time the integration test suite is run
+TEST_MODEL_VERSION_ID = ModelVersion(
+    model="TES-TEST",
+    project="onclusive/test",
+    api_token=os.environ.get("NEPTUNE_API_TOKEN"),  # your credentials
+)._sys_id
+
+
 @pytest.fixture()
 def test_file_directory_upload():
 
@@ -24,13 +32,14 @@ def test_file_directory_download(test_file_directory_upload):
 
 
 @pytest.fixture
-def test_model_version():
+def test_model_version(test_model_version_mode: str = "async"):
 
     return ModelVersion(
         model="TES-TEST",
-        with_id="TES-TEST-35",
+        with_id=TEST_MODEL_VERSION_ID,
         project="onclusive/test",
         api_token=os.environ.get("NEPTUNE_API_TOKEN"),  # your credentials
+        mode=test_model_version_mode,
     )
 
 

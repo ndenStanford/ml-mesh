@@ -16,6 +16,7 @@ from onclusiveml.ml_tracking.upload import capture_directory_for_upload
 
 @pytest.mark.order(2)
 @pytest.mark.download
+@pytest.mark.parametrize("test_model_version_mode", ["read-only"])
 @pytest.mark.parametrize(
     "file_name,file_extension",
     [
@@ -24,7 +25,11 @@ from onclusiveml.ml_tracking.upload import capture_directory_for_upload
     ],
 )
 def download_file_from_model_version_test(
-    test_model_version, test_file_directory_download, file_name, file_extension
+    test_model_version,
+    test_model_version_mode,
+    test_file_directory_download,
+    file_name,
+    file_extension,
 ):
 
     local_file_path = os.path.join(
@@ -39,13 +44,18 @@ def download_file_from_model_version_test(
     )
 
     # clean up
+    test_model_version.stop()
     os.remove(local_file_path)
 
 
 @pytest.mark.order(2)
 @pytest.mark.download
+@pytest.mark.parametrize("test_model_version_mode", ["read-only"])
 def download_directory_from_model_version_test(
-    test_model_version, test_file_directory_download, test_file_directory_upload
+    test_model_version,
+    test_model_version_mode,
+    test_file_directory_download,
+    test_file_directory_upload,
 ):
 
     download_directory_from_model_version(
@@ -83,15 +93,21 @@ def download_directory_from_model_version_test(
     assert set(directory_content_actual) == set(directory_content_expected)
 
     # clean up
+    test_model_version.stop()
     shutil.rmtree(test_file_directory_download)
 
 
 @pytest.mark.order(2)
 @pytest.mark.download
-def download_config_to_model_version_test(test_model_version, test_config_expected):
+@pytest.mark.parametrize("test_model_version_mode", ["read-only"])
+def download_config_from_model_version_test(
+    test_model_version, test_model_version_mode, test_config_expected
+):
 
     test_config_actual = download_config_from_model_version(
         model_version=test_model_version, neptune_attribute_path="test_config"
     )
 
     assert test_config_actual == test_config_expected
+
+    test_model_version.stop()
