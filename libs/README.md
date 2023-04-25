@@ -6,9 +6,9 @@ Internal libraries implement abstractions that allow us to build our ML applicat
 
 - **core**: base classes and global utilities used in all libraries and projects.
 - **data**: dataset lifecycle management.
-- **models**: model wrappers and parameter maangement.
-- **neuron**: neuron reusable objects to compile models.
-- **neptune**: Neptune.ai utilities.
+- **ml_tracking**: Support for interacting with the Neptune AI platform.
+- **ml_compile**: Support for optimizing models for serving purposes.
+- **ml_models**: model wrappers and parameter management.
 - **nlp**: internal NLP utilities.
 - **serving**: model wrappers for serving.
 - **training**: object suite to enable training models at scale.
@@ -19,12 +19,13 @@ Internal libraries implement abstractions that allow us to build our ML applicat
 Available targets:
 
     libs.install                            Installs a library and dependencies locally
-    libs.unit                               Runs unit tests for a library
-    libs.integration                        Runs integration tests for a library
-    libs.test                               Runs the full test suite
-    libs.unit-all                           Runs unit tests for all registered libraries
-    libs.integration-all                    Runs integration tests for all registered libraries
-    libs.test-all                           Runs the full test suite for all registered libraries
     libs.install-all                        Installs all libraries and dependencies locally
+    libs.unit                               Runs unit tests for a library
+    libs.unit-all                           Runs unit tests for all registered libraries
+    libs.integration                        Runs integration tests for a library
+    libs.integration-all                    Runs integration tests for all registered libraries
+    libs.test                               Runs the full test suite
+    libs.test-all                           Runs the full test suite for all registered libraries
+    
 
 ```

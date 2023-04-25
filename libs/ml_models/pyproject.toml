@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "ml-models"
+version = "0.1.0"
+description = "Project level ML (compiled) model wrapper classes and utilities."
+authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
+packages = [{include = "onclusiveml"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+ml-tracking = {path = "../ml_tracking"}
+ml-compile = {path = "../ml_compile"}
+
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true
+
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
