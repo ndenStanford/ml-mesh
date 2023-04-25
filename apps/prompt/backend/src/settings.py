@@ -8,6 +8,9 @@ from typing import Dict, List, Optional
 # 3rd party libraries
 from pydantic import BaseSettings
 
+# Source
+from src.model.constants import ModelEnum
+
 
 class Settings(BaseSettings):
     """API configuration."""
@@ -45,10 +48,10 @@ class Settings(BaseSettings):
     )
     # predefined models
     LIST_OF_MODELS: Dict[str, List[str]] = {
-        "1": ["gpt-3.5.turbo", OPENAI_PARAMETERS],
-        "2": ["text-davinci-003", OPENAI_PARAMETERS],
-        "3": ["text-curie-001", OPENAI_PARAMETERS],
-        "4": ["gpt-4", OPENAI_PARAMETERS],
+        "1": [ModelEnum.GPT3_5.value, OPENAI_PARAMETERS],
+        "2": [ModelEnum.DAVINCI.value, OPENAI_PARAMETERS],
+        "3": [ModelEnum.CURIE.value, OPENAI_PARAMETERS],
+        "4": [ModelEnum.GPT4.value, OPENAI_PARAMETERS],
     }
 
     AWS_REGION: str = "us-east-1"
