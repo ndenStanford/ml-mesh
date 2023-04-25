@@ -42,6 +42,7 @@ repos:
     rev: v2.4.1
     hooks:
       - id: prettier
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Dockerfile
   - repo: https://github.com/hadolint/hadolint.git
