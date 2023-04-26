@@ -16,25 +16,29 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
 @pytest.mark.order(2)
 @pytest.mark.keybert
 @pytest.mark.parametrize(
-    "compiled_word_pipeline, compiled_document_pipeline",
+    "document_pipeline, compiled_word_pipeline",
     [
         (
-            lazy_fixture("test_compiled_word_pipeline"),
-            lazy_fixture("test_compiled_document_pipeline"),
+            lazy_fixture("test_hf_pipeline"),
+            lazy_fixture("test_neuron_compiled_word_pipeline"),
         ),
         (
-            lazy_fixture("test_neuron_compiled_word_pipeline"),
+            lazy_fixture("test_compiled_document_pipeline"),
+            lazy_fixture("test_compiled_word_pipeline"),
+        ),
+        (
             lazy_fixture("test_neuron_compiled_document_pipeline"),
+            lazy_fixture("test_neuron_compiled_word_pipeline"),
         ),
     ],
 )
 def compiled_keybert_extract_keywords_test(
-    compiled_word_pipeline, compiled_document_pipeline, test_documents
+    document_pipeline, compiled_word_pipeline, test_documents
 ):
-    # compiled keybert
+    # either fully compiled keybert or a hybrid with document embedding pipeline uncompiled
     compiled_keybert = CompiledKeyBERT(
+        document_pipeline=document_pipeline,
         compiled_word_pipeline=compiled_word_pipeline,
-        compiled_document_pipeline=compiled_document_pipeline,
     )
 
     test_compiled_keywords = compiled_keybert.extract_keywords(docs=test_documents)
@@ -48,25 +52,26 @@ def compiled_keybert_extract_keywords_test(
 @pytest.mark.order(2)
 @pytest.mark.keybert
 @pytest.mark.parametrize(
-    "compiled_word_pipeline, compiled_document_pipeline",
+    "document_pipeline, compiled_word_pipeline",
     [
+        (lazy_fixture("test_hf_pipeline"), lazy_fixture("test_compiled_word_pipeline")),
         (
-            lazy_fixture("test_compiled_word_pipeline"),
             lazy_fixture("test_compiled_document_pipeline"),
+            lazy_fixture("test_compiled_word_pipeline"),
         ),
         (
-            lazy_fixture("test_neuron_compiled_word_pipeline"),
             lazy_fixture("test_neuron_compiled_document_pipeline"),
+            lazy_fixture("test_neuron_compiled_word_pipeline"),
         ),
     ],
 )
 def compiled_keybert_extract_embeddings_test(
-    compiled_word_pipeline, compiled_document_pipeline, test_documents
+    document_pipeline, compiled_word_pipeline, test_documents
 ):
 
     compiled_keybert = CompiledKeyBERT(
+        document_pipeline=document_pipeline,
         compiled_word_pipeline=compiled_word_pipeline,
-        compiled_document_pipeline=compiled_document_pipeline,
     )
 
     (
@@ -81,28 +86,30 @@ def compiled_keybert_extract_embeddings_test(
 
 
 @pytest.mark.parametrize(
-    "compiled_word_pipeline, compiled_document_pipeline",
+    "document_pipeline, compiled_word_pipeline",
     [
+        (lazy_fixture("test_hf_pipeline"), lazy_fixture("test_compiled_word_pipeline")),
         (
-            lazy_fixture("test_compiled_word_pipeline"),
             lazy_fixture("test_compiled_document_pipeline"),
+            lazy_fixture("test_compiled_word_pipeline"),
         ),
         (
-            lazy_fixture("test_neuron_compiled_word_pipeline"),
             lazy_fixture("test_neuron_compiled_document_pipeline"),
+            lazy_fixture("test_neuron_compiled_word_pipeline"),
         ),
     ],
 )
 def compiled_keybert_save_pretrained_from_pretrained(
-    compiled_word_pipeline, compiled_document_pipeline, test_documents
+    document_pipeline, compiled_word_pipeline, test_documents
 ):
     # initialize with constructor and score
     compiled_keybert = CompiledKeyBERT(
+        document_pipeline=document_pipeline,
         compiled_word_pipeline=compiled_word_pipeline,
-        compiled_document_pipeline=compiled_document_pipeline,
     )
 
     test_compiled_keywords = compiled_keybert.extract_keywords(docs=test_documents)
+
     # save, load and score again
     compiled_keybert.save_pretrained("./test")
     compiled_keybert_reloaded = CompiledKeyBERT.from_pretrained("./test")

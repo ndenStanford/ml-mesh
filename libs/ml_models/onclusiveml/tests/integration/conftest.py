@@ -35,7 +35,7 @@ def test_compiled_document_pipeline(test_hf_pipeline):
 
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
-        max_length=40,  # test docs are 100 words, so should be <= 150 tokens
+        max_length=150,  # test docs are 100 words, so should be <= 150 tokens
         batch_size=1,
         neuron=False,
         validate_compilation=False,
@@ -48,7 +48,7 @@ def test_neuron_compiled_word_pipeline(test_hf_pipeline):
 
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
-        max_length=5,
+        max_length=10,
         batch_size=1,
         neuron=True,
         validate_compilation=False,
@@ -61,7 +61,7 @@ def test_neuron_compiled_document_pipeline(test_hf_pipeline):
 
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
-        max_length=20,
+        max_length=15,
         batch_size=1,
         neuron=True,
         validate_compilation=False,

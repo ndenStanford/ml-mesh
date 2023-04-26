@@ -8,6 +8,7 @@ from keybert import KeyBERT
 from keybert._highlight import highlight_document
 from keybert._maxsum import max_sum_distance
 from keybert._mmr import mmr
+from transformers.pipelines import Pipeline, pipeline
 
 # 3rd party libraries
 import numpy as np
@@ -18,7 +19,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # Internal libraries
 from onclusiveml.ml_compile import CompiledPipeline
-from onclusiveml.ml_models.keywords import CompiledHFTransformerBackend
+from onclusiveml.ml_models.keywords import CustomHFTransformerBackend
 
 
 class CompiledKeyBERT(KeyBERT):
@@ -32,39 +33,33 @@ class CompiledKeyBERT(KeyBERT):
 
     def __init__(
         self,
-        compiled_document_pipeline: CompiledPipeline,
-        compiled_word_pipeline: CompiledPipeline = None,
+        document_pipeline: CompiledPipeline,
+        compiled_word_pipeline: Union[CompiledPipeline, Pipeline],
     ):
         """Updated constructor to support initialization and attaching of two, not one, backend of
-            type CompiledHFTransformerBackend:
-            - `compiled_document_backend`; to be used do embed documents, and
+            type CustomHFTransformerBackend:
+            - `document_backend`; to be used do embed documents, and
             - `compiled_word_backend`; to be used to embed keywords and seeded keywords (if
                 applicable)
 
         Args:
-            document_model (CompiledPipeline): A pipeline that has been compiled to embed entire
-                documents.
-            word_model (CompiledPipeline): A pipeline that has been compiled to embed keywords of
-                lengths no more than 10.
+            document_pipeline (Union[CompiledPipeline,Pipeline]): A pipeline used to embed entire
+                documents. Both compiled and uncompiled are supported. Unless incoming token
+                sequence length are equal to the model_max_length for 90% of the time or more, an
+                uncompiled pipeline gives better latency results than a (neuron) compiled one.
+            compiled_word_pipeline (CompiledPipeline): A pipeline that has been compiled to embed
+                keywords of token sequence lengths no more than 25. Only (neuron) compiled
+                pipelines are supported here as they provide a speed up of 3x - 4x.
 
         Args:
             copmiled_document_pipeline (CompiledPipeline): A pipeline that has been compiled to
                 embed entire documents.
-            compiled_word_pipeline (CompiledPipeline, optional): A pipeline that has been compiled
-                to embed keywords of lengths no more than 10. If not specified, the document
-                embedding backend will be used. Defaults to None.
+            compiled_word_pipeline (CompiledPipeline): A pipeline that has been compiled
+                to embed keywords of lengths no more than 10.
         """
-        # only support compiled huggingface transformer based pipelines as backends
-        self.compiled_document_backend = CompiledHFTransformerBackend(
-            compiled_document_pipeline
-        )
 
-        if compiled_word_pipeline is not None:
-            self.compiled_word_backend = CompiledHFTransformerBackend(
-                compiled_word_pipeline
-            )
-        else:
-            self.compiled_word_backend = self.compiled_document_backend
+        self.document_backend = CustomHFTransformerBackend(document_pipeline)
+        self.compiled_word_backend = CustomHFTransformerBackend(compiled_word_pipeline)
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
         """Canonic huggingface transformers export method. Only supports exporting to local file
@@ -74,15 +69,21 @@ class CompiledKeyBERT(KeyBERT):
             directory (Path,str): Directory on local file system to export model artifact to. Will
                 be created if it doesnt exist.
         """
-
-        for pipeline_subdir in ("compiled_word_pipeline", "compiled_document_pipeline"):
-            os.makedirs(os.path.join(directory, pipeline_subdir))
-
+        # since document pipelines are supported in both compiled and uncompiled formats, we use
+        # different subdirectories during export to be able to disambiguate at import time
+        if isinstance(self.document_backend.embedding_model, CompiledPipeline):
+            document_export_subdir = "compiled_document_pipeline"
+        else:
+            document_export_subdir = "document_pipeline"
+        # for pipeline_subdir in ("compiled_word_pipeline", document_export_subdir):
+        #     os.makedirs(os.path.join(directory, pipeline_subdir))
+        # export word embedding pipeline
         self.compiled_word_backend.embedding_model.save_pretrained(
             os.path.join(directory, "compiled_word_pipeline")
         )
-        self.compiled_document_backend.embedding_model.save_pretrained(
-            os.path.join(directory, "compiled_document_pipeline")
+        # export compiled or uncompiled document embedding pipeline
+        self.document_backend.embedding_model.save_pretrained(
+            os.path.join(directory, document_export_subdir)
         )
 
     @classmethod
@@ -96,13 +97,20 @@ class CompiledKeyBERT(KeyBERT):
         compiled_word_pipeline = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_word_pipeline")
         )
-        compiled_document_pipeline = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_document_pipeline")
-        )
+
+        if os.path.isdir(os.path.join(directory, "compiled_document_pipeline")):
+            document_pipeline = CompiledPipeline.from_pretrained(
+                os.path.join(directory, "compiled_document_pipeline")
+            )
+        else:
+            document_pipeline = pipeline(
+                task="feature-extraction",
+                model=os.path.join(directory, "document_pipeline"),
+            )
 
         return cls(
+            document_pipeline=document_pipeline,
             compiled_word_pipeline=compiled_word_pipeline,
-            compiled_document_pipeline=compiled_document_pipeline,
         )
 
     def extract_keywords(  # noqa: ignore=C901
@@ -216,7 +224,7 @@ class CompiledKeyBERT(KeyBERT):
                 )
         # Extract embeddings
         if doc_embeddings is None:
-            doc_embeddings = self.compiled_document_backend.embed(docs)
+            doc_embeddings = self.document_backend.embed(docs)
         if word_embeddings is None:
             word_embeddings = self.compiled_word_backend.embed(words)
         # Guided KeyBERT either local (keywords shared among documents) or global (keywords per
@@ -361,7 +369,7 @@ class CompiledKeyBERT(KeyBERT):
         else:
             words = count.get_feature_names()
 
-        doc_embeddings = self.compiled_document_backend.embed(docs)
+        doc_embeddings = self.document_backend.embed(docs)
         word_embeddings = self.compiled_word_backend.embed(words)
 
         return doc_embeddings, word_embeddings
