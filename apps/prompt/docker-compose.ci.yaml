@@ -1,6 +1,32 @@
 version: "3.9"
 
 services:
+  # =====================================================
+  # FRONTEND
+  # =====================================================
+  frontend:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/frontend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: frontend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    command: ["npm", "start"]
+    profiles: ["frontend"]
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: dev
+      NODE_ENV: development
+      API_KEY: 1234
+
+  # =====================================================
+  # BACKEND
+  # =====================================================
   backend:
     build:
       context: ../../
