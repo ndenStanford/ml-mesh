@@ -139,8 +139,10 @@ class CompiledModel(PreTrainedModel):
         """Canonic huggingface transformers export method. Only supports exporting to local file
         system.
 
-        directory (Path,str): Directory on local file system to export model artifact to. Will be
-            created if it doesnt exist."""
+        Args:
+            directory (Path,str): Directory on local file system to export model artifact to. Will
+                be created if it doesnt exist.
+        """
         # export remaining huggingface PreTrainedModel context
         self.config.save_pretrained(directory)
         # export traced model in torchscript format
@@ -156,7 +158,8 @@ class CompiledModel(PreTrainedModel):
         """Canonic huggingface transformers import method. Only supports importing from local file
         system.
 
-        directory (Path,str): Directory on local file system to import model artifact from."""
+        Args:
+            directory (Path,str): Directory on local file system to import model artifact from."""
         # import and instantiate huggingface transformer config
         config = AutoConfig.from_pretrained(directory)
         # use huggingface transformer PreTrainedModel constructor to re-initialize the original

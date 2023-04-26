@@ -23,7 +23,7 @@ def test_compiled_word_pipeline(test_hf_pipeline):
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=15,
-        batch_size=1,
+        batch_size=3,
         neuron=False,
         validate_compilation=False,
         tokenizer_settings={"add_special_tokens": True},
@@ -35,8 +35,8 @@ def test_compiled_document_pipeline(test_hf_pipeline):
 
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
-        max_length=40,  # test docs are 100 words, so should be <= 150 tokens
-        batch_size=1,
+        max_length=300,  # test docs are 100 words, so should be <= 300 tokens
+        batch_size=3,
         neuron=False,
         validate_compilation=False,
         tokenizer_settings={"add_special_tokens": True},
@@ -48,8 +48,8 @@ def test_neuron_compiled_word_pipeline(test_hf_pipeline):
 
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
-        max_length=5,
-        batch_size=1,
+        max_length=10,
+        batch_size=3,
         neuron=True,
         validate_compilation=False,
         tokenizer_settings={"add_special_tokens": True},
@@ -61,8 +61,8 @@ def test_neuron_compiled_document_pipeline(test_hf_pipeline):
 
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
-        max_length=20,
-        batch_size=1,
+        max_length=300,  # test docs are 100 words, so should be <= 300 tokens
+        batch_size=3,
         neuron=True,
         validate_compilation=False,
         tokenizer_settings={"add_special_tokens": True},
@@ -102,3 +102,9 @@ def test_documents():
         advancement in natural language processing and has the potential to revolutionize the way
         humans interact with machines.""",
     ]
+
+
+@pytest.fixture
+def test_document(test_documents, document_index: int = 0):
+
+    return test_documents[document_index]

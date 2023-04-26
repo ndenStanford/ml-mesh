@@ -1,9 +1,16 @@
+# Standard Library
+import shutil
+
 # 3rd party libraries
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
+from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.ml_models.keywords import CompiledKeyBERT
+
+
+logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
 
 
 @pytest.mark.order(2)
@@ -24,16 +31,18 @@ from onclusiveml.ml_models.keywords import CompiledKeyBERT
 def compiled_keybert_extract_keywords_test(
     compiled_word_pipeline, compiled_document_pipeline, test_documents
 ):
-
+    # compiled keybert
     compiled_keybert = CompiledKeyBERT(
         compiled_word_pipeline=compiled_word_pipeline,
         compiled_document_pipeline=compiled_document_pipeline,
     )
 
-    test_keywords = compiled_keybert.extract_keywords(docs=test_documents)
+    test_compiled_keywords = compiled_keybert.extract_keywords(docs=test_documents)
 
-    assert len(test_keywords) == len(test_documents)
-    assert all([len(test_keywords_i) == 5 for test_keywords_i in test_keywords])
+    assert len(test_compiled_keywords) == len(test_documents)
+    assert all(
+        [len(test_keywords_i) == 5 for test_keywords_i in test_compiled_keywords]
+    )
 
 
 @pytest.mark.order(2)
@@ -69,3 +78,39 @@ def compiled_keybert_extract_embeddings_test(
     assert (
         len(test_keyword_embeddings) >= 50
     )  # ~ 149 during testing, but not really deterministic
+
+
+@pytest.mark.parametrize(
+    "compiled_word_pipeline, compiled_document_pipeline",
+    [
+        (
+            lazy_fixture("test_compiled_word_pipeline"),
+            lazy_fixture("test_compiled_document_pipeline"),
+        ),
+        (
+            lazy_fixture("test_neuron_compiled_word_pipeline"),
+            lazy_fixture("test_neuron_compiled_document_pipeline"),
+        ),
+    ],
+)
+def compiled_keybert_save_pretrained_from_pretrained(
+    compiled_word_pipeline, compiled_document_pipeline, test_documents
+):
+    # initialize with constructor and score
+    compiled_keybert = CompiledKeyBERT(
+        compiled_word_pipeline=compiled_word_pipeline,
+        compiled_document_pipeline=compiled_document_pipeline,
+    )
+
+    test_compiled_keywords = compiled_keybert.extract_keywords(docs=test_documents)
+    # save, load and score again
+    compiled_keybert.save_pretrained("./test")
+    compiled_keybert_reloaded = CompiledKeyBERT.from_pretrained("./test")
+
+    test_compiled_keywords_reloaded = compiled_keybert_reloaded.extract_keywords(
+        docs=test_documents
+    )
+
+    assert test_compiled_keywords == test_compiled_keywords_reloaded
+    # clean up
+    shutil.rmtree("./test")

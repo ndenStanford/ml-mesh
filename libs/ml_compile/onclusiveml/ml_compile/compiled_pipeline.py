@@ -94,7 +94,12 @@ class CompiledPipeline(object):
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
         """Canonic huggingface transformers export method. Only supports exporting to local file
-        system."""
+        system.
+
+        Args:
+            directory (Path,str): Directory on local file system to export model artifact to. Will
+                be created if it doesnt exist.
+        """
         # export original uncompiled pipeline
         self.original_pipeline.save_pretrained(os.path.join(directory, "pipeline"))
         # export pipeline task
@@ -113,8 +118,11 @@ class CompiledPipeline(object):
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledPipeline":
-        """Canonic huggingface transformers export method. Only supports importing from local file
-        system."""
+        """Canonic huggingface transformers import method. Only supports importing from local file
+        system.
+
+        Args:
+            directory (Path,str): Directory on local file system to import model artifact from."""
         # import pipeline task
         with open(
             os.path.join(directory, "pipeline_task.json"), "r"

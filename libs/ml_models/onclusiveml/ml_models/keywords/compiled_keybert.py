@@ -1,4 +1,6 @@
 # Standard Library
+import os
+from pathlib import Path
 from typing import Any, List, Tuple, Union
 
 # ML libs
@@ -63,6 +65,45 @@ class CompiledKeyBERT(KeyBERT):
             )
         else:
             self.compiled_word_backend = self.compiled_document_backend
+
+    def save_pretrained(self, directory: Union[Path, str]) -> None:
+        """Canonic huggingface transformers export method. Only supports exporting to local file
+        system.
+
+        Args:
+            directory (Path,str): Directory on local file system to export model artifact to. Will
+                be created if it doesnt exist.
+        """
+
+        for pipeline_subdir in ("compiled_word_pipeline", "compiled_document_pipeline"):
+            os.makedirs(os.path.join(directory, pipeline_subdir))
+
+        self.compiled_word_backend.embedding_model.save_pretrained(
+            os.path.join(directory, "compiled_word_pipeline")
+        )
+        self.compiled_document_backend.embedding_model.save_pretrained(
+            os.path.join(directory, "compiled_document_pipeline")
+        )
+
+    @classmethod
+    def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledKeyBERT":
+        """Canonic huggingface transformers import method. Only supports importing from local file
+        system.
+
+        Args:
+            directory (Path,str): Directory on local file system to import model artifact from."""
+
+        compiled_word_pipeline = CompiledPipeline.from_pretrained(
+            os.path.join(directory, "compiled_word_pipeline")
+        )
+        compiled_document_pipeline = CompiledPipeline.from_pretrained(
+            os.path.join(directory, "compiled_document_pipeline")
+        )
+
+        return cls(
+            compiled_word_pipeline=compiled_word_pipeline,
+            compiled_document_pipeline=compiled_document_pipeline,
+        )
 
     def extract_keywords(  # noqa: ignore=C901
         self,
