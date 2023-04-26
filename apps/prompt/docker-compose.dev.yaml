@@ -14,7 +14,6 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
-    platform: linux/amd64
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: ["npm", "start"]
     profiles: ["frontend"]
