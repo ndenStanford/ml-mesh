@@ -16,14 +16,22 @@
     "import": "^0.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^8.0.7",
     "react-redux": "^8.0.5",
+    "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
+    "rehype-highlight": "^6.0.0",
+    "rehype-katex": "^6.0.3",
+    "remark-breaks": "^3.0.2",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1",
     "sass": "^1.62.0",
     "sass-loader": "^13.2.2",
     "thunk": "^0.0.1",
+    "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -51,6 +59,7 @@
     ]
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "eslint": "^8.38.0",

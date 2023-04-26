@@ -6,15 +6,22 @@ import { store, persistor } from "./state";
 import reportWebVitals from "./reportWebVitals";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { Provider } from "react-redux";
+import { enableMapSet } from "immer";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+enableMapSet();
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <BrowserRouter basename="/prompt">
+          <App />
+        </BrowserRouter>
       </PersistGate>
     </Provider>
   </React.StrictMode>

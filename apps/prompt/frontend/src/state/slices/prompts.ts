@@ -44,12 +44,63 @@ export const createPrompt = createAsyncThunk(
   }
 );
 
+export const generateTextFromPrompt = createAsyncThunk(
+  "prompts/generate/prompt",
+  async (
+    { prompt_id, body }: { prompt_id: string; body: any },
+    thunkAPI: any
+  ) => {
+    const response = await fetch(`${API_URI}/prompts/${prompt_id}/generate`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "x-api-key": API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (response.status !== 200) {
+      console.log("Error generating text");
+    }
+    console.log("Successfully generated text.");
+    const jsonResponse = await response.json();
+    return jsonResponse;
+  }
+);
+
+export const generateText = createAsyncThunk(
+  "prompts/generate/string",
+  async (prompt: string) => {
+    const response = await fetch(`${API_URI}/prompts/generate/${prompt}`, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        "x-api-key": API_KEY,
+      },
+    });
+    if (response.status !== 200) {
+      console.log("Error generating text");
+      return;
+    }
+    console.log("Successfully generated text.");
+    const jsonResponse = await response.json();
+    return jsonResponse["generated"];
+  }
+);
+
 const promptsSlice = createSlice({
   name: "prompts",
   initialState: {
     list: [],
   } as PromptsState,
-  reducers: {},
+  reducers: {
+    updateState: (state, action) => {
+      return {
+        ...state,
+        list: state.list,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getPrompts.fulfilled, (state, action) => {
       if (action.payload) {

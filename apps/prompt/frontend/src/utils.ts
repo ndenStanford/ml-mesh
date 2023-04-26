@@ -42,3 +42,17 @@ export function updateTheme(theme: Theme): Theme {
   const newTheme = toggleTheme(theme);
   return setTheme(newTheme);
 }
+
+export function formatDate(dt: string): string {
+  const date = new Date(dt);
+  const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date
+    .getHours()
+    .toString()
+    .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date
+    .getSeconds()
+    .toString()
+    .padStart(2, "0")}`;
+  return formattedDate;
+}

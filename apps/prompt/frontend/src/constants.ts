@@ -7,6 +7,7 @@ export const PORT = parseInt(process.env.PORT || "4000");
 export const API_URI = process.env.API_URI || `http://localhost:${PORT}/api/v1`;
 export const API_KEY = process.env.API_KEY || "1234";
 export const APP_VERSION = packageInfo.version;
+export const MESSAGE_SEND_ANIMATION_DELAY = 1000;
 
 export enum Theme {
   AUTO = "auto",

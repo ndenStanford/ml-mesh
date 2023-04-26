@@ -43,7 +43,7 @@ export default class SideBar extends React.Component<SidebarProps, any> {
         </div>
         {this.props.isNewPromptModalVisible && (
           <Modal
-            title={"Replace variables values."}
+            title={"Create new Prompt."}
             actions={[
               <Button
                 key="send"

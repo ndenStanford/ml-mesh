@@ -5,6 +5,7 @@ import { combineReducers } from "redux";
 import appReducer from "./slices/app";
 import modalsReducer from "./slices/modals";
 import promptsReducer from "./slices/prompts";
+import chatReducer from "./slices/chat";
 
 const persistConfig = {
   key: "root",
@@ -15,6 +16,7 @@ const globalReducer = combineReducers({
   app: appReducer,
   prompts: promptsReducer,
   modals: modalsReducer,
+  chat: chatReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, globalReducer);

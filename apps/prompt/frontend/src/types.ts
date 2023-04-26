@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { Theme } from "@/src/constants";
 
 export interface ButtonProps {
@@ -56,8 +56,8 @@ export interface PromptsState {
   list: PromptListItemProps[];
 }
 
-export interface ChatMessage {
-  id?: number;
+export interface Message {
+  id: string;
   date: string;
   isError?: boolean;
   content: string;
@@ -66,7 +66,7 @@ export interface ChatMessage {
 }
 
 export interface ChatState {
-  messages: ChatMessage[];
+  messages: { [id: string]: Message };
 }
 
 export interface LayoutProps {
@@ -79,10 +79,10 @@ export interface PromptListItemProps {
   alias: string;
   template: string;
   variables: string[];
-  created_at?: string;
+  created_at: string;
   selected?: boolean;
   onClick?: () => void;
-  onDelete?: () => void;
+  onSendClick: (dct: Dictionary, id: string) => void;
 }
 
 export interface ChatProps {
@@ -90,14 +90,26 @@ export interface ChatProps {
   subtitle: string;
   state: GlobalState;
   children?: JSX.Element;
+  onChatActionClick?: () => void;
+  onChatSendClick?: (content: string) => void;
 }
 
 export interface GlobalState {
   app: AppState;
   prompts: PromptsState;
   modals: ModalsState;
+  chat: ChatState;
 }
 
 export interface ChatMessageProps {
-  message: ChatMessage;
+  message: Message;
+}
+
+export interface ChatMessageContentProps {
+  message: Message;
+  parentRef: RefObject<HTMLDivElement>;
+}
+
+export interface Dictionary {
+  [key: string]: string;
 }
