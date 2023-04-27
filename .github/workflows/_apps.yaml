@@ -100,7 +100,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.integration }}
         run: make apps.integration/${{ inputs.app }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
