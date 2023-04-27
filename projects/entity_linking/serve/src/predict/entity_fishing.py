@@ -2,9 +2,9 @@
 
 # Standard Library
 import json
+import re
 from collections import Counter
 from typing import Any, Dict, List, Optional
-import re
 
 # 3rd party libraries
 import requests
@@ -29,18 +29,23 @@ def generate_entity_query(text: str, entities: EntityDictInput) -> List[Dict[str
         spans = [m.span() for m in matched_entities]
         for span in spans:
             offset_start, offset_end = span
-            entity_query += [{"rawName": entity_text, "offsetStart": offset_start, "offsetEnd": offset_end}]
+            entity_query += [
+                {
+                    "rawName": entity_text,
+                    "offsetStart": offset_start,
+                    "offsetEnd": offset_end,
+                }
+            ]
     return entity_query
+
 
 def generate_query(text: str, lang: str, entities: EntityDictInput) -> Dict[str, Any]:
     entities_query = generate_entity_query(text, entities)
     query = {
         "text": text,
-        "language": {
-            "lang": lang
-        },
+        "language": {"lang": lang},
         "mentions": [],
-        "entities": entities_query
+        "entities": entities_query,
     }
     return query
 
