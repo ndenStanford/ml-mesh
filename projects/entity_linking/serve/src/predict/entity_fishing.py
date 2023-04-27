@@ -22,6 +22,12 @@ logger = get_default_logger(__name__)
 
 
 def generate_entity_query(text: str, entities: EntityDictInput) -> List[Dict[str, Any]]:
+    """Generate a component of query to be consumed by the entity fish endpoint.
+
+    Args:
+        text (str): text to be wiki linked
+        entities (Optional[EntityDictInput]): entities within text recognized by an external NER model 
+    """
     entity_query = []
     unique_entity_text = set([get_entity_text(entity) for entity in entities])
     for entity_text in unique_entity_text:
@@ -40,6 +46,13 @@ def generate_entity_query(text: str, entities: EntityDictInput) -> List[Dict[str
 
 
 def generate_query(text: str, lang: str, entities: EntityDictInput) -> Dict[str, Any]:
+    """Generate the entire query to be consumed by the entity fish endpoint.
+
+    Args:
+        text (str): text to be wiki linked
+        lang (str): language of the text
+        entities (Optional[EntityDictInput]): entities within text recognized by an external NER model 
+    """
     entities_query = generate_entity_query(text, entities)
     query = {
         "text": text,
@@ -51,14 +64,23 @@ def generate_query(text: str, lang: str, entities: EntityDictInput) -> Dict[str,
 
 
 def query_wiki(query: Dict[str, Any]) -> Dict[str, Any]:
+    """Invoke entity fish endpoint."""
     url = settings.ENTITY_FISHING_ENDPOINT
     q = requests.post(url, json=query)
     return q.json()
 
 
 def get_entity_linking(
+    
     text: str, lang: str = "en", entities: EntityDictInput = None
 ) -> Dict[str, Any]:
+    """Link all entities in text to Wiki data id
+
+    Args:
+        text (str): text to be wiki linked
+        lang (str): language of the text
+        entities (Optional[EntityDictInput]): entities within text recognized by an external NER model 
+    """
     # using the NER API to get the result of NER and positions
     if entities is None:
         q = requests.post(
@@ -84,6 +106,7 @@ def get_entity_linking(
 
 
 def get_entity_text(entity: Dict[str, Any]) -> str:
+    """Fetch entity text from entities dictionary"""
     entity_text = entity.get("text")
     if entity_text is None:
         entity_text = entity.get("entity_text")
@@ -93,6 +116,12 @@ def get_entity_text(entity: Dict[str, Any]) -> str:
 def get_wiki_id(
     entity_text: str, entity_fish_entities: List[Dict[str, Any]]
 ) -> Optional[str]:
+    """Get most likely Wiki id of a single entity from wiki fish API return 
+
+    Args:
+        entity_text (str): entity to find corresponding wiki data id
+        entity_fish_entities (List[Dict[str, Any]]): Response from entity fish API
+    """
     wiki_list = []
     for entity in entity_fish_entities:
         if entity.get("offsetStart"):
@@ -108,6 +137,7 @@ def get_wiki_id(
 
 
 def entity_text_match(text_1: str, text_2: str) -> bool:
+    """Match entity in the tntities dictionary with one from the entity fish API response"""
     if (text_1 in text_2) or (text_2 in text_1):
         return True
     else:
