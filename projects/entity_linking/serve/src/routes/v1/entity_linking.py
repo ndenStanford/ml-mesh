@@ -26,6 +26,14 @@ router = APIRouter(
 
 @router.post("/fish", response_model=Response, status_code=status.HTTP_200_OK)
 def entity_fish_wiki(item: Request) -> Dict[str, Any]:
+    """Returns wiki id linked to entities of item content.
+
+    Args:
+        item (Request): parse request arguments.
+
+    Returns:
+        Response: entities with Wiki id attached.
+    """
     supported_langs = [
         "en",
         "fr",

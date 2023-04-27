@@ -15,7 +15,7 @@ def test_health_route(test_client):
 def test_entity_link_prompt(
     example_content_input, example_entities_input, example_entities_output, test_client
 ):
-    """Test delete prompt endpoint."""
+    """Test entity linking endpoint."""
     response = test_client.post(
         "/entity-linking/fish",
         json={"content": example_content_input, "entities": example_entities_input},
