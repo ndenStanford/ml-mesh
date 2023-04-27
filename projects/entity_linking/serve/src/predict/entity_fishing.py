@@ -26,7 +26,8 @@ def generate_entity_query(text: str, entities: EntityDictInput) -> List[Dict[str
 
     Args:
         text (str): text to be wiki linked
-        entities (Optional[EntityDictInput]): entities within text recognized by an external NER model 
+        entities (Optional[EntityDictInput]):
+            entities within text recognized by an external NER model
     """
     entity_query = []
     unique_entity_text = set([get_entity_text(entity) for entity in entities])
@@ -51,7 +52,8 @@ def generate_query(text: str, lang: str, entities: EntityDictInput) -> Dict[str,
     Args:
         text (str): text to be wiki linked
         lang (str): language of the text
-        entities (Optional[EntityDictInput]): entities within text recognized by an external NER model 
+        entities (Optional[EntityDictInput]):
+            entities within text recognized by an external NER model
     """
     entities_query = generate_entity_query(text, entities)
     query = {
@@ -71,7 +73,6 @@ def query_wiki(query: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_entity_linking(
-    
     text: str, lang: str = "en", entities: EntityDictInput = None
 ) -> Dict[str, Any]:
     """Link all entities in text to Wiki data id
@@ -79,7 +80,8 @@ def get_entity_linking(
     Args:
         text (str): text to be wiki linked
         lang (str): language of the text
-        entities (Optional[EntityDictInput]): entities within text recognized by an external NER model 
+        entities (Optional[EntityDictInput]):
+            entities within text recognized by an external NER model
     """
     # using the NER API to get the result of NER and positions
     if entities is None:
@@ -116,7 +118,7 @@ def get_entity_text(entity: Dict[str, Any]) -> str:
 def get_wiki_id(
     entity_text: str, entity_fish_entities: List[Dict[str, Any]]
 ) -> Optional[str]:
-    """Get most likely Wiki id of a single entity from wiki fish API return 
+    """Get most likely Wiki id of a single entity from wiki fish API return
 
     Args:
         entity_text (str): entity to find corresponding wiki data id
