@@ -187,6 +187,10 @@ jobs:
             component: backend
             integration: true
 
+          - name: entity-fishing
+            component: backend
+            integration: false
+
     with:
       environment: prod
       app: ${{ matrix.apps.name }}
