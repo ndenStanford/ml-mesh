@@ -10,7 +10,7 @@ set -o errexit -o errtrace -o pipefail -o nounset
 KERNEL="$(uname -s)"
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-function error() {
+error() {
     JOB="$0"              # job name
     LASTLINE="$1"         # line of error occurrence
     LASTERR="$2"          # error code
