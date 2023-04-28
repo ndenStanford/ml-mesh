@@ -28,12 +28,10 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-RUN npm run build
+RUN npm install && npm run build
 
 # --- production stage
 FROM builder as production
-
-RUN npm install
 
 # --- test build stage
 FROM builder as development
