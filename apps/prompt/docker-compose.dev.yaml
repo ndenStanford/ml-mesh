@@ -13,7 +13,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: frontend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: ["npm", "start"]
     profiles: ["frontend"]
@@ -40,9 +40,9 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: frontend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
-    command: ["npm", "start"]
+    command: ["CMD-SHELL", "sleep 3s"]
     profiles: ["frontend"]
     volumes:
       - type: bind
@@ -70,7 +70,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command:
       [
@@ -116,7 +116,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: v2023.3.2
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["unit"]
@@ -147,7 +147,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: v2023.3.2
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
