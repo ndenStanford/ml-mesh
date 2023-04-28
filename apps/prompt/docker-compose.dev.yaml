@@ -42,8 +42,8 @@ services:
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
-    command: ["CMD-SHELL", "sleep 3s"]
-    profiles: ["frontend"]
+    command: ["/bin/sh", "-c", "sleep 3s"]
+    profiles: ["frontend", "unit"]
     volumes:
       - type: bind
         source: frontend/public
@@ -119,7 +119,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    profiles: ["backend", "unit"]
     volumes:
       - type: bind
         source: backend/src
