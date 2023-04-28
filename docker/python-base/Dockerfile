@@ -1,6 +1,9 @@
 ARG PYTHON_VERSION=3.8.16
+ARG DOCKER_IMAGE_DIR=docker/python-base
 
 FROM python:${PYTHON_VERSION}-slim as builder
+
+ARG DOCKER_IMAGE_DIR
 
 ENV HOME="/home"
 
@@ -16,11 +19,11 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_NO_INTERACTION=1
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get -y install --no-install-recommends libpq-dev build-essential && \
+    apt-get -y install --no-install-recommends curl vim procps && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -30,6 +33,8 @@ RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cac
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR

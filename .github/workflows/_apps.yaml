@@ -58,8 +58,18 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'apps/${{ inputs.app }}/${{ inputs.component }}/**'
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -69,9 +79,11 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -81,8 +93,8 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        run:
-          make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        run: make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
@@ -90,7 +102,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.integration }}
+        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.integration }}
         run:
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -100,6 +112,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -109,6 +122,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make apps.deploy/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
