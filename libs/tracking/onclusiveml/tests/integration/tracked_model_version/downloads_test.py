@@ -5,14 +5,6 @@ import shutil
 # 3rd party libraries
 import pytest
 
-# Internal libraries
-from onclusiveml.ml_tracking.download import (
-    download_config_from_model_version,
-    download_directory_from_model_version,
-    download_file_from_model_version,
-)
-from onclusiveml.ml_tracking.upload import capture_directory_for_upload
-
 
 @pytest.mark.order(2)
 @pytest.mark.download
@@ -37,8 +29,7 @@ def download_file_from_model_version_test(
         f"{file_name}_downloaded.{file_extension}",
     )
 
-    download_file_from_model_version(
-        model_version=test_model_version,
+    test_model_version.download_file_from_model_version(
         neptune_attribute_path=f"model/{file_name}",
         local_file_path=local_file_path,
     )
@@ -58,14 +49,13 @@ def download_directory_from_model_version_test(
     test_file_directory_upload,
 ):
 
-    download_directory_from_model_version(
-        model_version=test_model_version,
+    test_model_version.download_directory_from_model_version(
         local_directory_path=test_file_directory_download,
         neptune_attribute_path="model/test_file_directory",
     )
     # assemble expected, comparable ground truth download content
     # capture original upload dir content
-    upload_directory_content = capture_directory_for_upload(
+    upload_directory_content = test_model_version.capture_directory_for_upload(
         local_directory_path=test_file_directory_upload, neptune_attribute_path=""
     )
     # retain the relative filepaths only for comparison purposes
@@ -77,7 +67,7 @@ def download_directory_from_model_version_test(
     )
     # assemble actual, comparable download content
     # capture the newly created downloaded directory content
-    download_directory_content = capture_directory_for_upload(
+    download_directory_content = test_model_version.capture_directory_for_upload(
         local_directory_path=test_file_directory_download,
         neptune_attribute_path="",
         exclude=[],
@@ -104,8 +94,8 @@ def download_config_from_model_version_test(
     test_model_version, test_model_version_mode, test_config_expected
 ):
 
-    test_config_actual = download_config_from_model_version(
-        model_version=test_model_version, neptune_attribute_path="test_config"
+    test_config_actual = test_model_version.download_config_from_model_version(
+        neptune_attribute_path="test_config"
     )
 
     assert test_config_actual == test_config_expected

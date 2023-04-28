@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ml-tracking"
+name = "tracking"
 version = "0.1.0"
 description = "Internal library for model tracking utilities using the neptune ai platform."
 authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]

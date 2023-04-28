@@ -5,7 +5,7 @@ import os
 import pytest
 
 # Internal libraries
-from onclusiveml.ml_tracking.upload import capture_directory_for_upload
+from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
 
 
 @pytest.mark.parametrize(
@@ -34,10 +34,12 @@ def capture_directory_for_upload_test(
 
     monkeypatch.setattr(os, "walk", mock_walk)
 
-    test_captured_directories_for_upload_actual = capture_directory_for_upload(
-        local_directory_path=local_directory_path,
-        neptune_attribute_path=neptune_attribute_path,
-        exclude=(),
+    test_captured_directories_for_upload_actual = (
+        TrackedModelVersion.capture_directory_for_upload(
+            local_directory_path=local_directory_path,
+            neptune_attribute_path=neptune_attribute_path,
+            exclude=(),
+        )
     )
 
     test_captured_directories_for_upload_actual == test_captured_directories_for_upload_expected

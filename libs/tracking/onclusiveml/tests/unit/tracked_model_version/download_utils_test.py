@@ -5,19 +5,15 @@ import os
 import pytest
 
 # Internal libraries
-from onclusiveml.ml_tracking.download import (
-    _convert_neptune_attribute_path_to_local_path,
-    _derive_and_filter_neptune_attribute_paths,
-    _extract_file_attributes,
-)
+from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
 
 
 def extract_file_attributes_test(
     test_uploaded_attributes, test_extracted_file_attributes_expected
 ):
 
-    test_extracted_file_attributes_actual = _extract_file_attributes(
-        test_uploaded_attributes
+    test_extracted_file_attributes_actual = (
+        TrackedModelVersion._extract_file_attributes(test_uploaded_attributes)
     )
     # access ._path attributes to enable comparisons
     actual = set(
@@ -37,7 +33,7 @@ def derive_and_filter_neptune_attributes_paths_test(
 ):
 
     test_derive_and_filter_neptune_attribute_paths_actual = (
-        _derive_and_filter_neptune_attribute_paths(
+        TrackedModelVersion._derive_and_filter_neptune_attribute_paths(
             test_extracted_file_attributes_expected,
             neptune_attribute_prefix=neptune_attribute_prefix,
         )
@@ -65,10 +61,12 @@ def convert_neptune_data_path_to_local_path_test(
     local_path_expected,
 ):
 
-    local_path_actual = _convert_neptune_attribute_path_to_local_path(
-        neptune_attribute_path=neptune_attribute_path,
-        neptune_attribute_prefix=neptune_attribute_prefix,
-        local_directory_path=local_directory_path,
+    local_path_actual = (
+        TrackedModelVersion._convert_neptune_attribute_path_to_local_path(
+            neptune_attribute_path=neptune_attribute_path,
+            neptune_attribute_prefix=neptune_attribute_prefix,
+            local_directory_path=local_directory_path,
+        )
     )
 
     assert local_path_actual == local_path_expected

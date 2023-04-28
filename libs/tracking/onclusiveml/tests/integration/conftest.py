@@ -3,11 +3,13 @@ import os
 
 # 3rd party libraries
 import pytest
-from neptune import ModelVersion
+
+# Internal libraries
+from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
 
 
 # create a new model version every time the integration test suite is run
-TEST_MODEL_VERSION_ID = ModelVersion(
+TEST_MODEL_VERSION_ID = TrackedModelVersion(
     model="TES-TEST",
     project="onclusive/test",
     api_token=os.environ.get("NEPTUNE_API_TOKEN"),  # your credentials
@@ -17,7 +19,7 @@ TEST_MODEL_VERSION_ID = ModelVersion(
 @pytest.fixture()
 def test_file_directory_upload():
 
-    return "./libs/ml_tracking/onclusiveml/tests/integration/test_file_directory"
+    return "./libs/tracking/onclusiveml/tests/integration/test_file_directory"
 
 
 @pytest.fixture()
@@ -34,7 +36,7 @@ def test_file_directory_download(test_file_directory_upload):
 @pytest.fixture
 def test_model_version(test_model_version_mode: str = "async"):
 
-    return ModelVersion(
+    return TrackedModelVersion(
         model="TES-TEST",
         with_id=TEST_MODEL_VERSION_ID,
         project="onclusive/test",
