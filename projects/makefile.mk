@@ -5,6 +5,7 @@ projects.build/%: ## Build project
 	docker build $(DOCKER_BUILD_ARGS) . \
 			-t $(OWNER)/$(notdir $@)-$(COMPONENT):${IMAGE_TAG} \
 			-f ./projects/$(notdir $@)/$(COMPONENT)/Dockerfile	\
+			--target $(TARGET_BUILD_STAGE) \
 			--build-arg OWNER="$(OWNER)" \
 			--build-arg PROJECT=$(notdir $@) \
 			--build-arg COMPONENT=$(COMPONENT) \

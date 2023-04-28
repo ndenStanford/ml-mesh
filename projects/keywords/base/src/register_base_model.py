@@ -1,5 +1,4 @@
 # Standard Library
-import json
 import os
 from typing import Dict, List, Tuple
 
@@ -8,20 +7,22 @@ import torch
 from keybert import KeyBERT
 from transformers import pipeline
 
-# 3rd party libraries
-import neptune
+# Internal libraries
+from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import KEYWORD_TRAIN_SETTINGS
 
 
-settings = KEYWORD_TRAIN_SETTINGS.dict()
+keyword_train_settings = KEYWORD_TRAIN_SETTINGS.dict()
 
-if not os.path.isdir(settings["LOCAL_OUTPUT_DIR"]):
-    os.makedirs(settings["LOCAL_OUTPUT_DIR"])
+if not os.path.isdir(keyword_train_settings["LOCAL_OUTPUT_DIR"]):
+    os.makedirs(keyword_train_settings["LOCAL_OUTPUT_DIR"])
 # --- initialize models
 # get specified huggingface transformer pipeline
-hf_pipeline = pipeline("feature-extraction", settings["HF_MODEL_REFERENCE"])
+hf_pipeline = pipeline(
+    "feature-extraction", keyword_train_settings["HF_MODEL_REFERENCE"]
+)
 hf_tokenizer = hf_pipeline.tokenizer
 hf_model = hf_pipeline.model
 # initialize keybert model with huggingface pipeline backend
@@ -86,7 +87,7 @@ sample_inputs = [
 # n_batch x min(max(n_tokens),max_token_length) = n_batch x min(max(n_tokens),512),
 # where max(n_tokens) is the maximum sequence length across the batch
 # setting padding = max_length ensures all arrays have the same dimension
-tokenizer_settings = settings["TOKENIZER_SETTINGS"]
+tokenizer_settings = keyword_train_settings["TOKENIZER_SETTINGS"]
 
 tokenized_sample_inputs: Dict[str, List[Tuple[int]]] = dict(
     hf_pipeline.tokenizer(sample_inputs, **tokenizer_settings)
@@ -114,14 +115,15 @@ hf_pipeline_predictions: List[List[Tuple[float]]] = hf_pipeline(
 )
 # keybert model
 # list of tuples (ngram/word, prob)
+keybert_settings = {"keyphrase_ngram_range": (1, 1), "stopwords": None}
 keybert_predictions: List[Tuple[str, float]] = keybert_model.extract_keywords(
     sample_inputs, keyphrase_ngram_range=(1, 1), stop_words=None
 )
 # --- register model on neptune ai
-model_version = neptune.init_model_version(
-    model=settings["NEPTUNE_MODEL_ID"],
-    project=settings["NEPTUNE_PROJECT"],
-    api_token=settings["NEPTUNE_API_TOKEN"],  # your credentials
+model_version = TrackedModelVersion(
+    model=keyword_train_settings["NEPTUNE_MODEL_ID"],
+    project=keyword_train_settings["NEPTUNE_PROJECT"],
+    api_token=keyword_train_settings["NEPTUNE_API_TOKEN"],
 )
 # inputs & outputs
 for (data, data_file_reference) in [
@@ -130,71 +132,23 @@ for (data, data_file_reference) in [
     (tokenized_sample_inputs, "tokenized_inputs"),
     (hf_model_predictions, "hf_model_predictions"),
     (hf_pipeline_predictions, "hf_pipeline_predictions"),
+    (keybert_settings, "keybert_settings"),
     (keybert_predictions, "keybert_predictions"),
 ]:
-    # export locally to make use of neptune ai's uoload method
-    test_file_path = os.path.join(
-        settings["LOCAL_OUTPUT_DIR"], f"{data_file_reference}.json"
+    neptune_attribute_path = f"model/test_files/{data_file_reference}"
+
+    model_version.upload_config_to_model_version(
+        config=data, neptune_attribute_path=neptune_attribute_path
     )
 
-    with open(test_file_path, "w") as local_file:
-        json.dump(data, local_file)
+hf_pipeline_local_dir = os.path.join(
+    keyword_train_settings["LOCAL_OUTPUT_DIR"], "hf_pipeline"
+)
+hf_pipeline.save_pretrained(hf_pipeline_local_dir)
 
-    neptune_data_reference = f"model/test_files/{data_file_reference}"
+model_version.upload_directory_to_model_version(
+    local_directory_path=hf_pipeline_local_dir,
+    neptune_attribute_path="model/hf_pipeline",
+)
 
-    print(
-        f"Uploading {data_file_reference} from local path {test_file_path}",
-        f"to meta data path {neptune_data_reference}.",
-    )
-
-    model_version[neptune_data_reference].upload(test_file_path)
-
-    print(
-        f"Uploaded {data_file_reference} from local path {test_file_path}",
-        f"to meta data path {neptune_data_reference}",
-    )
-# huggingface artifacts
-for (artifact, artifact_reference) in (
-    (
-        hf_pipeline,
-        "hf_pipeline",
-    ),
-):
-    artifact_local_dir = os.path.join(settings["LOCAL_OUTPUT_DIR"], artifact_reference)
-    artifact.save_pretrained(artifact_local_dir)
-
-    for artifact_file in os.listdir(artifact_local_dir):
-        artifact_file_path = os.path.join(artifact_local_dir, artifact_file)
-
-        print(
-            f"Uploading {artifact_file_path} to meta data path",
-            f"model/{artifact_reference}/{artifact_file}.",
-        )
-
-        model_version[f"model/{artifact_reference}/{artifact_file}"].upload(
-            artifact_file_path
-        )
-
-        print(
-            f"Uploaded {artifact_file_path} to meta data path ",
-            f"model/{artifact_reference}/{artifact_file}.",
-        )
-    # test params upload
-    # Define and log metadata
-    TEST_PARAMS = {
-        "batch_size": 64,
-        "dropout": 0.2,
-        "learning_rate": 0.001,
-        "optimizer": "Adam",
-        "config": {"a": 1, "b": 2},
-    }
-
-    model_version["model/test_params"] = TEST_PARAMS  # ?
-    model_version["model/test_text_inputs"] = {"content": sample_inputs}  # ?
-    model_version["model/test_tokenizer_settings"] = tokenizer_settings  # succeeds
-    model_version["model/test_tokenized_inputs"] = tokenized_sample_inputs  # fails
-    model_version["model/test_hf_model_predictions"] = {
-        "content": hf_model_predictions
-    }  # fails
-    # looks like dicts with array type values or
 model_version.stop()

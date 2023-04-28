@@ -42,6 +42,8 @@ RUN poetry install --no-interaction --no-ansi && \
 # --- production stage
 FROM builder as production
 
+ENV PYTHONPATH=${HOME}
+
 # --- test build stage
 FROM builder as development
 

@@ -134,7 +134,7 @@ jobs:
             python-version: "3.8.16"
 
           - name: keywords
-            component: train
+            component: base
             integration: false
             python-version: "3.8.16"
 
