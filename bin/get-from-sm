@@ -39,12 +39,12 @@ def append_secrets_to_env_file(secret, value, prepend_with_export=True):
         export_keyword = ""
         print("Export will not be prepended")
 
-    if os.path.exists(os.path.join(ROOT_DIR, '.env')):
+    if os.path.exists(os.path.join(ROOT_DIR, '.envrc')):
         writemode = 'a+'
     else:
         writemode = 'w+'
 
-    file = open(os.path.join(ROOT_DIR, '.env'), writemode)
+    file = open(os.path.join(ROOT_DIR, '.envrc'), writemode)
     escaped_value = value.translate(str.maketrans({
         "\"": "\\\"",
         "\n": ""

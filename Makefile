@@ -72,6 +72,7 @@ clean: ## Clean build artifacts.
 	@find . -name '__pycache__' -exec rm -rf {} \;
 	@find . -name '.pytest_cache' -exec rm -rf {} \;
 	@find . -name '.cache' -exec rm -rf {} \;
+	@find . -name 'node_modules' -exec rm -rf {} \;
 	rm -rf .cache
 	rm -rf build
 	rm -rf dist

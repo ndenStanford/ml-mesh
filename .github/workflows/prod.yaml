@@ -187,6 +187,10 @@ jobs:
             component: backend
             integration: true
 
+          - name: prompt
+            component: frontend
+            integration: false
+
           - name: entity-fishing
             component: backend
             integration: false

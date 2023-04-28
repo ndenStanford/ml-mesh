@@ -12,7 +12,11 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.helpers import get_api_key
 from src.prompt.generate import generate_text
-from src.prompt.schemas import PromptTemplateListSchema, PromptTemplateSchema
+from src.prompt.schemas import (
+    PromptTemplateListSchema,
+    PromptTemplateOutputSchema,
+    PromptTemplateSchema,
+)
 from src.prompt.tables import PromptTemplateTable
 
 
@@ -33,14 +37,16 @@ router = APIRouter(
 def get_prompts():
     """List prompts."""
     return {
-        "prompts": PromptTemplateSchema.get()  # NOTE: Pagination is not needed here (yet)
+        "prompts": PromptTemplateOutputSchema.from_template_schema(
+            PromptTemplateSchema.get()
+        )  # NOTE: Pagination is not needed here (yet)
     }
 
 
 @router.get(
     "/{id}",
     status_code=status.HTTP_200_OK,
-    response_model=PromptTemplateSchema,
+    response_model=PromptTemplateOutputSchema,
     dependencies=[Security(get_api_key)],
 )
 def get_prompt(id: str):
@@ -50,7 +56,9 @@ def get_prompt(id: str):
         id (str): prompt id
     """
     try:
-        return PromptTemplateSchema.get(id)
+        return PromptTemplateOutputSchema.from_template_schema(
+            PromptTemplateSchema.get(id)
+        )
     except PromptTemplateTable.DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"{str(e)} - (id={str(id)})"
@@ -121,4 +129,19 @@ def generate(id: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     prompt_template = PromptTemplateSchema.get(id)
-    return {"generated": generate_text(prompt_template.prompt(**values))}
+    prompt = prompt_template.prompt(**values)
+    return {"prompt": prompt, "generated": generate_text(prompt)}
+
+
+@router.get(
+    "/generate/{prompt}",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Security(get_api_key)],
+)
+def generate_test(prompt: str):
+    """Retrieves prompt via id.
+
+    Args:
+        id (str): prompt id
+    """
+    return {"generated": generate_text(prompt)}
