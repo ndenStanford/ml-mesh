@@ -1,32 +1,215 @@
 version: "3.9"
 
 services:
-  serve:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      args:
-        PROJECT: keywords
-        COMPONENT: serve
-      target: development
-    ports:
-      - "8888:8888"
-    environment:
-      DOCS_URL: /docs
-    hostname: onclusive-ml
-    networks: [onclusive-net]
+  # =============================================
+  # TRAIN
+  # =============================================
+
   train:
     build:
       context: ../../
       dockerfile: projects/keywords/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
       args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-      target: development
+    ports:
+      - "8888:8888"
+    volumes:
+      - type: bind
+        source: train/src
+        target: /home/projects/keywords/train/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["train"]
     environment:
-      NEPTUNE_API_TOKEN: secret_api_token_goes_here
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+  train-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: train
+    volumes:
+      - type: bind
+        source: train/src
+        target: /home/projects/keywords/train/src
+      - type: bind
+        source: train/tests
+        target: /home/projects/keywords/train/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["train"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-integration:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: train
+    volumes:
+      - type: bind
+        source: train/src
+        target: /home/projects/keywords/train/src
+      - type: bind
+        source: train/tests
+        target: /home/projects/keywords/train/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["train"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["serve"]
+    ports:
+      - 8000:8000
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/keywords/serve/src
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # unit tests
+  serve-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/keywords/serve/src
+      - type: bind
+        source: serve/tests
+        target: /home/projects/keywords/serve/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["serve", "unit"]
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  serve-integration:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/keywords/serve/src
+      - type: bind
+        source: serve/tests
+        target: /home/projects/keywords/serve/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["serve", "unit"]
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
 
 networks:
   onclusive-net:

@@ -1,0 +1,112 @@
+version: "3.9"
+
+services:
+  # ===========================================================
+  # PYTHON BASE
+  # ===========================================================
+  python-base:
+    build:
+      context: ./python-base
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG}
+
+  # ===========================================================
+  # FASTAPI SERVE
+  # ===========================================================
+
+  fastapi-serve:
+    build:
+      context: ./fastapi-serve
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
+    depends_on:
+      - python-base
+
+  # ===========================================================
+  # NEURON COMPILE
+  # ===========================================================
+
+  neuron-compile:
+    build:
+      context: ./neuron-compile
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
+    depends_on:
+      - python-base
+
+  # ===========================================================
+  # NEURON INFERENCE
+  # ===========================================================
+
+  neuron-inference:
+    build:
+      context: ./neuron-inference
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
+    depends_on:
+      - python-base
+
+  # ===========================================================
+  # KUBEFLOW JUPYTER
+  # ===========================================================
+
+  kubeflow-jupyter:
+    build:
+      context: ./kubeflow-jupyter
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
+    depends_on:
+      - python-base
+
+  # ===========================================================
+  # KUBEFLOW TORCH CPU
+  # ===========================================================
+
+  kubeflow-torch-cpu:
+    build:
+      context: ./kubeflow-torch-cpu
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
+    depends_on:
+      - kubeflow-jupyter
+
+  # ===========================================================
+  # KUBEFLOW DATA SCIENCE
+  # ===========================================================
+
+  kubeflow-data-science:
+    build:
+      context: ./kubeflow-data-science
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
+    depends_on:
+      - kubeflow-torch-cpu

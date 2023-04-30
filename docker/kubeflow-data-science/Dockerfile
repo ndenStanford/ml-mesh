@@ -1,10 +1,7 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=kubeflow-torch-cpu
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-ARG DOCKER_IMAGE_DIR=docker/kubeflow-data-science
+ARG AWS_ACCOUNT_ID
+ARG IMAGE_TAG
 
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-torch-cpu:$IMAGE_TAG as builder
 
 ARG DOCKER_IMAGE_DIR
 

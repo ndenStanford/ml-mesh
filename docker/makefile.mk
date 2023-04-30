@@ -1,31 +1,24 @@
-docker.build/%: DOCKER_BUILD_ARGS?=
-docker.build/%: ## build the latest image for a stack using the system's architecture
-	@echo "::group::Build $(OWNER)/docker/$(notdir $@) (system architecture)"
-		
-	@docker build $(DOCKER_BUILD_ARGS) . \
-			-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
-			-f ./docker/$(notdir $@)/Dockerfile	\
-			--build-arg OWNER="$(OWNER)" \
-			--build-arg IMAGE_TAG="$(IMAGE_TAG)" \
-			--build-arg DOCKER_IMAGE_DIR=docker/$(notdir $@) \
-			--platform=$(PLATFORM) \
-			--rm --force-rm \
-			--target $(TARGET_BUILD_STAGE)
-
-	@echo -n "built image size:"
-	@docker images  $(OWNER)/$(notdir $@):${IMAGE_TAG} --format "{{.Size}}"
+docker.build/%: docker.set ## Build app
+	@echo "::group::Build $(IMAGE) (system architecture)"
+	docker compose -f ./docker/docker-compose.yaml build $(notdir $@) --no-cache
 	@echo "::endgroup::"
 
-docker.run/%: ## run the specified image with optional command
+docker.install/%:
+	poetry install --directory=docker/$(notdir $@)/$(IMAGE)
 
-	@echo "::group::Running image $(OWNER)/$(notdir $@):${IMAGE_TAG} as container ..."
+docker.deploy/%: ## Deploy project IMAGE docker image to ECR.
+	docker compose -f ./docker/docker-compose.yaml push $(IMAGE)
 
-	@docker run $(DOCKER_RUN_ARGS) \
-		-t $(OWNER)/$(notdir $@):${IMAGE_TAG} \
-		$(DOCKER_RUN_CMD)
+docker.validate/%: ## Validate core docker image build
+	docker compose -f docker/docker-compose.yaml run $(IMAGE)-tests
 
-	@echo "Completed running of image $(OWNER)/$(notdir $@):${IMAGE_TAG} as container."
-	@echo "::endgroup::"
+docker.lock/%:
+	poetry lock --directory=docker/$(notdir $@)/$(IMAGE)
+
+docker.set:
+	export IMAGE_TAG=$(IMAGE_TAG)
+	export TARGET_BUILD_STAGE=$(TARGET_BUILD_STAGE)
+	export AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
 
 docker.build-all: $(foreach I, $(ALL_DOCKER_IMGS), docker.build/$(I)) ## build all images
 
@@ -41,21 +34,6 @@ docker.cont-rm-all: ## Remove all containers
 docker.img-rm-all: ## remove jupyter images
 	@echo "Removing $(OWNER) images ..."
 	-docker rmi --force $(shell docker images --quiet "$(OWNER)/*") 2> /dev/null
-
-docker.pull/%: ##pull image
-	docker pull $(OWNER)/$(notdir $@):${IMAGE_TAG}
-
-docker.tag/%:
-	docker tag $(OWNER)/$(notdir $@):${IMAGE_TAG} $(OWNER)/$(notdir $@):latest
-
-docker.untag/%:
-	aws ecr batch-delete-image --repository-name $(notdir $@) --image-ids imageTag=${IMAGE_TAG}
-
-docker.push/%: ## push image
-	docker push  $(OWNER)/$(notdir $@):${IMAGE_TAG}
-
-docker.push-latest/%: ## push image
-	docker push $(OWNER)/$(notdir $@):$latest
 
 docker.clean: docker.rm-deps-all docker.cont-clean-all docker.img-rm-all ## clean environment
 
