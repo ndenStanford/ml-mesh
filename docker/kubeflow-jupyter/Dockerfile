@@ -1,15 +1,17 @@
 ARG AWS_ACCOUNT_ID
 ARG IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-torch-cpu:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR
+ARG IMAGE_NAME
+
+ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
 
 # common environemnt variables
 ENV NB_USER jovyan
 ENV NB_UID 1000
 ENV NB_PREFIX /
-ENV HOME "${HOME}/$NB_USER"
 ENV SHELL /bin/bash
 
 # args - software versions
@@ -90,10 +92,17 @@ ENV LC_ALL en_GB.UTF-8
 # switch to NB_UID for installs
 USER "${NB_UID}"
 
-WORKDIR "${HOME}"
+WORKDIR "/"
 
 # install - poetry requirements
-COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
+COPY --chown="${NB_USER}:users" ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+
+COPY --chown="${NB_USER}:users" ${HOME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+
+# s6 - copy scripts
+COPY --chown="${NB_USER}:users" ${HOME}/s6 /etc/
+
+WORKDIR "${HOME}"
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/{cache,artifacts}
@@ -101,12 +110,7 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 RUN poetry cache clear pypi --all -q \
     && chown -R "${NB_USER}:users" "${HOME}"
 
-# s6 - copy scripts
-COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/s6 /etc/
-
 USER root
-
-COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
@@ -119,13 +123,11 @@ EXPOSE 8888
 
 # --- production stage
 FROM builder as production
-ARG DOCKER_IMAGE_DIR
 
 ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
-ARG DOCKER_IMAGE_DIR
 
 # dummy entrypoint to pass the CI docker run stage
 ENTRYPOINT ["pwd"]

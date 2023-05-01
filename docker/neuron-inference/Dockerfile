@@ -3,7 +3,10 @@ ARG IMAGE_TAG
 
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR
+ARG IMAGE_NAME
+
+ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
 
 USER root
 
@@ -42,12 +45,15 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
 USER app
 
 # setup workspace
-WORKDIR "${HOME}"
 
-RUN export PATH="/opt/aws/neuron/bin:$PATH"
+WORKDIR "/"
+
+ENV PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
+COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+
+WORKDIR "${HOME}"
 
 # install production dependencies
 RUN poetry install \
@@ -62,12 +68,10 @@ RUN poetry install \
 
 # --- production stage
 FROM builder as production
-ARG DOCKER_IMAGE_DIR
 
 
 # --- test build stage
 FROM builder as development
-ARG DOCKER_IMAGE_DIR
 
 # install development dependencies
 RUN poetry install \
@@ -80,8 +84,6 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users pytest.ini ./
-
-COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ ./tests
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 RUN mkdir tests/output

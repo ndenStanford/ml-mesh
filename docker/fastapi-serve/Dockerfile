@@ -3,10 +3,10 @@ ARG IMAGE_TAG
 
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR
+ARG IMAGE_NAME
 
 ENV USER=app
-ENV HOME="/home"
+ENV HOME="docker/${IMAGE_NAME}"
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
@@ -20,10 +20,12 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
 USER app
 
 # setup workspace
-WORKDIR "${HOME}"
+WORKDIR "/"
 
 # install - poetry requirements
-COPY --chown=app:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+
+WORKDIR "${HOME}"
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
@@ -33,8 +35,7 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 # --- production stage
 FROM builder as production
-ARG DOCKER_IMAGE_DIR
+
 
 # --- test build stage
 FROM builder as development
-ARG DOCKER_IMAGE_DIR
