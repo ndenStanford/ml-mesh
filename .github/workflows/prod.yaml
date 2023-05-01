@@ -60,13 +60,16 @@ jobs:
         libs:
           - name: core
             integration: false
+            functional: false
 
           - name: ml_compile
             integration: false
+            functional: true
 
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
+      functional: ${{ matrix.libs.functional }}
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
 
