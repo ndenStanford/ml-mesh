@@ -11,10 +11,16 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
-      - id: check-yaml
       - id: end-of-file-fixer
+        exclude: "^apps/entity-fishing/backend/"
       - id: trailing-whitespace
+        exclude: "^apps/entity-fishing/backend/"
       - id: check-merge-conflict
+      - id: detect-private-key
+      - id: detect-aws-credentials
+      - id: no-commit-to-branch
+        args:
+          ["--branch", "develop", "--branch", "main", "--pattern", "release/.*"]
 
   # Autoformat: YAML, JSON, Markdown, etc.
   - repo: https://github.com/pre-commit/mirrors-prettier
