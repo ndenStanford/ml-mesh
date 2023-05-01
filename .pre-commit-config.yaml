@@ -17,7 +17,6 @@ repos:
         exclude: "^apps/entity-fishing/backend/"
       - id: check-merge-conflict
       - id: detect-private-key
-      - id: detect-aws-credentials
       - id: no-commit-to-branch
         args:
           ["--branch", "develop", "--branch", "main", "--pattern", "release/.*"]
