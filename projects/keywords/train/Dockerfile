@@ -30,7 +30,7 @@ WORKDIR "/"
 COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
-COPY --chown=${USER}:users libs/ /libs/
+COPY --chown=${USER}:users libs/ libs/
 
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
