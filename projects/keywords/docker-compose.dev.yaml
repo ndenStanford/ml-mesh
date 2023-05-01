@@ -14,6 +14,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     ports:
       - "8888:8888"
     volumes:
@@ -21,18 +22,6 @@ services:
         source: train/src
         target: /home/projects/keywords/train/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
     profiles: ["train"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -48,61 +37,16 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: train/src
-        target: /home/projects/keywords/train/src
+        target: /projects/keywords/train/src
       - type: bind
         source: train/tests
-        target: /home/projects/keywords/train/tests
+        target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
-    profiles: ["train"]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  train-integration:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: train
-    volumes:
-      - type: bind
-        source: train/src
-        target: /home/projects/keywords/train/src
-      - type: bind
-        source: train/tests
-        target: /home/projects/keywords/train/tests
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["train"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -143,7 +87,7 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /home/projects/keywords/serve/src
+        target: /projects/keywords/serve/src
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
@@ -165,10 +109,10 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /home/projects/keywords/serve/src
+        target: /projects/keywords/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/keywords/serve/train
+        target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
@@ -195,12 +139,12 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /home/projects/keywords/serve/src
+        target: /projects/keywords/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/keywords/serve/train
+        target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
     ports:
       - 8000:8000

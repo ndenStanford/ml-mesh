@@ -19,7 +19,7 @@ services:
     volumes:
       - type: bind
         source: train/src
-        target: /home/projects/keywords/train/src
+        target: /projects/keywords/train/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command:
       [
@@ -51,10 +51,10 @@ services:
     volumes:
       - type: bind
         source: train/src
-        target: /home/projects/keywords/train/src
+        target: /projects/keywords/train/src
       - type: bind
         source: train/tests
-        target: /home/projects/keywords/train/tests
+        target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command:
       [
@@ -86,10 +86,10 @@ services:
     volumes:
       - type: bind
         source: train/src
-        target: /home/projects/keywords/train/src
+        target: /projects/keywords/train/src
       - type: bind
         source: train/tests
-        target: /home/projects/keywords/train/tests
+        target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command:
       [
