@@ -112,6 +112,30 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
+  # neuron-compile
+
+  - package-ecosystem: "pip"
+    directory: "/docker/neuron-compile"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # neuron-inference
+
+  - package-ecosystem: "pip"
+    directory: "/docker/neuron-inference"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
   # ====================================
   # LIBS
   # ====================================
@@ -128,6 +152,18 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
+  # compile lib
+
+  - package-ecosystem: "pip"
+    directory: "/libs/ml_compile"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
   # ====================================
   # PROJECTS
   # ====================================
@@ -135,8 +171,6 @@ updates:
   # KEYWORDS
 
   ## serve
-
-  # python
   - package-ecosystem: "pip"
     directory: "/projects/keywords/serve"
     schedule:
@@ -147,15 +181,29 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
-  # docker
-  - package-ecosystem: "docker"
-    directory: "/projects/keywords/serve"
+  ## train
+  - package-ecosystem: "pip"
+    directory: "/projects/keywords/train"
     schedule:
       interval: "monthly"
       time: "09:00"
       timezone: "Europe/London"
-    registries:
-      - ecr-prod
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # SUMMARIZATION
+
+  ## serve
+  - package-ecosystem: "pip"
+    directory: "/projects/summarization/serve"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
 # REGISTRIES
 
