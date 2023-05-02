@@ -8,7 +8,7 @@ from io import StringIO
 from onclusiveml.core.logging import LogFormat, get_default_logger
 
 
-def test_default_logger():
+def default_logger_test():
     """Test default logger setup."""
     buffer = StringIO(newline="")
     logger = get_default_logger(

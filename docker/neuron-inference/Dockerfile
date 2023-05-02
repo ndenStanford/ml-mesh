@@ -2,9 +2,12 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG DOCKER_IMAGE_DIR=docker/neuron-inference
 
 # --- build stage
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+
+ARG DOCKER_IMAGE_DIR
 
 USER root
 
@@ -48,7 +51,7 @@ WORKDIR "${HOME}"
 RUN export PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ./poetry.lock ./pyproject.toml ./
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
 
 # install production dependencies
 RUN poetry install \
@@ -63,10 +66,12 @@ RUN poetry install \
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR
 
 # install development dependencies
 RUN poetry install \
@@ -79,6 +84,8 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users ./test/ ./test
+COPY --chown=${USER}:users pytest.ini ./
 
-RUN mkdir test/output
+COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ ./tests
+
+RUN mkdir tests/output

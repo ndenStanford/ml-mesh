@@ -1,6 +1,9 @@
 ARG PYTHON_VERSION=3.8.16
+ARG DOCKER_IMAGE_DIR=docker/python-base
 
 FROM python:${PYTHON_VERSION}-slim as builder
+
+ARG DOCKER_IMAGE_DIR
 
 ENV HOME="/home"
 
@@ -30,6 +33,8 @@ RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cac
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR

@@ -2,7 +2,11 @@ ARG OWNER=onclusiveml
 ARG IMAGE_NAME=python-base
 ARG IMAGE_TAG=latest
 ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG DOCKER_IMAGE_DIR=docker/kubeflow-jupyter
+
 FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+
+ARG DOCKER_IMAGE_DIR
 
 # common environemnt variables
 ENV NB_USER jovyan
@@ -92,7 +96,7 @@ USER "${NB_UID}"
 WORKDIR "${HOME}"
 
 # install - poetry requirements
-COPY --chown="${NB_USER}:users" ./poetry.lock ./pyproject.toml ./
+COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/{cache,artifacts}
@@ -101,11 +105,11 @@ RUN poetry cache clear pypi --all -q \
     && chown -R "${NB_USER}:users" "${HOME}"
 
 # s6 - copy scripts
-COPY --chown="${NB_USER}:users" s6 /etc/
+COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/s6 /etc/
 
 USER root
 
-COPY --chown="${NB_USER}:users" .jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+COPY --chown="${NB_USER}:users" ${DOCKER_IMAGE_DIR}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
@@ -118,11 +122,13 @@ EXPOSE 8888
 
 # --- production stage
 FROM builder as production
+ARG DOCKER_IMAGE_DIR
 
 ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
+ARG DOCKER_IMAGE_DIR
 
 # dummy entrypoint to pass the CI docker run stage
 ENTRYPOINT ["pwd"]
