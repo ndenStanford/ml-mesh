@@ -9,7 +9,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 neptune = "^1.1.1"
 pytest = "7.2.0"
-pytest-order = "^1.1.0"
+pytest-order = "1.1.0"
 
 
 [build-system]
