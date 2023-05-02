@@ -81,7 +81,7 @@ jobs:
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }
+      - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' }}
         run: |
           make docker.build/${{ inputs.image }} \
