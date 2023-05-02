@@ -76,11 +76,9 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -90,21 +88,20 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make apps.unit/${{ inputs.app }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.integration }}
         run: make apps.integration/${{ inputs.app }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ !inputs.pull-request }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -114,7 +111,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ !inputs.pull-request }}
         run: |
           make apps.deploy/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
