@@ -180,6 +180,7 @@ def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
         )
     }
 
+
 @router.get(
     "/generate/{prompt}",
     status_code=status.HTTP_200_OK,
