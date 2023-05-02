@@ -64,7 +64,7 @@ jobs:
 
           - name: ml_compile
             integration: false
-            functional: true
+            functional: false # TODO: turn this to true when self hosted runners are available.
 
     with:
       lib: ${{ matrix.libs.name }}
