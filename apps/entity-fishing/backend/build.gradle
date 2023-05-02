@@ -1,0 +1,271 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.12.0'
+        //classpath "gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0"
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+//apply plugin: 'com.github.johnrengelman.shadow'
+
+group = "com.scienceminer.nerd"
+version = '0.0.6'
+
+description = """entity recognition and disambiguation against Wikidata and Wikipedia in a raw text, partially-annotated text segment, PDF or weighted term vector"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://grobid.s3.eu-west-1.amazonaws.com/repo/" }
+    jcenter()
+    maven {
+        url 'lib/'
+    }
+}
+
+dependencies {
+    // Tests
+    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+    testImplementation "org.hamcrest:hamcrest-all:1.3"
+    testImplementation group: 'org.easymock', name: 'easymock', version: '3.5'
+
+    // to be removed?
+    testImplementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+    // Logging
+    //implementation 'org.slf4j:slf4j-log4j12:1.7.25'
+    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+
+    // GROBID
+    implementation group: 'org.grobid', name: 'grobid-ner', version: '0.7.2'
+    implementation(group: 'org.grobid', name: 'grobid-trainer', version: '0.7.2') {
+        exclude(module: 'slf4j-jdk14')
+    }
+    implementation(group: 'org.grobid', name: 'grobid-core', version: '0.7.2') {
+        exclude(module: 'slf4j-jdk14')
+    }
+    //implementation group: 'directory-naming', name: 'naming-java', version: '0.8'
+    implementation group: 'fr.limsi.wapiti', name: 'wapiti', version: '1.5.0'
+    implementation group: 'org.wipo.analysers', name: 'wipo-analysers', version: '0.0.1'
+
+    // Apache commons
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'org.apache.commons:commons-lang3:3.6'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'commons-io:commons-io:2.7'
+    implementation 'commons-pool:commons-pool:1.6'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.1'
+    implementation group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+
+    // json and yaml
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.1'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.10.1'
+
+    // Web services
+    implementation "io.dropwizard:dropwizard-core:1.3.29"
+    implementation "io.dropwizard:dropwizard-assets:1.3.29"
+    implementation "com.hubspot.dropwizard:dropwizard-guicier:1.3.5.2"
+    implementation "io.dropwizard:dropwizard-testing:1.3.29"
+    implementation "io.dropwizard:dropwizard-forms:1.3.29"
+    implementation "io.dropwizard:dropwizard-client:1.3.29"
+    implementation "io.dropwizard:dropwizard-auth:1.3.29"
+    implementation "io.dropwizard.metrics:metrics-core:4.0.5"
+    implementation "io.dropwizard.metrics:metrics-servlets:4.0.5"
+    implementation "io.prometheus:simpleclient_dropwizard:0.11.0"
+    implementation "io.prometheus:simpleclient_servlet:0.11.0"
+
+    implementation group: 'net.arnx', name: 'jsonic', version: '1.3.10'
+
+    implementation "com.google.code.gson:gson:2.8.1"
+    implementation 'javax.mail:javax.mail-api:1.6.2'
+    implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
+
+    //Specialised libraries
+    implementation group: 'com.github.haifengl', name: 'smile-core', version: '1.3.1'
+    implementation(group: 'it.unimi.dsi', name: 'sux4j', version: '3.1.2') {
+        exclude(module: 'log4j-over-slf4j')
+        exclude(module: 'logback-classic')
+    }
+    implementation group: 'it.unimi.dsi', name: 'fastutil', version: '6.5.12'
+    implementation(group: 'it.unimi.dsi', name: 'dsiutils', version: '2.1.9') {
+        exclude(module: 'logback-classic')
+    }
+    implementation group: 'de.ruedigermoeller', name: 'fst', version: '2.56'
+
+    //Wikipedia
+    implementation group: 'org.sweble.wikitext', name: 'swc-parser-lazy', version: '3.1.9'
+    implementation(group: 'org.sweble.wikitext', name: 'swc-engine', version: '3.1.9') {
+        exclude(module: 'jaxb-impl')   
+    }
+
+    //XML
+    implementation group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.19'
+
+    //LMDB
+    implementation group: 'org.deephacks.lmdbjni', name: 'lmdbjni', version: '0.4.6'
+    implementation group: 'org.deephacks.lmdbjni', name: 'lmdbjni-linux64', version: '0.4.6'
+    implementation group: 'org.deephacks.lmdbjni', name: 'lmdbjni-osx64', version: '0.4.6'
+    implementation group: 'org.deephacks.lmdbjni', name: 'lmdbjni-win64', version: '0.4.6'
+
+    //Hadoop
+    implementation(group: 'org.apache.hadoop', name: 'hadoop-core', version: '1.2.1') {
+        exclude(module: 'jaxb-impl')   
+        exclude(module: 'jersey-core')
+        exclude(module: 'jersey-json')
+        exclude(module: 'jersey-server')
+    }
+    implementation group: 'org.apache.avro', name: 'avro', version: '1.7.5'
+}
+
+configurations {
+    implementation.exclude group: "org.slf4j", module: "slf4j-jdk14"
+}
+
+configurations.all {
+    exclude module: 'slf4j-log4j12'
+    resolutionStrategy {
+        force 'xml-apis:xml-apis:1.4.01'
+    }
+}
+
+test {
+    testLogging.showStandardStreams = true
+    exclude '**/**IntegrationTest**'
+}
+
+distTar.enabled = false
+distZip.enabled = false
+
+// service
+apply plugin: 'application'
+application {
+    mainClassName = 'com.scienceminer.nerd.service.NerdApplication'
+
+    run {
+        args = ['server', 'data/config/service.yaml']
+    }
+}
+
+//TODO: we could create a task to download and unpack the lmdb files automatically 
+//task copyModels(type: Copy) {
+//    from "${rootDir}/resources/models"
+//    include "**/*.wapiti"
+//    into "${rootDir}/../grobid-home/models/"
+//}
+
+//tasks.withType(JavaCompile) {
+//    options.compilerArgs << "-Xlint:deprecation"
+//    options.compilerArgs << "-Xlint:unchecked"
+//}
+
+wrapper {
+    gradleVersion "7.1.1"
+}
+
+// return the default value if the property has not been specified in command line
+ext.getArg = { propName, defaultVal ->
+    return project.hasProperty(propName) ? project.getProperty(propName) : defaultVal;
+}
+
+// Training with Wikipedia
+// Run like this: ./gradlew train_wikipedia -Plang=en
+// ./gradlew train_wikipedia -Plang=fr
+// etc.
+task(train_wikipedia, dependsOn: 'classes', type: JavaExec, group: 'training') {
+    main = 'com.scienceminer.nerd.training.WikipediaTrainer'
+    classpath = sourceSets.main.runtimeClasspath
+    args 'data/wikipedia/training/', getArg('lang', 'en')
+    jvmArgs '-Djdk.xml.totalEntitySizeLimit=2147480000', '-Djdk.xml.totalEntitySizeLimit=2147480000', '-Xms2g', '-Xmx8g'
+}
+
+// Training with an annotated corpus
+// Run like this: ./gradlew train_corpus -Pcorpus=aquaint -Plang=en
+// ./gradlew train_corpus -Pcorpus=aida-train -Plang=en 
+// etc.
+task(train_corpus, dependsOn: 'classes', type: JavaExec, group: 'training') {
+    main = 'com.scienceminer.nerd.training.CorpusTrainer'
+    classpath = sourceSets.main.runtimeClasspath
+    args getArg('corpus', ''), getArg('lang', 'en')
+    jvmArgs '-Djdk.xml.totalEntitySizeLimit=2147480000', '-Djdk.xml.totalEntitySizeLimit=2147480000', '-Xms2g', '-Xmx8g'
+}
+
+// Evaluation
+// Run like this: ./gradlew evaluation -Pcorpus=[corpusname]
+// e.g. ./gradlew evaluation -Pcorpus=aida-testb
+task(evaluation, dependsOn: 'classes', type: JavaExec, group: 'evaluation') {
+    main = 'com.scienceminer.nerd.evaluation.NEDCorpusEvaluation'
+    classpath = sourceSets.main.runtimeClasspath
+    args getArg('corpus', '')
+    jvmArgs '-Xms2g', '-Xmx8g'
+}
+
+// training data generation
+// Run like this: ./gradlew annotatedDataGeneration -Pcorpus=[corpusname]
+// e.g. ./gradlew annotatedDataGeneration -Pcorpus=toto
+task(annotatedDataGeneration, dependsOn: 'classes', type: JavaExec, group: 'training') {
+    main = 'com.scienceminer.nerd.evaluation.AnnotatedDataGeneration'
+    classpath = sourceSets.main.runtimeClasspath
+    args getArg('corpus', '')
+    jvmArgs '-Xms2g', '-Xmx8g'
+}
+
+// create entity description, necessary to then create entity embeddings
+// Run like this: ./gradlew generate_entity_description -Plang=en
+// ./gradlew generate_entity_description -Plang=fr
+// etc.
+task(generate_entity_description, dependsOn: 'classes', type: JavaExec, group: 'embeddings') {
+    main = 'com.scienceminer.nerd.embeddings.EntityDescription'
+    classpath = sourceSets.main.runtimeClasspath
+    args 'data/embeddings/', getArg('lang', 'en')
+    jvmArgs '-Xms2g', '-Xmx8g'
+}
+
+// tasks related to embeddings generation
+
+// quantize word embeddings 
+// Run like this: ./gradlew quantize_word_embeddings -Pi=word.embeddings.vec -Po=word.embeddings.quantized
+task(quantize_word_embeddings, dependsOn: 'classes', type: JavaExec, group: 'embeddings') {
+    main = 'com.scienceminer.nerd.embeddings.Quantizer'
+    classpath = sourceSets.main.runtimeClasspath
+    args '-i', getArg('i', 'word.embeddings.vec'), '-o', getArg('o', 'word.embeddings.quantized'), '-error', getArg('e', '0.01'), '-hashheader'
+    jvmArgs '-Xms2g', '-Xmx8g'
+}
+
+// create entity embeddings from word embeddings and generated entity description 
+// Run like this: ./gradlew generate_entity_embeddings -Pin=entity.description -Pv=word.embeddings.quantized -Pout=entity.embeddings.vec -Pn=10
+task(generate_entity_embeddings, dependsOn: 'classes', type: JavaExec, group: 'embeddings') {
+    main = 'com.scienceminer.nerd.embeddings.EntityEmbeddings'
+    classpath = sourceSets.main.runtimeClasspath
+    args '-in', getArg('in', 'entity.description'), '-v', getArg('v', 'word.embeddings.quantized'), '-out', getArg('out', 'entity.embeddings.vec'), '-n', getArg('n', '8')
+    jvmArgs '-Xms2g', '-Xmx8g'
+}
+
+// quantize entity embeddings 
+// Run like this: ./gradlew quantize_entity_embeddings -Pi=entity.embeddings.vec -Po=entity.embeddings.quantized
+task(quantize_entity_embeddings, dependsOn: 'classes', type: JavaExec, group: 'embeddings') {
+    main = 'com.scienceminer.nerd.embeddings.Quantizer'
+    classpath = sourceSets.main.runtimeClasspath
+    args '-i', getArg('i', 'entity.embeddings.vec'), '-o', getArg('o', 'entity.embeddings.quantized'), '-error', getArg('e', '0.01'), '-hashheader'
+    jvmArgs '-Xms2g', '-Xmx8g'
+}

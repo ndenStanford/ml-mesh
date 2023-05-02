@@ -1,6 +1,52 @@
 version: "3.9"
 
 services:
+  # =====================================================
+  # FRONTEND
+  # =====================================================
+  frontend:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/frontend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: frontend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    command: ["npm", "start"]
+    profiles: ["frontend"]
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: dev
+      REACT_APP_API_KEY: 1234
+      REACT_APP_API_URI: http://localhost:4000/api/v1
+
+  frontend-unit:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/frontend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: frontend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    command: ["/bin/sh", "-c", "sleep 3s"]
+    profiles: ["frontend", "unit"]
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: dev
+      REACT_APP_API_KEY: 1234
+      REACT_APP_API_URI: http://localhost:4000/api/v1
+
+  # =====================================================
+  # BACKEND
+  # =====================================================
   backend:
     build:
       context: ../../
@@ -11,7 +57,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command:
       [
         "uvicorn",
@@ -50,7 +96,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: v2023.3.2
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["unit"]
     environment:
@@ -74,7 +120,7 @@ services:
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: v2023.3.2
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
     environment:

@@ -57,6 +57,7 @@ def test_get_prompt(mock_prompt_get, id, test_client):
         "id": f"{id}",
         "template": "test template",
         "alias": "test alias",
+        "variables": [],
     }
 
 
@@ -266,7 +267,10 @@ def test_generate_text(
     assert mock_openai_chat.call_count == 1
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"generated": generated}
+    assert response.json() == {
+        "generated": generated,
+        "prompt": template.format(**values),
+    }
 
 
 @pytest.mark.parametrize(

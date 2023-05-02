@@ -42,6 +42,7 @@ repos:
     rev: v2.4.1
     hooks:
       - id: prettier
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Dockerfile
   - repo: https://github.com/hadolint/hadolint.git
@@ -49,6 +50,7 @@ repos:
     hooks:
       - id: hadolint-docker
         entry: hadolint/hadolint:v2.12.0 hadolint
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Bash scripts
   - repo: https://github.com/openstack-dev/bashate.git
@@ -56,6 +58,7 @@ repos:
     hooks:
       - id: bashate
         args: ["--ignore=E006"]
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Shell scripts
   - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -63,6 +66,7 @@ repos:
     hooks:
       - id: shellcheck
         args: ["-x"]
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -70,3 +74,4 @@ repos:
     hooks:
       - id: markdownlint
         args: ["--fix"]
+        exclude: "^apps/entity-fishing/backend/"

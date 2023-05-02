@@ -58,6 +58,8 @@ class Settings(BaseSettings):
 
     DB_HOST: Optional[str] = None
 
+    CORS_ORIGIN: List[str] = ["http://localhost:3333", "localhost:3333"]
+
 
 @lru_cache
 def get_settings() -> BaseSettings:

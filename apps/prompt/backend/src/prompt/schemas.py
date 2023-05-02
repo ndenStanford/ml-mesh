@@ -3,7 +3,7 @@
 # Standard Library
 import json
 from string import Formatter
-from typing import List, Optional
+from typing import List, Optional, Union
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -51,7 +51,9 @@ class PromptTemplateSchema(BaseModel):
         )
 
     @classmethod
-    def get(cls, id: Optional[str] = None) -> "PromptTemplateSchema":
+    def get(
+        cls, id: Optional[str] = None
+    ) -> Union["PromptTemplateSchema", List["PromptTemplateSchema"]]:
         """Returns row of the table."""
         if id is None:
             return list(
@@ -70,7 +72,40 @@ class PromptTemplateSchema(BaseModel):
         )
 
 
+class PromptTemplateOutputSchema(BaseModel):
+    """Prompt Template output schema"""
+
+    id: Optional[str] = None
+    template: str
+    created_at: Optional[str] = None
+    variables: List[str] = []
+
+    @classmethod
+    def from_template_schema(
+        cls, input: Union[PromptTemplateSchema, List[PromptTemplateSchema]]
+    ) -> "PromptTemplateOutputSchema":
+        """Converts internal schema to output schema."""
+        if isinstance(input, list):
+            return list(
+                map(
+                    lambda x: cls(
+                        id=x.id,
+                        template=x.template,
+                        created_at=x.created_at,
+                        variables=x.variables,
+                    ),
+                    input,
+                )
+            )
+        return cls(
+            id=input.id,
+            template=input.template,
+            created_at=input.created_at,
+            variables=input.variables,
+        )
+
+
 class PromptTemplateListSchema(BaseModel):
     """List of prompt templates."""
 
-    prompts: List[PromptTemplateSchema] = []
+    prompts: List[PromptTemplateOutputSchema] = []
