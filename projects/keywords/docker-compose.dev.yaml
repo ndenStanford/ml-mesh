@@ -14,7 +14,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     ports:
       - "8888:8888"
     volumes:
@@ -37,7 +37,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: train/src
@@ -67,7 +67,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command:
       [
@@ -105,7 +105,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: serve/src
@@ -135,7 +135,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: serve/src
