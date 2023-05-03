@@ -5,7 +5,6 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as
 
 ARG IMAGE_NAME
 
-ENV USER=app
 ENV HOME="docker/${IMAGE_NAME}"
 
 # common environemnt variables

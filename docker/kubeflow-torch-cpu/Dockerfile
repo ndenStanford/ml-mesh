@@ -5,7 +5,6 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-jupyter:$IMAGE_T
 
 ARG IMAGE_NAME
 
-ENV USER=app
 ENV HOME="docker/${IMAGE_NAME}"
 
 # set shell to bash
