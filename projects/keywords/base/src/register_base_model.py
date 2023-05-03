@@ -1,9 +1,8 @@
 # Standard Library
 import os
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 # ML libs
-import torch
 from keybert import KeyBERT
 from transformers import pipeline
 
@@ -11,20 +10,19 @@ from transformers import pipeline
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.settings import KEYWORD_TRAIN_SETTINGS
+from src.settings import tracked_keywords_base_model_card as config
 
 
-keyword_train_settings = KEYWORD_TRAIN_SETTINGS.dict()
-
-if not os.path.isdir(keyword_train_settings["LOCAL_OUTPUT_DIR"]):
-    os.makedirs(keyword_train_settings["LOCAL_OUTPUT_DIR"])
+if not os.path.isdir(config.local_output_dir):
+    os.makedirs(config.local_output_dir)
+# initialize registered model on neptune ai
+model_version = TrackedModelVersion(**config.model_specs.dict())
 # --- initialize models
 # get specified huggingface transformer pipeline
 hf_pipeline = pipeline(
-    "feature-extraction", keyword_train_settings["HF_MODEL_REFERENCE"]
+    task=config.model_params.huggingface_pipeline_task,
+    model=config.model_params.huggingface_model_reference,
 )
-hf_tokenizer = hf_pipeline.tokenizer
-hf_model = hf_pipeline.model
 # initialize keybert model with huggingface pipeline backend
 keybert_model = KeyBERT(model=hf_pipeline)
 # --- create prediction files
@@ -79,76 +77,33 @@ sample_inputs = [
          a situaciones no vistas en un
          manera 'razonable' (ver sesgo inductivo).""",
 ]
-# tokenizer
-# has max_token_length=512
-# classic tokenizer output dict with keys 'input_ids'->List[Tuple[int]] and
-# 'attention_mask'->:List[Tuple[int]],
-# if not setting padding = max_length, this would give a list with each array being of dim
-# n_batch x min(max(n_tokens),max_token_length) = n_batch x min(max(n_tokens),512),
-# where max(n_tokens) is the maximum sequence length across the batch
-# setting padding = max_length ensures all arrays have the same dimension
-tokenizer_settings = keyword_train_settings["TOKENIZER_SETTINGS"]
-
-tokenized_sample_inputs: Dict[str, List[Tuple[int]]] = dict(
-    hf_pipeline.tokenizer(sample_inputs, **tokenizer_settings)
-)
-tokenized_sample_inputs_tensor: Dict[str, torch.Tensor] = hf_pipeline.tokenizer(
-    sample_inputs, return_tensors="pt", **tokenizer_settings
-)
-# hugginface transformer model
-# has n_embed=384
-# torch tensor converted to nested list of dim n_batch x max_token_length x n_embed
-# = n_batch x 512 x 384
-hf_model_predictions: List[Tuple[Tuple[float]]] = hf_pipeline.model(
-    **tokenized_sample_inputs_tensor
-).last_hidden_state.tolist()
-# huggingface pipeline
-# note: # if not setting padding = max_length, this would give an array as nested lists of
-# dim n_batch x 1 x n_tokens x n_embed = n_batch x 1 x min(n_tokens,512) x 384
-# the n_tokens dim is input dependent regardless of padding approach chosen for tokenization, as the
-# embeddings of the trivial padding tokens seem to get removed by the head section
-# of the pipeline wrapper
-# specifying tokenizer settings via the tokenize_kwargs arg ensures deterministic, consistently
-# shaped outputs
-hf_pipeline_predictions: List[List[Tuple[float]]] = hf_pipeline(
-    sample_inputs, tokenize_kwargs=tokenizer_settings
-)
 # keybert model
 # list of tuples (ngram/word, prob)
-keybert_settings = {"keyphrase_ngram_range": (1, 1), "stopwords": None}
+keyword_extraction_settings = config.model_params.keyword_extraction_settings.dict()
 keybert_predictions: List[Tuple[str, float]] = keybert_model.extract_keywords(
-    sample_inputs, keyphrase_ngram_range=(1, 1), stop_words=None
+    sample_inputs, **keyword_extraction_settings
 )
-# --- register model on neptune ai
-model_version = TrackedModelVersion(
-    model=keyword_train_settings["NEPTUNE_MODEL_ID"],
-    project=keyword_train_settings["NEPTUNE_PROJECT"],
-    api_token=keyword_train_settings["NEPTUNE_API_TOKEN"],
-)
-# inputs & outputs
-for (data, data_file_reference) in [
-    (sample_inputs, "text_inputs"),
-    (tokenizer_settings, "tokenizer_settings"),
-    (tokenized_sample_inputs, "tokenized_inputs"),
-    (hf_model_predictions, "hf_model_predictions"),
-    (hf_pipeline_predictions, "hf_pipeline_predictions"),
-    (keybert_settings, "keybert_settings"),
-    (keybert_predictions, "keybert_predictions"),
+# --- add assets to registered model version on neptune ai
+# testing assets - inputs, inference specs and outputs
+for (test_file, test_file_attribute_path) in [
+    (sample_inputs, config.model_test_files.inputs),
+    (keyword_extraction_settings, config.model_test_files.inference_params),
+    (keybert_predictions, config.model_test_files.predictions),
 ]:
-    neptune_attribute_path = f"model/test_files/{data_file_reference}"
-
     model_version.upload_config_to_model_version(
-        config=data, neptune_attribute_path=neptune_attribute_path
+        config=test_file, neptune_attribute_path=test_file_attribute_path
     )
-
-hf_pipeline_local_dir = os.path.join(
-    keyword_train_settings["LOCAL_OUTPUT_DIR"], "hf_pipeline"
-)
+# model artifact
+hf_pipeline_local_dir = os.path.join(config.local_output_dir, "hf_pipeline")
 hf_pipeline.save_pretrained(hf_pipeline_local_dir)
 
 model_version.upload_directory_to_model_version(
     local_directory_path=hf_pipeline_local_dir,
-    neptune_attribute_path="model/hf_pipeline",
+    neptune_attribute_path=config.model_artifact_attribute_path,
+)
+# # model card
+model_version.upload_config_to_model_version(
+    config=config.dict(), neptune_attribute_path="model/model_card"
 )
 
 model_version.stop()

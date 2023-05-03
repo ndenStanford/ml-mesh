@@ -1,5 +1,5 @@
 # 3rd party libraries
-from pydantic import BaseSettings, Field, PyObject, SecretStr, validator
+from pydantic import BaseSettings, Field, SecretStr, validator
 
 
 class TrackedModelSpecs(BaseSettings):
@@ -18,8 +18,8 @@ class TrackedModelTestFiles(BaseSettings):
     for validating runtime environments or model compilations"""
 
     # neptune ai locations of test files
-    inputs_text: str = "model/test_files/inputs_text"
-    inputs_tokenized: str = "model/test_files/inputs_tokenized"
+    inputs: str = "model/test_files/inputs"
+    inference_params: str = "model/test_files/inference_params"
     predictions: str = "model/test_files/predictions"
 
 
@@ -46,9 +46,11 @@ class TrackedModelCard(BaseSettings):
     #
     # model_loader: load_tracked_model
     # ```
-    model_loader: PyObject = lambda x: x  # descoped for now
+    # model_loader: Callable = lambda x: x  # descoped for now
 
-    model_test_files: TrackedModelTestFiles  # class containing paths to the test file attributes
+    model_test_files: TrackedModelTestFiles = (
+        TrackedModelTestFiles()
+    )  # class containing paths to the test file attributes
 
     @validator("model_type")
     def check_model_type(v: str) -> str:

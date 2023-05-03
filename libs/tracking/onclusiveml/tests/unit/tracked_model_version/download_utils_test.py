@@ -66,6 +66,7 @@ def convert_neptune_data_path_to_local_path_test(
             neptune_attribute_path=neptune_attribute_path,
             neptune_attribute_prefix=neptune_attribute_prefix,
             local_directory_path=local_directory_path,
+            create_local_subdirs=False,
         )
     )
 

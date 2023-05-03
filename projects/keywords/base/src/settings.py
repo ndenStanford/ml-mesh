@@ -1,34 +1,41 @@
 # Standard Library
 import os
+from typing import List, Tuple
 
 # 3rd party libraries
 from pydantic import BaseSettings
 
-
-class TokenizerSettings(BaseSettings):
-    padding: str = "max_length"
-    truncation: bool = True
-    add_special_tokens: bool = True
-    max_length: int = (
-        512  # based on sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-    )
+# Internal libraries
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 
 
-class KeyWordTrainSettings(BaseSettings):
-    """Default parameter (behaviour) for the training component of the keyword ML project."""
+# --- settings classes
+class KeywordExtractionSettings(BaseSettings):
+    keyphrase_ngram_range: Tuple[int, int] = (1, 1)
+    stop_words: List[str] = None
 
-    # neptune ai model registry settings
-    NEPTUNE_PROJECT: str = "onclusive/keywords"
-    NEPTUNE_MODEL_ID: str = "KEYWORDS-BASE"
-    NEPTUNE_API_TOKEN: str
-    # model params
-    HF_MODEL_REFERENCE: str = (
+
+class ModelParams(BaseSettings):
+    huggingface_pipeline_task: str = "feature-extraction"
+    huggingface_model_reference: str = (
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
-    TOKENIZER_SETTINGS: TokenizerSettings = TokenizerSettings()
+    keyword_extraction_settings: KeywordExtractionSettings = KeywordExtractionSettings()
+
+
+class TrackedKeywordsBaseModelCard(TrackedModelCard):
+    """Default parameter (behaviour) for the training component of the keyword ML project."""
+
+    # --- custom fields
+    # model params
+    model_params: ModelParams = ModelParams()
     # admin
-    LOCAL_OUTPUT_DIR: str = os.path.join(".", "keyword_model_artifacts")
-    LOGGING_LEVEL: str = "INFO"
+    local_output_dir: str = os.path.join(".", "keyword_model_artifacts")
+    logging_level: str = "INFO"
 
 
-KEYWORD_TRAIN_SETTINGS = KeyWordTrainSettings()
+# --- settings file(s)
+tracked_keywords_base_model_card = TrackedKeywordsBaseModelCard(
+    model_specs=TrackedModelSpecs(project="onclusive/keywords", model="KEYWORDS-BASE"),
+    model_type="base",
+)

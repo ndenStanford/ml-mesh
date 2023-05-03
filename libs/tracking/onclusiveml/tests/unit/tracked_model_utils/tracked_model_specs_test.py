@@ -18,7 +18,7 @@ def from_env_test(project, model, api_token):
     for env_name, env_val in (
         ("neptune_project", project),
         ("neptune_model_id", model),
-        ("neptune_api_token", api_token),
+        ("NEPTUNE_API_TOKEN", api_token),  # tests case insensitivity
     ):
         os.environ[env_name] = env_val
 
@@ -32,7 +32,7 @@ def from_env_test(project, model, api_token):
     for env_name, env_val in (
         ("neptune_project", project),
         ("neptune_model_id", model),
-        ("neptune_api_token", api_token),
+        ("NEPTUNE_API_TOKEN", api_token),
     ):
         del os.environ[env_name]
 
