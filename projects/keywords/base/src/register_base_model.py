@@ -10,18 +10,21 @@ from transformers import pipeline
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.settings import tracked_keywords_base_model_card as config
+from src.settings import TrackedKeywordModelSpecs, TrackedKeywordsBaseModelCard
 
 
-if not os.path.isdir(config.local_output_dir):
-    os.makedirs(config.local_output_dir)
+model_specs = TrackedKeywordModelSpecs()
+model_card = TrackedKeywordsBaseModelCard()
+
+if not os.path.isdir(model_card.local_output_dir):
+    os.makedirs(model_card.local_output_dir)
 # initialize registered model on neptune ai
-model_version = TrackedModelVersion(**config.model_specs.dict())
+model_version = TrackedModelVersion(**model_specs.dict())
 # --- initialize models
 # get specified huggingface transformer pipeline
 hf_pipeline = pipeline(
-    task=config.model_params.huggingface_pipeline_task,
-    model=config.model_params.huggingface_model_reference,
+    task=model_card.model_params.huggingface_pipeline_task,
+    model=model_card.model_params.huggingface_model_reference,
 )
 # initialize keybert model with huggingface pipeline backend
 keybert_model = KeyBERT(model=hf_pipeline)
@@ -79,31 +82,31 @@ sample_inputs = [
 ]
 # keybert model
 # list of tuples (ngram/word, prob)
-keyword_extraction_settings = config.model_params.keyword_extraction_settings.dict()
+keyword_extraction_settings = model_card.model_params.keyword_extraction_settings.dict()
 keybert_predictions: List[Tuple[str, float]] = keybert_model.extract_keywords(
     sample_inputs, **keyword_extraction_settings
 )
 # --- add assets to registered model version on neptune ai
 # testing assets - inputs, inference specs and outputs
 for (test_file, test_file_attribute_path) in [
-    (sample_inputs, config.model_test_files.inputs),
-    (keyword_extraction_settings, config.model_test_files.inference_params),
-    (keybert_predictions, config.model_test_files.predictions),
+    (sample_inputs, model_card.model_test_files.inputs),
+    (keyword_extraction_settings, model_card.model_test_files.inference_params),
+    (keybert_predictions, model_card.model_test_files.predictions),
 ]:
     model_version.upload_config_to_model_version(
         config=test_file, neptune_attribute_path=test_file_attribute_path
     )
 # model artifact
-hf_pipeline_local_dir = os.path.join(config.local_output_dir, "hf_pipeline")
+hf_pipeline_local_dir = os.path.join(model_card.local_output_dir, "hf_pipeline")
 hf_pipeline.save_pretrained(hf_pipeline_local_dir)
 
 model_version.upload_directory_to_model_version(
     local_directory_path=hf_pipeline_local_dir,
-    neptune_attribute_path=config.model_artifact_attribute_path,
+    neptune_attribute_path=model_card.model_artifact_attribute_path,
 )
 # # model card
 model_version.upload_config_to_model_version(
-    config=config.dict(), neptune_attribute_path="model/model_card"
+    config=model_card.dict(), neptune_attribute_path="model/model_card"
 )
 
 model_version.stop()

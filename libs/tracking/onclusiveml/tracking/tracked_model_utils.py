@@ -1,5 +1,5 @@
 # 3rd party libraries
-from pydantic import BaseSettings, Field, SecretStr, validator
+from pydantic import BaseModel, BaseSettings, Field, SecretStr, validator
 
 
 class TrackedModelSpecs(BaseSettings):
@@ -13,7 +13,7 @@ class TrackedModelSpecs(BaseSettings):
     api_token: SecretStr = Field(..., env="neptune_api_token", exclude=True)
 
 
-class TrackedModelTestFiles(BaseSettings):
+class TrackedModelTestFiles(BaseModel):
     """A utility to specifiy the attribute paths of test files supporting regression tests, e.g
     for validating runtime environments or model compilations"""
 
@@ -26,10 +26,8 @@ class TrackedModelTestFiles(BaseSettings):
 MODEL_TYPES = ("base", "trained", "compiled")
 
 
-class TrackedModelCard(BaseSettings):
+class TrackedModelCard(BaseModel):
     """A common interface for specfying model resources on neptune ai."""
-
-    model_specs: TrackedModelSpecs
 
     model_type: str  # 'base', 'trained' or 'compiled'; see validator below
     # the path to the model artifact attribute. passing this path to the MODEL_INITIALIZER should
@@ -47,7 +45,6 @@ class TrackedModelCard(BaseSettings):
     # model_loader: load_tracked_model
     # ```
     # model_loader: Callable = lambda x: x  # descoped for now
-
     model_test_files: TrackedModelTestFiles = (
         TrackedModelTestFiles()
     )  # class containing paths to the test file attributes
