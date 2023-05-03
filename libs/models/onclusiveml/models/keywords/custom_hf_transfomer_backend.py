@@ -3,7 +3,7 @@ from keybert.backend._hftransformers import HFTransformerBackend
 from transformers.pipelines import Pipeline
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledPipeline
+from onclusiveml.compile import CompiledPipeline
 
 
 class CustomHFTransformerBackend(HFTransformerBackend):

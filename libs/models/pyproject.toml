@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ml-models"
+name = "models"
 version = "0.1.0"
 description = "Project level ML (compiled) model wrapper classes and utilities."
 authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]

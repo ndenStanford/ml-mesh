@@ -7,8 +7,8 @@ Internal libraries implement abstractions that allow us to build our ML applicat
 - **core**: base classes and global utilities used in all libraries and projects.
 - **data**: dataset lifecycle management.
 - **tracking**: Support for interacting with the Neptune AI platform.
-- **ml_compile**: Support for optimizing models for serving purposes.
-- **ml_models**: model wrappers and parameter management.
+- **compile**: Support for optimizing models for serving purposes.
+- **models**: Custom model wrappers.
 - **nlp**: internal NLP utilities.
 - **serving**: model wrappers for serving.
 - **training**: object suite to enable training models at scale.

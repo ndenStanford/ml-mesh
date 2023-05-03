@@ -18,8 +18,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledPipeline
-from onclusiveml.ml_models.keywords import CustomHFTransformerBackend
+from onclusiveml.compile import CompiledPipeline
+from onclusiveml.models.keywords import CustomHFTransformerBackend
 
 
 class CompiledKeyBERT(KeyBERT):

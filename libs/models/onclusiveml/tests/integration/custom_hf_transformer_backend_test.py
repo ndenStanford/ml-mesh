@@ -3,7 +3,7 @@ import pytest
 from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
-from onclusiveml.ml_models.keywords import CustomHFTransformerBackend
+from onclusiveml.models.keywords import CustomHFTransformerBackend
 
 
 @pytest.mark.order(1)

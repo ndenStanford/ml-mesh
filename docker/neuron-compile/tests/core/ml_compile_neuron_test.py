@@ -11,7 +11,7 @@ from transformers.pipelines import pipeline
 import pytest
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledModel, CompiledPipeline
+from onclusiveml.compile import CompiledModel, CompiledPipeline
 
 
 @pytest.mark.core

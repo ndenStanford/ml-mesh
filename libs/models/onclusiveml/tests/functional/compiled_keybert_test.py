@@ -11,7 +11,7 @@ from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.ml_models.keywords import CompiledKeyBERT
+from onclusiveml.models.keywords import CompiledKeyBERT
 
 
 logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
