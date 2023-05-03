@@ -29,7 +29,10 @@ export const getPrompts = createAsyncThunk("prompts/list", async () => {
 
 export const createPrompt = createAsyncThunk(
   "prompts/create",
-  async ({ template, alias }: { template: string; alias: string }) => {
+  async (
+    { template, alias }: { template: string; alias: string },
+    thunkAPI: any
+  ) => {
     const response = await fetch(
       `${API_URI}/prompts?template=${template}&alias=${alias}`,
       {
@@ -41,9 +44,6 @@ export const createPrompt = createAsyncThunk(
       }
     );
     if (response.status !== 201) {
-      // if (response.status == 409) {
-
-      // }
       console.log("Error fetching");
     }
     console.log("Successfully created new prompt.");

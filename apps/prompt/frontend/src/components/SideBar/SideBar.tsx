@@ -74,7 +74,7 @@ export default class SideBar extends React.Component<SidebarProps, any> {
                 <div className={styles["context-prompt-header"]}>
                   <span>New Prompt Template</span>
                   <div>
-                    Please enter the template text and an alias for the
+                    Please enter the template text and a unique alias for the
                     template:
                   </div>
                 </div>
