@@ -75,45 +75,45 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: DeployManifests
 
-      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+      - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         run: |
-          make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
+          make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
-      - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        run: make apps.unit/${{ inputs.app }} \
+      - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        run: make projects.unit/${{ inputs.project }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
           ENVIRONMENT="ci"
 
-      - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+      - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
-        run: make apps.integration/${{ inputs.app }} \
+        run: make projects.integration/${{ inputs.project }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           COMPONENT=${{ inputs.component }} \
           ENVIRONMENT="ci"
 
-      - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+      - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ !inputs.pull-request }}
         run: |
-          make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
+          make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
-      - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+      - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ !inputs.pull-request }}
         run: |
-          make apps.deploy/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
+          make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           ENVIRONMENT="ci"
