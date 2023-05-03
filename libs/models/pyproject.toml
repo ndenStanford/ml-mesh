@@ -7,8 +7,10 @@ packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-ml-tracking = {path = "../ml_tracking"}
-ml-compile = {path = "../ml_compile"}
+tracking = {path = "../tracking"}
+compile = {path = "../compile"}
+keybert = "^0.7.0"
+pytest = "7.2.0"
 
 
 [[tool.poetry.source]]
