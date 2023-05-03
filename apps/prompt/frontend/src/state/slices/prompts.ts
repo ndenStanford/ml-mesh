@@ -43,10 +43,16 @@ export const createPrompt = createAsyncThunk(
         },
       }
     );
+    // if (response.status === 409) {
+    //   return thunkAPI.rejectWithValue('TESTESTESTETESTETTESTESTESTETESTETTESTESTESTETESTETTESTESTESTETESTET');
+    //   // return thunkAPI.fulfillWithValue('TESTESTESTETESTETTESTESTESTETESTETTESTESTESTETESTETTESTESTESTETESTET');
+    // }
     if (response.status !== 201) {
       console.log("Error fetching");
     }
     console.log("Successfully created new prompt.");
+    const jsonResponse = await response.json();
+    return jsonResponse;
   }
 );
 

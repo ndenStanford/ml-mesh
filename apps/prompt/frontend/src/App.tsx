@@ -143,12 +143,13 @@ export default function App() {
           onModalActionClick={(template: string, alias: string) => {
             // NOTE: reloading the page here is a hack because redux should take
             // care of this when the state is updated.
-            dispatch(createPrompt({ template, alias })).then((content) => {
-              // alert(JSON.stringify(content));
-              if (String(content["type"]) == "prompts/create/fulfilled") {
-                alert("Alias conflict, you must provide a unique alias");
-              }
-            });
+            dispatch(createPrompt({ template, alias }));
+            // dispatch(createPrompt({ template, alias })).then((content) => {
+            //   alert(JSON.stringify(content));
+            //   if (String(content["type"]) == "prompts/create/fulfilled") {
+            //     alert("Alias conflict, you must provide a unique alias");
+            //   }
+            // });
             window.location.reload();
           }}
         >
