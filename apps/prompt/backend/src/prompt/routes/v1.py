@@ -192,4 +192,11 @@ def generate_test(prompt: str):
     Args:
         id (str): prompt id
     """
-    return {"generated": generate_text(prompt)}
+    return {
+        "generated": generate_text(
+            prompt,
+            ModelEnum.GPT3_5.value,
+            settings.OPENAI_MAX_TOKENS,
+            settings.OPENAI_TEMPERATURE,
+        ),
+    }
