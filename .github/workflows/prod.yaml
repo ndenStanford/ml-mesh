@@ -1,4 +1,4 @@
-name: ML-Mesh Prod Worfklow
+name: ML-Mesh Prod Workflow
 
 on:
   push:
@@ -140,6 +140,15 @@ jobs:
           # ========================
           # serve
           - name: summarization
+            component: serve
+            integration: true
+            python-version: "3.8.16"
+
+          # ========================
+          # ENTITY LINKING
+          # ========================
+          # serve
+          - name: entity-linking
             component: serve
             integration: true
             python-version: "3.8.16"
