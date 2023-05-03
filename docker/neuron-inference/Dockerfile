@@ -29,10 +29,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-USER ${USER}
-
 # create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
+RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
@@ -40,6 +38,9 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share \
  && chown -R ${USER}:users "${POETRY_HOME}"
+
+# switch user
+USER ${USER}
 
 # setup workspace
 
