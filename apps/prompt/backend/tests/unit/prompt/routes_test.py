@@ -268,8 +268,8 @@ def test_generate_text(
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "generated": generated,
         "prompt": template.format(**values),
+        "generated": generated,
     }
 
 

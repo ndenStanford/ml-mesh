@@ -146,12 +146,13 @@ def generate(id: str, values: Dict[str, Any]):
     prompt_template = PromptTemplateSchema.get(id)
     prompt = prompt_template.prompt(**values)
     return {
+        "prompt": prompt,
         "generated": generate_text(
             prompt,
             ModelEnum.GPT3_5.value,
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
-        )
+        ),
     }
 
 

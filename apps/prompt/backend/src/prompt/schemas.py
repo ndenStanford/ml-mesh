@@ -79,6 +79,7 @@ class PromptTemplateOutputSchema(BaseModel):
     template: str
     created_at: Optional[str] = None
     variables: List[str] = []
+    alias: str
 
     @classmethod
     def from_template_schema(
@@ -93,6 +94,7 @@ class PromptTemplateOutputSchema(BaseModel):
                         template=x.template,
                         created_at=x.created_at,
                         variables=x.variables,
+                        alias=x.alias,
                     ),
                     input,
                 )
@@ -102,6 +104,7 @@ class PromptTemplateOutputSchema(BaseModel):
             template=input.template,
             created_at=input.created_at,
             variables=input.variables,
+            alias=input.alias,
         )
 
 
