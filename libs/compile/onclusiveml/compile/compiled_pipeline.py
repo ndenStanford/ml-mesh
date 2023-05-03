@@ -8,11 +8,11 @@ from typing import Any, Dict, Union
 from transformers.pipelines import Pipeline, pipeline
 
 # Internal libraries
-from onclusiveml.ml_compile.compile_utils import (
+from onclusiveml.compile.compile_utils import (
     duplicate_huggingface_transformer_via_local_cache,
 )
-from onclusiveml.ml_compile.compiled_model import CompiledModel
-from onclusiveml.ml_compile.compiled_tokenizer import CompiledTokenizer
+from onclusiveml.compile.compiled_model import CompiledModel
+from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer
 
 
 class CompiledPipeline(object):

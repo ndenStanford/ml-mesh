@@ -8,7 +8,7 @@ from typing import List
 import pytest
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledTokenizer
+from onclusiveml.compile import CompiledTokenizer
 
 
 MODEL_MAX_LENGTH = 50

@@ -9,7 +9,7 @@ import pytest
 from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledTokenizer
+from onclusiveml.compile import CompiledTokenizer
 
 
 @pytest.mark.parametrize(

@@ -6,7 +6,7 @@ import torch.neuron
 import pytest
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledModel
+from onclusiveml.compile import CompiledModel
 
 
 @pytest.mark.parametrize(

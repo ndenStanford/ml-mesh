@@ -12,7 +12,7 @@ from transformers import (
 )
 
 # Internal libraries
-from onclusiveml.ml_compile.compile_utils import (
+from onclusiveml.compile.compile_utils import (
     duplicate_huggingface_transformer_via_local_cache,
 )
 

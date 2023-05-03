@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 # Internal libraries
-from onclusiveml.ml_compile import CompiledPipeline
+from onclusiveml.compile import CompiledPipeline
 
 
 @pytest.mark.parametrize(
