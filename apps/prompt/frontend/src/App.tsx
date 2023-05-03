@@ -140,10 +140,10 @@ export default function App() {
             dispatch(hideModal(APP_MODALS.NEW_PROMPT));
           }}
           isNewPromptModalVisible={modals.list[APP_MODALS.NEW_PROMPT]}
-          onModalActionClick={(template: string) => {
+          onModalActionClick={(template: string, alias: string) => {
             // NOTE: reloading the page here is a hack because redux should take
             // care of this when the state is updated.
-            dispatch(createPrompt(template));
+            dispatch(createPrompt({ template, alias }));
             window.location.reload();
           }}
         >

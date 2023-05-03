@@ -25,7 +25,7 @@ export interface SidebarProps {
   onActionClick?: (() => void) | ((arg0: any) => void);
   isNewPromptModalVisible: boolean;
   hideModal: any;
-  onModalActionClick?: (() => void) | ((arg0: any) => void);
+  onModalActionClick?: (() => void) | ((arg0: any, arg1: any) => void);
 }
 
 export interface IErrorBoundaryState {

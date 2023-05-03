@@ -57,8 +57,7 @@ class Settings(BaseSettings):
     AWS_REGION: str = "us-east-1"
 
     DB_HOST: Optional[str] = None
-
-    CORS_ORIGIN: List[str] = ["http://localhost:3333", "localhost:3333"]
+    CORS_ORIGIN: List[str] = ["*"]
 
 
 @lru_cache
