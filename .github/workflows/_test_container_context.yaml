@@ -31,8 +31,8 @@ jobs:
     steps:
       - name: Check inputs
         run: |
-          echo ${{ inputs.image-name }}
-          echo ${{ inputs.image-version }}
+          echo "Image name input: ${{ inputs.image-name }}"
+          echo "Image version input: ${{ inputs.image-version }}"
 
       - name: Export versioned image reference
         id: set-image-reference
