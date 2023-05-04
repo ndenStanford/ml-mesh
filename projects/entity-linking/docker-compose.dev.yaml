@@ -16,7 +16,7 @@ services:
         PROJECT: entity_linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity_linking-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command:
       [
         "uvicorn",
@@ -61,7 +61,7 @@ services:
       - type: bind
         source: serve/tests
         target: /home/projects/entity_linking/serve/train
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity_linking-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
     environment:
@@ -89,7 +89,7 @@ services:
       - type: bind
         source: serve/tests
         target: /home/projects/entity_linking/serve/train
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity_linking-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
     environment:
