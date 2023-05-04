@@ -14,7 +14,7 @@ on:
       - reopened
 env:
   image-name: python
-  image-version: 3.10-buster
+  image-version: 3.10-bullseye
 jobs:
 
   get-image-reference:
@@ -40,7 +40,7 @@ jobs:
     container:
       #image: ${{ env.image-name }}:${{ env.image-version }}
       #image: python:3.10-bullseye
-      image: ${{ needs.get-image-reference.outputs.image-reference }} # doesnt work
+      image: ${{ needs.get-image-reference.outputs.image-reference }} # works!
       env:
         some_param: 'PARAMETER A'
       volumes:
