@@ -27,7 +27,8 @@ jobs:
   container-test-job:
     runs-on: ubuntu-latest
     container:
-      image: ${{ inputs.image_name}}:${{ inputs.image_version }}
+      #image: ${{ inputs.image_name}}:${{ inputs.image_version }}
+      image: python:3.10-bullseye
       env:
         some_param: 'PARAMETER A'
       volumes:
