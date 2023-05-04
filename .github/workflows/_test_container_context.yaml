@@ -29,7 +29,7 @@ jobs:
     outputs:
       image-reference: ${{ steps.set-image-reference.outputs.image-reference}}
     steps:
-      - name Check inputs
+      - name: Check inputs
         run: |
           echo ${{ inputs.image-name }}
           echo ${{ inputs.image-version }}
