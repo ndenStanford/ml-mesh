@@ -48,6 +48,6 @@ jobs:
       options: --cpus 1 # --device /dev/neuron0 would go here
     steps:
       - name: Print out image version
-        run: echo "${{ needs.set-image-reference.outputs.image-reference }}"
+        run: echo "${{ needs.get-image-reference.outputs.image-reference }}"
       - name: Print out parameter
         run: echo $some_param
