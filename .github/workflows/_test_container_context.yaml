@@ -1,6 +1,14 @@
 name: Test container context capabilitiy
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - DS-375
+    pull_request:
+      - DS-375
+    types:
+      - opened
+      - reopened
     inputs:
       image_name:
         required: false
@@ -16,7 +24,7 @@ jobs:
   container-test-job:
     runs-on: ubuntu-latest
     container:
-      image: ${{ inputs.image_name}}:${{ inputs.image_version}}
+      image: ${{ inputs.image_name}}:${{ inputs.image_version }}
       env:
         some_param: 'PARAMETER A'
       volumes:
