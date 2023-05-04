@@ -1,0 +1,27 @@
+name: Test container context capabilitiy
+on:
+  workflow_dispatch:
+    inputs:
+      image_name:
+        required: false
+        type: string
+        default: python
+        description: "The name of the container image providing the github action job context"
+      image_version:
+        required: false
+        type: string
+        default: 3.8.16
+        description: "The version of the container image providing the github action job context"
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.image_name}}:${{ inputs.image_version}}
+      env:
+        some_param: 'PARAMETER A'
+      volumes:
+        - my_docker_volume:/volume_mount # mounted volume sharing outputs between steps goes here
+      options: --cpus 1 # --device /dev/neuron0 would go here
+    steps:
+      - name: Print out parameter
+        run: echo $some_param
