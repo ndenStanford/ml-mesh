@@ -55,12 +55,12 @@ def get_from_env(env, var, default=None):
         return env[var]
 
     if not default:
-        raise KeyError(f"{var} not found in environment or .env file")
+        raise KeyError(f"{var} not found in environment or .envrc file")
     return default
 
 
 def get_from_env_with_file_fallback(var, default):
-    env = parse_env_file(os.path.join(ROOT_DIR, '.env'))
+    env = parse_env_file(os.path.join(ROOT_DIR, '.envrc'))
     return get_from_env(env, var, default)
 
 

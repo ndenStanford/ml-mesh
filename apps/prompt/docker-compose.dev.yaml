@@ -1,6 +1,66 @@
 version: "3.9"
 
 services:
+  # =====================================================
+  # FRONTEND
+  # =====================================================
+  frontend:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/frontend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: frontend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    command: ["npm", "start"]
+    profiles: ["frontend"]
+    volumes:
+      - type: bind
+        source: frontend/public
+        target: /apps/prompt/frontend/public
+      - type: bind
+        source: frontend/src
+        target: /apps/prompt/frontend/src
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: dev
+      REACT_APP_API_KEY: 1234
+      REACT_APP_API_URI: http://localhost:4000/api/v1
+
+  frontend-unit:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/frontend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: frontend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    command: ["/bin/sh", "-c", "sleep 3s"]
+    profiles: ["frontend", "unit"]
+    volumes:
+      - type: bind
+        source: frontend/public
+        target: /apps/prompt/frontend/public
+      - type: bind
+        source: frontend/src
+        target: /apps/prompt/frontend/src
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: dev
+      REACT_APP_API_KEY: 1234
+      REACT_APP_API_URI: http://localhost:4000/api/v1
+
+  # =====================================================
+  # BACKEND
+  # =====================================================
   backend:
     build:
       context: ../../
@@ -10,8 +70,8 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command:
       [
         "uvicorn",
@@ -56,10 +116,10 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: v2023.3.2
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    profiles: ["backend", "unit"]
     volumes:
       - type: bind
         source: backend/src
@@ -87,8 +147,8 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: v2023.3.2
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
     volumes:
@@ -107,30 +167,28 @@ services:
       API_KEY: 1234
       DB_HOST: http://dynamodb:8000
     depends_on:
-      - dynamodb
+      dynamodb:
+        condition: service_healthy
     networks:
       - onclusive-net
 
   dynamodb:
     command: "-jar DynamoDBLocal.jar -sharedDb"
     image: "amazon/dynamodb-local:latest"
+    restart: always
     expose:
       - 8000
     ports:
       - 8000:8000
     profiles: ["backend", "integration"]
-    networks:
-      - onclusive-net
-
-  dynamo-admin:
-    image: aaronshaf/dynamodb-admin
-    environment:
-      - DYNAMO_ENDPOINT=http://dynamodb:8000
-    ports:
-      - 8001:8001
-    profiles: ["backend"]
-    depends_on:
-      - dynamodb
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
     networks:
       - onclusive-net
 
