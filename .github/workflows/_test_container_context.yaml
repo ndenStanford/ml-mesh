@@ -38,9 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-image-reference
     container:
-      #image: ${{ inputs.image_name}}:${{ inputs.image_version }}
+      image: ${{ inputs.image_name}}:${{ inputs.image_version }}
       #image: python:3.10-bullseye
-      image: ${{ needs.set-image-reference.outputs.image-reference}}
+      #image: ${{ needs.set-image-reference.outputs.image-reference}} # doesnt work
       env:
         some_param: 'PARAMETER A'
       volumes:
