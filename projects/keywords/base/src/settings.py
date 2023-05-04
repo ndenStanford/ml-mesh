@@ -29,7 +29,7 @@ class KeywordModelParams(BaseModel):
 
 
 class TrackedKeywordsBaseModelCard(TrackedModelCard):
-    """Default parameter (behaviour) for the training component of the keyword ML project."""
+    """The model card for the base model of the keywords ML project."""
 
     model_type: str = "base"
     # --- custom fields
