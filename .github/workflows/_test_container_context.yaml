@@ -41,7 +41,7 @@ jobs:
     container:
       #image: ${{ inputs.image_name}}:${{ inputs.image_version }}
       #image: python:3.10-bullseye
-      image: ${{ jobs.image-specifier.outputs.image-version}}
+      image: ${{ needs.image-specifier.outputs.image-version}}
       env:
         some_param: 'PARAMETER A'
       volumes:
