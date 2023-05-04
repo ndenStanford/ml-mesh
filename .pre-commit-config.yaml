@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
-        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity_linking/serve/src/predict/entity_fishing.py)
+        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py)
         args: ["--explicit-package-bases"]
 
   # isort
