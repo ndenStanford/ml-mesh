@@ -3,8 +3,10 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - prod
       - DS-375
     pull_request:
+      - prod
       - DS-375
     types:
       - opened
