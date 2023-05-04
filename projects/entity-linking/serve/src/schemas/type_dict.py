@@ -13,6 +13,7 @@ EntityDictInput = TypedDict(
     },
 )
 
+
 EntityDictOutput = TypedDict(
     "EntityDictOutput",
     {

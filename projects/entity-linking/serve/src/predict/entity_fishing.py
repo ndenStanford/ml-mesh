@@ -73,8 +73,8 @@ def query_wiki(query: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_entity_linking(
-    text: str, lang: str = "en", entities: EntityDictInput = None
-) -> Dict[str, Any]:
+    text: str, lang: str = "en", entities: Optional[List[EntityDictInput]] = None
+) -> List[Dict[str, Any]]:
     """Link all entities in text to Wiki data id
 
     Args:
