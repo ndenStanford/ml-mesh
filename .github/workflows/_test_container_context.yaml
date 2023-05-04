@@ -12,18 +12,11 @@ on:
     types:
       - opened
       - reopened
-    inputs:
-      image-name:
-        required: false
-        type: string
-        default: python
-        description: "The name of the container image providing the github action job context"
-      image-version:
-        required: false
-        type: string
-        default: 3.8.16
-        description: "The version of the container image providing the github action job context"
+env:
+  image-name: python
+  image-version: 3.10-buster
 jobs:
+
   get-image-reference:
     runs-on: ubuntu-latest
     outputs:
@@ -31,15 +24,16 @@ jobs:
     steps:
       - name: Check inputs
         run: |
-          echo "Image name input: ${{ inputs.image-name }}"
-          echo "Image version input: ${{ inputs.image-version }}"
+          echo "Image name input: ${{ env.image-name }}"
+          echo "Image version input: ${{ env.image-version }}"
 
       - name: Export versioned image reference
         id: set-image-reference
-        run: echo "image-reference=${{ inputs.image-name }}:${{ inputs.image-version }}" >> "$GITHUB_OUTPUT"
+        run: echo "image-reference=${{ env.image-name }}:${{ env.image-version }}" >> "$GITHUB_OUTPUT"
 
       - name: Check versioned image reference
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
+
   container-test-job:
     runs-on: ubuntu-latest
     needs: get-image-reference
