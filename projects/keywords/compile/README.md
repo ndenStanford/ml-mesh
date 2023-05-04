@@ -17,6 +17,16 @@ Each of the 4 components corresponds to a python module:
 3. `validate_compiled_model.py`
 4. `upload_compiled_model.py`
 
-Each module draws its configurations from the `settings.py` module and the parameters defined there using `pydantic`. This allows for easy configuration of the flow via environment variables fed directly by Github Actions, without the need of an additional command line argument layer.
+Each module draws its configurations from the `settings.py` module and the parameters defined there using `pydantic`'s `BaseSetting` environment variable support. This allows for easy configuration of the flow via environment variables fed directly by Github Actions, without the need of an additional command line argument layer.
 
 Orchestration of these components into the model compile pipeline is done by Github Actions of this same `ml-mesh` repository (as opposed to all other orchestration happening in `ml-platform`). The [modeol compile workflow can be found here](#add-link-here)
+
+# Running the components
+
+```
+docker run \
+    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+    --device /dev/neuron0 \
+    -t seb/keywords-compile:latest \
+    python -m src.download_uncompiled_model
+```

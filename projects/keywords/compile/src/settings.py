@@ -3,7 +3,8 @@ import os
 from typing import List
 
 # 3rd party libraries
-from pydantic import BaseSettings, validator
+from neptune.types.mode import Mode
+from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
@@ -12,9 +13,9 @@ from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 # --- atomic settings and models
 DOWNLOAD = "download"
 COMPILE = "compile"
-VALIDATE = "validate"
+TEST = "test"
 UPLOAD = "upload"
-WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, VALIDATE, UPLOAD)
+WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
@@ -24,6 +25,8 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
     with_id: str = "KEYWORDS-BASE-6"
+    # we only need to download from the base model, not upload
+    mode: str = Mode.READ_ONLY
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
@@ -32,35 +35,60 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "KEYWORDS-COMPILED"
 
 
-class OutputDirectory(BaseSettings):
+class WorkflowOutputDir(BaseSettings):
 
-    parent_directory: str = "./outputs"
-    compilation_workflow_component: str = "download"
+    outpath: str = "./outputs"
 
-    model_directory = os.path.join(
-        parent_directory, compilation_workflow_component, "model_artifacts"
-    )
-    inputs = os.path.join(
-        parent_directory, compilation_workflow_component, "test_files", "inputs"
-    )
-    inference_params = os.path.join(
-        parent_directory,
-        compilation_workflow_component,
-        "test_files",
-        "inference_params",
-    )
-    predictions = os.path.join(
-        parent_directory, compilation_workflow_component, "test_files", "predictions"
-    )
 
-    @validator("compilation_workflow_component")
-    def check_component_reference(v):
+class WorkflowComponentIOSettings(object):
 
-        if v not in WORKFLOW_COMPONENTS:
+    workflow_ouput_dir: str = WorkflowOutputDir().outpath
+
+    def __init__(self, workflow_component: str):
+
+        self.check_component_reference(workflow_component)
+
+        self.workflow_component = workflow_component
+        self.workflow_component_output_dir: str = os.path.join(
+            self.workflow_ouput_dir, workflow_component
+        )
+
+        if not os.path.isdir(self.workflow_component_output_dir):
+            os.makedirs(self.workflow_component_output_dir)
+
+        self.model_directory: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts"
+        )
+
+        self.test_files = {
+            "inputs": os.path.join(self.workflow_component_output_dir, "inputs.json"),
+            "inference_params": os.path.join(
+                self.workflow_component_output_dir,
+                "inference_params.json",
+            ),
+            "predictions": os.path.join(
+                self.workflow_component_output_dir, "predictions.json"
+            ),
+        }
+
+    @staticmethod
+    def check_component_reference(workflow_component: str):
+
+        if workflow_component not in WORKFLOW_COMPONENTS:
             raise ValueError(
-                f"Component reference {v} must be one of the following options: "
+                f"Component reference {workflow_component} must be one of the following options: "
                 f"{WORKFLOW_COMPONENTS}"
             )
+
+
+class IOSettings(object):
+    """Configuring container file system output locations for all 4 components"""
+
+    # admin
+    download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
+    compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
+    test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
+    upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
 
 
 class TokenizerSettings(BaseSettings):
@@ -82,16 +110,18 @@ class PipelineCompilationSettings(BaseSettings):
 
     pipeline_name: str
     max_length: int
-    batch_size: int
-    neuron: bool = True
+    batch_size: int = 1
+    neuron: bool = False
     validate_compilation: bool = True
     validation_rtol: float = 1e-02
-    validation_atol: float = (1e-02,)
+    validation_atol: float = 1e-02
     tokenizer_settings: TokenizerSettings = TokenizerSettings()
-    model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
+
+    if neuron:
+        model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
 
 
-class WordEmbeddingCompilationSettings(PipelineCompilationSettings):
+class WordPipelineCompilationSettings(PipelineCompilationSettings):
 
     pipeline_name: str = "word_model"
     max_length = 20
@@ -100,7 +130,7 @@ class WordEmbeddingCompilationSettings(PipelineCompilationSettings):
         env_prefix = "word_model_"
 
 
-class PipelineEmbeddingCompilationSettings(PipelineCompilationSettings):
+class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
 
     pipeline_name = "document_model"
     max_length = 512
@@ -114,67 +144,12 @@ class TrackedKeywordsCompiledModelCard(TrackedModelCard):
     model_type: str = "compiled"
     # --- custom fields
     # model compilation params
-    word_model_compilation_settings: WordEmbeddingCompilationSettings = (
-        WordEmbeddingCompilationSettings()
+    word_model_compilation_settings: PipelineCompilationSettings = (
+        WordPipelineCompilationSettings()
     )
-    document_model_compilation_settings: PipelineEmbeddingCompilationSettings = (
-        PipelineEmbeddingCompilationSettings()
+    document_model_compilation_settings: PipelineCompilationSettings = (
+        DocumentPipelineCompilationSettings()
     )
     # validation params
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
-
-
-# ---component level settings and models
-class UncompiledKeywordModelDownloadSettings(BaseSettings):
-    """Settings for module/component `download_uncompiled_model.py`"""
-
-    # uncompiled model specs
-    tracked_model_specs: TrackedModelSpecs = UncompiledTrackedModelSpecs()
-    # admin
-    local_output_dir = OutputDirectory(parent_directory="download")
-    logging_level: str = "INFO"
-    # prefix environment variable counterparts of all above fields
-
-    class Config:
-
-        env_prefix = "download_"
-
-
-class CompileKeywordsModelSettings(BaseSettings):
-    """Settings for module/component `compile_model.py`"""
-
-    # admin
-    local_output_dir = OutputDirectory(parent_directory="compile")
-    logging_level: str = "INFO"
-    # prefix environment variable counterparts of all above fields
-
-    class Config:
-
-        env_prefix = "compiled_"
-
-
-class ValidateCompiledKeywordsModelSettings(BaseSettings):
-    """Settings for module/component `validate_compiled_model.py`"""
-
-    # admin
-    local_output_dir = OutputDirectory(parent_directory="validate")
-    logging_level: str = "INFO"
-    # prefix environment variable counterparts of all above fields
-
-    class Config:
-
-        env_prefix = "validate_"
-
-
-class UploadValidatedCompiledKeywordModelSettings(BaseSettings):
-    """Settings for module/component `upload_compiled_model.py`"""
-
-    # compiled model specs
-    compiled_model_specs: TrackedModelSpecs = CompiledTrackedModelSpecs()
-
-    # prefix environment variable counterparts of all above fields
-
-    class Config:
-
-        env_prefix = "upload_"
