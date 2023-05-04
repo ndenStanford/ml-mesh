@@ -5,7 +5,8 @@ on:
     branches:
       - prod
       - DS-375
-    pull_request:
+  pull_request:
+    branches:
       - prod
       - DS-375
     types:
