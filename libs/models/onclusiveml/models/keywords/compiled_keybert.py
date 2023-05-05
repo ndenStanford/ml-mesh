@@ -200,6 +200,10 @@ class CompiledKeyBERT(KeyBERT):
         if vectorizer:
             count = vectorizer.fit(docs)
         else:
+
+            if isinstance(keyphrase_ngram_range, list):
+                keyphrase_ngram_range = tuple(keyphrase_ngram_range)  # type: ignore[unreachable]
+
             count = CountVectorizer(
                 ngram_range=keyphrase_ngram_range,
                 stop_words=stop_words,
@@ -356,6 +360,10 @@ class CompiledKeyBERT(KeyBERT):
         if vectorizer:
             count = vectorizer.fit(docs)
         else:
+
+            if isinstance(keyphrase_ngram_range, list):
+                keyphrase_ngram_range = tuple(keyphrase_ngram_range)  # type: ignore[unreachable]
+
             count = CountVectorizer(
                 ngram_range=keyphrase_ngram_range,
                 stop_words=stop_words,
