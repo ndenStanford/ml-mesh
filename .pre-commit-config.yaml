@@ -29,7 +29,7 @@ repos:
     hooks:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
-        exclude: ^(libs/.*/tests/|projects/.*/tests|projects/keywords/compile/src/*test.py|docker/.*/tests)
+        exclude: ^(libs/.*/tests/|projects/.*/tests/|projects/keywords/compile/src/conftest.py|projects/keywords/compile/src/compiled_model_test.py|docker/.*/tests)
         args: ["--explicit-package-bases"]
 
   # isort
