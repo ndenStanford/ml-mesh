@@ -4,9 +4,10 @@ from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 
 # Internal libraries
+from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 
 
@@ -26,7 +27,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     # than creating a new one
     with_id: str = "KEYWORDS-BASE-6"
     # we only need to download from the base model, not upload
-    mode: str = Mode.READ_ONLY
+    mode: str = Field(Mode.READ_ONLY)
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
@@ -90,6 +91,8 @@ class IOSettings(object):
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
 
+    log_level: int = INFO
+
 
 class TokenizerSettings(BaseSettings):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details"""
@@ -139,10 +142,18 @@ class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
         env_prefix = "document_model_"
 
 
-class TrackedKeywordsCompiledModelCard(TrackedModelCard):
+class CompilationTestSettings(BaseSettings):
+
+    regression_atol: float = 1e-02
+    regression_rtol: float = 1e-02
+
+
+class CompiledKeywordsTrackedModelCard(TrackedModelCard):
 
     model_type: str = "compiled"
     # --- custom fields
+    # uncompiled model reference
+    uncompiled_model: UncompiledTrackedModelSpecs = UncompiledTrackedModelSpecs()
     # model compilation params
     word_model_compilation_settings: PipelineCompilationSettings = (
         WordPipelineCompilationSettings()
@@ -150,6 +161,5 @@ class TrackedKeywordsCompiledModelCard(TrackedModelCard):
     document_model_compilation_settings: PipelineCompilationSettings = (
         DocumentPipelineCompilationSettings()
     )
-    # validation params
-    regression_atol: float = 1e-02
-    regression_rtol: float = 1e-02
+
+    compilation_test_settings: CompilationTestSettings = CompilationTestSettings()

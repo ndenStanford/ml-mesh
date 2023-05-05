@@ -21,6 +21,15 @@ Each module draws its configurations from the `settings.py` module and the param
 
 Orchestration of these components into the model compile pipeline is done by Github Actions of this same `ml-mesh` repository (as opposed to all other orchestration happening in `ml-platform`). The [modeol compile workflow can be found here](#add-link-here)
 
+# Running the scripts
+
+export NEPTUNE_API_TOKEN===
+
+python -m projects.keywords.compile.src.download_uncompiled_model
+python -m projects.keywords.compile.src.compile_model
+pytest projects/keywords/compile/src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
+python -m projects.keywords.compile.src.upload_compiled_model
+
 # Running the components
 
 ```

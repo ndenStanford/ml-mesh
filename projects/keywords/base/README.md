@@ -4,5 +4,7 @@ To run the container step submitting a huggingface model to neptune ai's model r
 
 ```docker run \
     --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    onclusiveml/keywords-train:latest \
-    python -m src.register_trained_model```
+    seb/keywords-base:latest \
+    python -m src.register_base_model```
+
+    #onclusiveml/keywords-train:latest \
