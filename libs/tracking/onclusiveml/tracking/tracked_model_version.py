@@ -246,7 +246,7 @@ class TrackedModelVersion(ModelVersion):
             raise FileExistsError(f"Specified file {local_file_path} already exists.")
 
         logger.debug(
-            f"Downloading File attribute {neptune_attribute_path} into local file ",
+            f"Downloading File attribute {neptune_attribute_path} into local file "
             f"{local_file_path}.",
         )
 
