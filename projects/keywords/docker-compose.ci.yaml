@@ -17,10 +17,6 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     ports:
       - "8888:8888"
-    volumes:
-      - type: bind
-        source: train/src
-        target: /projects/keywords/train/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command:
       [
@@ -50,13 +46,6 @@ services:
         PROJECT: keywords
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: train/src
-        target: /projects/keywords/train/src
-      - type: bind
-        source: train/tests
-        target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command:
       [
@@ -86,13 +75,6 @@ services:
         PROJECT: keywords
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: train/src
-        target: /projects/keywords/train/src
-      - type: bind
-        source: train/tests
-        target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command:
       [
@@ -143,10 +125,6 @@ services:
     profiles: ["serve"]
     ports:
       - 8000:8000
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /home/projects/keywords/serve/src
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
@@ -165,13 +143,6 @@ services:
         PROJECT: keywords
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /home/projects/keywords/serve/src
-      - type: bind
-        source: serve/tests
-        target: /home/projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
@@ -195,13 +166,6 @@ services:
         PROJECT: keywords
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /home/projects/keywords/serve/src
-      - type: bind
-        source: serve/tests
-        target: /home/projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
