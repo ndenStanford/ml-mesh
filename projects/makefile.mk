@@ -21,7 +21,7 @@ projects.test/%: projects.unit/% projects.integration/% ## Run all tests for pro
 	echo "Running all tests."
 
 projects.unit/%: projects.set ## Run unit tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml run $(COMPONENT)-unit
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up --exit-code-from $(COMPONENT)-unit
 
 projects.integration/%: ## Run integration tests for project component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up --exit-code-from $(COMPONENT)-integration
