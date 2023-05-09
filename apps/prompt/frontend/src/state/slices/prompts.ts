@@ -47,9 +47,13 @@ export const createPrompt = createAsyncThunk(
     if (response.status !== 201) {
       console.log("Error fetching");
     }
+    if (response.status == 409) {
+      console.log("409 Conflict, alias exists in database");
+      return thunkAPI.rejectWithValue({
+        message: "409",
+      });
+    }
     console.log("Successfully created new prompt.");
-    const jsonResponse = await response.json();
-    return jsonResponse;
   }
 );
 
@@ -68,16 +72,12 @@ export const generateTextFromPrompt = createAsyncThunk(
       },
       body: JSON.stringify(body),
     });
-    if (response.status == 409) {
-      console.log("409 Conflict, alias exists in database");
-      return thunkAPI.rejectWithValue({
-        message: "409",
-      });
-    }
     if (response.status !== 200) {
       console.log("Error generating text");
     }
     console.log("Successfully generated text.");
+    const jsonResponse = await response.json();
+    return jsonResponse;
   }
 );
 
