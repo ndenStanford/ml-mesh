@@ -29,16 +29,31 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
+    class Config:
+        env_prefix = "uncompiled_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
     project: str = "onclusive/keywords"
     model: str = "KEYWORDS-COMPILED"
 
+    class Config:
+        env_prefix = "compiled_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
 
 class WorkflowOutputDir(BaseSettings):
 
     outpath: str = "./outputs"
+
+    class Config:
+        env_prefix = "io_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
 
 
 class WorkflowComponentIOSettings(object):
@@ -99,6 +114,11 @@ class TokenizerSettings(BaseSettings):
 
     add_special_tokens: bool = True
 
+    class Config:
+        env_prefix = "tokenizer_settings_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
 
 class ModelTracingSettings(BaseSettings):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details"""
@@ -106,6 +126,11 @@ class ModelTracingSettings(BaseSettings):
     dynamic_batching: bool = True
     strict: bool = True
     compiler_args: List[str] = ["--fast-math", "none"]
+
+    class Config:
+        env_prefix = "model_tracing_settings_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
 
 
 class PipelineCompilationSettings(BaseSettings):
@@ -130,7 +155,9 @@ class WordPipelineCompilationSettings(PipelineCompilationSettings):
     max_length = 20
 
     class Config:
-        env_prefix = "word_model_"
+        env_prefix = "word_pipeline_compilation_settings_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
 
 
 class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
@@ -139,13 +166,20 @@ class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
     max_length = 512
 
     class Config:
-        env_prefix = "document_model_"
+        env_prefix = "document_pipeline_compilation_settings_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
 
 
 class CompilationTestSettings(BaseSettings):
 
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
+
+    class Config:
+        env_prefix = "compilation_test_settings_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
 
 
 class CompiledKeywordsTrackedModelCard(TrackedModelCard):
@@ -163,3 +197,8 @@ class CompiledKeywordsTrackedModelCard(TrackedModelCard):
     )
 
     compilation_test_settings: CompilationTestSettings = CompilationTestSettings()
+
+    class Config:
+        env_prefix = "compiled_keywords_tracked_model_card_"
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"

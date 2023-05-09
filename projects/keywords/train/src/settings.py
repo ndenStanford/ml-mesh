@@ -12,12 +12,13 @@ from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 # --- settings classes
 class TrackedKeywordModelSpecs(TrackedModelSpecs):
     project: str = "onclusive/keywords"
-    model = "KEYWORDS-BASE"
+    model = "KEYWORDS-TRAINED"
 
 
 class KeywordExtractionSettings(BaseModel):
     keyphrase_ngram_range: Tuple[int, int] = (1, 1)
     stop_words: List[str] = None
+    top_n: int = 3
 
 
 class KeywordModelParams(BaseModel):

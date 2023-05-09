@@ -1,0 +1,45 @@
+# -------------- uncompiled model specs: UncompiledTrackedModelSpecs
+UNCOMPILED_PROJECT = "onclusive/keywords"
+UNCOMPILED_MODEL = "KEYWORDS-BASE"
+UNCOMPILED_WITH_ID = "KEYWORDS-BASE-8"
+UNCOMPILED_MODE = "read-only" # "async" for read+write access
+
+# -------------- compiled model specs: CompiledTrackedModelSpecs
+COMPILED_PROJECT = "onclusive/keywords"
+COMPILED_MODEL = "KEYWORDS-COMPILED"
+
+# -------------- worflow output directory: WorkflowOutputDir
+IO_OUTPATH = "/projects/keywords/compile/outputs"
+
+# -------------- tokenizer settings: TokenizerSettings
+TOKENIZER_SETTINGS_ADD_SPECIAL_TOKENS = "yes"
+
+# -------------- model tracing settings: ModelTracingSettings
+MODEL_TRACING_SETTINGS_DYNAMIC_BATCHING = "no"
+MODEL_TRACING_SETTINGS_STRICT = "yes"
+MODEL_TRACING_SETTINGS_COMPILER_ARGS = ["--fast-math", "none"]
+
+# -------------- model tracing settings: WordPipelineCompilationSettings
+WORD_PIPELINE_COMPILATION_SETTINGS_PIPELINE_NAME = "word_model_prod"
+WORD_PIPELINE_COMPILATION_SETTINGS_MAX_LENGTH = 20
+WORD_PIPELINE_COMPILATION_SETTINGS_BATCH_SIZE = 1
+WORD_PIPELINE_COMPILATION_SETTINGS_NEURON = "no"
+WORD_PIPELINE_COMPILATION_SETTINGS_VALIDATE_COMPILATION = "no"
+WORD_PIPELINE_COMPILATION_SETTINGS_VALIDATION_RTOL = 0.01
+WORD_PIPELINE_COMPILATION_SETTINGS_VALIDATION_ATOL = 0.01
+
+# -------------- model tracing settings: DocumentPipelineCompilationSettings
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_PIPELINE_NAME = "document_model_prod"
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_MAX_LENGTH = 512
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_BATCH_SIZE = 1
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_NEURON = "no"
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_VALIDATE_COMPILATION = "no"
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_VALIDATION_RTOL = 0.01
+DOCUMENT_PIPELINE_COMPILATION_SETTINGS_VALIDATION_ATOL = 0.01
+
+# -------------- compilation test settings: CompilationTestSettings
+COMPILATION_TEST_SETTINGS_REGRESSION_ATOL = 0.01
+COMPILATION_TEST_SETTINGS_REGRESSION_RTOL = 0.01
+
+# -------------- compilation test settings: CompiledKeywordsTrackedModelCard
+COMPILED_KEYWORDS_TRACKED_MODEL_CARD_MODEL_TYPE = 'compiled'

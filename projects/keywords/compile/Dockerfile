@@ -33,6 +33,9 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
 # --- production stage
 FROM builder as production
 
+# hadolint ignore=DL3002
+USER root
+
 # --- test build stage
 FROM builder as development
 

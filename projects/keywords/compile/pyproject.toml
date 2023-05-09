@@ -9,10 +9,10 @@ packages = [{include = "src"}]
 python = "3.8.16"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
-
+pydantic = {version = "1.10.4", extras = ["dotenv"]}
 
 [tool.poetry.group.dev.dependencies]
-pydantic = "1.10.4"
+
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 
