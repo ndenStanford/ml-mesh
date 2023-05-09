@@ -45,26 +45,6 @@ jobs:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
   # ===============================================
-  # COMPILE MODELS
-  # ===============================================
-
-  run-ml-compilation-pipelines:
-    name: Compile ML models
-    uses: ./.github/workflows/_compile_mode.yaml
-    needs: [run-code-quality-checks]
-    with:
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      environment: prod
-      project: python-base
-      tag: v2023.5.1
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-
-  # ===============================================
   # TEST LIBS
   # ===============================================
 
@@ -81,7 +61,13 @@ jobs:
           - name: core
             integration: false
 
-          - name: ml_compile
+          - name: compile
+            integration: false
+
+          - name: models
+            integration: false
+
+          - name: tracking
             integration: false
 
     with:
@@ -154,7 +140,12 @@ jobs:
             python-version: "3.8.16"
 
           - name: keywords
-            component: base
+            component: train
+            integration: false
+            python-version: "3.8.16"
+
+          - name: keywords
+            component: compile
             integration: false
             python-version: "3.8.16"
 
