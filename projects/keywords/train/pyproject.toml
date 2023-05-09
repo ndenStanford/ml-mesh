@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "keywords-base"
+name = "keywords-train"
 version = "0.1.0"
-description = "Docker image for registering a base model for keywords extraction."
+description = "Docker image for registering a trained model for keywords extraction."
 authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
 readme = "README.md"
 
