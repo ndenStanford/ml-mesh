@@ -88,16 +88,22 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        run: make projects.unit/${{ inputs.project }} \
+        run: |
+          make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          COMPONENT=${{ inputs.component }} \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
-        run: make projects.integration/${{ inputs.project }} \
+        run: |
+          make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          COMPONENT=${{ inputs.component }} \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
@@ -116,4 +122,6 @@ jobs:
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
