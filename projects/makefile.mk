@@ -21,10 +21,10 @@ projects.test/%: projects.unit/% projects.integration/% ## Run all tests for pro
 	echo "Running all tests."
 
 projects.unit/%: projects.set ## Run unit tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up --exit-code-from $(COMPONENT)-unit
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up --exit-code-from $(COMPONENT)-unit --abort-on-container-exit
 
 projects.integration/%: ## Run integration tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up --exit-code-from $(COMPONENT)-integration
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up --exit-code-from $(COMPONENT)-integration --abort-on-container-exit
 
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)
