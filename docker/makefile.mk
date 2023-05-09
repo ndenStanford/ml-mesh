@@ -6,10 +6,10 @@ docker.build/%: docker.set ## Build app
 docker.install/%:
 	poetry install --directory=docker/$(notdir $@)/$(IMAGE)
 
-docker.deploy/%: ## Deploy project IMAGE docker image to ECR.
+docker.deploy/%: docker.set ## Deploy project IMAGE docker image to ECR.
 	docker compose -f ./docker/docker-compose.yaml push $(IMAGE)
 
-docker.validate/%: ## Validate core docker image build
+docker.validate/%: docker.set ## Validate core docker image build
 	docker compose -f docker/docker-compose.yaml run $(IMAGE)-tests
 
 docker.lock/%:
