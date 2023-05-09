@@ -24,7 +24,7 @@ apps.unit/%: apps.set ## Run unit tests for project component
 	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit
 
 apps.integration/%: ## Run integration tests for project component
-	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up --exit-code-from $(COMPONENT)-integration --abort-on-container-exit
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up $(COMPONENT)-integration --exit-code-from $(COMPONENT)-integration
 
 apps.lock/%:
 	poetry lock --directory=apps/$(notdir $@)/$(COMPONENT)
