@@ -14,4 +14,4 @@ class PromptTemplateTable(BaseTable):
         table_name = "prompt_template"
 
     template = UnicodeAttribute(null=False)
-    alias = UnicodeAttribute(null=False)
+    alias = UnicodeAttribute(null=False, default="alias")

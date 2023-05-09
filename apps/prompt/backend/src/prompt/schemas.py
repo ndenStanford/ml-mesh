@@ -79,7 +79,7 @@ class PromptTemplateOutputSchema(BaseModel):
     template: str
     created_at: Optional[str] = None
     variables: List[str] = []
-    alias: str = ""
+    alias: str
 
     @classmethod
     def from_template_schema(
