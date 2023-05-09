@@ -112,5 +112,4 @@ jobs:
         run: |
           make docker.deploy/${{ inputs.image }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          IMAGE="${{ inputs.image }}" \
           IMAGE_TAG="${{ inputs.tag }}"

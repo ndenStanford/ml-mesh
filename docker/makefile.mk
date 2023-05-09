@@ -1,19 +1,16 @@
 docker.build/%: docker.set ## Build app
-	@echo "::group::Build $(IMAGE) (system architecture)"
+	@echo "::group::Build$(notdir $@) (system architecture)"
 	docker compose -f ./docker/docker-compose.yaml build $(notdir $@) --no-cache
 	@echo "::endgroup::"
 
-docker.install/%:
-	poetry install --directory=docker/$(notdir $@)/$(IMAGE)
-
 docker.deploy/%: docker.set ## Deploy project IMAGE docker image to ECR.
-	docker compose -f ./docker/docker-compose.yaml push $(IMAGE)
+	docker compose -f ./docker/docker-compose.yaml push $(notdir $@)
 
 docker.validate/%: docker.set ## Validate core docker image build
-	docker compose -f docker/docker-compose.yaml run $(IMAGE)-tests
+	docker compose -f docker/docker-compose.yaml run $(notdir $@)-tests
 
 docker.lock/%:
-	poetry lock --directory=docker/$(notdir $@)/$(IMAGE)
+	poetry lock --directory=docker/$(notdir $@)
 
 docker.set:
 	export IMAGE_TAG=$(IMAGE_TAG)
