@@ -50,7 +50,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["serve", "unit"]
+    profiles: ["unit"]
     ports:
       - 8000:8000
     environment:
@@ -73,7 +73,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["serve", "integration"]
+    profiles: ["integration"]
     ports:
       - 8000:8000
     environment:

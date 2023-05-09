@@ -47,7 +47,7 @@ services:
         target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["train"]
+    profiles: ["train", "unit"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
@@ -115,7 +115,7 @@ services:
         target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["serve", "unit"]
+    profiles: ["unit"]
     ports:
       - 8000:8000
     environment:
@@ -145,7 +145,7 @@ services:
         target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["serve", "unit"]
+    profiles: ["integration"]
     ports:
       - 8000:8000
     environment:
