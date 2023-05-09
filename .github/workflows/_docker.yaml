@@ -94,7 +94,9 @@ jobs:
         if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.validate-build }}
         run: make docker.validate/${{ inputs.image }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          IMAGE_TAG="${{ inputs.tag }}"
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
