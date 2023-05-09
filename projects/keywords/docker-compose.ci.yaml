@@ -18,18 +18,7 @@ services:
     ports:
       - "8888:8888"
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["train"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -76,18 +65,7 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["train"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -167,7 +145,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["serve", "unit"]
     ports:
       - 8000:8000
