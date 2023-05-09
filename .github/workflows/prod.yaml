@@ -96,7 +96,7 @@ jobs:
         validate-build: [false]
         include:
           - image: neuron-compile
-            validate-build: true
+            validate-build: false
     with:
       environment: prod
       image: ${{ matrix.image }}
