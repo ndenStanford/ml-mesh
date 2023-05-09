@@ -11,10 +11,6 @@ services:
       target: development
     ports:
       - "8888:8888"
-    volumes:
-      - type: bind
-        source: serve
-        target: /home/projects/keywords/serve
     environment:
       DOCS_URL: /docs
     hostname: onclusive-ml
@@ -27,8 +23,16 @@ services:
         PROJECT: keywords
         COMPONENT: train
       target: development
-    environment:
-      NEPTUNE_API_TOKEN: secret_api_token_goes_here
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+  compile:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/compile/Dockerfile
+      args:
+        PROJECT: keywords
+        COMPONENT: compile
+      target: development
     hostname: onclusive-ml
     networks: [onclusive-net]
 
