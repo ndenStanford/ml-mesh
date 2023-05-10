@@ -18,6 +18,7 @@ def get_default_logger(
 ) -> logging.Logger:
     """Instantiates default logger."""
     logger = logging.getLogger(name)
+    logger.setLevel(level)
     handler.setLevel(level)
     handler.setFormatter(logging.Formatter(fmt))
     logger.addHandler(handler)

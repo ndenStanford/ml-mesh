@@ -4,13 +4,13 @@ libs.install/%: ## Installs library and dependencies locally
 	poetry install --directory=libs/$(notdir $@)
 
 libs.unit/%: ## Run unit tests for lib
-	python -m pytest libs/$(notdir $@)/onclusiveml/tests/unit -ra -vvv --full-trace --tb=long --capture=no
+	python -m pytest libs/$(notdir $@)/onclusiveml/tests/unit -ra -vv --capture=no
 
 libs.integration/%: ## Run integration tests for lib
-	python -m pytest libs/$(notdir $@)/onclusiveml/tests/integration -ra -vvv --full-trace --tb=long --capture=no
+	python -m pytest libs/$(notdir $@)/onclusiveml/tests/integration -ra -vv --capture=no
 
 libs.functional/%: ## Run functional tests for lib
-	python -m pytest libs/$(notdir $@)/onclusiveml/tests/functional -ra -vvv --full-trace --tb=long --capture=no
+	python -m pytest libs/$(notdir $@)/onclusiveml/tests/functional -ra -vv --capture=no
 
 libs.test/%: libs.unit/% libs.integration/% libs.functional/% ## Run the full (unit, integration & functional) test suite
 	@echo "Run full test suite for library $(notdir $@)..."

@@ -29,7 +29,7 @@ from onclusiveml.ml_compile import CompiledModel
         # and takes a long time for neuron tracing
     ],
 )
-def compiled_tokenizer_from_pretrained_test(
+def test_compiled_tokenizer_from_pretrained(
     huggingface_tokenizer,
     huggingface_model,
     batch_size,
