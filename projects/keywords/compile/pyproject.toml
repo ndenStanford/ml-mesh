@@ -9,7 +9,6 @@ packages = [{include = "src"}]
 python = "3.8.16"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
-pydantic = {version = "1.10.4", extras = ["dotenv"]}
 
 [tool.poetry.group.dev.dependencies]
 

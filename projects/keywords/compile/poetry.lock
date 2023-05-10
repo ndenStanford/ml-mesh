@@ -2665,8 +2665,10 @@ develop = false
 
 [package.dependencies]
 boto3 = "1.16.0"
+core = {path = "../core"}
 neptune = "1.1.1"
 numpy = "1.18.5"
+pydantic = {version = "1.10.4", extras = ["dotenv"]}
 pytest = "7.2.0"
 pytest-order = "1.1.0"
 
@@ -2956,4 +2958,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "0c0e8caff39b75c7580dd0c2dd960fd3dfe9f631e1be90f881f74e307b3b6c1e"
+content-hash = "4276659ef3f65b94b97dbed8e47479e683d313b0984cd9c3af4268205789a27b"

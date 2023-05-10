@@ -1,6 +1,6 @@
 # Standard Library
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 # Internal libraries
 from onclusiveml.tracking import (
@@ -22,7 +22,7 @@ class TrackedKeywordModelSpecs(TrackedModelSpecs):
 
 class Inputs(TrackedParams):
 
-    sample_documents: List[str] = []
+    sample_documents: List[str]
 
     class Config:
         env_file = "src/config/.dev", "src/config/.prod"
@@ -31,7 +31,7 @@ class Inputs(TrackedParams):
 
 class KeywordExtractionSettings(TrackedParams):
     keyphrase_ngram_range: Tuple[int, int] = (1, 1)
-    stop_words: List[str] = None
+    stop_words: Union[str, List[str]] = "english"
     top_n: int = 3
 
     class Config:

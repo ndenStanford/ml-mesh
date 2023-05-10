@@ -62,11 +62,10 @@ make projects.build/keywords \
     ```docker
     docker run \
       --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-      --env OUTPATH=$CONTAINER_VOLUME_DIR \
+      --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
-      --device /dev/neuron0 \
-      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
       python -m src.download_uncompiled_model```
   - Compile the model:
     ```docker
@@ -76,7 +75,7 @@ make projects.build/keywords \
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
       python -m src.compile_model
     ```
   - Test compiled model:
@@ -87,7 +86,7 @@ make projects.build/keywords \
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
       pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
     ```
   - Upload compiled model:
@@ -98,7 +97,7 @@ make projects.build/keywords \
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
       python -m src.upload_compiled_model
     ```
     - Note: If the `bind` mount command `--mount type=bind,source=...` is omitted in the below steps, the pipeline will fall back on the file `.dev` file that was copied into the image at build time.

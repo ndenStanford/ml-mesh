@@ -35,13 +35,14 @@ def main() -> None:
     keyword_extraction_settings = (
         model_card.model_params.keyword_extraction_settings.dict()
     )
+
     keybert_predictions: List[Tuple[str, float]] = keybert_model.extract_keywords(
-        model_card.model_inputs, **keyword_extraction_settings
+        model_card.model_inputs.sample_documents, **keyword_extraction_settings
     )
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     for (test_file, test_file_attribute_path) in [
-        (model_card.model_inputs, model_card.model_test_files.inputs),
+        (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
         (keyword_extraction_settings, model_card.model_test_files.inference_params),
         (keybert_predictions, model_card.model_test_files.predictions),
     ]:

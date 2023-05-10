@@ -13,6 +13,7 @@ neptune = "1.1.1"
 boto3 = "1.16.0" # not specifying this causes the lock command to run forever
 numpy = "1.18.5" # not specifying this causes 1.24.3 to be installed, clashing with the `compile` lib reqs
 core = {path = "../core"}
+pydantic = {version = "1.10.4", extras = ["dotenv"]}
 
 
 [build-system]

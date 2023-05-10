@@ -1,7 +1,7 @@
 # -------------- uncompiled model specs: UncompiledTrackedModelSpecs
 UNCOMPILED_PROJECT = "onclusive/keywords"
 UNCOMPILED_MODEL = "KEYWORDS-TRAINED"
-UNCOMPILED_WITH_ID = "KEYWORDS-TRAINED-1"
+UNCOMPILED_WITH_ID = "KEYWORDS-TRAINED-4"
 UNCOMPILED_MODE = "read-only" # "async" for read+write access
 
 # -------------- compiled model specs: CompiledTrackedModelSpecs
