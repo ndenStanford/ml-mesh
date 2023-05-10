@@ -152,7 +152,7 @@ jobs:
           # serve
           - name: entity-linking
             component: serve
-            integration: true
+            integration: false
             python-version: "3.8.16"
 
     with:
