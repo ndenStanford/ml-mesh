@@ -61,7 +61,6 @@ jobs:
           - name: core
             integration: false
             functional: false
-            functional: false
 
           - name: compile
             integration: false
