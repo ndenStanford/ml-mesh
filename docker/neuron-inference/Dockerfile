@@ -1,10 +1,12 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=python-base
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
+ARG AWS_ACCOUNT_ID
+ARG IMAGE_TAG
 
-# --- build stage
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
+
+ARG IMAGE_NAME
+
+ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
 
 USER root
 
@@ -27,11 +29,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ENV USER=app
-ENV HOME="/home/onclusive/${USER}"
-
 # create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
+RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
@@ -40,15 +39,19 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/share \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
-USER app
+# switch user
+USER ${USER}
 
 # setup workspace
-WORKDIR "${HOME}"
 
-RUN export PATH="/opt/aws/neuron/bin:$PATH"
+WORKDIR "/"
+
+ENV PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ./poetry.lock ./pyproject.toml ./
+COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+
+WORKDIR "${HOME}"
 
 # install production dependencies
 RUN poetry install \
@@ -79,6 +82,6 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users ./test/ ./test
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-RUN mkdir test/output
+RUN mkdir -p "${HOME}/tests/output"

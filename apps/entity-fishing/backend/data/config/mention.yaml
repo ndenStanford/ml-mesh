@@ -1,0 +1,4 @@
+# entity-fishing configuration for the different mention recognizers
+
+# path to the GROBID home (for grobid-ner, grobid, etc.)
+grobidHome: ../grobid/grobid-home/

@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@v3
 
       - uses: dorny/paths-filter@v2
-        id: get-changed-files
+        id: files-changed
         name: Get a list of modified files.
         with:
           list-files: shell
@@ -82,8 +82,8 @@ jobs:
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
+      - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -94,16 +94,22 @@ jobs:
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
-        run: make apps.unit/${{ inputs.app }} \
+        run: |
+          make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          COMPONENT=${{ inputs.component }} \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
-        run: make apps.integration/${{ inputs.app }} \
+        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.integration }}
+        run: |
+          make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          COMPONENT=${{ inputs.component }} \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}

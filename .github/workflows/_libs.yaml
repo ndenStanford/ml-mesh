@@ -11,6 +11,11 @@ on:
         default: true
         type: boolean
         description: "Whether to run integrations."
+      functional:
+        required: true
+        default: true
+        type: boolean
+        description: "Whether to run functional tests."
       python-version:
         required: false
         type: string
@@ -46,4 +51,8 @@ jobs:
 
       - name: Run integration tests
         if: ${{ inputs.integration }}
-        run: make libs.interation/${{ inputs.lib }}
+        run: make libs.integration/${{ inputs.lib }}
+
+      - name: Run functional tests
+        if: ${{ inputs.functional }}
+        run: make libs.functional/${{ inputs.lib }}

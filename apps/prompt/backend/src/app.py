@@ -2,6 +2,7 @@
 
 # 3rd party libraries
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -33,6 +34,14 @@ def create_app(initialize: bool = True) -> FastAPI:
         description=settings.API_DESCRIPTION,
         docs_url=settings.DOCS_URL,
         on_startup=on_startup,
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ORIGIN,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["*"],
     )
 
     logger.debug("Adding routers...")

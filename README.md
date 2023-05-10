@@ -16,7 +16,7 @@ lifecycle at Onclusive.
 - **train**: model training.
 - **compile**: model compilation (it can be so that the model runs on a specific architecture of a model quantization);
 - **serve**: model served as a REST API.
-- **show**: UI component with streamlit.
+- **display**: UI component with streamlit.
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component behaviour (input, processing and output).
 This allows us to create well defined patterns that can be applied specifically to implement each of these steps on new projects.

@@ -58,13 +58,13 @@ jobs:
         uses: actions/checkout@v3
 
       - uses: dorny/paths-filter@v2
-        id: get-changed-files
+        id: files-changed
         name: Get a list of modified files.
         with:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'docker/${{ inputs.image }}/**'
+              - added | modified: 'docker/**'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -81,32 +81,35 @@ jobs:
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
-        run: make docker.build/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+      - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' }}
+        run: |
+          make docker.build/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
-          PLATFORM=linux/amd64 \
-          TARGET_BUILD_STAGE=development
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64
 
-      - name: Run Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+      - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.validate-build }}
-        run: make docker.run/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+        run: make docker.validate/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
-          DOCKER_RUN_CMD="pytest -m build"
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64
 
-      - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
-        run: make docker.build/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          PLATFORM=linux/amd64 \
-          TARGET_BUILD_STAGE=production
-
-      - name: Push Production Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
+      - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
-          make docker.push/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          make docker.build/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="production" \
+          PLATFORM=linux/amd64
+
+      - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        run: |
+          make docker.deploy/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}"
