@@ -8,9 +8,12 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.db import BaseTable
-from src.model._init import fill_table
 from src.model.tables import ModelTable
 from src.prompt.tables import PromptTemplateTable
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 logger = get_default_logger(__name__)
@@ -21,6 +24,23 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([PromptTemplateTable, ModelTable])
     fill_table()
+
+
+def fill_table() -> None:
+    """Model filling."""
+    logger.info("Adding models to model table...")
+    list_of_models = settings.LIST_OF_MODELS
+
+    # Saving predifined models into database
+    # If model id doesn't exist, then add model to table
+    for id, model in list_of_models.items():
+        try:
+            _ = ModelSchema.get(id)
+        except Exception as e:
+            logger.debug(e)
+            logger.debug("Adding model: {}".format(model[0]))
+            model = ModelSchema(id=id, model_name=model[0], parameters=model[1])
+            model.save()
 
 
 def _create_tables(tables: List[BaseTable]) -> None:
