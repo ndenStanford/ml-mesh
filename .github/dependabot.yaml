@@ -204,12 +204,3 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
-
-# REGISTRIES
-
-registries:
-  ecr-prod:
-    type: docker-registry
-    url: https://211212199399.dkr.ecr.us-east-1.amazonaws.com
-    username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
