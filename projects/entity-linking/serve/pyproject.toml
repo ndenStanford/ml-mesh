@@ -3,7 +3,6 @@ name = "entity-linking-serve"
 version = "0.1.0"
 description = "Entity linking serve"
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
-readme = "README.md"
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
