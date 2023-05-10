@@ -61,7 +61,7 @@ repos:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py)
-        args: ["--explicit-package-bases"]
+        args: ["--explicit-package-bases", "--show-error-codes"]
 
   # isort
   - repo: https://github.com/pycqa/isort
