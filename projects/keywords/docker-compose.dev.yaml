@@ -22,7 +22,7 @@ services:
       - type: bind
         source: train/src
         target: /home/projects/keywords/train/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
     profiles: ["train"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}

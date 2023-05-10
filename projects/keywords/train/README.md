@@ -27,10 +27,12 @@ located in `src/config`. Editing that file allows for configuring development pi
 
 ### 2.2.1 Building the docker container
 
-1. Export build environment variables
-  - `export OWNER=?`
-  - export `IMAGE_TAG=?`
-2. Run the `make` target: `make projects.build/keywords COMPONENT=train OWNER=$OWNER IMAGE_TAG=$IMAGE_TAG TARGET_BUILD_STAGE=production`
+To locally build the image tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest`, run the `make` target: 
+```make
+make projects.build/keywords \
+  COMPONENT=train \ 
+  ENVIRONMENT=dev
+```
 
 ### 2.2.2 Running the components inside docker
 
