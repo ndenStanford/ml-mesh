@@ -9,11 +9,11 @@ services:
   serve:
     build:
       context: ../../
-      dockerfile: projects/entity_linking/serve/Dockerfile
+      dockerfile: projects/entity-linking/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity_linking
+        PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
@@ -43,11 +43,11 @@ services:
   serve-unit:
     build:
       context: ../../
-      dockerfile: projects/entity_linking/serve/Dockerfile
+      dockerfile: projects/entity-linking/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity_linking
+        PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
@@ -64,11 +64,11 @@ services:
   serve-integration:
     build:
       context: ../../
-      dockerfile: projects/entity_linking/serve/Dockerfile
+      dockerfile: projects/entity-linking/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity_linking
+        PROJECT: entity-linking
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
