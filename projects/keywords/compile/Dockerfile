@@ -53,4 +53,4 @@ RUN poetry install --no-interaction
 
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
-USER root 
+USER root
