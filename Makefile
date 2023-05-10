@@ -33,7 +33,8 @@ ALL_LIBS:= \
 # all projects
 ALL_PROJECTS:= \
 	keywords \
-	summarization
+	summarization \
+	entity-linking
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk
