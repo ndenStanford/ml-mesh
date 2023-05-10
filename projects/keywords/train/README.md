@@ -1,29 +1,11 @@
-# 'Train' a keybert huggingface model
-
-To run the container step submitting a huggingface model to neptune ai's model registry:
-
-1. Set run environment variables:
-  - `export OWNER=?`
-  - `export IMAGE_TAG=?`
-  - `export NEPTUNE_API_TOKEN=?`
-2. Run container step:
-```docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    -t $OWNER/keywords-train:$IMAGE_TAG \
-    python -m src.register_trained_model
-  ```
-
 # 1 Overview
 
-The `keywords-train` container image provides the runtime environment for retrieving a specified
-feature extraction pipeline from huggingface and registering it on our internal neptun AI model
-registry.
+The `keywords-train` container image provides the code and runtime environment for retrieving a specified feature extraction pipeline from huggingface and registering it on our internal neptun AI model registry.
 
 The python module implementing the above process is `register_trained_model.py`.
 
 It draws its configurations from the `settings.py` module, which in turn expects one of the two
-`.dotenv` files to be present in the `src/config` subdirectory (locally or in the container when
- running inside docker):
+`.dotenv` files to be present in the `src/config` subdirectory (locally or in the container when running inside docker):
 
 - `.dev`
 - `.prod`
@@ -58,10 +40,11 @@ located in `src/config`. Editing that file allows for configuring development pi
 
 2. Update the `.dev` file in the `src/config` directory as needed. We will mount it into the running containers (See below) to allow for pipeline runtime configurations without requiring a rebuild of the docker container.
 3. Run the container:
-  ```docker run \
-  --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-  --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/train/src/config/,target=/projects/keywords/train/src/config,readonly \
-  -t $OWNER/keywords-compile:$IMAGE_TAG \
-  python -m src.register_trained_model
+  ```docker
+  docker run \
+    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+    --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/train/src/config/,target=/projects/keywords/train/src/config,readonly \
+    -t $OWNER/keywords-train:$IMAGE_TAG \
+    python -m src.register_trained_model
   ```
   - Note: If the `bind` mount command `--mount type=bind,source=...` is omitted in the below steps, the pipeline will fall back on the file `.dev` file that was copied into the image at build time.

@@ -57,43 +57,47 @@ By default, the `settings.py` script will draw its environment variable values f
 2. Update the `.dev` file in the `src/config` directory as needed. We will mount it into the running containers (See below) to allow for pipeline runtime configurations without requiring a rebuild of the docker container.
 3. Run the pipeline
   - Download the uncompiled model:
-    ```docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env OUTPATH=$CONTAINER_VOLUME_DIR \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
-    --device /dev/neuron0 \
-    -t $OWNER/keywords-compile:$IMAGE_TAG \
-    python -m src.download_uncompiled_model```
+    ```docker
+    docker run \
+      --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+      --env OUTPATH=$CONTAINER_VOLUME_DIR \
+      --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
+      --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
+      --device /dev/neuron0 \
+      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      python -m src.download_uncompiled_model```
   - Compile the model:
-    ```docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env OUTPATH=$CONTAINER_VOLUME_DIR \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
-    --device /dev/neuron0 \
-    -t $OWNER/keywords-compile:$IMAGE_TAG \
-    python -m src.compile_model
+    ```docker
+    docker run \
+      --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+      --env OUTPATH=$CONTAINER_VOLUME_DIR \
+      --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
+      --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
+      --device /dev/neuron0 \
+      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      python -m src.compile_model
     ```
   - Test compiled model:
-    ```docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env OUTPATH=$CONTAINER_VOLUME_DIR \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
-    --device /dev/neuron0 \
-    -t $OWNER/keywords-compile:$IMAGE_TAG \
-    pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
+    ```docker
+    docker run \
+      --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+      --env OUTPATH=$CONTAINER_VOLUME_DIR \
+      --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
+      --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
+      --device /dev/neuron0 \
+      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
     ```
   - Upload compiled model:
-    ```docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env OUTPATH=$CONTAINER_VOLUME_DIR \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
-    --device /dev/neuron0 \
-    -t $OWNER/keywords-compile:$IMAGE_TAG \
-    python -m src.upload_compiled_model
+    ```docker
+    docker run \
+      --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+      --env OUTPATH=$CONTAINER_VOLUME_DIR \
+      --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
+      --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
+      --device /dev/neuron0 \
+      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      python -m src.upload_compiled_model
     ```
     - Note: If the `bind` mount command `--mount type=bind,source=...` is omitted in the below steps, the pipeline will fall back on the file `.dev` file that was copied into the image at build time.
     - Note: The `volume` mount command `--mount type=volume,source=...` will create a docker volume named `workflow-volume` on your machine. Follow the docker docs to remove it to unblock repeated downloads when re-running the first component
