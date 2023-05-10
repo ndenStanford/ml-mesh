@@ -8,7 +8,7 @@ class DummyException(OnclusiveException):
     message_format = "Raise {code} with {description}."
 
 
-def kwargs_test():
+def test_kwargs():
     """Test parsed keyword arguments."""
     e = DummyException(code=200, description="OK")
 
@@ -16,7 +16,7 @@ def kwargs_test():
     assert e._param_dct() == {"code": 200, "description": "OK"}
 
 
-def simple_message_test():
+def test_simple_message():
     """Test simple message formatting."""
     e = DummyException(code=200, description="OK")
     assert e

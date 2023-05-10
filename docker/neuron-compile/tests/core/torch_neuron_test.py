@@ -13,7 +13,7 @@ import pytest
 
 @pytest.mark.core
 @pytest.mark.compilation
-def neuron_compile_torch_function_test(torch_function_input, test_output_dir) -> None:
+def test_neuron_compile_torch_function(torch_function_input, test_output_dir) -> None:
     def foo(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return 2 * x + y
 
@@ -25,7 +25,7 @@ def neuron_compile_torch_function_test(torch_function_input, test_output_dir) ->
 
 
 @pytest.mark.inference
-def neuron_inference_torch_function_test(test_output_dir, torch_function_input):
+def test_neuron_inference_torch_function(test_output_dir, torch_function_input):
 
     traced_foo = torch.jit.load(os.path.join(test_output_dir, "traced_foo.pt"))
     traced_foo(*torch_function_input)
@@ -33,7 +33,7 @@ def neuron_inference_torch_function_test(test_output_dir, torch_function_input):
 
 @pytest.mark.core
 @pytest.mark.compilation
-def neuron_compile_torch_graph_test(torch_graph_input, test_output_dir) -> None:
+def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
     class Net(torch.nn.Module):
         def __init__(self) -> None:
             super().__init__()
@@ -55,7 +55,7 @@ def neuron_compile_torch_graph_test(torch_graph_input, test_output_dir) -> None:
 
 
 @pytest.mark.inference
-def neuron_inference_torch_graph_test(test_output_dir, torch_graph_input):
+def test_neuron_inference_torch_graph(test_output_dir, torch_graph_input):
 
     neuron_forward = torch.jit.load(os.path.join(test_output_dir, "neuron_forward.pt"))
     neuron_forward(torch_graph_input)
@@ -66,7 +66,7 @@ def neuron_inference_torch_graph_test(test_output_dir, torch_graph_input):
 
 @pytest.mark.core
 @pytest.mark.compilation
-def neuron_compile_transformer_nlp_model_test(
+def test_neuron_compile_transformer_nlp_model(
     torch_model_name: str,
     torch_model_input: Tuple[torch.Tensor, torch.Tensor],
     test_output_dir,
@@ -89,7 +89,7 @@ def neuron_compile_transformer_nlp_model_test(
 
 
 @pytest.mark.inference
-def neuron_inference_transformer_nlp_model_test(test_output_dir, torch_model_input):
+def test_neuron_inference_transformer_nlp_model(test_output_dir, torch_model_input):
 
     neuron_model_scripted = torch.jit.load(
         os.path.join(

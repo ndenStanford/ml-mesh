@@ -1,40 +1,210 @@
 version: "3.9"
 
 services:
-  serve:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      args:
-        PROJECT: keywords
-        COMPONENT: serve
-      target: development
-    ports:
-      - "8888:8888"
-    environment:
-      DOCS_URL: /docs
-    hostname: onclusive-ml
-    networks: [onclusive-net]
+
+  # =============================================
+  # TRAIN
+  # =============================================
+
   train:
     build:
       context: ../../
       dockerfile: projects/keywords/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
       args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-      target: development
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    ports:
+      - "8888:8888"
+    volumes:
+      - type: bind
+        source: train/src
+        target: /home/projects/keywords/train/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    profiles: ["train"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+  train-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/keywords/train/src
+      - type: bind
+        source: train/tests
+        target: /projects/keywords/train/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["train", "unit"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # COMPILE
+  # =============================================
+
   compile:
     build:
       context: ../../
       dockerfile: projects/keywords/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
       args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: compile
-      target: development
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    profiles: ["compile"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+  compile-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - type: bind
+        source: compile/tests
+        target: /projects/keywords/compile/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["unit"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["serve"]
+    ports:
+      - 8000:8000
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/keywords/serve/src
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # unit tests
+  serve-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/keywords/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/keywords/serve/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["unit"]
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  serve-integration:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/keywords/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/keywords/serve/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
+    profiles: ["integration"]
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /docs
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
 
 networks:
   onclusive-net:

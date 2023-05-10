@@ -28,14 +28,6 @@ on:
         default: true
         type: boolean
         description: "Indicates whether this workflow is running for a Pull Request."
-      python-version:
-        required: false
-        type: string
-        description: "Python version."
-      poetry-version:
-        required: false
-        type: string
-        description: "Python version."
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -83,41 +75,53 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: DeployManifests
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version-file: ".python-version"
-
-      - name: Get Poetry version
-        id: get-poetry-version
-        run: |
-          echo "::set-output name=poetry-version::$(cat .poetry-version)"
-
-      - name: Setup Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: ${{ steps.get-poetry-version.outputs.poetry-version }}
-
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        run: make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
+      - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
+        run: |
+          make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
 
-      - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
+      - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        run: |
+          make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
+
+      - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
-        run: make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} WITH_DOCKER=true
+        run: |
+          make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        run:
+        if: ${{ !inputs.pull-request }}
+        run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
-          TARGET_BUILD_STAGE=production \
-          PLATFORM=linux/amd64
+          TARGET_BUILD_STAGE="production" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ !inputs.pull-request }}
         run: |
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}"
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
