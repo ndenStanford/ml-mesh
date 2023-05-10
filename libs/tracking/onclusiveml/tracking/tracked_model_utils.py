@@ -1,8 +1,15 @@
 # 3rd party libraries
-from pydantic import BaseModel, BaseSettings, Field, SecretStr, validator
+from pydantic import BaseSettings, Field, SecretStr, validator
 
 
-class TrackedModelSpecs(BaseSettings):
+class TrackingParams(BaseSettings):
+    """Base class for all parameter classes in the tracking library. Subclassing from BaseSettings
+    allows for configuring parameters via environment variables."""
+
+    pass
+
+
+class TrackedModelSpecs(TrackingParams):
     """A utility to specify the neptune ai project and model level resources.
     Also includes the parsing of the api token to help instantiate ModelVersion's..
     The `api_token` field will be excluded from the model's standard export methods."""
@@ -13,7 +20,7 @@ class TrackedModelSpecs(BaseSettings):
     api_token: SecretStr = Field(..., env="neptune_api_token", exclude=True)
 
 
-class TrackedModelTestFiles(BaseModel):
+class TrackedModelTestFiles(TrackingParams):
     """A utility to specifiy the attribute paths of test files supporting regression tests, e.g
     for validating runtime environments or model compilations"""
 
@@ -26,7 +33,7 @@ class TrackedModelTestFiles(BaseModel):
 MODEL_TYPES = ("base", "trained", "compiled")
 
 
-class TrackedModelCard(BaseModel):
+class TrackedModelCard(TrackingParams):
     """A common interface for specfying model resources on neptune ai."""
 
     model_type: str  # 'base', 'trained' or 'compiled'; see validator below

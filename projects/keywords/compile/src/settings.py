@@ -4,11 +4,15 @@ from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field
+from pydantic import Field
 
 # Internal libraries
 from onclusiveml.core.logging import INFO
-from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
+from onclusiveml.tracking import (
+    TrackedModelCard,
+    TrackedModelSpecs,
+    TrackedParams,
+)
 
 
 # --- atomic settings and models
@@ -46,7 +50,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class WorkflowOutputDir(BaseSettings):
+class WorkflowOutputDir(TrackedParams):
 
     outpath: str = "./outputs"
 
@@ -109,7 +113,7 @@ class IOSettings(object):
     log_level: int = INFO
 
 
-class TokenizerSettings(BaseSettings):
+class TokenizerSettings(TrackedParams):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details"""
 
     add_special_tokens: bool = True
@@ -120,7 +124,7 @@ class TokenizerSettings(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-class ModelTracingSettings(BaseSettings):
+class ModelTracingSettings(TrackedParams):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details"""
 
     dynamic_batching: bool = True
@@ -133,7 +137,7 @@ class ModelTracingSettings(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-class PipelineCompilationSettings(BaseSettings):
+class PipelineCompilationSettings(TrackedParams):
     """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details"""
 
     pipeline_name: str
@@ -171,7 +175,7 @@ class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
         env_file_encoding = "utf-8"
 
 
-class CompilationTestSettings(BaseSettings):
+class CompilationTestSettings(TrackedParams):
 
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
