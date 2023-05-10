@@ -26,10 +26,10 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
     project: str = "onclusive/keywords"
-    model: str = "KEYWORDS-BASE"
+    model: str = "KEYWORDS-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "KEYWORDS-BASE-6"
+    with_id: str = "KEYWORDS-TRAINED-1"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
