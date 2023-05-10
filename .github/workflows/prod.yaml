@@ -51,7 +51,7 @@ jobs:
   run-ml-compilation-pipelines:
     name: Compile ML models
     uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-code-quality-checks]
+    needs: [run-repository-state]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
       environment: prod
