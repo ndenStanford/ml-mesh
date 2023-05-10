@@ -52,7 +52,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["serve", "unit"]
+    profiles: ["unit"]
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
@@ -73,7 +73,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["serve", "unit"]
+    profiles: ["integration"]
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
