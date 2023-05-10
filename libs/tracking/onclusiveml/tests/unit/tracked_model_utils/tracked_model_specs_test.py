@@ -13,7 +13,7 @@ from onclusiveml.tracking.tracked_model_utils import TrackedModelSpecs
     "project,model,api_token",
     [("a", "b", "c"), ("some project", "some model", "some token")],
 )
-def from_env_test(project, model, api_token):
+def test_from_env(project, model, api_token):
 
     for env_name, env_val in (
         ("neptune_project", project),
@@ -37,13 +37,13 @@ def from_env_test(project, model, api_token):
         del os.environ[env_name]
 
 
-def from_empty_env_raise_error_test():
+def test_from_empty_env_raise_error():
 
     with pytest.raises(ValidationError):
         TrackedModelSpecs()
 
 
-def to_dict_raise_test():
+def test_to_dict_raise():
 
     test_specs = TrackedModelSpecs(project="a", model="b", api_token="secret_token")
     test_specs_dict = test_specs.dict()

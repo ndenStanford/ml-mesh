@@ -34,7 +34,7 @@ from onclusiveml.tracking.tracked_model_utils import (
         ),
     ],
 )
-def from__init___test(
+def test_from__init__(
     inputs,
     inference_params,
     predictions,

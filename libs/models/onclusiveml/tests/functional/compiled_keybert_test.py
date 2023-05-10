@@ -37,7 +37,7 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
         ),
     ],
 )
-def compiled_keybert_extract_keywords_regression_test(
+def test_compiled_keybert_extract_keywords_regression(
     document_pipeline,
     compiled_word_pipeline,
     test_hf_pipeline,
@@ -84,7 +84,7 @@ def compiled_keybert_extract_keywords_regression_test(
         ),
     ],
 )
-def compiled_keybert_extract_keywords_latency_test(
+def test_compiled_keybert_extract_keywords_latency(
     keybert_scenario,
     document_pipeline,
     compiled_word_pipeline,

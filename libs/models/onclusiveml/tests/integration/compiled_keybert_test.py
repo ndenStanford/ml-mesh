@@ -32,7 +32,7 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
         ),
     ],
 )
-def compiled_keybert_extract_keywords_test(
+def test_compiled_keybert_extract_keywords(
     document_pipeline, compiled_word_pipeline, test_documents
 ):
     # either fully compiled keybert or a hybrid with document embedding pipeline uncompiled
@@ -65,7 +65,7 @@ def compiled_keybert_extract_keywords_test(
         ),
     ],
 )
-def compiled_keybert_extract_embeddings_test(
+def test_compiled_keybert_extract_embeddings(
     document_pipeline, compiled_word_pipeline, test_documents
 ):
 
@@ -99,7 +99,7 @@ def compiled_keybert_extract_embeddings_test(
         ),
     ],
 )
-def compiled_keybert_save_pretrained_from_pretrained(
+def test_compiled_keybert_save_pretrained_from_pretrained(
     document_pipeline, compiled_word_pipeline, test_documents
 ):
     # initialize with constructor and score

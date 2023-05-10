@@ -41,8 +41,6 @@ FROM builder as development
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users pytest.ini "${HOME}/"
-
 COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"

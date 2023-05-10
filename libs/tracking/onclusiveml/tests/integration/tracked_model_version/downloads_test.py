@@ -16,7 +16,7 @@ import pytest
         ("test_file_2", "txt"),
     ],
 )
-def download_file_from_model_version_test(
+def test_download_file_from_model_version(
     test_model_version,
     test_model_version_mode,
     test_file_directory_download,
@@ -42,7 +42,7 @@ def download_file_from_model_version_test(
 @pytest.mark.order(2)
 @pytest.mark.download
 @pytest.mark.parametrize("test_model_version_mode", ["read-only"])
-def download_directory_from_model_version_test(
+def test_download_directory_from_model_version(
     test_model_version,
     test_model_version_mode,
     test_file_directory_download,
@@ -90,7 +90,7 @@ def download_directory_from_model_version_test(
 @pytest.mark.order(2)
 @pytest.mark.download
 @pytest.mark.parametrize("test_model_version_mode", ["read-only"])
-def download_config_from_model_version_test(
+def test_download_config_from_model_version(
     test_model_version, test_model_version_mode, test_config_expected
 ):
 

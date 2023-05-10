@@ -14,7 +14,7 @@ def to_dataframe(extracted_keywords: List[Tuple[str, float]]) -> pd.DataFrame:
 
 @pytest.mark.order(1)
 @pytest.mark.parametrize("test_sample_index", [0, 1, 2])
-def compiled_model_regression_test(
+def test_compiled_model_regression(
     logger,
     io_settings,
     compiled_keybert,

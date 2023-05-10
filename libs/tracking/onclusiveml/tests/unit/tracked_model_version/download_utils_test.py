@@ -8,7 +8,7 @@ import pytest
 from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
 
 
-def extract_file_attributes_test(
+def test_extract_file_attributes(
     test_uploaded_attributes, test_extracted_file_attributes_expected
 ):
 
@@ -26,7 +26,7 @@ def extract_file_attributes_test(
 
 
 @pytest.mark.parametrize("neptune_attribute_prefix", ["c", ""])
-def derive_and_filter_neptune_attributes_paths_test(
+def test_derive_and_filter_neptune_attributes_paths(
     test_extracted_file_attributes_expected,
     neptune_attribute_prefix,
     test_derive_and_filter_neptune_attribute_paths_expected,
@@ -54,7 +54,7 @@ def derive_and_filter_neptune_attributes_paths_test(
         ("e/f/g/h", "e/f", ".", os.path.join(".", "g", "h")),
     ],
 )
-def convert_neptune_data_path_to_local_path_test(
+def test_convert_neptune_data_path_to_local_path(
     neptune_attribute_path,
     neptune_attribute_prefix,
     local_directory_path,

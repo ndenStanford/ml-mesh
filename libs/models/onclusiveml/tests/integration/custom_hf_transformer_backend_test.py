@@ -9,7 +9,7 @@ from onclusiveml.models.keywords import CustomHFTransformerBackend
 @pytest.mark.order(1)
 @pytest.mark.backend
 @pytest.mark.parametrize("invalid_pipeline_type", ["some string value"])
-def custom_hf_transformer_backend___init__raise_test(invalid_pipeline_type):
+def test_custom_hf_transformer_backend___init__raise(invalid_pipeline_type):
 
     with pytest.raises(ValueError):
         CustomHFTransformerBackend(embedding_model=invalid_pipeline_type)
@@ -25,7 +25,7 @@ def custom_hf_transformer_backend___init__raise_test(invalid_pipeline_type):
         lazy_fixture("test_neuron_compiled_word_pipeline"),
     ],
 )
-def custom_hf_transformer_backend_embed_test(compiled_pipeline, test_documents):
+def test_custom_hf_transformer_backend_embed(compiled_pipeline, test_documents):
 
     compiled_hf_backend = CustomHFTransformerBackend(embedding_model=compiled_pipeline)
 

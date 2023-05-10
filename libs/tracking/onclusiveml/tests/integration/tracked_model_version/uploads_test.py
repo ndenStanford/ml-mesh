@@ -11,7 +11,7 @@ import pytest
         ("test_file_2", "txt"),
     ],
 )
-def upload_file_to_model_version_test(
+def test_upload_file_to_model_version(
     test_model_version, test_file_directory_upload, file_name, file_extension
 ):
 
@@ -29,7 +29,7 @@ def upload_file_to_model_version_test(
     "neptune_attribute_path", ["", "some_attribute_path", "some/nested/attribute/path"]
 )
 @pytest.mark.parametrize("exclude", [[], [".", "__"]])
-def capture_directory_for_upload_test(
+def test_capture_directory_for_upload(
     test_model_version,
     test_file_directory_upload,
     exclude,
@@ -52,7 +52,7 @@ def capture_directory_for_upload_test(
 
 @pytest.mark.order(1)
 @pytest.mark.upload
-def upload_directory_to_model_version_test(
+def test_upload_directory_to_model_version(
     test_model_version, test_file_directory_upload
 ):
 
@@ -66,7 +66,7 @@ def upload_directory_to_model_version_test(
 
 @pytest.mark.order(1)
 @pytest.mark.upload
-def upload_config_to_model_version_test(test_model_version, test_config_expected):
+def test_upload_config_to_model_version(test_model_version, test_config_expected):
 
     test_model_version.upload_config_to_model_version(
         config=test_config_expected,

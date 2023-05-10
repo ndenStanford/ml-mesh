@@ -22,7 +22,7 @@ from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
         (os.path.join("some", "nested", "dir"), ""),
     ],
 )
-def capture_directory_for_upload_test(
+def test_capture_directory_for_upload(
     test_directory,
     monkeypatch,
     local_directory_path,
