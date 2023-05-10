@@ -20,7 +20,7 @@ Each module draws its configurations from the `settings.py` module, which in tur
 - `.dev`
 - `.prod`
 
-Orchestration of these components into the model compile pipeline is done by Github Actions of this same `ml-mesh` repository (as opposed to all other orchestration happening in `ml-platform`). The [modeol compile workflow can be found here](#add-link-here)
+Orchestration of these components into the model compile pipeline is done by Github Actions of this same `ml-mesh` repository (as opposed to all other orchestration happening in `ml-platform`)
 
 # 2 Running the pipeline
 
@@ -42,10 +42,12 @@ By default, the `settings.py` script will draw its environment variable values f
 
 ### 2.2.1 Building the docker container
 
-1. Export build environment variables
-  - `export OWNER=?`
-  - export `IMAGE_TAG=?`
-2. Run the `make` target: `make projects.build/keywords COMPONENT=compile OWNER=$OWNER IMAGE_TAG=$IMAGE_TAG TARGET_BUILD_STAGE=production`
+To locally build the image tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest`, run the `make` target: 
+```make
+make projects.build/keywords \
+  COMPONENT=compile \ 
+  ENVIRONMENT=dev
+```
 
 ### 2.2.2 Running the components inside docker
 
@@ -64,7 +66,7 @@ By default, the `settings.py` script will draw its environment variable values f
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
       python -m src.download_uncompiled_model```
   - Compile the model:
     ```docker
@@ -74,7 +76,7 @@ By default, the `settings.py` script will draw its environment variable values f
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
       python -m src.compile_model
     ```
   - Test compiled model:
@@ -85,7 +87,7 @@ By default, the `settings.py` script will draw its environment variable values f
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
       pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
     ```
   - Upload compiled model:
@@ -96,7 +98,7 @@ By default, the `settings.py` script will draw its environment variable values f
       --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
       --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/compile/src/config/,target=/projects/keywords/compile/src/config,readonly \
       --device /dev/neuron0 \
-      -t $OWNER/keywords-compile:$IMAGE_TAG \
+      -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-copmile:latest \
       python -m src.upload_compiled_model
     ```
     - Note: If the `bind` mount command `--mount type=bind,source=...` is omitted in the below steps, the pipeline will fall back on the file `.dev` file that was copied into the image at build time.

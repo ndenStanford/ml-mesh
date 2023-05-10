@@ -72,7 +72,7 @@ services:
       - type: bind
         source: compile/src
         target: /projects/keywords/compile/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
     profiles: ["compile"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}

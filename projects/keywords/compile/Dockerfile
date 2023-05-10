@@ -1,4 +1,7 @@
-FROM 211212199399.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:2023.4.9 as builder
+ARG AWS_ACCOUNT_ID
+ARG BASE_IMAGE_TAG
+
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${BASE_IMAGE_TAG} as builder
 
 ARG PROJECT
 ARG COMPONENT

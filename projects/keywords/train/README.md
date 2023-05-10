@@ -46,7 +46,7 @@ make projects.build/keywords \
   docker run \
     --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
     --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/train/src/config/,target=/projects/keywords/train/src/config,readonly \
-    -t $OWNER/keywords-train:$IMAGE_TAG \
+    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest \
     python -m src.register_trained_model
   ```
   - Note: If the `bind` mount command `--mount type=bind,source=...` is omitted in the below steps, the pipeline will fall back on the file `.dev` file that was copied into the image at build time.
