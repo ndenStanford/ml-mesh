@@ -72,7 +72,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
     environment:
       ENVIRONMENT: ci
