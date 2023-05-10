@@ -11,7 +11,7 @@ This project contains the modular implementation of the logic powering Onclusive
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
-- **ingest**: ingest any data that is external to our system.
+- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
 - **train**: model training.
 - **compile**: model compilation (it can be so that the model runs on a specific architecture of a model quantization);

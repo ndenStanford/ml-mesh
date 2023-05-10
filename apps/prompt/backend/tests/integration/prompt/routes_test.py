@@ -31,19 +31,27 @@ def test_get_prompt(test_client, create_prompts):
     assert response.json()["id"] == prompt.id
     assert response.json()["template"] == prompt.template
     assert response.json()["created_at"] == prompt.created_at
+    assert response.json()["alias"] == prompt.alias
 
 
 @pytest.mark.parametrize(
-    "template",
+    "template, alias",
     [
-        "I want you to act like {character} from {series}."
-        "What personalities are mentionned in this text {text}",
+        (
+            "I want you to act like {character} from {series}.",
+            "alias1",
+        ),
+        (
+            "What personalities are mentionned in this text {text}",
+            "alias2",
+        ),
     ],
 )
-def test_create_prompt(template, test_client):
-    """Test get prompt endpoint."""
+def test_create_prompt(template, test_client, alias):
+    """Test create prompt endpoint."""
     response = test_client.post(
-        f"/api/v1/prompts?template={template}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        headers={"x-api-key": "1234"},
     )
 
     data = response.json()
@@ -53,9 +61,35 @@ def test_create_prompt(template, test_client):
     assert isinstance(data["id"], str)
     assert isinstance(data["created_at"], str)
     assert isinstance(data["template"], str)
+    assert isinstance(data["alias"], str)
     assert prompt.id == data["id"]
     assert prompt.created_at == data["created_at"]
     assert prompt.template == data["template"]
+    assert prompt.alias == data["alias"]
+
+
+@pytest.mark.parametrize(
+    "template, alias",
+    [
+        (
+            "template-x",
+            "t1",
+        ),
+    ],
+)
+def test_create_prompt_same_alias(test_client, create_prompts, template, alias):
+    """Test create prompt endpoint with alias in database."""
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        headers={"x-api-key": "1234"},
+    )
+
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json() == {
+        "detail": "{} already exists in the database, please provide a unique alias".format(
+            alias
+        )
+    }
 
 
 def test_update_prompt(test_client, create_prompts):
@@ -73,6 +107,7 @@ def test_update_prompt(test_client, create_prompts):
         "created_at": prompt.created_at,
         "id": prompt.id,
         "template": "updated template",
+        "alias": prompt.alias,
     }
 
 

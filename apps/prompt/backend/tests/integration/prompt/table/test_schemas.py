@@ -9,15 +9,21 @@ from src.prompt.tables import PromptTemplateTable
 
 
 @pytest.mark.parametrize(
-    "template",
+    "template, alias",
     [
-        "Quiero un breve resumen de dos líneas de este texto: {text}",
-        "Quel est le framework {type} le plus populaire?",
+        (
+            "Quiero un breve resumen de dos líneas de este texto: {text}",
+            "alias1",
+        ),
+        (
+            "Quel est le framework {type} le plus populaire?",
+            "alias2",
+        ),
     ],
 )
-def test_save(template):
+def test_save(template, alias):
     """Test save schema in db."""
-    schema = PromptTemplateSchema(template=template)
+    schema = PromptTemplateSchema(template=template, alias=alias)
 
     saved_schema = schema.save()
 
@@ -27,35 +33,43 @@ def test_save(template):
 
 
 @pytest.mark.parametrize(
-    "template",
+    "template, alias",
     [
-        "Translate this text {text} from {source_lang} to {target_lang}",
-        "Ecris une dissertation de {count} mots sur le sujet suivant {topic}",
+        (
+            "Translate this text {text} from {source_lang} to {target_lang}",
+            "alias3",
+        ),
+        (
+            "Ecris une dissertation de {count} mots sur le sujet suivant {topic}",
+            "alias4",
+        ),
     ],
 )
-def test_get_exists(template):
+def test_get_exists(template, alias):
     """Test get item from table."""
-    schema = PromptTemplateSchema(template=template).save()
+    schema = PromptTemplateSchema(template=template, alias=alias).save()
 
     schema_from_db = PromptTemplateSchema.get(schema.id)
 
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
     assert schema.template == schema_from_db.template
+    assert schema.alias == schema_from_db.alias
 
 
 @pytest.mark.parametrize(
-    "template, updated_template",
+    "template, alias, updated_template",
     [
         (
             "Transalte this test {text} to {target_lang}",
+            "alias5",
             "Translate this text {text} from {source_lang} to {target_lang}",
         )
     ],
 )
-def test_update(template, updated_template):
+def test_update(template, alias, updated_template):
     """Test get item from table."""
-    schema = PromptTemplateSchema(template=template).save()
+    schema = PromptTemplateSchema(template=template, alias=alias).save()
 
     schema.update(template=updated_template)
 
@@ -64,4 +78,5 @@ def test_update(template, updated_template):
     assert updated_schema.id == schema.id
     assert updated_schema.created_at == schema.created_at
     assert updated_schema.template == updated_template
+    assert updated_schema.alias == alias
     assert updated_schema.template != schema.template
