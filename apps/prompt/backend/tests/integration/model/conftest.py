@@ -9,27 +9,31 @@ from fastapi import FastAPI
 from starlette.testclient import TestClient
 
 # Source
-from src.prompt.schemas import PromptTemplateSchema
-from src.prompt.tables import PromptTemplateTable
+from src.model.schemas import ModelSchema
+from src.model.tables import ModelTable
+from src.settings import get_settings
 
 
-TEST_PROMPTS = [
-    PromptTemplateSchema(template="template1"),
-    PromptTemplateSchema(template="template2"),
-    PromptTemplateSchema(template="template3"),
-    PromptTemplateSchema(template="template4"),
+settings = get_settings()
+
+
+TEST_MODELS = [
+    ModelSchema(model_name="model-1", parameters=settings.OPENAI_PARAMETERS),
+    ModelSchema(model_name="model-2", parameters=settings.OPENAI_PARAMETERS),
+    ModelSchema(model_name="model-3", parameters=settings.OPENAI_PARAMETERS),
+    ModelSchema(model_name="model-4", parameters=settings.OPENAI_PARAMETERS),
 ]
 
 
 @pytest.fixture(autouse=True)
 def init_tables() -> Generator[None, None, None]:
     """Initializes dynamodb tables."""
-    if not PromptTemplateTable.exists():
-        PromptTemplateTable.create_table(
+    if not ModelTable.exists():
+        ModelTable.create_table(
             read_capacity_units=1, write_capacity_units=1, wait=True
         )
     yield
-    PromptTemplateTable.delete_table()
+    ModelTable.delete_table()
 
 
 @pytest.fixture
@@ -48,9 +52,9 @@ def test_client(app: FastAPI, init_tables: Any) -> Generator[TestClient, None, N
 
 
 @pytest.fixture()
-def create_prompts(init_tables):
-    """Create template for integration tests."""
+def create_models(init_tables):
+    """Create model_name for integration tests."""
     res = []
-    for template in TEST_PROMPTS:
-        res.append(template.save())
+    for model_name in TEST_MODELS:
+        res.append(model_name.save())
     return res

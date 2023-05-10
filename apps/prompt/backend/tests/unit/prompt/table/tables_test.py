@@ -11,6 +11,7 @@ from src.settings import get_settings
 def test_base_table():
     """Test BaseTable object."""
     assert list(PromptTemplateTable._attributes.keys()) == [
+        "alias",
         "created_at",
         "id",
         "template",
