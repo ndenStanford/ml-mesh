@@ -42,7 +42,6 @@ on:
         description: "AWS IAM role to assume."
 
 jobs:
-
   setup-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
@@ -52,7 +51,6 @@ jobs:
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
 
     steps:
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -103,16 +101,14 @@ jobs:
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
 
   register-compiled-model:
-
     name: Compile and register a base or trained model
     needs:
       - start-runner
       - set-image-reference
     runs-on: ${{ needs.start-runner.outputs.label }}
     container:
-      image: image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
+      image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
     steps:
-
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
@@ -130,7 +126,6 @@ jobs:
           echo 'Uploading Compiled Model'
           #python -m src.upload_compiled_model
   stop-runner:
-
     name: Stop self-hosted EC2 runner
     needs:
       - start-runner
