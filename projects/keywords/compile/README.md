@@ -26,7 +26,7 @@ Orchestration of these components into the model compile pipeline is done by Git
 
 ## 2.1 Without containers
 
-For development purposes, the pipeline can be run locally without containers. 
+For development purposes, the pipeline can be run locally without containers.
 
 1. Set the neptune authentication token value: `export NEPTUNE_API_TOKEN==?`
 2. Change into the `projects/keywords/compile/src` directory: `cd projects/keywords/compile/src`
@@ -56,7 +56,7 @@ By default, the `settings.py` script will draw its environment variable values f
 
 2. Update the `.dev` file in the `src/config` directory as needed. We will mount it into the running containers (See below) to allow for pipeline runtime configurations without requiring a rebuild of the docker container.
 3. Run the pipeline
-  - Download the uncompiled model: 
+  - Download the uncompiled model:
     ```docker run \
     --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
     --env OUTPATH=$CONTAINER_VOLUME_DIR \
@@ -65,7 +65,7 @@ By default, the `settings.py` script will draw its environment variable values f
     --device /dev/neuron0 \
     -t $OWNER/keywords-compile:$IMAGE_TAG \
     python -m src.download_uncompiled_model```
-  - Compile the model: 
+  - Compile the model:
     ```docker run \
     --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
     --env OUTPATH=$CONTAINER_VOLUME_DIR \

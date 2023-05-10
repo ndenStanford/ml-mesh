@@ -26,6 +26,6 @@ Available targets:
     libs.integration-all                    Runs integration tests for all registered libraries
     libs.test                               Runs the full test suite
     libs.test-all                           Runs the full test suite for all registered libraries
-    
+
 
 ```
