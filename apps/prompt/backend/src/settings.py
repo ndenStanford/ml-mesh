@@ -10,6 +10,7 @@ from pydantic import BaseSettings
 
 # Source
 from src.model.constants import ModelEnum
+from src.prompt.constants import PromptEnum
 
 
 class Settings(BaseSettings):
@@ -52,6 +53,9 @@ class Settings(BaseSettings):
         "2": [ModelEnum.DAVINCI.value, OPENAI_PARAMETERS],
         "3": [ModelEnum.CURIE.value, OPENAI_PARAMETERS],
         "4": [ModelEnum.GPT4.value, OPENAI_PARAMETERS],
+    }
+    LIST_OF_PROMPTS: Dict[str, List[str]] = {
+        "1": [PromptEnum.EN.value[0], PromptEnum.EN.value[1]]
     }
 
     AWS_REGION: str = "us-east-1"
