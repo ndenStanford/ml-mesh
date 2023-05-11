@@ -57,6 +57,24 @@ export const createPrompt = createAsyncThunk(
   }
 );
 
+export const deletePrompt = createAsyncThunk(
+  "prompts/delete",
+  async ({ id }: { id: string }, thunkAPI: any) => {
+    const response = await fetch(`${API_URI}/prompts/${id}`, {
+      method: "DELETE",
+      headers: {
+        accept: "application/json",
+        "x-api-key": API_KEY,
+      },
+    });
+    if (response.status !== 200) {
+      console.log("Error Deleting");
+    } else {
+      console.log("Successfully deleted prompt.");
+    }
+  }
+);
+
 export const generateTextFromPrompt = createAsyncThunk(
   "prompts/generate/prompt",
   async (
