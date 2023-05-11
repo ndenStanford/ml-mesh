@@ -8,9 +8,9 @@ This folder contains the implmentation of all our machine learning projects. Eac
 - compile
 - serve
 
-##  Projects
+## Projects
 
-| Project       | Description                       | Data Type | Prepare | Train | Compile | Serve |
+| Project       | Description                       | Data Type | Prepare | Train | Compile | Serve |     |
 | ------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- | --- |
 | IPTC          | Document topic classification     | Text      |         |       |         |       |     |
 | Sentiment     | Document Sentiment classification | Text      |         |       |         |       |     |
@@ -24,15 +24,14 @@ This folder contains the implmentation of all our machine learning projects. Eac
 ```text
 Available targets:
 
-    projects.build                      Builds the component docker image
-    projects.install                    Install component dependencies locally
-    projects.deploy                     Deploys component docker image to ECR
-    projects.tag                        Tags component image
-    projects.untag                      Untags component image
-    projects.start                      Start development container for component
-    projects.test                       Runs component full test suite
-    projects.unit                       Runs component unit test
-    projects.integration                Runs component integration test
-    projects.lock                       Updates the poetry lock file
+    projects.build/<project>                    Builds the component docker image. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.install/<project>                  Install component dependencies locally. Variable(s): COMPONENT
+    projects.deploy/<project>                   Deploys component docker image to ECR. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.start/<project>                    Start development container for component. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.stop/<project>                     Stop development container for component. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.test/<project>                     Runs component full test suite. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.unit/<project>                     Runs component unit test. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.integration/<project>              Runs component integration test. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.lock/<project>                     Updates the poetry lock file. Variable(s): COMPONENT.
 
 ```

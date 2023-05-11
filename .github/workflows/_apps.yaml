@@ -82,7 +82,7 @@ jobs:
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+      - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \

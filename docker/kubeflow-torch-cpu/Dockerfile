@@ -1,12 +1,11 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=kubeflow-jupyter
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-ARG DOCKER_IMAGE_DIR=docker/kubeflow-torch-cpu
+ARG AWS_ACCOUNT_ID
+ARG IMAGE_TAG
 
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-jupyter:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR
+ARG IMAGE_NAME
+
+ENV HOME="docker/${IMAGE_NAME}"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -14,10 +13,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # switch to NB_UID for installs
 USER ${NB_UID}
 
-WORKDIR "${HOME}"
+WORKDIR "/"
 
 # install - poetry requirements
-COPY --chown=${NB_USER}:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
+COPY --chown="${NB_USER}:users" ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+
+WORKDIR "${HOME}"
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
@@ -29,13 +30,11 @@ EXPOSE 8888
 
 # --- production stage
 FROM builder as production
-ARG DOCKER_IMAGE_DIR
 
 ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
-ARG DOCKER_IMAGE_DIR
 
 # dummy entrypoint to pass the CI docker run stage
 ENTRYPOINT ["pwd"]
