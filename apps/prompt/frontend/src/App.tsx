@@ -13,6 +13,7 @@ import {
   createPrompt,
   generateText,
   generateTextFromPrompt,
+  deletePrompt,
 } from "./state/slices/prompts";
 import { addModal, hideModal, showModal } from "./state/slices/modals";
 import {
@@ -81,6 +82,11 @@ export default function App() {
       } as Message;
       dispatch(addMessage(final_response));
     });
+  }
+
+  async function handleDeletePrompt(id: string) {
+    dispatch(deletePrompt({ id }));
+    window.location.reload();
   }
 
   async function handleSendMessageWithPrompt(dct: Dictionary, id: string) {
@@ -170,6 +176,9 @@ export default function App() {
                   },
                   onSendClick: (dct: Dictionary, id: string) => {
                     handleSendMessageWithPrompt(dct, id);
+                  },
+                  onDeleteClick: (id: string) => {
+                    handleDeletePrompt(id);
                   },
                 }}
                 isModalVisible={modals.list[item.id]}
