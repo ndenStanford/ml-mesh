@@ -14,5 +14,5 @@ class PromptEnum(Enum):
         + "\n"  # noqa: W503
         + "{text}"  # noqa: W503
         + "\n",  # noqa: W503
-        "English Summarization",
+        "English-Summarization",
     ]
