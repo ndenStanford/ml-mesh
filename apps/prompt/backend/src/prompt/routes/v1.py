@@ -124,9 +124,21 @@ def delete_prompt(id: str):
     """
     try:
         # TODO: for consistency this method should be moved to PromptTemplateSchema
-        prompt = PromptTemplateTable.get(id)
-        prompt.delete()
-        return "deleted"
+        alias = PromptTemplateSchema.get(id).alias
+        delete = True
+        for _, prompt in settings.LIST_OF_PROMPTS.items():
+            if alias in prompt[1]:
+                delete = False
+                break
+        if delete:
+            prompt = PromptTemplateTable.get(id)
+            prompt.delete()
+            return "deleted"
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Cannot delete predefined models - (id={str(id)})",
+            )
     except PromptTemplateTable.DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=f"{str(e)} - (id={str(id)})"
