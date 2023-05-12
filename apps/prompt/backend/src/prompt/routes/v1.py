@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 # 3rd party libraries
 from fastapi import APIRouter, HTTPException, Security, status
+from slugify import slugify
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -82,6 +83,7 @@ def create_prompt(template: str, alias: str):
         template (str): prompt template text.
         alias (str): alias for template.
     """
+    alias = slugify(alias)
     all_prompts = PromptTemplateSchema.get()
     for prompt in all_prompts:
         if alias == prompt.alias:
