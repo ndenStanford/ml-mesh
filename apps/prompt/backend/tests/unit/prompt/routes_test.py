@@ -206,6 +206,28 @@ def test_delete_prompt(mock_prompt_delete, mock_prompt_schema, id, test_client):
     assert response.json() == "deleted"
 
 
+@pytest.mark.parametrize("alias", ["English-Summarization"])
+@patch.object(PromptTemplateSchema, "get")
+@patch("src.prompt.schemas.PromptTemplateSchema.delete")
+def test_delete_prompt_protection(
+    mock_prompt_delete, mock_prompt_schema, alias, test_client
+):
+    """Test delete prompt endpoint."""
+    mock_prompt_schema.return_value = PromptTemplateSchema(
+        id="1", template="Summarization prompt", alias=alias
+    )
+
+    response = test_client.delete(
+        f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"}
+    )
+
+    assert mock_prompt_schema.call_count == 1
+
+    mock_prompt_schema.assert_called_with(f"{id}")
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_delete_prompt_unauthenticated(test_client):
     """Test delete prompt endpoint unauthenticated."""
     response = test_client.delete("/api/v1/prompts/12345")
