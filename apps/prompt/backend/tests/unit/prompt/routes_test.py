@@ -75,7 +75,7 @@ def test_get_prompt_unauthenticated(test_client):
         (
             "874285",
             "How long does it take to become proficient in {language}",
-            "alias2",
+            "alias",
         ),
     ],
 )
@@ -103,19 +103,19 @@ def test_create_prompt(
 
 
 @pytest.mark.parametrize(
-    "id, template, alias",
+    "id, template, alias, slugified_alias",
     [
-        (1, "I want you to act like {character} from {series}.", "alias 1"),
+        (1, "I want you to act like {character} from {series}.", "alias 1", "alias-1"),
     ],
 )
 @patch("src.db.Model.save")
 @patch.object(PromptTemplateSchema, "get")
 def test_create_prompt_same_alias(
-    mock_prompt_get, mock_table_save, id, template, alias, test_client
+    mock_prompt_get, mock_table_save, id, template, alias, slugified_alias, test_client
 ):
     """Test get prompt endpoint."""
     mock_prompt_get.return_value = [
-        PromptTemplateSchema(template="test-template", alias=alias)
+        PromptTemplateSchema(template="test-template", alias=slugified_alias)
     ]
     response = test_client.post(
         f"/api/v1/prompts?template={template}&alias={alias}",
@@ -126,7 +126,7 @@ def test_create_prompt_same_alias(
     assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {
         "detail": "{} already exists in the database, please provide a unique alias".format(
-            alias
+            slugified_alias
         )
     }
 

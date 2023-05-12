@@ -10,6 +10,7 @@ python = "3.8.16"
 pynamodb = "5.4.1"
 core = {path = "../../../libs/core"}
 openai = "0.27.2"
+python-slugify = "8.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
