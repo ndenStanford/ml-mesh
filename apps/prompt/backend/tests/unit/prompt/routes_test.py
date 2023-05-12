@@ -11,7 +11,6 @@ from fastapi import status
 # Source
 from src.model.schemas import ModelSchema
 from src.prompt.schemas import PromptTemplateSchema
-from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
 
 
@@ -186,11 +185,11 @@ def test_update_prompt_unauthenticated(test_client):
 
 
 @pytest.mark.parametrize("id", [1, 124543, "2423"])
-@patch.object(PromptTemplateTable, "get")
-@patch("src.prompt.tables.PromptTemplateTable.delete")
-def test_delete_prompt(mock_prompt_delete, mock_prompt_get, id, test_client):
+@patch.object(PromptTemplateSchema, "get")
+@patch("src.prompt.schemas.PromptTemplateSchema.delete")
+def test_delete_prompt(mock_prompt_delete, mock_prompt_schema, id, test_client):
     """Test delete prompt endpoint."""
-    mock_prompt_get.return_value = PromptTemplateTable(
+    mock_prompt_schema.return_value = PromptTemplateSchema(
         id=id, template="test template", alias="test alias"
     )
 
@@ -198,10 +197,10 @@ def test_delete_prompt(mock_prompt_delete, mock_prompt_get, id, test_client):
         f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"}
     )
 
-    assert mock_prompt_get.call_count == 1
+    assert mock_prompt_schema.call_count == 1
     assert mock_prompt_delete.call_count == 1
 
-    mock_prompt_get.assert_called_with(f"{id}")
+    mock_prompt_schema.assert_called_with(f"{id}")
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == "deleted"
