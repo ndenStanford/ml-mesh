@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  python-base:
+    build:
+      context: ./python-base
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG:-latest}
+
+  fastapi-serve:
+    build:
+      context: ./fastapi-serve
+      dockerfile: Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG:-latest}
+    depends_on:
+      - python-base
