@@ -36,5 +36,8 @@ class Settings(BaseSettings):
     # OpenAI api key
     OPENAI_API_KEY: str
 
+    # Prompt url
+    PROMPT_API: str = "http://0.0.0.0:4000"
+    PROMPT_API_KEY: str = "1234"
 
 settings = Settings()
