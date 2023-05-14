@@ -1,5 +1,4 @@
 import requests
-from article import ARTICLE
 
 #curl -X 'GET' 'http://0.0.0.0:4000/api/v1/prompts' -H 'accept: application/json' -H 'x-api-key: 1234'
 
