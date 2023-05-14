@@ -11,8 +11,8 @@ q = requests.get("{}/api/v1/prompts".format(url), headers = headers)
 english_summarization_template = "{content} Summarize the article in 20 words"
 english_summarization_alias = "english_summarization_prompt"
 
-#q = requests.post(f"{url}/api/v1/prompts?template={english_summarization_template}&alias={english_summarization_alias}", headers = headers)
-#q
+q = requests.post(f"{url}/api/v1/prompts?template={english_summarization_template}&alias={english_summarization_alias}", headers = headers)
+q
 
 #q = requests.post("{}/api/v1/prompts".format(url), json = {"template": english_summarization_template, "alias": "english_summarization_prompt"}, headers = headers)
 q = requests.get("{}/api/v1/prompts".format(url), headers = headers)

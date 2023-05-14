@@ -4,6 +4,7 @@
 import datetime
 import re
 from typing import Any, Dict, Optional, Tuple
+import requests
 
 # 3rd party libraries
 # OpenAI library
@@ -46,15 +47,9 @@ class SummarizationHandler:
             frequency_penalty (float):
             model (str):
         """
-        # append summary prompt
-        prompt = (
-            "Give an abstractive summary while retaining important quotes of speech in less than "
-            + str(desired_length)  # noqa: W503
-            + " words: "  # noqa: W503
-            + "\n"  # noqa: W503
-            + text  # noqa: W503
-            + "\n"  # noqa: W503
-        )
+        prompt = self.get_prompt()
+        input_dict = {'content': text}
+        prompt = prompt.format(**input_dict)
 
         if model == "gpt-3.5-turbo":
             # get summary
@@ -87,6 +82,17 @@ class SummarizationHandler:
     def pre_process(self, text: str) -> str:
         text = re.sub("\n+", " ", text)
         return text
+
+    def get_prompt(self):
+        headers = {'x-api-key': settings.PROMPT_API_KEY}
+        q = requests.get("{}/api/v1/prompts".format(settings.PROMPT_API), headers = headers)
+        prompts = eval(q.content)["prompts"]
+        english_prompt_dict = [prompt for prompt in prompts if prompt["alias"] == settings.ENGLISH_SUMMARIZATION_ALIAS]
+        english_prompt_id = english_prompt_dict[0]["id"]
+
+        q = requests.get("{}/api/v1/prompts/{}".format(settings.PROMPT_API, english_prompt_id), headers = headers)
+        template = eval(q.content)["template"]
+        return template
 
 
 _service = SummarizationHandler()
