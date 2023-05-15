@@ -147,7 +147,6 @@ jobs:
           - name: keywords
             component: compile
             integration: false
-            python-version: "3.8.16"
 
           # ========================
           # SUMMARIZATION
@@ -164,7 +163,6 @@ jobs:
           - name: entity-linking
             component: serve
             integration: false
-            python-version: "3.8.16"
 
     with:
       environment: prod
