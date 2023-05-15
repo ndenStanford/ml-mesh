@@ -54,6 +54,7 @@ jobs:
     needs: [run-repository-state]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
+      self-hosted-runner-type: t3.medium
       environment: prod
       project: python-base
       tag: 2023.5.1

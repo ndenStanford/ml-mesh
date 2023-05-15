@@ -45,7 +45,7 @@ on:
         description: "Github PAT to allow EC2 instance to connect to Github repository content."
 
 jobs:
-  setup-runner:
+  set-up-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -54,12 +54,6 @@ jobs:
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
 
     steps:
-      - name: Check inputs 1
-        run: |
-          echo Project input: ${{ inputs.project }}
-          echo Image tag input: ${{ inputs.tag }}
-          echo AWS account id: ${{ secrets.AWS_ACCOUNT_ID }}
-          echo AWS default region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -70,13 +64,6 @@ jobs:
           role-external-id: ${{ secrets.TF_VAR_EXTERNAL_ID }}
           role-duration-seconds: 1200
           role-session-name: DeployManifests
-
-      - name: Check inputs 2
-        run: |
-          echo Project input: ${{ inputs.project }}
-          echo Image tag input: ${{ inputs.tag }}
-          echo AWS account id: ${{ secrets.AWS_ACCOUNT_ID }}
-          echo AWS default region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Start EC2 runner
         id: start-ec2-runner
@@ -106,25 +93,18 @@ jobs:
       image-reference: ${{ steps.set-image-reference.outputs.image-reference}}
 
     steps:
-      - name: Check inputs 3
-        run: |
-          echo Project input: ${{ inputs.project }}
-          echo Image tag input: ${{ inputs.tag }}
-          echo AWS account id: ${{ secrets.AWS_ACCOUNT_ID }}
-          echo AWS default region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Export versioned image reference
         id: set-image-reference
-        #run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-compile:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
-        run: echo image-reference="${{ secrets.AWS_ACCOUNT_ID }}".dkr.ecr."${{ secrets.AWS_DEFAULT_REGION }}".amazonaws.com/${{ inputs.project }}:${{ inputs.tag}} >> $GITHUB_OUTPUT
+        run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> $GITHUB_OUTPUT
       - name: Check versioned image reference
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
 
   register-compiled-model:
     name: Compile and register a base or trained model
     needs:
-      - setup-runner
+      - set-up-runner
       - set-image-reference
-    runs-on: ${{ needs.start-runner.outputs.label }}
+    runs-on: ${{ needs.set-up-runner.outputs.label }}
     container:
       image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
     steps:
@@ -147,7 +127,7 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
-      - setup-runner
+      - set-up-runner
       - register-compiled-model
 
     runs-on: ubuntu-latest
@@ -169,5 +149,5 @@ jobs:
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ needs.setup-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.setup-runner.outputs.ec2-instance-id }}
+          label: ${{ needs.set-up-runner.outputs.label }}
+          ec2-instance-id: ${{ needs.set-up-runner.outputs.ec2-instance-id }}
