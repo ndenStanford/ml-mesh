@@ -14,7 +14,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: ["python", "-m", "src.register_trained_model"]
     profiles: ["train"]
@@ -32,7 +32,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["unit"]
@@ -50,7 +50,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
@@ -130,7 +130,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command:
       [
@@ -164,7 +164,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["unit"]
@@ -187,7 +187,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
