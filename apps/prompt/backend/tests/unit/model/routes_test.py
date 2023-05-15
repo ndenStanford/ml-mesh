@@ -40,9 +40,9 @@ def test_get_models_unauthenticated(test_client):
     assert response.json() == {"detail": "Not authenticated"}
 
 
-@pytest.mark.parametrize("id", [1, 124543, "2423"])
+@pytest.mark.parametrize("model_name", ["model-1", "model-2", "model-3"])
 @patch.object(ModelSchema, "get")
-def test_get_model(mock_model_get, id, test_client):
+def test_get_model(mock_model_get, model_name, test_client):
     parameters = json.dumps(
         {
             "max_tokens": settings.OPENAI_MAX_TOKENS,
@@ -51,15 +51,17 @@ def test_get_model(mock_model_get, id, test_client):
     )
     """Test get model endpoint."""
     mock_model_get.return_value = ModelSchema(
-        id=id, model_name="test-model", parameters=parameters
+        id="123abc", model_name=model_name, parameters=parameters
     )
-    response = test_client.get(f"/api/v1/models/{id}", headers={"x-api-key": "1234"})
-    mock_model_get.assert_called_with(f"{id}")
+    response = test_client.get(
+        f"/api/v1/models/{model_name}", headers={"x-api-key": "1234"}
+    )
+    mock_model_get.assert_called_with(f"{model_name}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "created_at": None,
-        "id": f"{id}",
-        "model_name": "test-model",
+        "id": "123abc",
+        "model_name": model_name,
         "parameters": parameters,
     }
 
