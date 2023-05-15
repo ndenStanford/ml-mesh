@@ -40,16 +40,16 @@ class ModelSchema(BaseModel):
         )
 
     @classmethod
-    def get(cls, id: Optional[str] = None) -> "ModelSchema":
+    def get(cls, model_name: Optional[str] = None) -> "ModelSchema":
         """Returns row of the table."""
-        if id is None:
+        if model_name is None:
             return list(
                 map(
                     lambda x: ModelSchema(**json.loads(x.to_json())),
                     list(ModelTable.scan()),
                 )
             )
-        return ModelSchema(**json.loads(ModelTable.get(id).to_json()))
+        return ModelSchema(**json.loads(ModelTable.get(model_name).to_json()))
 
     def get_model_name(self) -> str:
         """Returns the model name."""
