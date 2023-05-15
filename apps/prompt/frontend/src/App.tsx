@@ -149,16 +149,17 @@ export default function App() {
           onModalActionClick={(template: string, alias: string) => {
             // NOTE: reloading the page here is a hack because redux should take
             // care of this when the state is updated.
-            dispatch(createPrompt({ template, alias }));
-            // Below is inconsistent so leaving it commented out
-            // dispatch(createPrompt({ template, alias })).then((content) => {
-            //   alert(JSON.stringify(content));
-            //   alert(JSON.stringify(content["payload"]["detail"]));
-            //   if (String(content["payload"]["detail"]).includes("already exists in the database, please provide a unique alias")||String(content["payload"])=="409") {
-            //     alert("Alias conflict, you must provide a unique alias");
-            //   }
-            // });
-            window.location.reload();
+            // dispatch(createPrompt({ template, alias }));
+            dispatch(createPrompt({ template, alias })).then((content) => {
+              // alert(JSON.stringify(content));
+              // alert(JSON.stringify(content["payload"]["message"]));
+              if (String(content["payload"]["message"]) == "409") {
+                alert(
+                  "A prompt with the same alias exists, please use a unique alias."
+                );
+              }
+            });
+            // window.location.reload();
           }}
         >
           <PromptList>
