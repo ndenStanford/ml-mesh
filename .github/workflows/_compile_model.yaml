@@ -48,7 +48,7 @@ jobs:
   setup-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref }}
+    environment: ${{ github.environment }}
     outputs:
       label: ${{ steps.start-ec2-runner.outputs.label }}
       ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
@@ -88,9 +88,6 @@ jobs:
   set-image-reference:
     name: Set container runtime image
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     outputs:
       image-reference: ${{ steps.set-image-reference.outputs.image-reference}}
 
@@ -102,7 +99,7 @@ jobs:
       - name: Export versioned image reference
         id: set-image-reference
         #run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-compile:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
-        run: echo "image-reference=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
+        run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
       - name: Check versioned image reference
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
 
@@ -138,7 +135,7 @@ jobs:
       - register-compiled-model
 
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref }}
+    environment: ${{ github.environment }}
     if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
