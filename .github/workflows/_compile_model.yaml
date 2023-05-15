@@ -88,6 +88,9 @@ jobs:
   set-image-reference:
     name: Set container runtime image
     runs-on: ubuntu-latest
+    env:
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
     outputs:
       image-reference: ${{ steps.set-image-reference.outputs.image-reference}}
 
@@ -99,7 +102,7 @@ jobs:
       - name: Export versioned image reference
         id: set-image-reference
         #run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-compile:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
-        run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
+        run: echo "image-reference=${{ aws-account-id }}.dkr.ecr.${{ aws-region }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
       - name: Check versioned image reference
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
 
