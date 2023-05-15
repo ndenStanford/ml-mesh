@@ -103,7 +103,7 @@ jobs:
   register-compiled-model:
     name: Compile and register a base or trained model
     needs:
-      - start-runner
+      - setup-runner
       - set-image-reference
     runs-on: ${{ needs.start-runner.outputs.label }}
     container:
@@ -128,9 +128,8 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
-      - start-runner
-      - compile
-      - deploy
+      - setup-runner
+      - register-compiled-model
 
     runs-on: ubuntu-latest
     environment: ${{ github.base_ref }}
