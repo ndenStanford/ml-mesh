@@ -94,12 +94,14 @@ jobs:
     steps:
       - name: Check inputs
         run: |
-          echo "Project input: ${{ inputs.project }}"
-          echo "Image tag input: ${{ inputs.tag }}"
+          echo Project input: ${{ inputs.project }}
+          echo Image tag input: ${{ inputs.tag }}
+          echo AWS account id (secret): ${{ secrets.AWS_ACCOUNT_ID }}
+          echo AWS default region (secret): ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Export versioned image reference
         id: set-image-reference
         #run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-compile:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
-        run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> "$GITHUB_OUTPUT"
+        run: echo image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}} >> $GITHUB_OUTPUT
       - name: Check versioned image reference
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
 
