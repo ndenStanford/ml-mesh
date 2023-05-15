@@ -40,6 +40,9 @@ on:
       AWS_ROLE_TO_ASSUME:
         required: true
         description: "AWS IAM role to assume."
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: "Github PAT to allow EC2 instance to connect to Github repository content."
 
 jobs:
   setup-runner:
