@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.routes import health_router, v1_router
+from src.routes import health_router, v1_router  # type: ignore
 from src.settings import settings
 
 

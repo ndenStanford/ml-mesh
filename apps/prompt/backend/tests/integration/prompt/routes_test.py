@@ -39,11 +39,11 @@ def test_get_prompt(test_client, create_prompts):
     [
         (
             "I want you to act like {character} from {series}.",
-            "alias1",
+            "aliasone",
         ),
         (
             "What personalities are mentionned in this text {text}",
-            "alias2",
+            "aliastwo",
         ),
     ],
 )
