@@ -56,7 +56,7 @@ jobs:
       pull-request: ${{ github.event_name == 'pull_request' }}
       environment: prod
       project: python-base
-      tag: v2023.5.1
+      tag: 2023.5.1
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
