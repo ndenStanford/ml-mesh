@@ -1,0 +1,303 @@
+#!/bin/bash
+
+# ===========================================================================
+# BOOTSTRAP - SETUP DEV ENVIRONMENT
+# ===========================================================================
+
+# Bash options for strict error checking
+set -o pipefail
+
+KERNEL="$(uname -s)"
+
+# Utils
+
+error() {
+    JOB="$0"              # job name
+    LASTLINE="$1"         # line of error occurrence
+    LASTERR="$2"          # error code
+    echo "ERROR in ${JOB} : line ${LASTLINE} with exit code ${LASTERR}"
+    _setup
+}
+trap 'error ${LINENO} ${?}' ERR
+
+reset='\e[0m'
+black='\e[0;30m'
+red='\e[0;31m'
+green='\e[0;32m'
+yellow='\e[0;33m'
+blue='\e[0;34m'
+purple='\e[0;35m'
+cyan='\e[0;36m'
+white='\e[0;37m'
+
+function success() {
+  echo -e "${green}✓ $1${reset}"
+}
+
+function info() {
+  echo -e "\n${cyan}INFO: $1${reset}"
+}
+
+function separator() {
+  echo -e "\n${cyan}===================================================================================================================${reset}"
+}
+
+function warn() {
+  echo -e "\n${yellow}WARN: $1${reset}" >&2
+}
+
+function err() {
+  echo -e "\n${red}ERROR: $1${reset}" >&2
+}
+
+function fatal() {
+  echo -e "\n${red}FATAL: $1${reset}" >&2
+  exit 1
+}
+
+# Installing Linux package manager
+_setup_package_manager(){
+
+    info "🌕  Setup yum ..."
+
+    sudo yum update -y
+    separator
+}
+
+# Installing global dependencies
+_install_global_deps() {
+
+    info "🌕  Installing system dependencies..."
+
+    sudo yum install -y git \
+                        curl \
+                        make \
+                        yum-utils \
+                        zlib \
+                        zlib-devel \
+                        bzip2-devel \
+                        openssl-devel \
+                        sqlite-devel \
+                        libffi-devel \
+                        readline-devel \
+                        gcc \
+                        glibc \
+                        glibc-common \
+                        gd \
+                        gd-devel \
+                        xz-devel \
+                        python-backports-lzma
+    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
+    sudo yum install -y docker-compose-plugin
+    sudo systemctl enable docker
+
+    # extra global deps (pyenv, direnv)
+    curl -sfL https://direnv.net/install.sh | bash
+    if [ ! -d "$HOME/.pyenv" ]; then
+        curl https://pyenv.run | bash
+    else
+        info "Found pyenv, skipping installation..."
+    fi
+
+    # shellcheck disable=SC2129
+    export PATH="/home/ec2-user/.pyenv/bin:$PATH"
+    echo "export PATH='/home/ec2-user/.pyenv/bin:$PATH'" >> $HOME/.bashrc
+    echo "eval "$(direnv hook bash)"" >> $HOME/.bashrc
+    echo "export PYENV_ROOT=$HOME/.pyenv" >> $HOME/.bashrc
+    echo "command -v pyenv >/dev/null || export PATH=$PYENV_ROOT/bin:$PATH" >> $HOME/.bashrc
+    echo "eval $(pyenv init -)" >> $HOME/.bashrc
+
+    separator
+}
+
+
+_setup_ssh_key(){
+
+    info "🌕  Generating SSH key ..."
+
+    local EMAIL
+
+    EMAIL=$1
+
+
+    if [ -e "$HOME/.ssh/id_rsa" ]; then
+        info "SSH already set up!"
+        return
+    fi
+
+    info "Setting up ssh..."
+    ssh-keygen -t rsa -b 4096 -C "$EMAIL"
+    sudo -s eval `ssh-agent -s` 1>/dev/null
+    info "🛑 Before continuing, please register your ssh public key to GitHub: https://github.com/settings/ssh/new"
+    cat $HOME/.ssh/id_rsa.pub
+    read -sp "Press enter to continue when you have added your public key to GitHub..."
+    separator
+}
+
+_setup_git(){
+
+    info "🌕  Setting up git ..."
+
+    local NAME
+    local EMAIL
+
+    NAME=$1
+    EMAIL=$2
+
+    git config --global user.name "$NAME"
+    git config --global user.email "$EMAIL"
+    git config --global merge.ff false
+    git config --global pull.rebase false
+    separator
+}
+
+
+_clone_repositories(){
+
+    info "🌕  Cloning ml repositories ..."
+
+
+    if [ ! -d "$HOME/ml-mesh" ]; then
+        git clone git@github.com:AirPR/ml-mesh.git
+    else
+        info "Repository ml-mesh found, skipping..."
+    fi
+    separator
+}
+
+# Installing python
+_install_python(){
+
+    info "🌕  Installing python..."
+    separator
+
+    if [ -e "$HOME/ml-mesh/.python-version" ]; then
+        PYTHON_VERSION=$(cat $HOME/ml-mesh/.python-version)
+    else
+        warn "python-version file was not found. Installing Python 3.10"
+        PYTHON_VERSION="3.10"
+    fi
+
+    pyenv install "${PYTHON_VERSION}" -f
+    pyenv global "${PYTHON_VERSION}"
+}
+
+# Installing poetry
+_install_poetry(){
+    info "🌕  Install poetry..."
+
+    if [ -e "$HOME/ml-mesh/.poetry-version" ]; then
+        POETRY_VERSION=$(cat $HOME/ml-mesh/.poetry-version)
+    else
+        warn "python-version file was not found. Installing Poetry 1.3.2"
+        POETRY_VERSION="1.3.2"
+    fi
+    pip3 --no-cache-dir install --upgrade pip setuptools wheel
+    pip3 --no-cache-dir install "poetry==${POETRY_VERSION}"
+
+    separator
+}
+
+# Installing project dependencies
+_install_project_deps(){
+
+    info "🌕  Install project dependencies..."
+
+    cd $HOME/ml-mesh
+    poetry install
+    separator
+}
+
+_setup_git_hooks(){
+
+    info "🌕  Setup git hooks..."
+
+    cd $HOME/ml-mesh
+    pip3 install --no-cache-dir pre-commit
+    pre-commit install
+    separator
+}
+
+_setup(){
+
+    local NAME
+    local EMAIL
+
+    NAME=$1
+    EMAIL=$2
+
+    _install_global_deps
+    _setup_ssh_key "$EMAIL"
+    _setup_git "$NAME" "$EMAIL"
+    _clone_repositories
+    _install_python
+    _install_poetry
+    _install_project_deps
+    _setup_git_hooks
+}
+
+# Main entrypoint for script.
+main(){
+
+    info "🌕  Kick starting your machine..."
+    separator
+
+    if [[ "${KERNEL}" == "Linux" ]]; then
+
+        info "🌕  We need the following information to setup your remote machine"
+        separator
+
+        while true; do
+            echo "Please enter your full name? [default is '$(whoami)']"
+            read NAME
+            [[ $NAME == "" ]] && NAME="$(whoami)"
+            echo "Enter your onclusive email. [default is '$(whoami)@$(hostname)']"
+            read EMAIL
+            [[ $EMAIL == "" ]] && EMAIL="$(whoami)@$(hostname)"
+            separator
+            info "Name: ${NAME}"
+            info "Email: ${EMAIL}"
+            separator
+            info "does this look ok? ( y / N )"
+            read OK
+            [[ $OK == "y" || $OK == "Y" ]] && break
+        done
+
+        _setup_package_manager
+        _setup "$NAME" "$EMAIL"
+    else
+
+        info "Kernel ${KERNEL} is not supported by the script."
+        info "If your kernel bootrap does not exist, please check the project README for manual installation steps"
+        separator
+    fi
+
+    info "🎉 All done!"
+    info
+    info
+    info ":"
+    info " ⚙️  Displays > Resolution > More Space"
+    info " ⚙️  Keyboard > Input Sources > add U.S. International - PC > remove others"
+    info " ⚙️  Accessibility > Zoom > Use scroll gesture with modifier keys to zoom > ^ Control"
+    info " ⚙️  Security & Privacy > General > Require password immediately after sleep or screen saver begins"
+    info " ⚙️  Keyboard > Text > disable Correct spelling automatically and Capitalize words automatically"
+    info
+    info "Application configuration to do manually:"
+    info " 📅 Calendar:"
+    info "  ⚙️  Add Google accounts, configure refreshing for every 5min"
+    info
+    info " 👓 Rectangle:"
+    info "  ⚙️  System Preferences > Security & Privacy > Accessibility > Rectangle"
+    info
+    info " 📋 Clipy-App: Open-source clipboard manager"
+    info "  ⚙️  System Preferences > Security & Privacy > Accessibility > Clipy"
+    info
+    info " 🌕 Firefox:"
+    info "  ⚙️  Set as default browser"
+    info "  ⚙️  Login to Firefox to synchronize extensions"
+    info
+    info "🌈 WELCOME AND HAVE FUN! 🦄"
+}
+
+main
