@@ -12,24 +12,15 @@ ROOT_DIR = os.path.dirname(
     )
 )
 
-def get_secret(secret_name: str, region: str) -> str:
-    """Retrieves secret from secret manager."""
-
+def get_parameter(name: str, region: str) -> str:
     session = boto3.Session()
     client = session.client(
-        service_name='secretsmanager',
+        service_name='ssm',
         region_name=region
     )
-
-    get_secret_value_response = client.get_secret_value(
-        SecretId=secret_name
-    )
-
-    # Decrypts secret using the associated KMS CMK.
-    if 'SecretString' in get_secret_value_response:
-        return get_secret_value_response['SecretString']
-    raise NotImplementedError("""Binary secrets are not supported.
-        Please set a Key Value secret.""")
+    
+    param = client.get_parameter(Name=name, WithDecryption=True)
+    return param["Parameter"]["Value"]
 
 
 def append_secrets_to_env_file(secret, value, prepend_with_export=True):
@@ -56,13 +47,18 @@ def append_secrets_to_env_file(secret, value, prepend_with_export=True):
 @click.command()
 @click.argument("secret")
 @click.option(
+    "--name",
+    "-n",
+    help="Environment Variable name."
+)
+@click.option(
     "--region",
     "-r",
     help="AWS region.",
     default="us-east-1"
 )
-def main(secret, region):
-    append_secrets_to_env_file(secret, get_secret(secret, region))
+def main(secret, name, region):
+    append_secrets_to_env_file(name, get_parameter(secret, region))
 
 
 if __name__ == "__main__":
