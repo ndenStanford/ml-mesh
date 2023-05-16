@@ -43,16 +43,3 @@ class Settings(BaseSettings):
     ENGLISH_SUMMARIZATION_ALIAS = "english-summarization-prompt"
 
 settings = Settings()
-
-import requests 
-
-headers = {'x-api-key': settings.PROMPT_API_KEY}
-q = requests.get("{}/api/v1/prompts".format(settings.PROMPT_API), headers = headers)
-prompts = eval(q.content)["prompts"]
-english_prompt_dict = [prompt for prompt in prompts if prompt["alias"] == settings.ENGLISH_SUMMARIZATION_ALIAS]
-english_prompt_id = english_prompt_dict[0]["id"]
-
-q = requests.get("{}/api/v1/prompts/{}".format(settings.PROMPT_API, english_prompt_id), headers = headers)
-template = eval(q.content)["template"]
-content = "This is a test content"
-template

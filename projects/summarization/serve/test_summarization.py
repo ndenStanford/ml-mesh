@@ -8,4 +8,4 @@ q = requests.get("{}/health".format(url))
 
 values = {"content": ARTICLE}
 q = requests.post("{}/v1/summarization/gpt3/predict".format(url), json=values)
-q
+print(q.content)

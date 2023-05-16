@@ -20,7 +20,6 @@ def create_app() -> FastAPI:
 
     logger.debug("Initialising application...")
 
-    app = FastAPI(name=settings.API_NAME, description=settings.API_DESCRIPTION)
     app = FastAPI(
         name=settings.API_NAME,
         description=settings.API_DESCRIPTION,

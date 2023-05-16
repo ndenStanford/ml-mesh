@@ -22,14 +22,14 @@ services:
         "--host",
         "0.0.0.0",
         "--port",
-        "8000",
+        "8001",
         "--reload",
         "--log-level",
         "debug",
       ]
     profiles: ["serve"]
     ports:
-      - 8000:8000
+      - 8001:8001
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
@@ -52,7 +52,7 @@ services:
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
     profiles: ["unit"]
     ports:
-      - 8000:8000
+      - 8001:8001
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
@@ -75,7 +75,7 @@ services:
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
     profiles: ["integration"]
     ports:
-      - 8000:8000
+      - 8001:8001
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
