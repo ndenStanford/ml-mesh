@@ -84,16 +84,12 @@ export default function App() {
     });
   }
 
-  async function handleDeletePrompt(alias: string) {
-    dispatch(deletePrompt({ alias }));
+  async function handleDeletePrompt(id: string) {
+    dispatch(deletePrompt({ id }));
     window.location.reload();
   }
 
-  async function handleSendMessageWithPrompt(
-    dct: Dictionary,
-    id: string,
-    alias: string
-  ) {
+  async function handleSendMessageWithPrompt(dct: Dictionary, id: string) {
     const message = {
       id: uuidv4(),
       date: new Date().toLocaleString(),
@@ -112,7 +108,7 @@ export default function App() {
       isUser: false,
     } as Message;
     dispatch(addMessage(response));
-    dispatch(generateTextFromPrompt({ alias: alias, body: dct })).then(
+    dispatch(generateTextFromPrompt({ prompt_id: id, body: dct })).then(
       async (content) => {
         const final_message = {
           id: message.id,
@@ -154,22 +150,16 @@ export default function App() {
             // NOTE: reloading the page here is a hack because redux should take
             // care of this when the state is updated.
             // dispatch(createPrompt({ template, alias }));
-
             dispatch(createPrompt({ template, alias })).then((content) => {
               // alert(JSON.stringify(content));
               // alert(JSON.stringify(content["payload"]["message"]));
-              if ("payload" in content) {
-                if ("message" in content["payload"]) {
-                  if (String(content["payload"]["message"]) == "409") {
-                    alert(
-                      "A prompt with the same alias exists, please use a unique alias."
-                    );
-                  }
-                }
+              if (String(content["payload"]["message"]) == "409") {
+                alert(
+                  "A prompt with the same alias exists, please use a unique alias."
+                );
               }
             });
-
-            window.location.reload();
+            // window.location.reload();
           }}
         >
           <PromptList>
@@ -185,8 +175,8 @@ export default function App() {
                   onClick: () => {
                     dispatch(showModal(item.id));
                   },
-                  onSendClick: (dct: Dictionary, id: string, alias: string) => {
-                    handleSendMessageWithPrompt(dct, id, alias);
+                  onSendClick: (dct: Dictionary, id: string) => {
+                    handleSendMessageWithPrompt(dct, id);
                   },
                   onDeleteClick: (id: string) => {
                     handleDeletePrompt(id);

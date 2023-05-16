@@ -24,7 +24,7 @@ def test_get_prompt(test_client, create_prompts):
     prompt = create_prompts[1]
 
     response = test_client.get(
-        f"/api/v1/prompts/{prompt.alias}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{prompt.id}", headers={"x-api-key": "1234"}
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -55,7 +55,7 @@ def test_create_prompt(template, test_client, alias):
     )
 
     data = response.json()
-    prompt = PromptTemplateSchema.get(alias=data["alias"])
+    prompt = PromptTemplateSchema.get(id=data["id"])
 
     assert response.status_code == status.HTTP_201_CREATED
     assert isinstance(data["id"], str)
@@ -98,7 +98,7 @@ def test_update_prompt(test_client, create_prompts):
     prompt = create_prompts[2]
 
     response = test_client.put(
-        f"/api/v1/prompts/{prompt.alias}?template=updated template",
+        f"/api/v1/prompts/{prompt.id}?template=updated template",
         headers={"x-api-key": "1234"},
     )
 
@@ -117,11 +117,11 @@ def test_delete_prompt(test_client, create_prompts):
     prompt = create_prompts[3]
 
     response = test_client.delete(
-        f"/api/v1/prompts/{prompt.alias}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{prompt.id}", headers={"x-api-key": "1234"}
     )
 
     with pytest.raises(PromptTemplateTable.DoesNotExist):
-        _ = PromptTemplateSchema.get(alias=prompt.alias)
+        _ = PromptTemplateSchema.get(id=prompt.id)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == "deleted"

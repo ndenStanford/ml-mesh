@@ -53,7 +53,7 @@ def test_get_exists(model_name):
     )
     schema = ModelSchema(model_name=model_name, parameters=parameters).save()
 
-    schema_from_db = ModelSchema.get(schema.model_name)
+    schema_from_db = ModelSchema.get(schema.id)
 
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
@@ -83,7 +83,7 @@ def test_get_models_different_params(model_name, max_tokens, temperature):
         parameters=json.dumps({"max_tokens": max_tokens, "temperature": temperature}),
     ).save()
 
-    schema_from_db = ModelSchema.get(schema.model_name)
+    schema_from_db = ModelSchema.get(schema.id)
 
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at

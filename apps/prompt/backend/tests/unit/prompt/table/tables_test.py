@@ -16,7 +16,7 @@ def test_base_table():
         "id",
         "template",
     ]
-    assert PromptTemplateTable._hash_keyname == "alias"
+    assert PromptTemplateTable._hash_keyname == "id"
 
 
 def test_base_table_meta():

@@ -51,11 +51,7 @@ export default function PromptListItem(props: {
                   text={"Send"}
                   onClick={() => {
                     props.hideModal();
-                    props.item.onSendClick(
-                      dictionary,
-                      props.item.id,
-                      props.item.alias
-                    );
+                    props.item.onSendClick(dictionary, props.item.id);
                   }}
                 />
                 {/* Hiding button from prompt form for now */}

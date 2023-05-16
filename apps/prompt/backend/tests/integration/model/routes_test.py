@@ -20,7 +20,7 @@ def test_get_model(test_client, create_models):
     model = create_models[1]
 
     response = test_client.get(
-        f"/api/v1/models/{model.model_name}", headers={"x-api-key": "1234"}
+        f"/api/v1/models/{model.id}", headers={"x-api-key": "1234"}
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -31,19 +31,15 @@ def test_get_model(test_client, create_models):
 
 
 @pytest.mark.parametrize(
-    "model_name",
+    "id",
     [
-        "model-x",
-        "model-y",
+        "abc",
+        "efg",
     ],
 )
-def test_get_model_fail(test_client, create_models, model_name):
+def test_get_model_fail(test_client, create_models, id):
     """Test get model endpoint."""
-    response = test_client.get(
-        f"/api/v1/models/{model_name}", headers={"x-api-key": "1234"}
-    )
+    response = test_client.get(f"/api/v1/models/{id}", headers={"x-api-key": "1234"})
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json() == {
-        "detail": "Item does not exist - (model_name={})".format(model_name)
-    }
+    assert response.json() == {"detail": "Item does not exist - (id={})".format(id)}

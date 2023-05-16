@@ -11,7 +11,7 @@ from src.settings import get_settings
 def test_base_table():
     """Test BaseTable object."""
     assert list(BaseTable._attributes.keys()) == ["created_at", "id"]
-    assert BaseTable._hash_keyname is None
+    assert BaseTable._hash_keyname == "id"
 
 
 def test_base_table_meta():

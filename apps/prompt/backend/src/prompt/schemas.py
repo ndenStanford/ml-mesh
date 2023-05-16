@@ -51,28 +51,26 @@ class PromptTemplateSchema(BaseModel):
         )
 
     def delete(self) -> None:
-        prompt = PromptTemplateTable.get(self.alias)
+        prompt = PromptTemplateTable.get(self.id)
         prompt.delete()
 
     @classmethod
     def get(
-        cls, alias: Optional[str] = None
+        cls, id: Optional[str] = None
     ) -> Union["PromptTemplateSchema", List["PromptTemplateSchema"]]:
         """Returns row of the table."""
-        if alias is None:
+        if id is None:
             return list(
                 map(
                     lambda x: PromptTemplateSchema(**json.loads(x.to_json())),
                     list(PromptTemplateTable.scan()),
                 )
             )
-        return PromptTemplateSchema(
-            **json.loads(PromptTemplateTable.get(alias).to_json())
-        )
+        return PromptTemplateSchema(**json.loads(PromptTemplateTable.get(id).to_json()))
 
     def update(self, **kwargs) -> None:
         """Updates table record."""
-        prompt = PromptTemplateTable.get(self.alias)
+        prompt = PromptTemplateTable.get(self.id)
         prompt.update(
             actions=[PromptTemplateTable.template.set(kwargs.get("template"))]
         )
