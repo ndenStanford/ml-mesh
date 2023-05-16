@@ -85,8 +85,6 @@ class SummarizationHandler:
 
     def get_prompt(self):
         headers = {'x-api-key': settings.PROMPT_API_KEY}
-        print('*' * 10)
-        print(settings.PROMPT_API)
         q = requests.get("{}/api/v1/prompts".format(settings.PROMPT_API), headers = headers)
         prompts = eval(q.content)["prompts"]
         english_prompt_dict = [prompt for prompt in prompts if prompt["alias"] == settings.ENGLISH_SUMMARIZATION_ALIAS]
