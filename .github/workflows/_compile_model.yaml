@@ -103,7 +103,7 @@ jobs:
           ls ${{ github.workspace }} -a -l
           mkdir ${{ github.workspace }}/test_dir
           touch ${{ github.workspace }}/test_dir/test_file
-          ls -l ${{ github.workspace }} # test_dir/test_file
+          ls -l ${{ github.workspace }} # test_dir
           ls -l ${{ github.workspace }}/test_dir # test_file
 
   register-compiled-model:
@@ -115,7 +115,7 @@ jobs:
     container:
       image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
       volumes:
-        - ${{ github.workspace }}/test_dir:/home
+        - /home/runner/work/ml-mesh/ml-mesh/test_dir:/home
     steps:
       - name: Check repository location inside container
         run: |
