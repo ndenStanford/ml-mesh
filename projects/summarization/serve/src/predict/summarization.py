@@ -34,25 +34,19 @@ class SummarizationHandler:
         """Summarization prediction handler method.
         Args:
             text (str):
-            desired_length (int):
             max_tokens (int):
-            top_p (int):
-            temperature (float):
-            presence_penalty (float):
-            frequency_penalty (float):
-            model (str):
             lang (str):
         """
-        prompt, prompt_id = self.get_prompt(lang)
+        prompt_id = self.get_prompt(lang)
         input_dict = {"max_tokens": max_tokens, "content": text}
-        prompt = prompt.format(**input_dict)
+        #prompt = prompt.format(**input_dict)
         headers = {"x-api-key": settings.PROMPT_API_KEY}
-        q = requests.get(
+        q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, prompt_id),
             headers=headers,
+            json=input_dict
         )
-
-        return q["generated"]
+        return eval(q.content)["generated"]
 
     def postprocess(self, text: str) -> str:
         text = re.sub("\n+", " ", text)
@@ -74,13 +68,14 @@ class SummarizationHandler:
             if prompt["alias"] == settings.PROMPT_DICT[lang]["alias"]
         ]
         prompt_id = english_prompt_dict[0]["id"]
+        return prompt_id
 
-        q = requests.get(
-            "{}/api/v1/prompts/{}".format(settings.PROMPT_API, prompt_id),
-            headers=headers,
-        )
-        template = eval(q.content)["template"]
-        return template, prompt_id
+        #q = requests.get(
+        #    "{}/api/v1/prompts/{}".format(settings.PROMPT_API, prompt_id),
+        #    headers=headers,
+        #)
+        #template = eval(q.content)["template"]
+        #return template, prompt_id
 
 
 _service = SummarizationHandler()
@@ -121,15 +116,9 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
         lang = data["lang"]
 
         starttime = datetime.datetime.utcnow()
-        summary, finish_reason = _service.inference(
+        summary = _service.inference(
             text,
-            desired_length,
             max_tokens,
-            top_p,
-            temperature,
-            presence_penalty,
-            frequency_penalty,
-            model,
             lang,
         )
         endtime = datetime.datetime.utcnow()
@@ -141,6 +130,6 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
         )
 
         summary = _service.postprocess(summary)
-        return {"model": model, "summary": summary, "finish_reason": finish_reason}
+        return {"model": model, "summary": summary}
     except Exception as e:
         raise e
