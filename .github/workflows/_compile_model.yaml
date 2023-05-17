@@ -120,7 +120,7 @@ jobs:
       - name: Check repository location inside container
         run: |
           echo ${GITHUB_WORKSPACE}
-          ls ${GITHUB_WORKSPACE} -a -l # test_file
+          ls /home -a -l # test_file
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
