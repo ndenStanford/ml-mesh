@@ -1,4 +1,4 @@
-"""Test schemas."""
+"""Schemas Test."""
 
 # 3rd party libraries
 import pytest
