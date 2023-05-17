@@ -106,10 +106,13 @@ jobs:
     runs-on: ${{ needs.set-up-runner.outputs.label }}
     container:
       image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
+      volumes:
+        - ${{ github.workspace}}/docker/${{ inputs.project }}:/home
     steps:
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
+          ls /home -l
           #python -m src.download_uncompiled_model
       - name: Compile Model
         run: |
