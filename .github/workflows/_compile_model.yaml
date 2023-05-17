@@ -115,7 +115,7 @@ jobs:
     container:
       image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
       volumes:
-        - ${GITHUB_WORKSPACE}/test_dir/:/home
+        - ${GITHUB_WORKSPACE}/test_dir:/home
     steps:
       - name: Check repository location inside container
         run: |
