@@ -39,12 +39,12 @@ class SummarizationHandler:
         """
         prompt_id = self.get_prompt(lang)
         input_dict = {"max_tokens": max_tokens, "content": text}
-        #prompt = prompt.format(**input_dict)
+        # prompt = prompt.format(**input_dict)
         headers = {"x-api-key": settings.PROMPT_API_KEY}
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, prompt_id),
             headers=headers,
-            json=input_dict
+            json=input_dict,
         )
         return eval(q.content)["generated"]
 
@@ -70,12 +70,12 @@ class SummarizationHandler:
         prompt_id = english_prompt_dict[0]["id"]
         return prompt_id
 
-        #q = requests.get(
+        # q = requests.get(
         #    "{}/api/v1/prompts/{}".format(settings.PROMPT_API, prompt_id),
         #    headers=headers,
-        #)
-        #template = eval(q.content)["template"]
-        #return template, prompt_id
+        # )
+        # template = eval(q.content)["template"]
+        # return template, prompt_id
 
 
 _service = SummarizationHandler()
@@ -106,13 +106,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
             )
 
         text = _service.pre_process(data["content"])
-        desired_length = data["desired_length"]
         max_tokens = data["max_tokens"]
-        top_p = data["top_p"]  # may be removed
-        temperature = data["temperature"]
-        presence_penalty = data["presence_penalty"]  # may be removed
-        frequency_penalty = data["frequency_penalty"]  # may be removed
-        model = data["model"]
         lang = data["lang"]
 
         starttime = datetime.datetime.utcnow()
