@@ -1,3 +1,7 @@
+# Standard Library
+from enum import Enum
+from typing import Tuple
+
 # 3rd party libraries
 from pydantic import BaseSettings, Field, SecretStr, validator
 
@@ -30,7 +34,17 @@ class TrackedModelTestFiles(TrackedParams):
     predictions: str = "model/test_files/predictions"
 
 
-MODEL_TYPES = ("base", "trained", "compiled")
+class ModelTypes(Enum):
+
+    base: str = "base"
+    trained: str = "trained"
+    compiled: str = "compiled"
+
+    @classmethod
+    def get_valid_range(cls) -> Tuple[str, str, str]:
+        """Simple model type validation utility"""
+
+        return (cls.base.value, cls.trained.value, cls.compiled.value)
 
 
 class TrackedModelCard(TrackedParams):
@@ -59,10 +73,10 @@ class TrackedModelCard(TrackedParams):
     @validator("model_type")
     def check_model_type(v: str) -> str:
 
-        if v not in MODEL_TYPES:
+        if v not in ModelTypes.get_valid_range():
             raise ValueError(
                 f"Model type {v} must be one of the following valid options: "
-                f"{MODEL_TYPES}"
+                f"{ModelTypes.get_valid_range()}"
             )
 
         return v
