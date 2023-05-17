@@ -41,7 +41,7 @@ services:
       ENVIRONMENT: ci
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: prompt-backend:4000
+      PROMPT_API: http://prompt-backend:4000
     depends_on:
       - prompt-backend
     hostname: onclusiveml
@@ -72,7 +72,7 @@ services:
       ENVIRONMENT: ci
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: prompt-backend:4000
+      PROMPT_API: http://prompt-backend:4000
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -101,7 +101,7 @@ services:
       ENVIRONMENT: ci
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: prompt-backend:4000
+      PROMPT_API: http://prompt-backend:4000
     depends_on:
       - prompt-backend
     hostname: onclusiveml
