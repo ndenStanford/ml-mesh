@@ -101,6 +101,8 @@ jobs:
         run: |
           echo ${GITHUB_WORKSPACE}
           ls ${GITHUB_WORKSPACE} -a -l
+          mkdir ${GITHUB_WORKSPACE}/test_dir
+          touch ${GITHUB_WORKSPACE}/test_dir/test_file
 
   register-compiled-model:
     name: Compile and register a base or trained model
@@ -111,12 +113,12 @@ jobs:
     container:
       image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
       volumes:
-        - ${{ github.workspace}}/docker/${{ inputs.project }}:/home
+        - ${GITHUB_WORKSPACE}/test_dir/:/home
     steps:
       - name: Check repository location inside container
         run: |
           echo ${GITHUB_WORKSPACE}
-          ls ${GITHUB_WORKSPACE} -a -l
+          ls ${GITHUB_WORKSPACE} -a -l # test_file
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
