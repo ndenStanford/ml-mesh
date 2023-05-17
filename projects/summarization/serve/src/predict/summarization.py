@@ -35,6 +35,7 @@ class SummarizationHandler:
         presence_penalty: float,
         frequency_penalty: float,
         model: str,
+        lang: str,
     ) -> Tuple[str, str]:
         """Summarization prediction handler method.
         Args:
@@ -46,6 +47,7 @@ class SummarizationHandler:
             presence_penalty (float):
             frequency_penalty (float):
             model (str):
+            lang (str):
         """
         prompt = self.get_prompt()
         input_dict = {"content": text}
@@ -83,7 +85,7 @@ class SummarizationHandler:
         text = re.sub("\n+", " ", text)
         return text
 
-    def get_prompt(self):
+    def get_prompt(self, lang):
         headers = {"x-api-key": settings.PROMPT_API_KEY}
         q = requests.get(
             "{}/api/v1/prompts".format(settings.PROMPT_API), headers=headers
@@ -92,7 +94,7 @@ class SummarizationHandler:
         english_prompt_dict = [
             prompt
             for prompt in prompts
-            if prompt["alias"] == settings.ENGLISH_SUMMARIZATION_ALIAS
+            if prompt["alias"] == settings.PROMPT_DICT[lang]["alias"]
         ]
         english_prompt_id = english_prompt_dict[0]["id"]
 
@@ -139,6 +141,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
         presence_penalty = data["presence_penalty"]  # may be removed
         frequency_penalty = data["frequency_penalty"]  # may be removed
         model = data["model"]
+        lang = data["lang"]
 
         starttime = datetime.datetime.utcnow()
         summary, finish_reason = _service.inference(
@@ -150,6 +153,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
             presence_penalty,
             frequency_penalty,
             model,
+            lang
         )
         endtime = datetime.datetime.utcnow()
 
