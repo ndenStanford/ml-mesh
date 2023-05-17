@@ -273,31 +273,33 @@ main(){
         separator
     fi
 
-    info "🎉 All done!"
     info
     info
-    info ":"
-    info " ⚙️  Displays > Resolution > More Space"
-    info " ⚙️  Keyboard > Input Sources > add U.S. International - PC > remove others"
-    info " ⚙️  Accessibility > Zoom > Use scroll gesture with modifier keys to zoom > ^ Control"
-    info " ⚙️  Security & Privacy > General > Require password immediately after sleep or screen saver begins"
-    info " ⚙️  Keyboard > Text > disable Correct spelling automatically and Capitalize words automatically"
+    info " 📋 Some more customization is needed to optimize your workflow:"
+    info " ⚙️  Use the bin/init-envrc to initialize your environment variable file."
+    info " ⚙️  You can also use the script bin/get-env-from-ssm to download additional environment variables from AWS Systems Manager."
     info
-    info "Application configuration to do manually:"
-    info " 📅 Calendar:"
-    info "  ⚙️  Add Google accounts, configure refreshing for every 5min"
+    info " 📋 Don't forget to have a look at our contribution guide:"
+    info "  ⚙️  Workflows: https://onclusive.atlassian.net/l/cp/kuzQgc3S"
+    info "  ⚙️  Versioning: https://onclusive.atlassian.net/l/cp/FaXTyYKs"
+    info "  ⚙️  Pull Requests: https://onclusive.atlassian.net/l/cp/FTetCGQ0"
+    info "  ⚙️  Code Reviews: https://onclusive.atlassian.net/l/cp/51zuuLBF"
+    info "  ⚙️  Release Process: https://onclusive.atlassian.net/l/cp/1iiHeWdV"
+    info "  ⚙️  Pre-commit Hooks: https://onclusive.atlassian.net/l/cp/PPNJRJhm"
+    info "  ⚙️  Testing: https://onclusive.atlassian.net/l/cp/fxZns0Zk"
     info
-    info " 👓 Rectangle:"
-    info "  ⚙️  System Preferences > Security & Privacy > Accessibility > Rectangle"
+    info " 📋 Check out our style guides:"
+    info "  ⚙️  Git: https://onclusive.atlassian.net/l/cp/bSbvqAQU"
+    info "  ⚙️  Python: https://onclusive.atlassian.net/l/cp/SxQNknXx"
+    info "  ⚙️  Terraform: https://onclusive.atlassian.net/l/cp/AumvdX0d"
+    info "  ⚙️  Kustomize: https://onclusive.atlassian.net/l/cp/76YvsoFG"
     info
-    info " 📋 Clipy-App: Open-source clipboard manager"
-    info "  ⚙️  System Preferences > Security & Privacy > Accessibility > Clipy"
-    info
-    info " 🌕 Firefox:"
-    info "  ⚙️  Set as default browser"
-    info "  ⚙️  Login to Firefox to synchronize extensions"
+    info " 📋 If you have any questions don't hesitate to reach out:"
+    info "  ⚙️  MLOPs slack channel: #ml_infra"
+    info "  ⚙️  ML slack channel: #ml_team"
     info
     info "🌈 WELCOME AND HAVE FUN! 🦄"
+
 }
 
 main
