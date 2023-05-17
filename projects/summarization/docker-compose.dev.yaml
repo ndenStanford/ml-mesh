@@ -42,8 +42,6 @@ services:
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
-    depends_on:
-      - prompt-backend
     hostname: onclusiveml
     networks:
       - onclusive-net
