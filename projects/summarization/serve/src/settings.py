@@ -42,4 +42,5 @@ class Settings(BaseSettings):
 
     ENGLISH_SUMMARIZATION_ALIAS = "english-summarization-prompt"
 
+
 settings = Settings()

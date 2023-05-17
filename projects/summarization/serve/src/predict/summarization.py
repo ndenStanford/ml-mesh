@@ -48,7 +48,7 @@ class SummarizationHandler:
             model (str):
         """
         prompt = self.get_prompt()
-        input_dict = {'content': text}
+        input_dict = {"content": text}
         prompt = prompt.format(**input_dict)
 
         if model == "gpt-3.5-turbo":
@@ -84,13 +84,22 @@ class SummarizationHandler:
         return text
 
     def get_prompt(self):
-        headers = {'x-api-key': settings.PROMPT_API_KEY}
-        q = requests.get("{}/api/v1/prompts".format(settings.PROMPT_API), headers = headers)
+        headers = {"x-api-key": settings.PROMPT_API_KEY}
+        q = requests.get(
+            "{}/api/v1/prompts".format(settings.PROMPT_API), headers=headers
+        )
         prompts = eval(q.content)["prompts"]
-        english_prompt_dict = [prompt for prompt in prompts if prompt["alias"] == settings.ENGLISH_SUMMARIZATION_ALIAS]
+        english_prompt_dict = [
+            prompt
+            for prompt in prompts
+            if prompt["alias"] == settings.ENGLISH_SUMMARIZATION_ALIAS
+        ]
         english_prompt_id = english_prompt_dict[0]["id"]
 
-        q = requests.get("{}/api/v1/prompts/{}".format(settings.PROMPT_API, english_prompt_id), headers = headers)
+        q = requests.get(
+            "{}/api/v1/prompts/{}".format(settings.PROMPT_API, english_prompt_id),
+            headers=headers,
+        )
         template = eval(q.content)["template"]
         return template
 

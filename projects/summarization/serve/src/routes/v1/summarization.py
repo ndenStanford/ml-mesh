@@ -20,15 +20,11 @@ from src.schemas import Request, Response
 
 logger = get_default_logger(__name__)
 
-router = APIRouter(
-    prefix="/summarization/gpt3",
-)
+router = APIRouter(prefix="/summarization/gpt3",)
 
 
 @router.post("/predict", response_model=Response, status_code=status.HTTP_200_OK)
-def get_summary(
-    item: Request,
-) -> Optional[Dict[str, str]]:
+def get_summary(item: Request,) -> Optional[Dict[str, str]]:
     """Returns summary of item content.
 
     Args:
