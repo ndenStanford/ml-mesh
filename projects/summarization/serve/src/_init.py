@@ -30,7 +30,7 @@ def _setup_prompts() -> None:
     )
     english_summarization_alias = settings.ENGLISH_SUMMARIZATION_ALIAS
     requests.post(
-        f"{settings.PROMPT_API}/api/v1/prompts?template={english_summarization_template}&alias={english_summarization_alias}",
+        f"{settings.PROMPT_API}/api/v1/prompts?template={english_summarization_template}&alias={english_summarization_alias}", # noqa: E501
         headers=headers,
     )
     return
