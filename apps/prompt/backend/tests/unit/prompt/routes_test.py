@@ -206,7 +206,7 @@ def test_delete_prompt(mock_prompt_delete, mock_prompt_schema, id, test_client):
     assert response.json() == "deleted"
 
 
-@pytest.mark.parametrize("alias", ["English-Summarization"])
+@pytest.mark.parametrize("alias", ["english-summarization"])
 @patch.object(PromptTemplateSchema, "get")
 @patch("src.prompt.schemas.PromptTemplateSchema.delete")
 def test_delete_prompt_protection(
@@ -225,7 +225,7 @@ def test_delete_prompt_protection(
 
     mock_prompt_schema.assert_called_with(f"{id}")
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_409_CONFLICT
 
 
 def test_delete_prompt_unauthenticated(test_client):

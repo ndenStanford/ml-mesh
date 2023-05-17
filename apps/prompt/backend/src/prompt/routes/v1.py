@@ -135,8 +135,8 @@ def delete_prompt(id: str):
             return "deleted"
         else:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Cannot delete predefined models - (id={str(id)})",
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Cannot delete predefined prompts - (id={str(id)})",
             )
 
     except PromptTemplateTable.DoesNotExist as e:
