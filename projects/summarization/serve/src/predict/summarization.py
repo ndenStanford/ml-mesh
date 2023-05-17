@@ -3,7 +3,7 @@
 # Standard Library
 import datetime
 import re
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 # 3rd party libraries
 # OpenAI library
@@ -28,15 +28,9 @@ class SummarizationHandler:
     def inference(
         self,
         text: str,
-        desired_length: int,
         max_tokens: int,
-        top_p: float,
-        temperature: float,
-        presence_penalty: float,
-        frequency_penalty: float,
-        model: str,
         lang: str,
-    ) -> Tuple[str, str]:
+    ) -> str:
         """Summarization prediction handler method.
         Args:
             text (str):
@@ -49,33 +43,16 @@ class SummarizationHandler:
             model (str):
             lang (str):
         """
-        prompt = self.get_prompt(lang)
+        prompt, prompt_id = self.get_prompt(lang)
         input_dict = {"max_tokens": max_tokens, "content": text}
         prompt = prompt.format(**input_dict)
+        headers = {"x-api-key": settings.PROMPT_API_KEY}
+        q = requests.get(
+            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, prompt_id),
+            headers=headers,
+        )
 
-        if model == "gpt-3.5-turbo":
-            # get summary
-            response = openai.ChatCompletion.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-            summary = response["choices"][0]["message"]["content"]
-        else:
-            # get summary
-            response = openai.Completion.create(
-                model=model,
-                prompt=prompt,
-                max_tokens=max_tokens,  # default 16
-                temperature=temperature,
-            )
-
-            summary = response["choices"][0]["text"]
-
-        finish_reason = response["choices"][0]["finish_reason"]
-
-        return summary, finish_reason
+        return q["generated"]
 
     def postprocess(self, text: str) -> str:
         text = re.sub("\n+", " ", text)
@@ -96,14 +73,14 @@ class SummarizationHandler:
             for prompt in prompts
             if prompt["alias"] == settings.PROMPT_DICT[lang]["alias"]
         ]
-        english_prompt_id = english_prompt_dict[0]["id"]
+        prompt_id = english_prompt_dict[0]["id"]
 
         q = requests.get(
-            "{}/api/v1/prompts/{}".format(settings.PROMPT_API, english_prompt_id),
+            "{}/api/v1/prompts/{}".format(settings.PROMPT_API, prompt_id),
             headers=headers,
         )
         template = eval(q.content)["template"]
-        return template
+        return template, prompt_id
 
 
 _service = SummarizationHandler()

@@ -81,6 +81,58 @@ services:
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     hostname: onclusiveml
+    depends_on:
+      - dynamodb
+    networks:
+      - onclusive-net
+
+  prompt-backend:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "4000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["integration"]
+    ports:
+      - 4000:4000
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      DOCS_URL: /docs
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+      API_KEY: 1234
+      DB_HOST: "http://dynamodb:8000"
+    depends_on:
+      - dynamodb
+    networks:
+      - onclusive-net
+
+  dynamodb:
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+    image: "amazon/dynamodb-local:latest"
+    restart: always
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+    profiles: ["backend", "integration"]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
     networks:
       - onclusive-net
 

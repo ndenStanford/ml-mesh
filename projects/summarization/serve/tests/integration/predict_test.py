@@ -22,17 +22,10 @@ class TestParametrized:
             json={
                 "content": input,
                 "max_tokens": 512,
-                "desired_length": 100,
-                "temperature": 0.7,
-                "top_p": 1,
-                "presence_penalty": 0,
-                "frequency_penalty": 0,
                 "lang": "en",
             },
         )
         assert len(response.json()["summary"]) > 0
-        assert response.json()["model"] == "gpt-3.5-turbo"
-        assert response.json()["finish_reason"] == "stop"
 
     def test_davinci(self, test_client, input):
         """Test prediction endpoint."""
@@ -41,15 +34,7 @@ class TestParametrized:
             json={
                 "content": input,
                 "max_tokens": 512,
-                "desired_length": 100,
-                "temperature": 0.7,
-                "top_p": 1,
-                "presence_penalty": 0,
-                "frequency_penalty": 0,
-                "model": "text-davinci-003",
                 "lang": "en",
             },
         )
         assert len(response.json()["summary"]) > 0
-        assert response.json()["model"] == "text-davinci-003"
-        assert response.json()["finish_reason"] == "stop"
