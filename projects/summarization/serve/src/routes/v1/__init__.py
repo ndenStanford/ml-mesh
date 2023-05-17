@@ -9,6 +9,8 @@ from fastapi import APIRouter
 from src.routes.v1.summarization import router as summarization_router
 
 
-router = APIRouter(prefix="/v1",)
+router = APIRouter(
+    prefix="/v1",
+)
 
 router.include_router(summarization_router)

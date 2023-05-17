@@ -40,13 +40,18 @@ class Settings(BaseSettings):
     PROMPT_API: str = "http://0.0.0.0:4000"
     PROMPT_API_KEY: str = "1234"
 
-    # ENGLISH_SUMMARIZATION_ALIAS = "english-summarization-prompt"
+    PROMPT_DICT = {
+        "en": {
+            "alias": "english-summarization-prompt",
+            "template": "Give an abstractive summary while retaining important \
+                        quotes of speech in less than {word_num} words: \n {content} \n",
+        },
+        "fr": {
+            "alias": "french-summarization-prompt",
+            "template": "Donner un résumé abstrait tout en gardant l'importance \
+                        citations de discours en moins de {word_num} mots: \n {content} \n",
+        },
+    }
 
-    PROMPT_DICT = {"en": {"alias":  "english-summarization-prompt", 
-                                "template": "Give an abstractive summary while retaining important \
-                                    quotes of speech in less than {word_num} words: \n {content} \n" },
-                        "fr": {"alias":  "french-summarization-prompt", 
-                                "template": "Donner un résumé abstrait tout en gardant l'importance \
-                                    citations de discours en moins de {word_num} mots: \n {content} \n" }}
 
 settings = Settings()

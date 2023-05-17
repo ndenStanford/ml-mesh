@@ -4,11 +4,11 @@
 import datetime
 import re
 from typing import Any, Dict, Optional, Tuple
-import requests
 
 # 3rd party libraries
 # OpenAI library
 import openai
+import requests
 
 # Internal libraries
 # Internal library
@@ -153,7 +153,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
             presence_penalty,
             frequency_penalty,
             model,
-            lang
+            lang,
         )
         endtime = datetime.datetime.utcnow()
 
