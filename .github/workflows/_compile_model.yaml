@@ -113,7 +113,8 @@ jobs:
       - set-image-reference
     runs-on: ${{ needs.set-up-runner.outputs.label }}
     container:
-      image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
+      # image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
+      image: python-slim:3.8.16
       volumes:
         - /home/runner/work/ml-mesh/ml-mesh/test_dir:/home
     steps:
