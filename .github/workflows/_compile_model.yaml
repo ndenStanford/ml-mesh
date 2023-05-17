@@ -97,6 +97,10 @@ jobs:
         run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> $GITHUB_OUTPUT
       - name: Check versioned image reference
         run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
+      - name: Check repository location on runner
+        run: |
+          echo ${GITHUB_WORKSPACE}
+          ls ${GITHUB_WORKSPACE} -a -l
 
   register-compiled-model:
     name: Compile and register a base or trained model
@@ -109,10 +113,13 @@ jobs:
       volumes:
         - ${{ github.workspace}}/docker/${{ inputs.project }}:/home
     steps:
+      - name: Check repository location inside container
+        run: |
+          echo ${GITHUB_WORKSPACE}
+          ls ${GITHUB_WORKSPACE} -a -l
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
-          ls /home -l
           #python -m src.download_uncompiled_model
       - name: Compile Model
         run: |
