@@ -103,6 +103,8 @@ jobs:
           ls ${GITHUB_WORKSPACE} -a -l
           mkdir ${GITHUB_WORKSPACE}/test_dir
           touch ${GITHUB_WORKSPACE}/test_dir/test_file
+          ls -l ${GITHUB_WORKSPACE} # test_dir/test_file
+          ls -l ${GITHUB_WORKSPACE}/test_dir # test_file
 
   register-compiled-model:
     name: Compile and register a base or trained model
