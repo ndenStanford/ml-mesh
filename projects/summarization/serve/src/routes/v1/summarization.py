@@ -49,6 +49,7 @@ def get_summary(
                     "presence_penalty": item.presence_penalty,
                     "frequency_penalty": item.frequency_penalty,
                     "model": item.model,
+                    "lang": item.lang,
                 }
             }
         ]

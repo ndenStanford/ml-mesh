@@ -49,8 +49,8 @@ class SummarizationHandler:
             model (str):
             lang (str):
         """
-        prompt = self.get_prompt()
-        input_dict = {"content": text}
+        prompt = self.get_prompt(lang)
+        input_dict = {"max_tokens": max_tokens, "content": text}
         prompt = prompt.format(**input_dict)
 
         if model == "gpt-3.5-turbo":

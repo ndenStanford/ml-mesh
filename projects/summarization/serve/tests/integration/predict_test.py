@@ -27,6 +27,7 @@ class TestParametrized:
                 "top_p": 1,
                 "presence_penalty": 0,
                 "frequency_penalty": 0,
+                "lang": "en"
             },
         )
         assert len(response.json()["summary"]) > 0
@@ -46,6 +47,7 @@ class TestParametrized:
                 "presence_penalty": 0,
                 "frequency_penalty": 0,
                 "model": "text-davinci-003",
+                "lang": "en"
             },
         )
         assert len(response.json()["summary"]) > 0
