@@ -116,12 +116,12 @@ jobs:
       # image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
       image: python:3.8.16-slim
       volumes:
-        - /home/runner/work/ml-mesh/ml-mesh/test_dir:/home
+        - ${{ github.workspace }}/test_dir:${{ github.workspace }}/test_dir
     steps:
       - name: Check repository location inside container
         run: |
           echo ${GITHUB_WORKSPACE}
-          ls /home -a -l # test_file
+          ls ${{ github.workspace }}/test_dir -a -l # test_file
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
