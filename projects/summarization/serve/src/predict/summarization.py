@@ -124,6 +124,6 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
         )
 
         summary = _service.postprocess(summary)
-        return {"model": model, "summary": summary}
+        return {"summary": summary}
     except Exception as e:
         raise e

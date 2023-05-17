@@ -20,6 +20,4 @@ class Response(BaseModel):
         model (str): OpenAI model used to create summary
     """
 
-    model: str
     summary: str
-    finish_reason: Optional[str] = None
