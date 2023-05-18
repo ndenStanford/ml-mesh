@@ -16,7 +16,7 @@ class TrackedKeywordModelSpecs(TrackedModelSpecs):
     model = "KEYWORDS-TRAINED"
 
     class Config:
-        env_file = "src/config/.dev", "src/config/.prod"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -25,7 +25,7 @@ class Inputs(TrackedParams):
     sample_documents: List[str]
 
     class Config:
-        env_file = "src/config/.dev", "src/config/.prod"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -35,7 +35,7 @@ class KeywordExtractionSettings(TrackedParams):
     top_n: int = 3
 
     class Config:
-        env_file = "src/config/.dev", "src/config/.prod"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -47,7 +47,7 @@ class KeywordModelParams(TrackedParams):
     keyword_extraction_settings: KeywordExtractionSettings = KeywordExtractionSettings()
 
     class Config:
-        env_file = "src/config/.dev", "src/config/.prod"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -64,5 +64,5 @@ class TrackedKeywordsBaseModelCard(TrackedModelCard):
     logging_level: str = "INFO"
 
     class Config:
-        env_file = "src/config/.dev", "src/config/.prod"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
