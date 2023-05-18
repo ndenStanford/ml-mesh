@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import os
+import click
+import boto3
+
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+
+def get_parameter(name: str, region: str) -> str:
+    session = boto3.Session()
+    client = session.client(service_name="ssm", region_name=region)
+
+    param = client.get_parameter(Name=name, WithDecryption=True)
+    return param["Parameter"]["Value"]
+
+
+def append_secrets_to_env_file(
+    secret: str,
+    value: str,
+    prepend_with_export: bool = True,
+    is_terraform_var: bool = False,
+) -> None:
+    """"""
+    export_keyword = "export "
+    if not prepend_with_export:
+        export_keyword = ""
+        print("Export will not be prepended")
+
+    file = open(os.path.join(ROOT_DIR, ".envrc"), "a+")
+    escaped_value = value.translate(str.maketrans({'"': '\\"', "\n": ""}))
+
+    file.write('{}{}="{}"\n'.format(export_keyword, secret, escaped_value))
+    file.close()
+
+
+@click.command()
+@click.argument("secret")
+@click.option("--variable", "-v", help="Environment Variable name.")
+@click.option("--region", "-r", help="AWS region.", default="us-east-1")
+@click.option(
+    "--terraform", "-t", help="Format secret name to terraform.", is_flag=True
+)
+def main(secret: str, variable: str, region: str, terraform: bool) -> None:
+    append_secrets_to_env_file(
+        variable, get_parameter(secret, region), is_terraform_var=terraform
+    )
+
+
+if __name__ == "__main__":
+    main()
