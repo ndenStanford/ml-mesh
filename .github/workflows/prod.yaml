@@ -54,10 +54,10 @@ jobs:
     needs: [run-repository-state]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
-      self-hosted-runner-type: t3.medium
+      self-hosted-runner-type: inf1.xlarge
       environment: prod
-      project: python-base
-      tag: 2023.5.1
+      project: keywords
+      tag: 2023.5.12
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
