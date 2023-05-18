@@ -35,7 +35,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
     class Config:
         env_prefix = "uncompiled_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -46,7 +46,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
     class Config:
         env_prefix = "compiled_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -56,7 +56,7 @@ class WorkflowOutputDir(TrackedParams):
 
     class Config:
         env_prefix = "io_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -120,7 +120,7 @@ class TokenizerSettings(TrackedParams):
 
     class Config:
         env_prefix = "tokenizer_settings_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -133,7 +133,7 @@ class ModelTracingSettings(TrackedParams):
 
     class Config:
         env_prefix = "model_tracing_settings_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -160,7 +160,7 @@ class WordPipelineCompilationSettings(PipelineCompilationSettings):
 
     class Config:
         env_prefix = "word_pipeline_compilation_settings_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -171,7 +171,7 @@ class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
 
     class Config:
         env_prefix = "document_pipeline_compilation_settings_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -182,7 +182,7 @@ class CompilationTestSettings(TrackedParams):
 
     class Config:
         env_prefix = "compilation_test_settings_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
@@ -204,5 +204,5 @@ class CompiledKeywordsTrackedModelCard(TrackedModelCard):
 
     class Config:
         env_prefix = "compiled_keywords_tracked_model_card_"
-        env_file = "config/dev.env", "config/prod.env"
+        env_file = "config/dev.env"
         env_file_encoding = "utf-8"

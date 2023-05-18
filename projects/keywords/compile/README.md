@@ -22,11 +22,12 @@ Each of the 4 components corresponds to a (set of) python module(s):
 4. `upload_compiled_model.py`
 
 Each component draws its configurations from the `settings.py` module, which parses all required
-environment variable either from the environment or from one of the two following `.dotenv` files
-located in the `config` subdirectory (locally or in the container when running inside docker):
+environment variable either
 
-- `dev.env`: defines pipeline configuration during development
-- `prod.env`: defines pipeline configuration during CI builds
+- from the environment, or, if not specified,
+- from the `config/dev.env` dotenv file (locally or in the container when running inside docker)
+
+Specs defined in the `config/prod.env` is used only during CI processes.
 
 Orchestration of these components into the model compile pipeline is done by Github Actions of this
 same `ml-mesh` repository (as opposed to all other orchestration happening in `ml-platform`)
@@ -49,8 +50,9 @@ For development purposes, the pipeline can be run locally without containers.
 - `pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no`
 - `python -m src.upload_compiled_model`
 
-By default, the `settings.py` script will draw its environment variable values from the `dev.env` file
-located in `src/config`. Editing that file allows for configuring development pipeline runs.
+As described in the previous section the `settings.py` script will fall back onto the
+`config/dev.env` file for any environment variables that it cant obtain from the environment.
+Editing that file allows for configuring development pipeline runs.
 
 ### 2.2 With containers
 
@@ -87,7 +89,7 @@ make projects.build/keywords \
     --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
     --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
     --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:seb-development \
+    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
     python -m src.download_uncompiled_model```
   ````
 
@@ -100,7 +102,7 @@ make projects.build/keywords \
     --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
     --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
     --device /dev/neuron0 \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:seb-development \
+    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
     python -m src.compile_model
   ```
 
@@ -113,7 +115,7 @@ make projects.build/keywords \
     --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
     --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
     --device /dev/neuron0 \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:seb-development \
+    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
     pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
   ```
 
@@ -125,12 +127,11 @@ make projects.build/keywords \
     --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
     --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
     --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --device /dev/neuron0 \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:seb-development \
+    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
     python -m src.upload_compiled_model
   ```
 
   - Note: If the `--env-file` command is omitted in the above steps,
-    the pipeline will fall back on the file `dev.env` file that was copied into the image at build time.
+    the pipeline will fall back on the default values defined in the `settings.py` file.
   - Note: The `volume` mount command `--mount type=volume,source=...` will create a docker volume
     named `workflow-volume` on your machine. Follow the docker docs to remove it to unblock repeated downloads when re-running the first component

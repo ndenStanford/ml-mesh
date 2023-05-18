@@ -7,11 +7,13 @@ specified feature extraction pipeline from huggingface and registering it on our
 
 The python module implementing the above process is `register_trained_model.py`.
 
-It draws its configurations from the `settings.py` module, which in turn expects one of the two
-`.dotenv` files to be present in the `src/config` subdirectory (locally or in the container when running inside docker):
+It draws its configurations from the `settings.py` module, which parses all required
+environment variable either
 
-- `.dev`
-- `.prod`
+- from the environment, or, if not specified,
+- from the `config/dev.env` dotenv file (locally or in the container when running inside docker)
+
+Specs defined in the `config/prod.env` is used only during CI processes.
 
 ## 2 Running the pipeline
 
@@ -19,12 +21,16 @@ It draws its configurations from the `settings.py` module, which in turn expects
 
 For development purposes, the pipeline can be run locally without containers.
 
-1. Set the neptune authentication token value: `export NEPTUNE_API_TOKEN==?`
-2. Change into the `projects/keywords/train/src` directory: `cd projects/keywords/train/src`
-3. Run the model retrieval + registering step: `python -m src.register_trained_model`
+1. Set the neptune authentication token value
+   - `export NEPTUNE_API_TOKEN==?`
+2. Change into the `projects/keywords/train/src` directory
+   - `cd projects/keywords/train`
+3. Run the model retrieval + registering step
+   - `python -m src.register_trained_model`
 
-By default, the `settings.py` script will draw its environment variable values from the `.dev` file
-located in `src/config`. Editing that file allows for configuring development pipeline runs.
+As described in the previous section the `settings.py` script will fall back onto the
+`config/dev.env` file for any environment variables that it cant obtain from the environment.
+Editing that file allows for configuring development pipeline runs.
 
 ### 2.2 With containers
 
@@ -45,16 +51,19 @@ make projects.build/keywords \
    - `export NEPTUNE_API_TOKEN=?`
    - `export PATH_TO_REPOSITORY=?`
 
-2. Update the `.dev` file in the `src/config` directory as needed. We will mount it into the running
-   containers (See below) to allow for pipeline runtime configurations without requiring a rebuild of the docker container.
+2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
+   variable values directly from the file into the running container (see below) to allow for pipeline
+   runtime configurations without requiring a rebuild of the docker container.
+
 3. Run the container:
 
 ```docker
 docker run \
   --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-  --mount type=bind,source=$PATH_TO_REPOSITORY/projects/keywords/train/src/config/,target=/projects/keywords/train/src/config,readonly \
+  --env-file $PATH_TO_REPOSITORY/projects/keywords/train/config/dev.env \
   -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest \
   python -m src.register_trained_model
 ```
 
-- Note: If the `bind` mount command `--mount type=bind,source=...` is omitted in the below steps, the pipeline will fall back on the file `.dev` file that was copied into the image at build time.
+- Note: If the `--env-file` command is omitted in the above steps,
+  the pipeline will fall back on the default values defined in the `settings.py` file.
