@@ -91,6 +91,7 @@ _install_global_deps() {
     sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
     sudo yum install -y docker-compose-plugin
     sudo systemctl enable docker
+    sudo systemctl start docker
 
     # extra global deps (pyenv, direnv)
     curl -sfL https://direnv.net/install.sh | bash
@@ -101,12 +102,18 @@ _install_global_deps() {
     fi
 
     # shellcheck disable=SC2129
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
     export PATH="/home/ec2-user/.pyenv/bin:$PATH"
+
     echo "export PATH='/home/ec2-user/.pyenv/bin:$PATH'" >> $HOME/.bashrc
     echo "eval "$(direnv hook bash)"" >> $HOME/.bashrc
     echo "export PYENV_ROOT=$HOME/.pyenv" >> $HOME/.bashrc
     echo "command -v pyenv >/dev/null || export PATH=$PYENV_ROOT/bin:$PATH" >> $HOME/.bashrc
     echo "eval $(pyenv init -)" >> $HOME/.bashrc
+    source ~/.bashrc
+
+    eval "$(pyenv init --path)"
 
     separator
 }
