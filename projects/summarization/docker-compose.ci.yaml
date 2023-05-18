@@ -80,7 +80,8 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
     depends_on:
-      - prompt-backend
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -120,7 +121,8 @@ services:
       API_KEY: 1234
       DB_HOST: "http://dynamodb:8000"
     depends_on:
-      - dynamodb
+      dynamodb:
+        condition: service_healthy
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
