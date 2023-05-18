@@ -38,6 +38,7 @@ services:
     profiles: ["unit"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: projects/keywords/train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -95,6 +96,7 @@ services:
     profiles: ["unit"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: projects/keywords/compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
