@@ -14,6 +14,10 @@ on:
         required: true
         type: string
         description: "Version tag of image providing the compilation runtime context."
+      upload-compiled-model:
+        required: true
+        type: boolean
+        description: "Whether to upload the compiled model to the Neptune AI model registry"
       pull-request:
         required: true
         default: true
@@ -139,21 +143,25 @@ jobs:
           ls /home/temp/test_dir -a -l # test_file
 
       - name: Download uncompiled model
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Downloading Uncompiled Model'
-          #python -m src.download_uncompiled_model
+          make projects.compile/keywords ...
 
       - name: Compile Model
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Compiling Model'
           #python -m src.compile_model
 
       - name: Validate Compiled Model
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Validating Compiled Model'
           #python -m src.validate_compiled_model
 
       - name: Upload Compiled Model
+        if: ${{ steps.files-changed.outputs.this == 'true' && ${{ inputs.upload-compiled-model }} || !inputs.pull-request }}
         run: |
           echo 'Uploading Compiled Model'
           #python -m src.upload_compiled_model
