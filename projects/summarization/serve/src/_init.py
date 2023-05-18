@@ -15,7 +15,7 @@ logger = get_default_logger(__name__)
 
 def init() -> None:
     """App initialization."""
-    print('*' * 10)
+    print("*" * 10)
     print("App Initialization")
     logger.info("Downloading model...")
     _setup_prompts()
@@ -23,7 +23,7 @@ def init() -> None:
 
 def _setup_prompts() -> None:
     """Setup prompts"""
-    print('+' * 10)
+    print("+" * 10)
     print("Setup prompts")
     headers = {"x-api-key": settings.PROMPT_API_KEY}
     
