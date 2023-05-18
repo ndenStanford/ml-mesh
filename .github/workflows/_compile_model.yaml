@@ -123,48 +123,46 @@ jobs:
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Export versioned image reference
-        id: set-image-reference
-        run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> $GITHUB_OUTPUT
-
-      - name: Check repository location on runner
-        run: |
-          echo ${{ github.workspace }}
-          ls ${{ github.workspace }} -a -l
-          mkdir ${{ github.workspace }}/test_dir
-          touch ${{ github.workspace }}/test_dir/test_file
-          ls -l ${{ github.workspace }} # test_dir
-          ls -l ${{ github.workspace }}/test_dir # test_file
-
-      - name: Check repository location inside container
-        run: |
-          echo ${{ github.workspace }}
-          ls /home/temp/ -a -l # test_dir
-          ls /home/temp/test_dir -a -l # test_file
-
       - name: Download uncompiled model
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Downloading Uncompiled Model'
-          make projects.compile/keywords ...
+          make projects.compile/keywords \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=download-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Compile Model
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Compiling Model'
-          #python -m src.compile_model
+          make projects.compile/keywords \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=compile-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Validate Compiled Model
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Validating Compiled Model'
-          #python -m src.validate_compiled_model
+          make projects.compile/keywords \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=validate-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
         if: ${{ steps.files-changed.outputs.this == 'true' && ${{ inputs.upload-compiled-model }} || !inputs.pull-request }}
         run: |
           echo 'Uploading Compiled Model'
-          #python -m src.upload_compiled_model
+          make projects.compile/keywords \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=upload-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
+
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
