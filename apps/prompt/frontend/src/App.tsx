@@ -84,7 +84,6 @@ export default function App() {
     });
   }
 
-<<<<<<< HEAD
   async function handleDeletePrompt(alias: string) {
     dispatch(deletePrompt({ alias }));
     window.location.reload();
@@ -95,14 +94,6 @@ export default function App() {
     id: string,
     alias: string
   ) {
-=======
-  async function handleDeletePrompt(id: string) {
-    dispatch(deletePrompt({ id }));
-    window.location.reload();
-  }
-
-  async function handleSendMessageWithPrompt(dct: Dictionary, id: string) {
->>>>>>> 1bb04d692d0473aedebc9bac069981e728b83cdf
     const message = {
       id: uuidv4(),
       date: new Date().toLocaleString(),
@@ -197,11 +188,8 @@ export default function App() {
                   onSendClick: (dct: Dictionary, id: string, alias: string) => {
                     handleSendMessageWithPrompt(dct, id, alias);
                   },
-                  onDeleteClick: (id: string) => {
-                    handleDeletePrompt(id);
-                  },
-                  onDeleteClick: (id: string) => {
-                    handleDeletePrompt(id);
+                  onDeleteClick: (alias: string) => {
+                    handleDeletePrompt(alias);
                   },
                 }}
                 isModalVisible={modals.list[item.id]}

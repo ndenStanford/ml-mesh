@@ -82,13 +82,8 @@ export interface PromptListItemProps {
   created_at: string;
   selected?: boolean;
   onClick?: () => void;
-<<<<<<< HEAD
   onSendClick: (dct: Dictionary, id: string, alias: string) => void;
   onDeleteClick: (alias: string) => void;
-=======
-  onSendClick: (dct: Dictionary, id: string) => void;
-  onDeleteClick: (id: string) => void;
->>>>>>> 1bb04d692d0473aedebc9bac069981e728b83cdf
 }
 
 export interface ChatProps {
