@@ -84,19 +84,45 @@ jobs:
               {"Key": "Stack", "Value": "mesh"},
               {"Key": "Billing", "Value": "ML"}
             ]
-  set-image-reference:
-    name: Set container runtime image
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    outputs:
-      image-reference: ${{ steps.set-image-reference.outputs.image-reference}}
 
+  register-compiled-model:
+    name: Compile and register a base or trained model
+    needs:
+      - set-up-runner
+      - set-image-reference
+    runs-on: ${{ needs.set-up-runner.outputs.label }}
     steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'keywords/compile/config/.prod'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 1200
+          role-session-name: DeployManifests
+
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
+
       - name: Export versioned image reference
         id: set-image-reference
         run: echo "image-reference=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}:${{ inputs.tag}}" >> $GITHUB_OUTPUT
-      - name: Check versioned image reference
-        run: echo "Using image ${{ steps.set-image-reference.outputs.image-reference }}"
+
       - name: Check repository location on runner
         run: |
           echo ${{ github.workspace }}
@@ -106,35 +132,27 @@ jobs:
           ls -l ${{ github.workspace }} # test_dir
           ls -l ${{ github.workspace }}/test_dir # test_file
 
-  register-compiled-model:
-    name: Compile and register a base or trained model
-    needs:
-      - set-up-runner
-      - set-image-reference
-    runs-on: ${{ needs.set-up-runner.outputs.label }}
-    container:
-      # image: ${{ needs.set-image-reference.outputs.image-reference }} # works!
-      image: python:3.8.16-slim
-      volumes:
-        - ${{ github.workspace }}/test_dir:/home/temp/test_dir
-    steps:
       - name: Check repository location inside container
         run: |
           echo ${{ github.workspace }}
           ls /home/temp/ -a -l # test_dir
           ls /home/temp/test_dir -a -l # test_file
+
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'
           #python -m src.download_uncompiled_model
+
       - name: Compile Model
         run: |
           echo 'Compiling Model'
           #python -m src.compile_model
+
       - name: Validate Compiled Model
         run: |
           echo 'Validating Compiled Model'
           #python -m src.validate_compiled_model
+
       - name: Upload Compiled Model
         run: |
           echo 'Uploading Compiled Model'
