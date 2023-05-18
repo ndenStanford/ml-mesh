@@ -15,15 +15,21 @@ logger = get_default_logger(__name__)
 
 def init() -> None:
     """App initialization."""
+    print('*' * 10)
+    print("App Initialization")
     logger.info("Downloading model...")
     _setup_prompts()
 
 
 def _setup_prompts() -> None:
     """Setup prompts"""
+    print('+' * 10)
+    print("Setup prompts")
     headers = {"x-api-key": settings.PROMPT_API_KEY}
-
+    
     for lang, prompt_dict in settings.PROMPT_DICT.items():
+        print(lang)
+        print(prompt_dict)
         for alias, template in prompt_dict.items():
             requests.post(
                 f"{settings.PROMPT_API}/api/v1/prompts?template={template}&alias={alias}",  # noqa: E501
