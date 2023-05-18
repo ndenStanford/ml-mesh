@@ -44,14 +44,29 @@ export default function PromptListItem(props: {
         <Modal
           title={"Replace variables values."}
           actions={[
-            <Button
-              key="send"
-              text={"Send"}
-              onClick={() => {
-                props.hideModal();
-                props.item.onSendClick(dictionary, props.item.id);
-              }}
-            />,
+            <div className={styles["buttons"]}>
+              <div className={styles["prompt-buttons"]}>
+                <Button
+                  key="send"
+                  text={"Send"}
+                  onClick={() => {
+                    props.hideModal();
+                    props.item.onSendClick(dictionary, props.item.id);
+                  }}
+                />
+                {/* Hiding button from prompt form for now */}
+                {/* ,
+                <Button
+                  key="send"
+                  icon={<DeleteIcon />}
+                  text={"Delete"}
+                  onClick={() => {
+                    props.hideModal();
+                    props.item.onDeleteClick(props.item.id);
+                  }}
+                /> */}
+              </div>
+            </div>,
           ]}
           onClose={props.hideModal}
         >

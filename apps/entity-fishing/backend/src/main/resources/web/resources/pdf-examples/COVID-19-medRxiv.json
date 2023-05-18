@@ -1,7 +1,0 @@
-{
-  "mentions": ["wikipedia"],
-  "nbest": false,
-  "structure": "grobid",
-  "customisation": "generic",
-  "minSelectorScore": 0.3
-}

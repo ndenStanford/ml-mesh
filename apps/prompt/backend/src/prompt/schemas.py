@@ -50,6 +50,10 @@ class PromptTemplateSchema(BaseModel):
             created_at=prompt_dict["created_at"],
         )
 
+    def delete(self) -> None:
+        prompt = PromptTemplateTable.get(self.id)
+        prompt.delete()
+
     @classmethod
     def get(
         cls, id: Optional[str] = None
