@@ -1,34 +1,68 @@
 # Standard Library
 import os
+from typing import List, Tuple, Union
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
-
-class TokenizerSettings(BaseSettings):
-    padding: str = "max_length"
-    truncation: bool = True
-    add_special_tokens: bool = True
-    max_length: int = (
-        512  # based on sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-    )
+# Internal libraries
+from onclusiveml.tracking import (
+    TrackedModelCard,
+    TrackedModelSpecs,
+    TrackedParams,
+)
 
 
-class KeyWordTrainSettings(BaseSettings):
-    """Default parameter (behaviour) for the training component of the keyword ML project."""
+# --- settings classes
+class TrackedKeywordModelSpecs(TrackedModelSpecs):
+    project: str = "onclusive/keywords"
+    model = "KEYWORDS-TRAINED"
 
-    # neptune ai model registry settings
-    NEPTUNE_PROJECT: str = "onclusive/keywords"
-    NEPTUNE_MODEL_ID: str = "KEYWORDS-KEYBERT"
-    NEPTUNE_API_TOKEN: str
-    # model params
-    HF_MODEL_REFERENCE: str = (
+    class Config:
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
+
+class Inputs(TrackedParams):
+
+    sample_documents: List[str]
+
+    class Config:
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
+
+class KeywordExtractionSettings(TrackedParams):
+    keyphrase_ngram_range: Tuple[int, int] = (1, 1)
+    stop_words: Union[str, List[str]] = "english"
+    top_n: int = 3
+
+    class Config:
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
+
+class KeywordModelParams(TrackedParams):
+    huggingface_pipeline_task: str = "feature-extraction"
+    huggingface_model_reference: str = (
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
-    TOKENIZER_SETTINGS: TokenizerSettings = TokenizerSettings()
+    keyword_extraction_settings: KeywordExtractionSettings = KeywordExtractionSettings()
+
+    class Config:
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"
+
+
+class TrackedKeywordsBaseModelCard(TrackedModelCard):
+    """The model card for the base model of the keywords ML project."""
+
+    model_type: str = "trained"
+    # --- custom fields
+    # model params
+    model_params: KeywordModelParams = KeywordModelParams()
+    model_inputs: Inputs = Inputs()
     # admin
-    LOCAL_OUTPUT_DIR: str = os.path.join(".", "keyword_model_artifacts")
-    LOGGING_LEVEL: str = "INFO"
+    local_output_dir: str = os.path.join(".", "keyword_model_artifacts")
+    logging_level: str = "INFO"
 
-
-KEYWORD_TRAIN_SETTINGS = KeyWordTrainSettings()
+    class Config:
+        env_file = "src/config/.dev", "src/config/.prod"
+        env_file_encoding = "utf-8"

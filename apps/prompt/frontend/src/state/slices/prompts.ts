@@ -29,16 +29,29 @@ export const getPrompts = createAsyncThunk("prompts/list", async () => {
 
 export const createPrompt = createAsyncThunk(
   "prompts/create",
-  async (template: string) => {
-    const response = await fetch(`${API_URI}/prompts?template=${template}`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "x-api-key": API_KEY,
-      },
-    });
+  async (
+    { template, alias }: { template: string; alias: string },
+    thunkAPI: any
+  ) => {
+    const response = await fetch(
+      `${API_URI}/prompts?template=${template}&alias=${alias}`,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "x-api-key": API_KEY,
+        },
+      }
+    );
+
     if (response.status !== 201) {
       console.log("Error fetching");
+    }
+    if (response.status == 409) {
+      console.log("409 Conflict, alias exists in database");
+      return thunkAPI.rejectWithValue({
+        message: "409",
+      });
     }
     console.log("Successfully created new prompt.");
   }

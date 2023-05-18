@@ -1,7 +1,9 @@
 ---
 ci:
   skip: [hadolint-docker]
-
+default_language_version:
+  # force all unspecified python hooks to run python3
+  python: python3.8
 repos:
   # =================================
   # GENERIC
@@ -60,8 +62,10 @@ repos:
     hooks:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
-        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py)
-        args: ["--explicit-package-bases"]
+        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py|projects/keywords/compile/src/conftest.py)
+        args:
+          - --explicit-package-bases
+          - --no-warn-unused-ignores
 
   # isort
   - repo: https://github.com/pycqa/isort
