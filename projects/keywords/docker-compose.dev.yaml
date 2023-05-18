@@ -67,10 +67,6 @@ services:
         PROJECT: keywords
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
     profiles: ["compile", "pipeline"]
     environment:
@@ -79,15 +75,6 @@ services:
     networks: [onclusive-net]
 
   compile-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: compile/src
@@ -102,44 +89,60 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
+    depends_on:
+      - compile
 
   compile-download-model:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    depends_on: [compile]
-    command: ["python", "-m", "src.download_uncompiled_model"]
-    profiles: ["pipeline"]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/keywords/compile/outputs
     volumes:
       - type: bind
         source: compile/src
         target: /projects/keywords/compile/src
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    command: ["python", "-m", "src.download_uncompiled_model"]
+    profiles: ["pipeline"]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/keywords/compile/outputs
+    env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
+    depends_on:
+      - compile
 
   compile-compile-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: ["python", "-m", "src.compile_model"]
     profiles: ["pipeline"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+    depends_on:
+      - compile
+
+  compile-validate-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: compile/src
         target: /projects/keywords/compile/src
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-validate-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command:
       [
         "pytest",
-        "src/compiled_model_test.py",
+        "src/test_compiled_model",
         "-ra",
         "-vvv",
         "--full-trace",
@@ -150,28 +153,29 @@ services:
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+    depends_on:
+      - compile
+
+  compile-upload-model:
     volumes:
       - type: bind
         source: compile/src
         target: /projects/keywords/compile/src
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-upload-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: ["python", "-m", "src.upload_compiled_model"]
     profiles: ["pipeline"]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+    env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
+    depends_on:
+      - compile
 
   # =============================================
   # SERVE
