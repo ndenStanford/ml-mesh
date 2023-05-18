@@ -15,7 +15,7 @@ Each of the 4 components corresponds to a (set of) python module(s):
 
 1. `download_uncompiled_model.py`
 2. `compile_model.py`
-3. Regression test suite:
+3. Regression test suite inside `test_compiled_model` directory:
    - `pytest.ini`
    - `conftest.py`
    - `compiled_model_test.py`
@@ -47,7 +47,7 @@ For development purposes, the pipeline can be run locally without containers.
 
 - `python -m src.download_uncompiled_model`
 - `python -m src.compile_model`
-- `pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no`
+- `pytest src/test_compiled_model -ra -vvv --full-trace --tb=long --capture=no`
 - `python -m src.upload_compiled_model`
 
 As described in the previous section the `settings.py` script will fall back onto the
@@ -76,8 +76,8 @@ make projects.build/keywords \
    - `export PATH_TO_REPOSITORY=?`
 
 2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
-   variable values directly from the file into the running container (see below) to allow for pipeline
-   runtime configurations without requiring a rebuild of the docker container.
+   variable values directly from the file into the running container (see below) to allow for
+   pipeline runtime configurations without requiring a rebuild of the docker container.
 
 3. Run the pipeline
 
@@ -116,7 +116,7 @@ make projects.build/keywords \
     --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
     --device /dev/neuron0 \
     -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
-    pytest src/compiled_model_test.py -ra -vvv --full-trace --tb=long --capture=no
+    pytest src/test_compiled_model -ra -vvv --full-trace --tb=long --capture=no
   ```
 
 - Upload compiled model:
@@ -134,4 +134,5 @@ make projects.build/keywords \
   - Note: If the `--env-file` command is omitted in the above steps,
     the pipeline will fall back on the default values defined in the `settings.py` file.
   - Note: The `volume` mount command `--mount type=volume,source=...` will create a docker volume
-    named `workflow-volume` on your machine. Follow the docker docs to remove it to unblock repeated downloads when re-running the first component
+    named `workflow-volume` on your machine. Follow the docker docs to remove it to unblock repeated
+    downloads when re-running the first component

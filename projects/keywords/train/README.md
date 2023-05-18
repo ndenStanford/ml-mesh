@@ -3,7 +3,8 @@
 ## 1 Overview
 
 The `keywords-train` container image provides the code and runtime environment for retrieving a
-specified feature extraction pipeline from huggingface and registering it on our internal neptun AI model registry.
+specified feature extraction pipeline from huggingface and registering it on our internal neptun AI
+model registry.
 
 The python module implementing the above process is `register_trained_model.py`.
 
@@ -36,7 +37,8 @@ Editing that file allows for configuring development pipeline runs.
 
 #### 2.2.1 Building the docker container
 
-To locally build the image tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest`, run the `make` target:
+To locally build the image tagged as
+`063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest`, run the `make` target:
 
 ```make
 make projects.build/keywords \
@@ -52,8 +54,8 @@ make projects.build/keywords \
    - `export PATH_TO_REPOSITORY=?`
 
 2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
-   variable values directly from the file into the running container (see below) to allow for pipeline
-   runtime configurations without requiring a rebuild of the docker container.
+   variable values directly from the file into the running container (see below) to allow for
+   pipeline runtime configurations without requiring a rebuild of the docker container.
 
 3. Run the container:
 

@@ -4,11 +4,13 @@ from typing import Dict
 
 # 3rd party libraries
 import pytest
-from settings import CompilationTestSettings, IOSettings
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.models.keywords import CompiledKeyBERT
+
+# Source
+from src.settings import CompilationTestSettings, IOSettings
 
 
 @pytest.fixture
