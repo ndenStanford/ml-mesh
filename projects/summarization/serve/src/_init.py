@@ -25,8 +25,7 @@ def _setup_prompts() -> None:
     """Setup prompts"""
     print("+" * 10)
     print("Setup prompts")
-    headers = {"x-api-key": settings.PROMPT_API_KEY}
-    
+    headers = {"x-api-key": settings.PROMPT_API_KEY} 
     for lang, prompt_dict in settings.PROMPT_DICT.items():
         print(lang)
         print(prompt_dict)
