@@ -30,9 +30,10 @@ def _setup_prompts() -> None:
     for lang, prompt_dict in settings.PROMPT_DICT.items():
         logger.debug(lang)
         logger.debug(prompt_dict)
-        for alias, template in prompt_dict.items():
-            requests.post(
-                f"{settings.PROMPT_API}/api/v1/prompts?template={template}&alias={alias}",  # noqa: E501
-                headers=headers,
-            )
+        alias = prompt_dict['alias']
+        template = prompt_dict['template']
+        requests.post(
+            f"{settings.PROMPT_API}/api/v1/prompts?template={template}&alias={alias}",  # noqa: E501
+            headers=headers,
+        )
     return
