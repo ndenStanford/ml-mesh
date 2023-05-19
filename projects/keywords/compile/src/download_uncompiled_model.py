@@ -6,7 +6,10 @@ from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.settings import IOSettings, UncompiledTrackedModelSpecs
+from src.settings import (  # type: ignore[attr-defined]
+    IOSettings,
+    UncompiledTrackedModelSpecs,
+)
 
 
 def main() -> None:
