@@ -1,10 +1,12 @@
-"""Test settings."""
-
 # Source
-from src.settings import KeyWordTrainSettings
+from src.settings import TrackedKeywordModelSpecs, TrackedKeywordsBaseModelCard
 
 
-def test_settings_init():
-    """Test initialize settings."""
-    settings = KeyWordTrainSettings()
-    assert settings.NEPTUNE_PROJECT == "onclusive/keywords"
+def test_tracked_keyword_model_specs():
+
+    TrackedKeywordModelSpecs()
+
+
+def test_tracked_keywords_base_model_card():
+
+    TrackedKeywordsBaseModelCard()
