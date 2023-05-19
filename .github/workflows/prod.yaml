@@ -54,6 +54,7 @@ jobs:
     needs: [run-repository-state]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
+      upload-compiled-model: true
       self-hosted-runner-type: inf1.xlarge
       environment: prod
       project: keywords
