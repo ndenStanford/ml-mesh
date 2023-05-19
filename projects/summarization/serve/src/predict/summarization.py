@@ -41,7 +41,7 @@ class SummarizationHandler:
         input_dict = {"desired_length": desired_length, "content": text}
         # prompt = prompt.format(**input_dict)
         headers = {"x-api-key": settings.PROMPT_API_KEY}
-        logger.debug('@' * 10)
+        logger.debug("@" * 10)
         logger.debug(input_dict)
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, prompt_id),

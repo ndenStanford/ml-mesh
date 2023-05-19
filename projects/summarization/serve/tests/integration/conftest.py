@@ -5,8 +5,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Source
-from src.app import create_app
 from src._init import _setup_prompts
+from src.app import create_app
 
 
 @pytest.fixture(scope="session")

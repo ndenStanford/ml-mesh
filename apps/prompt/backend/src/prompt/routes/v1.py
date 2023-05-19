@@ -158,9 +158,9 @@ def generate(id: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
     """
     prompt_template = PromptTemplateSchema.get(id)
-    logger.debug('prompt_template')
+    logger.debug("prompt_template")
     logger.debug(prompt_template)
-    logger.debug('values')
+    logger.debug("values")
     logger.debug(values)
     prompt = prompt_template.prompt(**values)
     return {

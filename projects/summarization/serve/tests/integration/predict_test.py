@@ -16,7 +16,7 @@ input = (
 @pytest.mark.parametrize("input", input)
 class TestParametrized:
     def test_turbo(self, test_client, input):
-        print('$' * 10)
+        print("$" * 10)
         """Test prediction endpoint."""
         response = test_client.post(
             "/v1/summarization/gpt3/predict",
