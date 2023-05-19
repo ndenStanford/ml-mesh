@@ -17,7 +17,7 @@ def test_base_table():
         "model_name",
         "parameters",
     ]
-    assert ModelTable._hash_keyname == "id"
+    assert ModelTable._hash_keyname == "model_name"
 
 
 def test_base_table_meta():

@@ -1,4 +1,4 @@
-"""Test routes.x"""
+"""Test routes"""
 
 # Standard Library
 import json
@@ -41,21 +41,23 @@ def test_get_prompts_unauthenticated(test_client):
     assert response.json() == {"detail": "Not authenticated"}
 
 
-@pytest.mark.parametrize("id", [1, 124543, "2423"])
+@pytest.mark.parametrize("alias", ["alias-1", "alias-2", "alias-3"])
 @patch.object(PromptTemplateSchema, "get")
-def test_get_prompt(mock_prompt_get, id, test_client):
+def test_get_prompt(mock_prompt_get, alias, test_client):
     """Test get prompt endpoint."""
     mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template="test template", alias="test alias"
+        template="test template", alias=alias
     )
-    response = test_client.get(f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"})
-    mock_prompt_get.assert_called_with(f"{id}")
+    response = test_client.get(
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
+    )
+    mock_prompt_get.assert_called_with(f"{alias}")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
+        "alias": alias,
         "created_at": None,
-        "id": f"{id}",
         "template": "test template",
-        "alias": "test alias",
+        "id": None,
         "variables": [],
     }
 
@@ -164,7 +166,7 @@ def test_update_prompt(
         id=id, template=template, alias=alias
     )
     response = test_client.put(
-        f"/api/v1/prompts/{id}?template={update}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{alias}?template={update}", headers={"x-api-key": "1234"}
     )
     assert mock_prompt_get.call_count == 2
     assert mock_prompt_update.call_count == 1
@@ -184,23 +186,23 @@ def test_update_prompt_unauthenticated(test_client):
     assert response.json() == {"detail": "Not authenticated"}
 
 
-@pytest.mark.parametrize("id", [1, 124543, "2423"])
+@pytest.mark.parametrize("alias", ["alias-1", "alias-2", "alias-3"])
 @patch.object(PromptTemplateSchema, "get")
 @patch("src.prompt.schemas.PromptTemplateSchema.delete")
-def test_delete_prompt(mock_prompt_delete, mock_prompt_schema, id, test_client):
+def test_delete_prompt(mock_prompt_delete, mock_prompt_schema, alias, test_client):
     """Test delete prompt endpoint."""
     mock_prompt_schema.return_value = PromptTemplateSchema(
-        id=id, template="test template", alias="test alias"
+        template="test template", alias=alias
     )
 
     response = test_client.delete(
-        f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )
 
     assert mock_prompt_schema.call_count == 1
     assert mock_prompt_delete.call_count == 1
 
-    mock_prompt_schema.assert_called_with(f"{id}")
+    mock_prompt_schema.assert_called_with(f"{alias}")
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == "deleted"
@@ -218,12 +220,12 @@ def test_delete_prompt_protection(
     )
 
     response = test_client.delete(
-        f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )
 
     assert mock_prompt_schema.call_count == 1
 
-    mock_prompt_schema.assert_called_with(f"{id}")
+    mock_prompt_schema.assert_called_with(f"{alias}")
 
     assert response.status_code == status.HTTP_409_CONFLICT
 
@@ -274,7 +276,7 @@ def test_generate_text(
     )
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate", headers={"x-api-key": "1234"}, json=values
+        f"/api/v1/prompts/{alias}/generate", headers={"x-api-key": "1234"}, json=values
     )
     # check openai method is called
     mock_openai_chat.assert_called_with(
@@ -295,11 +297,12 @@ def test_generate_text(
 
 
 @pytest.mark.parametrize(
-    "id, template, model_id, model_name, values, generated",
+    "id, template, alias, model_id, model_name, values, generated",
     [
         (
             1,
             "Write me a {count}-verse poem about {topic}",
+            "poem",
             2,
             "text-davinci-003",
             {"count": 3, "topic": "machine learning"},
@@ -308,6 +311,7 @@ def test_generate_text(
         (
             "3",
             "What's the most popular {type} framework?",
+            "framework",
             "4",
             "text-curie-001",
             {"type": "web"},
@@ -324,6 +328,7 @@ def test_generate_text_with_diff_model(
     mock_model_get,
     id,
     template,
+    alias,
     model_id,
     model_name,
     values,
@@ -334,7 +339,7 @@ def test_generate_text_with_diff_model(
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias="test alias"
+        id=id, template=template, alias=alias
     )
 
     parameters = json.dumps(
@@ -348,7 +353,7 @@ def test_generate_text_with_diff_model(
     )
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate/model/{model_id}",
+        f"/api/v1/prompts/{alias}/generate/model/{model_name}",
         headers={"x-api-key": "1234"},
         json=values,
     )
@@ -369,11 +374,12 @@ def test_generate_text_with_diff_model(
 
 
 @pytest.mark.parametrize(
-    "id, template, model_id, model_name, values",
+    "id, template, alias, model_id, model_name, values",
     [
         (
             1,
             "Write me a {count}-verse poem about {topic}",
+            "poem",
             2,
             "model-x",
             {"count": 3, "topic": "machine learning"},
@@ -387,6 +393,7 @@ def test_generate_text_with_diff_model_model_not_found(
     mock_model_get,
     id,
     template,
+    alias,
     model_id,
     model_name,
     values,
@@ -395,7 +402,7 @@ def test_generate_text_with_diff_model_model_not_found(
     """Test text generation endpoint."""
     # set mock return values
     mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias="test alias"
+        id=id, template=template, alias=alias
     )
     parameters = json.dumps(
         {
@@ -408,7 +415,7 @@ def test_generate_text_with_diff_model_model_not_found(
     )
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate/model/{model_id}",
+        f"/api/v1/prompts/{alias}/generate/model/{model_id}",
         headers={"x-api-key": "1234"},
         json=values,
     )
