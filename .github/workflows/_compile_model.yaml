@@ -95,18 +95,19 @@ jobs:
     needs:
       - set-up-runner
     runs-on: ${{ needs.set-up-runner.outputs.label }}
+    environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - uses: dorny/paths-filter@v2
-        id: files-changed
-        name: Get a list of modified files.
-        with:
-          list-files: shell
-          filters: |
-            this:
-              - added | modified: 'keywords/compile/config/.prod'
+      # - uses: dorny/paths-filter@v2
+      #   id: files-changed
+      #   name: Get a list of modified files.
+      #   with:
+      #     list-files: shell
+      #     filters: |
+      #       this:
+      #         - added | modified: 'keywords/compile/config/.prod'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
