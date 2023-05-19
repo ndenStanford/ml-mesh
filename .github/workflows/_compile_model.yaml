@@ -110,7 +110,7 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -120,11 +120,11 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Download uncompiled model
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Downloading Uncompiled Model'
           make projects.compile/keywords \
@@ -134,7 +134,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Compile Model
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Compiling Model'
           make projects.compile/keywords \
@@ -144,7 +144,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Validate Compiled Model
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           echo 'Validating Compiled Model'
           make projects.compile/keywords \
@@ -154,7 +154,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
-        if: ${{ steps.files-changed.outputs.this == 'true' && inputs.upload-compiled-model || !inputs.pull-request }}
+        #if: ${{ steps.files-changed.outputs.this == 'true' && inputs.upload-compiled-model || !inputs.pull-request }}
         run: |
           echo 'Uploading Compiled Model'
           make projects.compile/keywords \
