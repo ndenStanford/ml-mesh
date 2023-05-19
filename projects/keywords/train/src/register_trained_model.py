@@ -10,7 +10,10 @@ from transformers import pipeline
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.settings import TrackedKeywordModelSpecs, TrackedKeywordsBaseModelCard
+from src.settings import (  # type: ignore[attr-defined]
+    TrackedKeywordModelSpecs,
+    TrackedKeywordsBaseModelCard,
+)
 
 
 def main() -> None:
