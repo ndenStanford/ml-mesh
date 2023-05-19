@@ -94,7 +94,6 @@ jobs:
     name: Compile and register a base or trained model
     needs:
       - set-up-runner
-      - set-image-reference
     runs-on: ${{ needs.set-up-runner.outputs.label }}
     steps:
       - name: Check out code
