@@ -58,7 +58,7 @@ jobs:
       self-hosted-runner-type: inf1.xlarge
       environment: prod
       project: keywords
-      tag: 2023.5.12
+      tag: 2023.5.14
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
