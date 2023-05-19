@@ -1,4 +1,4 @@
-"""Test schemas."""
+"""Schemas Test."""
 
 # 3rd party libraries
 import pytest
@@ -49,7 +49,7 @@ def test_get_exists(template, alias):
     """Test get item from table."""
     schema = PromptTemplateSchema(template=template, alias=alias).save()
 
-    schema_from_db = PromptTemplateSchema.get(schema.id)
+    schema_from_db = PromptTemplateSchema.get(schema.alias)
 
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
@@ -62,7 +62,7 @@ def test_get_exists(template, alias):
     [
         (
             "Transalte this test {text} to {target_lang}",
-            "alias5",
+            "alias-5",
             "Translate this text {text} from {source_lang} to {target_lang}",
         )
     ],
@@ -73,7 +73,7 @@ def test_update(template, alias, updated_template):
 
     schema.update(template=updated_template)
 
-    updated_schema = PromptTemplateSchema.get(schema.id)
+    updated_schema = PromptTemplateSchema.get(schema.alias)
 
     assert updated_schema.id == schema.id
     assert updated_schema.created_at == schema.created_at

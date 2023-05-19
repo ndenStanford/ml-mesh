@@ -13,5 +13,5 @@ class ModelTable(BaseTable):
     class Meta(BaseTable.Meta):
         table_name = "model"
 
-    model_name = UnicodeAttribute(null=False)
+    model_name = UnicodeAttribute(null=False, hash_key=True)
     parameters = UnicodeAttribute(null=True)
