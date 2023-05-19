@@ -28,17 +28,17 @@ class SummarizationHandler:
     def inference(
         self,
         text: str,
-        max_tokens: int,
+        desired_length: int,
         lang: str,
     ) -> str:
         """Summarization prediction handler method.
         Args:
             text (str):
-            max_tokens (int):
+            desired_length (int):
             lang (str):
         """
         prompt_id = self.get_prompt(lang)
-        input_dict = {"max_tokens": max_tokens, "content": text}
+        input_dict = {"desired_length": desired_length, "content": text}
         # prompt = prompt.format(**input_dict)
         headers = {"x-api-key": settings.PROMPT_API_KEY}
         q = requests.post(
@@ -106,13 +106,13 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
             )
 
         text = _service.pre_process(data["content"])
-        max_tokens = data["max_tokens"]
+        desired_length = data["desired_length"]
         lang = data["lang"]
 
         starttime = datetime.datetime.utcnow()
         summary = _service.inference(
             text,
-            max_tokens,
+            desired_length,
             lang,
         )
         endtime = datetime.datetime.utcnow()

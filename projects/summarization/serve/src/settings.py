@@ -44,12 +44,12 @@ class Settings(BaseSettings):
         "en": {
             "alias": "english-summarization-prompt",
             "template": "Give an abstractive summary while retaining important \
-                        quotes of speech in less than {word_num} words: \n {content} \n",
+                        quotes of speech in less than {desired_length} words: \n {content} \n",
         },
         "fr": {
             "alias": "french-summarization-prompt",
             "template": "Donner un résumé abstrait tout en gardant l'importance \
-                        citations de discours en moins de {word_num} mots: \n {content} \n",
+                        citations de discours en moins de {desired_length} mots: \n {content} \n",
         },
     }
 

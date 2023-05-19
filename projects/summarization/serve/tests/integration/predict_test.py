@@ -21,7 +21,7 @@ class TestParametrized:
             "/v1/summarization/gpt3/predict",
             json={
                 "content": input,
-                "max_tokens": 512,
+                "desired_length": 100,
                 "lang": "en",
             },
         )
@@ -33,7 +33,7 @@ class TestParametrized:
             "/v1/summarization/gpt3/predict",
             json={
                 "content": input,
-                "max_tokens": 512,
+                "desired_length": 100,
                 "lang": "en",
             },
         )
