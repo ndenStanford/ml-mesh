@@ -2,13 +2,20 @@
 __pycache__/
 *.py[cod]
 *$py.class
+test_model
+*/**/*.pt
+test_file_directory_downloaded/
+libs/models/onclusiveml/models/keywords/compiled_pipeline_long
+libs/models/onclusiveml/models/keywords/compiled_pipeline_short
+libs/models/onclusiveml/models/keywords/compiled_pipeline_medium
+neuron_compiled_document_pipeline
+neuron_compiled_word_pipeline
 
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -212,3 +219,18 @@ yarn-error.log*
 .env
 Brewfile.lock.json
 .envrc
+
+# bazel
+bazel-bin
+bazel-bin/
+bazel-lib
+bazel-lib/
+bazel-out
+bazel-out/
+bazel-testlogs
+bazel-testlogs/
+bazel-ml-mesh
+bazel-ml-mesh/
+
+# neptune
+.neptune

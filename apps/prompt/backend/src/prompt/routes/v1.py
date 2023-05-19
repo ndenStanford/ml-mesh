@@ -52,24 +52,25 @@ def get_prompts():
 
 
 @router.get(
-    "/{id}",
+    "/{alias}",
     status_code=status.HTTP_200_OK,
     response_model=PromptTemplateOutputSchema,
     dependencies=[Security(get_api_key)],
 )
-def get_prompt(id: str):
-    """Retrieves prompt via id.
+def get_prompt(alias: str):
+    """Retrieves prompt via alias.
 
     Args:
-        id (str): prompt id
+        alias (str): alias
     """
     try:
         return PromptTemplateOutputSchema.from_template_schema(
-            PromptTemplateSchema.get(id)
+            PromptTemplateSchema.get(alias)
         )
     except PromptTemplateTable.DoesNotExist as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"{str(e)} - (id={str(id)})"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{str(e)} - (alias={str(alias)})",
         )
 
 
@@ -96,35 +97,35 @@ def create_prompt(template: str, alias: str):
 
 
 @router.put(
-    "/{id}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
+    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
 )
-def update_prompt(id: str, template: str):
+def update_prompt(alias: str, template: str):
     """Updates prompt.
 
     Args:
-        id (str): prompt id
+        alias (str): alias
         template (str): prompt template text.
     """
-    prompt = PromptTemplateSchema.get(id)
+    prompt = PromptTemplateSchema.get(alias)
     prompt.update(template=template)
-    return PromptTemplateSchema.get(id)
+    return PromptTemplateSchema.get(alias)
 
 
 @router.delete(
-    "/{id}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
+    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
 )
-def delete_prompt(id: str):
+def delete_prompt(alias: str):
     """Deletes prompt from database.
 
     Args:
-        id (str): prompt id
+        alias (str): prompt alias
 
     Raises:
-        HTTPException.DoesNotExist if id is not found in table.
+        HTTPException.DoesNotExist if alias is not found in table.
     """
     try:
         delete = True
-        prompt = PromptTemplateSchema.get(id)
+        prompt = PromptTemplateSchema.get(alias)
         for _, x in settings.LIST_OF_PROMPTS.items():
             if prompt.alias in x[1]:
                 delete = False
@@ -136,28 +137,29 @@ def delete_prompt(id: str):
         else:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=f"Cannot delete predefined prompts - (id={str(id)})",
+                detail=f"Cannot delete predefined prompts - (alias={str(alias)})",
             )
 
     except PromptTemplateTable.DoesNotExist as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"{str(e)} - (id={str(id)})"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{str(e)} - (alias={str(alias)})",
         )
 
 
 @router.post(
-    "/{id}/generate",
+    "/{alias}/generate",
     status_code=status.HTTP_200_OK,
     dependencies=[Security(get_api_key)],
 )
-def generate(id: str, values: Dict[str, Any]):
+def generate(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template.
 
     Args:
-        id (str): prompt id
+        alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(id)
+    prompt_template = PromptTemplateSchema.get(alias)
     prompt = prompt_template.prompt(**values)
     return {
         "prompt": prompt,
@@ -171,21 +173,21 @@ def generate(id: str, values: Dict[str, Any]):
 
 
 @router.post(
-    "/{id}/generate/model/{model_id}",
+    "/{alias}/generate/model/{model_name}",
     status_code=status.HTTP_200_OK,
     dependencies=[Security(get_api_key)],
 )
-def generate_with_diff_model(id: str, model_id: str, values: Dict[str, Any]):
+def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]):
     """Generates text using a prompt template.
 
     Args:
-        id (str): prompt id
-        model_id (str): model id
+        alias (str): prompt alias
+        model_name (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(id)
+    prompt_template = PromptTemplateSchema.get(alias)
     prompt = prompt_template.prompt(**values)
-    model = ModelSchema.get(model_id)
+    model = ModelSchema.get("model_name")
     return {
         "generated": generate_text(
             prompt,
