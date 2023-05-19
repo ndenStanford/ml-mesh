@@ -9,6 +9,7 @@ services:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization
@@ -22,14 +23,14 @@ services:
         "--host",
         "0.0.0.0",
         "--port",
-        "8001",
+        "8888",
         "--reload",
         "--log-level",
         "debug",
       ]
     profiles: ["serve"]
     ports:
-      - 8001:8001
+      - 8888:8888
     volumes:
       - type: bind
         source: serve/src
@@ -42,6 +43,9 @@ services:
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -51,6 +55,7 @@ services:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization
@@ -80,6 +85,7 @@ services:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization
@@ -112,6 +118,7 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
@@ -130,7 +137,7 @@ services:
         "--log-level",
         "debug",
       ]
-    profiles: ["integration"]
+    profiles: ["serve", "integration"]
     ports:
       - 4000:4000
     environment:
@@ -163,7 +170,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: ["integration"]
+    profiles: ["serve", "integration"]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
