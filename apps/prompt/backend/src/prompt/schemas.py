@@ -9,7 +9,16 @@ from typing import List, Optional, Union
 from pydantic import BaseModel
 
 # Source
+from src.prompt.exceptions import (
+    DeletionProtectedPrompt,
+    PromptNotFound,
+    PromptVersionNotFound,
+)
 from src.prompt.tables import PromptTemplateTable
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 class PromptTemplateSchema(BaseModel):
@@ -22,6 +31,7 @@ class PromptTemplateSchema(BaseModel):
     id: Optional[str] = None
     template: str
     alias: str
+    version: int = 0
     created_at: Optional[str] = None
 
     @property
@@ -40,6 +50,7 @@ class PromptTemplateSchema(BaseModel):
         prompt = PromptTemplateTable(
             template=self.template,
             alias=self.alias,
+            version=self.version,
         )
         prompt.save()
         prompt_dict = json.loads(prompt.to_json())
@@ -47,18 +58,34 @@ class PromptTemplateSchema(BaseModel):
             id=prompt_dict["id"],
             template=prompt_dict["template"],
             alias=prompt_dict["alias"],
+            version=prompt_dict["version"],
             created_at=prompt_dict["created_at"],
         )
 
     def delete(self) -> None:
-        prompt = PromptTemplateTable.get(self.alias)
+        """Deletes prompt from table."""
+        prompt = self.get(self.alias)
+
+        if prompt is None:
+            raise PromptNotFound(alias=self.alias)
+
+        for _, x in settings.LIST_OF_PROMPTS.items():
+            if prompt.alias in x[1]:
+                raise DeletionProtectedPrompt(alias=self.alias)
         prompt.delete()
 
     @classmethod
     def get(
-        cls, alias: Optional[str] = None
-    ) -> Union["PromptTemplateSchema", List["PromptTemplateSchema"]]:
-        """Returns row of the table."""
+        cls,
+        alias: Optional[str] = None,
+        version: Optional[int] = None,
+        raises_if_not_found: bool = False,
+    ) -> Optional[Union["PromptTemplateSchema", List["PromptTemplateSchema"]]]:
+        """Returns row of the table.
+
+        Raises:
+
+        """
         if alias is None:
             return list(
                 map(
@@ -66,16 +93,30 @@ class PromptTemplateSchema(BaseModel):
                     list(PromptTemplateTable.scan()),
                 )
             )
-        return PromptTemplateSchema(
-            **json.loads(PromptTemplateTable.get(alias).to_json())
-        )
+        if version is None:
+            # if no version specified get the latest.
+            query = list(PromptTemplateTable.query(alias, scan_index_forward=False))
+        else:
+            query = list(
+                PromptTemplateTable.query(alias, PromptTemplateTable.version == version)
+            )
+        if not query:
+            if raises_if_not_found:
+                if version is None:
+                    raise PromptNotFound(alias=alias)
+                else:
+                    raise PromptVersionNotFound(alias=alias, version=version)
+            return None
+        return PromptTemplateSchema(**json.loads(query[0].to_json()))
 
-    def update(self, **kwargs) -> None:
-        """Updates table record."""
-        prompt = PromptTemplateTable.get(self.alias)
-        prompt.update(
-            actions=[PromptTemplateTable.template.set(kwargs.get("template"))]
-        )
+    def update(self, **kwargs) -> "PromptTemplateSchema":
+        """Updates table record from latest version."""
+        query = list(PromptTemplateTable.query(self.alias, scan_index_forward=False))
+        return PromptTemplateSchema(
+            template=kwargs.get("template"),
+            alias=self.alias,
+            version=int(query[0].version) + 1,
+        ).save()
 
 
 class PromptTemplateOutputSchema(BaseModel):
@@ -85,6 +126,7 @@ class PromptTemplateOutputSchema(BaseModel):
     template: str
     created_at: Optional[str] = None
     variables: List[str] = []
+    version: int
     alias: str
 
     @classmethod
@@ -100,6 +142,7 @@ class PromptTemplateOutputSchema(BaseModel):
                         template=x.template,
                         created_at=x.created_at,
                         variables=x.variables,
+                        version=x.version,
                         alias=x.alias,
                     ),
                     input,
@@ -110,6 +153,7 @@ class PromptTemplateOutputSchema(BaseModel):
             template=input.template,
             created_at=input.created_at,
             variables=input.variables,
+            version=input.version,
             alias=input.alias,
         )
 
