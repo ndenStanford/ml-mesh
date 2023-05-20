@@ -42,9 +42,6 @@ class SummarizationHandler:
         input_dict = {"desired_length": desired_length, "content": text}
         # prompt = prompt.format(**input_dict)
         headers = {"x-api-key": settings.PROMPT_API_KEY}
-        logger.debug("@" * 10)
-        logger.debug(input_dict)
-        logger.debug(alias)
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
             headers=headers,
@@ -59,22 +56,6 @@ class SummarizationHandler:
     def pre_process(self, text: str) -> str:
         text = re.sub("\n+", " ", text)
         return text
-
-    """
-    def get_prompt(self, lang):
-        headers = {"x-api-key": settings.PROMPT_API_KEY}
-        q = requests.get(
-            "{}/api/v1/prompts".format(settings.PROMPT_API), headers=headers
-        )
-        prompts = eval(q.content)["prompts"]
-        english_prompt_dict = [
-            prompt
-            for prompt in prompts
-            if prompt["alias"] == settings.PROMPT_DICT[lang]["alias"]
-        ]
-        prompt_id = english_prompt_dict[0]["id"]
-        return prompt_id
-    """
 
 
 _service = SummarizationHandler()

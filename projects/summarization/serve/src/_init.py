@@ -15,16 +15,12 @@ logger = get_default_logger(__name__)
 
 def init() -> None:
     """App initialization."""
-    logger.debug("*" * 10)
-    logger.debug("App Initialization")
-    logger.info("Downloading model...")
+    logger.info("Setting up prompts...")
     _setup_prompts()
 
 
 def _setup_prompts() -> None:
     """Setup prompts"""
-    logger.debug("+" * 10)
-    logger.debug("Setup prompts")
     headers = {"x-api-key": settings.PROMPT_API_KEY}
 
     for lang, prompt_dict in settings.PROMPT_DICT.items():
