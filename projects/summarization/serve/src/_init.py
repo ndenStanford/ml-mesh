@@ -24,8 +24,6 @@ def _setup_prompts() -> None:
     headers = {"x-api-key": settings.PROMPT_API_KEY}
 
     for lang, prompt_dict in settings.PROMPT_DICT.items():
-        logger.debug(lang)
-        logger.debug(prompt_dict)
         alias = prompt_dict["alias"]
         template = prompt_dict["template"]
         requests.post(
