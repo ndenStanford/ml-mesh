@@ -37,7 +37,7 @@ class SummarizationHandler:
             desired_length (int):
             lang (str):
         """
-        #prompt_id = self.get_prompt(lang)
+        # prompt_id = self.get_prompt(lang)
         alias = settings.PROMPT_DICT[lang]["alias"]
         input_dict = {"desired_length": desired_length, "content": text}
         # prompt = prompt.format(**input_dict)
