@@ -44,6 +44,7 @@ class SummarizationHandler:
         headers = {"x-api-key": settings.PROMPT_API_KEY}
         logger.debug("@" * 10)
         logger.debug(input_dict)
+        logger.debug(alias)
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
             headers=headers,
