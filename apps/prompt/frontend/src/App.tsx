@@ -15,6 +15,7 @@ import {
   generateTextFromPrompt,
   deletePrompt,
 } from "./state/slices/prompts";
+import { getModels } from "./state/slices/models";
 import { addModal, hideModal, showModal } from "./state/slices/modals";
 import {
   addMessage,
@@ -30,7 +31,7 @@ import { MESSAGE_SEND_ANIMATION_DELAY } from "./constants";
 export default function App() {
   const dispatch = useGlobalDispatch();
   // TODO: add button to clear the states to their inital values.
-  const { app, prompts, modals, chat } = useGlobalSelector(
+  const { app, prompts, models, modals, chat } = useGlobalSelector(
     (state: GlobalState) => state
   );
 
@@ -43,9 +44,12 @@ export default function App() {
   useEffect(() => {
     if (firstRender.current) {
       dispatch(getPrompts());
+      dispatch(getModels());
       firstRender.current = false;
       prompts.list.map((item) => dispatch(addModal(item.id)));
+      models.list.map((item) => dispatch(addModal(item.id)));
       dispatch(addModal(APP_MODALS.NEW_PROMPT));
+      dispatch(addModal(APP_MODALS.SETTINGS));
     }
   }, []);
 
@@ -141,15 +145,23 @@ export default function App() {
     <>
       <Layout state={app}>
         <SideBar
+          models={models}
           title={"Onclusive Prompt Manager"}
           subtitle={"Onclusive Machine Learning"}
           onActionClick={() => {
             dispatch(showModal(APP_MODALS.NEW_PROMPT));
           }}
+          onSettingsClick={() => {
+            dispatch(showModal(APP_MODALS.SETTINGS));
+          }}
           hideModal={() => {
             dispatch(hideModal(APP_MODALS.NEW_PROMPT));
           }}
+          hideSettingsModal={() => {
+            dispatch(hideModal(APP_MODALS.SETTINGS));
+          }}
           isNewPromptModalVisible={modals.list[APP_MODALS.NEW_PROMPT]}
+          isSettingsVisible={modals.list[APP_MODALS.SETTINGS]}
           onModalActionClick={(template: string, alias: string) => {
             // NOTE: reloading the page here is a hack because redux should take
             // care of this when the state is updated.
@@ -203,7 +215,7 @@ export default function App() {
         <Chat
           header={"Chat"}
           subtitle={"Send messages with prompt templates."}
-          state={{ app, prompts, modals, chat }}
+          state={{ app, prompts, models, modals, chat }}
           onChatActionClick={() => {
             dispatch(clearMessages());
           }}

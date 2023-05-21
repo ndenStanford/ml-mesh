@@ -3,6 +3,7 @@ import styles from "./side-bar.module.scss";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
 import { ReactComponent as AddIcon } from "../../icons/add.svg";
+import { ReactComponent as SettingsIcon } from "../../icons/settings.svg";
 import { SidebarProps } from "@/src/types";
 
 export default class SideBar extends React.Component<SidebarProps, any> {
@@ -39,6 +40,11 @@ export default class SideBar extends React.Component<SidebarProps, any> {
                   icon={<AddIcon />}
                   text="New Prompt"
                   onClick={this.props.onActionClick}
+                />
+                <Button
+                  icon={<SettingsIcon />}
+                  text="Settings"
+                  onClick={this.props.onSettingsClick}
                 />
               </div>
             </div>
@@ -100,6 +106,53 @@ export default class SideBar extends React.Component<SidebarProps, any> {
                   className={styles["context-input"]}
                   onChange={this.handleTextAliasChange}
                 ></textarea>
+              </div>
+            </div>
+          </Modal>
+        )}
+        {this.props.isSettingsVisible && (
+          <Modal
+            title={"Settings"}
+            actions={[
+              <Button
+                key="send"
+                text={"Save Settings"}
+                onClick={() => {
+                  if (
+                    !(
+                      this.state.textAreaValue === "" ||
+                      this.state.textAliasValue == ""
+                    )
+                  )
+                    this.props.onModalActionClick?.(
+                      this.state.textAreaValue,
+                      this.state.textAliasValue
+                    );
+                  this.props.hideSettingsModal();
+                }}
+              />,
+            ]}
+            onClose={this.props.hideSettingsModal}
+          >
+            <div className={styles["context-prompt"]}>
+              <div className={styles["context-prompt-row"]}>
+                <div className={styles["context-prompt-header"]}>
+                  <span>Onclusive Prompt Settings</span>
+                </div>
+              </div>
+
+              <div className={styles["context-prompt-row"]}>
+                <div className={styles["context-role"]}>
+                  <label>Models</label>
+                </div>
+                <select
+                  className={styles["context-input"]}
+                  // onChange={this.handleTextAreaChange}
+                >
+                  {this.props.models.list.map((model: any, index: any) => (
+                    <option value={model.model_name}>{model.model_name}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </Modal>

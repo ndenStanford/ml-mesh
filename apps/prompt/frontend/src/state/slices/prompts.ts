@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { PromptListItemProps, PromptsState } from "@/src/types";
+import {
+  ModelListItemProps,
+  PromptListItemProps,
+  PromptsState,
+} from "@/src/types";
 import { API_URI, API_KEY } from "../../constants";
 
 export const getPrompts = createAsyncThunk("prompts/list", async () => {
@@ -21,7 +25,6 @@ export const getPrompts = createAsyncThunk("prompts/list", async () => {
         created_at: prompt.created_at,
         selected: prompt.selected,
       };
-      console.log(promptItem);
       return promptItem;
     }
   );
