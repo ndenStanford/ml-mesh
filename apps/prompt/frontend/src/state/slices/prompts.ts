@@ -21,7 +21,6 @@ export const getPrompts = createAsyncThunk("prompts/list", async () => {
         created_at: prompt.created_at,
         selected: prompt.selected,
       };
-      console.log(promptItem);
       return promptItem;
     }
   );
