@@ -3,6 +3,9 @@
 # 3rd party libraries
 import openai
 
+# Internal libraries
+from onclusiveml.core.retry import retry
+
 # Source
 from src.model.constants import ModelEnum
 from src.settings import get_settings
@@ -11,6 +14,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
+@retry(tries=2)
 def generate_text(
     prompt: str, model_name: str, max_tokens: int, temperature: float
 ) -> str:
