@@ -199,6 +199,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
     }
 
 
+# TODO: make new endpoint for frontend when using a different model
 @router.get(
     "/generate/{prompt}",
     status_code=status.HTTP_200_OK,
