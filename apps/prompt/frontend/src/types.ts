@@ -29,6 +29,8 @@ export interface SidebarProps {
   hideModal: any;
   hideSettingsModal: any;
   onModalActionClick?: (() => void) | ((arg0: any, arg1: any) => void);
+  onSettingsActionClick?: (() => void) | ((arg0: any) => void);
+  defaultModelName: string;
   models: any;
 }
 

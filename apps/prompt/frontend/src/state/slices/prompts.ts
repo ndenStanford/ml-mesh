@@ -81,8 +81,17 @@ export const deletePrompt = createAsyncThunk(
 
 export const generateTextFromPrompt = createAsyncThunk(
   "prompts/generate/prompt",
-  async ({ alias, body }: { alias: string; body: any }, thunkAPI: any) => {
-    const response = await fetch(`${API_URI}/prompts/${alias}/generate`, {
+  async (
+    { alias, body, modelName }: { alias: string; body: any; modelName: string },
+    thunkAPI: any
+  ) => {
+    var suffix = "";
+    if (modelName != "gpt-3.5-turbo") {
+      suffix = `prompts/${alias}/generate/model/${modelName}`;
+    } else {
+      suffix = `prompts/${alias}/generate`;
+    }
+    const response = await fetch(`${API_URI}/${suffix}`, {
       method: "POST",
       headers: {
         accept: "application/json",

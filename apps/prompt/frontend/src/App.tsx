@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Layout,
   SideBar,
@@ -29,6 +29,10 @@ import { v4 as uuidv4 } from "uuid";
 import { MESSAGE_SEND_ANIMATION_DELAY } from "./constants";
 
 export default function App() {
+  var modelName = String(localStorage.getItem("modelName"));
+  if (!modelName || modelName == "" || modelName == null) {
+    modelName = "gpt-3.5-turbo";
+  }
   const dispatch = useGlobalDispatch();
   // TODO: add button to clear the states to their inital values.
   const { app, prompts, models, modals, chat } = useGlobalSelector(
@@ -96,7 +100,8 @@ export default function App() {
   async function handleSendMessageWithPrompt(
     dct: Dictionary,
     id: string,
-    alias: string
+    alias: string,
+    modelName: string
   ) {
     const message = {
       id: uuidv4(),
@@ -116,36 +121,36 @@ export default function App() {
       isUser: false,
     } as Message;
     dispatch(addMessage(response));
-    dispatch(generateTextFromPrompt({ alias: alias, body: dct })).then(
-      async (content) => {
-        const final_message = {
-          id: message.id,
-          date: message.date,
-          isError: message.isError,
-          content: content.payload.prompt,
-          isLoading: false,
-          isUser: true,
-        } as Message;
-        const final_response = {
-          id: response.id,
-          date: response.date,
-          isError: response.isError,
-          content: content.payload.generated,
-          isLoading: false,
-          isUser: false,
-        } as Message;
-        dispatch(addMessage(final_message));
-        await delay(1.5 * MESSAGE_SEND_ANIMATION_DELAY);
-        dispatch(addMessage(final_response));
-      }
-    );
+    dispatch(
+      generateTextFromPrompt({ alias: alias, body: dct, modelName: modelName })
+    ).then(async (content) => {
+      const final_message = {
+        id: message.id,
+        date: message.date,
+        isError: message.isError,
+        content: content.payload.prompt,
+        isLoading: false,
+        isUser: true,
+      } as Message;
+      const final_response = {
+        id: response.id,
+        date: response.date,
+        isError: response.isError,
+        content: content.payload.generated,
+        isLoading: false,
+        isUser: false,
+      } as Message;
+      dispatch(addMessage(final_message));
+      await delay(1.5 * MESSAGE_SEND_ANIMATION_DELAY);
+      dispatch(addMessage(final_response));
+    });
   }
-
   return (
     <>
       <Layout state={app}>
         <SideBar
-          models={models}
+          defaultModelName={modelName}
+          models={models.list}
           title={"Onclusive Prompt Manager"}
           subtitle={"Onclusive Machine Learning"}
           onActionClick={() => {
@@ -183,6 +188,12 @@ export default function App() {
 
             window.location.reload();
           }}
+          onSettingsActionClick={(newModelName: string) => {
+            console.log(newModelName);
+            console.log(newModelName);
+            console.log(newModelName);
+            localStorage.setItem("modelName", newModelName);
+          }}
         >
           <PromptList>
             {prompts.list.map((item) => (
@@ -198,7 +209,7 @@ export default function App() {
                     dispatch(showModal(item.id));
                   },
                   onSendClick: (dct: Dictionary, id: string, alias: string) => {
-                    handleSendMessageWithPrompt(dct, id, alias);
+                    handleSendMessageWithPrompt(dct, id, alias, modelName);
                   },
                   onDeleteClick: (alias: string) => {
                     handleDeletePrompt(alias);

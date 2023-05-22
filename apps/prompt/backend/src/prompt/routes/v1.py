@@ -187,14 +187,15 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
     """
     prompt_template = PromptTemplateSchema.get(alias)
     prompt = prompt_template.prompt(**values)
-    model = ModelSchema.get("model_name")
+    model = ModelSchema.get(model_name)
     return {
+        "prompt": prompt,
         "generated": generate_text(
             prompt,
             model.model_name,
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
-        )
+        ),
     }
 
 

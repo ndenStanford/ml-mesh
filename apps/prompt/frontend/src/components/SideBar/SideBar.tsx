@@ -12,6 +12,7 @@ export default class SideBar extends React.Component<SidebarProps, any> {
     this.state = {
       textAreaValue: "",
       textAliasValue: "",
+      modelNameValue: this.props.defaultModelName,
     };
   }
 
@@ -20,6 +21,9 @@ export default class SideBar extends React.Component<SidebarProps, any> {
   };
   handleTextAliasChange = (event: any) => {
     this.setState({ textAliasValue: event.target.value });
+  };
+  handleModelNameChange = (event: any) => {
+    this.setState({ modelNameValue: event.target.value });
   };
 
   render() {
@@ -118,16 +122,7 @@ export default class SideBar extends React.Component<SidebarProps, any> {
                 key="send"
                 text={"Save Settings"}
                 onClick={() => {
-                  if (
-                    !(
-                      this.state.textAreaValue === "" ||
-                      this.state.textAliasValue == ""
-                    )
-                  )
-                    this.props.onModalActionClick?.(
-                      this.state.textAreaValue,
-                      this.state.textAliasValue
-                    );
+                  this.props.onSettingsActionClick?.(this.state.modelNameValue);
                   this.props.hideSettingsModal();
                 }}
               />,
@@ -147,9 +142,10 @@ export default class SideBar extends React.Component<SidebarProps, any> {
                 </div>
                 <select
                   className={styles["context-input"]}
-                  // onChange={this.handleTextAreaChange}
+                  value={this.state.modelNameValue}
+                  onChange={this.handleModelNameChange}
                 >
-                  {this.props.models.list.map((model: any, index: any) => (
+                  {this.props.models.map((model: any, index: any) => (
                     <option value={model.model_name}>{model.model_name}</option>
                   ))}
                 </select>
