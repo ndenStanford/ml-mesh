@@ -39,12 +39,14 @@ export default class SideBar extends React.Component<SidebarProps, any> {
           <div className={styles["sidebar-body"]}>{this.props.children}</div>
           <div className={styles["sidebar-tail"]}>
             <div className={styles["sidebar-actions"]}>
-              <div className={styles["sidebar-action"]}>
+              <div className={styles["sidebar-actions"]}>
                 <Button
                   icon={<AddIcon />}
                   text="New Prompt"
                   onClick={this.props.onActionClick}
                 />
+              </div>
+              <div className={styles["sidebar-actions"]}>
                 <Button
                   icon={<SettingsIcon />}
                   text="Settings"
