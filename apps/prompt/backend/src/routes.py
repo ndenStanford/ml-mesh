@@ -4,6 +4,7 @@
 from fastapi import APIRouter, status
 
 # Source
+from src.model.routes import v1_router as model_v1_router
 from src.prompt.routes import v1_router as prompt_v1_router
 
 
@@ -18,3 +19,4 @@ async def health() -> str:
 
 
 api_router.include_router(prompt_v1_router)
+api_router.include_router(model_v1_router)

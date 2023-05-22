@@ -2,6 +2,11 @@ ARG PYTHON_VERSION=3.8.16
 
 FROM python:${PYTHON_VERSION}-slim as builder
 
+ARG IMAGE_NAME
+
+ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
+
 ENV HOME="/home"
 
 ENV PYTHONUNBUFFERED=1 \
@@ -16,11 +21,11 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_NO_INTERACTION=1
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get -y install --no-install-recommends libpq-dev build-essential && \
+    apt-get -y install --no-install-recommends curl vim procps && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

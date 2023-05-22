@@ -11,12 +11,12 @@ This project contains the modular implementation of the logic powering Onclusive
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
+- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
 - **train**: model training.
 - **compile**: model compilation (it can be so that the model runs on a specific architecture of a model quantization);
 - **serve**: model served as a REST API.
-- **backfill**: data enriched with a previous version of the model is re-enriched with a newer version.
-- **show**: UI component with streamlit.
+- **display**: UI component with streamlit.
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component behaviour (input, processing and output).
 This allows us to create well defined patterns that can be applied specifically to implement each of these steps on new projects.

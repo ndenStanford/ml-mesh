@@ -1,8 +1,11 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=kubeflow-jupyter
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+ARG AWS_ACCOUNT_ID
+ARG IMAGE_TAG
+
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-jupyter:$IMAGE_TAG as builder
+
+ARG IMAGE_NAME
+
+ENV HOME="docker/${IMAGE_NAME}"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -10,10 +13,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # switch to NB_UID for installs
 USER ${NB_UID}
 
-WORKDIR "${HOME}"
+WORKDIR "/"
 
 # install - poetry requirements
-COPY --chown=${NB_USER}:users ./poetry.lock ./pyproject.toml ./
+COPY --chown="${NB_USER}:users" ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+
+WORKDIR "${HOME}"
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \

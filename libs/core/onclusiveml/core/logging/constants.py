@@ -8,6 +8,12 @@ from enum import Enum
 
 DEFAULT_LOGGING_HANDLER: logging.Handler = logging.StreamHandler(sys.stdout)
 
+DEBUG = logging.DEBUG
+INFO = logging.INFO
+WARNING = logging.WARNING
+ERROR = logging.ERROR
+CRITICAL = logging.CRITICAL
+
 
 class LogFormat(Enum):
     """Standardized logging formats."""

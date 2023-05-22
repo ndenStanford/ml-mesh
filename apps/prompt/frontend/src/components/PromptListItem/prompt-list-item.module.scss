@@ -1,0 +1,151 @@
+.prompt-list-item {
+  padding: 5px 7px;
+  background-color: var(--white);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--primary);
+}
+
+.prompt-list-item:hover {
+  background-color: var(--hover-color);
+}
+
+.prompt-list-item-selected {
+  border-color: var(--primary);
+}
+
+.prompt-list-item-alias {
+  font-size: 14px;
+  font-weight: bolder;
+  display: block;
+  width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prompt-list-item-delete {
+  position: absolute;
+  top: 10px;
+  right: -20px;
+  transition: all ease 0.3s;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.prompt-list-item:hover > .prompt-list-item-delete {
+  opacity: 0.5;
+  right: 10px;
+}
+
+.prompt-list-item:hover > .prompt-list-item-delete:hover {
+  opacity: 1;
+}
+
+.prompt-list-item-info {
+  display: block;
+  justify-content: space-between;
+  color: rgb(166, 166, 166);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.prompt-list-item-template {
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: var(--black);
+}
+
+.prompt-list-item-date {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: right;
+  font-size: 11px;
+}
+
+.context-prompt {
+  .context-prompt-row {
+    display: flex;
+    justify-content: center;
+    width: 100% !important;
+    margin-bottom: 10px;
+
+    .context-prompt-header {
+      display: block;
+      width: 100% !important;
+      margin-bottom: 10px;
+
+      span {
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      div {
+        background-color: var(--gray);
+        border-radius: 6px;
+        padding: 10px;
+        font-size: 12px;
+        user-select: text;
+      }
+    }
+
+    .context-role {
+      border: var(--border-in-light);
+      border-radius: 10px;
+      padding: 10px;
+      margin-right: 10px;
+      font-family: inherit;
+      background-color: var(--white);
+      color: var(--black);
+      resize: none;
+      font-size: 12px;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .context-content {
+      flex: 1;
+      max-width: 100%;
+      text-align: left;
+    }
+
+    .context-delete-button {
+      margin-left: 10px;
+    }
+  }
+
+  .context-prompt-button {
+    flex: 1;
+  }
+
+  .context-input {
+    border: var(--border-in-light);
+    border-radius: 10px;
+    padding: 10px;
+    font-family: inherit;
+    background-color: var(--white);
+    color: var(--black);
+    resize: none;
+    min-width: 50px;
+    width: 100% !important;
+  }
+  .buttons {
+    margin: 0 auto;
+    display: inline;
+  }
+  .prompt-buttons {
+    margin: 0 auto;
+    display: inline;
+  }
+}
