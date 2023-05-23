@@ -57,7 +57,7 @@ jobs:
         id: export-tag
         run: |
           if [[ ${{ inputs.pull-request }} = true ]]; then
-            echo "tag=${{ steps.get-commit-sha.outputs.tag }}" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.job }}" >> $GITHUB_OUTPUT
           else
             echo "tag=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
           fi
