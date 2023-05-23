@@ -1,9 +1,10 @@
 """Data models."""
 
 # Standard Library
+import datetime
 import json
 from string import Formatter
-from typing import List, Optional, Union
+from typing import List, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -32,7 +33,7 @@ class PromptTemplateSchema(BaseModel):
     template: str
     alias: str
     version: int = 0
-    created_at: Optional[str] = None
+    created_at: Optional[datetime.datetime] = None
 
     @property
     def variables(self) -> List[str]:
@@ -64,15 +65,18 @@ class PromptTemplateSchema(BaseModel):
 
     def delete(self) -> None:
         """Deletes prompt from table."""
-        prompt = self.get(self.alias)
+        prompts = PromptTemplateTable.query(self.alias, scan_index_forward=False)
 
-        if prompt is None:
+        prompts = list(prompts)
+
+        if not prompts:
             raise PromptNotFound(alias=self.alias)
 
-        for _, x in settings.LIST_OF_PROMPTS.items():
-            if prompt.alias in x[1]:
-                raise DeletionProtectedPrompt(alias=self.alias)
-        prompt.delete()
+        for prompt in prompts:
+            for _, x in settings.LIST_OF_PROMPTS.items():
+                if prompt.alias in x[1]:
+                    raise DeletionProtectedPrompt(alias=self.alias)
+            prompt.delete()
 
     @classmethod
     def get(
@@ -80,11 +84,13 @@ class PromptTemplateSchema(BaseModel):
         alias: Optional[str] = None,
         version: Optional[int] = None,
         raises_if_not_found: bool = False,
-    ) -> Optional[Union["PromptTemplateSchema", List["PromptTemplateSchema"]]]:
+    ) -> Optional[List["PromptTemplateSchema"]]:
         """Returns row of the table.
 
-        Raises:
+        Note: returns a list even when the
 
+        Raises:
+            PromptNotFound: of
         """
         if alias is None:
             return list(
@@ -95,11 +101,14 @@ class PromptTemplateSchema(BaseModel):
             )
         if version is None:
             # if no version specified get the latest.
-            query = list(PromptTemplateTable.query(alias, scan_index_forward=False))
+            query = PromptTemplateTable.query(alias, scan_index_forward=False)
         else:
-            query = list(
-                PromptTemplateTable.query(alias, PromptTemplateTable.version == version)
+            query = PromptTemplateTable.query(
+                alias, PromptTemplateTable.version == version
             )
+
+        query = list(query)
+
         if not query:
             if raises_if_not_found:
                 if version is None:
@@ -107,7 +116,19 @@ class PromptTemplateSchema(BaseModel):
                 else:
                     raise PromptVersionNotFound(alias=alias, version=version)
             return None
-        return PromptTemplateSchema(**json.loads(query[0].to_json()))
+
+        return list(
+            map(
+                lambda x: cls(
+                    id=x.id,
+                    template=x.template,
+                    created_at=x.created_at,
+                    version=x.version,
+                    alias=x.alias,
+                ),
+                query,
+            )
+        )
 
     def update(self, **kwargs) -> "PromptTemplateSchema":
         """Updates table record from latest version."""
@@ -124,37 +145,28 @@ class PromptTemplateOutputSchema(BaseModel):
 
     id: Optional[str] = None
     template: str
-    created_at: Optional[str] = None
+    created_at: Optional[datetime.datetime] = None
     variables: List[str] = []
     version: int
     alias: str
 
     @classmethod
     def from_template_schema(
-        cls, input: Union[PromptTemplateSchema, List[PromptTemplateSchema]]
-    ) -> "PromptTemplateOutputSchema":
+        cls, input: List[PromptTemplateSchema]
+    ) -> List["PromptTemplateOutputSchema"]:
         """Converts internal schema to output schema."""
-        if isinstance(input, list):
-            return list(
-                map(
-                    lambda x: cls(
-                        id=x.id,
-                        template=x.template,
-                        created_at=x.created_at,
-                        variables=x.variables,
-                        version=x.version,
-                        alias=x.alias,
-                    ),
-                    input,
-                )
+        return list(
+            map(
+                lambda x: cls(
+                    id=x.id,
+                    template=x.template,
+                    created_at=x.created_at,
+                    variables=x.variables,
+                    version=x.version,
+                    alias=x.alias,
+                ),
+                input,
             )
-        return cls(
-            id=input.id,
-            template=input.template,
-            created_at=input.created_at,
-            variables=input.variables,
-            version=input.version,
-            alias=input.alias,
         )
 
 
