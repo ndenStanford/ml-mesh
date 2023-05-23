@@ -70,7 +70,7 @@ def get_prompt(alias: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
-    return PromptTemplateOutputSchema.from_template_schema(prompt)
+    return PromptTemplateOutputSchema.from_template_schema(prompt)[0]
 
 
 @router.post(
@@ -87,8 +87,10 @@ def create_prompt(template: str, alias: str):
     prompt = PromptTemplateSchema.get(alias)
     # if prompt does exist, create a new version
     # otherwise create a new prompt with version 0.
-    if prompt is None:
+    if not prompt:
         return PromptTemplateSchema(template=template, alias=alias).save()
+
+    prompt = prompt[0]
     if prompt.template == template:
         # if no change in the template return the current version
         return prompt
@@ -112,9 +114,11 @@ def update_prompt(alias: str, template: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
+    prompt = prompt[0]
+
     if not prompt.template == template:
         prompt.update(template=template)
-    return PromptTemplateSchema.get(alias)
+    return PromptTemplateSchema.get(alias)[0]
 
 
 @router.delete(
@@ -132,9 +136,14 @@ def delete_prompt(alias: str):
     try:
         PromptTemplateSchema(alias=alias, template="").delete()
         return "deleted"
-    except (PromptNotFound, DeletionProtectedPrompt) as e:
+    except PromptNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except DeletionProtectedPrompt as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
             detail=str(e),
         )
 
@@ -179,7 +188,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
     """
     prompt_template = PromptTemplateSchema.get(alias)
     prompt = prompt_template.prompt(**values)
-    model = ModelSchema.get("model_name")
+    model = ModelSchema.get(model_name)
     return {
         "generated": generate_text(
             prompt,
