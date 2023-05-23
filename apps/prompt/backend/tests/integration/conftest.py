@@ -33,8 +33,8 @@ TEST_MODELS = [
 ]
 
 
-@pytest.fixture(autouse=True)
-def init_tables() -> Generator[None, None, None]:
+@pytest.fixture(scope="session")
+def init_prompt_tables() -> Generator[None, None, None]:
     """Initializes dynamodb tables."""
     if not PromptTemplateTable.exists():
         PromptTemplateTable.create_table(
@@ -44,7 +44,7 @@ def init_tables() -> Generator[None, None, None]:
     PromptTemplateTable.delete_table()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def app() -> FastAPI:
     """Instanciates app."""
     # Source
@@ -53,8 +53,8 @@ def app() -> FastAPI:
     return app
 
 
-@pytest.fixture(autouse=True)
-def init_tables() -> Generator[None, None, None]:  # noqa: F811
+@pytest.fixture(scope="session")
+def init_model_tables() -> Generator[None, None, None]:  # noqa: F811
     """Initializes dynamodb tables."""
     if not ModelTable.exists():
         ModelTable.create_table(
@@ -64,14 +64,16 @@ def init_tables() -> Generator[None, None, None]:  # noqa: F811
     ModelTable.delete_table()
 
 
-@pytest.fixture()
-def test_client(app: FastAPI, init_tables: Any) -> Generator[TestClient, None, None]:
+@pytest.fixture(scope="session")
+def test_client(
+    app: FastAPI, init_prompt_tables: Any, init_model_tables: Any
+) -> Generator[TestClient, None, None]:
     """instanciates test client."""
     yield TestClient(app=app)
 
 
-@pytest.fixture()
-def create_prompts(init_tables):
+@pytest.fixture(scope="module")
+def create_prompts(test_client):
     """Create template for integration tests."""
     res = []
     for template in TEST_PROMPTS:
@@ -79,8 +81,8 @@ def create_prompts(init_tables):
     return res
 
 
-@pytest.fixture()
-def create_models(init_tables):
+@pytest.fixture(scope="module")
+def create_models(test_client):
     """Create model_name for integration tests."""
     res = []
     for model_name in TEST_MODELS:
