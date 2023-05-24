@@ -124,6 +124,10 @@ jobs:
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Setup docker compose manually
+        run: |
+          sudo yum install -y docker-compose-plugin
+
       - name: Check tool versions
         run: |
           docker version
