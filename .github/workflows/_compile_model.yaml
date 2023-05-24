@@ -126,6 +126,7 @@ jobs:
 
       - name: Check docker versions
         run: |
+          export PATH=/opt/aws/neuron/bin:$PATH
           neuron-ls
           docker version
           docker compose version
