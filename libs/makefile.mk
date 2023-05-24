@@ -1,7 +1,7 @@
 # LIBS targets
 
 libs.install/%: ## Installs library and dependencies locally
-	poetry install --directory=libs/$(notdir $@)
+	poetry install --directory=libs/$(notdir $@) --with dev
 
 libs.unit/%: ## Run unit tests for lib
 	python -m pytest libs/$(notdir $@)/onclusiveml/tests/unit -ra -vv --capture=no
