@@ -9,7 +9,6 @@ from pydantic import Field
 # Internal libraries
 from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
-    TrackedGithubActionsSpecs,
     TrackedModelCard,
     TrackedModelSpecs,
     TrackedParams,
@@ -202,8 +201,6 @@ class CompiledKeywordsTrackedModelCard(TrackedModelCard):
     )
 
     compilation_test_settings: CompilationTestSettings = CompilationTestSettings()
-
-    github_action_context: TrackedGithubActionsSpecs = TrackedGithubActionsSpecs()
 
     class Config:
         env_prefix = "compiled_keywords_tracked_model_card_"

@@ -105,3 +105,5 @@ class TrackedModelCard(TrackedParams):
             )
 
         return v
+
+    github_action_context: TrackedGithubActionsSpecs = TrackedGithubActionsSpecs()
