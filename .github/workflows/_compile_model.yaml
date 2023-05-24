@@ -77,7 +77,7 @@ jobs:
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           ec2-image-id: ami-04b40c32c6992d916
           ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-          subnet-id: subnet-0eb8ac7d02ae29e38
+          subnet-id: subnet-0b4bfc562953af299
           security-group-id: sg-00def06a1c2518854
           # iam-role-name: ${{ secrets.AWS_ROLE_TO_ASSUME }} # optional, requires additional permissions
           # TODO: add timestamp and environment name to the instance name
