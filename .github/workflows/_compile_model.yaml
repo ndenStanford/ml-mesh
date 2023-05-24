@@ -127,7 +127,7 @@ jobs:
       - name: Check docker versions
         run: |
           docker version
-          docker compose version
+          docker-compose version
 
       - name: Download uncompiled model
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
