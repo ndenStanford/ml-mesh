@@ -126,7 +126,9 @@ jobs:
 
       - name: Setup docker compose manually
         run: |
+          sudo rm -f /etc/yum.repos.d/neuron.repo
           sudo yum install -y docker-compose-plugin
+          sudo systemctl enable docker
 
       - name: Check tool versions
         run: |
