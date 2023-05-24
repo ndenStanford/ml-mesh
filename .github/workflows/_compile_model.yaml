@@ -124,6 +124,11 @@ jobs:
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Check docker versions
+        run: |
+          docker version
+          docker compose version
+
       - name: Download uncompiled model
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
