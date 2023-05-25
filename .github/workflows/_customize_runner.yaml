@@ -29,23 +29,18 @@ jobs:
       ebs-mount-point: /mnt/ebs
 
     steps:
-      - name: Check disks 1
+      - name: Check disks
         run: |
           df -h
           lsblk
 
-      - name: Mount 200GB of block storage
+      - name: Mount EBS volume
         run: |
           sudo file -s /dev/nvme1n1 # Check for EBS drive
           sudo fdisk -l # List all drives & partitions
           sudo mkfs -t xfs /dev/nvme1n1 # Create filesystem
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
-
-      - name: Check disks 1.5
-        run: |
-          df -h
-          lsblk
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
@@ -66,16 +61,6 @@ jobs:
           export PATH=/opt/aws/neuron/bin:$PATH
           echo "Available neuron devicces:"
           neuron-ls
-
-      - name: Check disks 2
-        run: |
-          df -h
-          lsblk
-
-      - name: Check docker dir
-        run: |
-          echo "Docker installation file directory:"
-          docker info -f '{{ .DockerRootDir}}'
 
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
@@ -100,8 +85,3 @@ jobs:
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
-
-      - name: Check disks 3
-        run: |
-          df -h
-          lsblk

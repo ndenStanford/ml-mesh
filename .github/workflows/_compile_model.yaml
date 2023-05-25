@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       compile:
-        required: false
+        required: true
         default: false
         type: boolean
         description: "Whether to run the compilation pipeline"
@@ -105,8 +105,9 @@ jobs:
       setup-docker-compose: true
       setup-neuron: true
 
-  register-compiled-model:
+  compile-model:
     name: Compile and register a base or trained model
+    if: ${{ inputs.compile }}
     needs: [provision-runner, customize-runner]
     runs-on: ${{ needs.provision-runner.outputs.label }}
     environment: ${{ inputs.environment }}
@@ -138,18 +139,7 @@ jobs:
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Check tool versions
-        run: |
-          docker version
-          docker compose version
-
-      - name: Check disks 4
-        run: |
-          df -h
-          lsblk
-
       - name: Download uncompiled model
-        if: ${{ inputs.compile }}
         run: |
           echo 'Downloading Uncompiled Model'
           make projects.compile/${{ inputs.project }} \
@@ -159,7 +149,6 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Compile Model
-        if: ${{ inputs.compile }}
         run: |
           echo 'Compiling Model'
           make projects.compile/${{ inputs.project }} \
@@ -169,7 +158,6 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Validate Compiled Model
-        if: ${{ inputs.compile }}
         run: |
           echo 'Validating Compiled Model'
           make projects.compile/${{ inputs.project }} \
@@ -179,7 +167,6 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
-        if: ${{ inputs.compile }}
         run: |
           echo 'Uploading Compiled Model'
           make projects.compile/${{ inputs.project }} \
@@ -190,7 +177,7 @@ jobs:
 
   stop-runner:
     name: Stop self-hosted EC2 runner
-    needs: [provision-runner, register-compiled-model]
+    needs: [provision-runner, compile-model]
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
