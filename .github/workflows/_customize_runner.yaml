@@ -36,9 +36,8 @@ jobs:
         run: |
           sudo file -s /dev/nvme1n1 # Check filesystem type (ext4)
           sudo fdisk -l # Find new disk
-          # sudo mkfs -t ext4 /dev/xvdf # Create filesystem
-          #sudo mkdir /ebs
-          #sudo mount -t xfs -o nouuid /dev/nvme1n1 /ebs
+          #sudo mkfs -t xfs /dev/nvme1n1 # Create filesystem
+          sudo mount -t xfs -o nouuid /dev/nvme1n1 /mnt/ebs
 
       - name: Check disks 1.5
         run: |
