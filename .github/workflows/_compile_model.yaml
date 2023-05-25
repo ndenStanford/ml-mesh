@@ -94,8 +94,8 @@ jobs:
     name: Custom installations on runner
     uses: ./.github/workflows/_customize_runner.yaml
     needs: provision-runner
-    runs-on: ${{ needs.provision-runner.outputs.label }}
     with:
+      runner-id: ${{ needs.provision-runner.outputs.label }}
       environment: ${{ inputs.environment }}
       setup-docker-compose: true
       setup-neuron: true
