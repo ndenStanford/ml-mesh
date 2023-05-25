@@ -53,12 +53,13 @@ jobs:
     uses: ./.github/workflows/_compile_model.yaml
     needs: [run-repository-state]
     with:
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      upload-compiled-model: true
-      self-hosted-runner-type: inf1.xlarge
       environment: prod
+      self-hosted-runner-type: inf1.xlarge
+      compile: false
       project: keywords
       tag: 2023.5.14
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      upload-compiled-model: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

@@ -2,15 +2,20 @@ name: Model Compilation
 on:
   workflow_call:
     inputs:
+      environment:
+        required: true
+        type: string
+        description: "Environment where code is deployed [prod, stage]"
+      self-hosted-runner-type:
+        required: false
+        default: inf1.6xlarge
+        type: string
+        description: "Which EC2 instance type to provide as a self hosted runner."
       compile:
         required: false
         default: false
         type: boolean
         description: "Whether to run the compilation pipeline"
-      environment:
-        required: true
-        type: string
-        description: "Environment where code is deployed [prod, stage]"
       project:
         required: true
         type: string
@@ -29,11 +34,6 @@ on:
         type: boolean
         default: true
         description: "Whether to upload the compiled model to the Neptune AI model registry"
-      self-hosted-runner-type:
-        required: false
-        default: inf1.6xlarge
-        type: string
-        description: "Which EC2 instance type to provide as a self hosted runner."
     secrets:
       AWS_ACCOUNT_ID:
         required: true
