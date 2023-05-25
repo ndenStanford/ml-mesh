@@ -97,7 +97,7 @@ jobs:
     with:
       runner-id: ${{ needs.provision-runner.outputs.label }}
       environment: ${{ inputs.environment }}
-      setup-docker-compose: true
+      setup-docker-compose: false
       setup-neuron: true
 
   register-compiled-model:
