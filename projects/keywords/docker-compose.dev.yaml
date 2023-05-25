@@ -141,6 +141,8 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command:
       [
+        "python",
+        "-m",
         "pytest",
         "src/test_compiled_model",
         "-ra",
