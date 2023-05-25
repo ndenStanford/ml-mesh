@@ -189,9 +189,6 @@ export default function App() {
             window.location.reload();
           }}
           onSettingsActionClick={(newModelName: string) => {
-            console.log(newModelName);
-            console.log(newModelName);
-            console.log(newModelName);
             localStorage.setItem("modelName", newModelName);
           }}
         >
