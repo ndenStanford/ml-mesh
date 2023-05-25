@@ -3,8 +3,8 @@ on:
   workflow_call:
     inputs:
       compile:
-        required: true
-        default: false
+        required: false
+        default: true
         type: boolean
         description: "Whether to run the compilation pipeline"
       environment:
