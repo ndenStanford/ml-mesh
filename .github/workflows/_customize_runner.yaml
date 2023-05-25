@@ -80,15 +80,22 @@ jobs:
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
         run: |
+          echo "Stopping all docker processes"
+          sudo systemctl stop docker
+          sudo systemctl stop docker.socket
+          sudo systemctl stop containerd
           echo "Installing docker compose"
           sudo yum update -y
           sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
           sudo yum install -y docker-compose-plugin jq
+          echo "Configuring docker dir to mounted EBS volume"
           sudo touch /etc/docker/daemon.json
-          sudo jq -n --arg mount_point "${{ env.ebs-mount-point }}" '{"data-root": "$mount_point/docker"}' > /etc/docker/daemon.json
+          sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
+          echo "Restarting docker"
           sudo systemctl enable docker
+          sudo systemctl start docker
           echo "Docker installation file directory:"
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
