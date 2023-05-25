@@ -2,6 +2,10 @@ name: Customize Runner
 on:
   workflow_call:
     inputs:
+      # runner-id:
+      #   required: true
+      #   type: string
+      #   description: "Unique runner label, serving as an identifier of the runner that we want to customize."
       environment:
         required: true
         type: string
@@ -18,7 +22,6 @@ on:
 jobs:
   set-up-runner:
     name: Start self-hosted EC2 runner
-    runs-on: ubuntu-latest
 
     steps:
       - name: Install docker compose

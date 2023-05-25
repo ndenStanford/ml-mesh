@@ -93,8 +93,7 @@ jobs:
   customize-runner:
     name: Custom installations on runner
     uses: ./.github/workflows/_customize_runner.yaml
-    needs:
-      - provision-runner
+    needs: provision-runner
     runs-on: ${{ needs.provision-runner.outputs.label }}
     with:
       environment: ${{ inputs.environment }}
@@ -103,9 +102,7 @@ jobs:
 
   register-compiled-model:
     name: Compile and register a base or trained model
-    needs:
-      - provision-runner
-      - customize-runner
+    needs: [provision-runner, customize-runner]
     runs-on: ${{ needs.provision-runner.outputs.label }}
     environment: ${{ inputs.environment }}
     steps:
@@ -183,9 +180,7 @@ jobs:
 
   stop-runner:
     name: Stop self-hosted EC2 runner
-    needs:
-      - provision-runner
-      - register-compiled-model
+    needs: [provision-runner, register-compiled-model]
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
