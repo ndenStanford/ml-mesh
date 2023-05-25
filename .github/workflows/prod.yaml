@@ -55,10 +55,10 @@ jobs:
     with:
       environment: prod
       self-hosted-runner-type: inf1.xlarge
-      compile: false
       project: keywords
       tag: 2023.5.14
       pull-request: ${{ github.event_name == 'pull_request' }}
+      compile: true
       upload-compiled-model: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
