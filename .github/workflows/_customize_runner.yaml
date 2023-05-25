@@ -82,7 +82,7 @@ jobs:
           sudo yum update -y
           sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
-          sudo yum install -y docker-compose-plugin
+          sudo yum install -y docker-compose-plugin jq
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg mount_point "${{ env.ebs-mount-point }}" '{"data-root": "$mount_point/docker"}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
