@@ -50,7 +50,7 @@ on:
         description: "Github PAT to allow EC2 instance to connect to Github repository content."
 
 jobs:
-  set-up-runner:
+  provision-runner:
     name: Start self-hosted EC2 runner
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
