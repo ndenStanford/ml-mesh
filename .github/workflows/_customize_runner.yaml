@@ -34,7 +34,7 @@ jobs:
 
       - name: Mount 200GB of block storage
         run: |
-          mkdir /ebs
+          sudo mkdir /ebs
           sudo mount -t xfs -o nouuid /dev/nvme1n1 /ebs
 
       - name: Check disks 1.5
