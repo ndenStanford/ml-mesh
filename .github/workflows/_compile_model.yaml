@@ -4,7 +4,7 @@ on:
     inputs:
       compile:
         required: false
-        default: true
+        default: false
         type: boolean
         description: "Whether to run the compilation pipeline"
       environment:
@@ -34,89 +34,56 @@ on:
         default: inf1.6xlarge
         type: string
         description: "Which EC2 instance type to provide as a self hosted runner."
-    # secrets:
-    #   AWS_ACCOUNT_ID:
-    #     required: true
-    #     description: "AWS account ID."
-    #   AWS_DEFAULT_REGION:
-    #     required: true
-    #     description: "AWS account region"
-    #   AWS_ACCESS_KEY_ID:
-    #     required: true
-    #     description: "AWS access key ID."
-    #   AWS_SECRET_ACCESS_KEY:
-    #     required: true
-    #     description: "AWS secret access key"
-    #   AWS_ROLE_TO_ASSUME:
-    #     required: true
-    #     description: "AWS IAM role to assume."
-    #   GH_PERSONAL_ACCESS_TOKEN:
-    #     required: true
-    #     description: "Github PAT to allow EC2 instance to connect to Github repository content."
-    #   NEPTUNE_API_TOKEN:
-    #     required: true
-    #     description: "The API token for the neptune service account managing the model registry."
+    secrets:
+      AWS_ACCOUNT_ID:
+        required: true
+        description: "AWS account ID."
+      AWS_DEFAULT_REGION:
+        required: true
+        description: "AWS account region"
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: "AWS access key ID."
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: "AWS secret access key"
+      AWS_ROLE_TO_ASSUME:
+        required: true
+        description: "AWS IAM role to assume."
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: "Github PAT to allow EC2 instance to connect to Github repository content."
+      NEPTUNE_API_TOKEN:
+        required: true
+        description: "The API token for the neptune service account managing the model registry."
 
 jobs:
   provision-runner:
     name: Provision self-hosted EC2 runner
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    outputs:
-      label: ${{ steps.start-ec2-runner.outputs.label }}
-      ec2-instance-id: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
-
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-duration-seconds: 1200
-          role-session-name: DeployManifests
-
-      - name: Start EC2 runner
-        id: start-ec2-runner
-        uses: machulav/ec2-github-runner@v2
-        with:
-          mode: start
-          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ami-0d2a1f4cfde325652 # <- most recent build artifact from merged PR #357 | ami-04b40c32c6992d916 # <- one of the first successful custom builds # ami-0bef6cc322bfff646 <- official amazon linux 2 - doesnt even have docker
-          ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-          subnet-id: subnet-0b4bfc562953af299
-          security-group-id: sg-00def06a1c2518854
-          # iam-role-name: ${{ secrets.AWS_ROLE_TO_ASSUME }} # optional, requires additional permissions
-          # TODO: add timestamp and environment name to the instance name
-          aws-resource-tags: > # optional, requires additional permissions
-            [
-              {"Key": "Name", "Value": "ml-ec2-github-runner"},
-              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
-              {"Key": "Environment", "Value": "dev"},
-              {"Key": "Stack", "Value": "mesh"},
-              {"Key": "Billing", "Value": "ML"}
-            ]
-
-  customize-runner:
-    name: Customize self-hosted EC2 runner
-    uses: ./.github/workflows/_customize_runner.yaml
-    needs: provision-runner
+    uses: ./.github/workflows/_provision_customized_runner.yaml
     with:
-      runner-id: ${{ needs.provision-runner.outputs.label }}
       environment: ${{ inputs.environment }}
+      self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
       setup-docker-compose: true
       setup-neuron: true
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   compile-model:
     name: Compile and register a base or trained model
-    if: ${{ inputs.compile }}
-    needs: [provision-runner, customize-runner]
-    runs-on: ${{ needs.provision-runner.outputs.label }}
+    needs: provision-runner
+    runs-on: ${{ needs.provision-runner.outputs.runner-label }}
     environment: ${{ inputs.environment }}
+    if: ${{ inputs.compile }}
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+      # - name: Check out code
+      #   uses: actions/checkout@v3
 
       # - uses: dorny/paths-filter@v2
       #   id: files-changed
@@ -204,5 +171,5 @@ jobs:
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ needs.provision-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.provision-runner.outputs.ec2-instance-id }}
+          label: ${{ needs.provision-runner.outputs.runner-label }}
+          ec2-instance-id: ${{ needs.provision-runner.outputs.runner-instance-id }}
