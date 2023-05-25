@@ -73,7 +73,7 @@ jobs:
           lsblk
 
       - name: Check docker dir
-        run: cat /etc/docker/daemon.json
+        run: docker info -f '{{ .DockerRootDir}}'
 
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
@@ -87,6 +87,7 @@ jobs:
           sudo jq -n --arg mount_point "${{ env.ebs-mount-point }}" '{"data-root": "$mount_point/docker"}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
           sudo systemctl enable docker
+          docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
 
