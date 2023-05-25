@@ -35,7 +35,7 @@ jobs:
       - name: Mount 200GB of block storage
         run: |
           mkdir /ebs
-          sudo mount nvme1n1 /ebs
+          sudo mount /dev/nvme1n1 /ebs
 
       - name: Check disks 1.5
         run: |

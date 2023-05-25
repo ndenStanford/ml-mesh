@@ -2,6 +2,11 @@ name: Model Compilation
 on:
   workflow_call:
     inputs:
+      compile:
+        required: false
+        default: false
+        type: boolean
+        description: "Whether to run the compilation pipeline"
       environment:
         required: true
         type: string
@@ -144,7 +149,7 @@ jobs:
           lsblk
 
       - name: Download uncompiled model
-        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.compile }}
         run: |
           echo 'Downloading Uncompiled Model'
           make projects.compile/${{ inputs.project }} \
@@ -154,7 +159,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Compile Model
-        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.compile }}
         run: |
           echo 'Compiling Model'
           make projects.compile/${{ inputs.project }} \
@@ -164,7 +169,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Validate Compiled Model
-        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.compile }}
         run: |
           echo 'Validating Compiled Model'
           make projects.compile/${{ inputs.project }} \
@@ -174,7 +179,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
-        #if: ${{ steps.files-changed.outputs.this == 'true' && inputs.upload-compiled-model || !inputs.pull-request }}
+        if: ${{ inputs.compile }}
         run: |
           echo 'Uploading Compiled Model'
           make projects.compile/${{ inputs.project }} \
