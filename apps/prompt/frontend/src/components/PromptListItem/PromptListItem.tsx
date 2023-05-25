@@ -59,7 +59,7 @@ export default function PromptListItem(props: {
                   }}
                 />
                 {/* Hiding button from prompt form for now */}
-                ,
+                {/* ,
                 <Button
                   key="send"
                   icon={<DeleteIcon />}
@@ -68,7 +68,7 @@ export default function PromptListItem(props: {
                     props.hideModal();
                     props.item.onDeleteClick(props.item.alias);
                   }}
-                />
+                /> */}
               </div>
             </div>,
           ]}
