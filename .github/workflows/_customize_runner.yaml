@@ -25,6 +25,8 @@ jobs:
   set-up-runner:
     name: Customize self-hosted EC2 runner
     runs-on: ${{ inputs.runner-id }}
+    env:
+      ebs-mount-point: /mnt/ebs
 
     steps:
       - name: Check disks 1
@@ -34,11 +36,11 @@ jobs:
 
       - name: Mount 200GB of block storage
         run: |
-          sudo file -s /dev/nvme1n1 # Check filesystem type (ext4)
-          sudo fdisk -l # Find new disk
+          sudo file -s /dev/nvme1n1 # Check for EBS drive
+          sudo fdisk -l # List all drives & partitions
           sudo mkfs -t xfs /dev/nvme1n1 # Create filesystem
-          sudo mkdir /mnt/ebs
-          sudo mount -t xfs -o nouuid /dev/nvme1n1 /mnt/ebs
+          sudo mkdir /mnt/ebs # Create mount point
+          sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
       - name: Check disks 1.5
         run: |
@@ -81,6 +83,9 @@ jobs:
           sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
           sudo yum install -y docker-compose-plugin
+          sudo touch /etc/docker/daemon.json
+          sudo jq -n --arg mount_point "${{ env.ebs-mount-point }}" '{"data-root": "$mount_point/docker"}' > /etc/docker/daemon.json
+          cat /etc/docker/daemon.json
           sudo systemctl enable docker
           echo "Docker compose installation complete. Version:"
           docker compose version
