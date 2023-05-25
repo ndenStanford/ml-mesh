@@ -23,7 +23,7 @@ def _setup_prompts() -> None:
     """Setup prompts"""
     headers = {"x-api-key": settings.PROMPT_API_KEY}
 
-    for lang, prompt_dict in settings.PROMPT_DICT.items():
+    for _, prompt_dict in settings.PROMPT_DICT.items():
         alias = prompt_dict["alias"]
         template = prompt_dict["template"]
         requests.post(
