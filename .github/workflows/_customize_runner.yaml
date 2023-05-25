@@ -23,7 +23,7 @@ on:
 
 jobs:
   set-up-runner:
-    name: Start self-hosted EC2 runner
+    name: Customize self-hosted EC2 runner
     runs-on: ${{ inputs.runner-id }}
 
     steps:
@@ -31,6 +31,13 @@ jobs:
         if: ${{ inputs.setup-docker-compose == 'true' }}
         run: |
           echo "Installing docker compose"
+          sudo yum update
+          sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
+          sudo yum install -y docker-compose-plugin
+          sudo systemctl enable docker
+          echo "Docker compose installation complete. Version:"
+          docker compose version
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron == 'true' }}

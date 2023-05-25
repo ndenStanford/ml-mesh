@@ -51,7 +51,7 @@ on:
 
 jobs:
   provision-runner:
-    name: Start self-hosted EC2 runner
+    name: Provision self-hosted EC2 runner
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
@@ -91,7 +91,7 @@ jobs:
             ]
 
   customize-runner:
-    name: Custom installations on runner
+    name: Customize self-hosted EC2 runner
     uses: ./.github/workflows/_customize_runner.yaml
     needs: provision-runner
     with:
