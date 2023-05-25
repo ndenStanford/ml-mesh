@@ -39,11 +39,9 @@ on:
         description: "Github PAT to allow EC2 instance to connect to Github repository content."
     outputs:
       runner-label:
-        type: string
         description: "Unique runner label, serving as an identifier of the provisioned, customized runner."
         value: ${{ jobs.provision-runner.outputs.label }}
       runner-instance-id:
-        type: string
         description: "The AWS EC2 instance if of the provisioned, customized runner."
         value: ${{ jobs.provision-runner.outputs.ec2-instance-id }}
 
