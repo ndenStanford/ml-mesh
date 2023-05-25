@@ -80,8 +80,8 @@ jobs:
     environment: ${{ inputs.environment }}
     if: ${{ inputs.compile }}
     steps:
-      # - name: Check out code
-      #   uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v3
 
       # - uses: dorny/paths-filter@v2
       #   id: files-changed
