@@ -60,7 +60,6 @@ on:
 jobs:
   provision-runner:
     name: Provision self-hosted EC2 runner
-    environment: ${{ inputs.environment }}
     uses: ./.github/workflows/_provision_customized_runner.yaml
     with:
       environment: ${{ inputs.environment }}
