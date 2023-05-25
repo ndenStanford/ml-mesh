@@ -34,7 +34,7 @@ jobs:
 
       - name: Mount 200GB of block storage
         run: |
-          sudo file -s /dev/nvme* # Check filesystem type (ext4)
+          sudo file -s /dev/nvme1n1 # Check filesystem type (ext4)
           sudo fdisk -l # Find new disk
           # sudo mkfs -t ext4 /dev/xvdf # Create filesystem
           #sudo mkdir /ebs
