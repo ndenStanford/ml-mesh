@@ -32,6 +32,16 @@ jobs:
           df -h
           lsblk
 
+      - name: Mount 200GB of block storage
+        run: |
+          mkdir /ebs
+          sudo mount nvme1n1 /ebs
+
+      - name: Check disks 1.5
+        run: |
+          df -h
+          lsblk
+
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
         run: |
