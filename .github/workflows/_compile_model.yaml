@@ -90,11 +90,23 @@ jobs:
               {"Key": "Billing", "Value": "ML"}
             ]
 
+  customize-runner:
+    name: Custom installations on runner
+    needs:
+      - provision-runner
+    runs-on: ${{ needs.provision-runner.outputs.label }}
+    uses: ./.github/workflows/_libs.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      setup-docker-compose: true
+      setup-neuron: true
+
   register-compiled-model:
     name: Compile and register a base or trained model
     needs:
-      - set-up-runner
-    runs-on: ${{ needs.set-up-runner.outputs.label }}
+      - provision-runner
+      - customize-runner
+    runs-on: ${{ needs.provision-runner.outputs.label }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
@@ -123,12 +135,6 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
-
-      - name: Setup docker compose manually
-        run: |
-          sudo rm -f /etc/yum.repos.d/neuron.repo
-          sudo yum install -y docker-compose-plugin
-          sudo systemctl enable docker
 
       - name: Check tool versions
         run: |
@@ -178,7 +184,7 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
-      - set-up-runner
+      - provision-runner
       - register-compiled-model
 
     runs-on: ubuntu-latest
@@ -199,5 +205,5 @@ jobs:
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ needs.set-up-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.set-up-runner.outputs.ec2-instance-id }}
+          label: ${{ needs.provision-runner.outputs.label }}
+          ec2-instance-id: ${{ needs.provision-runner.outputs.ec2-instance-id }}

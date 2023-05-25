@@ -1,0 +1,32 @@
+name: Customize Runner
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Environment where code is deployed [prod, stage]"
+      setup-docker-compose:
+        required: false
+        default: true
+        description: "Whether to set up docker compose on the runner."
+      setup-neuron:
+        required: false
+        default: true
+        description: "Whether to set up neuron driver and runtime OS libraries on the runner."
+
+jobs:
+  set-up-runner:
+    name: Start self-hosted EC2 runner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install docker compose
+        if: ${{ inputs.setup-docker-compose == 'true' }}
+        run: |
+          echo "Installing docker compose"
+
+      - name: Install neuron libraries
+        if: ${{ inputs.setup-neuron == 'true' }}
+        run: |
+          echo "Installing neuron libraries"
