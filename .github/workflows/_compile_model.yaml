@@ -92,10 +92,10 @@ jobs:
 
   customize-runner:
     name: Custom installations on runner
+    uses: ./.github/workflows/_customize_runner.yaml
     needs:
       - provision-runner
     runs-on: ${{ needs.provision-runner.outputs.label }}
-    uses: ./.github/workflows/_libs.yaml
     with:
       environment: ${{ inputs.environment }}
       setup-docker-compose: true
