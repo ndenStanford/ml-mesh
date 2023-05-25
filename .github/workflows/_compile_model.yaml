@@ -75,7 +75,7 @@ jobs:
         with:
           mode: start
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ami-04b40c32c6992d916 # <- one of the first successful custom builds # ami-0bef6cc322bfff646 <- official amazon linux 2 - doesnt even have docker
+          ec2-image-id: ami-0d2a1f4cfde325652 # <- most recent build artifact from merged PR #357 | ami-04b40c32c6992d916 # <- one of the first successful custom builds # ami-0bef6cc322bfff646 <- official amazon linux 2 - doesnt even have docker
           ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
           subnet-id: subnet-0b4bfc562953af299
           security-group-id: sg-00def06a1c2518854
