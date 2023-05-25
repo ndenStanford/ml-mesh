@@ -34,28 +34,28 @@ on:
         default: inf1.6xlarge
         type: string
         description: "Which EC2 instance type to provide as a self hosted runner."
-    secrets:
-      AWS_ACCOUNT_ID:
-        required: true
-        description: "AWS account ID."
-      AWS_DEFAULT_REGION:
-        required: true
-        description: "AWS account region"
-      AWS_ACCESS_KEY_ID:
-        required: true
-        description: "AWS access key ID."
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-        description: "AWS secret access key"
-      AWS_ROLE_TO_ASSUME:
-        required: true
-        description: "AWS IAM role to assume."
-      GH_PERSONAL_ACCESS_TOKEN:
-        required: true
-        description: "Github PAT to allow EC2 instance to connect to Github repository content."
-      NEPTUNE_API_TOKEN:
-        required: true
-        description: "The API token for the neptune service account managing the model registry."
+    # secrets:
+    #   AWS_ACCOUNT_ID:
+    #     required: true
+    #     description: "AWS account ID."
+    #   AWS_DEFAULT_REGION:
+    #     required: true
+    #     description: "AWS account region"
+    #   AWS_ACCESS_KEY_ID:
+    #     required: true
+    #     description: "AWS access key ID."
+    #   AWS_SECRET_ACCESS_KEY:
+    #     required: true
+    #     description: "AWS secret access key"
+    #   AWS_ROLE_TO_ASSUME:
+    #     required: true
+    #     description: "AWS IAM role to assume."
+    #   GH_PERSONAL_ACCESS_TOKEN:
+    #     required: true
+    #     description: "Github PAT to allow EC2 instance to connect to Github repository content."
+    #   NEPTUNE_API_TOKEN:
+    #     required: true
+    #     description: "The API token for the neptune service account managing the model registry."
 
 jobs:
   provision-runner:
