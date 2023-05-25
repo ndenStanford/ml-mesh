@@ -53,6 +53,9 @@ on:
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: "Github PAT to allow EC2 instance to connect to Github repository content."
+      NEPTUNE_API_TOKEN:
+        required: true
+        description: "The API token for the neptune service account managing the model registry."
 
 jobs:
   provision-runner:
