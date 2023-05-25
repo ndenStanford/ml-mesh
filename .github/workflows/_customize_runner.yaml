@@ -70,6 +70,9 @@ jobs:
           df -h
           lsblk
 
+      - name: Check docker dir
+        run: cat /etc/docker/daemon.json
+
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
         run: |
