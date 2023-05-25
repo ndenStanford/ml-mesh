@@ -141,6 +141,9 @@ jobs:
       - name: Check disk size 4
         run: df -h
 
+      - name: Check disks
+        run: lsblk
+
       - name: Download uncompiled model
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |

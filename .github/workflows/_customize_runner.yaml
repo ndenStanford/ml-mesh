@@ -30,6 +30,9 @@ jobs:
       - name: Check disk size 1
         run: df -h
 
+      - name: Check disks
+        run: lsblk
+
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
         run: |
