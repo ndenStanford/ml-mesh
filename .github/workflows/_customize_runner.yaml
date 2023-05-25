@@ -27,6 +27,9 @@ jobs:
     runs-on: ${{ inputs.runner-id }}
 
     steps:
+      - name: Check disk size 1
+        run: df -h
+
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
         run: |
@@ -47,6 +50,9 @@ jobs:
           echo "Available neuron devicces:"
           neuron-ls
 
+      - name: Check disk size 2
+        run: df -h
+
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
         run: |
@@ -58,3 +64,6 @@ jobs:
           sudo systemctl enable docker
           echo "Docker compose installation complete. Version:"
           docker compose version
+
+      - name: Check disk size 3
+        run: df -h
