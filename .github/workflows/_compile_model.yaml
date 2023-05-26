@@ -107,6 +107,12 @@ jobs:
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Test neuron compile using core docker test suite - temporary
+        run: |
+          make docker.validate/neuron-compile \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
+
       - name: Download uncompiled model
         run: |
           echo 'Downloading Uncompiled Model'

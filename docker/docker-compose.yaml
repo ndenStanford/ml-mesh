@@ -58,6 +58,8 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: neuron-compile
+    devices:
+      - /dev/neuron0:/dev/neuron0
     command: ["pytest", "tests/core", "-ra", "-vv", "--capture=no"]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
     depends_on:
