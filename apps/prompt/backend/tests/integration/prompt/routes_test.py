@@ -130,4 +130,4 @@ def test_delete_prompt(test_client, alias):
     assert response.json() == "deleted"
 
 
-3
+# TODO: add integration tests for generate endpoints
