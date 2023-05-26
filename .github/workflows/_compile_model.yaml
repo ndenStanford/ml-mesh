@@ -65,9 +65,8 @@ on:
 jobs:
   provision-customized-runner:
     name: Provision self-hosted & customized runner
-    environment: ${{ inputs.environment }}
-    if: ${{ inputs.runner-kind == 'custom' }}
     uses: ./.github/workflows/_provision_customized_runner.yaml
+    if: ${{ inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
