@@ -63,36 +63,37 @@ on:
         description: "The API token for the neptune service account managing the model registry."
 
 jobs:
-  provision-runner:
-    name: Provision self-hosted & customized or standard Github Actions runner
-    runs-on: ubuntu-latest
+  provision-customized-runner:
+    name: Provision self-hosted & customized runner
     environment: ${{ inputs.environment }}
+    if: ${{ inputs.runner-kind == 'custom' }}
+    uses: ./.github/workflows/_provision_customized_runner.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
+      setup-docker-compose: true
+      setup-neuron: true
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+  set-runner-specs:
+    name: Set runner specs conditional on hosting requirements
+    needs: provision-customized-runner
+    if: ${{ always() }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
     steps:
-      - name: Provision self-hosted EC2 runner
-        id: provision-customized-runner
-        if: ${{ inputs.runner-kind == 'custom' }}
-        uses: ./.github/workflows/_provision_customized_runner.yaml
-        with:
-          environment: ${{ inputs.environment }}
-          self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
-          setup-docker-compose: true
-          setup-neuron: true
-        secrets:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
       - name: Toggle runner label
         uses: haya14busa/action-cond@v1
         id: set-runner-label
         with:
           cond: ${{ inputs.runner-kind == 'custom' }}
-          if_true: ${{ steps.provision-customized-runner.outputs.runner-label }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
           if_false: ${{ inputs.runner-kind }}
 
       - name: Toggle runner instance type
@@ -100,13 +101,13 @@ jobs:
         id: set-runner-instance-id
         with:
           cond: ${{ inputs.runner-kind == 'custom' }}
-          if_true: ${{ steps.provision-customized-runner.outputs.runner-instance-id }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
           if_false: ""
 
   compile-model:
     name: Compile and register a base or trained model
-    needs: provision-runner
-    runs-on: ${{ needs.provision-runner.outputs.runner-label }}
+    needs: set-runner-specs
+    runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     environment: ${{ inputs.environment }}
     if: ${{ inputs.compile }}
     steps:
@@ -168,11 +169,11 @@ jobs:
 
   stop-runner:
     name: Stop self-hosted EC2 runner
-    needs: [provision-runner, compile-model]
+    needs: [set-runner-specs, compile-model]
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -188,5 +189,5 @@ jobs:
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          label: ${{ needs.provision-runner.outputs.runner-label }}
-          ec2-instance-id: ${{ needs.provision-runner.outputs.runner-instance-id }}
+          label: ${{ needs.set-runner-specs.outputs.runner-label }}
+          ec2-instance-id: ${{ needs.set-runner-specs.outputs.runner-instance-id }}
