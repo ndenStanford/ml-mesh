@@ -131,7 +131,7 @@ jobs:
           sudo rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB
           sudo yum update -y
           sudo yum install kernel-devel-$(uname -r) kernel-headers-$(uname -r) -y
-          sudo yum install ${{ inputs.neuron-driver-version }} -y
+          sudo yum install ${{ inputs.neuron-dkms-version }} -y
           sudo yum install ${{ inputs.neuron-tools-version }} -y
           export PATH=/opt/aws/neuron/bin:$PATH
           echo "Available neuron devicces:"
