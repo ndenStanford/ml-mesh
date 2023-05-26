@@ -160,7 +160,7 @@ def generate(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(alias)
+    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     return {
         "prompt": prompt,
@@ -186,7 +186,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
         model_name (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(alias)
+    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     model = ModelSchema.get(model_name)
     return {
