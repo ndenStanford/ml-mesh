@@ -55,9 +55,6 @@ jobs:
 
     strategy:
       matrix:
-        environment: prod
-        compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
-        upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
         models:
           - runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
@@ -65,13 +62,13 @@ jobs:
             tag: 2023.5.14
 
     with:
-      environment: ${{ matrix.environment }}
+      environment: prod
       runner-kind: ${{ matrix.models.runner-kind }}
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: ${{ matrix.compile }}
-      upload-compiled-model: ${{ matrix.upload-compiled-model }}
+      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
+      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
