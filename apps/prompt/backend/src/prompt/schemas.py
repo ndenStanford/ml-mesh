@@ -34,6 +34,7 @@ class PromptTemplateSchema(BaseModel):
     alias: str
     version: int = 0
     created_at: Optional[datetime.datetime] = None
+    parameters: Optional[str] = ""
 
     @property
     def variables(self) -> List[str]:
@@ -52,6 +53,7 @@ class PromptTemplateSchema(BaseModel):
             template=self.template,
             alias=self.alias,
             version=self.version,
+            parameters=self.parameters,
         )
         prompt.save()
         prompt_dict = json.loads(prompt.to_json())
@@ -61,6 +63,7 @@ class PromptTemplateSchema(BaseModel):
             alias=prompt_dict["alias"],
             version=prompt_dict["version"],
             created_at=prompt_dict["created_at"],
+            parameters=prompt_dict["parameters"],
         )
 
     def delete(self) -> None:
@@ -125,6 +128,7 @@ class PromptTemplateSchema(BaseModel):
                     created_at=x.created_at,
                     version=x.version,
                     alias=x.alias,
+                    parameters=x.parameters,
                 ),
                 query,
             )
@@ -149,6 +153,7 @@ class PromptTemplateOutputSchema(BaseModel):
     variables: List[str] = []
     version: int
     alias: str
+    parameters: Optional[str]
 
     @classmethod
     def from_template_schema(
@@ -164,6 +169,7 @@ class PromptTemplateOutputSchema(BaseModel):
                     variables=x.variables,
                     version=x.version,
                     alias=x.alias,
+                    parameters=x.parameters,
                 ),
                 input,
             )

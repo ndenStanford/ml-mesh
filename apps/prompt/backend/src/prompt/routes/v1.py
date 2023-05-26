@@ -76,19 +76,22 @@ def get_prompt(alias: str):
 @router.post(
     "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
 )
-def create_prompt(template: str, alias: str):
+def create_prompt(template: str, alias: str, parameters: str = ""):
     """Creates prompt.
 
     Args:
         template (str): prompt template text.
         alias (str): alias for template.
+        parameters (str): model and parameters values to be used with prompt
     """
     alias = slugify(alias)
     prompt = PromptTemplateSchema.get(alias)
     # if prompt does exist, create a new version
     # otherwise create a new prompt with version 0.
     if not prompt:
-        return PromptTemplateSchema(template=template, alias=alias).save()
+        return PromptTemplateSchema(
+            template=template, alias=alias, parameters=parameters
+        ).save()
 
     prompt = prompt[0]
     if prompt.template == template:
@@ -162,13 +165,23 @@ def generate(alias: str, values: Dict[str, Any]):
     """
     prompt_template = PromptTemplateSchema.get(alias)
     prompt = prompt_template.prompt(**values)
+    model_name = ModelEnum.GPT3_5.value
+    max_tokens = settings.OPENAI_MAX_TOKENS
+    temperature = settings.OPENAI_TEMPERATURE
+
+    if prompt_template.parameters is not None and prompt_template.parameters != "":
+        model_name = json.loads(prompt_template.parameters)["model_name"]
+        max_tokens = int(json.loads(prompt_template.parameters)["max_tokens"])
+        temperature = float(json.loads(prompt_template.parameters)["temperature"])
+
+    # if parameters field exists, replace model and parameter values
     return {
         "prompt": prompt,
         "generated": generate_text(
             prompt,
-            ModelEnum.GPT3_5.value,
-            settings.OPENAI_MAX_TOKENS,
-            settings.OPENAI_TEMPERATURE,
+            model_name,
+            max_tokens,
+            temperature,
         ),
     }
 
