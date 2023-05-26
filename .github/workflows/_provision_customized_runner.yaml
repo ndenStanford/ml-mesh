@@ -23,14 +23,14 @@ on:
         description: "Whether to set up neuron driver and runtime OS libraries on the runner."
       neuron-dkms-version:
         required: false
-        default: aws-neuron-dkms
-        type: string
-        description: "The neuron driver version to be installed. Valid options are: `aws-neuron-dkms` or `aws-neuronx-dkms-2.*`"
+        default: aws-neuron-dkms-2.3.26.*
+        type: choice
+        description: "The neuron driver version to be installed. Valid options are: `aws-neuron-dkms-2.3.26.*` or `aws-neuronx-dkms-2.*`"
       neuron-tools-version:
         required: false
-        default: aws-neuron-tools
+        default: aws-neuron-tools-2.1.4.*
         type: string
-        description: "The neuron inspection tool suite version to be installed. Valid options are:`aws-neuron-tools` or `aws-neuronx-tools-2.*`"
+        description: "The neuron inspection tool suite version to be installed. Valid options are:`aws-neuron-tools-2.1.4.*` or `aws-neuronx-tools-2.*`"
     secrets:
       AWS_DEFAULT_REGION:
         required: true
