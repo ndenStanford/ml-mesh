@@ -15,13 +15,13 @@ from onclusiveml.core.logging import get_default_logger
 from src.helpers import get_api_key
 from src.model.constants import ModelEnum
 from src.model.schemas import ModelSchema
+from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
 from src.prompt.generate import generate_text
 from src.prompt.schemas import (
     PromptTemplateListSchema,
     PromptTemplateOutputSchema,
     PromptTemplateSchema,
 )
-from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
 
 
@@ -36,12 +36,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "",
-    status_code=status.HTTP_200_OK,
-    response_model=PromptTemplateListSchema,
-    dependencies=[Security(get_api_key)],
-)
+@router.get("", status_code=status.HTTP_200_OK, response_model=PromptTemplateListSchema)
 def get_prompts():
     """List prompts."""
     return {
@@ -55,7 +50,6 @@ def get_prompts():
     "/{alias}",
     status_code=status.HTTP_200_OK,
     response_model=PromptTemplateOutputSchema,
-    dependencies=[Security(get_api_key)],
 )
 def get_prompt(alias: str):
     """Retrieves prompt via alias.
@@ -64,14 +58,13 @@ def get_prompt(alias: str):
         alias (str): alias
     """
     try:
-        return PromptTemplateOutputSchema.from_template_schema(
-            PromptTemplateSchema.get(alias)
-        )
-    except PromptTemplateTable.DoesNotExist as e:
+        prompt = PromptTemplateSchema.get(alias, raises_if_not_found=True)
+    except PromptNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"{str(e)} - (alias={str(alias)})",
+            detail=str(e),
         )
+    return PromptTemplateOutputSchema.from_template_schema(prompt)[0]
 
 
 @router.post(
@@ -85,30 +78,41 @@ def create_prompt(template: str, alias: str):
         alias (str): alias for template.
     """
     alias = slugify(alias)
-    all_prompts = PromptTemplateSchema.get()
-    for prompt in all_prompts:
-        if alias == prompt.alias:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"{alias} already exists in the database, please provide a unique alias",
-            )
-    prompt = PromptTemplateSchema(template=template, alias=alias)
-    return prompt.save()
+    prompt = PromptTemplateSchema.get(alias)
+    # if prompt does exist, create a new version
+    # otherwise create a new prompt with version 0.
+    if not prompt:
+        return PromptTemplateSchema(template=template, alias=alias).save()
+
+    prompt = prompt[0]
+    if prompt.template == template:
+        # if no change in the template return the current version
+        return prompt
+    return prompt.update(template=template)
 
 
 @router.put(
     "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
 )
 def update_prompt(alias: str, template: str):
-    """Updates prompt.
+    """Updates latest version of a prompt.
 
     Args:
         alias (str): alias
         template (str): prompt template text.
     """
-    prompt = PromptTemplateSchema.get(alias)
-    prompt.update(template=template)
-    return PromptTemplateSchema.get(alias)
+    try:
+        prompt = PromptTemplateSchema.get(alias, raises_if_not_found=True)
+    except PromptNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    prompt = prompt[0]
+
+    if not prompt.template == template:
+        prompt.update(template=template)
+    return PromptTemplateSchema.get(alias)[0]
 
 
 @router.delete(
@@ -124,34 +128,21 @@ def delete_prompt(alias: str):
         HTTPException.DoesNotExist if alias is not found in table.
     """
     try:
-        delete = True
-        prompt = PromptTemplateSchema.get(alias)
-        for _, x in settings.LIST_OF_PROMPTS.items():
-            if prompt.alias in x[1]:
-                delete = False
-                break
-        if delete:
-            prompt.delete()
-            delete = True
-            return "deleted"
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"Cannot delete predefined prompts - (alias={str(alias)})",
-            )
-
-    except PromptTemplateTable.DoesNotExist as e:
+        PromptTemplateSchema(alias=alias, template="").delete()
+        return "deleted"
+    except PromptNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"{str(e)} - (alias={str(alias)})",
+            detail=str(e),
+        )
+    except DeletionProtectedPrompt as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e),
         )
 
 
-@router.post(
-    "/{alias}/generate",
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(get_api_key)],
-)
+@router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template.
 
@@ -159,7 +150,7 @@ def generate(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(alias)
+    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     return {
         "prompt": prompt,
@@ -172,11 +163,7 @@ def generate(alias: str, values: Dict[str, Any]):
     }
 
 
-@router.post(
-    "/{alias}/generate/model/{model_name}",
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(get_api_key)],
-)
+@router.post("/{alias}/generate/model/{model_name}", status_code=status.HTTP_200_OK)
 def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]):
     """Generates text using a prompt template.
 
@@ -185,7 +172,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
         model_name (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(alias)
+    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     model = ModelSchema.get(model_name)
     return {
@@ -199,12 +186,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
     }
 
 
-# TODO: make new endpoint for frontend when using a different model
-@router.get(
-    "/generate/{prompt}",
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(get_api_key)],
-)
+@router.get("/generate/{prompt}", status_code=status.HTTP_200_OK)
 def generate_test(prompt: str):
     """Retrieves prompt via id.
     Args:

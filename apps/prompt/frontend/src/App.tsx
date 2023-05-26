@@ -173,14 +173,14 @@ export default function App() {
             // dispatch(createPrompt({ template, alias }));
 
             dispatch(createPrompt({ template, alias })).then((content) => {
-              // alert(JSON.stringify(content));
-              // alert(JSON.stringify(content["payload"]["message"]));
               if ("payload" in content) {
-                if ("message" in content["payload"]) {
-                  if (String(content["payload"]["message"]) == "409") {
-                    alert(
-                      "A prompt with the same alias exists, please use a unique alias."
-                    );
+                if (content["payload"]) {
+                  if ("message" in content["payload"]) {
+                    if (String(content["payload"]["message"]) == "409") {
+                      alert(
+                        "A prompt with the same alias exists, please provide a unique alias."
+                      );
+                    }
                   }
                 }
               }
