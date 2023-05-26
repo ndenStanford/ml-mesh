@@ -6,16 +6,16 @@ on:
         required: true
         type: string
         description: "Environment where code is deployed [prod, stage]"
+      runner-kind:
+        required: true
+        default: custom
+        type: string
+        description: "If 'custom', a customized self hosted runner will be provided. Otherwise needs to be a valid Github Actions runner kind reference."
       self-hosted-runner-type:
         required: false
         default: inf1.6xlarge
         type: string
-        description: "Which EC2 instance type to provide as a self hosted runner."
-      compile:
-        required: false
-        default: false
-        type: boolean
-        description: "Whether to run the compilation pipeline"
+        description: "Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'."
       project:
         required: true
         type: string
@@ -29,6 +29,11 @@ on:
         default: true
         type: boolean
         description: "Indicates whether this workflow is running for a Pull Request."
+      compile:
+        required: false
+        default: false
+        type: boolean
+        description: "Whether to run the compilation pipeline. Useful for testing runner provisioning."
       upload-compiled-model:
         required: false
         type: boolean
@@ -59,19 +64,44 @@ on:
 
 jobs:
   provision-runner:
-    name: Provision self-hosted EC2 runner
-    uses: ./.github/workflows/_provision_customized_runner.yaml
-    with:
-      environment: ${{ inputs.environment }}
-      self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
-      setup-docker-compose: true
-      setup-neuron: true
-    secrets:
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+    name: Provision self-hosted & customized or standard Github Actions runner
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      runner-label: ${{ steps.set-runner-label.outputs.value }}
+      runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
+    steps:
+      - name: Provision self-hosted EC2 runner
+        id: provision-customized-runner
+        if: ${{ inputs.runner-kind == 'custom' }}
+        uses: ./.github/workflows/_provision_customized_runner.yaml
+        with:
+          environment: ${{ inputs.environment }}
+          self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
+          setup-docker-compose: true
+          setup-neuron: true
+        secrets:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Toggle runner label
+        uses: haya14busa/action-cond@v1
+        id: set-runner-label
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ steps.provision-customized-runner.outputs.runner-label }}
+          if_false: ${{ inputs.runner-kind }}
+
+      - name: Toggle runner instance type
+        uses: haya14busa/action-cond@v1
+        id: set-runner-instance-id
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ steps.provision-customized-runner.outputs.runner-instance-id }}
+          if_false: ""
 
   compile-model:
     name: Compile and register a base or trained model
@@ -83,18 +113,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      # - uses: dorny/paths-filter@v2
-      #   id: files-changed
-      #   name: Get a list of modified files.
-      #   with:
-      #     list-files: shell
-      #     filters: |
-      #       this:
-      #         - added | modified: 'keywords/compile/config/.prod'
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
-        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -104,26 +124,7 @@ jobs:
           role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
-
-      # - name: Build python-base with as-is code - temporary
-      #   run: |
-      #     make docker.build/python-base \
-      #       AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-      #       IMAGE_TAG=neuron-runner-test
-
-      # - name: Build neuron-compile base with as-is code - temporary
-      #   run: |
-      #     make docker.build/neuron-compile \
-      #       AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-      #       IMAGE_TAG=neuron-runner-test
-
-      # - name: Test neuron compile using core docker test suite - temporary
-      #   run: |
-      #     make docker.validate/neuron-compile \
-      #       AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-      #       IMAGE_TAG=neuron-runner-test
 
       - name: Download uncompiled model
         run: |

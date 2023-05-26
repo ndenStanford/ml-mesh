@@ -54,6 +54,7 @@ jobs:
     needs: [run-repository-state]
     with:
       environment: prod
+      runner-kind: custom
       self-hosted-runner-type: inf1.xlarge
       project: keywords
       tag: 2023.5.14
