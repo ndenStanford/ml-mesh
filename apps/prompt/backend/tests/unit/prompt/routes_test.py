@@ -335,7 +335,7 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    mock_openai_chat.return_value = {"choices": [{"text": generated}]}
     mock_prompt_get.return_value = [
         PromptTemplateSchema(id=id, template=template, alias=alias)
     ]
