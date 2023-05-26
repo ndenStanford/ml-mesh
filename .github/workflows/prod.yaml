@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix:
         environment: prod
-        compile: ${{ github.event_name == 'push }} # run the compilation pipeline on every release
+        compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
         upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
         models:
           - runner-kind: custom
