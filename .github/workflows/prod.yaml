@@ -80,6 +80,7 @@ jobs:
       functional: ${{ matrix.libs.functional }}
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
 
   # ===============================================
   # DOCKER
