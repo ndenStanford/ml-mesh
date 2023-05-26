@@ -82,6 +82,7 @@ jobs:
   set-runner-specs:
     name: Set runner specs conditional on hosting requirements
     needs: provision-customized-runner
+    runs-on: ubuntu-latest
     if: ${{ always() }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
