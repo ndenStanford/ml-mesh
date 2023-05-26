@@ -67,8 +67,8 @@ jobs:
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
-      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
+      compile: ${{ github.event_name == 'pull-request' }} # run the compilation pipeline on every release
+      upload-compiled-model: ${{ github.event_name == 'pull-request' }} # upload the compiled model on every release
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
