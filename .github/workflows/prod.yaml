@@ -182,17 +182,17 @@ jobs:
             component: compile
             integration: false
 
-          # # ========================
-          # # SUMMARIZATION
-          # # ========================
+          # ========================
+          # SUMMARIZATION
+          # ========================
           # serve
           - name: summarization
             component: serve
             integration: true
 
-          # # ========================
-          # # ENTITY LINKING
-          # # ========================
+          # ========================
+          # ENTITY LINKING
+          # ========================
           # serve
           - name: entity-linking
             component: serve
