@@ -25,7 +25,7 @@ RUN wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEU
 # Install Neuron Driver
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get -yq install --no-install-recommends aws-neuronx-dkms aws-neuronx-tools && \
+    apt-get -yq install --no-install-recommends aws-neuronx-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
