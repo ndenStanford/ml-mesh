@@ -110,6 +110,7 @@ jobs:
       - name: Check neuron & docker compose again
         run: |
           docker compose version
+          export PATH=/opt/aws/neuron/bin:$PATH
           neuron-ls
 
       - name: Build python-base with as-is code - temporary
