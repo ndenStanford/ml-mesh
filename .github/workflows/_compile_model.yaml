@@ -112,6 +112,7 @@ jobs:
           docker compose version
           export PATH=/opt/aws/neuron/bin:$PATH
           neuron-ls
+          ls -l /dev/neuron*
 
       - name: Build python-base with as-is code - temporary
         run: |
