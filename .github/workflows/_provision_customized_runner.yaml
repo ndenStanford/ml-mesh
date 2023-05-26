@@ -24,7 +24,7 @@ on:
       neuron-dkms-version:
         required: false
         default: aws-neuron-dkms-2.3.26.*
-        type: choice
+        type: string
         description: "The neuron driver version to be installed. Valid options are: `aws-neuron-dkms-2.3.26.*` or `aws-neuronx-dkms-2.*`"
       neuron-tools-version:
         required: false
