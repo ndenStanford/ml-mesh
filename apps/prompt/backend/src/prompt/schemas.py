@@ -4,7 +4,7 @@
 import datetime
 import json
 from string import Formatter
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -34,7 +34,7 @@ class PromptTemplateSchema(BaseModel):
     alias: str
     version: int = 0
     created_at: Optional[datetime.datetime] = None
-    parameters: Optional[str] = ""
+    parameters: Optional[Dict[str, Any]] = {}
 
     @property
     def variables(self) -> List[str]:
@@ -63,7 +63,7 @@ class PromptTemplateSchema(BaseModel):
             alias=prompt_dict["alias"],
             version=prompt_dict["version"],
             created_at=prompt_dict["created_at"],
-            parameters=prompt_dict["parameters"],
+            parameters=json.loads(prompt_dict["parameters"]),
         )
 
     def delete(self) -> None:
@@ -96,12 +96,18 @@ class PromptTemplateSchema(BaseModel):
             PromptNotFound: of
         """
         if alias is None:
-            return list(
-                map(
-                    lambda x: PromptTemplateSchema(**json.loads(x.to_json())),
-                    list(PromptTemplateTable.scan()),
-                )
-            )
+            # Cannot use lambda function here as we need to convert parameters field into dict
+            # JSONAttributes doesnt convert "stringed" dicts back to dicts
+            prompt_templates = []
+            prompt_table = PromptTemplateTable.scan()
+            for prompt in prompt_table:
+                prompt_json = prompt.to_json()
+                prompt_data = json.loads(prompt_json)
+                prompt_data["parameters"] = json.loads(prompt_data["parameters"])
+                prompt_template = PromptTemplateSchema(**prompt_data)
+                prompt_templates.append(prompt_template)
+            return prompt_templates
+
         if version is None:
             # if no version specified get the latest.
             query = PromptTemplateTable.query(alias, scan_index_forward=False)
@@ -153,7 +159,7 @@ class PromptTemplateOutputSchema(BaseModel):
     variables: List[str] = []
     version: int
     alias: str
-    parameters: Optional[str]
+    parameters: Optional[Dict[str, Any]] = {}
 
     @classmethod
     def from_template_schema(

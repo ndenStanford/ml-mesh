@@ -2,7 +2,6 @@
 
 # Standard Library
 import datetime
-import json
 
 # 3rd party libraries
 import pytest
@@ -49,13 +48,11 @@ def test_get_prompt(test_client, create_prompts):
         (
             "What personalities are mentionned in this text {text}",
             "aliastwo",
-            json.dumps(
-                {
-                    "model_name": "gpt-4",
-                    "max_tokens": 100,
-                    "temperature": 0.2,
-                }
-            ),
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 100,
+                "temperature": 0.2,
+            },
         ),
     ],
 )
@@ -75,12 +72,12 @@ def test_create_prompt(template, test_client, alias, parameters):
     assert isinstance(data["created_at"], str)
     assert isinstance(data["template"], str)
     assert isinstance(data["alias"], str)
-    assert isinstance(data["parameters"], str)
+    assert isinstance(data["parameters"], dict)
     assert prompt.id == data["id"]
     assert prompt.created_at == datetime.datetime.fromisoformat(data["created_at"])
     assert prompt.template == data["template"]
     assert prompt.alias == data["alias"]
-    assert prompt.parameters == json.loads(data["parameters"])
+    assert prompt.parameters == data["parameters"]
 
 
 @pytest.mark.parametrize(

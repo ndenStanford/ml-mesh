@@ -58,7 +58,7 @@ def test_get_prompt(mock_prompt_get, alias, test_client):
         "created_at": "2022-11-02T08:34:01",
         "template": "test template",
         "id": None,
-        "parameters": "",
+        "parameters": {},
         "variables": [],
         "version": 0,
     }
@@ -103,13 +103,11 @@ def test_create_prompt(mock_prompt_get, mock_table_save, template, alias, test_c
         (
             "Tell me a joke in {language}",
             "joke-in-different-language",
-            json.dumps(
-                {
-                    "model_name": "gpt-4",
-                    "max_tokens": settings.OPENAI_MAX_TOKENS,
-                    "temperature": settings.OPENAI_TEMPERATURE,
-                }
-            ),
+            {
+                "model_name": "gpt-4",
+                "max_tokens": settings.OPENAI_MAX_TOKENS,
+                "temperature": settings.OPENAI_TEMPERATURE,
+            },
         ),
     ],
 )
@@ -135,7 +133,7 @@ def test_create_prompt_with_parameters(
     assert isinstance(data["template"], str)
     assert isinstance(data["alias"], str)
     assert isinstance(data["version"], int)
-    assert isinstance(data["parameters"], str)
+    assert isinstance(data["parameters"], dict)
     assert data["version"] == 0
 
 
@@ -179,14 +177,14 @@ def test_create_prompt_same_alias(
             53463,
             "Quiero un breve resumen de dos líneas de este texto: {text}",
             "alias1",
-            "",
+            {},
             "I would like a brief two-line summary of this text: {text}",
         ),
         (
             "874285",
             "Quel est le framework {type} le plus populaire?",
             "alias2",
-            "",
+            {},
             "What's the most popular {type} framework?",
         ),
     ],
@@ -360,13 +358,11 @@ def test_generate_text(
             "Write me a {count}-verse poem about {topic}",
             {"count": 3, "topic": "machine learning"},
             "alias1",
-            json.dumps(
-                {
-                    "model_name": "gpt-4",
-                    "max_tokens": 100,
-                    "temperature": 0.2,
-                }
-            ),
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 100,
+                "temperature": 0.2,
+            },
             "Verse 1:\nIn the world of tech, there's a buzzword we hear,\nIt's called \"machine learning,\" and it's quite clear,\nIt's a way for computers to learn and adapt,\nTo make predictions and improve how they act.\n\nVerse 2:\nFrom speech recognition to self-driving cars,\nMachine learning is taking us far,\nIt can analyze data and find patterns we miss,\nAnd help us solve problems with greater success.\n\nVerse 3:\nIt's not just for tech, it's used in many fields,\nFrom medicine to finance, it yields great yields,\nWith algorithms that can sort through the noise,\nAnd make sense of data that's vast and diverse.\n\nVerse 4:\nAs we move forward, machine learning will grow,\nAnd change how we work, live, and know,\nIt's a tool that will help us achieve,\nAnd make the impossible, possible, we believe.",  # noqa: E501
         )
     ],
