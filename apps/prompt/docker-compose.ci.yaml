@@ -39,8 +39,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: ["/bin/sh", "-c", "sleep 3s"]
     profiles: ["frontend", "unit"]
-    ports:
-      - 3000:3000
     environment:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234

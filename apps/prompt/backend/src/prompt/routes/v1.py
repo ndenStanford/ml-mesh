@@ -36,12 +36,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "",
-    status_code=status.HTTP_200_OK,
-    response_model=PromptTemplateListSchema,
-    dependencies=[Security(get_api_key)],
-)
+@router.get("", status_code=status.HTTP_200_OK, response_model=PromptTemplateListSchema)
 def get_prompts():
     """List prompts."""
     return {
@@ -55,7 +50,6 @@ def get_prompts():
     "/{alias}",
     status_code=status.HTTP_200_OK,
     response_model=PromptTemplateOutputSchema,
-    dependencies=[Security(get_api_key)],
 )
 def get_prompt(alias: str):
     """Retrieves prompt via alias.
@@ -148,11 +142,7 @@ def delete_prompt(alias: str):
         )
 
 
-@router.post(
-    "/{alias}/generate",
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(get_api_key)],
-)
+@router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template.
 
@@ -160,7 +150,7 @@ def generate(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(alias)
+    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     return {
         "prompt": prompt,
@@ -173,11 +163,7 @@ def generate(alias: str, values: Dict[str, Any]):
     }
 
 
-@router.post(
-    "/{alias}/generate/model/{model_name}",
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(get_api_key)],
-)
+@router.post("/{alias}/generate/model/{model_name}", status_code=status.HTTP_200_OK)
 def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]):
     """Generates text using a prompt template.
 
@@ -186,7 +172,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
         model_name (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template = PromptTemplateSchema.get(alias)
+    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     model = ModelSchema.get(model_name)
     return {
@@ -199,11 +185,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
     }
 
 
-@router.get(
-    "/generate/{prompt}",
-    status_code=status.HTTP_200_OK,
-    dependencies=[Security(get_api_key)],
-)
+@router.get("/generate/{prompt}", status_code=status.HTTP_200_OK)
 def generate_test(prompt: str):
     """Retrieves prompt via id.
     Args:

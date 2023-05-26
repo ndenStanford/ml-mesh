@@ -53,8 +53,6 @@ services:
       - type: bind
         source: frontend/src
         target: /apps/prompt/frontend/src
-    ports:
-      - 3000:3000
     environment:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234
