@@ -52,15 +52,26 @@ jobs:
     name: Compile ML models
     uses: ./.github/workflows/_compile_model.yaml
     needs: [run-repository-state]
+
+    strategy:
+      matrix:
+        environment: prod
+        compile: ${{ github.event_name == 'push }} # run the compilation pipeline on every release
+        upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
+        models:
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+            project: keywords
+            tag: 2023.5.14
+
     with:
-      environment: prod
-      runner-kind: custom
-      self-hosted-runner-type: inf1.xlarge
-      project: keywords
-      tag: 2023.5.14
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      compile: true
-      upload-compiled-model: true
+      environment: ${{ matrix.environment }}
+      runner-kind: ${{ matrix.models.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
+      project: ${{ matrix.models.project }}
+      tag: ${{ matrix.models.tag }}
+      compile: ${{ matrix.compile }}
+      upload-compiled-model: ${{ matrix.upload-compiled-model }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -88,17 +99,17 @@ jobs:
             integration: false
             functional: false
 
-          # - name: compile
-          #   integration: false
-          #   functional: false
+          - name: compile
+            integration: false
+            functional: false
 
-          # - name: models
-          #   integration: false
-          #   functional: false
+          - name: models
+            integration: false
+            functional: false
 
-          # - name: tracking
-          #   integration: false
-          #   functional: false # TODO: turn this to true when self hosted runners are available.
+          - name: tracking
+            integration: false
+            functional: false # TODO: turn this to true when self hosted runners are available.
 
     with:
       lib: ${{ matrix.libs.name }}
@@ -107,40 +118,40 @@ jobs:
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
 
-  # # ===============================================
-  # # DOCKER
-  # # ===============================================
+  # ===============================================
+  # DOCKER
+  # ===============================================
 
-  # run-docker:
-  #   name: Core Docker Images.
-  #   uses: ./.github/workflows/_docker.yaml
-  #   needs: [run-repository-state, run-libs-tests]
-  #   strategy:
-  #     max-parallel: 1
-  #     matrix:
-  #       image:
-  #         [
-  #           python-base,
-  #           neuron-compile,
-  #           neuron-inference,
-  #           kubeflow-jupyter,
-  #           kubeflow-torch-cpu,
-  #           kubeflow-data-science,
-  #           fastapi-serve,
-  #         ]
-  #       validate-build: [false]
-  #   with:
-  #     environment: prod
-  #     image: ${{ matrix.image }}
-  #     tag: "${{ needs.run-repository-state.outputs.tag }}"
-  #     pull-request: ${{ github.event_name == 'pull_request' }}
-  #     validate-build: ${{ matrix.validate-build }}
-  #   secrets:
-  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #     AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  run-docker:
+    name: Core Docker Images.
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests]
+    strategy:
+      max-parallel: 1
+      matrix:
+        image:
+          [
+            python-base,
+            neuron-compile,
+            neuron-inference,
+            kubeflow-jupyter,
+            kubeflow-torch-cpu,
+            kubeflow-data-science,
+            fastapi-serve,
+          ]
+        validate-build: [false]
+    with:
+      environment: prod
+      image: ${{ matrix.image }}
+      tag: "${{ needs.run-repository-state.outputs.tag }}"
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      validate-build: ${{ matrix.validate-build }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
   # ===============================================
   # PROJECTS
@@ -162,13 +173,13 @@ jobs:
           # KEYWORDS
           # ========================
 
-          # - name: keywords
-          #   component: serve
-          #   integration: true
+          - name: keywords
+            component: serve
+            integration: true
 
-          # - name: keywords
-          #   component: train
-          #   integration: false
+          - name: keywords
+            component: train
+            integration: false
 
           - name: keywords
             component: compile
@@ -177,18 +188,18 @@ jobs:
           # # ========================
           # # SUMMARIZATION
           # # ========================
-          # # serve
-          # - name: summarization
-          #   component: serve
-          #   integration: true
+          # serve
+          - name: summarization
+            component: serve
+            integration: true
 
           # # ========================
           # # ENTITY LINKING
           # # ========================
-          # # serve
-          # - name: entity-linking
-          #   component: serve
-          #   integration: false
+          # serve
+          - name: entity-linking
+            component: serve
+            integration: false
 
     with:
       environment: prod
@@ -210,42 +221,42 @@ jobs:
   # APPS
   # ===============================================
 
-  # run-apps:
-  #   name: Web Applications
-  #   uses: ./.github/workflows/_apps.yaml
-  #   needs: [run-repository-state, run-libs-tests]
-  #   strategy:
-  #     max-parallel: 10
-  #     matrix:
-  #       apps:
-  #         # NOTE: list of apps components to run
+  run-apps:
+    name: Web Applications
+    uses: ./.github/workflows/_apps.yaml
+    needs: [run-repository-state, run-libs-tests]
+    strategy:
+      max-parallel: 10
+      matrix:
+        apps:
+          # NOTE: list of apps components to run
 
-  #         # ========================
-  #         # Prompt manager
-  #         # ========================
+          # ========================
+          # Prompt manager
+          # ========================
 
-  #         - name: prompt
-  #           component: backend
-  #           integration: true
+          - name: prompt
+            component: backend
+            integration: true
 
-  #         - name: prompt
-  #           component: frontend
-  #           integration: false
+          - name: prompt
+            component: frontend
+            integration: false
 
-  #         - name: entity-fishing
-  #           component: backend
-  #           integration: false
+          - name: entity-fishing
+            component: backend
+            integration: false
 
-  #   with:
-  #     environment: prod
-  #     app: ${{ matrix.apps.name }}
-  #     component: ${{ matrix.apps.component }}
-  #     tag: ${{ needs.run-repository-state.outputs.tag }}
-  #     integration: ${{ matrix.apps.integration }}
-  #     pull-request: ${{ github.event_name == 'pull_request' }}
-  #   secrets:
-  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #     AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+    with:
+      environment: prod
+      app: ${{ matrix.apps.name }}
+      component: ${{ matrix.apps.component }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      integration: ${{ matrix.apps.integration }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}

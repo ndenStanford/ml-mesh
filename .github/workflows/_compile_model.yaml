@@ -24,11 +24,6 @@ on:
         required: true
         type: string
         description: "Version tag of image providing the compilation runtime context."
-      pull-request:
-        required: true
-        default: true
-        type: boolean
-        description: "Indicates whether this workflow is running for a Pull Request."
       compile:
         required: false
         default: false
