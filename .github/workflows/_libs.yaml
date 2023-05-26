@@ -33,26 +33,39 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'libs/${{ inputs.lib }}/**'
+
       - name: Setup Python
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
 
       - name: Setup Poetry
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ inputs.poetry-version }}
 
       - name: Install lib dependencies
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make libs.install/${{ inputs.lib }}
 
       - name: Run unit tests
+        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make libs.unit/${{ inputs.lib }}
 
       - name: Run integration tests
-        if: ${{ inputs.integration }}
+        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.integration }}
         run: make libs.integration/${{ inputs.lib }}
 
       - name: Run functional tests
-        if: ${{ inputs.functional }}
+        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.functional }}
         run: make libs.functional/${{ inputs.lib }}
