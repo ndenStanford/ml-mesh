@@ -107,13 +107,18 @@ jobs:
         #if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build python base with as-is code - temporary
+      - name: Check neuron & docker compose again
+        run: |
+          docker compose version
+          neuron-ls
+
+      - name: Build python-base with as-is code - temporary
         run: |
           make docker.build/python-base \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG=neuron-runner-test
 
-      - name: Build python base with as-is code - temporary
+      - name: Build neuron-compile base with as-is code - temporary
         run: |
           make docker.build/neuron-compile \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
