@@ -40,7 +40,7 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'libs/${{ inputs.lib }}/**'
+              - added | modified: 'libs/**'
 
       - name: Setup Python
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
