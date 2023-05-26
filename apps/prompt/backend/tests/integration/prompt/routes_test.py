@@ -75,11 +75,12 @@ def test_create_prompt(template, test_client, alias, parameters):
     assert isinstance(data["created_at"], str)
     assert isinstance(data["template"], str)
     assert isinstance(data["alias"], str)
+    assert isinstance(data["parameters"], str)
     assert prompt.id == data["id"]
     assert prompt.created_at == datetime.datetime.fromisoformat(data["created_at"])
     assert prompt.template == data["template"]
     assert prompt.alias == data["alias"]
-    assert prompt.parameters == data["parameters"]
+    assert prompt.parameters == json.loads(data["parameters"])
 
 
 @pytest.mark.parametrize(
