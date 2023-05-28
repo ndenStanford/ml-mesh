@@ -186,7 +186,7 @@ _install_python(){
     pyenv install "${PYTHON_VERSION}" -f
     pyenv shell "${PYTHON_VERSION}"
     # shellcheck disable=SC2016
-    echo 'pyenv shell "${PYTHON_VERSION}"' >> "$HOME/.bashrc"
+    echo pyenv global "${PYTHON_VERSION}" >> "$HOME/.bashrc"
 }
 
 # Installing poetry
