@@ -21,38 +21,34 @@ error() {
 trap 'error ${LINENO} ${?}' ERR
 
 reset='\e[0m'
-black='\e[0;30m'
 red='\e[0;31m'
 green='\e[0;32m'
 yellow='\e[0;33m'
-blue='\e[0;34m'
-purple='\e[0;35m'
 cyan='\e[0;36m'
-white='\e[0;37m'
 
-function success() {
-  echo -e "${green}✓ $1${reset}"
+success() {
+    echo -e "${green}✓ $1${reset}"
 }
 
-function info() {
-  echo -e "\n${cyan}INFO: $1${reset}"
+info() {
+    echo -e "\n${cyan}INFO: $1${reset}"
 }
 
-function separator() {
-  echo -e "\n${cyan}===================================================================================================================${reset}"
+separator() {
+    echo -e "\n${cyan}===================================================================================================================${reset}"
 }
 
-function warn() {
-  echo -e "\n${yellow}WARN: $1${reset}" >&2
+warn() {
+    echo -e "\n${yellow}WARN: $1${reset}" >&2
 }
 
-function err() {
-  echo -e "\n${red}ERROR: $1${reset}" >&2
+err() {
+    echo -e "\n${red}ERROR: $1${reset}" >&2
 }
 
-function fatal() {
-  echo -e "\n${red}FATAL: $1${reset}" >&2
-  exit 1
+fatal() {
+    echo -e "\n${red}FATAL: $1${reset}" >&2
+    exit 1
 }
 
 # Installing Linux package manager
@@ -104,16 +100,18 @@ _install_global_deps() {
     # shellcheck disable=SC2129
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
-    export PATH="/home/ec2-user/.pyenv/bin:$PATH"
 
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
-    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
-    echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
-    echo 'eval "$(direnv hook bash)"' >> $HOME/.bashrc
+    # shellcheck disable=SC2016
+    { echo 'export PYENV_ROOT="$HOME/.pyenv"'; \
+        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'; \
+        echo 'eval "$(pyenv init -)"'; \
+        echo 'eval "$(direnv hook bash)"'; } >> .bashrc
 
     eval "$(pyenv init --path)"
-    source ~/.bashrc
-    source ~/.bash_profile
+    # shellcheck disable=SC1091
+    source "$HOME/.bashrc"
+    # shellcheck disable=SC1091
+    source "$HOME/.bash_profile"
     separator
 }
 
@@ -133,11 +131,11 @@ _setup_ssh_key(){
     fi
 
     info "Setting up ssh..."
-    ssh-keygen -t rsa -b 4096 -f $HOME/.ssh/id_rsa -C "$EMAIL"
-    sudo -s eval `ssh-agent -s` 1>/dev/null
+    ssh-keygen -t rsa -b 4096 -f "$HOME/.ssh/id_rsa" -C "$EMAIL"
+    sudo -s eval "$(ssh-agent -s)" 1>/dev/null
     info "🛑 Before continuing, please register your ssh public key to GitHub: https://github.com/settings/ssh/new"
-    cat $HOME/.ssh/id_rsa.pub
-    read -sp "Press enter to continue when you have added your public key to GitHub..."
+    cat "$HOME/.ssh/id_rsa.pub"
+    read -rsp "Press enter to continue when you have added your public key to GitHub..."
     separator
 }
 
@@ -179,7 +177,7 @@ _install_python(){
     separator
 
     if [ -e "$HOME/ml-mesh/.python-version" ]; then
-        PYTHON_VERSION=$(cat $HOME/ml-mesh/.python-version)
+        PYTHON_VERSION=$(cat "$HOME/ml-mesh/.python-version")
     else
         warn "python-version file was not found. Installing Python 3.10"
         PYTHON_VERSION="3.10"
@@ -187,7 +185,8 @@ _install_python(){
 
     pyenv install "${PYTHON_VERSION}" -f
     pyenv shell "${PYTHON_VERSION}"
-    echo 'pyenv shell "${PYTHON_VERSION}"' >> $HOME/.bashrc
+    # shellcheck disable=SC2016
+    echo 'pyenv shell "${PYTHON_VERSION}"' >> "$HOME/.bashrc"
 }
 
 # Installing poetry
@@ -195,7 +194,7 @@ _install_poetry(){
     info "🌕  Install poetry..."
 
     if [ -e "$HOME/ml-mesh/.poetry-version" ]; then
-        POETRY_VERSION=$(cat $HOME/ml-mesh/.poetry-version)
+        POETRY_VERSION=$(cat "$HOME/ml-mesh/.poetry-version")
     else
         warn "python-version file was not found. Installing Poetry 1.3.2"
         POETRY_VERSION="1.3.2"
@@ -211,7 +210,7 @@ _install_project_deps(){
 
     info "🌕  Install project dependencies..."
 
-    cd $HOME/ml-mesh
+    cd "$HOME/ml-mesh" || exit
     poetry install
     separator
 }
@@ -220,7 +219,7 @@ _setup_git_hooks(){
 
     info "🌕  Setup git hooks..."
 
-    cd $HOME/ml-mesh
+    cd "$HOME/ml-mesh" || exit
     pip3 install --no-cache-dir pre-commit
     pre-commit install
     separator
@@ -273,17 +272,17 @@ main(){
 
         while true; do
             echo "Please enter your full name? [default is '$(whoami)']"
-            read NAME
+            read -r NAME
             [[ $NAME == "" ]] && NAME="$(whoami)"
             echo "Enter your onclusive email. [default is '$(whoami)@$(hostname)']"
-            read EMAIL
+            read -r EMAIL
             [[ $EMAIL == "" ]] && EMAIL="$(whoami)@$(hostname)"
             separator
             info "Name: ${NAME}"
             info "Email: ${EMAIL}"
             separator
             info "does this look ok? ( y / N )"
-            read OK
+            read -r OK
             [[ $OK == "y" || $OK == "Y" ]] && break
         done
 
