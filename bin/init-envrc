@@ -38,10 +38,11 @@ def append_secrets_to_env_file(secret: str, value: str, prepend_with_export: boo
 )
 @click.option("--no-export", "-n", is_flag=True, help="Remove export from variable definition.",)
 def main(profile: str, no_export: bool):
+
     append_secrets_to_env_file("AWS_PROFILE", profile, "w")
     append_secrets_to_env_file("AWS_ACCOUNT_ID", boto3.client('sts').get_caller_identity().get('Account'))
-    append_secrets_to_env_file("IMAGE_TAG", getpass.getuser())
-    append_secrets_to_env_file("BASE_IMAGE_TAG", getpass.getuser())
+    append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('UserId').split("/")[-1])
+    append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('UserId').split("/")[-1])
 
 if __name__ == "__main__":
     main()
