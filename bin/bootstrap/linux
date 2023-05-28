@@ -226,6 +226,21 @@ _setup_git_hooks(){
     separator
 }
 
+_mount_ebs_volume() {
+
+    info "🌕  Setup EBS volume ..."
+
+    if [ ! -d "$HOME/data" ]; then
+        sudo mkfs -t xfs /dev/nvme1n1
+        sudo mkdir "$HOME/data"
+        sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
+    else
+        warn "Mount target exists. This step will be skipped"
+    fi
+
+    separator
+}
+
 _setup(){
 
     local NAME
@@ -242,6 +257,7 @@ _setup(){
     _install_poetry
     _install_project_deps
     _setup_git_hooks
+    _mount_ebs_volume
 }
 
 # Main entrypoint for script.
