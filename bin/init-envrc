@@ -41,8 +41,8 @@ def main(profile: str, no_export: bool):
 
     append_secrets_to_env_file("AWS_PROFILE", profile, "w")
     append_secrets_to_env_file("AWS_ACCOUNT_ID", boto3.client('sts').get_caller_identity().get('Account'))
-    append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('UserId').split("/")[-1])
-    append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('UserId').split("/")[-1])
+    append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
+    append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
 
 if __name__ == "__main__":
     main()
