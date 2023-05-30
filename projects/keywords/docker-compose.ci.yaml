@@ -87,7 +87,7 @@ services:
     profiles: ["unit"]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends:
+    depends_on:
       - compile
 
   compile-download-model:
