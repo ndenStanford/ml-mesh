@@ -13,7 +13,11 @@ import pytest
 @pytest.fixture()
 def test_output_dir() -> str:
 
-    return os.path.join(".", "tests", "output")
+    output_dir = os.environ.get(
+        "NEURON_COMPILE_OUTPUT_DIR", os.path.join(".", "tests", "output")
+    )
+
+    return output_dir
 
 
 @pytest.fixture()
