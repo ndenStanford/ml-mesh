@@ -48,5 +48,4 @@ class Settings(BaseSettings):
     API_KEY: str = "sk-cDOh2WYa0nr6LyjBM8sElW6b61oFhPTQ"
 
 
-
 settings = Settings()
