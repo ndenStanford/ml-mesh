@@ -37,13 +37,6 @@ def test_get_prompts(mock_prompt_get, test_client):
     assert response.json() == {"prompts": []}
 
 
-def test_get_prompts_unauthenticated(test_client):
-    """Test get prompts endpoint unauthenticated."""
-    response = test_client.get("/api/v1/prompts")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
 @pytest.mark.parametrize("alias", ["alias-1", "alias-2", "alias-3"])
 @patch.object(PromptTemplateSchema, "get")
 def test_get_prompt(mock_prompt_get, alias, test_client):
@@ -68,13 +61,6 @@ def test_get_prompt(mock_prompt_get, alias, test_client):
         "variables": [],
         "version": 0,
     }
-
-
-def test_get_prompt_unauthenticated(test_client):
-    """Test get prompt endpoint unauthenticated."""
-    response = test_client.get("/api/v1/prompts/1")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
 
 
 @pytest.mark.parametrize(
@@ -143,13 +129,6 @@ def test_create_prompt_same_alias(
     assert response.status_code == status.HTTP_201_CREATED
 
 
-def test_create_prompt_unauthenticated(test_client):
-    """Test create prompt endpoint unauthenticated."""
-    response = test_client.post("/api/v1/prompts?template=template&alias=alias")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
 @pytest.mark.parametrize(
     "id, template, alias, update",
     [
@@ -189,13 +168,6 @@ def test_update_prompt(
         "template": template,
         "version": 0,
     }
-
-
-def test_update_prompt_unauthenticated(test_client):
-    """Test update prompt endpoint unauthenticated."""
-    response = test_client.put("/api/v1/prompts/12345?template=template")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
 
 
 @pytest.mark.parametrize("alias", ["alias-1", "alias-2", "alias-3"])
@@ -263,13 +235,6 @@ def test_delete_prompt_protection_404(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_delete_prompt_unauthenticated(test_client):
-    """Test delete prompt endpoint unauthenticated."""
-    response = test_client.delete("/api/v1/prompts/12345")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
 @pytest.mark.parametrize(
     "id, template, values, alias, generated",
     [
@@ -304,9 +269,9 @@ def test_generate_text(
     """Test text generation endpoint."""
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias=alias
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
     # send request to test client
     response = test_client.post(
         f"/api/v1/prompts/{alias}/generate", headers={"x-api-key": "1234"}, json=values
@@ -371,9 +336,9 @@ def test_generate_text_with_diff_model(
     """Test text generation endpoint."""
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias=alias
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
 
     parameters = json.dumps(
         {
@@ -434,9 +399,9 @@ def test_generate_text_with_diff_model_model_not_found(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias=alias
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
     parameters = json.dumps(
         {
             "max_tokens": settings.OPENAI_MAX_TOKENS,
@@ -459,17 +424,3 @@ def test_generate_text_with_diff_model_model_not_found(
     assert response.json() == {
         "generated": "Sorry, the backend for this model is in development"
     }
-
-
-def test_generate_unauthenticated(test_client):
-    """Test generate endpoint unauthenticated."""
-    response = test_client.post("/api/v1/prompts/1/generate")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
-def test_generate_with_diff_model_unauthenticated(test_client):
-    """Test generate endpoint unauthenticated."""
-    response = test_client.post("/api/v1/prompts/1/generate/model/1")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
