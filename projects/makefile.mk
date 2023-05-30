@@ -12,7 +12,7 @@ projects.deploy/%: ## Deploy project component docker image to ECR.
 	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml push $(COMPONENT)
 
 projects.start/%: # Start development container of component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up --force-recreate
 
 projects.stop/%: # Start development container of component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
@@ -21,7 +21,7 @@ projects.test/%: projects.unit/% projects.integration/% ## Run all tests for pro
 	echo "Running all tests."
 
 projects.unit/%: projects.set ## Run unit tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit --force-recreate
 
 projects.integration/%: ## Run integration tests for project component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up --exit-code-from $(COMPONENT)-integration

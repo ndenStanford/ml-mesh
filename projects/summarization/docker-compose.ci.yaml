@@ -9,6 +9,7 @@ services:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization
@@ -44,6 +45,7 @@ services:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization
@@ -66,6 +68,7 @@ services:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization

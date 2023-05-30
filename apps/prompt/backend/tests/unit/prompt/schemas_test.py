@@ -104,7 +104,7 @@ def test_save_prompt_template_schema(mock_save, template, alias):
     mock_save.assert_called_once()
 
     assert isinstance(saved_template.id, str)
-    assert isinstance(saved_template.created_at, str)
+    assert isinstance(saved_template.created_at, datetime)
     assert isinstance(saved_template.template, str)
     assert isinstance(saved_template.alias, str)
 
@@ -113,17 +113,39 @@ def test_save_prompt_template_schema(mock_save, template, alias):
     "alias",
     ["alias-1", "alias-2"],
 )
-@patch.object(PromptTemplateTable, "get")
-def test_get_template_schema_with_alias(mock_get, alias):
+@patch.object(PromptTemplateTable, "query")
+def test_get_template_schema_with_alias(mock_query, alias):
     """Test retrieve template with alias."""
-    mock_get.return_value = PromptTemplateTable(
-        id=1,
-        template="template",
-        alias="alias",
-        created_at=datetime.now(timezone.utc),
-    )
+    mock_query.return_value = [
+        PromptTemplateTable(
+            id=1,
+            template="template",
+            alias="alias",
+            created_at=datetime.now(timezone.utc),
+        )
+    ]
     _ = PromptTemplateSchema.get(alias)
-    mock_get.assert_called_with(alias)
+    mock_query.assert_called_with(alias, scan_index_forward=False)
+
+
+@pytest.mark.parametrize(
+    "alias, version",
+    [("alias-1", 1), ("alias-2", 2)],
+)
+@patch.object(PromptTemplateTable, "query")
+def test_get_template_schema_with_alias_and_version(mock_query, alias, version):
+    """Test retrieve template with alias."""
+    mock_query.return_value = [
+        PromptTemplateTable(
+            id=1,
+            template="template",
+            alias="alias",
+            version=version,
+            created_at=datetime.now(timezone.utc),
+        )
+    ]
+    _ = PromptTemplateSchema.get(alias, version=version)
+    mock_query.assert_called_once()
 
 
 @patch.object(PromptTemplateTable, "scan")
@@ -136,22 +158,40 @@ def test_get_template_schema_without_id(mock_scan):
 
 
 @pytest.mark.parametrize(
-    "alias",
-    ["alias1", "alias2"],
+    "id, alias, template, updated_template",
+    [
+        (
+            "ac6b630d-ad44-4f7a-b306-402fdd62ecdd",
+            "joke",
+            "Tell me a joke",
+            "Tell me a joke about {topic}",
+        ),
+        (
+            "30b5b324-5f1b-486e-8771-6946b9762183",
+            "write-an-essay",
+            "Write a {count}-word essay about {topic}",
+            "Write an essay about {topic} in less than {count} words.",
+        ),
+    ],
 )
-@patch("src.prompt.tables.PromptTemplateTable.update")
-@patch.object(PromptTemplateTable, "get")
-def test_update_template_schema(mock_get, mock_prompt_update, alias):
+@patch.object(PromptTemplateSchema, "save")
+@patch.object(PromptTemplateTable, "query")
+def test_update_template_schema(
+    mock_query, mock_prompt_save, id, alias, template, updated_template
+):
     """Test update template schema."""
-    prompt = PromptTemplateSchema(id="123abc", template="template", alias=alias)
-    mock_get.return_value = PromptTemplateTable(
-        id=id,
-        template="template",
-        alias="alias",
-        created_at=datetime.now(timezone.utc),
-    )
+    prompt = PromptTemplateSchema(id=id, template=template, alias=alias)
 
-    prompt.update()
+    mock_query.return_value = [
+        PromptTemplateTable(
+            id=id,
+            template=template,
+            alias=alias,
+            created_at=datetime.now(timezone.utc),
+        )
+    ]
 
-    mock_get.assert_called_with(alias)
-    mock_prompt_update.assert_called_once()
+    prompt.update(template=updated_template)
+
+    mock_query.assert_called_with(alias, scan_index_forward=False)
+    mock_prompt_save.assert_called_once()

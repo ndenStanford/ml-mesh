@@ -2,6 +2,7 @@
 
 # 3rd party libraries
 import pytest
+from freezegun import freeze_time
 
 # Source
 from src.prompt.schemas import PromptTemplateSchema
@@ -49,7 +50,7 @@ def test_get_exists(template, alias):
     """Test get item from table."""
     schema = PromptTemplateSchema(template=template, alias=alias).save()
 
-    schema_from_db = PromptTemplateSchema.get(schema.alias)
+    schema_from_db = PromptTemplateSchema.get(schema.alias)[0]
 
     assert schema.id == schema_from_db.id
     assert schema.created_at == schema_from_db.created_at
@@ -67,15 +68,16 @@ def test_get_exists(template, alias):
         )
     ],
 )
+@freeze_time("2012-01-14 03:21:34")
 def test_update(template, alias, updated_template):
     """Test get item from table."""
     schema = PromptTemplateSchema(template=template, alias=alias).save()
 
     schema.update(template=updated_template)
 
-    updated_schema = PromptTemplateSchema.get(schema.alias)
+    updated_schema = PromptTemplateSchema.get(schema.alias)[0]
 
-    assert updated_schema.id == schema.id
+    assert updated_schema.id != schema.id  # new version created
     assert updated_schema.created_at == schema.created_at
     assert updated_schema.template == updated_template
     assert updated_schema.alias == alias

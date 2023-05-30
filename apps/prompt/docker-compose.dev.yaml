@@ -9,6 +9,7 @@ services:
       context: ../../
       dockerfile: apps/prompt/frontend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
@@ -36,6 +37,7 @@ services:
       context: ../../
       dockerfile: apps/prompt/frontend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
@@ -66,6 +68,7 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
@@ -112,6 +115,7 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
@@ -119,7 +123,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["backend", "unit"]
+    profiles: ["unit"]
     volumes:
       - type: bind
         source: backend/src
@@ -143,6 +147,7 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
