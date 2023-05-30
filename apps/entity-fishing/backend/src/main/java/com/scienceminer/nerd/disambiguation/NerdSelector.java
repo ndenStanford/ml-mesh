@@ -152,9 +152,7 @@ public class NerdSelector extends NerdModel {
 		feature.dice = dice;
 		feature.embeddings_centroid_similarity = embeddingsSimilarity;
 		double[] features = feature.toVector(attributes);
-		
-		//smile.math.Math.setSeed(7);
-
+	
 		// we add some robustness when calling the prediction, with an Executor and timer
 		// it appears that smile-ml on some cloud machine can randomly take minutes to predict 
 		// a result that usually takes a few milliseconds. Reasons for this random super slowness
@@ -163,42 +161,7 @@ public class NerdSelector extends NerdModel {
 		// -> note: we are finally not using it because it is expensive in term of number of used threads
 		// for very large sequences, to be reviewed
 
-		/*ExecutorService executor = Executors.newSingleThreadExecutor();
-		PredictTask task = new PredictTask(forest, features);
-		double score = -1.0;
-		int counter = 0;
-		while(score == -1.0) {
-			Future<Double> future = executor.submit(task);
-			try {
-	    		score = future.get(50, TimeUnit.MILLISECONDS).doubleValue();
-	    	} catch (TimeoutException ex) {
-			   	// handle the timeout
-			} catch (InterruptedException e) {
-			   	// handle the interrupts
-			} catch (ExecutionException e) {
-			   	// handle other exceptions
-			} finally {
-			   	future.cancel(true); // may or may not desire this
-			}
-			if (counter == 5)
-				score = 0.0;
-			counter++;
-		}*/
-
 		final double score = forest.predict(features);
-
-		/*logger.debug("selector: " +
-				"score: " + score + ", " +
-				"ranker score: "+nerd_score+", " +
-				"link prob: "+prob_anchor_string+", " +
-				"ranker score: "+prob_c+", " +
-				"words size: "+nb_tokens+", " +
-				"relatedness: "+relatedness+", " +
-				"candidate in context? : "+inContext+", " +
-				"NE? : "+isNe+", " +
-				"tf/idf : "+ tf_idf+", " +
-				"dice : "+dice+", "
-		);*/
 
 		return score;
 	}
@@ -275,9 +238,8 @@ public class NerdSelector extends NerdModel {
 			FileUtils.writeStringToFile(file, arffBuilder.toString(), StandardCharsets.UTF_8, true);
 			nbArticle++;
 		}
-		//arffDataset = arffBuilder.toString();
 		arffDataset = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-		//System.out.println(arffDataset);
+		System.out.println(arffDataset);
 		attributeDataset = arffParser.parse(IOUtils.toInputStream(arffDataset, StandardCharsets.UTF_8));
 		System.out.println("Training data saved under " + file.getPath());
 	}
@@ -380,10 +342,6 @@ public class NerdSelector extends NerdModel {
 			List<NerdCandidate> cands = entry.getValue();
 			NerdEntity entity = entry.getKey();
 
-			/*for (NerdCandidate cand : cands) {
-				System.out.println(cand.toString());
-			}*/
-
 			int start = entity.getOffsetStart();
 			int end = entity.getOffsetEnd();
 			for(NerdEntity ref : refs) {
@@ -414,13 +372,6 @@ public class NerdSelector extends NerdModel {
 			NerdEntity entity = entry.getKey();
 			int expectedId = entity.getWikipediaExternalRef();
 			int nbCandidate = 0;
-			/*if (expectedId == -1) {
-				continue;
-			}*/
-			/*if ((cands == null) || (cands.size() <= 1)) {
-				// do not considerer unambiguous entities
-				continue;
-			}*/
 
 			final double dice = ProcessText.getDICECoefficient(entity.getNormalisedName(), lang);
 
@@ -438,10 +389,10 @@ public class NerdSelector extends NerdModel {
 						continue;
 
 					double commonness = sense.getPriorProbability();
-//System.out.println("commonness: " + commonness);
+					System.out.println("commonness: " + commonness);
 
 					double related = relatedness.getRelatednessTo(candidate, context, lang);
-//System.out.println("relatedness: " + related);
+					System.out.println("relatedness: " + related);
 
 					boolean bestCaseContext = true;
 					// actual label used
@@ -499,20 +450,6 @@ public class NerdSelector extends NerdModel {
 						else
 							this.positives++;
 					}
-		
-					//System.out.println("*"+candidate.getWikiSense().getTitle() + "* " + 
-					//		entity.toString());
-					//System.out.println("\t\t" + "nerd_score: " + nerd_score + 
-					//	", prob_anchor_string: " + feature.prob_anchor_string);
-
-					/*if ( (feature.label == 1.0) && (nbCandidate > 1) )
-						break;
-					if ( (expectedId == -1) && (nbCandidate > 0) ) {
-						break;
-					}*/
-
-					/*if (nbCandidate > 0)
-						break;*/
 				}
 				catch(Exception e) {
 					e.printStackTrace();
@@ -613,7 +550,6 @@ public class NerdSelector extends NerdModel {
 		}
 
 		NerdEngine engine = NerdEngine.getInstance();
-		//Language lang = new Language(wikipedia.getConfig().getLangCode(), 1.0);
 		Map<NerdEntity, List<NerdCandidate>> candidates = 
 			engine.generateCandidatesSimple(entities, wikipedia.getConfig().getLangCode(), NerdRanker.ZIPF_MAX);
 		NerdContext context = engine.rank(candidates, wikipedia.getConfig().getLangCode(), null, false, tokens);
@@ -634,7 +570,6 @@ public class NerdSelector extends NerdModel {
 				}
 			} else if (cands.size() > 0) {
 				Collections.sort(cands);
-				//Collections.sort(cands, new SortCandidatesBySelectionScore());
 				if (!producedDisamb.contains(cands.get(0).getWikipediaExternalRef()))
 					producedDisamb.add(cands.get(0).getWikipediaExternalRef());
 			}
@@ -643,7 +578,6 @@ public class NerdSelector extends NerdModel {
 		
 		if (full) {
 			Collections.sort(result);
-			//Collections.sort(result, new SortEntitiesByNerdScore());
 			result = pruningService.pruneOverlap(result, false, wikipedia.getConfig().getFinalScore());
 			for(NerdEntity entit : result) {
 				if (!producedDisamb.contains(entit.getWikipediaExternalRef()))

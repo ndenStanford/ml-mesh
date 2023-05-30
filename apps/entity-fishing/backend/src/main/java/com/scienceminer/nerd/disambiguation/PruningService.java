@@ -114,9 +114,6 @@ public class PruningService {
                 // dont prune such explicit mention recognition
                 continue;
             }
-			/*if (entity.getNerdScore() < threshold) {
-				toRemove.add(entity);
-			}*/
             // variant: prune named entities less aggressively
             if ( (entity.getNerdScore() < threshold) && ( (entity.getType() == null) || entity.getIsAcronym() ) ) {
                 toRemove.add(entity);
@@ -295,31 +292,4 @@ public class PruningService {
 
         return true;
     }
-
-    /**
-     * 	We prioritize the longest term match from the KB : the term coming from the KB shorter than
-     *  the longest match from the KB and which have not been merged, are lowered.
-     */
-    /*
-    public void impactOverlap(Map<NerdEntity, List<NerdCandidate>> candidates) {
-        //List<Integer> toRemove = new ArrayList<Integer>();
-
-        for (Map.Entry<NerdEntity, List<NerdCandidate>> entry : candidates.entrySet()) {
-            List<NerdCandidate> cands = entry.getValue();
-            NerdEntity entity = entry.getKey();
-            if (cands == null)
-                continue;
-            // the arity measure below does not need to be precise
-            int arity = entity.getNormalisedName().split("[ ,-.]").length;
-            for(NerdCandidate candidate : cands) {
-                double score = candidate.getNerdScore();
-                double new_score = score - ( (5-arity)*0.01);
-                if ( (new_score > 0) && (new_score <= 1) )
-                    candidate.setNerdScore(new_score);
-
-            }
-            Collections.sort(cands, new SortCandidatesByNerdScore());
-        }
-    }
-    */
 }

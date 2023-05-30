@@ -150,7 +150,6 @@ public class NerdCategories {
 		// first path to get the weight range 
 		double accumulatedWeight = 0.0;
 		for (Map.Entry<Integer, Category> entry : categoryMap.entrySet()) {
-			// entry.getKey();
             Category categ = entry.getValue();
 			accumulatedWeight += categ.getWeight();
 		}

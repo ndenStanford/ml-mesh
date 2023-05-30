@@ -42,5 +42,4 @@ public class NerdServiceConfiguration extends Configuration {
     public void setCorsAllowedHeaders(String corsAllowedHeaders) {
         this.corsAllowedHeaders = corsAllowedHeaders;
     }
-
 }
