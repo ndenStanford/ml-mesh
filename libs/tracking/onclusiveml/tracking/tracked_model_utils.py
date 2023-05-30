@@ -46,7 +46,9 @@ class TrackedModelSpecs(TrackedParams):
     # neptune ai model registry specs
     project: str = Field(..., env="neptune_project")
     model: str = Field(..., env="neptune_model_id")
-    api_token: SecretStr = Field(..., env="neptune_api_token", exclude=True)
+    api_token: SecretStr = Field(
+        default="api_token", env="neptune_api_token", exclude=True
+    )
 
 
 class TrackedModelTestFiles(TrackedParams):
