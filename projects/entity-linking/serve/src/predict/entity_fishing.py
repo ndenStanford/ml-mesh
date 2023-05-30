@@ -67,8 +67,9 @@ def generate_query(text: str, lang: str, entities: EntityDictInput) -> Dict[str,
 
 def query_wiki(query: Dict[str, Any]) -> Dict[str, Any]:
     """Invoke entity fish endpoint."""
+    headers = {settings.API_KEY_NAME: settings.API_KEY}
     url = settings.ENTITY_FISHING_ENDPOINT
-    q = requests.post(url, json=query)
+    q = requests.post(url, json=query, headers=headers)
     return q.json()
 
 

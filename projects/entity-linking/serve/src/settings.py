@@ -36,13 +36,17 @@ class Settings(BaseSettings):
     # entity fishing endpoint
     # our endpoint does not have load balancer for now
     ENTITY_FISHING_ENDPOINT: str = (
-        "https://cloud.science-miner.com/nerd/service/disambiguate"
+        "https://internal.api.ml.stage.onclusive.com/service/disambiguate"
     )
 
     # entity recognition endpoint
     ENTITY_RECOGNITION_ENDPOINT: str = (
         "https://eks-data-prod.onclusive.com/predictions/ner_neuron_v2"
     )
+
+    API_KEY_NAME: str = "x-api-key"
+    API_KEY: str = "sk-cDOh2WYa0nr6LyjBM8sElW6b61oFhPTQ"
+
 
 
 settings = Settings()
