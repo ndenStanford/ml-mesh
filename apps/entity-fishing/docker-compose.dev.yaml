@@ -24,7 +24,7 @@ services:
         "processResources",
         "-x",
         "classes",
-        "-d"
+        "-d",
       ]
     profiles: ["backend"]
     volumes:
