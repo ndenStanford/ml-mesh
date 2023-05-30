@@ -34,7 +34,24 @@ class Settings(BaseSettings):
     DOCS_URL: Optional[str] = None
 
     # OpenAI api key
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: str = ""
+
+    # Prompt url
+    PROMPT_API: str = "http://0.0.0.0:4000"
+    PROMPT_API_KEY: str = "1234"
+
+    PROMPT_DICT = {
+        "en": {
+            "alias": "english-summarization-prompt",
+            "template": "Give an abstractive summary while retaining important \
+                        quotes of speech in less than {desired_length} words: \n {content} \n",
+        },
+        "fr": {
+            "alias": "french-summarization-prompt",
+            "template": "Donner un résumé abstrait tout en gardant l'importance \
+                        citations de discours en moins de {desired_length} mots: \n {content} \n",
+        },
+    }
 
 
 settings = Settings()

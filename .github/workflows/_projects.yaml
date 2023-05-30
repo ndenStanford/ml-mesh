@@ -72,7 +72,7 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'projects/${{ inputs.projects }}/${{ inputs.component }}/**'
+              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
