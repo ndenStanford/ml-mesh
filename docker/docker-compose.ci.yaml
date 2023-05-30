@@ -57,9 +57,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - type: bind
-        source: neuron-compile/tests
-        target: /docker/neuron-compile/tests
+      - neuron-vol:/docker/neuron-compile/tests/output_compile
     environment:
       NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile # must match the "neuron-compile/{...}" suffix of the test suite output volume bind
     command: ["pytest", "tests/core", "-ra", "-vv", "--capture=no"]
@@ -89,12 +87,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - type: bind
-        source: neuron-inference/tests
-        target: /docker/neuron-inference/tests
-      - type: bind
-        source: neuron-compile/tests/output_compile
-        target: /docker/neuron-inference/tests/input_inference
+      - neuron-vol:/docker/neuron-inference/tests/input_inference
     environment:
       NEURON_COMPILE_OUTPUT_DIR: ./tests/input_inference # must match the "neuron-inference/{...}" suffix of the neuron-compile test suite output volume bind
     command: ["pytest", "tests/core", "-ra", "-vv", "--capture=no"]
@@ -158,3 +151,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     depends_on:
       - kubeflow-torch-cpu
+
+volumes:
+  neuron-vol:

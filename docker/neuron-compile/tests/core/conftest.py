@@ -17,6 +17,9 @@ def test_output_dir() -> str:
         "NEURON_COMPILE_OUTPUT_DIR", os.path.join(".", "tests", "output")
     )
 
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
+
     return output_dir
 
 
