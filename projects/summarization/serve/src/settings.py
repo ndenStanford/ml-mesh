@@ -59,27 +59,35 @@ class Settings(BaseSettings):
         "it": {
             "alias": "ml-summarization-italian",
             "template": "Fornisci un riassunto astratto pur mantenendo importanti \
-                        virgolette del discorso in meno di {lunghezza_desiderata} parole: \n {contenuto} \n",
+                        virgolette del discorso in meno di {desired_length} \
+                        parole: \n {content} \n",
         },
         "es": {
             "alias": "ml-summarization-spanish",
             "template": "Proporcione un resumen abstracto manteniendo importantes \
-                        citas de discurso en menos de {desired_length} palabras: \n {content} \n",
+                        citas de discurso en menos de {desired_length} \
+                        palabras: \n {content} \n",
         },
         "ca": {
             "alias": "ml-summarization-catalan",
             "template": "Feu un resum abstractiu tot conservant la importància \
-                        cites del discurs en menys de {desired_length} paraules: \n {contingut} \n",
+                        cites del discurs en menys de {desired_length} paraules: \n {content} \n",
         },
         "pt": {
             "alias": "ml-summarization-portuguese",
             "template": "Forneça um resumo abstrato, mantendo importantes \
-                        citações do discurso em menos de {desired_length} palavras: \n {conteúdo} \n",
+                        citações do discurso em menos de {desired_length} \
+                        palavras: \n {content} \n",
         },
         "zh": {
-            "alias": "ml-summarization-chinese",
+            "alias": "ml-summarization-chinese_simplified",
             "template": "给出一个抽象的总结，同时保留重要的\
                         少于 {desired_length} 个单词的演讲引述：\n {content} \n",
+        },
+        "zh-t": {
+            "alias": "ml-summarization-chinese_traditional",
+            "template": "給出一個抽象的總結，同時保留重要的\
+                        少於 {desired_length} 個單詞的演講引述：\n {content} \n",
         },
         "ja": {
             "alias": "ml-summarization-japanese",
