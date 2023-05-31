@@ -39,3 +39,30 @@ class TestParametrized:
             },
         )
         assert len(response.json()["summary"]) > 0
+
+@pytest.mark.parametrize("input", input)
+class TestParametrizedCrossLingual:
+    def test_turbo(self, test_client, input):
+        print("$" * 10)
+        """Test prediction endpoint."""
+        response = test_client.post(
+            "/v1/summarization/gpt3/predict/fr",
+            json={
+                "content": input,
+                "desired_length": 100,
+                "lang": "en",
+            },
+        )
+        assert len(response.json()["summary"]) > 0
+
+    def test_davinci(self, test_client, input):
+        """Test prediction endpoint."""
+        response = test_client.post(
+            "/v1/summarization/gpt3/predict/fr",
+            json={
+                "content": input,
+                "desired_length": 100,
+                "lang": "en",
+            },
+        )
+        assert len(response.json()["summary"]) > 0

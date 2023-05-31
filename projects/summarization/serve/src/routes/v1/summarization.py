@@ -50,6 +50,40 @@ def get_summary(
                     "frequency_penalty": item.frequency_penalty,
                     "model": item.model,
                     "lang": item.lang,
+                    "target_lang": item.lang,
+                }
+            }
+        ]
+    )
+    return summary
+
+@router.post("/predict/{target_lang}", response_model=Response, status_code=status.HTTP_200_OK)
+def get_summary(
+    target_lang: str,
+    item: Request,
+) -> Optional[Dict[str, str]]:
+    """Returns summary of item content.
+
+    Args:
+        item (Request): parse request arguments.
+
+    Returns:
+        Response: summary, model used and reason response finished.
+    """
+    summary = handle(
+        data=[
+            {
+                "body": {
+                    "content": item.content,
+                    "desired_length": item.desired_length,
+                    "max_tokens": item.max_tokens,
+                    "top_p": item.top_p,
+                    "temperature": item.temperature,
+                    "presence_penalty": item.presence_penalty,
+                    "frequency_penalty": item.frequency_penalty,
+                    "model": item.model,
+                    "lang": item.lang,
+                    "target_lang": target_lang,
                 }
             }
         ]
