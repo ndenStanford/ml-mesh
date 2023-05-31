@@ -80,8 +80,6 @@ jobs:
       functional: ${{ matrix.libs.functional }}
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
-    secrets:
-      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
   # DOCKER
