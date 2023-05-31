@@ -40,7 +40,7 @@ class SummarizationHandler:
         """
         try:
             alias = settings.PROMPT_DICT[lang][target_lang]["alias"]
-        except:
+        except KeyError:
             logger.errror("Summarization language not supported.")
 
         input_dict = {"desired_length": desired_length, "content": text}
