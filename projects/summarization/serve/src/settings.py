@@ -101,12 +101,14 @@ class Settings(BaseSettings):
         "en2fr": {
             "alias": "ml-summarization-en2fr",
             "template": "Give an abstractive summary in French while retaining important \
-                        quotes of speech in less than {desired_length} words: \n {content} \n Résumé français: ",
+                        quotes of speech in less than {desired_length} \words: \
+                        \n {content} \n Résumé français: ",
         },
         "fr2en": {
             "alias": "ml-summarization-fr2en",
             "template": "Donner un résumé abstrait en français tout en retenant l'important \
-                        citations de discours en moins de {desired_length} mots : \n {content} \n English summary: ",
+                        citations de discours en moins de {desired_length} mots: \
+                        \n {content} \n English summary: ",
         },
     }
 
