@@ -7,7 +7,7 @@ from typing import Dict, Optional
 
 # 3rd party libraries
 # Third party libs
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, HTTPException
 
 # Internal libraries
 # Internal libs
@@ -16,6 +16,7 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.predict.summarization import handle
 from src.schemas import Request, Response
+from src.settings import settings
 
 
 logger = get_default_logger(__name__)
@@ -37,6 +38,13 @@ def get_summary(
     Returns:
         Response: summary, model used and reason response finished.
     """
+    
+    if item.lang not in settings.PROMPT_DICT.keys():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Language not supported",
+        )
+    
     summary = handle(
         data=[
             {
@@ -70,6 +78,23 @@ def get_summary(
     Returns:
         Response: summary, model used and reason response finished.
     """
+
+    target_lang_dict = settings.PROMPT_DICT.get(item.lang)
+    if target_lang_dict is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Language not supported",
+        )
+    else:
+        target_dict = target_lang_dict.get(target_lang)
+        if target_dict is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Language not supported",
+            )
+
+        
+    
     summary = handle(
         data=[
             {
