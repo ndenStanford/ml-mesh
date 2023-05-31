@@ -89,7 +89,7 @@ class Settings(BaseSettings):
         "ko": {
             "alias": "ml-summarization-korean",
             "template": "다음 내용에 대해 중요한 인용구를 유지하면서 {desired_length} 단어 미만으로 요약하세요: \n {content} \n",
-        }, 
+        },
     }
 
 
