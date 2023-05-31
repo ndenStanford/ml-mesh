@@ -7,7 +7,7 @@ from typing import Dict, Optional
 
 # 3rd party libraries
 # Third party libs
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
 # Internal libraries
 # Internal libs
@@ -38,13 +38,13 @@ def get_summary(
     Returns:
         Response: summary, model used and reason response finished.
     """
-    
+
     if item.lang not in settings.PROMPT_DICT.keys():
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Language not supported",
         )
-    
+
     summary = handle(
         data=[
             {
@@ -65,8 +65,11 @@ def get_summary(
     )
     return summary
 
-@router.post("/predict/{target_lang}", response_model=Response, status_code=status.HTTP_200_OK)
-def get_summary(
+
+@router.post(
+    "/predict/{target_lang}", response_model=Response, status_code=status.HTTP_200_OK
+)
+def get_summary_cross_lingual(
     target_lang: str,
     item: Request,
 ) -> Optional[Dict[str, str]]:
@@ -93,8 +96,6 @@ def get_summary(
                 detail="Language not supported",
             )
 
-        
-    
     summary = handle(
         data=[
             {

@@ -53,6 +53,7 @@ class TestParametrized:
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
+
 @pytest.mark.parametrize("input", input)
 class TestParametrizedCrossLingual:
     def test_turbo(self, test_client, input):

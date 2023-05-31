@@ -93,12 +93,7 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
         target_lang = data["target_lang"]
 
         starttime = datetime.datetime.utcnow()
-        summary = _service.inference(
-            text,
-            desired_length,
-            lang,
-            target_lang
-        )
+        summary = _service.inference(text, desired_length, lang, target_lang)
         endtime = datetime.datetime.utcnow()
 
         logger.debug(
