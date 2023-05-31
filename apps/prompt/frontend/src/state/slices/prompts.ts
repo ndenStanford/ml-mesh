@@ -59,8 +59,8 @@ export const createPrompt = createAsyncThunk(
 
 export const deletePrompt = createAsyncThunk(
   "prompts/delete",
-  async ({ id }: { id: string }, thunkAPI: any) => {
-    const response = await fetch(`${API_URI}/prompts/${id}`, {
+  async ({ alias }: { alias: string }, thunkAPI: any) => {
+    const response = await fetch(`${API_URI}/prompts/${alias}`, {
       method: "DELETE",
       headers: {
         accept: "application/json",
@@ -77,11 +77,8 @@ export const deletePrompt = createAsyncThunk(
 
 export const generateTextFromPrompt = createAsyncThunk(
   "prompts/generate/prompt",
-  async (
-    { prompt_id, body }: { prompt_id: string; body: any },
-    thunkAPI: any
-  ) => {
-    const response = await fetch(`${API_URI}/prompts/${prompt_id}/generate`, {
+  async ({ alias, body }: { alias: string; body: any }, thunkAPI: any) => {
+    const response = await fetch(`${API_URI}/prompts/${alias}/generate`, {
       method: "POST",
       headers: {
         accept: "application/json",

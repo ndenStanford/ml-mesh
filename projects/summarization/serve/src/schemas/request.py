@@ -45,3 +45,4 @@ class Request(BaseModel):
     presence_penalty: Optional[float] = 0
     frequency_penalty: Optional[float] = 0
     model: Optional[str] = "gpt-3.5-turbo"
+    lang: Optional[str] = "en"

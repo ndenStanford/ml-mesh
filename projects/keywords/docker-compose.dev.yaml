@@ -10,6 +10,7 @@ services:
       context: ../../
       dockerfile: projects/keywords/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
@@ -33,6 +34,7 @@ services:
       context: ../../
       dockerfile: projects/keywords/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
@@ -202,6 +204,7 @@ services:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
@@ -240,6 +243,7 @@ services:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
@@ -270,6 +274,7 @@ services:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords

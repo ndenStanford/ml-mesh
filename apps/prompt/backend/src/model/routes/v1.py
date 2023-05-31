@@ -32,20 +32,21 @@ def get_models():
 
 
 @router.get(
-    "/{id}",
+    "/{model_name}",
     status_code=status.HTTP_200_OK,
     response_model=ModelSchema,
     dependencies=[Security(get_api_key)],
 )
-def get_model(id: str):
-    """Retrieves model via id.
+def get_model(model_name: str):
+    """Retrieves model via model name.
 
     Args:
-        id (str): model id
+        model_name (str): model name
     """
     try:
-        return ModelSchema.get(id)
+        return ModelSchema.get(model_name)
     except ModelTable.DoesNotExist as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"{str(e)} - (id={str(id)})"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{str(e)} - (model_name={str(model_name)})",
         )

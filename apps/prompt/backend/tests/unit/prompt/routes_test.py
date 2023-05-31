@@ -1,6 +1,7 @@
-"""Test routes.x"""
+"""Test routes"""
 
 # Standard Library
+import datetime
 import json
 from unittest.mock import patch
 
@@ -10,7 +11,9 @@ from fastapi import status
 
 # Source
 from src.model.schemas import ModelSchema
+from src.prompt.constants import PromptEnum
 from src.prompt.schemas import PromptTemplateSchema
+from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
 
 
@@ -34,57 +37,47 @@ def test_get_prompts(mock_prompt_get, test_client):
     assert response.json() == {"prompts": []}
 
 
-def test_get_prompts_unauthenticated(test_client):
-    """Test get prompts endpoint unauthenticated."""
-    response = test_client.get("/api/v1/prompts")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
-@pytest.mark.parametrize("id", [1, 124543, "2423"])
+@pytest.mark.parametrize("alias", ["alias-1", "alias-2", "alias-3"])
 @patch.object(PromptTemplateSchema, "get")
-def test_get_prompt(mock_prompt_get, id, test_client):
+def test_get_prompt(mock_prompt_get, alias, test_client):
     """Test get prompt endpoint."""
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template="test template", alias="test alias"
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(
+            template="test template",
+            alias=alias,
+            created_at=datetime.datetime(2022, 11, 2, 8, 34, 1),
+        )
+    ]
+    response = test_client.get(
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )
-    response = test_client.get(f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"})
-    mock_prompt_get.assert_called_with(f"{id}")
+    mock_prompt_get.assert_called_with(alias, raises_if_not_found=True)
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "created_at": None,
-        "id": f"{id}",
+        "alias": alias,
+        "created_at": "2022-11-02T08:34:01",
         "template": "test template",
-        "alias": "test alias",
+        "id": None,
         "variables": [],
+        "version": 0,
     }
 
 
-def test_get_prompt_unauthenticated(test_client):
-    """Test get prompt endpoint unauthenticated."""
-    response = test_client.get("/api/v1/prompts/1")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
 @pytest.mark.parametrize(
-    "id, template, alias",
+    "template, alias",
     [
-        (53463, "I want you to act like {character} from {series}.", "alias 1"),
+        ("I want you to act like {character} from {series}.", "alias abcdefg"),
         (
-            "874285",
             "How long does it take to become proficient in {language}",
-            "alias",
+            "alias-123456",
         ),
     ],
 )
 @patch("src.db.Model.save")
 @patch.object(PromptTemplateSchema, "get")
-def test_create_prompt(
-    mock_prompt_get, mock_table_save, id, template, alias, test_client
-):
+def test_create_prompt(mock_prompt_get, mock_table_save, template, alias, test_client):
     """Test get prompt endpoint."""
-    mock_prompt_get.return_value = []
+    mock_prompt_get.return_value = None
     response = test_client.post(
         f"/api/v1/prompts?template={template}&alias={alias}",
         headers={"x-api-key": "1234"},
@@ -99,42 +92,41 @@ def test_create_prompt(
     assert isinstance(data["created_at"], str)
     assert isinstance(data["template"], str)
     assert isinstance(data["alias"], str)
+    assert isinstance(data["version"], int)
+    assert data["version"] == 0
 
 
 @pytest.mark.parametrize(
-    "id, template, alias, slugified_alias",
+    "template, alias, slugified_alias",
     [
-        (1, "I want you to act like {character} from {series}.", "alias 1", "alias-1"),
+        ("I want you to act like {character} from {series}.", "alias 1", "alias-1"),
     ],
 )
 @patch("src.db.Model.save")
-@patch.object(PromptTemplateSchema, "get")
+@patch("src.db.Model.query")
 def test_create_prompt_same_alias(
-    mock_prompt_get, mock_table_save, id, template, alias, slugified_alias, test_client
+    mock_prompt_query, mock_table_save, template, alias, slugified_alias, test_client
 ):
     """Test get prompt endpoint."""
-    mock_prompt_get.return_value = [
-        PromptTemplateSchema(template="test-template", alias=slugified_alias)
+    mock_prompt_query.return_value = [
+        PromptTemplateTable(
+            id="5690d5d1-e384-4e7a-a559-4c5ad5c785a3",
+            template="test-template",
+            alias=slugified_alias,
+            created_at=datetime.datetime(2023, 5, 22, 12, 3, 41),
+        )
     ]
+
     response = test_client.post(
         f"/api/v1/prompts?template={template}&alias={alias}",
         headers={"x-api-key": "1234"},
     )
+    data = response.json()
 
-    assert not mock_table_save.called
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.json() == {
-        "detail": "{} already exists in the database, please provide a unique alias".format(
-            slugified_alias
-        )
-    }
+    mock_table_save.assert_called_once()
 
-
-def test_create_prompt_unauthenticated(test_client):
-    """Test create prompt endpoint unauthenticated."""
-    response = test_client.post("/api/v1/prompts?template=template&alias=alias")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
+    assert data["version"] == 1
+    assert response.status_code == status.HTTP_201_CREATED
 
 
 @pytest.mark.parametrize(
@@ -160,11 +152,11 @@ def test_update_prompt(
     mock_prompt_update, mock_prompt_get, id, template, alias, update, test_client
 ):
     """Test update prompt endpoint."""
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias=alias
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
     response = test_client.put(
-        f"/api/v1/prompts/{id}?template={update}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{alias}?template={update}", headers={"x-api-key": "1234"}
     )
     assert mock_prompt_get.call_count == 2
     assert mock_prompt_update.call_count == 1
@@ -174,65 +166,73 @@ def test_update_prompt(
         "created_at": None,
         "id": f"{id}",
         "template": template,
+        "version": 0,
     }
 
 
-def test_update_prompt_unauthenticated(test_client):
-    """Test update prompt endpoint unauthenticated."""
-    response = test_client.put("/api/v1/prompts/12345?template=template")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
-@pytest.mark.parametrize("id", [1, 124543, "2423"])
-@patch.object(PromptTemplateSchema, "get")
-@patch("src.prompt.schemas.PromptTemplateSchema.delete")
-def test_delete_prompt(mock_prompt_delete, mock_prompt_schema, id, test_client):
+@pytest.mark.parametrize("alias", ["alias-1", "alias-2", "alias-3"])
+@patch("src.db.Model.delete")
+@patch.object(PromptTemplateTable, "query")
+def test_delete_prompt(
+    mock_prompt_schema_query, mock_prompt_table_delete, alias, test_client
+):
     """Test delete prompt endpoint."""
-    mock_prompt_schema.return_value = PromptTemplateSchema(
-        id=id, template="test template", alias="test alias"
-    )
+    mock_prompt_schema_query.return_value = [
+        PromptTemplateTable(template="test template", alias=alias)
+    ]
 
     response = test_client.delete(
-        f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )
 
-    assert mock_prompt_schema.call_count == 1
-    assert mock_prompt_delete.call_count == 1
-
-    mock_prompt_schema.assert_called_with(f"{id}")
+    assert mock_prompt_schema_query.call_count == 1
+    mock_prompt_schema_query.assert_called_with(alias, scan_index_forward=False)
+    mock_prompt_table_delete.assert_called_once()
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == "deleted"
 
 
-@pytest.mark.parametrize("alias", ["english-summarization"])
-@patch.object(PromptTemplateSchema, "get")
-@patch("src.prompt.schemas.PromptTemplateSchema.delete")
-def test_delete_prompt_protection(
-    mock_prompt_delete, mock_prompt_schema, alias, test_client
+@pytest.mark.parametrize(
+    "alias, template", [("english-summarization", PromptEnum.EN.value[0])]
+)
+@patch("src.db.Model.delete")
+@patch.object(PromptTemplateTable, "query")
+def test_delete_prompt_protection_409(
+    mock_prompt_schema_query, mock_prompt_table_delete, alias, template, test_client
 ):
     """Test delete prompt endpoint."""
-    mock_prompt_schema.return_value = PromptTemplateSchema(
-        id="1", template="Summarization prompt", alias=alias
-    )
-
+    mock_prompt_schema_query.return_value = [
+        PromptTemplateTable(template=template, alias=alias)
+    ]
     response = test_client.delete(
-        f"/api/v1/prompts/{id}", headers={"x-api-key": "1234"}
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )
 
-    assert mock_prompt_schema.call_count == 1
-
-    mock_prompt_schema.assert_called_with(f"{id}")
+    mock_prompt_schema_query.assert_called_with(alias, scan_index_forward=False)
+    assert mock_prompt_schema_query.call_count == 1
+    assert mock_prompt_table_delete.call_count == 0
 
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-def test_delete_prompt_unauthenticated(test_client):
-    """Test delete prompt endpoint unauthenticated."""
-    response = test_client.delete("/api/v1/prompts/12345")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
+@pytest.mark.parametrize("alias", ["english-summarization-1"])
+@patch("src.db.Model.delete")
+@patch.object(PromptTemplateTable, "query")
+def test_delete_prompt_protection_404(
+    mock_prompt_table_query, mock_prompt_table_delete, alias, test_client
+):
+    """Test delete prompt endpoint."""
+    mock_prompt_table_query.return_value = []
+    response = test_client.delete(
+        f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
+    )
+
+    mock_prompt_table_query.assert_called_with(alias, scan_index_forward=False)
+    assert mock_prompt_table_query.call_count == 1
+    assert mock_prompt_table_delete.call_count == 0
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.parametrize(
@@ -269,12 +269,12 @@ def test_generate_text(
     """Test text generation endpoint."""
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias=alias
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate", headers={"x-api-key": "1234"}, json=values
+        f"/api/v1/prompts/{alias}/generate", headers={"x-api-key": "1234"}, json=values
     )
     # check openai method is called
     mock_openai_chat.assert_called_with(
@@ -295,11 +295,12 @@ def test_generate_text(
 
 
 @pytest.mark.parametrize(
-    "id, template, model_id, model_name, values, generated",
+    "id, template, alias, model_id, model_name, values, generated",
     [
         (
             1,
             "Write me a {count}-verse poem about {topic}",
+            "poem",
             2,
             "text-davinci-003",
             {"count": 3, "topic": "machine learning"},
@@ -308,6 +309,7 @@ def test_generate_text(
         (
             "3",
             "What's the most popular {type} framework?",
+            "framework",
             "4",
             "text-curie-001",
             {"type": "web"},
@@ -324,6 +326,7 @@ def test_generate_text_with_diff_model(
     mock_model_get,
     id,
     template,
+    alias,
     model_id,
     model_name,
     values,
@@ -333,9 +336,9 @@ def test_generate_text_with_diff_model(
     """Test text generation endpoint."""
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias="test alias"
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
 
     parameters = json.dumps(
         {
@@ -348,7 +351,7 @@ def test_generate_text_with_diff_model(
     )
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate/model/{model_id}",
+        f"/api/v1/prompts/{alias}/generate/model/{model_name}",
         headers={"x-api-key": "1234"},
         json=values,
     )
@@ -369,11 +372,12 @@ def test_generate_text_with_diff_model(
 
 
 @pytest.mark.parametrize(
-    "id, template, model_id, model_name, values",
+    "id, template, alias, model_id, model_name, values",
     [
         (
             1,
             "Write me a {count}-verse poem about {topic}",
+            "poem",
             2,
             "model-x",
             {"count": 3, "topic": "machine learning"},
@@ -387,6 +391,7 @@ def test_generate_text_with_diff_model_model_not_found(
     mock_model_get,
     id,
     template,
+    alias,
     model_id,
     model_name,
     values,
@@ -394,9 +399,9 @@ def test_generate_text_with_diff_model_model_not_found(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_prompt_get.return_value = PromptTemplateSchema(
-        id=id, template=template, alias="test alias"
-    )
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
     parameters = json.dumps(
         {
             "max_tokens": settings.OPENAI_MAX_TOKENS,
@@ -408,7 +413,7 @@ def test_generate_text_with_diff_model_model_not_found(
     )
     # send request to test client
     response = test_client.post(
-        f"/api/v1/prompts/{id}/generate/model/{model_id}",
+        f"/api/v1/prompts/{alias}/generate/model/{model_id}",
         headers={"x-api-key": "1234"},
         json=values,
     )
@@ -419,17 +424,3 @@ def test_generate_text_with_diff_model_model_not_found(
     assert response.json() == {
         "generated": "Sorry, the backend for this model is in development"
     }
-
-
-def test_generate_unauthenticated(test_client):
-    """Test generate endpoint unauthenticated."""
-    response = test_client.post("/api/v1/prompts/1/generate")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
-def test_generate_with_diff_model_unauthenticated(test_client):
-    """Test generate endpoint unauthenticated."""
-    response = test_client.post("/api/v1/prompts/1/generate/model/1")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}

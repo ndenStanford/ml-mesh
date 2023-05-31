@@ -91,6 +91,7 @@ _install_global_deps() {
     sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
     sudo yum install -y docker-compose-plugin
     sudo systemctl enable docker
+    sudo systemctl start docker
 
     # extra global deps (pyenv, direnv)
     curl -sfL https://direnv.net/install.sh | bash
@@ -101,13 +102,18 @@ _install_global_deps() {
     fi
 
     # shellcheck disable=SC2129
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
     export PATH="/home/ec2-user/.pyenv/bin:$PATH"
-    echo "export PATH='/home/ec2-user/.pyenv/bin:$PATH'" >> $HOME/.bashrc
-    echo "eval "$(direnv hook bash)"" >> $HOME/.bashrc
-    echo "export PYENV_ROOT=$HOME/.pyenv" >> $HOME/.bashrc
-    echo "command -v pyenv >/dev/null || export PATH=$PYENV_ROOT/bin:$PATH" >> $HOME/.bashrc
-    echo "eval $(pyenv init -)" >> $HOME/.bashrc
 
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
+    echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
+    echo 'eval "$(direnv hook bash)"' >> $HOME/.bashrc
+
+    eval "$(pyenv init --path)"
+    source ~/.bashrc
+    source ~/.bash_profile
     separator
 }
 
@@ -127,7 +133,7 @@ _setup_ssh_key(){
     fi
 
     info "Setting up ssh..."
-    ssh-keygen -t rsa -b 4096 -C "$EMAIL"
+    ssh-keygen -t rsa -b 4096 -f $HOME/.ssh/id_rsa -C "$EMAIL"
     sudo -s eval `ssh-agent -s` 1>/dev/null
     info "🛑 Before continuing, please register your ssh public key to GitHub: https://github.com/settings/ssh/new"
     cat $HOME/.ssh/id_rsa.pub
@@ -180,7 +186,8 @@ _install_python(){
     fi
 
     pyenv install "${PYTHON_VERSION}" -f
-    pyenv global "${PYTHON_VERSION}"
+    pyenv shell "${PYTHON_VERSION}"
+    echo 'pyenv shell "${PYTHON_VERSION}"' >> $HOME/.bashrc
 }
 
 # Installing poetry
@@ -297,6 +304,8 @@ main(){
     info " 📋 If you have any questions don't hesitate to reach out:"
     info "  ⚙️  MLOPs slack channel: #ml_infra"
     info "  ⚙️  ML slack channel: #ml_team"
+    info
+    info " Start a new bash command and you're ready to go !"
     info
     info "🌈 WELCOME AND HAVE FUN! 🦄"
 

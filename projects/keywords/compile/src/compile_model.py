@@ -11,7 +11,7 @@ from onclusiveml.models.keywords import CompiledKeyBERT
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.settings import (
+from src.settings import (  # type: ignore[attr-defined]
     DocumentPipelineCompilationSettings,
     IOSettings,
     UncompiledTrackedModelSpecs,
