@@ -45,7 +45,6 @@ class Settings(BaseSettings):
     )
 
     API_KEY_NAME: str = "x-api-key"
-    API_KEY: str = "sk-cDOh2WYa0nr6LyjBM8sElW6b61oFhPTQ"
-
+    API_KEY: str
 
 settings = Settings()
