@@ -13,7 +13,11 @@ import pytest
 @pytest.fixture()
 def test_output_dir() -> str:
 
-    return os.path.join(".", "tests", "output")
+    output_dir = os.environ.get(
+        "NEURON_COMPILE_OUTPUT_DIR", os.path.join(".", "tests", "output")
+    )
+
+    return output_dir
 
 
 @pytest.fixture()
@@ -52,7 +56,7 @@ def torch_model_input(torch_model_name, torch_model_text_input) -> torch.Tensor:
         torch_model_text_input,
         add_special_tokens=True,
         padding="max_length",
-        max_length=50,
+        max_length=10,
         truncation=True,
         return_tensors="pt",
     )
