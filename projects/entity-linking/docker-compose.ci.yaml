@@ -58,6 +58,7 @@ services:
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /docs
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
     hostname: onclusiveml
     networks:
       - onclusive-net
