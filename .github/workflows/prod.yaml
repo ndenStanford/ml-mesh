@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/_code-quality.yaml
     with:
       environment: prod
-      pull-request: ${{ github.event_name == 'pull_request' }}
+      pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
       timeout: 10
 
   # ===============================================
