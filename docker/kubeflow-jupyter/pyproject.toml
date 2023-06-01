@@ -6,7 +6,7 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-jupyterlab = "3.6.3"
+jupyterlab = "4.0.1"
 notebook = "6.4.12"
 ipykernel = "6.23.0"
 
