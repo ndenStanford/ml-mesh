@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Union
 
 # 3rd party libraries
+import boto3
 from neptune import ModelVersion
 from neptune.attributes.atoms.file import File as FileAttributeType
 from neptune.types import File
@@ -18,9 +19,154 @@ logger = get_default_logger(__name__, fmt=LogFormat.DETAILED.value)
 
 
 class TrackedModelVersion(ModelVersion):
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        use_s3_backend: bool = True,
+        s3_backend_bucket: str = "",
+        s3_backend_prefix: str = "",
+        *args: Any,
+        **kwargs: Any,
+    ):
+        """Constructor for customized ModelVersion based object class.
+
+        Args:
+            s3_backend (str, optional): Bucket name. Defaults to ''.
+        """
 
         super().__init__(*args, **kwargs)
+
+        # configure s3 storage backend
+        self.configure_s3_storage_backend(
+            use_s3_backend, s3_backend_bucket, s3_backend_prefix
+        )
+
+    # --- S3 specific utilities
+    def configure_s3_storage_backend(
+        self,
+        use_s3_backend: bool = True,
+        s3_backend_bucket: str = "",
+        s3_backend_prefix: str = "",
+    ) -> None:
+
+        """Validates and sets the s3 storage backend configuration for this TrackedModelVersion
+        instance.
+
+        Args:
+            use_s3_backend: (bool): Whether to use S3 storage as a backend for file attributes.
+                Enabling this is useful for two reasons:
+                    - Storage capacity on Neptune servers is very limited at 100GB/month, and LLM
+                        model artifacts will easily use up that quota when using the default neptune
+                        storage servers
+                    - S3 buckets configured in the same VPC/AZ as the EC2 instances hosting the
+                        application code
+
+            s3_backend_bucket (str, optional): The bucket to be used for file attribute storage.
+                Defaults to ''.
+            s3_backend_prefix (str, optional): The optional S3 prefix to be prepended to all file
+                attributes stored in the S3 bucket via the TrackedModelVersion utilities. Defaults
+                to ''.
+
+        Raises:
+            ValueError: If no bucket is specified even though `use_s3_backend` is set to true
+            ValueError: If the `s3_backend_prefix` is not empty but starts/ends with a '/'
+            ValueError: If no boto3 client can be initialized to the specified bucket.
+
+        Returns:
+            None:
+        """
+
+        if use_s3_backend:
+            self.validate_s3_backend_storage(s3_backend_bucket, s3_backend_prefix)
+
+        self.use_s3_backend = use_s3_backend
+        self.s3_backend_bucket = s3_backend_bucket
+        self.s3_backend_prefix = s3_backend_prefix
+
+    def validate_s3_backend_storage(
+        self,
+        s3_backend_bucket: str = "",
+        s3_backend_prefix: str = "",
+    ) -> None:
+        """Utility to validate optional S3 backend storage specs. Checks for
+        - non-trivial specification of bucket if S3 storage mode is set to True
+        - cleanly formatted (optional) S3 prefix
+        - existing bucket
+
+        Args:
+            s3_backend_bucket (str, optional): The bucket to be used for file attribute storage.
+                Defaults to ''.
+            s3_backend_prefix (str, optional): The optional S3 prefix to be prepended to all file
+                attributes stored in the S3 bucket via the TrackedModelVersion utilities. Defaults
+                to ''.
+
+        Raises:
+            ValueError: If no bucket is specified even though `use_s3_backend` is set to true
+            ValueError: If the `s3_backend_prefix` is not empty but starts/ends with a '/'
+            ValueError: If no boto3 client can be initialized to the specified bucket.
+        """
+
+        # ensure bucket is specified
+        if not s3_backend_bucket:
+            raise ValueError(
+                "S3 backend storage has been enabled, but no bucket was specified"
+            )
+        # ensure validity of backend prefix
+        if s3_backend_prefix and (
+            s3_backend_prefix.startswith("/") or s3_backend_prefix.endswith("/")
+        ):
+            raise ValueError(
+                f"Invalid backend storage prefix {s3_backend_prefix}: May not start or end on "
+                '"/"'
+            )
+        # ensure validity of bucket spec
+        try:
+            self.get_s3_bucket_client(s3_backend_bucket)
+
+        except Exception as s3_backend_bucket_exception:
+            raise ValueError(
+                "Invalid s3 storage backend bucket specification: "
+                f"{s3_backend_bucket_exception}"
+            )
+
+    @staticmethod
+    def get_s3_bucket_client(s3_backend_bucket: str) -> boto3.resource.Bucket:
+        """Utility to retrieve S3 bucket client instance.
+
+        Args:
+            s3_backend_bucket (str): Name of the S3 bucket
+
+        Returns:
+            boto3.resource.Bucket: An initialized S3 bucket client
+        """
+
+        return boto3.resource("s3").Bucket(s3_backend_bucket)
+
+    def derive_model_version_s3_prefix(self, s3_prefix: str = "") -> str:
+        """
+        Helper function that assembles the S3 storage prefix for the current model version. Uses
+        the pattern
+
+        ({s3_prefix}/){workspace}/{project}/{model}-{model_version}, e.g.
+
+        model_registry/onclusive/keywords/KEYWORDS-TRAINED-4
+
+        Args:
+            s3_prefix (str, optional): A valid S3 prefix, if users want to specify a bucket
+                "subdirectory" for a given model version. Defaults to ''.
+
+        Returns:
+            str: The model version level S3 prefix. Will be used to prepend any and all file
+                attribute S3 prefixes associated to this model version.
+        """
+
+        model_version_s3_prefix = (
+            f"{self._workspace}/{self._project_name}/{self._model}-{self._sys_id}"
+        )
+
+        if s3_prefix:
+            model_version_s3_prefix = f"{s3_prefix}/{model_version_s3_prefix}"
+
+        return model_version_s3_prefix
 
     # --- Upload utilities
     def upload_file_to_model_version(
@@ -61,10 +207,59 @@ class TrackedModelVersion(ModelVersion):
             f"Uploading file {local_file_path} into attribute {neptune_attribute_path}."
         )
 
-        self[neptune_attribute_path].upload(file_object)
+        if not self.use_s3_backend:
+            self[neptune_attribute_path].upload(file_object)
+        else:
+            _ = self.upload_tracked_file_to_s3(
+                neptune_attribute_path=neptune_attribute_path,
+                local_file_path=local_file_path,
+            )
 
         logger.debug(
             f"Uploaded file {local_file_path} into attribute {neptune_attribute_path}."
+        )
+
+    def upload_tracked_file_to_s3(
+        self,
+        neptune_attribute_path: str,
+        local_file_path: Union[str, Path] = "",
+    ) -> str:
+        """Utility to
+        - generate an S3 bucket client for the configured storage backend 3 bucket
+        - upload the designated file from local to the model version and neptune attribute path
+            specific S3 location
+        - track the uploaded file via neptune's track_files method, thus adding it to the
+            TrackedModelVersion's meta data for the python object instance, and subsequently also
+            to the resulting model registry entry
+
+        Args:
+            neptune_attribute_path (str): _description_
+            local_file_path (Union[str, Path], optional): _description_. Defaults to "".
+
+        Returns:
+            str: The full S3 uri of the uploaded file
+        """
+
+        s3_client = self.get_s3_bucket_client(self.s3_backend_bucket)
+
+        s3_file_prefix = self.derive_model_version_s3_prefix(self.s3_backend_prefix)
+
+        logger.debug(
+            f"Uploading file {local_file_path} into S3 bucket {self.s3_backend_bucket}: "
+            f"{s3_file_prefix}."
+        )
+
+        s3_client.upload_file(local_file_path, s3_file_prefix)
+
+        self[neptune_attribute_path].track_files(s3_file_prefix)
+
+        logger.debug(
+            f"Uploaded file {local_file_path} into S3 bucket {self.s3_backend_bucket}: "
+            f"{s3_file_prefix}."
+        )
+
+        return (
+            f"{s3_client.meta.endpoint_url}/{self.s3_backend_bucket}/{s3_file_prefix}"
         )
 
     @staticmethod
