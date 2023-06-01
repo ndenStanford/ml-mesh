@@ -13,6 +13,9 @@ from neptune.types import File
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.tracking.tracking_settings import (
+    TrackingLibraryBackendSettings,
+)
 
 
 logger = get_default_logger(__name__, fmt=LogFormat.DETAILED.value)
@@ -21,9 +24,6 @@ logger = get_default_logger(__name__, fmt=LogFormat.DETAILED.value)
 class TrackedModelVersion(ModelVersion):
     def __init__(
         self,
-        use_s3_backend: bool = True,
-        s3_backend_bucket: str = "",
-        s3_backend_prefix: str = "",
         *args: Any,
         **kwargs: Any,
     ):
@@ -36,20 +36,18 @@ class TrackedModelVersion(ModelVersion):
         super().__init__(*args, **kwargs)
 
         # configure s3 storage backend
-        self.configure_s3_storage_backend(
-            use_s3_backend, s3_backend_bucket, s3_backend_prefix
-        )
+        self.configure_s3_storage_backend()
 
     # --- S3 specific utilities
-    def configure_s3_storage_backend(
-        self,
-        use_s3_backend: bool = True,
-        s3_backend_bucket: str = "",
-        s3_backend_prefix: str = "",
-    ) -> None:
+    def configure_s3_storage_backend(self, **kwargs: Any) -> Dict:
 
         """Validates and sets the s3 storage backend configuration for this TrackedModelVersion
-        instance.
+        instance. If not arguments are provided, falls back on the currently provided environment
+        variables as per TrackingLibraryBackendSettings.
+
+        Note that this means that re-running this method with at least one of the below three
+        arguments unspecified after resetting the relevant environment variable(s) will most likely
+        lead to different configuration results.
 
         Args:
             use_s3_backend: (bool): Whether to use S3 storage as a backend for file attributes.
@@ -67,69 +65,20 @@ class TrackedModelVersion(ModelVersion):
                 to ''.
 
         Raises:
-            ValueError: If no bucket is specified even though `use_s3_backend` is set to true
+            ValueError: If an invalid bucket is specified (see tracking_settings for valid range)
             ValueError: If the `s3_backend_prefix` is not empty but starts/ends with a '/'
-            ValueError: If no boto3 client can be initialized to the specified bucket.
 
         Returns:
             None:
         """
 
-        if use_s3_backend:
-            self.validate_s3_backend_storage(s3_backend_bucket, s3_backend_prefix)
+        # validate and configure S3 storage backend specs
+        self.s3_storage_backend_config = TrackingLibraryBackendSettings(**kwargs)
 
-        self.use_s3_backend = use_s3_backend
-        self.s3_backend_bucket = s3_backend_bucket
-        self.s3_backend_prefix = s3_backend_prefix
-
-    def validate_s3_backend_storage(
-        self,
-        s3_backend_bucket: str = "",
-        s3_backend_prefix: str = "",
-    ) -> None:
-        """Utility to validate optional S3 backend storage specs. Checks for
-        - non-trivial specification of bucket if S3 storage mode is set to True
-        - cleanly formatted (optional) S3 prefix
-        - existing bucket
-
-        Args:
-            s3_backend_bucket (str, optional): The bucket to be used for file attribute storage.
-                Defaults to ''.
-            s3_backend_prefix (str, optional): The optional S3 prefix to be prepended to all file
-                attributes stored in the S3 bucket via the TrackedModelVersion utilities. Defaults
-                to ''.
-
-        Raises:
-            ValueError: If no bucket is specified even though `use_s3_backend` is set to true
-            ValueError: If the `s3_backend_prefix` is not empty but starts/ends with a '/'
-            ValueError: If no boto3 client can be initialized to the specified bucket.
-        """
-
-        # ensure bucket is specified
-        if not s3_backend_bucket:
-            raise ValueError(
-                "S3 backend storage has been enabled, but no bucket was specified"
-            )
-        # ensure validity of backend prefix
-        if s3_backend_prefix and (
-            s3_backend_prefix.startswith("/") or s3_backend_prefix.endswith("/")
-        ):
-            raise ValueError(
-                f"Invalid backend storage prefix {s3_backend_prefix}: May not start or end on "
-                '"/"'
-            )
-        # ensure validity of bucket spec
-        try:
-            self.get_s3_bucket_client(s3_backend_bucket)
-
-        except Exception as s3_backend_bucket_exception:
-            raise ValueError(
-                "Invalid s3 storage backend bucket specification: "
-                f"{s3_backend_bucket_exception}"
-            )
+        return self.s3_storage_backend_config
 
     @staticmethod
-    def get_s3_bucket_client(s3_backend_bucket: str) -> boto3.resource.Bucket:
+    def get_s3_bucket_client(s3_backend_bucket: str) -> Any:
         """Utility to retrieve S3 bucket client instance.
 
         Args:
