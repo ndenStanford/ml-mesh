@@ -45,40 +45,6 @@ jobs:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
   # ===============================================
-  # COMPILE MODELS
-  # ===============================================
-
-  run-ml-compilation-pipelines:
-    name: Compile ML models
-    uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-repository-state]
-
-    strategy:
-      matrix:
-        models:
-          - runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
-            project: keywords
-            tag: 2023.5.14
-
-    with:
-      environment: prod
-      runner-kind: ${{ matrix.models.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
-      project: ${{ matrix.models.project }}
-      tag: ${{ matrix.models.tag }}
-      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
-      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
-
-  # ===============================================
   # TEST LIBS
   # ===============================================
 
@@ -212,6 +178,40 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
+  # COMPILE MODELS
+  # ===============================================
+
+  run-ml-compilation-pipelines:
+    name: Compile ML models
+    uses: ./.github/workflows/_compile_model.yaml
+    needs: [run-repository-state, run-projects]
+
+    strategy:
+      matrix:
+        models:
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+            project: keywords
+            tag: 2023.5.14
+
+    with:
+      environment: prod
+      runner-kind: ${{ matrix.models.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
+      project: ${{ matrix.models.project }}
+      tag: ${{ matrix.models.tag }}
+      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
+      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
 
   # ===============================================
