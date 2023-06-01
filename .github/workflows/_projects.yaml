@@ -102,6 +102,10 @@ jobs:
           PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
+      - name: Check internal api key
+        run: |
+          echo $INTERNAL_ML_ENDPOINT_API_KEY
+
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
