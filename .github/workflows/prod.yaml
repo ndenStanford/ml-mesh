@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/_code-quality.yaml
     with:
       environment: prod
-      pull-request: ${{ github.event_name == 'pull_request' }}
+      pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
       timeout: 10
 
   # ===============================================
@@ -179,6 +179,7 @@ jobs:
       AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
   # COMPILE MODELS
