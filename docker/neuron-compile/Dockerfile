@@ -89,6 +89,7 @@ WORKDIR "/"
 
 COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-RUN mkdir -p "${HOME}/tests/output"
-
 WORKDIR "${HOME}"
+
+# hadolint ignore=DL3002
+USER root

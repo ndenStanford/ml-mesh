@@ -23,11 +23,12 @@ def _setup_prompts() -> None:
     """Setup prompts"""
     headers = {"x-api-key": settings.PROMPT_API_KEY}
 
-    for _, prompt_dict in settings.PROMPT_DICT.items():
-        alias = prompt_dict["alias"]
-        template = prompt_dict["template"]
-        requests.post(
-            f"{settings.PROMPT_API}/api/v1/prompts?template={template}&alias={alias}",  # noqa: E501
-            headers=headers,
-        )
+    for input_lang, target_lang_dict in settings.PROMPT_DICT.items():
+        for target_lang, prompt_dict in target_lang_dict.items():
+            alias = prompt_dict["alias"]
+            template = prompt_dict["template"]
+            requests.post(
+                f"{settings.PROMPT_API}/api/v1/prompts?template={template}&alias={alias}",  # noqa: E501
+                headers=headers,
+            )
     return
