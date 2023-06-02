@@ -1,7 +1,7 @@
 """DynamoDB Tables"""
 
 # 3rd party libraries
-from pynamodb.attributes import UnicodeAttribute
+from pynamodb.attributes import UnicodeAttribute, NumberAttribute
 
 # Source
 from src.db import BaseTable
@@ -15,4 +15,4 @@ class PromptTemplateTable(BaseTable):
 
     template = UnicodeAttribute(null=False)
     alias = UnicodeAttribute(null=False, default="", hash_key=True)
-    version = UnicodeAttribute(range_key=True, default=0)
+    version = NumberAttribute(range_key=True, default=0)
