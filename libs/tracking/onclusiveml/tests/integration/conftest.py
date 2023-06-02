@@ -36,13 +36,15 @@ def test_file_directory_download(test_file_directory_upload):
 @pytest.fixture
 def test_model_version(test_model_version_mode: str = "async"):
 
-    return TrackedModelVersion(
+    test_model_version = TrackedModelVersion(
         model="TES-TEST",
         with_id=TEST_MODEL_VERSION_ID,
         project="onclusive/test",
         api_token=os.environ.get("NEPTUNE_API_TOKEN"),  # your credentials
         mode=test_model_version_mode,
     )
+
+    return test_model_version
 
 
 @pytest.fixture
