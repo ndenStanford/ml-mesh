@@ -212,7 +212,7 @@ public class NerdRestService implements NerdPaths {
     public Response processQueryJsonNoMultipart(String query) {
         String output = null;
         Response response = null;
-
+        System.out.println("Disembiguate endpoint called.");
         try {
             output = nerdProcessQuery.processQuery(query);
 

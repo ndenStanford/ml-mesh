@@ -110,7 +110,6 @@ public class Relatedness {
 		}
 
 		for (Article contextArticle : contextArticles) {
-			//if (article.getId() != contextArticle.getId()){
 			currentRelatedness = 0.0;
 			try {
 				currentRelatedness = getRelatedness(article, contextArticle, lang);
@@ -121,7 +120,6 @@ public class Relatedness {
 			}
 			totalRelatedness += currentRelatedness;
 			totalComparisons++;
-			//}
 		}
 		if (totalComparisons == 0) {
 			return 0.0;
@@ -155,8 +153,6 @@ public class Relatedness {
 		if ( (epr.getInLinkIntersectionProportion() == 0.0) && (epr.getOutLinkIntersectionProportion() == 0.0) )
 			return 0.0;
 
-		//System.out.println("gi " + epr.getInLinkmilneWittenMeasure());
-		//System.out.println("go " + epr.getOutLinkmilneWittenMeasure());
 		int count = 0;
 		double total = 0.0;
 
@@ -205,7 +201,6 @@ public class Relatedness {
 			return epr;
 
 		NerdConfig conf = wikipedia.getConfig();
-//System.out.println("#linksA: " + linksA.size() + " / " + "#linksB: " + linksB.size());
 
 		int intersection = 0;
 		//int sentenceIntersection = 0;
@@ -303,7 +298,6 @@ public class Relatedness {
 			int bestSense = candidate.getWikipediaExternalRef();
 			if (bestSense == -1)
 				continue;
-			//Article bestArticle = wikipedia.getArticleByTitle(bestSense.replace("_", " "));
 			Article bestArticle = (Article)wikipedia.getPageById(bestSense);
 			if (bestArticle == null)
 				continue;
@@ -314,7 +308,6 @@ public class Relatedness {
 				context.add(bestArticle);
 			}
 			catch (Exception e) {
-				//System.out.println("Error computing senses for " + candidate.toString());
 				e.printStackTrace();
 			}
 		}
@@ -400,19 +393,8 @@ public class Relatedness {
 								unambig.add(theSense);
 								unambigIds.add(theSense.getId());
 							}
-							//extraSenses.add(cands.get(0).getWikiSense());
 							break;
 						}
-						/*else if (cand.getProb_c() >= 0.8) {
-							// we store some extra "good" senses in case we need more of them
-							Label.Sense theSense = cands.get(0).getWikiSense();
-							if ( !extraSensesIds.contains(theSense.getId()) &&
-								!unambigIds.contains(theSense.getId()) ) {
-								extraSenses.add(theSense);
-								extraSensesIds.add(theSense.getId());
-							}
-							break;
-						}*/
 					}
 				}
 				if (unambig.size()+certainPages.size() > NerdEngine.maxContextSize)
@@ -452,8 +434,6 @@ public class Relatedness {
 							List<NerdEntity> userEntities,
 							String lang) {
 		List<Label.Sense> unambig = new ArrayList<>();
-
-		//String targetString = content.substring(entity.getOffsetStart(), entity.getOffsetEnd());
 
 		String s = "$ " + content + " $";
 
@@ -500,7 +480,6 @@ public class Relatedness {
 		List<Article> certainPages = new ArrayList<Article>();
 		for(NerdEntity ent : userEntities) {
 			if (ent.getWikipediaExternalRef() != -1) {
-				//resultContext.addPage(wikipedia.getPageById(ent.getWikipediaExternalRef()));
 				Page thePage = wikipedia.getPageById(ent.getWikipediaExternalRef());
 				if (thePage.getType() == Page.PageType.article) {
 					certainPages.add((Article)thePage);
@@ -564,7 +543,6 @@ public class Relatedness {
 		List<Article> certainPages = new ArrayList<Article>();
 		for(NerdEntity ent : userEntities) {
 			if (ent.getWikipediaExternalRef() != -1) {
-				//resultContext.addPage(wikipedia.getPageById(ent.getWikipediaExternalRef()));
 				Page thePage = wikipedia.getPageById(ent.getWikipediaExternalRef());
 				if (thePage.getType() == Page.PageType.article) {
 					certainPages.add((Article)thePage);
