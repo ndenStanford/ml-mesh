@@ -64,16 +64,15 @@ To locally build the image tagged as
 ```make
 make projects.build/keywords \
   COMPONENT=compile \
-  ENVIRONMENT=dev
+  ENVIRONMENT=dev \
+  IMAGE_TAG="some-tag"
 ```
 
 #### 2.2.2 Running the components inside docker
 
 1. Export run environment variables:
 
-   - `export CONTAINER_VOLUME_DIR=?`
    - `export NEPTUNE_API_TOKEN=?`
-   - `export PATH_TO_REPOSITORY=?`
 
 2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
    variable values directly from the file into the running container (see below) to allow for
@@ -83,56 +82,62 @@ make projects.build/keywords \
 
 - Download the uncompiled model:
 
-  ````docker
-  docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
-    --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
-    python -m src.download_uncompiled_model```
-  ````
+  ```docker
+  make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=dev \
+            PIPELINE_COMPONENT=download-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="some-tag"
+  ```
 
 - Compile the model:
 
   ```docker
-  docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
-    --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --device /dev/neuron0 \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
-    python -m src.compile_model
+  make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=dev \
+            PIPELINE_COMPONENT=compile-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="some-tag"
   ```
 
 - Test compiled model:
 
   ```docker
-  docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
-    --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    --device /dev/neuron0 \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
-    pytest src/test_compiled_model -ra -vvv --full-trace --tb=long --capture=no
+  make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=dev \
+            PIPELINE_COMPONENT=validate-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="some-tag"
   ```
 
 - Upload compiled model:
 
   ```docker
-  docker run \
-    --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-    --env IO_OUTPATH=$CONTAINER_VOLUME_DIR \
-    --env-file $PATH_TO_REPOSITORY/projects/keywords/compile/config/dev.env \
-    --mount type=volume,source=workflow-volume,target=$CONTAINER_VOLUME_DIR \
-    -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:latest \
-    python -m src.upload_compiled_model
+  make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=dev \
+            PIPELINE_COMPONENT=upload-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="some-tag"
   ```
 
   - Note: If the `--env-file` command is omitted in the above steps,
     the pipeline will fall back on the default values defined in the `settings.py` file.
   - Note: The `volume` mount command `--mount type=volume,source=...` will create a docker volume
-    named `workflow-volume` on your machine. Follow the docker docs to remove it to unblock repeated
+    named `keywords_compile-pipeline-vol` on your machine. Follow the docker docs to remove it to unblock repeated
     downloads when re-running the first component
+
+### 2.3 With Github Actions
+
+Two custom workflows have been created to orchestrate the neuron compilation on a customized, self
+hosted `inf1.x` Github Actions runner.
+
+- the model compilation workflow `.github/workflows/_compile_model.yaml` oversees the model
+  compilation by provisioning the runner as needed, and running the 4 pipeline components described
+  in the previous 2 sections.
+- the customized runner provisioning workflow `.github/workflows/_provision_customized_runner.yaml`
+  that provisions a specified EC2 instance as a self hosted runner and installs `neuron` runtimes
+  and/or `docker-compose` as needed
