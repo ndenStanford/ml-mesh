@@ -1,7 +1,7 @@
 """DynamoDB Tables"""
 
 # 3rd party libraries
-from pynamodb.attributes import UnicodeAttribute, NumberAttribute
+from pynamodb.attributes import NumberAttribute, UnicodeAttribute
 
 # Source
 from src.db import BaseTable
