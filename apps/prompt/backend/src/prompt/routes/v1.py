@@ -12,7 +12,6 @@ from slugify import slugify
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.helpers import get_api_key
 from src.model.constants import ModelEnum
 from src.model.schemas import ModelSchema
 from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
@@ -68,7 +67,7 @@ def get_prompt(alias: str):
 
 
 @router.post(
-    "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
+    "", status_code=status.HTTP_201_CREATED
 )
 def create_prompt(template: str, alias: str):
     """Creates prompt.
@@ -92,7 +91,7 @@ def create_prompt(template: str, alias: str):
 
 
 @router.put(
-    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
+    "/{alias}", status_code=status.HTTP_200_OK
 )
 def update_prompt(alias: str, template: str):
     """Updates latest version of a prompt.
@@ -116,7 +115,7 @@ def update_prompt(alias: str, template: str):
 
 
 @router.delete(
-    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
+    "/{alias}", status_code=status.HTTP_200_OK
 )
 def delete_prompt(alias: str):
     """Deletes prompt from database.
