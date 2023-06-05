@@ -74,20 +74,27 @@ def test_upload_directory_to_model_version(
 
 @pytest.mark.order(1)
 @pytest.mark.upload
-@pytest.mark.parametrize(
-    "test_use_s3_backend",
-    [
-        False,
-    ],
-)
-def test_upload_config_to_model_version(
-    test_model_version, test_use_s3_backend, test_config_expected
-):
+def test_upload_config_to_model_version(test_model_version, test_config_expected):
 
     test_model_version.upload_config_to_model_version(
         config=test_config_expected,
-        neptune_attribute_path=f"s3_{test_use_s3_backend}/test_config",
-        use_s3=test_use_s3_backend,
+        neptune_attribute_path=f"s3_{False}/test_config",
+        use_s3=False,
+    )
+
+    test_model_version.stop()
+
+
+@pytest.mark.order(1)
+@pytest.mark.upload
+def test_upload_model_card_to_model_version(
+    test_model_version, test_model_card_expected
+):
+
+    test_model_version.upload_config_to_model_version(
+        config=test_model_card_expected,
+        neptune_attribute_path=f"s3_{False}/test_model_card",
+        use_s3=False,
     )
 
     test_model_version.stop()

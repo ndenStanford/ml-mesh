@@ -107,20 +107,32 @@ def test_download_directory_from_model_version(
 
 @pytest.mark.order(2)
 @pytest.mark.download
-@pytest.mark.parametrize(
-    "test_use_s3_backend,test_model_version_mode", [(False, "read-only")]
-)
+@pytest.mark.parametrize("test_model_version_mode", [(False, "read-only")])
 def test_download_config_from_model_version(
     test_model_version,
-    test_use_s3_backend,
     test_model_version_mode,
     test_config_expected,
 ):
 
     test_config_actual = test_model_version.download_config_from_model_version(
-        neptune_attribute_path=f"s3_{test_use_s3_backend}/test_config",
+        neptune_attribute_path=f"s3_{False}/test_config",
     )
+
+    test_model_version.stop()
 
     assert test_config_actual == test_config_expected
 
+
+@pytest.mark.order(2)
+@pytest.mark.download
+def test_download_model_card_from_model_version(
+    test_model_version, test_model_card_expected
+):
+
+    test_model_card_actual = test_model_version.download_config_from_model_version(
+        neptune_attribute_path=f"s3_{False}/test_model_card",
+    )
+
     test_model_version.stop()
+
+    assert test_model_card_actual == test_model_card_expected

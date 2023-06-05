@@ -5,6 +5,7 @@ import os
 import pytest
 
 # Internal libraries
+from onclusiveml.tracking.tracked_model_utils import TrackedModelCard
 from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
 
 
@@ -150,3 +151,9 @@ def test_config_expected():
             [1, 2, 3, 4],
         ],
     }
+
+
+@pytest.fixture
+def test_model_card_expected():
+
+    return TrackedModelCard(model_type="base").dict()
