@@ -88,7 +88,8 @@ jobs:
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
-          PLATFORM=linux/amd64
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
 
       - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.validate-build }}
@@ -96,7 +97,8 @@ jobs:
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
-          PLATFORM=linux/amd64
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
@@ -105,11 +107,13 @@ jobs:
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="production" \
-          PLATFORM=linux/amd64
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
         run: |
           make docker.deploy/${{ inputs.image }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          IMAGE_TAG="${{ inputs.tag }}"
+          IMAGE_TAG="${{ inputs.tag }}" \
+          ENVIRONMENT="ci"

@@ -6,4 +6,5 @@ from onclusiveml.tracking.tracked_model_utils import (  # noqa: F401
     TrackedModelSpecs,
     TrackedModelTestFiles,
     TrackedModelCard,
+    TrackedGithubActionsSpecs,
 )

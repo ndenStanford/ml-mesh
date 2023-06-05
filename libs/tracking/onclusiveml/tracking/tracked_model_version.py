@@ -592,7 +592,9 @@ class TrackedModelVersion(ModelVersion):
 
             if (
                 neptune_attribute_prefix != ""
-                and not neptune_attribute_path.startswith(neptune_attribute_prefix)
+                and not neptune_attribute_path.startswith(  # noqa: W503
+                    neptune_attribute_prefix
+                )
             ):
                 logger.debug(
                     f"Neptune data path {neptune_attribute_path} does not start with "

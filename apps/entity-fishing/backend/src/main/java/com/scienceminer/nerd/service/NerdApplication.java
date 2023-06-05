@@ -46,7 +46,6 @@ public class NerdApplication extends Application<NerdServiceConfiguration> {
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(new MultiPartBundle());
         bootstrap.addBundle(new AssetsBundle("/web", "/", "index.html", "assets"));
-        //bootstrap.addCommand(new CreateTrainingCommand());
     }
 
     @Override

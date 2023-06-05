@@ -30,6 +30,7 @@ class SummarizationHandler:
         text: str,
         desired_length: int,
         lang: str,
+        target_lang: str,
     ) -> str:
         """Summarization prediction handler method.
         Args:
@@ -37,11 +38,15 @@ class SummarizationHandler:
             desired_length (int):
             lang (str):
         """
-        # prompt_id = self.get_prompt(lang)
-        alias = settings.PROMPT_DICT[lang]["alias"]
+        try:
+            alias = settings.PROMPT_DICT[lang][target_lang]["alias"]
+        except KeyError:
+            logger.errror("Summarization language not supported.")
+
         input_dict = {"desired_length": desired_length, "content": text}
         # prompt = prompt.format(**input_dict)
         headers = {"x-api-key": settings.PROMPT_API_KEY}
+
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
             headers=headers,
@@ -88,13 +93,10 @@ def handle(data: Any) -> Optional[Dict[str, str]]:
         text = _service.pre_process(data["content"])
         desired_length = data["desired_length"]
         lang = data["lang"]
+        target_lang = data["target_lang"]
 
         starttime = datetime.datetime.utcnow()
-        summary = _service.inference(
-            text,
-            desired_length,
-            lang,
-        )
+        summary = _service.inference(text, desired_length, lang, target_lang)
         endtime = datetime.datetime.utcnow()
 
         logger.debug(

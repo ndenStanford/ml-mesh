@@ -12,7 +12,7 @@ apps.deploy/%: ## Deploy project component docker image to ECR.
 	docker compose -f ./apps/$(notdir apps/$@)/docker-compose.$(ENVIRONMENT).yaml push $(COMPONENT)
 
 apps.start/%: # Start development container of component
-	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up --force-recreate
 
 apps.stop/%: # Start development container of component
 	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
@@ -21,10 +21,10 @@ apps.test/%: apps.unit/% apps.integration/% ## Run all tests for project compone
 	echo "Running all tests."
 
 apps.unit/%: apps.set ## Run unit tests for project component
-	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit --force-recreate
 
 apps.integration/%: ## Run integration tests for project component
-	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up $(COMPONENT)-integration --exit-code-from $(COMPONENT)-integration
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up $(COMPONENT)-integration --exit-code-from $(COMPONENT)-integration --force-recreate
 
 apps.lock/%:
 	poetry lock --directory=apps/$(notdir $@)/$(COMPONENT)

@@ -27,7 +27,7 @@ public class NerdRestProcessGeneric {
     public static Response isAlive() {
         Response response = null;
         try {
-            LOGGER.debug("Called isAlive()...");
+            System.out.println("Called isAlive()...");
 
             String retVal = null;
             try {

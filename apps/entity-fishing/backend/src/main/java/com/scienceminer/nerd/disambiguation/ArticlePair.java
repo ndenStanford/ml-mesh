@@ -23,8 +23,6 @@ public class ArticlePair {
         //generate unique key for the pair of articles
         int min = Math.min(art1.getId(), art2.getId());
         int max = Math.max(art1.getId(), art2.getId());
-        //long key = min + (max << 30);
-//System.out.println(min + " / " + max);
         return (((long) min) << 32) | (max & 0xffffffffL);
     }
 
