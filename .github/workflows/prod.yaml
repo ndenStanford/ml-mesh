@@ -125,7 +125,8 @@ jobs:
   run-projects:
     name: ML Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    #needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state]
     strategy:
       max-parallel: 10
       matrix:
