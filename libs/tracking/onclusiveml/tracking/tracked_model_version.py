@@ -14,13 +14,12 @@ from neptune.exceptions import TypeDoesNotSupportAttributeException
 from neptune.types import File
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.tracking.tracked_logging import (
+    tracking_library_logger as logger,
+)
 from onclusiveml.tracking.tracking_settings import (
     TrackingLibraryBackendSettings,
 )
-
-
-logger = get_default_logger(__name__, fmt=LogFormat.DETAILED.value)
 
 
 class TrackedModelVersion(ModelVersion):
@@ -37,18 +36,17 @@ class TrackedModelVersion(ModelVersion):
 
         super().__init__(*args, **kwargs)
         # configure s3 storage backend
+        self.s3_storage_backend_config = TrackingLibraryBackendSettings()
         self.configure_s3_storage_backend()
 
     # --- S3 specific utilities
     def configure_s3_storage_backend(self, **kwargs: Any) -> None:
 
         """Validates and sets the s3 storage backend configuration for this TrackedModelVersion
-        instance. If not arguments are provided, falls back on the currently provided environment
-        variables as per TrackingLibraryBackendSettings.
-
-        Note that this means that re-running this method with at least one of the below three
-        arguments unspecified after resetting the relevant environment variable(s) will most likely
-        lead to different configuration results.
+        instance. If not arguments are provided, falls back on the configuration derived at the time
+        of instance initialization. If no such configuration exists (e.g. if this is called by the
+        constructor) environment variables and default values as per the
+        TrackedLibraryBackendSetting class will be used.
 
         Args:
             use_s3_backend: (bool): Whether to use S3 storage as a backend for file attributes.
@@ -73,8 +71,19 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             None:
         """
-        # validate and configure S3 storage backend specs
-        self.s3_storage_backend_config = TrackingLibraryBackendSettings(**kwargs)
+
+        logger.debug(
+            "(Re-)configuring backend settings using the following parameters (using"
+            f"defaults for others): {kwargs}"
+        )
+
+        # only update the parameters that are specified in this method's kwargs
+        logger.debug("Backend configuration found. Updating specified params.")
+        s3_storage_backend_updated_dict = self.s3_storage_backend_config.dict().copy()
+        s3_storage_backend_updated_dict.update(kwargs)
+        self.s3_storage_backend_config = TrackingLibraryBackendSettings(
+            **s3_storage_backend_updated_dict
+        )
 
         logger.debug(
             "Successfully configured s3 storage backend: "

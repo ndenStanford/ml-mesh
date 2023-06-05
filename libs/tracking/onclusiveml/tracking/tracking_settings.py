@@ -3,7 +3,18 @@ from enum import Enum
 from typing import Dict
 
 # 3rd party libraries
-from pydantic import BaseSettings, root_validator
+from pydantic import root_validator
+
+# Internal libraries
+from onclusiveml.core.base.params import Params
+from onclusiveml.core.logging.constants import (  # noqa:F401
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    WARNING,
+    LogFormat,
+)
 
 
 class TrackingLibraryS3Backends(Enum):
@@ -23,7 +34,18 @@ class TrackingLibraryS3Backends(Enum):
     prod: str = "onclusive-model-store-prod"
 
 
-class TrackingLibraryBackendSettings(BaseSettings):
+class TrackingLibraryLoggingSettings(Params):
+    """Entrypoint to configure logging behaviour of the tracking library for the current session."""
+
+    name: str = __name__
+    fmt: str = LogFormat.DETAILED.value
+    level: int = INFO  # 10=DEBUG, 20=INFO, 30=WARNING, 40=ERROR, 50=CRITICAL
+
+    class Config:
+        env_prefix = "onclusiveml_tracking_logger_"
+
+
+class TrackingLibraryBackendSettings(Params):
     """
     Entrypoint to configure the tracking library's S3 storage backend behaviour via environment
     variables. The values derived by this class's attributes will be used as default values for the
@@ -36,6 +58,9 @@ class TrackingLibraryBackendSettings(BaseSettings):
     use_s3_backend: bool = True
     s3_backend_bucket: str = TrackingLibraryS3Backends.dev.value
     s3_backend_prefix: str = "neptune-ai-model-registry"
+
+    class Config:
+        env_prefix = "onclusiveml_tracking_backend_"
 
     @root_validator
     def validate_s3_storage_settings(cls, values: Dict) -> Dict:
