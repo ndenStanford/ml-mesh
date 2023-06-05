@@ -33,13 +33,6 @@ def test_get_models(mock_model_get, test_client):
     assert response.json() == {"models": []}
 
 
-def test_get_models_unauthenticated(test_client):
-    """Test get models endpoint unauthenticated."""
-    response = test_client.get("/api/v1/models")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
-
-
 @pytest.mark.parametrize("model_name", ["model-1", "model-2", "model-3"])
 @patch.object(ModelSchema, "get")
 def test_get_model(mock_model_get, model_name, test_client):
@@ -64,10 +57,3 @@ def test_get_model(mock_model_get, model_name, test_client):
         "model_name": model_name,
         "parameters": parameters,
     }
-
-
-def test_get_model_unauthenticated(test_client):
-    """Test get model endpoint unauthenticated."""
-    response = test_client.get("/api/v1/models/1")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}

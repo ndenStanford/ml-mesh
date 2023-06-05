@@ -1,13 +1,12 @@
 """Model."""
 
 # 3rd party libraries
-from fastapi import APIRouter, HTTPException, Security, status
+from fastapi import APIRouter, HTTPException, status
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.helpers import get_api_key
 from src.model.schemas import ModelListSchema, ModelSchema
 from src.model.tables import ModelTable
 
@@ -24,7 +23,6 @@ router = APIRouter(
     "",
     status_code=status.HTTP_200_OK,
     response_model=ModelListSchema,
-    dependencies=[Security(get_api_key)],
 )
 def get_models():
     """List models."""
@@ -35,7 +33,6 @@ def get_models():
     "/{model_name}",
     status_code=status.HTTP_200_OK,
     response_model=ModelSchema,
-    dependencies=[Security(get_api_key)],
 )
 def get_model(model_name: str):
     """Retrieves model via model name.
