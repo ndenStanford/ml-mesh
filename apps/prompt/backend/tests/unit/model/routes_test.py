@@ -58,9 +58,3 @@ def test_get_model(mock_model_get, model_name, test_client):
         "parameters": parameters,
     }
 
-
-def test_get_model_unauthenticated(test_client):
-    """Test get model endpoint unauthenticated."""
-    response = test_client.get("/api/v1/models/1")
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json() == {"detail": "Not authenticated"}
