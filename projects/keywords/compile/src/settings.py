@@ -127,7 +127,7 @@ class TokenizerSettings(TrackedParams):
 class ModelTracingSettings(TrackedParams):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details"""
 
-    dynamic_batching: bool = True
+    dynamic_batch_size: bool = True
     strict: bool = True
     compiler_args: List[str] = ["--fast-math", "none"]
 
@@ -148,9 +148,7 @@ class PipelineCompilationSettings(TrackedParams):
     validation_rtol: float = 1e-02
     validation_atol: float = 1e-02
     tokenizer_settings: TokenizerSettings = TokenizerSettings()
-
-    if neuron:
-        model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
+    model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
 
 
 class WordPipelineCompilationSettings(PipelineCompilationSettings):
