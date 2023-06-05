@@ -57,4 +57,3 @@ def test_get_model(mock_model_get, model_name, test_client):
         "model_name": model_name,
         "parameters": parameters,
     }
-
