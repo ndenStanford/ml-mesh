@@ -27,7 +27,7 @@ def test_health_route(test_client):
 def test_get_models(mock_model_get, test_client):
     """Test get models endpoint."""
     mock_model_get.return_value = []
-    response = test_client.get("/api/v1/models", headers={"x-api-key": "1234"})
+    response = test_client.get("/api/v1/models")
     mock_model_get.assert_called_once()
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"models": []}
