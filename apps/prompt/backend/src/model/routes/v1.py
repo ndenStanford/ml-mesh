@@ -1,13 +1,12 @@
 """Model."""
 
 # 3rd party libraries
-from fastapi import APIRouter, HTTPException, Security, status
+from fastapi import APIRouter, HTTPException, status
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.helpers import get_api_key
 from src.model.schemas import ModelListSchema, ModelSchema
 from src.model.tables import ModelTable
 
