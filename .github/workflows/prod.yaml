@@ -195,7 +195,7 @@ jobs:
       matrix:
         models:
           - runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-type: inf1.2xlarge
             project: keywords
             tag: 2023.6.3
 
