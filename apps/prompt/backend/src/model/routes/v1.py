@@ -24,6 +24,7 @@ router = APIRouter(
     "",
     status_code=status.HTTP_200_OK,
     response_model=ModelListSchema,
+    dependencies=[Security(get_api_key)],
 )
 def get_models():
     """List models."""
@@ -34,6 +35,7 @@ def get_models():
     "/{model_name}",
     status_code=status.HTTP_200_OK,
     response_model=ModelSchema,
+    dependencies=[Security(get_api_key)],
 )
 def get_model(model_name: str):
     """Retrieves model via model name.
