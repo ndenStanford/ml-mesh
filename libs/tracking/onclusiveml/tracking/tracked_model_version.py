@@ -157,27 +157,45 @@ class TrackedModelVersion(ModelVersion):
             FileExistsError: If the specified `local_file_path` does not point to a valid file, this
                 exception will be raised.
         """
-        # validate file specs
-        if not local_file_path and not file_object:
-            raise ValueError(
-                "At least one of `local_file_path` or `file_object` must be provided."
+
+        # if the use of s3 storage is not specified at the file upload level, fall back on
+        # `s3_storage_backend_config` parameter
+        use_s3 = kwargs.get("use_s3", self.s3_storage_backend_config.use_s3_backend)
+
+        # if a file object is specified, enforce neptune ai storage backend as uploading configs
+        # directly is not yet supported by S3 backend
+        # if no file object is specified, ensure a valid local file path is specified and create a
+        # neptune file object from it
+        if file_object is not None:
+
+            logger.info("File object specified. Enforcing neptune storage backend.")
+            use_s3 = False
+
+        elif file_object is None and local_file_path:
+
+            logger.debug(
+                "File object not specified, but file path specified. Attempting to create "
+                f"file object from file path {local_file_path}."
             )
-        # create neptune file type object from local path - this is the default upload object
-        # when using the neptune server storage backend
-        if local_file_path:
+
             if not os.path.exists(local_file_path):
                 raise FileExistsError(
                     f"Specified file {local_file_path} could not be located."
                 )
             else:
                 file_object = File.from_path(local_file_path)
+                logger.debug(f"Created file object from file path {local_file_path}.")
 
-        logger.debug(
-            f"Uploading file {local_file_path} into attribute {neptune_attribute_path}."
-        )
-        # if the use of s3 storage is not specified at the file upload level, fall back on
-        # `s3_storage_backend_config` parameter
-        use_s3 = kwargs.get("use_s3", self.s3_storage_backend_config.use_s3_backend)
+        elif file_object is None and not local_file_path:
+            raise ValueError(
+                "At least one of `local_file_path` or `file_object` must be provided."
+            )
+        else:
+            raise NotImplementedError(
+                f"Unforeseen specification: File object {file_object}."
+                f"File path {local_file_path}."
+            )
+
         # upload the file:
         # - if storage backend is configured to neptune ai servers, upload the file object
         # - if storage backend is configured to internal S3:
@@ -189,15 +207,14 @@ class TrackedModelVersion(ModelVersion):
         # implementing a read method required for boto3's upload_fileobj method
         if not use_s3:
             self[neptune_attribute_path].upload(file_object)
+            logger.debug(
+                f"Uploaded file object {file_object} into attribute {neptune_attribute_path}."
+            )
         else:
             _ = self.upload_tracked_file_to_s3(
                 neptune_attribute_path=neptune_attribute_path,
                 local_file_path=local_file_path,
             )
-
-        logger.debug(
-            f"Uploaded file {local_file_path} into attribute {neptune_attribute_path}."
-        )
 
     def upload_tracked_file_to_s3(
         self,
@@ -236,11 +253,16 @@ class TrackedModelVersion(ModelVersion):
 
         s3_client.upload_file(local_file_path, s3_file_prefix)
 
-        self[neptune_attribute_path].track_files(s3_file_uri)
-
         logger.debug(
             f"Uploaded file {local_file_path} into S3 bucket {s3_bucket}: "
             f"{s3_file_prefix}."
+        )
+
+        self[neptune_attribute_path].track_files(s3_file_uri)
+
+        logger.debug(
+            f"Tracked file in S3 bucket {s3_bucket}: {s3_file_prefix} under attribute path "
+            f"{neptune_attribute_path}"
         )
 
         return s3_file_uri
