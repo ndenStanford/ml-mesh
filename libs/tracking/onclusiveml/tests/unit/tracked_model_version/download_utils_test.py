@@ -8,33 +8,33 @@ import pytest
 from onclusiveml.tracking.tracked_model_version import TrackedModelVersion
 
 
-def test_extract_file_attributes(
-    test_uploaded_attributes, test_extracted_file_attributes_expected
+def test__extract_data_attributes(
+    test_uploaded_attributes, test_extracted_data_attributes_expected
 ):
 
-    test_extracted_file_attributes_actual = (
-        TrackedModelVersion._extract_file_attributes(test_uploaded_attributes)
+    test_extracted_data_attributes_actual = (
+        TrackedModelVersion._extract_data_attributes(test_uploaded_attributes)
     )
     # access ._path attributes to enable comparisons
     actual = set(
-        ["|".join(item._path) for item in test_extracted_file_attributes_actual]
+        ["|".join(item._path) for item in test_extracted_data_attributes_actual]
     )
     expected = set(
-        ["|".join(item._path) for item in test_extracted_file_attributes_expected]
+        ["|".join(item._path) for item in test_extracted_data_attributes_expected]
     )
     assert actual == expected
 
 
 @pytest.mark.parametrize("neptune_attribute_prefix", ["c", ""])
 def test_derive_and_filter_neptune_attributes_paths(
-    test_extracted_file_attributes_expected,
+    test_extracted_data_attributes_expected,
     neptune_attribute_prefix,
     test_derive_and_filter_neptune_attribute_paths_expected,
 ):
 
     test_derive_and_filter_neptune_attribute_paths_actual = (
         TrackedModelVersion._derive_and_filter_neptune_attribute_paths(
-            test_extracted_file_attributes_expected,
+            test_extracted_data_attributes_expected,
             neptune_attribute_prefix=neptune_attribute_prefix,
         )
     )
