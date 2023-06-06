@@ -23,6 +23,12 @@ def main() -> None:
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
+    # 3rd party libraries
+    import boto3
+
+    id = boto3.client("sts").get_caller_identity()
+
+    logger.info(f"AWS identity: {id}")
     # --- upload compiled model
     compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
@@ -32,13 +38,11 @@ def main() -> None:
     compiled_model_version.upload_config_to_model_version(
         config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
     )
-
     # upload compiled keybert model artifact
     compiled_model_version.upload_directory_to_model_version(
         local_directory_path=io_settings.compile.model_directory,
         neptune_attribute_path=compiled_model_card.model_artifact_attribute_path,
     )
-
     # upload test files:
     # - inputs same as uncompiled model
     # - inference_params same as uncompiled model
