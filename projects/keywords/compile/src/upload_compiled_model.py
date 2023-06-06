@@ -23,12 +23,7 @@ def main() -> None:
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
-    # 3rd party libraries
-    import boto3
 
-    id = boto3.client("sts").get_caller_identity()
-
-    logger.info(f"AWS identity: {id}")
     # --- upload compiled model
     compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())

@@ -18,12 +18,7 @@ def main() -> None:
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
-    # 3rd party libraries
-    import boto3
 
-    id = boto3.client("sts").get_caller_identity()
-
-    logger.info(f"AWS identity: {id}")
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
