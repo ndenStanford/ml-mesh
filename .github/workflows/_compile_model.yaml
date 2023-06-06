@@ -105,6 +105,9 @@ jobs:
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     environment: ${{ inputs.environment }}
     if: ${{ inputs.compile }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
