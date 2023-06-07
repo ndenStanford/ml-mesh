@@ -117,13 +117,13 @@ class TrackedModelVersion(ModelVersion):
 
         sts_client = boto3.client("sts")
         id_pre = sts_client.get_caller_identity()
-        logger.info(f"AWS sts client identity before generating role object: {id_pre}")
+        logger.debug(f"AWS sts client identity before generating role object: {id_pre}")
 
         aws_role_arn_to_assume = os.environ.get("AWS_ROLE_TO_ASSUME", "")
 
         if aws_role_arn_to_assume:
 
-            logger.info(
+            logger.debug(
                 f"AWS role set. Attempting to assume role {aws_role_arn_to_assume}."
             )
 
@@ -137,7 +137,7 @@ class TrackedModelVersion(ModelVersion):
             )
 
             id_post = sts_client.get_caller_identity()
-            logger.info(
+            logger.debug(
                 "AWS sts client identity after generating role object for role "
                 f"{aws_role_arn_to_assume}: {id_post}"
             )
