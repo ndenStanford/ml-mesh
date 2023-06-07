@@ -119,6 +119,9 @@ jobs:
           role-duration-seconds: 1200
           role-session-name: DeployManifests
 
+      - name: Check identity
+        run: aws sts get-caller-identity
+
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
