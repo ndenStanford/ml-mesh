@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "serving"
+version = "0.1.0"
+description = "Internal serving library for REST and gRPC based app and project servers"
+authors = ["Sebastian Scherer <scherersebastian@yahoo.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
