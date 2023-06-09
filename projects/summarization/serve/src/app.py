@@ -26,7 +26,7 @@ def create_app() -> FastAPI:
         docs_url=settings.DOCS_URL,
         on_startup=[init],
     )
-    logger.debug('*'*10)
+    logger.debug('*' * 10)
     logger.debug(settings.DOCS_URL)
 
     logger.debug("Adding routers...")
