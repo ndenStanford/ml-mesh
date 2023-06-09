@@ -31,14 +31,15 @@ class Settings(BaseSettings):
     LOGGING_LEVEL: str = "info"
 
     # documentation endpoint
-    DOCS_URL: Optional[str] = None
+    DOCS_URL: Optional[str] = "/summarization/docs"
+    OPENAI_URL: Optional[str] = "/summarization/openai.json"
 
     # OpenAI api key
     OPENAI_API_KEY: str = ""
 
     # Prompt url
-    PROMPT_API: str = "http://0.0.0.0:4000"
-    PROMPT_API_KEY: str = "1234"
+    PROMPT_API: str = "https://internal.api.ml.dev.onclusive.org"
+    INTERNAL_ML_ENDPOINT_API_KEY: str
 
     PROMPT_DICT = {
         "en": {
