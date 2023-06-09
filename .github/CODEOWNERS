@@ -5,7 +5,10 @@
 * @airpr/mlops-engineers @RonsenbergVI @SebastianScherer88
 
 /libs @airpr/mlops-engineers
-/libs/compile /libs/models /libs/serving /libs/tracking @SebastianScherer88
+/libs/compile @SebastianScherer88
+/libs/models @SebastianScherer88
+/libs/serving @SebastianScherer88
+/libs/tracking @SebastianScherer88
 
 ## MLE owns the project implementation
 
