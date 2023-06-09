@@ -33,7 +33,7 @@ services:
       - 8001:8001
     environment:
       ENVIRONMENT: ci
-      SUMMARIZATION_DOCS_URL: /summarization/docs
+      DOCS_URL: /summarization/docs
       OPENAI_URL: /summarization/openai.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
@@ -57,7 +57,7 @@ services:
     profiles: ["unit"]
     environment:
       ENVIRONMENT: ci
-      SUMMARIZATION_DOCS_URL: /summarization/docs
+      DOCS_URL: /summarization/docs
       OPENAI_URL: /summarization/openai.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
@@ -82,7 +82,7 @@ services:
     profiles: ["integration"]
     environment:
       ENVIRONMENT: ci
-      SUMMARIZATION_DOCS_URL: /summarization/docs
+      DOCS_URL: /summarization/docs
       OPENAI_URL: /summarization/openai.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
@@ -123,8 +123,7 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      SUMMARIZATION_DOCS_URL: /summarization/docs
-      OPENAI_URL: /summarization/openai.json
+      DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234

@@ -23,7 +23,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         name=settings.API_NAME,
         description=settings.API_DESCRIPTION,
-        docs_url=settings.SUMMARIZATION_DOCS_URL,
+        docs_url=settings.DOCS_URL,
         on_startup=[init],
         openapi_url=settings.OPENAI_URL,
     )
