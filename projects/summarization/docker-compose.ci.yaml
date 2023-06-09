@@ -33,7 +33,8 @@ services:
       - 8001:8001
     environment:
       ENVIRONMENT: ci
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
+      OPENAI_URL: /summarization/openai.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
     hostname: onclusiveml
@@ -56,9 +57,11 @@ services:
     profiles: ["unit"]
     environment:
       ENVIRONMENT: ci
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
+      OPENAI_URL: /summarization/openai.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -79,9 +82,11 @@ services:
     profiles: ["integration"]
     environment:
       ENVIRONMENT: ci
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
+      OPENAI_URL: /summarization/openai.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
     depends_on:
       prompt-backend:
         condition: service_healthy
