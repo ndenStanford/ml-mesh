@@ -34,6 +34,8 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(v1_router)
 
+    url_list = [{"path": route.path, "name": route.name} for route in app.routes]
+    logger.debug(url_list)
     return app
 
 
