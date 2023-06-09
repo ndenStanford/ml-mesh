@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # documentation endpoint
     DOCS_URL: Optional[str] = "/summarization/docs"
-    OPENAI_URL: Optional[str] = "/summarization/openai.json"
+    OPENAPI_URL: Optional[str] = "/summarization/openapi.json"
 
     # OpenAI api key
     OPENAI_API_KEY: str = ""

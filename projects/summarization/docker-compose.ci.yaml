@@ -34,7 +34,7 @@ services:
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /summarization/docs
-      OPENAI_URL: /summarization/openai.json
+      OPENAPI_URL: /summarization/openapi.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
     hostname: onclusiveml
@@ -58,7 +58,7 @@ services:
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /summarization/docs
-      OPENAI_URL: /summarization/openai.json
+      OPENAPI_URL: /summarization/openapi.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
@@ -83,7 +83,7 @@ services:
     environment:
       ENVIRONMENT: ci
       DOCS_URL: /summarization/docs
-      OPENAI_URL: /summarization/openai.json
+      OPENAPI_URL: /summarization/openapi.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
