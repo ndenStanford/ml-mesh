@@ -25,10 +25,8 @@ def create_app() -> FastAPI:
         description=settings.API_DESCRIPTION,
         docs_url=settings.DOCS_URL,
         on_startup=[init],
-        openapi_url=settings.OPENAI_URL,
+        openapi_url=settings.OPENAPI_URL,
     )
-    logger.debug("*" * 10)
-    logger.debug(settings.DOCS_URL)
 
     logger.debug("Adding routers...")
 
