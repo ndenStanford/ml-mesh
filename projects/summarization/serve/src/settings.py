@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     LOGGING_LEVEL: str = "info"
 
     # documentation endpoint
-    SUMMARIZATION_DOCS_URL: Optional[str] = "/summarization/docs"
+    DOCS_URL: Optional[str] = "/summarization/docs"
     OPENAI_URL: Optional[str] = "/summarization/openai.json"
 
     # OpenAI api key
