@@ -1,0 +1,57 @@
+#!/bin/bash
+set -euo pipefail
+
+# https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# shellcheck source=shared
+# shellcheck disable=SC1091
+source "${script_dir}/shared"
+
+##==----------------------------------------------------------------------------
+##  Git info - branch names, commit short ref
+
+default_branch='main'
+current_ref="${GITHUB_REF:-}"
+git_commit="$(git rev-parse --short HEAD | sed 's/0*//')"  # trim leading zeros, because semver doesn't allow that in
+                                                           # the 'pre-release version' part, but we can't use the + char
+                                                           # to make it 'build metadata' as that's not supported in K8s
+                                                           # labels
+
+##==----------------------------------------------------------------------------
+##  Version increment
+
+# increment the month if needed
+month="$(date '+%y.%-m.')"
+release="${current_version//$month/}"
+if [[ "${release}" == "${current_version}" ]] ; then
+    current_version="$(date '+%y.%-m.0')"
+
+fi
+
+# increment the patch digit
+IFS=" " read -r -a version_array <<< "${current_version//./ }"
+
+
+(( ++version_array[2] ))
+
+new_version="${version_array[0]}.${version_array[1]}.${version_array[2]}"
+
+# add pre-release info to version if not the default branch
+if [[ "${current_ref}" != "refs/heads/${default_branch}" ]] ; then
+    pre_release="pre.${git_commit}"
+    new_version="${new_version}-${pre_release}"
+    echo "PRE_RELEASE_LABEL=${pre_release}" >> "${GITHUB_OUTPUT}"
+fi
+
+
+echo "ℹ️ The new version is ${new_version}"
+
+# shellcheck disable=SC2129
+echo "VERSION=${new_version}" >> "${GITHUB_OUTPUT}"
+echo "V_VERSION=v${new_version}" >> "${GITHUB_OUTPUT}"
+echo "MAJOR_VERSION=${version_array[0]}" >> "${GITHUB_OUTPUT}"
+echo "MINOR_VERSION=${version_array[1]}" >> "${GITHUB_OUTPUT}"
+echo "PATCH_VERSION=${version_array[2]}" >> "${GITHUB_OUTPUT}"
+echo "MAJOR_V_VERSION=v${version_array[0]}" >> "${GITHUB_OUTPUT}"
+echo "MINOR_V_VERSION=v${version_array[1]}" >> "${GITHUB_OUTPUT}"
+echo "PATCH_V_VERSION=v${version_array[2]}" >> "${GITHUB_OUTPUT}"

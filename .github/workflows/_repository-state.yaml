@@ -11,6 +11,16 @@ on:
         required: true
         type: string
         description: "Current branch name."
+      prerelease:
+        required: false
+        type: boolean
+        default: false
+        description: "If true a pre-release is created."
+      publish:
+        required: false
+        type: boolean
+        default: true
+        description: "If true a pre-release is created."
     secrets:
       GITHUB_TOKEN_:
         required: true
@@ -28,10 +38,16 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
       tag: ${{ steps.export-tag.outputs.tag }}
+      release-notes: ${{ steps.release-drafter.outputs.body }}
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Export current working directory
+        id: export-working-dir
+        run: |
+          echo "workdir=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
 
       - name: Tag Pull Request
         uses: TimonVS/pr-labeler-action@v4
@@ -39,12 +55,18 @@ jobs:
         with:
           configuration-path: .github/pr-labeler.yaml
 
+      - name: Lookup current version
+        id: version-lookup
+        run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-lookup
+        shell: bash
+
       - name: Get next version
+        id: version-increment
         if: ${{ !inputs.pull-request }}
-        id: get-version
-        uses: reecetech/version-increment@2023.4.1
-        with:
-          scheme: calver
+        run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
+        shell: bash
+        env:
+          current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
 
       - name: Get short commit SHA
         id: get-commit-sha
@@ -59,7 +81,7 @@ jobs:
           if [[ ${{ inputs.pull-request }} = true ]]; then
             echo "tag=ci-${{ github.run_id }}" >> $GITHUB_OUTPUT
           else
-            echo "tag=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "tag=v${{ steps.version-increment.outputs.version }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Generate Release Notes
@@ -68,9 +90,9 @@ jobs:
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          publish: true
+          publish: ${{ inputs.publish }}
           commitish: ${{ github.ref_name }}
-          prerelease: false
-          tag: v${{ steps.get-version.outputs.version }}
-          name: ${{ steps.get-version.outputs.version }}
-          version: ${{ steps.get-version.outputs.version }}
+          prerelease: ${{ inputs.prerelease }}
+          tag: v${{ steps.version-increment.outputs.version }}
+          name: ${{ steps.version-increment.outputs.version }}
+          version: ${{ steps.version-increment.outputs.version }}

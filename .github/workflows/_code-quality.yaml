@@ -47,7 +47,7 @@ jobs:
           extra_args: --verbose --files ${{ steps.files-changed.outputs.all_files }}
 
       - name: Code Quality Checks For All Files
-        if: ${{ !inputs.pull-request }}
+        if: ${{ !inputs.pull-request || inputs.release }}
         id: pre-commit-all
         timeout-minutes: ${{ inputs.timeout }}
         uses: pre-commit/action@v3.0.0
