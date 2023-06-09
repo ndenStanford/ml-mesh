@@ -1,5 +1,8 @@
+
+# 3rd party libraries
 import requests
 from app import Wine
+
 
 sample = Wine(
     fixed_acidity=0.1,
@@ -12,12 +15,11 @@ sample = Wine(
     density=1,
     ph=1,
     sulphates=1,
-    alcohol_pct_vol=1
+    alcohol_pct_vol=1,
 )
 
 n_pings = 100
 
 for i in range(n_pings):
     print(f"Pinging {i}/{n_pings}")
-    requests.post('http://localhost:8001/predict',
-                  json=sample.dict())
+    requests.post("http://localhost:8001/predict", json=sample.dict())

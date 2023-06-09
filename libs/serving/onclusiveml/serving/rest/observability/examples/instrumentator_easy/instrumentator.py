@@ -1,11 +1,14 @@
+
+# Standard Library
 import os
 from typing import Callable
 
+# 3rd party libraries
 import numpy as np
-from prometheus_client import Histogram
-from prometheus_client import REGISTRY
+from prometheus_client import REGISTRY, Histogram
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from prometheus_fastapi_instrumentator.metrics import Info
+
 
 NAMESPACE = os.environ.get("METRICS_NAMESPACE", "fastapi")
 SUBSYSTEM = os.environ.get("METRICS_SUBSYSTEM", "model")
@@ -19,10 +22,8 @@ instrumentator = Instrumentator(
     env_var_name="ENABLE_METRICS",
     inprogress_name="fastapi_inprogress",
     inprogress_labels=True,
-    registry=REGISTRY
+    registry=REGISTRY,
 )
-
-
 # ----- custom metrics -----
 def regression_model_output(
     metric_name: str = "regression_model_output",
@@ -46,8 +47,6 @@ def regression_model_output(
                 METRIC.observe(float(predicted_quality))
 
     return instrumentation
-
-
 # ----- add metrics -----
 instrumentator.add(
     metrics.request_size(
@@ -88,5 +87,7 @@ instrumentator.add(
 
 buckets = (*np.arange(0, 10.5, 0.5).tolist(), float("inf"))
 instrumentator.add(
-    regression_model_output(metric_namespace=NAMESPACE, metric_subsystem=SUBSYSTEM, buckets=buckets)
+    regression_model_output(
+        metric_namespace=NAMESPACE, metric_subsystem=SUBSYSTEM, buckets=buckets
+    )
 )
