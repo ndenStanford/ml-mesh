@@ -4,14 +4,9 @@
 
 * @airpr/mlops-engineers @RonsenbergVI @SebastianScherer88
 
-/libs @SebastianScherer88 @RonsenbergVI
+/libs @airpr/mlops-engineers
+/libs/compile /libs/models /libs/serving /libs/tracking @SebastianScherer88
 
 ## MLE owns the project implementation
 
-/projects @airpr/ml-engineers @SebastianScherer88
-
-## TODO: associate each project owner with the folder
-
-### keywords
-
-/projects/keywords @airpr/ml-engineers @airpr/mlops-engineers
+/projects @airpr/ml-engineers @airpr/mlops-engineers
