@@ -41,7 +41,7 @@ jobs:
       - name: Check release version is correct
         id: check-release-version
         run: |
-          if [[ "${{ needs.run-repository-state.outputs.tag }}" != "${{ steps.regex-match-version.outputs.match }}" ]]; then
+          if [[ "${{ needs.run-repository-state.outputs.tag }}" != "v${{ steps.regex-match-version.outputs.match }}" ]]; then
               echo "Version is not valid, expected ${{ needs.run-repository-state.outputs.tag }} but got ${{ steps.regex-match-version.outputs.match }}"
               exit 1
           fi
