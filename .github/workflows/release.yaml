@@ -16,7 +16,7 @@ jobs:
     with:
       pull-request: false
       current-branch: main
-      prerelease: true
+      prerelease: false
       publish: false
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
