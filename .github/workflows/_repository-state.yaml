@@ -7,10 +7,11 @@ on:
         default: true
         type: boolean
         description: "Indicates whether this workflow is running for a Pull Request."
-      current-branch:
-        required: true
+      target-branch:
+        required: false
         type: string
-        description: "Current branch name."
+        default: main
+        description: "Release target branch."
       prerelease:
         required: false
         type: boolean
@@ -92,7 +93,7 @@ jobs:
         with:
           config-name: release-drafter.yaml
           publish: ${{ inputs.publish }}
-          commitish: ${{ github.ref_name }}
+          commitish: ${{ inputs.target-branch }}
           prerelease: ${{ inputs.prerelease }}
           tag: v${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
