@@ -67,6 +67,7 @@ jobs:
         shell: bash
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
+          is_pre_release: ${{ inputs.prerelease }}
 
       - name: Get short commit SHA
         id: get-commit-sha
