@@ -1,6 +1,6 @@
 # Internal libraries
-from onclusiveml.serving.params import ServingParams
-from onclusiveml.serving.rest.model_server import ModelServer
+from libs.serving.onclusiveml.serving.rest.params import ServingParams
+from onclusiveml.serving.rest.serve.model_server import ModelServer
 
 
 def test_rest_model_server___init__():

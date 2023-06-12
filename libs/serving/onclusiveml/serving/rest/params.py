@@ -20,6 +20,9 @@ class ServingParams(BaseSettings):
 
     add_liveness: bool = True
     add_readiness: bool = True
+    add_model_predict: bool = True
+    add_model_bio: bool = True
+    api_version: str = "v1"
     # fastapi settings
     fastapi_settings: FastAPISettings = FastAPISettings()
     # uvicorn settings
