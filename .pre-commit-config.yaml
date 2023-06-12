@@ -65,6 +65,13 @@ repos:
           - --explicit-package-bases
           - --no-warn-unused-ignores
 
+  # isort
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        files: ^(libs|docker|apps|projects|tests)/.*\.py$
+
   # =================================
   # DOCKER
   # =================================
