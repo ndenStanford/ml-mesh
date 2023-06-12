@@ -10,11 +10,17 @@ from onclusiveml.core.retry import retry
 from src.model.constants import ModelEnum
 from src.settings import get_settings
 
+# Redis Caching
+import redis
+from redis_cache import RedisCache
 
 settings = get_settings()
 
+client = redis.from_url(settings.REDIS_CONNECTION_STRING)
+cache = RedisCache(redis_client=client)
 
 @retry(tries=2)
+@cache.cache()
 def generate_text(
     prompt: str, model_name: str, max_tokens: int, temperature: float
 ) -> str:

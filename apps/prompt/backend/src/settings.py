@@ -57,6 +57,8 @@ class Settings(BaseSettings):
 
     AWS_REGION: str = "us-east-1"
 
+    REDIS_CONNECTION_STRING: str = ""
+
     DB_HOST: Optional[str] = None
     CORS_ORIGIN: List[str] = ["*"]
 

@@ -71,7 +71,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.6.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command:
       [
@@ -101,7 +101,7 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
       DB_HOST: "http://dynamodb:8000"
     depends_on:
       - dynamodb
@@ -135,7 +135,7 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
       DB_HOST: "http://dynamodb:8000"
     networks:
       - onclusive-net
@@ -167,7 +167,7 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
       DB_HOST: http://dynamodb:8000
     depends_on:
       dynamodb:
@@ -188,6 +188,25 @@ services:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
       test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+  redisdb:
+    image: "redis:latest"
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    profiles: [ "backend", "integration" ]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [ "CMD-SHELL", "sleep 3s || exit 1" ]
       interval: 5s
       retries: 5
       start_period: 5s
