@@ -2,8 +2,6 @@
 
 # 3rd party libraries
 import openai
-
-# Redis Caching
 import redis
 from redis_cache import RedisCache
 
