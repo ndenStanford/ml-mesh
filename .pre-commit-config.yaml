@@ -71,6 +71,7 @@ repos:
     hooks:
       - id: isort
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
+        exclude: "apps/prompt/backend/src/prompt/generate.py"
 
   # =================================
   # DOCKER
