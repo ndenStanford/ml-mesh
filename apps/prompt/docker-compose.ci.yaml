@@ -160,7 +160,6 @@ services:
     networks:
       - onclusive-net
 
-
   redisdb:
     image: "redis:latest"
     restart: always
@@ -168,18 +167,17 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [ "backend", "integration" ]
+    profiles: ["backend", "integration"]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [ "CMD-SHELL", "sleep 3s || exit 1" ]
+      test: ["CMD-SHELL", "sleep 3s || exit 1"]
       interval: 5s
       retries: 5
       start_period: 5s
       timeout: 10s
     networks:
       - onclusive-net
-
 
 networks:
   onclusive-net:
