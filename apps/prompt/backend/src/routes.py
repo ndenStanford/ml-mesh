@@ -21,11 +21,12 @@ api_router = APIRouter(prefix="/api")
 @health_router.get("/health", status_code=status.HTTP_200_OK)
 async def health() -> str:
     """Health endpoint."""
-    requests.post(
-        "https://uptime.betterstack.com/api/v1/heartbeat/{}".format(
-            settings.BETTERSTACK_KEY
+    if settings.ENVIRONMENT != "dev":
+        requests.post(
+            "https://uptime.betterstack.com/api/v1/heartbeat/{}".format(
+                settings.BETTERSTACK_KEY
+            )
         )
-    )
     return "OK"
 
 
