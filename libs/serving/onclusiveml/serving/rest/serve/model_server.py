@@ -9,8 +9,8 @@ from fastapi import FastAPI
 from onclusiveml.serving.rest.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
-    create_model_endpoint,
     get_liveness_router,
+    get_model_router,
     get_readiness_router,
     get_root_router,
 )
@@ -71,19 +71,19 @@ class ModelServer(FastAPI):
 
             assert model is not None
 
-            model_predict_route = create_model_endpoint(
+            model_predict_router = get_model_router(
                 model=model, endpoint="predict", api_version=configuration.api_version
             )
-            self.include_router(model_predict_route)
+            self.include_router(model_predict_router)
 
         if configuration.add_model_bio:
 
             assert model is not None
 
-            model_bio_route = create_model_endpoint(
+            model_bio_router = get_model_router(
                 model=model, endpoint="bio", api_version=configuration.api_version
             )
-            self.include_router(model_bio_route)
+            self.include_router(model_bio_router)
 
     def generate_uvicorn_config(self) -> uvicorn.Config:
         """Utility for generating and attaching a uvicorn configuration.

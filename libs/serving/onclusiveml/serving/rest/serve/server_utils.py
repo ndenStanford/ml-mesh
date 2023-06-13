@@ -81,7 +81,7 @@ def get_readiness_router(api_version: str = "v1") -> Callable:
     return readiness_router
 
 
-def create_model_endpoint(
+def get_model_router(
     model: ServedModel, endpoint: Literal["predict", "bio"], api_version: str = "v1"
 ) -> APIRouter:
     """Utility to wrap model methods into FastAPI routers compatible with the ModelServer class

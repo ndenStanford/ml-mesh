@@ -10,5 +10,5 @@ from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
     get_root_router,
     get_liveness_router,
     get_readiness_router,
-    create_model_endpoint,
+    get_model_router,
 )

@@ -5,8 +5,8 @@ from served_model_test import TestServedModel
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
     ServedModel,
-    create_model_endpoint,
     get_liveness_router,
+    get_model_router,
     get_readiness_router,
     get_root_router,
 )
@@ -107,7 +107,7 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
         ),
     ],
 )
-def test_create_model_endpoint(
+def test_get_model_router(
     test_served_model,
     test_endpoint,
     test_api_version,
@@ -118,17 +118,17 @@ def test_create_model_endpoint(
         api_version=test_api_version, model_name=test_served_model.name
     )
 
-    test_model_endpoint = create_model_endpoint(
+    test_model_router = get_model_router(
         model=test_served_model, endpoint=test_endpoint, api_version=test_api_version
     )
 
-    test_route_url_actual = test_model_endpoint.routes[0].path
-    test_route_response_model_actual = test_model_endpoint.routes[0].response_model
+    test_route_url_actual = test_model_router.routes[0].path
+    test_route_response_model_actual = test_model_router.routes[0].response_model
 
     assert test_route_url_actual == test_route_url_expected
 
     if test_endpoint == "predict":
-        test_response_model_expected = test_served_model.bio_response_model
+        test_response_model_expected = test_served_model.predict_response_model
     elif test_endpoint == "bio":
         test_response_model_expected = test_served_model.bio_response_model
 
