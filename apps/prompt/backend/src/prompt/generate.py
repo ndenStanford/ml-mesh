@@ -2,25 +2,21 @@
 
 # 3rd party libraries
 import openai
-import redis
-from redis_cache import RedisCache
 
 # Internal libraries
 from onclusiveml.core.retry import retry
 
 # Source
+from src.extensions.redis import cache
 from src.model.constants import ModelEnum
 from src.settings import get_settings
 
 
 settings = get_settings()
 
-client = redis.from_url(settings.REDIS_CONNECTION_STRING)
-cache = RedisCache(redis_client=client)
-
 
 @retry(tries=2)
-@cache.cache()
+@cache.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_text(
     prompt: str, model_name: str, max_tokens: int, temperature: float
 ) -> str:

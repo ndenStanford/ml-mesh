@@ -11,8 +11,9 @@ pynamodb = "5.4.1"
 core = {path = "../../../libs/core"}
 openai = "0.27.2"
 python-slugify = "8.0.1"
-redis = "^4.5.5"
-python-redis-cache = "^2.1.2"
+fakeredis = {version = "2.14.1", extras = ["lua"]}
+redis = "4.5.5"
+python-redis-cache = "2.1.2"
 
 
 [tool.poetry.group.dev.dependencies]
