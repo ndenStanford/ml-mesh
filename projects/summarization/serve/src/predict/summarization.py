@@ -44,8 +44,7 @@ class SummarizationHandler:
             logger.errror("Summarization language not supported.")
 
         input_dict = {"desired_length": desired_length, "content": text}
-        # prompt = prompt.format(**input_dict)
-        headers = {"x-api-key": settings.PROMPT_API_KEY}
+        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
