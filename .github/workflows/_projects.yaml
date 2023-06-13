@@ -28,6 +28,12 @@ on:
         default: true
         type: boolean
         description: "Indicates whether this workflow is running for a Pull Request."
+      release:
+        required: true
+        default: true
+        type: boolean
+        description: "If false, only the project components that have been changed are ran, otherwise every project component is ran."
+
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -41,9 +47,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: "AWS secret access key"
-      AWS_ROLE_TO_ASSUME:
-        required: true
-        description: "AWS IAM role to assume."
       OPENAI_API_KEY:
         required: true
         description: "OPENAI Api key."
@@ -84,16 +87,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-duration-seconds: 1200
-          role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -107,7 +107,7 @@ jobs:
           echo $INTERNAL_ML_ENDPOINT_API_KEY
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -117,7 +117,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.integration && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.integration }}
+        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -127,7 +127,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -137,7 +137,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \

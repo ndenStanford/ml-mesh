@@ -33,9 +33,6 @@ class Settings(BaseSettings):
     DOCS_URL: Optional[str] = None
     # initialize database
     INITIALIZE: bool = True
-    # API key for secure endpoints access
-    API_KEY: str
-    API_KEY_NAME: str = "x-api-key"
     # OpenAI API key
     OPENAI_API_KEY: str
     OPENAI_MAX_TOKENS: int = 512

@@ -6,6 +6,7 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -19,6 +20,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/fastapi-serve"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -32,6 +34,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-base"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -44,6 +47,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-data-science"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -56,6 +60,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-jax-cpu"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -68,6 +73,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-jupyter"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -80,6 +86,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-numpy"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -92,6 +99,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-torch-cpu"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -104,6 +112,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/python-base"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -116,6 +125,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/neuron-compile"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -128,6 +138,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/neuron-inference"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -144,6 +155,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/libs/core"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -156,6 +168,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/libs/ml_compile"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -173,6 +186,7 @@ updates:
   ## serve
   - package-ecosystem: "pip"
     directory: "/projects/keywords/serve"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -184,6 +198,7 @@ updates:
   ## train
   - package-ecosystem: "pip"
     directory: "/projects/keywords/train"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -197,6 +212,7 @@ updates:
   ## serve
   - package-ecosystem: "pip"
     directory: "/projects/summarization/serve"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"

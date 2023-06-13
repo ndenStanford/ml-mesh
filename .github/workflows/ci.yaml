@@ -1,12 +1,14 @@
-name: ML-Mesh Prod Workflow
+name: ML-mesh CI Workflow
 
 on:
   push:
     branches:
-      - prod
+      - main
+      - develop
   pull_request:
     branches:
-      - prod
+      - main
+      - develop
     types:
       - ready_for_review
       - opened
@@ -40,7 +42,8 @@ jobs:
     needs: [run-code-quality-checks]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
-      current-branch: ${{ github.ref_name }}
+      target-branch: ${{ github.ref_name }}
+      prerelease: ${{ github.ref_name == 'develop' }}
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,6 +57,8 @@ jobs:
     needs: [run-repository-state]
 
     strategy:
+      max-parallel: 5
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         python-version: ["3.8.16"]
         poetry-version: ["1.3.2"]
@@ -85,6 +90,7 @@ jobs:
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
       pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
 
   # ===============================================
   # DOCKER
@@ -96,6 +102,7 @@ jobs:
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 1
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         image:
           [
@@ -114,12 +121,12 @@ jobs:
       tag: "${{ needs.run-repository-state.outputs.tag }}"
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
+      release: ${{ github.ref_name == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
   # ===============================================
   # PROJECTS
@@ -133,6 +140,7 @@ jobs:
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         projects:
           # NOTE: list of project components to run
@@ -176,12 +184,12 @@ jobs:
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.projects.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
@@ -196,6 +204,7 @@ jobs:
     needs: [run-repository-state, run-projects]
 
     strategy:
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         models:
           - runner-kind: custom
@@ -216,7 +225,6 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
 
@@ -230,6 +238,7 @@ jobs:
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         apps:
           # NOTE: list of apps components to run
@@ -257,9 +266,9 @@ jobs:
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
