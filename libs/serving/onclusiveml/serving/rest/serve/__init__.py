@@ -12,3 +12,5 @@ from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
     get_readiness_router,
     get_model_router,
 )
+
+from onclusiveml.serving.rest.params import ServingParams  # noqa: F401

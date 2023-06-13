@@ -1,11 +1,14 @@
 # 3rd party libraries
 import pytest
 
-# Internal libraries
-from libs.serving.onclusiveml.serving.rest.params import ServingParams
+
+@pytest.fixture
+def test_api_version():
+
+    return "test-version"
 
 
 @pytest.fixture
-def test_configuration():
+def test_port():
 
-    return ServingParams().dict()
+    return 8000

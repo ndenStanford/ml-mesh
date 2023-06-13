@@ -15,7 +15,7 @@ from onclusiveml.serving.rest.serve.server_models import (
 
 
 SERVING_ROOT_URL = "/{api_version}"
-SERVING_LIVENESS_PROBE_URL = SERVING_ROOT_URL + "/liveness"
+SERVING_LIVENESS_PROBE_URL = SERVING_ROOT_URL + "/live"
 SERVING_READINESS_PROBE_URL = SERVING_ROOT_URL + "/ready"
 SERVING_ML_MODEL_PREDICT_URL = SERVING_ROOT_URL + "/model/{model_name}/predict"
 SERVING_ML_MODEL_BIO_URL = SERVING_ROOT_URL + "/model/{model_name}/bio"
