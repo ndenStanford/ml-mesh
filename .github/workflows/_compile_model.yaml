@@ -47,9 +47,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: "AWS secret access key"
-      AWS_ROLE_TO_ASSUME:
-        required: true
-        description: "AWS IAM role to assume."
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: "Github PAT to allow EC2 instance to connect to Github repository content."
@@ -71,7 +68,6 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   set-runner-specs:
@@ -115,9 +111,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-duration-seconds: 1200
-          role-session-name: DeployManifests
 
       - name: Check identity
         run: aws sts get-caller-identity
@@ -191,9 +184,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          #role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          #role-duration-seconds: 1200
-          #role-session-name: DeployManifests
+
       - name: Stop EC2 runner
         uses: machulav/ec2-github-runner@v2
         with:

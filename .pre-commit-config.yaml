@@ -20,9 +20,6 @@ repos:
         exclude: "^apps/entity-fishing/backend/"
       - id: check-merge-conflict
       - id: detect-private-key
-      - id: no-commit-to-branch
-        args:
-          ["--branch", "develop", "--branch", "main", "--pattern", "release/.*"]
 
   # Autoformat: YAML, JSON, Markdown, etc.
   - repo: https://github.com/pre-commit/mirrors-prettier
