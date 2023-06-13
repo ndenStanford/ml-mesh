@@ -10,7 +10,8 @@ from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
     get_root_router,
     get_liveness_router,
     get_readiness_router,
-    get_model_router,
+    get_model_predict_router,
+    get_model_bio_router,
 )
 
 from onclusiveml.serving.rest.params import ServingParams  # noqa: F401

@@ -83,16 +83,40 @@ def test_served_model_load(test_model_name):
     assert served_model.is_ready() is True
 
 
+def test_served_model_predict_raise_bad_args(test_model_name):
+    # get loaded model
+    served_model = ServedModel(name=test_model_name)
+
+    served_model.load()
+
+    # highlight importance of predict method requirements with test showing wrong
+    # call/implementation w.r.t argument specs
+    with pytest.raises(TypeError) as _:
+        test_payload = served_model.predict_request_model(instances=[1, 2])
+        some_arg = 1
+        some_kwarg = 2
+        served_model.predict(test_payload, some_arg, some_kwarg=some_kwarg)
+
+
 def test_served_model_predict(test_model_name):
     # get loaded model
     served_model = ServedModel(name=test_model_name)
 
     served_model.load()
     # call `predict` stump
-    request_arg = served_model.predict_request_model(instances=[1, 2])
-    some_arg = 1
-    some_kwarg = 2
-    served_model.predict(request_arg, some_arg, some_kwarg=some_kwarg)
+    test_payload = served_model.predict_request_model(instances=[1, 2])
+    served_model.predict(payload=test_payload)
+
+
+def test_served_model_bio_raise_bad_args(test_model_name):
+
+    served_model = ServedModel(name=test_model_name)
+
+    # highlight importance of bio method requirements with test showing wrong call/implementation
+    # w.r.t argument specs
+    with pytest.raises(TypeError) as _:
+        # call `bio` stump
+        served_model.bio(1)
 
 
 def test_served_model_bio(test_model_name):

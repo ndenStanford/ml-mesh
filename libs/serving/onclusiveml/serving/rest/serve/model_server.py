@@ -10,7 +10,8 @@ from onclusiveml.serving.rest.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
     get_liveness_router,
-    get_model_router,
+    get_model_bio_router,
+    get_model_predict_router,
     get_readiness_router,
     get_root_router,
 )
@@ -71,8 +72,8 @@ class ModelServer(FastAPI):
 
             assert model is not None
 
-            model_predict_router = get_model_router(
-                model=model, endpoint="predict", api_version=configuration.api_version
+            model_predict_router = get_model_predict_router(
+                model=model, api_version=configuration.api_version
             )
             self.include_router(model_predict_router)
 
@@ -80,8 +81,8 @@ class ModelServer(FastAPI):
 
             assert model is not None
 
-            model_bio_router = get_model_router(
-                model=model, endpoint="bio", api_version=configuration.api_version
+            model_bio_router = get_model_bio_router(
+                model=model, api_version=configuration.api_version
             )
             self.include_router(model_bio_router)
 
@@ -92,9 +93,9 @@ class ModelServer(FastAPI):
 
         self.uvicorn_configuration = uvicorn.Config(
             app=self,
-            host=self.configuration.uvicorn_settings.host,  # "0.0.0.0",
+            host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",
             log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type. can be None
-            port=self.configuration.uvicorn_settings.http_port,  # 8000
+            port=self.configuration.uvicorn_settings.http_port,
         )
 
         return self.uvicorn_configuration

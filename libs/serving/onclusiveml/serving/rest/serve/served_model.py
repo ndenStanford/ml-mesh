@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Any, Dict, Union
+from typing import Dict, Union
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -42,9 +42,11 @@ class ServedModel(object):
         return self.ready
 
     def predict(
-        self, payload: Union[Dict, predict_request_model], *args: Any, **kwargs: Any
+        self, payload: predict_request_model
     ) -> Union[Dict, predict_response_model]:
-        """Inference method."""
+        """Inference method. Must
+        - only take one `payload` argument
+        - use the class attribute `predict_response_model` as a type hint"""
 
         assert self.ready
 
@@ -52,6 +54,7 @@ class ServedModel(object):
 
     def bio(self) -> Union[Dict, bio_response_model]:
         """Placeholder for optional, customizable model meta data. Ideally the `model_card` info
-        from a neptune model version entry."""
+        from a neptune model version entry. Must
+        - take no arguments"""
 
         pass

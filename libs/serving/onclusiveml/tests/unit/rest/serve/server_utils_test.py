@@ -6,7 +6,8 @@ from served_model_test import TestServedModel
 from onclusiveml.serving.rest.serve import (
     ServedModel,
     get_liveness_router,
-    get_model_router,
+    get_model_bio_router,
+    get_model_predict_router,
     get_readiness_router,
     get_root_router,
 )
@@ -16,6 +17,7 @@ from onclusiveml.serving.rest.serve.server_utils import (
     SERVING_ML_MODEL_PREDICT_URL,
     SERVING_READINESS_PROBE_URL,
     SERVING_ROOT_URL,
+    ServedModelEndpoints,
 )
 
 
@@ -59,55 +61,55 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
     [
         (
             ServedModel,
-            "predict",
+            ServedModelEndpoints.predict.value,
             "v2",
             SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             ServedModel,
-            "predict",
+            ServedModelEndpoints.predict.value,
             "test",
             SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             ServedModel,
-            "bio",
+            ServedModelEndpoints.bio.value,
             "v2",
             SERVING_ML_MODEL_BIO_URL,
         ),
         (
             ServedModel,
-            "bio",
+            ServedModelEndpoints.bio.value,
             "test",
             SERVING_ML_MODEL_BIO_URL,
         ),
         (
             TestServedModel,
-            "predict",
+            ServedModelEndpoints.predict.value,
             "v2",
             SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             TestServedModel,
-            "predict",
+            ServedModelEndpoints.predict.value,
             "test",
             SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             TestServedModel,
-            "bio",
+            ServedModelEndpoints.bio.value,
             "v2",
             SERVING_ML_MODEL_BIO_URL,
         ),
         (
             TestServedModel,
-            "bio",
+            ServedModelEndpoints.bio.value,
             "test",
             SERVING_ML_MODEL_BIO_URL,
         ),
     ],
 )
-def test_get_model_router(
+def test_get_model_routers(
     test_served_model,
     test_endpoint,
     test_api_version,
@@ -118,18 +120,22 @@ def test_get_model_router(
         api_version=test_api_version, model_name=test_served_model.name
     )
 
-    test_model_router = get_model_router(
-        model=test_served_model, endpoint=test_endpoint, api_version=test_api_version
-    )
+    if test_endpoint == "predict":
+        test_model_router = get_model_predict_router(
+            model=test_served_model, api_version=test_api_version
+        )
+
+        test_response_model_expected = test_served_model.predict_response_model
+
+    elif test_endpoint == "bio":
+        test_model_router = get_model_bio_router(
+            model=test_served_model, api_version=test_api_version
+        )
+
+        test_response_model_expected = test_served_model.bio_response_model
 
     test_route_url_actual = test_model_router.routes[0].path
     test_route_response_model_actual = test_model_router.routes[0].response_model
 
     assert test_route_url_actual == test_route_url_expected
-
-    if test_endpoint == "predict":
-        test_response_model_expected = test_served_model.predict_response_model
-    elif test_endpoint == "bio":
-        test_response_model_expected = test_served_model.bio_response_model
-
     assert test_route_response_model_actual == test_response_model_expected

@@ -8,6 +8,7 @@ from served_model_test import TestServedModel
 # Internal libraries
 from onclusiveml.serving.rest.params import FastAPISettings, ServingParams
 from onclusiveml.serving.rest.serve import ModelServer, ServedModel
+from onclusiveml.serving.rest.serve.server_utils import ServedModelEndpoints
 
 
 @pytest.mark.parametrize(
@@ -94,12 +95,12 @@ def test_model_server___init__with_model(
     test_has_predict_route = [
         route
         for route in test_versioned_model_server_routes
-        if route.path.endswith("predict")
+        if route.name == ServedModelEndpoints.predict.value
     ]
     test_has_bio_route = [
         route
         for route in test_versioned_model_server_routes
-        if route.path.endswith("bio")
+        if route.name == ServedModelEndpoints.bio.value
     ]
     # check that liveness endpoint has been built/not built following the specs
     assert bool(test_has_predict_route) == test_add_model_predict

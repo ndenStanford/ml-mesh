@@ -12,3 +12,9 @@ def test_api_version():
 def test_port():
 
     return 8000
+
+
+@pytest.fixture
+def test_model_name():
+
+    return "test-model"
