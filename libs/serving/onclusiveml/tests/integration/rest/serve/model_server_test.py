@@ -51,20 +51,15 @@ class TestModelPredictResponseModel(BaseModel):
     predictions: List[TestPrediction]
 
 
-class TestBioResponseModel(BaseModel):
+class TestBioResponseModel(ServedModel.bio_response_model):
 
-    model_name: str = "ANIMAL-CLASSIFIER-TEST"
-    model_type: str = "classifier"
+    type: str = "classifier"
 
 
 class TestServedModel(ServedModel):
 
-    name: str = "test_animal_classifier"
-
     predict_request_model = TestModelPredictRequestModel
     predict_response_model = TestModelPredictResponseModel
-    bio_response_model = TestBioResponseModel
-
     bio_response_model = TestBioResponseModel
 
     def predict(
@@ -89,12 +84,12 @@ class TestServedModel(ServedModel):
 
     def bio(self) -> bio_response_model:
 
-        return self.bio_response_model()
+        return self.bio_response_model(name=self.name)
 
 
 # --- server
 @pytest.mark.order(1)
-@pytest.mark.serve
+@pytest.mark.server
 def test_model_server_serve_with_model(test_api_version, test_port, test_model_name):
 
     test_serving_params = ServingParams(
@@ -114,7 +109,7 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
     test_model_server.serve()
 
 
-# --- client
+# --- client - root, liveness, readiness
 @pytest.mark.order(2)
 @pytest.mark.client
 @pytest.mark.parametrize(
@@ -204,8 +199,8 @@ def test_model_server_serve_predict(
 @pytest.mark.order(3)
 @pytest.mark.client
 @pytest.mark.parametrize(
-    "test_url_template, test_response_model, test_response_expected",
-    [(SERVING_ML_MODEL_BIO_URL, TestBioResponseModel, TestBioResponseModel())],
+    "test_url_template, test_response_model",
+    [(SERVING_ML_MODEL_BIO_URL, TestBioResponseModel)],
 )
 def test_modeel_server_serve_bio(
     test_url_template,
@@ -213,7 +208,6 @@ def test_modeel_server_serve_bio(
     test_port,
     test_model_name,
     test_response_model,
-    test_response_expected,
 ):
 
     model_bio_url = f"http://localhost:{test_port}" + test_url_template.format(
@@ -223,5 +217,6 @@ def test_modeel_server_serve_bio(
     response = requests.get(model_bio_url)
 
     test_response_actual = test_response_model(**response.json())
+    test_response_expected = TestBioResponseModel(name=test_model_name)
 
     assert test_response_actual == test_response_expected

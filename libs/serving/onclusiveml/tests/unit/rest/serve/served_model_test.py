@@ -29,20 +29,15 @@ class TestModelPredictResponseModel(BaseModel):
     predictions: List[TestPrediction]
 
 
-class TestBioResponseModel(BaseModel):
+class TestBioResponseModel(ServedModel.bio_response_model):
 
-    model_name: str = "ANIMAL-CLASSIFIER-TEST"
-    model_type: str = "classifier"
+    type: str = "classifier"
 
 
 class TestServedModel(ServedModel):
 
-    name: str = "test_animal_classifier"
-
     predict_request_model = TestModelPredictRequestModel
     predict_response_model = TestModelPredictResponseModel
-    bio_response_model = TestBioResponseModel
-
     bio_response_model = TestBioResponseModel
 
     def predict(
@@ -66,7 +61,7 @@ class TestServedModel(ServedModel):
 
     def bio(self) -> bio_response_model:
 
-        return self.bio_response_model()
+        return self.bio_response_model(name=self.name)
 
 
 # --- test the ServedModel class
@@ -123,7 +118,11 @@ def test_served_model_bio(test_model_name):
 
     served_model = ServedModel(name=test_model_name)
     # call `bio` stump
-    served_model.bio()
+    served_model_bio_actual = served_model.bio()
+
+    served_model_bio_expected = served_model.bio_response_model(name=test_model_name)
+
+    assert served_model_bio_actual == served_model_bio_expected
 
 
 # --- test the TestServedModel class
@@ -188,4 +187,6 @@ def test_test_served_model_bio(test_model_name):
 
     test_served_model.load()
 
-    assert test_served_model.bio() == TestServedModel.bio_response_model()
+    assert test_served_model.bio() == TestServedModel.bio_response_model(
+        name=test_model_name
+    )

@@ -56,7 +56,7 @@ manually on local.
 - Install the library
   - `make libs.install/serving`
 - Start the model server by running the `server` side test suite
-  - `python -m pytest libs/serving/onclusiveml/tests/integration -ra -vv --capture=no -m serve`
+  - `python -m pytest libs/serving/onclusiveml/tests/integration -ra -vv --capture=no -m server`
   - This will run on port 8000 by default, so make sure the port is free
 - Run the `client` side regression test suite
   - `python -m pytest libs/serving/onclusiveml/tests/integration -ra -vv --capture=no -m client`

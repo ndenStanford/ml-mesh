@@ -22,3 +22,8 @@ class ProtocolV1RequestModel(BaseModel):
 class ProtocolV1ResponseModel(BaseModel):
 
     predictions: List[Any]
+
+
+class ServedModelBioModel(BaseModel):
+
+    name: str

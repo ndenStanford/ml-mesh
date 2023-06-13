@@ -7,6 +7,7 @@ from onclusiveml.serving.rest.serve import (
     ProtocolV1RequestModel,
     ProtocolV1ResponseModel,
     ReadinessProbeResponse,
+    ServedModelBioModel,
 )
 
 
@@ -32,3 +33,8 @@ def test_ml_protocol_v1_response_model():
     ProtocolV1ResponseModel(
         predictions=[TestPrediction(animal="snake"), TestPrediction(animal="flamingo")]
     )
+
+
+def test_ml_bio_response_model(test_model_name):
+
+    ServedModelBioModel(name=test_model_name)

@@ -57,7 +57,7 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
 
 
 @pytest.mark.parametrize(
-    "test_served_model, test_endpoint, test_api_version, test_route_url_template",
+    "test_served_model_class, test_endpoint, test_api_version, test_route_url_template",
     [
         (
             ServedModel,
@@ -110,11 +110,14 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
     ],
 )
 def test_get_model_routers(
-    test_served_model,
+    test_served_model_class,
+    test_model_name,
     test_endpoint,
     test_api_version,
     test_route_url_template,
 ):
+
+    test_served_model = test_served_model_class(name=test_model_name)
 
     test_route_url_expected = test_route_url_template.format(
         api_version=test_api_version, model_name=test_served_model.name
