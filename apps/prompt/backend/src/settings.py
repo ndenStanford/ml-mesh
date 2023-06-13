@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
+    # Betterstack heartbeat key
+    BETTERSTACK_KEY: str = ""
 
     OPENAI_PARAMETERS = json.dumps(
         {

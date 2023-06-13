@@ -103,6 +103,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       API_KEY: 1234
       DB_HOST: "http://dynamodb:8000"
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
       - dynamodb
     networks:
