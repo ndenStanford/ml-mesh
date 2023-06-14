@@ -1,4 +1,4 @@
-TOKENS = [
+SPECIAL_CHARACTERS = [
     "։",
     "؟",
     "۔",
