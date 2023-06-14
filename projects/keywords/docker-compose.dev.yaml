@@ -107,7 +107,6 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_ROLE_TO_ASSUME: ${AWS_ROLE_TO_ASSUME}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -198,7 +197,6 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_ROLE_TO_ASSUME: ${AWS_ROLE_TO_ASSUME}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]

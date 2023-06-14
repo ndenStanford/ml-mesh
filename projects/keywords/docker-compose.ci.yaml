@@ -84,7 +84,6 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_ROLE_TO_ASSUME: ${AWS_ROLE_TO_ASSUME}
     env_file: compile/config/prod.env
     volumes:
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
@@ -167,7 +166,6 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_ROLE_TO_ASSUME: ${AWS_ROLE_TO_ASSUME}
     env_file: compile/config/prod.env
     volumes:
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
