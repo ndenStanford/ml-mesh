@@ -11,40 +11,73 @@ from onclusiveml.serving.rest.serve import (
     get_readiness_router,
     get_root_router,
 )
-from onclusiveml.serving.rest.serve.server_utils import (
-    SERVING_LIVENESS_PROBE_URL,
-    SERVING_ML_MODEL_BIO_URL,
-    SERVING_ML_MODEL_PREDICT_URL,
-    SERVING_READINESS_PROBE_URL,
-    SERVING_ROOT_URL,
-    ServedModelEndpoints,
+from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
+from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
+
+
+@pytest.mark.parametrize(
+    "test_kwargs,root_url_expected,liveness_url_expected,readiness_url_expected,predict_url_expected,bio_url_expected",  # noqa: E501
+    [
+        (
+            {},  # test defaults
+            "/",
+            "/live",
+            "/ready",
+            "/model/no_model/predict",
+            "/model/no_model/bio",
+        ),
+        (
+            {"api_version": "test-version", "model_name": "test-model"},
+            "/test-version/",
+            "/test-version/live",
+            "/test-version/ready",
+            "/test-version/model/test-model/predict",
+            "/test-version/model/test-model/bio",
+        ),
+    ],
 )
+def test_get_model_server_urls(
+    test_kwargs,
+    root_url_expected,
+    liveness_url_expected,
+    readiness_url_expected,
+    predict_url_expected,
+    bio_url_expected,
+):
+
+    test_urls = get_model_server_urls(**test_kwargs)
+
+    assert test_urls.root == root_url_expected
+    assert test_urls.liveness == liveness_url_expected
+    assert test_urls.readiness == readiness_url_expected
+    assert test_urls.model_predict == predict_url_expected
+    assert test_urls.model_bio == bio_url_expected
 
 
 @pytest.mark.parametrize(
     "get_router_method, test_api_version, test_route_url_expected",
     [
-        (get_root_router, "v2", SERVING_ROOT_URL.format(api_version="v2")),
-        (get_root_router, "test", SERVING_ROOT_URL.format(api_version="test")),
+        (get_root_router, "v2", get_model_server_urls(api_version="v2").root),
+        (get_root_router, "test", get_model_server_urls(api_version="test").root),
         (
             get_liveness_router,
             "v2",
-            SERVING_LIVENESS_PROBE_URL.format(api_version="v2"),
+            get_model_server_urls(api_version="v2").liveness,
         ),
         (
             get_liveness_router,
             "test",
-            SERVING_LIVENESS_PROBE_URL.format(api_version="test"),
+            get_model_server_urls(api_version="test").liveness,
         ),
         (
             get_readiness_router,
             "v2",
-            SERVING_READINESS_PROBE_URL.format(api_version="v2"),
+            get_model_server_urls(api_version="v2").readiness,
         ),
         (
             get_readiness_router,
             "test",
-            SERVING_READINESS_PROBE_URL.format(api_version="test"),
+            get_model_server_urls(api_version="test").readiness,
         ),
     ],
 )
@@ -57,80 +90,70 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
 
 
 @pytest.mark.parametrize(
-    "test_served_model_class, test_endpoint, test_api_version, test_route_url_template",
+    "test_served_model_class, test_model_endpoint_type, test_api_version",
     [
         (
             ServedModel,
-            ServedModelEndpoints.predict.value,
+            ServedModelMethods().predict,
             "v2",
-            SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             ServedModel,
-            ServedModelEndpoints.predict.value,
+            ServedModelMethods().predict,
             "test",
-            SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             ServedModel,
-            ServedModelEndpoints.bio.value,
+            ServedModelMethods().bio,
             "v2",
-            SERVING_ML_MODEL_BIO_URL,
         ),
         (
             ServedModel,
-            ServedModelEndpoints.bio.value,
+            ServedModelMethods().bio,
             "test",
-            SERVING_ML_MODEL_BIO_URL,
         ),
         (
             TestServedModel,
-            ServedModelEndpoints.predict.value,
+            ServedModelMethods().predict,
             "v2",
-            SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             TestServedModel,
-            ServedModelEndpoints.predict.value,
+            ServedModelMethods().predict,
             "test",
-            SERVING_ML_MODEL_PREDICT_URL,
         ),
         (
             TestServedModel,
-            ServedModelEndpoints.bio.value,
+            ServedModelMethods().bio,
             "v2",
-            SERVING_ML_MODEL_BIO_URL,
         ),
         (
             TestServedModel,
-            ServedModelEndpoints.bio.value,
+            ServedModelMethods().bio,
             "test",
-            SERVING_ML_MODEL_BIO_URL,
         ),
     ],
 )
 def test_get_model_routers(
-    test_served_model_class,
-    test_model_name,
-    test_endpoint,
-    test_api_version,
-    test_route_url_template,
+    test_served_model_class, test_model_endpoint_type, test_api_version, test_model_name
 ):
 
     test_served_model = test_served_model_class(name=test_model_name)
 
-    test_route_url_expected = test_route_url_template.format(
-        api_version=test_api_version, model_name=test_served_model.name
+    test_urls = get_model_server_urls(
+        api_version=test_api_version, model_name=test_model_name
     )
 
-    if test_endpoint == "predict":
+    if test_model_endpoint_type == ServedModelMethods().predict:
+        test_route_url_expected = test_urls.model_predict
         test_model_router = get_model_predict_router(
             model=test_served_model, api_version=test_api_version
         )
 
         test_response_model_expected = test_served_model.predict_response_model
 
-    elif test_endpoint == "bio":
+    elif test_model_endpoint_type == ServedModelMethods().bio:
+        test_route_url_expected = test_urls.model_bio
         test_model_router = get_model_bio_router(
             model=test_served_model, api_version=test_api_version
         )

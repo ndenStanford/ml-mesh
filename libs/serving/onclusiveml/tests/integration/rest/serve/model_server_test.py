@@ -18,13 +18,7 @@ from onclusiveml.serving.rest.serve import (
     ReadinessProbeResponse,
     ServedModel,
 )
-from onclusiveml.serving.rest.serve.server_utils import (
-    SERVING_LIVENESS_PROBE_URL,
-    SERVING_ML_MODEL_BIO_URL,
-    SERVING_ML_MODEL_PREDICT_URL,
-    SERVING_READINESS_PROBE_URL,
-    SERVING_ROOT_URL,
-)
+from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
 
 
 class RootResponse(BaseModel):
@@ -113,18 +107,20 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
 @pytest.mark.order(2)
 @pytest.mark.client
 @pytest.mark.parametrize(
-    "test_url_template, test_probe_response_model",
+    "test_url_reference, test_probe_response_model",
     [
-        (SERVING_ROOT_URL, RootResponse),
-        (SERVING_LIVENESS_PROBE_URL, LivenessProbeResponse),
-        (SERVING_READINESS_PROBE_URL, ReadinessProbeResponse),
+        ("root", RootResponse),
+        ("liveness", LivenessProbeResponse),
+        ("readiness", ReadinessProbeResponse),
     ],
 )
 def test_model_server_client_no_model(
-    test_api_version, test_port, test_url_template, test_probe_response_model
+    test_api_version, test_port, test_url_reference, test_probe_response_model
 ):
-    url = f"http://localhost:{test_port}" + test_url_template.format(
-        api_version=test_api_version
+    test_model_server_urls = get_model_server_urls(api_version=test_api_version)
+
+    url = f"http://localhost:{test_port}" + getattr(
+        test_model_server_urls, test_url_reference
     )
 
     response = requests.get(url)
@@ -136,10 +132,9 @@ def test_model_server_client_no_model(
 @pytest.mark.order(4)
 @pytest.mark.client
 @pytest.mark.parametrize(
-    "test_url_template, test_request_data, test_response_model, test_response_expected",
+    "test_request_data, test_response_model, test_response_expected",
     [
         (
-            SERVING_ML_MODEL_PREDICT_URL,
             TestModelPredictRequestModel(
                 instances=[
                     TestRecord(number_of_legs=0),
@@ -153,7 +148,6 @@ def test_model_server_client_no_model(
             ),
         ),
         (
-            SERVING_ML_MODEL_PREDICT_URL,
             TestModelPredictRequestModel(
                 instances=[
                     TestRecord(number_of_legs=1),
@@ -175,7 +169,6 @@ def test_model_server_client_no_model(
     ],
 )
 def test_model_server_serve_predict(
-    test_url_template,
     test_api_version,
     test_port,
     test_model_name,
@@ -184,8 +177,12 @@ def test_model_server_serve_predict(
     test_response_expected,
 ):
 
-    model_predict_url = f"http://localhost:{test_port}" + test_url_template.format(
+    test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
+    )
+
+    model_predict_url = (
+        f"http://localhost:{test_port}" + test_model_server_urls.model_predict
     )
 
     response = requests.post(model_predict_url, json=test_request_data.dict())
@@ -199,20 +196,21 @@ def test_model_server_serve_predict(
 @pytest.mark.order(3)
 @pytest.mark.client
 @pytest.mark.parametrize(
-    "test_url_template, test_response_model",
-    [(SERVING_ML_MODEL_BIO_URL, TestBioResponseModel)],
+    "test_response_model",
+    [TestBioResponseModel],
 )
 def test_modeel_server_serve_bio(
-    test_url_template,
     test_api_version,
     test_port,
     test_model_name,
     test_response_model,
 ):
 
-    model_bio_url = f"http://localhost:{test_port}" + test_url_template.format(
+    test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
     )
+
+    model_bio_url = f"http://localhost:{test_port}" + test_model_server_urls.model_bio
 
     response = requests.get(model_bio_url)
 
