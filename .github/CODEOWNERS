@@ -2,18 +2,14 @@
 
 ## MLOPs Own all the things
 
-* @airpr/mlops-engineers @RonsenbergVI
+* @airpr/mlops-engineers @RonsenbergVI @SebastianScherer88
+
+/libs @airpr/mlops-engineers
+/libs/compile @SebastianScherer88
+/libs/models @SebastianScherer88
+/libs/serving @SebastianScherer88
+/libs/tracking @SebastianScherer88
 
 ## MLE owns the project implementation
 
-/projects @airpr/ml-engineers
-
-## TODO: associate each project owner with the folder
-
-### keywords
-
-/projects/keywords @sreza1
-
-### summarization
-
-/projects/summarization @sreza1
+/projects @airpr/ml-engineers @airpr/mlops-engineers

@@ -1,21 +1,166 @@
 version: "3.9"
 
 services:
+  # =============================================
+  # SERVE
+  # =============================================
   serve:
     build:
       context: ../../
       dockerfile: projects/summarization/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: summarization
         COMPONENT: serve
-      target: development
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8001",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["serve"]
     ports:
-      - "8888:8888"
+      - 8001:8001
     environment:
-      DOCS_URL: /docs
+      ENVIRONMENT: ci
+      DOCS_URL: /summarization/docs
+      OPENAPI_URL: /summarization/openapi.json
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
+      PROMPT_API: http://prompt-backend:4000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  serve-unit:
+    build:
+      context: ../../
+      dockerfile: projects/summarization/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: summarization
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["unit"]
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /summarization/docs
+      OPENAPI_URL: /summarization/openapi.json
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  serve-integration:
+    build:
+      context: ../../
+      dockerfile: projects/summarization/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: summarization
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
+    profiles: ["integration"]
+    environment:
+      ENVIRONMENT: ci
+      DOCS_URL: /summarization/docs
+      OPENAPI_URL: /summarization/openapi.json
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  prompt-backend:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    command:
+      [
+        "uvicorn",
+        "src.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "4000",
+        "--reload",
+        "--log-level",
+        "debug",
+      ]
+    profiles: ["integration"]
+    ports:
+      - 4000:4000
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      DOCS_URL: /docs
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+      API_KEY: 1234
+      DB_HOST: "http://dynamodb:8000"
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+  dynamodb:
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+    image: "amazon/dynamodb-local:latest"
+    restart: always
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+    profiles: ["integration"]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
 
 networks:
   onclusive-net:

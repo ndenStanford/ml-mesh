@@ -24,6 +24,11 @@ on:
         default: false
         type: boolean
         description: "If true, builds development stage and runs its build validation pytest suite marked by 'build'."
+      release:
+        required: true
+        default: true
+        type: boolean
+        description: "If false, only the images that have been changed are ran, otherwise every image is ran."
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -37,9 +42,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: "AWS secret access key"
-      AWS_ROLE_TO_ASSUME:
-        required: true
-        description: "AWS IAM role to assume."
 
 jobs:
   deploy:
@@ -49,9 +51,6 @@ jobs:
       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-      role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-      role-duration-seconds: 1200
-      role-session-name: DeployManifests
 
     steps:
       - name: Check out code
@@ -68,45 +67,49 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-duration-seconds: 1200
-          role-session-name: DeployManifests
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Build Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
-        run: make docker.build/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          PLATFORM=linux/amd64 \
-          TARGET_BUILD_STAGE=development
-
-      - name: Run Development Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build && steps.files-changed.outputs.this == 'true' || !inputs.pull-request && inputs.validate-build }}
-        run: make docker.run/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          DOCKER_RUN_CMD="python -m pytest tests/core -m core -ra -vvv --full-trace --tb=long --capture=no"
-
-      - name: Build Production Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
-        run: make docker.build/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          PLATFORM=linux/amd64 \
-          TARGET_BUILD_STAGE=production
-
-      - name: Push Production Docker image with version | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' || !inputs.pull-request }}
+      - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: ${{ steps.files-changed.outputs.this == 'true' }}
         run: |
-          make docker.push/${{ inputs.image }} \
-          OWNER="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com" \
-          IMAGE_TAG="${{ inputs.tag }}"
+          make docker.build/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
+
+      - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ ( inputs.validate-build && inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.validate-build }}
+        run: make docker.validate/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
+
+      - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        run: |
+          make docker.build/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="production" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
+
+      - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        run: |
+          make docker.deploy/${{ inputs.image }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          ENVIRONMENT="ci"

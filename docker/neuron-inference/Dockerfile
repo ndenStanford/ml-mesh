@@ -1,13 +1,12 @@
-ARG OWNER=onclusiveml
-ARG IMAGE_NAME=python-base
-ARG IMAGE_TAG=latest
-ARG BASE_CONTAINER=$OWNER/$IMAGE_NAME
-ARG DOCKER_IMAGE_DIR=docker/neuron-inference
+ARG AWS_ACCOUNT_ID
+ARG IMAGE_TAG
 
-# --- build stage
-FROM $BASE_CONTAINER:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
-ARG DOCKER_IMAGE_DIR
+ARG IMAGE_NAME
+
+ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
 
 USER root
 
@@ -26,15 +25,12 @@ RUN wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEU
 # Install Neuron Driver
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get -yq install --no-install-recommends aws-neuronx-dkms aws-neuronx-tools && \
+    apt-get -yq install --no-install-recommends aws-neuronx-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ENV USER=app
-ENV HOME="/home/onclusive/${USER}"
-
 # create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
+RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
@@ -43,15 +39,19 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/share \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
-USER app
+# switch user
+USER ${USER}
 
 # setup workspace
-WORKDIR "${HOME}"
 
-RUN export PATH="/opt/aws/neuron/bin:$PATH"
+WORKDIR "/"
+
+ENV PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/poetry.lock ${DOCKER_IMAGE_DIR}/pyproject.toml ./
+COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+
+WORKDIR "${HOME}"
 
 # install production dependencies
 RUN poetry install \
@@ -66,12 +66,10 @@ RUN poetry install \
 
 # --- production stage
 FROM builder as production
-ARG DOCKER_IMAGE_DIR
 
 
 # --- test build stage
 FROM builder as development
-ARG DOCKER_IMAGE_DIR
 
 # install development dependencies
 RUN poetry install \
@@ -84,8 +82,11 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users pytest.ini ./
+WORKDIR "/"
 
-COPY --chown=${USER}:users ${DOCKER_IMAGE_DIR}/tests/ ./tests
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-RUN mkdir tests/output
+WORKDIR "${HOME}"
+
+# hadolint ignore=DL3002
+USER root

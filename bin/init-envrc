@@ -1,0 +1,48 @@
+"""Populate .env file from secret manager secrets."""
+
+import os
+import click
+import getpass
+import boto3
+
+
+ROOT_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.realpath(__file__)
+    )
+)
+
+def append_secrets_to_env_file(secret: str, value: str, prepend_with_export: bool = True, mode: str = "a+"):
+    "Add secrets to environment file."
+    export_keyword = "export "
+    if not prepend_with_export:
+        export_keyword = ""
+        print("Export will not be prepended")
+
+    file = open(os.path.join(ROOT_DIR, '.envrc'), mode)
+
+    escaped_value = value.translate(str.maketrans({
+        "\"": "\\\"",
+        "\n": ""
+    }))
+
+    file.write("{}{}=\"{}\"\n".format(export_keyword, secret, escaped_value))
+    file.close()
+
+@click.command()
+@click.option(
+    "--profile",
+    "-p",
+    help="AWS account to select.",
+    default="dev"
+)
+@click.option("--no-export", "-n", is_flag=True, help="Remove export from variable definition.",)
+def main(profile: str, no_export: bool):
+
+    append_secrets_to_env_file("AWS_PROFILE", profile, "w")
+    append_secrets_to_env_file("AWS_ACCOUNT_ID", boto3.client('sts').get_caller_identity().get('Account'))
+    append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
+    append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
+
+if __name__ == "__main__":
+    main()

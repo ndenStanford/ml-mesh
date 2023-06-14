@@ -6,6 +6,7 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -19,6 +20,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/fastapi-serve"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -32,6 +34,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-base"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -44,6 +47,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-data-science"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -56,6 +60,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-jax-cpu"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -68,6 +73,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-jupyter"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -80,6 +86,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-numpy"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -92,6 +99,7 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/kubeflow-torch-cpu"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -104,6 +112,33 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/docker/python-base"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # neuron-compile
+
+  - package-ecosystem: "pip"
+    directory: "/docker/neuron-compile"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # neuron-inference
+
+  - package-ecosystem: "pip"
+    directory: "/docker/neuron-inference"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -120,6 +155,20 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/libs/core"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # compile lib
+
+  - package-ecosystem: "pip"
+    directory: "/libs/ml_compile"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -135,10 +184,9 @@ updates:
   # KEYWORDS
 
   ## serve
-
-  # python
   - package-ecosystem: "pip"
     directory: "/projects/keywords/serve"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
@@ -147,21 +195,28 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
-  # docker
-  - package-ecosystem: "docker"
-    directory: "/projects/keywords/serve"
+  ## train
+  - package-ecosystem: "pip"
+    directory: "/projects/keywords/train"
+    target-branch: "develop"
     schedule:
       interval: "monthly"
       time: "09:00"
       timezone: "Europe/London"
-    registries:
-      - ecr-prod
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
-# REGISTRIES
+  # SUMMARIZATION
 
-registries:
-  ecr-prod:
-    type: docker-registry
-    url: https://211212199399.dkr.ecr.us-east-1.amazonaws.com
-    username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ## serve
+  - package-ecosystem: "pip"
+    directory: "/projects/summarization/serve"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]

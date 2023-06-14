@@ -11,12 +11,12 @@ This project contains the modular implementation of the logic powering Onclusive
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
+- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
 - **train**: model training.
 - **compile**: model compilation (it can be so that the model runs on a specific architecture of a model quantization);
 - **serve**: model served as a REST API.
-- **backfill**: data enriched with a previous version of the model is re-enriched with a newer version.
-- **show**: UI component with streamlit.
+- **display**: UI component with streamlit.
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component behaviour (input, processing and output).
 This allows us to create well defined patterns that can be applied specifically to implement each of these steps on new projects.
@@ -26,19 +26,42 @@ Not all of these steps are mandatory: for instance, pre-trained model used for z
 
 ### Setting up your local environment
 
-If you are on MacOS, you can run the script `./bin/boostrap/darwin` that will set up your local machine for development. If you are using Linux, the next section describes the installation steps.
+If you are on MacOS, you can run the script `./bin/boostrap/darwin` that will set up your local machine for development. If you are using Linux, use `./bin/boostrap/linux`.
 
-**Windows and Linux setup is not supported yet - to be explored**. If you want to contribute to this please reach out to the MLOPs team.
+**Windows setup is not supported yet - to be explored**. If you want to contribute to this please reach out to the MLOPs team.
 
-### Manual installation
+#### Setup AWS credentials
 
-In order to setup your local development enviroment, please follow these steps:
+Setup your aws credentials for dev and prod ML accounts (Default region name  should be us-east-1 and Default output format should be JSON). Ask @mlops on slack to get your credentials created if you
+don't have them already.
 
-- [ ] Install core dependencies
-- [ ] Setup your AWS config
-- [ ] Install poetry
-- [ ] Setup your python environment
-- [ ] Install git hooks (optional)
+For your dev credentials:
+
+```shell
+aws configure --profile dev
+```
+
+For your prod credentials:
+
+```shell
+aws configure --profile prod
+```
+
+You can also switch profiles at any time by updating the environment variable as follows
+
+```shell
+export AWS_PROFILE=dev
+```
+
+#### Build all base images
+
+As all images used in projects and apps are based on our core docker images. It helps save time to build all images. Run the command
+
+```shell
+make docker.build-all
+```
+
+It takes about 10 minutes to run, go stretch your legs, get a coffee, or consult our [Contribution Guide](https://onclusive.atlassian.net/l/cp/u1Mz7m6M).
 
 ### Contributing to the codebase
 

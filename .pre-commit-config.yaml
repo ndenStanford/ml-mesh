@@ -1,8 +1,41 @@
 ---
 ci:
   skip: [hadolint-docker]
+default_language_version:
+  # force all unspecified python hooks to run python3
+  python: python3.8
 
 repos:
+  # =================================
+  # GENERIC
+  # =================================
+
+  # generic hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: "^apps/entity-fishing/backend/"
+      - id: trailing-whitespace
+        exclude: "^apps/entity-fishing/backend/"
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  # Autoformat: YAML, JSON, Markdown, etc.
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.4.1
+    hooks:
+      - id: prettier
+        exclude: "^apps/entity-fishing/backend/"
+
+  # Lint: Markdown
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.29.0
+    hooks:
+      - id: markdownlint
+        args: ["--fix"]
+        exclude: "^apps/entity-fishing/backend/"
+
   # =================================
   # PYTHON
   # =================================
@@ -27,8 +60,10 @@ repos:
     hooks:
       - id: mypy
         files: ^(libs|projects)/.*\.py$
-        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests)
-        args: ["--explicit-package-bases"]
+        exclude: ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py|projects/summarization/serve/src/_init.py|projects/summarization/serve/src/predict/summarization.py|projects/keywords/compile/src/test_compiled_model/conftest.py)
+        args:
+          - --explicit-package-bases
+          - --no-warn-unused-ignores
 
   # isort
   - repo: https://github.com/pycqa/isort
@@ -37,11 +72,9 @@ repos:
       - id: isort
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
 
-  # Autoformat: YAML, JSON, Markdown, etc.
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.4.1
-    hooks:
-      - id: prettier
+  # =================================
+  # DOCKER
+  # =================================
 
   # Lint: Dockerfile
   - repo: https://github.com/hadolint/hadolint.git
@@ -49,6 +82,7 @@ repos:
     hooks:
       - id: hadolint-docker
         entry: hadolint/hadolint:v2.12.0 hadolint
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Bash scripts
   - repo: https://github.com/openstack-dev/bashate.git
@@ -56,6 +90,7 @@ repos:
     hooks:
       - id: bashate
         args: ["--ignore=E006"]
+        exclude: "^apps/entity-fishing/backend/"
 
   # Lint: Shell scripts
   - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -63,10 +98,4 @@ repos:
     hooks:
       - id: shellcheck
         args: ["-x"]
-
-  # Lint: Markdown
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.29.0
-    hooks:
-      - id: markdownlint
-        args: ["--fix"]
+        exclude: "^apps/entity-fishing/backend/"

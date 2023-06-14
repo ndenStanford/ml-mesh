@@ -21,7 +21,7 @@ settings = get_settings()
 class BaseTable(Model):
     """Base Table."""
 
-    id = UnicodeAttribute(hash_key=True)
+    id = UnicodeAttribute()
     created_at = UTCDateTimeAttribute(null=False)
 
     class Meta:

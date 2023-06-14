@@ -1,0 +1,78 @@
+name: ML-Mesh Draft Release
+
+on:
+  issues:
+    types:
+      - opened
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.event.issue.title }}
+
+jobs:
+  run-repository-state:
+    name: Get Repository metadata
+    uses: ./.github/workflows/_repository-state.yaml
+    if: startsWith(github.event.issue.title, '[RELEASE]:')
+    with:
+      pull-request: false
+      prerelease: false
+      publish: false
+      target-branch: main
+    secrets:
+      GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
+
+  run-get-version:
+    name: Draft a new release
+    runs-on: ubuntu-latest
+    needs: [run-repository-state]
+    if: startsWith(github.event.issue.title, '[RELEASE]:')
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: develop
+
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match-version
+        with:
+          text: ${{ github.event.issue.title }}
+          regex: '(\d+\.)?(\d+\.)?(\*|\d+)$'
+
+      - name: Check release version is correct
+        id: check-release-version
+        run: |
+          if [[ "${{ needs.run-repository-state.outputs.tag }}" != "v${{ steps.regex-match-version.outputs.match }}" ]]; then
+              echo "Version is not valid, expected ${{ needs.run-repository-state.outputs.tag }} but got ${{ steps.regex-match-version.outputs.match }}"
+              exit 1
+          fi
+
+      - name: Create release branch
+        id: release-branch
+        run: |
+          git checkout -b release/${{ steps.regex-match-version.outputs.match }}
+          echo "version=${{ steps.regex-match-version.outputs.match }}" >> $GITHUB_OUTPUT
+
+      # In order to make a commit, we need to initialize a user.
+      # You may choose to write something less generic here if you want, it doesn't matter functionality wise.
+      - name: Initialize mandatory git config
+        run: |
+          git config user.name "GitHub actions"
+          git config user.email noreply@github.com
+
+      - name: Push new branch
+        run: |
+          git branch --set-upstream-to=origin/develop develop
+          git branch --set-upstream-to=origin/develop release/${{ steps.release-branch.outputs.version }}
+          git pull
+          git push --set-upstream origin release/${{ steps.release-branch.outputs.version }}
+
+      - name: Create pull request
+        uses: thomaseizinger/create-pull-request@1.3.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          head: refs/heads/release/${{ steps.release-branch.outputs.version }}
+          base: main
+          title: ML-MESH RELEASE [${{ steps.release-branch.outputs.version }}]
+          body: |
+            "${{ needs.run-repository-state.outputs.release-notes }}"

@@ -13,7 +13,7 @@ import pytest
 
 @pytest.mark.core
 @pytest.mark.compilation
-def neuron_compile_torch_function_test(torch_function_input, test_output_dir) -> None:
+def test_neuron_compile_torch_function(torch_function_input, test_output_dir) -> None:
     def foo(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return 2 * x + y
 
@@ -21,19 +21,23 @@ def neuron_compile_torch_function_test(torch_function_input, test_output_dir) ->
     traced_foo = torch.neuron.trace(foo, torch_function_input)
     # `traced_foo` can now be run with the TorchScript interpreter or saved
     # and loaded in a Python-free environment
-    torch.jit.save(traced_foo, os.path.join(test_output_dir, "traced_foo.pt"))
+    torch.jit.save(
+        traced_foo, os.path.join(test_output_dir, "compiled_torch_function.pt")
+    )
 
 
 @pytest.mark.inference
-def neuron_inference_torch_function_test(test_output_dir, torch_function_input):
+def test_neuron_inference_torch_function(test_output_dir, torch_function_input):
 
-    traced_foo = torch.jit.load(os.path.join(test_output_dir, "traced_foo.pt"))
+    traced_foo = torch.jit.load(
+        os.path.join(test_output_dir, "compiled_torch_function.pt")
+    )
     traced_foo(*torch_function_input)
 
 
 @pytest.mark.core
 @pytest.mark.compilation
-def neuron_compile_torch_graph_test(torch_graph_input, test_output_dir) -> None:
+def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
     class Net(torch.nn.Module):
         def __init__(self) -> None:
             super().__init__()
@@ -47,26 +51,30 @@ def neuron_compile_torch_graph_test(torch_graph_input, test_output_dir) -> None:
     # Trace a specific method and construct `ScriptModule` with
     # a single `forward` method
     neuron_forward = torch.neuron.trace(n.forward, torch_graph_input)
-    torch.jit.save(neuron_forward, os.path.join(test_output_dir, "neuron_forward.pt"))
+    torch.jit.save(
+        neuron_forward, os.path.join(test_output_dir, "compiled_torch_forward_pass.pt")
+    )
     # Trace a module (implicitly traces `forward`) and constructs a
     # `ScriptModule` with a single `forward` method
     neuron_net = torch.neuron.trace(n, torch_graph_input)
-    torch.jit.save(neuron_net, os.path.join(test_output_dir, "neuron_net.pt"))
+    torch.jit.save(neuron_net, os.path.join(test_output_dir, "compiled_torch_net.pt"))
 
 
 @pytest.mark.inference
-def neuron_inference_torch_graph_test(test_output_dir, torch_graph_input):
+def test_neuron_inference_torch_graph(test_output_dir, torch_graph_input):
 
-    neuron_forward = torch.jit.load(os.path.join(test_output_dir, "neuron_forward.pt"))
+    neuron_forward = torch.jit.load(
+        os.path.join(test_output_dir, "compiled_torch_forward_pass.pt")
+    )
     neuron_forward(torch_graph_input)
 
-    neuron_net = torch.jit.load(os.path.join(test_output_dir, "neuron_net.pt"))
+    neuron_net = torch.jit.load(os.path.join(test_output_dir, "compiled_torch_net.pt"))
     neuron_net.forward(torch_graph_input)
 
 
 @pytest.mark.core
 @pytest.mark.compilation
-def neuron_compile_transformer_nlp_model_test(
+def test_neuron_compile_transformer_nlp_model(
     torch_model_name: str,
     torch_model_input: Tuple[torch.Tensor, torch.Tensor],
     test_output_dir,
@@ -83,18 +91,18 @@ def neuron_compile_transformer_nlp_model_test(
         model_neuron,
         os.path.join(
             test_output_dir,
-            "transformer_nlp_model_neuron.pt",
+            "compiled_transformer_nlp_model.pt",
         ),
     )
 
 
 @pytest.mark.inference
-def neuron_inference_transformer_nlp_model_test(test_output_dir, torch_model_input):
+def test_neuron_inference_transformer_nlp_model(test_output_dir, torch_model_input):
 
     neuron_model_scripted = torch.jit.load(
         os.path.join(
             test_output_dir,
-            "transformer_nlp_model_neuron.pt",
+            "compiled_transformer_nlp_model.pt",
         )
     )
 

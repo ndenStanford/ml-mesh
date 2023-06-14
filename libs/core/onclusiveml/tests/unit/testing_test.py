@@ -23,13 +23,13 @@ override_settings = get_override_settings_context_manager(get_settings)
 
 
 @override_settings(debug=True)
-def override_settings_decorator_test():
+def test_override_settings_decorator():
     """Test override settings"""
     settings = get_settings()
     assert settings.debug is True
 
 
-def original_settings_test():
+def test_original_settings():
     """Test settings original value."""
     settings = get_settings()
     assert settings.debug is False

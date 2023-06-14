@@ -1,4 +1,7 @@
-FROM 211212199399.dkr.ecr.us-east-1.amazonaws.com/python-base:v2023.3.2 as builder
+ARG AWS_ACCOUNT_ID
+ARG BASE_IMAGE_TAG
+
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -27,7 +30,7 @@ WORKDIR "/"
 COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
-COPY --chown=${USER}:users libs/ /libs/
+COPY --chown=${USER}:users libs/ libs/
 
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
@@ -41,6 +44,8 @@ RUN poetry install --no-interaction --no-ansi && \
 
 # --- production stage
 FROM builder as production
+
+ENV PYTHONPATH=${HOME}
 
 # --- test build stage
 FROM builder as development
