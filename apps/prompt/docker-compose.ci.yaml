@@ -84,6 +84,7 @@ services:
       DB_HOST: "http://dynamodb:8000"
     depends_on:
       - dynamodb
+      - redisdb
     networks:
       - onclusive-net
 
@@ -137,6 +138,8 @@ services:
     depends_on:
       dynamodb:
         condition: service_healthy
+      redisdb:
+        condition: service_healthy
     networks:
       - onclusive-net
 
@@ -161,7 +164,7 @@ services:
       - onclusive-net
 
   redisdb:
-    image: "redis:latest"
+    image: "redis:7.0"
     restart: always
     expose:
       - 6379
