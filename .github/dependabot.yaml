@@ -118,7 +118,7 @@ updates:
   # compile lib
 
   - package-ecosystem: "pip"
-    directory: "/libs/ml_compile"
+    directory: "/libs/compile"
     target-branch: "develop"
     schedule:
       interval: "monthly"
