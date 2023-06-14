@@ -30,18 +30,6 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
-  # kubeflow base
-
-  - package-ecosystem: "pip"
-    directory: "/docker/kubeflow-base"
-    target-branch: "develop"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-      timezone: "Europe/London"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
 
   # kubeflow data science
 
@@ -56,10 +44,11 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
-  # kubeflow jax cpu
+
+  # kubeflow torch cpu
 
   - package-ecosystem: "pip"
-    directory: "/docker/kubeflow-jax-cpu"
+    directory: "/docker/kubeflow-torch-cpu"
     target-branch: "develop"
     schedule:
       interval: "monthly"
@@ -82,18 +71,7 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
-  # kubeflow numpy
 
-  - package-ecosystem: "pip"
-    directory: "/docker/kubeflow-numpy"
-    target-branch: "develop"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-      timezone: "Europe/London"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
 
   # kubeflow torch cpu
 
@@ -108,18 +86,6 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
-  # python base
-
-  - package-ecosystem: "pip"
-    directory: "/docker/python-base"
-    target-branch: "develop"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-      timezone: "Europe/London"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
 
   # neuron-compile
 
@@ -177,11 +143,50 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
+  # models lib
+
+  - package-ecosystem: "pip"
+    directory: "/libs/models"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # tracking lib
+
+  - package-ecosystem: "pip"
+    directory: "/libs/tracking"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
   # ====================================
   # PROJECTS
   # ====================================
 
   # KEYWORDS
+
+  ## compile
+
+  - package-ecosystem: "pip"
+    directory: "/projects/keywords/compile"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   ## serve
   - package-ecosystem: "pip"
@@ -207,11 +212,71 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
 
+
   # SUMMARIZATION
 
   ## serve
   - package-ecosystem: "pip"
     directory: "/projects/summarization/serve"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # ENTITY-LINKING
+
+  ## serve
+  - package-ecosystem: "pip"
+    directory: "/projects/entity-linking/serve"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  # ====================================
+  # APPS
+  # ====================================
+
+  # ENTITY-FISHING
+  ## backend
+  - package-ecosystem: "maven"
+    directory: "/apps/entity-fishing/backend"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+
+  # PROMPT
+
+  ## backend
+  - package-ecosystem: "pip"
+    directory: "/apps/prompt/backend"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+      time: "09:00"
+      timezone: "Europe/London"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+
+  ## frontend
+  - package-ecosystem: "npm"
+    directory: "/apps/prompt/frontend"
     target-branch: "develop"
     schedule:
       interval: "monthly"
