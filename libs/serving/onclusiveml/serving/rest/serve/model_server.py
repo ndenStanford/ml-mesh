@@ -43,7 +43,7 @@ class ModelServer(FastAPI):
 
         super().__init__(
             *args,
-            on_startp=on_startup,
+            on_startup=on_startup,
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
 
