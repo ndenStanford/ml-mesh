@@ -43,4 +43,4 @@ def test_tokenize_unique_chars(char):
     test_sent = sent1 + char + sent2
     tokenizer = SentenceTokenizer()
     res = tokenizer.tokenize(content=test_sent)
-    assert res["sentences"] == ["This is sentence one", "This is sentence two."]
+    assert res["sentences"] == [sent1, sent2]
