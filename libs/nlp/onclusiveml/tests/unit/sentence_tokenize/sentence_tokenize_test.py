@@ -1,7 +1,11 @@
 """Sentence tokenizer test."""
 
+# 3rd party libraries
+import pytest
+
 # Internal libraries
 from onclusiveml.nlp import SentenceTokenizer
+from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
 
 
 def test_tokenize():
@@ -29,8 +33,14 @@ def test_tokenize_fr():
     ]
 
 
-def test_tokenize_unique_chars():
-    text = """This is sentence one！ This is sentence two."""
+@pytest.mark.parametrize(
+    "char",
+    SPECIAL_CHARACTERS,
+)
+def test_tokenize_unique_chars(char):
+    sent1 = "This is sentence one"
+    sent2 = "This is sentence two."
+    test_sent = sent1 + char + sent2
     tokenizer = SentenceTokenizer()
-    res = tokenizer.tokenize(content=text)
-    assert res["sentences"] == ["This is sentence one", " This is sentence two."]
+    res = tokenizer.tokenize(content=test_sent)
+    assert res["sentences"] == ["This is sentence one", "This is sentence two."]
