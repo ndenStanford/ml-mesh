@@ -72,21 +72,6 @@ updates:
         update-types: ["version-update:semver-patch"]
 
 
-
-  # kubeflow torch cpu
-
-  - package-ecosystem: "pip"
-    directory: "/docker/kubeflow-torch-cpu"
-    target-branch: "develop"
-    schedule:
-      interval: "monthly"
-      time: "09:00"
-      timezone: "Europe/London"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
-
-
   # neuron-compile
 
   - package-ecosystem: "pip"
