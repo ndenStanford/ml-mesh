@@ -36,17 +36,17 @@ SERVING_ML_MODEL_BIO_URL = (
 def get_root_router(
     api_version: str = "v1", api_config: Dict = FastAPISettings().dict()
 ) -> Callable:
-    """API root url"""
+    """Utility for a consistent api root endpoint."""
 
-    liveness_router = APIRouter()
+    root_router = APIRouter()
 
-    @liveness_router.get(
+    @root_router.get(
         SERVING_ROOT_URL.format(api_version=api_version), status_code=status.HTTP_200_OK
     )
     async def root() -> Dict:
         return api_config
 
-    return liveness_router
+    return root_router
 
 
 def get_liveness_router(api_version: str = "v1") -> Callable:
@@ -61,7 +61,7 @@ def get_liveness_router(api_version: str = "v1") -> Callable:
         response_model=LivenessProbeResponse,
         status_code=status.HTTP_200_OK,
     )
-    async def live() -> str:
+    async def live() -> LivenessProbeResponse:
         return LivenessProbeResponse()
 
     return liveness_router
@@ -79,18 +79,19 @@ def get_readiness_router(api_version: str = "v1") -> Callable:
         response_model=ReadinessProbeResponse,
         status_code=status.HTTP_200_OK,
     )
-    async def ready() -> str:
+    async def ready() -> ReadinessProbeResponse:
         return ReadinessProbeResponse()
 
     return readiness_router
 
 
 def get_model_predict_router(model: ServedModel, api_version: str = "v1") -> APIRouter:
-    """Utility to wrap a ServedModel's (subclass') instance's `predict` method into FastAPI routers
+    """Utility to wrap a ServedModel's (subclass') instance's `predict` method into FastAPI router
     compatible with the ModelServer class
 
     Args:
-        model (str): The ServedModel instance implementing the endpoint logic and holding the
+        model (ServedModel): The ServedModel instance implementing the endpoint logic and holding
+            the
             - request & response model specifications as class attributes
             - model name
         api_version (str): The api version prefix. Will be used to construct the URL. See template
@@ -99,9 +100,9 @@ def get_model_predict_router(model: ServedModel, api_version: str = "v1") -> API
                 - SERVING_ML_MODEL_BIO_URL
             for details
     Returns:
-        model_predict_router: An APIRouter object that implements the model's `predict` method's
-            logic as a functional FastAPI endpoint. Can be added directly as a route to a FastAPI
-            and ModelServer instance.
+        model_predict_router (APIRouter): An APIRouter object that implements the model's `predict`
+            method's logic as a functional FastAPI endpoint. Can be added directly as a route to a
+            FastAPI and ModelServer instance.
     """
 
     model_predict_router = APIRouter()
@@ -124,18 +125,19 @@ def get_model_bio_router(model: ServedModel, api_version: str = "v1") -> APIRout
     compatible with the ModelServer class
 
     Args:
-        model (str): The ServedModel instance implementing the endpoint logic and holding the
-            - response model specifications as a class attribute
-            - model name
+        model (ServedModel): The ServedModel instance implementing the endpoint logic and holding
+            the
+                - response model specifications as a class attribute
+                - model name
         api_version (str): The api version prefix. Will be used to construct the URL. See template
             variables
                 - SERVING_ML_MODEL_PREDICT_URL
                 - SERVING_ML_MODEL_BIO_URL
             for details
     Returns:
-        model_bio_router: An APIRouter object that implements the model's `bio` method's logic as a
-            functional FastAPI endpoint. Can be added directly as a route to a FastAPI and
-            ModelServer instance.
+        model_bio_router (APIRouter): An APIRouter object that implements the model's `bio` method's
+            logic as a functional FastAPI endpoint. Can be added directly as a route to a FastAPI
+            and ModelServer instance.
     """
 
     model_bio_router = APIRouter()
