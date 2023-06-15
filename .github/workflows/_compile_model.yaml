@@ -89,7 +89,7 @@ jobs:
 
       - name: Show runner label
         run: |
-          ${{ set-runner-label.outputs.value }}
+          ${{ steps.set-runner-label.outputs.value }}
 
       - name: Toggle runner instance type
         uses: haya14busa/action-cond@v1
@@ -101,7 +101,7 @@ jobs:
 
       - name: Show runner instance id
         run: |
-          ${{ set-runner-instance-id.outputs.value }}
+          ${{ steps.set-runner-instance-id.outputs.value }}
 
   compile-model:
     name: Compile and register a base or trained model
