@@ -130,7 +130,7 @@ jobs:
           echo "Available neuron devicces:"
           neuron-ls
           ls /dev/neuron* -l
-          ls /dev/neuron -l
+          ls /dev/ -l
 
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
