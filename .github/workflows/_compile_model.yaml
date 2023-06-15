@@ -130,7 +130,7 @@ jobs:
         run: aws sts get-caller-identity
 
       - name: Check neuron device(s)
-        run: ls /dev/neuron* -l
+        run: ls /dev/ -l
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
