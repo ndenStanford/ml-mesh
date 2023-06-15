@@ -31,6 +31,7 @@ ALL_LIBS:= \
 	compile \
 	core \
 	models \
+  nlp \
 	serving \
 	tracking
 

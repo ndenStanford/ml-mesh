@@ -7,6 +7,7 @@ import openai
 from onclusiveml.core.retry import retry
 
 # Source
+from src.extensions.redis import cache
 from src.model.constants import ModelEnum
 from src.settings import get_settings
 
@@ -15,6 +16,7 @@ settings = get_settings()
 
 
 @retry(tries=2)
+@cache.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_text(
     prompt: str, model_name: str, max_tokens: int, temperature: float
 ) -> str:

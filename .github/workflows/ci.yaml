@@ -83,6 +83,10 @@ jobs:
             integration: false
             functional: false # TODO: turn this to true when self hosted runners are available.
 
+          - name: nlp
+            integration: false
+            functional: false
+
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
