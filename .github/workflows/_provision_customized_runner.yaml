@@ -129,6 +129,7 @@ jobs:
           export PATH=/opt/aws/neuron/bin:$PATH
           echo "Available neuron devicces:"
           neuron-ls
+          ls /dev/neuron* -l
 
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
