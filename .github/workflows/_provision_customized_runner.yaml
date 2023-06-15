@@ -127,7 +127,7 @@ jobs:
           sudo yum install ${{ inputs.neuron-dkms-version }} -y
           sudo yum install ${{ inputs.neuron-tools-version }} -y
           export PATH=/opt/aws/neuron/bin:$PATH
-          echo "Available neuron devicces:"
+          echo "Available neuron device(s):"
           neuron-ls
           ls /dev/neuron* -l
 
