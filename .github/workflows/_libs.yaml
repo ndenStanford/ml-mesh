@@ -69,6 +69,7 @@ jobs:
         run: make libs.install/${{ inputs.lib }}
 
       - name: Check python & pytest versions
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           python --version
           pytest --version
