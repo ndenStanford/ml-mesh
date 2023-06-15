@@ -75,6 +75,10 @@ jobs:
             integration: false
             functional: false
 
+          - name: serving
+            integration: false
+            functional: false
+
           - name: tracking
             integration: false
             functional: false # TODO: turn this to true when self hosted runners are available.
