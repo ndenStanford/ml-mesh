@@ -155,3 +155,4 @@ jobs:
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
+          ls /dev/ -l
