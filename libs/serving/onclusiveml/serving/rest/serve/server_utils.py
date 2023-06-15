@@ -15,17 +15,6 @@ from onclusiveml.serving.rest.serve.server_models import (
 )
 
 
-# SERVING_ROOT_URL = "/{api_version}/"
-# SERVING_LIVENESS_PROBE_URL = SERVING_ROOT_URL + "/live"
-# SERVING_READINESS_PROBE_URL = SERVING_ROOT_URL + "/ready"
-# SERVING_ML_MODEL_PREDICT_URL = (
-#     SERVING_ROOT_URL + "/model/{model_name}" + f"/{ServedModelEndpoints.predict.value}"
-# )
-# SERVING_ML_MODEL_BIO_URL = (
-#     SERVING_ROOT_URL + "/model/{model_name}" + f"/{ServedModelEndpoints.bio.value}"
-# )
-
-
 def get_model_server_urls(
     api_version: str = "", model_name: str = "no_model"
 ) -> ModelServerURLs:
@@ -57,7 +46,8 @@ def get_model_server_urls(
 
     model_predict_url = f"{root_url}model/{model_name}/{served_model_methods.predict}"
     model_bio_url = f"{root_url}model/{model_name}/{served_model_methods.bio}"
-    # dump into data model with auto validation
+
+    # dump into url data model with auto validation
     model_server_urls = ModelServerURLs(
         root=root_url,
         liveness=liveness_url,
