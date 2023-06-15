@@ -68,6 +68,11 @@ jobs:
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make libs.install/${{ inputs.lib }}
 
+      - name: Check python & pytest versions
+        run: |
+          python --version
+          pytest --version
+
       - name: Run unit tests
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make libs.unit/${{ inputs.lib }}
