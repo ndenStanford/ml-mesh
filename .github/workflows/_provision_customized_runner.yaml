@@ -130,7 +130,6 @@ jobs:
           echo "Available neuron devicces:"
           neuron-ls
           ls /dev/neuron* -l
-          ls /dev/ -l
 
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
@@ -140,7 +139,6 @@ jobs:
           sudo systemctl stop docker.socket
           sudo systemctl stop containerd
           echo "Installing docker compose"
-          #sudo yum update -y --exclude=${{ inputs.neuron-dkms-version }} --exclude=${{ inputs.neuron-tools-version }}
           sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
           sudo yum install -y docker-compose-plugin jq
@@ -155,4 +153,3 @@ jobs:
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
-          ls /dev/ -l
