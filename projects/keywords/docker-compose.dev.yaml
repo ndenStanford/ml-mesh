@@ -95,9 +95,8 @@ services:
   compile-download-model:
     volumes:
       - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: ["python", "-m", "src.download_uncompiled_model"]
     profiles: ["pipeline"]
@@ -118,9 +117,8 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+        source: compile
+        target: /projects/keywords/compile
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: ["python", "-m", "src.compile_model"]
     profiles: ["pipeline"]
@@ -139,9 +137,8 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+        source: compile
+        target: /projects/keywords/compile
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command:
       [
@@ -169,9 +166,8 @@ services:
   compile-upload-model:
     volumes:
       - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+        source: compile
+        target: /projects/keywords/compile
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: ["python", "-m", "src.upload_compiled_model"]
     profiles: ["pipeline"]
