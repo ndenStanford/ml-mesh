@@ -61,15 +61,15 @@ def filter_language(supported_languages: List[LanguageIso]) -> Callable:
 
             Returns:
                 Any: If detected language is supported, it will return the function and proceed.
-                    Else will return "We currently do not support this language" if the detected
-                    language is not in the list of supported languages
+                    Else will return None if the detected language is not in the list of supported
+                    languages
 
             """
             lang = detect_language(content=content, language=language)
             if lang in supported_languages:
                 return func(content, language)
             else:
-                return "We currently do not support this language"
+                return None
 
         return wrapper
 

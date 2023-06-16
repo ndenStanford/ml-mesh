@@ -47,7 +47,7 @@ def test_detect_language_content_fr():
             "Salut comment tu t'appelles?",
             "fr",
             [LanguageIso.EN],
-            "We currently do not support this language",
+            None,
         ),
         (
             "Salut comment tu t'appelles?",
@@ -59,7 +59,7 @@ def test_detect_language_content_fr():
             "Hola, cómo estás",
             None,
             [LanguageIso.EN],
-            "We currently do not support this language",
+            None,
         ),
     ],
 )
