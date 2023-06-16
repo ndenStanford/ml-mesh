@@ -1,7 +1,7 @@
 """Language Detection."""
 
 # Standard Library
-from typing import Any, Callable, Optional
+from typing import Callable, List, Optional
 
 # 3rd party libraries
 from langdetect import detect
@@ -19,12 +19,15 @@ def detect_language(content: str, language: Optional[str] = None) -> LanguageIso
         return constants.LanguageIso.from_language_iso(res)
 
 
-def filter_language(func: Callable) -> Any:
-    def wrapper(content: str, language: Optional[str] = None) -> LanguageIso:
-        lang = detect_language(content=content, language=language)
-        if lang == LanguageIso.EN:
-            return func(content, language)
-        else:
-            return "We currently do not support this language"
+def filter_language(supported_languages: List[LanguageIso]) -> Callable:
+    def decorator(func: Callable) -> Callable:
+        def wrapper(content: str, language: Optional[str] = None) -> LanguageIso:
+            lang = detect_language(content=content, language=language)
+            if lang in supported_languages:
+                return func(content, language)
+            else:
+                return "We currently do not support this language"
 
-    return wrapper
+        return wrapper
+
+    return decorator

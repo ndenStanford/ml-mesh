@@ -35,23 +35,36 @@ def test_detect_language_content_fr():
 
 
 @pytest.mark.parametrize(
-    "content, language, expected",
+    "content, language, supported_languages, expected",
     [
         (
             "Hello world!",
             "en",
+            [LanguageIso.EN],
             "Processing content: Hello world!",
         ),
         (
             "Salut comment tu t'appelles?",
             "fr",
+            [LanguageIso.EN],
             "We currently do not support this language",
         ),
-        ("Hola, cómo estás", None, "We currently do not support this language"),
+        (
+            "Salut comment tu t'appelles?",
+            "fr",
+            [LanguageIso.EN, LanguageIso.FR],
+            "Processing content: Salut comment tu t'appelles?",
+        ),
+        (
+            "Hola, cómo estás",
+            None,
+            [LanguageIso.EN],
+            "We currently do not support this language",
+        ),
     ],
 )
-def test_detect_language_decorator(content, language, expected):
-    @filter_language
+def test_detect_language_decorator(content, language, supported_languages, expected):
+    @filter_language(supported_languages)
     def some_func(content: str, language: str = None) -> str:
         return "Processing content: " + content
 
