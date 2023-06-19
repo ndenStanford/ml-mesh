@@ -87,6 +87,18 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "py"
+version = "1.11.0"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+files = [
+    {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
+    {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
+]
+
+[[package]]
 name = "pydantic"
 version = "1.10.4"
 description = "Data validation and settings management using python type hints"
@@ -164,6 +176,22 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-catchlog"
+version = "1.2.2"
+description = "py.test plugin to catch log messages. This is a fork of pytest-capturelog."
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-catchlog-1.2.2.zip", hash = "sha256:4be15dc5ac1750f83960897f591453040dff044b5966fe24a91c2f7d04ecfcf0"},
+    {file = "pytest_catchlog-1.2.2-py2.py3-none-any.whl", hash = "sha256:a692966da726b918197cabd20dc0ad4da5503fbdc99baaa192e62579c8a45773"},
+]
+
+[package.dependencies]
+py = ">=1.1.1"
+pytest = ">=2.6"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -190,4 +218,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "e2a1113d44208e4041edc5e50ad1965293bfa634fb45c31623b1c073604fd65a"
+content-hash = "d24e96069da8ae4e313821bc84810cebd634e60c8e0919eb4129d17318007ad5"
