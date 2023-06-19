@@ -14,6 +14,8 @@ from onclusiveml.serving.rest.serve import ServedModel
 from src.keywords_serving_params import KeywordsServedModelParams
 from src.served_keywords_data_models import (
     KeywordsBioResponseModel,
+    KeywordsPredictionExtractedKeyword,
+    KeywordsPredictionOutputDocument,
     KeywordsPredictRequestModel,
     KeywordsPredictResponseModel,
 )
@@ -47,7 +49,36 @@ class ServedKeywordsModel(ServedModel):
         self, payload: predict_request_model  # type: ignore[valid-type]
     ) -> predict_response_model:  # type: ignore[valid-type]
 
-        return self.predict_response_model(predictions=[1, 2, 3])
+        payload_documents = [
+            instance.document for instance in payload.instances  # type: ignore[attr-defined]
+        ]
+
+        predicted_documents = self.model.extract_keywords(payload_documents)
+
+        print(predicted_documents)
+
+        predicted_payload_list = []
+
+        for predicted_document in predicted_documents:
+
+            predicted_document_list = []
+
+            for extracted_keyword_token, extracted_keyword_score in predicted_document:
+
+                predicted_document_list.append(
+                    KeywordsPredictionExtractedKeyword(
+                        keyword_token=extracted_keyword_token,
+                        keyword_score=extracted_keyword_score,
+                    )
+                )
+
+            predicted_document_model = KeywordsPredictionOutputDocument(
+                predicted_document=predicted_document_list
+            )
+
+            predicted_payload_list.append(predicted_document_model)
+
+        return self.predict_response_model(predictions=predicted_payload_list)
 
     def bio(self) -> bio_response_model:  # type: ignore[valid-type]
 
