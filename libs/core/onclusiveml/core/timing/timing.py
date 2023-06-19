@@ -1,22 +1,29 @@
-"""Timing decorator."""
+"""Timing decorator"""
 
 # Wrapper that checks time to run function, then log it
 # make so can deal with unkonwn amount of parameters
 
-# Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
-
 # Standard Library
-from typing import Any, Callable, List, Optional
 import datetime
+from typing import Any, Callable
+
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
 
 logger = get_default_logger(__name__)
 
-def timing_decorator(func) -> Callable:
-    def wrapper(*args, **kwargs) -> None:
+
+def timing_decorator(func: Callable) -> Callable:
+    def wrapper(*args: Any, **kwargs: Any) -> None:
         start_time = datetime.datetime.utcnow()
         result = func(*args, **kwargs)
         end_time = datetime.datetime.utcnow()
-        logger.info('Total Time in milliseconds = {}'.format((end_time - start_time).total_seconds()*1000))
+        logger.info(
+            "Total Time in milliseconds = {}".format(
+                (end_time - start_time).total_seconds() * 1000
+            )
+        )
         return result
+
     return wrapper
