@@ -86,6 +86,9 @@ class ModelServer(FastAPI):
             )
             self.include_router(model_bio_router)
 
+        # finally, generate and attach the uvicorn server process configuration object instance
+        self.generate_uvicorn_config()
+
     def generate_uvicorn_config(self) -> uvicorn.Config:
         """Utility for generating and attaching a uvicorn configuration.
         Sources its parameters from the `configuration` arugment specified during initialization
@@ -94,7 +97,7 @@ class ModelServer(FastAPI):
         self.uvicorn_configuration = uvicorn.Config(
             app=self,
             host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",
-            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type. can be None
+            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type
             port=self.configuration.uvicorn_settings.http_port,
         )
 
@@ -103,7 +106,9 @@ class ModelServer(FastAPI):
     def serve(self) -> None:
         """Utility for running the fully configured app programmatically."""
 
-        self.generate_uvicorn_config()
+        # ensure the serving parameters have populated a server config by this point
+        if not hasattr(self, "uvicorn_configuration"):
+            self.generate_uvicorn_config()
 
         server = uvicorn.Server(self.uvicorn_configuration)
         server.run()

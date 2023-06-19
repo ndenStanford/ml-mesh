@@ -20,7 +20,7 @@ The `serving` library provides a tested framework to consistently implement and 
 
 ## 2 Configuration
 
-TBC - see `ServingParams` in the `rest.paraclass for now
+TBC - see `ServingParams` and its attribute classes in the `rest.params`module for now
 
 ## 3 ModelServer
 

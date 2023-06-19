@@ -5,18 +5,63 @@ from typing import Dict, Optional, Union
 from pydantic import BaseSettings
 
 
-class FastAPISettings(BaseSettings):
+class ServingBaseParams(BaseSettings):
+    class Config:
+        env_prefix = "onclusiveml_serving_"
+        env_file_encoding = "utf-8"
+
+
+class FastAPISettings(ServingBaseParams):
     name: str = "fastapi-app-name"
 
 
-class UvicornSettings(BaseSettings):
+class LogConfigSettings(ServingBaseParams):
+    """Log config default settings. Taken from the uvicorn log configuration handling approach
+    shown here: https://github.com/encode/uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/...
+        ...uvicorn/config.py#L74"""
+
+    version: int = 1
+    disable_existing_loggers: bool = False
+    formatters: Dict = {
+        "default": {
+            "()": "uvicorn.logging.DefaultFormatter",
+            "fmt": "%(levelprefix)s %(message)s",
+            "use_colors": None,
+        },
+        "access": {
+            "()": "uvicorn.logging.AccessFormatter",
+            "fmt": '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s',  # noqa: E501
+        },
+    }
+
+    handlers: Dict = {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+    }
+
+    loggers: Dict = {
+        "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
+        "uvicorn.error": {"level": "INFO"},
+        "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+    }
+
+
+class UvicornSettings(ServingBaseParams):
     http_port: int = 8000
     host: str = "0.0.0.0"
-    log_config: Optional[Union[str, Dict]] = None
+    log_config: Optional[Union[str, Dict]] = LogConfigSettings().dict()
     workers: int = 1
 
 
-class ServingParams(BaseSettings):
+class ServingParams(ServingBaseParams):
 
     add_liveness: bool = True
     add_readiness: bool = True
@@ -27,7 +72,3 @@ class ServingParams(BaseSettings):
     fastapi_settings: FastAPISettings = FastAPISettings()
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
-
-    class Config:
-        env_prefix = "onclusiveml_serving_modelserver_"
-        env_file_encoding = "utf-8"
