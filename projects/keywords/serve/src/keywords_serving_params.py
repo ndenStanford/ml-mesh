@@ -2,11 +2,14 @@
 from pathlib import Path
 from typing import Union
 
+# 3rd party libraries
+from pydantic import BaseSettings
+
 # Internal libraries
 from onclusiveml.serving.rest import ServingParams
 
 
-class KeywordsServingBaseParams(ServingParams):
+class KeywordsServingBaseParams(BaseSettings):
     class Config:
         # -> "onclusiveml_serving_keywords" at the time of writing
         env_prefix = f"{ServingParams.__config__.env_prefix}_keywords_"
@@ -21,7 +24,6 @@ class KeywordsServedModelParams(KeywordsServingBaseParams):
     model_card: str = "model_card.json"
 
 
-class KeywordsServingParams(KeywordsServingBaseParams):
+class KeywordsServingParams(ServingParams, KeywordsServingBaseParams):
 
-    add_model_predict: bool = True
-    add_model_bio: bool = True
+    pass

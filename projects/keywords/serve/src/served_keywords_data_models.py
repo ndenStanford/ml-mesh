@@ -1,25 +1,41 @@
 # Standard Library
-from typing import Dict, List
+from typing import Dict, List, Tuple, Union
 
 # 3rd party libraries
 from pydantic import BaseModel
 
-# Internal libraries
-from onclusiveml.serving.rest.serve import (
-    ProtocolV1RequestModel,
-    ProtocolV1ResponseModel,
-)
-
 
 # --- prediction request models
+class KeywordsPredictConfiguration(BaseModel):
+    """Model class around the kwargs of the `CompiledKeyBERT`'s `extract_keywords` method. Useful if
+    clients want to run different inference calls configuring
+    - how many keywords should be extracted,
+    - n-gram length
+    - etc"""
+
+    candidates: Union[List[str], None] = None
+    keyphrase_ngram_range: Tuple[int, int] = (1, 1)
+    stop_words: Union[str, List[str]] = "english"
+    top_n: int = 5
+    min_df: int = 1
+    use_maxsum: bool = False
+    use_mmr: bool = False
+    diversity: float = 0.5
+    nr_candidates: int = 20
+    seed_keywords: Union[List[str], List[List[str]], None] = None
+
+
 class KeywordsPredictInputDocumentModel(BaseModel):
 
     document: str
 
 
-class KeywordsPredictRequestModel(ProtocolV1RequestModel):
+class KeywordsPredictRequestModel(BaseModel):
 
-    instances: List[KeywordsPredictInputDocumentModel]
+    inference_configuration: KeywordsPredictConfiguration = (
+        KeywordsPredictConfiguration()
+    )
+    inference_inputs: List[KeywordsPredictInputDocumentModel]
 
 
 # --- prediction response models
@@ -34,9 +50,9 @@ class KeywordsPredictionOutputDocument(BaseModel):
     predicted_document: List[KeywordsPredictionExtractedKeyword]
 
 
-class KeywordsPredictResponseModel(ProtocolV1ResponseModel):
+class KeywordsPredictResponseModel(BaseModel):
 
-    predictions: List[KeywordsPredictionOutputDocument]
+    inference_outputs: List[KeywordsPredictionOutputDocument]
 
 
 # --- bio response models

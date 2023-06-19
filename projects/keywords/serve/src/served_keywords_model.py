@@ -46,17 +46,21 @@ class ServedKeywordsModel(ServedModel):
         self.ready = True
 
     def predict(
-        self, payload: predict_request_model  # type: ignore[valid-type]
-    ) -> predict_response_model:  # type: ignore[valid-type]
+        self, payload: KeywordsPredictRequestModel
+    ) -> KeywordsPredictResponseModel:
 
-        payload_documents = [
-            instance.document for instance in payload.instances  # type: ignore[attr-defined]
-        ]
+        # extract documents and inference call configuration from validated payload
+        inference_configuration = payload.inference_configuration
+        inference_inputs = payload.inference_inputs
 
-        predicted_documents = self.model.extract_keywords(payload_documents)
+        documents = [input.document for input in inference_inputs]
 
-        print(predicted_documents)
+        # score the model
+        predicted_documents = self.model.extract_keywords(
+            docs=documents, **inference_configuration.dict()
+        )
 
+        # assemble validated response model instance
         predicted_payload_list = []
 
         for predicted_document in predicted_documents:
@@ -78,10 +82,10 @@ class ServedKeywordsModel(ServedModel):
 
             predicted_payload_list.append(predicted_document_model)
 
-        return self.predict_response_model(predictions=predicted_payload_list)
+        return KeywordsPredictResponseModel(inference_outputs=predicted_payload_list)
 
-    def bio(self) -> bio_response_model:  # type: ignore[valid-type]
+    def bio(self) -> KeywordsBioResponseModel:
 
-        return self.bio_response_model(
+        return KeywordsBioResponseModel(
             name=self.name, tracked_keywords_model_card=self.model_card
         )
