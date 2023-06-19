@@ -1,4 +1,4 @@
-"""Timing decorator"""
+"""Timing decorator."""
 
 # Standard Library
 import datetime
@@ -23,8 +23,9 @@ def timing_decorator(func: Callable) -> Callable:
         def my_function():
             ...
 
-        my_function() # execution time will be logged    
+        my_function() # execution time will be logged
     """
+
     def wrapper(*args: Any, **kwargs: Any) -> None:
         start_time = datetime.datetime.utcnow()
         result = func(*args, **kwargs)
