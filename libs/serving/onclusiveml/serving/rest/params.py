@@ -6,6 +6,8 @@ from pydantic import BaseSettings
 
 
 class ServingBaseParams(BaseSettings):
+    """Base class implementing the environment variable prefix"""
+
     class Config:
         env_prefix = "onclusiveml_serving_"
         env_file_encoding = "utf-8"
@@ -55,6 +57,11 @@ class LogConfigSettings(ServingBaseParams):
 
 
 class UvicornSettings(ServingBaseParams):
+    """A settings wrapper around the uvicorn library's `Config` class's constructor arguments. Used
+    to configure the `ModelServer`'s underlying uvicorn process. See https://github.com/encode/...
+    uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/uvicorn/config.py#L187 for details.
+    """
+
     http_port: int = 8000
     host: str = "0.0.0.0"
     log_config: Optional[Union[str, Dict]] = LogConfigSettings().dict()
@@ -62,13 +69,17 @@ class UvicornSettings(ServingBaseParams):
 
 
 class ServingParams(ServingBaseParams):
+    """A functional base class for specifying a configuration for the `ModelServer` constructor
+    method's `configuration` argument"""
 
     add_liveness: bool = True
     add_readiness: bool = True
     add_model_predict: bool = True
     add_model_bio: bool = True
     api_version: str = "v1"
+
     # fastapi settings
     fastapi_settings: FastAPISettings = FastAPISettings()
+
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
