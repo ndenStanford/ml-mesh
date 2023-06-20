@@ -16,7 +16,7 @@ designated for configuration environment variables. These inlcude
   - model artifact location on local disk of serving node
   - model serving logic parametrization
 - `UvicornSettings`
-  - a uvicorn configuration](<https://github.com/encode/uvicorn/blob/master/uvicorn/config.py>) specification; serving process configuration - see the `serving` library documentation for details
+  - a [uvicorn configuration](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py) specification; serving process configuration - see the `serving` library documentation for details
 
 ### Running the model server
 
