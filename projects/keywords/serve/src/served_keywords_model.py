@@ -27,7 +27,13 @@ class ServedKeywordsModel(ServedModel):
     predict_response_model: Type[BaseModel] = KeywordsPredictResponseModel
     bio_response_model: Type[BaseModel] = KeywordsBioResponseModel
 
-    served_model_params: KeywordsServedModelParams = KeywordsServedModelParams()
+    # served_model_params: KeywordsServedModelParams = KeywordsServedModelParams()
+
+    def __init__(self, served_model_params: KeywordsServedModelParams):
+
+        self.served_model_params = served_model_params
+
+        super().__init__(name=served_model_params.model_name)
 
     def load(self) -> None:
         # load and attach model_card attribute

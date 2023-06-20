@@ -234,16 +234,6 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: serve/src
@@ -253,9 +243,7 @@ services:
         target: /projects/keywords/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
-    ports:
-      - 8000:8000
+    profiles: ["serve", "unit"]
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -266,34 +254,21 @@ services:
   # - include model artifact
   # - do NOT include REST model server process
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: serve/src
         target: /projects/keywords/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/keywords/serve/train
+        target: /projects/keywords/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
-    ports:
-      - 8000:8000
-    environment:
-      ENVIRONMENT: ci
-      DOCS_URL: /docs
+    profiles: ["serve", "integration"]
     hostname: onclusiveml
     networks:
       - onclusive-net
+    # depends_on:
+    #   - serve
 
   # functional tests
   # - include model artifact
@@ -318,7 +293,7 @@ services:
         target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
+    profiles: ["functional"]
     ports:
       - 8000:8000
     environment:

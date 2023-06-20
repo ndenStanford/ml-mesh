@@ -18,6 +18,7 @@ class KeywordsServingBaseParams(BaseSettings):
 
 class KeywordsServedModelParams(KeywordsServingBaseParams):
 
+    model_name: str = "keywords_model"
     model_artifact_directory: Union[str, Path] = "src/keywords_model_artifacts"
     document_pipeline_artifact: Union[str, Path] = "compiled_document_pipeline"
     word_pipeline_artifact: Union[str, Path] = "compiled_word_pipeline"

@@ -23,6 +23,7 @@ def test_keywords_served_model_params_env_prefix():
 @pytest.mark.parametrize(
     "test_field_name, test_field_value_expected",
     [
+        ("model_name", "test_model_name"),
         ("model_artifact_directory", "test_dir"),
         ("document_pipeline_artifact", "test_document_pipeline"),
         ("word_pipeline_artifact", "test_word_pipeline"),
