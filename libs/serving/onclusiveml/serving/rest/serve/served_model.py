@@ -22,10 +22,9 @@ class ServedModel(object):
     predict_response_model: BaseModel = ProtocolV1ResponseModel
     bio_response_model: BaseModel = ServedModelBioModel
 
-    def __init__(self, name: str, api_version: str = "v1") -> None:
+    def __init__(self, name: str) -> None:
 
         self.name = name
-        self.api_version = api_version
         self.ready = False
 
     def load(self) -> None:
