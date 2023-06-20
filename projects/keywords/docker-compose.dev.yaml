@@ -205,6 +205,8 @@ services:
 
   # serving image
   serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
     build:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
@@ -216,34 +218,54 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
+    command: ["python", "-m", "src.keywords_model_server"]
     profiles: ["serve"]
     ports:
       - 8000:8000
     volumes:
       - type: bind
-        source: serve/src
-        target: /projects/keywords/serve/src
-    environment:
-      ENVIRONMENT: ci
-      DOCS_URL: /docs
+        source: serve/
+        target: /projects/keywords/serve/
     hostname: onclusiveml
     networks:
       - onclusive-net
 
   # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
   serve-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/keywords/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/keywords/serve/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
+    profiles: ["unit"]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    # depends_on:
+    #   - serve
+
+  # integration tests
+  # - include model artifact
+  # - do NOT include REST model server process
+  serve-integration:
     build:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
@@ -262,8 +284,8 @@ services:
         source: serve/tests
         target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
+    profiles: ["integration"]
     ports:
       - 8000:8000
     environment:
@@ -273,8 +295,10 @@ services:
     networks:
       - onclusive-net
 
-  # integration tests
-  serve-integration:
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
     build:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile

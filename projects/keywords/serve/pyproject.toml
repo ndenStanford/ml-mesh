@@ -1,27 +1,26 @@
 [tool.poetry]
 name = "keywords-serve"
 version = "0.1.0"
-description = "Implementation of Keywords Extraction API."
-authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
+description = "Implementation of Keywords Extraction API using neuron compiled models and internal libraries."
+authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-torch = "1.11.0"
-transformers = "4.22.0"
-keybert = "0.7.0"
-regex = "2022.10.31"
-numpy = "1.24.2"
 core = {path = "../../../libs/core"}
+models = {path = "../../../libs/models"}
+serving = {path = "../../../libs/serving"}
 
 [tool.poetry.group.dev.dependencies]
-pydantic = "1.10.4"
-uvicorn = "0.20.0"
-starlette = "0.25.0"
-fastapi = {version = "0.92.0", extras = ["all"]}
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true

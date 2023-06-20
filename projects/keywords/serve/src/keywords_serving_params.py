@@ -12,7 +12,7 @@ from onclusiveml.serving.rest import ServingParams
 class KeywordsServingBaseParams(BaseSettings):
     class Config:
         # -> "onclusiveml_serving_keywords" at the time of writing
-        env_prefix = f"{ServingParams.__config__.env_prefix}_keywords_"
+        env_prefix = f"{ServingParams.__config__.env_prefix}keywords_"
         env_file_encoding = "utf-8"
 
 
@@ -24,6 +24,6 @@ class KeywordsServedModelParams(KeywordsServingBaseParams):
     model_card: str = "model_card.json"
 
 
-class KeywordsServingParams(ServingParams, KeywordsServingBaseParams):
+class KeywordsServingParams(KeywordsServingBaseParams, ServingParams):
 
     pass
