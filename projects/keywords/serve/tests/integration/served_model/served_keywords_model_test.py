@@ -14,20 +14,22 @@ from src.server_models import (
 )
 
 
-# def test_served_keywords_model__init__(test_served_model_params):
+def test_served_keywords_model__init__(test_served_model_params):
 
-#     ServedKeywordsModel(served_model_params=test_served_model_params)
+    ServedKeywordsModel(served_model_params=test_served_model_params)
 
 
-# def test_served_keywords_model_load(test_served_model_params):
+def test_served_keywords_model_load(test_served_model_params):
 
-#     served_keywords_model = ServedKeywordsModel(served_model_params=test_served_model_params)
+    served_keywords_model = ServedKeywordsModel(
+        served_model_params=test_served_model_params
+    )
 
-#     assert not served_keywords_model.is_ready()
+    assert not served_keywords_model.is_ready()
 
-#     served_keywords_model.load()
+    served_keywords_model.load()
 
-#     assert served_keywords_model.is_ready()
+    assert served_keywords_model.is_ready()
 
 
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
