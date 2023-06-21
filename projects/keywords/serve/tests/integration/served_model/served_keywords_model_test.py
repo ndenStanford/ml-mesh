@@ -4,6 +4,7 @@ import pytest
 # Source
 from src.served_model import ServedKeywordsModel
 from src.server_models import (
+    BioResponseModel,
     PredictConfiguration,
     PredictInputDocumentModel,
     PredictionExtractedKeyword,
@@ -59,6 +60,24 @@ def test_served_keywprds_model_predict(
                 ]
             )
         ]
+    )
+
+    assert actual_output == expected_output
+
+
+def test_served_keywprds_model_bio(
+    test_model_name, test_served_model_params, test_model_card
+):
+
+    served_keywords_model = ServedKeywordsModel(
+        served_model_params=test_served_model_params
+    )
+
+    served_keywords_model.load()
+
+    actual_output = served_keywords_model.bio()
+    expected_output = BioResponseModel(
+        model_name=test_model_name, model_card=test_model_card
     )
 
     assert actual_output == expected_output

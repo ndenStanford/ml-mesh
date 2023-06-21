@@ -45,3 +45,12 @@ def test_predictions(test_served_model_params):
         test_predictions = json.load(json_file)
 
     return test_predictions
+
+
+@pytest.fixture
+def test_model_card(test_served_model_params):
+
+    with open(test_served_model_params.model_card_file, "r") as json_file:
+        test_model_card = json.load(json_file)
+
+    return test_model_card
