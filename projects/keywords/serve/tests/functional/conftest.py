@@ -3,11 +3,25 @@ import json
 
 # 3rd party libraries
 import pytest
-from fastapi.testclient import TestClient
+from requests_toolbelt.sessions import BaseUrlSession
+
+# Internal libraries
+from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
-from src.model_server import get_model_server
 from src.serving_params import ServedModelParams
+
+
+@pytest.fixture
+def test_client():
+    """Client-like session with base url to avoid duplication, as per
+    https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession"""
+
+    serving_params = ServingParams()
+    model_server_port = serving_params.uvicorn_settings.http_port
+    test_model_server_url = f"http://serve:{model_server_port}"
+
+    return BaseUrlSession(base_url=test_model_server_url)
 
 
 @pytest.fixture
@@ -56,11 +70,3 @@ def test_model_card(test_served_model_params):
         test_model_card = json.load(json_file)
 
     return test_model_card
-
-
-@pytest.fixture
-def test_client():
-
-    model_server = get_model_server()
-
-    return TestClient(model_server)

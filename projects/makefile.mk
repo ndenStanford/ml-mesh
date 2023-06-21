@@ -15,7 +15,7 @@ projects.start/%: # Start development container of component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --force-recreate
 
 projects.stop/%: # Start development container of component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) --profile functional down
 
 projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
 	echo "Running all tests."
@@ -31,6 +31,9 @@ projects.functional/%: ## Run functional tests for project component
 
 projects.compile/%: ## Run model compilation pipeline component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile pipeline up compile-$(PIPELINE_COMPONENT) --exit-code-from compile-$(PIPELINE_COMPONENT)
+
+	# ensure the `serve` component that the `serve-functional` component usually depends on shuts down as well
+	projects.stop/$(notdir $@)
 
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)

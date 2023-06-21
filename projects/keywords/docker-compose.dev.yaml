@@ -229,6 +229,12 @@ services:
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://serve:8000/v1/ready"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   # unit tests
   # - do NOT include model artifact
@@ -255,7 +261,7 @@ services:
   # - do NOT include REST model server process
   serve-integration:
     devices:
-      - /dev/neuron0:/dev/neuron0
+      - /dev/neuron1:/dev/neuron1 # needs to be different from the `serve` service device
     volumes:
       - type: bind
         source: serve/src
@@ -269,6 +275,8 @@ services:
     hostname: onclusiveml
     networks:
       - onclusive-net
+    depends_on:
+      - serve # this allows us to avoid duplicating the `build` section
 
   # functional tests
   # - include model artifact
@@ -290,17 +298,16 @@ services:
         target: /projects/keywords/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/keywords/serve/train
+        target: /projects/keywords/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
+    command: ["pytest", "tests/functional", "-ra", "-vv", "--capture=no"]
     profiles: ["functional"]
-    ports:
-      - 8000:8000
     hostname: onclusiveml
     networks:
       - onclusive-net
     depends_on:
-      - serve # this allows us to avoid duplicating the `build` section
+      serve:
+        condition: service_healthy
 
 networks:
   onclusive-net:
