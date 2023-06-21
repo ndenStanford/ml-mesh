@@ -1,34 +1,35 @@
+---
 name: Repository state
-on:
+on  :
   workflow_call:
     inputs:
       pull-request:
         required: true
         default: true
         type: boolean
-        description: "Indicates whether this workflow is running for a Pull Request."
+        description: Indicates whether this workflow is running for a Pull Request.
       target-branch:
         required: false
         type: string
         default: main
-        description: "Release target branch."
+        description: Release target branch.
       prerelease:
         required: false
         type: boolean
         default: false
-        description: "If true a pre-release is created."
+        description: If true a pre-release is created.
       publish:
         required: false
         type: boolean
         default: true
-        description: "If true a pre-release is created."
+        description: If true a pre-release is created.
     secrets:
       GITHUB_TOKEN_:
         required: true
-        description: "Github Token to interact with repo."
+        description: Github Token to interact with repo.
     outputs:
       tag:
-        description: "Final tag to attach to images built within the workflow"
+        description: Final tag to attach to images built within the workflow
         value: ${{ jobs.get-stage.outputs.tag }}
 
 jobs:
