@@ -26,7 +26,6 @@ import { APP_MODALS } from "./constants";
 import { Message, Dictionary } from "./types";
 import { v4 as uuidv4 } from "uuid";
 import { MESSAGE_SEND_ANIMATION_DELAY } from "./constants";
-import styles from "./components/SideBar/side-bar.module.scss";
 export default function App() {
   const dispatch = useGlobalDispatch();
   // TODO: add button to clear the states to their inital values.
