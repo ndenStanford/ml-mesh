@@ -5,6 +5,7 @@ import {
   Chat,
   PromptListItem,
   PromptList,
+  SearchBar,
 } from "./components";
 import { useGlobalSelector, useGlobalDispatch } from "./hooks/use-dispatch";
 import { GlobalState } from "./state";
@@ -26,6 +27,7 @@ import { APP_MODALS } from "./constants";
 import { Message, Dictionary } from "./types";
 import { v4 as uuidv4 } from "uuid";
 import { MESSAGE_SEND_ANIMATION_DELAY } from "./constants";
+
 export default function App() {
   const dispatch = useGlobalDispatch();
   // TODO: add button to clear the states to their inital values.
@@ -173,23 +175,7 @@ export default function App() {
           }}
         >
           <PromptList>
-            <div>
-              <input
-                type="text"
-                value={searchQuery}
-                placeholder="Search prompts"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  padding: "8px",
-                  marginBottom: "16px",
-                  width: "100%",
-                  boxSizing: "border-box",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  fontSize: "16px",
-                }}
-              />
-            </div>
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
             {prompts.list
               .filter((item) =>
                 item.alias.toLowerCase().includes(searchQuery.toLowerCase())
