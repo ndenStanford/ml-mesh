@@ -30,6 +30,10 @@ class ModelServer(FastAPI):
         *args: Any,
         **kwargs: Any,
     ):
+
+        self.configuration = configuration
+        self.model = model
+
         # if model is specified, ensure model loads are done in individual worker processes by
         # specifying start up behaviour
         if model is not None:
@@ -47,7 +51,6 @@ class ModelServer(FastAPI):
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
 
-        self.configuration = configuration
         # add root endpoint with API meta data
         self.include_router(
             get_root_router(

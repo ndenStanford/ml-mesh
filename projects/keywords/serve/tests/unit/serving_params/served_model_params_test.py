@@ -22,9 +22,10 @@ def test_served_model_params_env_prefix():
     [
         ("model_name", "test_model_name"),
         ("model_artifact_directory", "test_dir"),
-        ("document_pipeline_artifact", "test_document_pipeline"),
-        ("word_pipeline_artifact", "test_word_pipeline"),
-        ("model_card", "test_model_card"),
+        ("model_card_file", "test_model_card"),
+        ("inputs_test_file", "test_inputs_location"),
+        ("inference_params_test_file", "test_inference_params_location"),
+        ("predictions_test_file", "test_predictions_location"),
     ],
 )
 def test_served_model_params_set_fields_via_env_vars(

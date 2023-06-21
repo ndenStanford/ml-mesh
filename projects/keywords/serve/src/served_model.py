@@ -1,6 +1,5 @@
 # Standard Library
 import json
-import os
 from typing import Type
 
 # 3rd party libraries
@@ -34,30 +33,27 @@ class ServedKeywordsModel(ServedModel):
         super().__init__(name=served_model_params.model_name)
 
     def load(self) -> None:
-        # load and attach model_card attribute
-        model_card_path = os.path.join(
-            self.served_model_params.model_artifact_directory,
-            self.served_model_params.model_card,
-        )
 
-        with open(model_card_path, "r") as model_card_json_file:
-            self.model_card = json.load(model_card_json_file)
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = CompiledKeyBERT.from_pretrained(
             self.served_model_params.model_artifact_directory
         )
 
+        # load model card json file into dict
+        with open(self.served_model_params.model_card_file, "r") as json_file:
+            self.model_card = json.load(json_file)
+
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
         # extract documents and inference call configuration from validated payload
-        inference_configuration = payload.inference_configuration
-        inference_inputs = payload.inference_inputs
+        configuration = payload.configuration
+        inputs = payload.inputs
 
-        documents = [input.document for input in inference_inputs]
+        documents = [input.document for input in inputs]
         # score the model
         predicted_documents = self.model.extract_keywords(
-            docs=documents, **inference_configuration.dict()
+            docs=documents, **configuration.dict()
         )
         # assemble validated response model instance
         predicted_payload_list = []
