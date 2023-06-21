@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 # --- prediction request models
-class KeywordsPredictConfiguration(BaseModel):
+class PredictConfiguration(BaseModel):
     """Model class around the kwargs of the `CompiledKeyBERT`'s `extract_keywords` method. Useful if
     clients want to run different inference calls configuring
     - how many keywords should be extracted,
@@ -25,41 +25,39 @@ class KeywordsPredictConfiguration(BaseModel):
     seed_keywords: Union[List[str], List[List[str]], None] = None
 
 
-class KeywordsPredictInputDocumentModel(BaseModel):
+class PredictInputDocumentModel(BaseModel):
 
     document: str
 
 
-class KeywordsPredictRequestModel(BaseModel):
+class PredictRequestModel(BaseModel):
 
-    inference_configuration: KeywordsPredictConfiguration = (
-        KeywordsPredictConfiguration()
-    )
-    inference_inputs: List[KeywordsPredictInputDocumentModel]
+    configuration: PredictConfiguration = PredictConfiguration()
+    inputs: List[PredictInputDocumentModel]
 
 
 # --- prediction response models
-class KeywordsPredictionExtractedKeyword(BaseModel):
+class PredictionExtractedKeyword(BaseModel):
 
     keyword_token: str
     keyword_score: float
 
 
-class KeywordsPredictionOutputDocument(BaseModel):
+class PredictionOutputDocument(BaseModel):
 
-    predicted_document: List[KeywordsPredictionExtractedKeyword]
+    predicted_document: List[PredictionExtractedKeyword]
 
 
-class KeywordsPredictResponseModel(BaseModel):
+class PredictResponseModel(BaseModel):
 
-    inference_outputs: List[KeywordsPredictionOutputDocument]
+    outputs: List[PredictionOutputDocument]
 
 
 # --- bio response models
-class KeywordsBioResponseModel(BaseModel):
+class BioResponseModel(BaseModel):
 
-    name: str = "keywords-model"
+    model_name: str = "keywords-model"
     # difficult to link up all the way back to the `CompiledKeywordsTrackedModelCard` here, so for
     # now we leave this unmodelled ith an understanding that that is what will come through in this
     # field
-    tracked_keywords_model_card: Dict
+    model_card: Dict

@@ -11,25 +11,23 @@ from onclusiveml.models.keywords import CompiledKeyBERT
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.keywords_serving_params import KeywordsServedModelParams
-from src.served_keywords_data_models import (
-    KeywordsBioResponseModel,
-    KeywordsPredictionExtractedKeyword,
-    KeywordsPredictionOutputDocument,
-    KeywordsPredictRequestModel,
-    KeywordsPredictResponseModel,
+from src.server_models import (
+    BioResponseModel,
+    PredictionExtractedKeyword,
+    PredictionOutputDocument,
+    PredictRequestModel,
+    PredictResponseModel,
 )
+from src.serving_params import ServedModelParams
 
 
 class ServedKeywordsModel(ServedModel):
 
-    predict_request_model: Type[BaseModel] = KeywordsPredictRequestModel
-    predict_response_model: Type[BaseModel] = KeywordsPredictResponseModel
-    bio_response_model: Type[BaseModel] = KeywordsBioResponseModel
+    predict_request_model: Type[BaseModel] = PredictRequestModel
+    predict_response_model: Type[BaseModel] = PredictResponseModel
+    bio_response_model: Type[BaseModel] = BioResponseModel
 
-    # served_model_params: KeywordsServedModelParams = KeywordsServedModelParams()
-
-    def __init__(self, served_model_params: KeywordsServedModelParams):
+    def __init__(self, served_model_params: ServedModelParams):
 
         self.served_model_params = served_model_params
 
@@ -51,21 +49,16 @@ class ServedKeywordsModel(ServedModel):
 
         self.ready = True
 
-    def predict(
-        self, payload: KeywordsPredictRequestModel
-    ) -> KeywordsPredictResponseModel:
-
+    def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
         # extract documents and inference call configuration from validated payload
         inference_configuration = payload.inference_configuration
         inference_inputs = payload.inference_inputs
 
         documents = [input.document for input in inference_inputs]
-
         # score the model
         predicted_documents = self.model.extract_keywords(
             docs=documents, **inference_configuration.dict()
         )
-
         # assemble validated response model instance
         predicted_payload_list = []
 
@@ -76,22 +69,20 @@ class ServedKeywordsModel(ServedModel):
             for extracted_keyword_token, extracted_keyword_score in predicted_document:
 
                 predicted_document_list.append(
-                    KeywordsPredictionExtractedKeyword(
+                    PredictionExtractedKeyword(
                         keyword_token=extracted_keyword_token,
                         keyword_score=extracted_keyword_score,
                     )
                 )
 
-            predicted_document_model = KeywordsPredictionOutputDocument(
+            predicted_document_model = PredictionOutputDocument(
                 predicted_document=predicted_document_list
             )
 
             predicted_payload_list.append(predicted_document_model)
 
-        return KeywordsPredictResponseModel(inference_outputs=predicted_payload_list)
+        return PredictResponseModel(outputs=predicted_payload_list)
 
-    def bio(self) -> KeywordsBioResponseModel:
+    def bio(self) -> BioResponseModel:
 
-        return KeywordsBioResponseModel(
-            name=self.name, tracked_keywords_model_card=self.model_card
-        )
+        return BioResponseModel(model_name=self.name, model_card=self.model_card)
