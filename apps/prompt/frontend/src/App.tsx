@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Layout,
   SideBar,
@@ -26,13 +26,14 @@ import { APP_MODALS } from "./constants";
 import { Message, Dictionary } from "./types";
 import { v4 as uuidv4 } from "uuid";
 import { MESSAGE_SEND_ANIMATION_DELAY } from "./constants";
-
+import styles from "./components/SideBar/side-bar.module.scss";
 export default function App() {
   const dispatch = useGlobalDispatch();
   // TODO: add button to clear the states to their inital values.
   const { app, prompts, modals, chat } = useGlobalSelector(
     (state: GlobalState) => state
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const firstRender = useRef(true);
   function delay(ms: number) {
@@ -173,31 +174,56 @@ export default function App() {
           }}
         >
           <PromptList>
-            {prompts.list.map((item) => (
-              <PromptListItem
-                item={{
-                  id: item.id,
-                  alias: item.alias,
-                  template: item.template,
-                  variables: item.variables,
-                  created_at: item.created_at,
-                  selected: item.selected,
-                  onClick: () => {
-                    dispatch(showModal(item.id));
-                  },
-                  onSendClick: (dct: Dictionary, id: string, alias: string) => {
-                    handleSendMessageWithPrompt(dct, id, alias);
-                  },
-                  onDeleteClick: (alias: string) => {
-                    handleDeletePrompt(alias);
-                  },
-                }}
-                isModalVisible={modals.list[item.id]}
-                hideModal={() => {
-                  dispatch(hideModal(item.id));
+            <div>
+              <input
+                type="text"
+                value={searchQuery}
+                placeholder="Search prompts"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  padding: "8px",
+                  marginBottom: "16px",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  fontSize: "16px",
                 }}
               />
-            ))}
+            </div>
+            {prompts.list
+              .filter((item) =>
+                item.alias.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((item) => (
+                <PromptListItem
+                  item={{
+                    id: item.id,
+                    alias: item.alias,
+                    template: item.template,
+                    variables: item.variables,
+                    created_at: item.created_at,
+                    selected: item.selected,
+                    onClick: () => {
+                      dispatch(showModal(item.id));
+                    },
+                    onSendClick: (
+                      dct: Dictionary,
+                      id: string,
+                      alias: string
+                    ) => {
+                      handleSendMessageWithPrompt(dct, id, alias);
+                    },
+                    onDeleteClick: (alias: string) => {
+                      handleDeletePrompt(alias);
+                    },
+                  }}
+                  isModalVisible={modals.list[item.id]}
+                  hideModal={() => {
+                    dispatch(hideModal(item.id));
+                  }}
+                />
+              ))}
           </PromptList>
         </SideBar>
         <Chat
