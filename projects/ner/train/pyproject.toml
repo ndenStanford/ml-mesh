@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "train"
+name = "ner-train"
 version = "0.1.0"
 description = "Docker image for registering model for named entity recognition"
 authors = ["Syed Reza <syed.reza@onclusive.com>"]
