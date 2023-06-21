@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   # =====================================================
@@ -16,8 +17,8 @@ services:
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
-    command: ["npm", "start"]
-    profiles: ["frontend"]
+    command: [npm, start]
+    profiles: [frontend]
     volumes:
       - type: bind
         source: frontend/public
@@ -44,8 +45,8 @@ services:
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
-    command: ["/bin/sh", "-c", "sleep 3s"]
-    profiles: ["frontend", "unit"]
+    command: [/bin/sh, -c, sleep 3s]
+    profiles: [frontend, unit]
     volumes:
       - type: bind
         source: frontend/public
@@ -71,21 +72,10 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.6.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "4000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
-    profiles: ["backend"]
+    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    profiles: [backend]
     volumes:
       - type: bind
         source: backend/src
@@ -101,10 +91,12 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
-      DB_HOST: "http://dynamodb:8000"
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DB_HOST: http://dynamodb:8000
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
       - dynamodb
+      - redisdb
     networks:
       - onclusive-net
 
@@ -118,10 +110,10 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.6.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     volumes:
       - type: bind
         source: backend/src
@@ -135,8 +127,8 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
-      DB_HOST: "http://dynamodb:8000"
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DB_HOST: http://dynamodb:8000
     networks:
       - onclusive-net
 
@@ -152,8 +144,8 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     volumes:
       - type: bind
         source: backend/src
@@ -167,27 +159,48 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
     depends_on:
       dynamodb:
+        condition: service_healthy
+      redisdb:
         condition: service_healthy
     networks:
       - onclusive-net
 
   dynamodb:
-    command: "-jar DynamoDBLocal.jar -sharedDb"
-    image: "amazon/dynamodb-local:latest"
+    command: -jar DynamoDBLocal.jar -sharedDb
+    image: amazon/dynamodb-local:latest
     restart: always
     expose:
       - 8000
     ports:
       - 8000:8000
-    profiles: ["backend", "integration"]
+    profiles: [backend, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      test: [CMD-SHELL, sleep 3s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+  redisdb:
+    image: redis:7.0
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    profiles: [backend, integration]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [CMD-SHELL, sleep 3s || exit 1]
       interval: 5s
       retries: 5
       start_period: 5s

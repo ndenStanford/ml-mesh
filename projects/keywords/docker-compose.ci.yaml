@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   # =============================================
@@ -17,8 +18,8 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command: ["python", "-m", "src.register_trained_model"]
-    profiles: ["train"]
+    command: [python, -m, src.register_trained_model]
+    profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
@@ -36,8 +37,8 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: train/config/dev.env
@@ -59,7 +60,7 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    profiles: ["compile", "unit", "integration", "pipeline"]
+    profiles: [compile, unit, integration, pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
@@ -67,8 +68,8 @@ services:
 
   compile-unit:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
     depends_on:
@@ -76,11 +77,14 @@ services:
 
   compile-download-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    command: ["python", "-m", "src.download_uncompiled_model"]
-    profiles: ["pipeline"]
+    command: [python, -m, src.download_uncompiled_model]
+    profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
     volumes:
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
@@ -93,11 +97,12 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    command: ["python", "-m", "src.compile_model"]
-    profiles: ["pipeline"]
+    command: [python, -m, src.compile_model]
+    profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
     volumes:
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
@@ -110,22 +115,12 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    command:
-      [
-        "python",
-        "-m",
-        "pytest",
-        "src/test_compiled_model",
-        "-ra",
-        "-vvv",
-        "--full-trace",
-        "--tb=long",
-        "--capture=no",
-      ]
-    profiles: ["pipeline"]
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+    profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
     volumes:
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
@@ -136,8 +131,8 @@ services:
 
   compile-upload-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    command: ["python", "-m", "src.upload_compiled_model"]
-    profiles: ["pipeline"]
+    command: [python, -m, src.upload_compiled_model]
+    profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
@@ -156,6 +151,11 @@ services:
       RUNNER_ARCH: ${RUNNER_ARCH}
       RUNNER_NAME: ${RUNNER_NAME}
       RUNNER_OS: ${RUNNER_OS}
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
     volumes:
       - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
@@ -181,19 +181,8 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
-    profiles: ["serve"]
+    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8000', --reload, --log-level, debug]
+    profiles: [serve]
     ports:
       - 8000:8000
     environment:
@@ -216,8 +205,8 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     ports:
       - 8000:8000
     environment:
@@ -240,8 +229,8 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     ports:
       - 8000:8000
     environment:
@@ -254,5 +243,5 @@ services:
 networks:
   onclusive-net:
 
-volumes:
+volumes :
   compile-pipeline-vol:

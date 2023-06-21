@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   # ===========================================================
@@ -62,7 +63,7 @@ services:
         target: /docker/neuron-compile/tests
     environment:
       NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile # must match the "neuron-compile/{...}" suffix of the test suite output volume bind
-    command: ["pytest", "tests/core", "-ra", "-vv", "--capture=no"]
+    command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
     depends_on:
       - neuron-compile
@@ -97,7 +98,7 @@ services:
         target: /docker/neuron-inference/tests/input_inference
     environment:
       NEURON_COMPILE_OUTPUT_DIR: ./tests/input_inference # must match the "neuron-inference/{...}" suffix of the neuron-compile test suite output volume bind
-    command: ["pytest", "tests/core", "-ra", "-vv", "--capture=no"]
+    command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
     depends_on:
       neuron-compile-tests:

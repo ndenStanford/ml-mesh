@@ -1,6 +1,7 @@
-name: ML-mesh CI Workflow
+---
+name       : ML-mesh CI Workflow
 
-on:
+on         :
   push:
     branches:
       - main
@@ -19,7 +20,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
   group: Deployment ${{ github.ref_name }}
 
-jobs:
+jobs       :
   # ===============================================
   # QUALITY CHECKS
   # ===============================================
@@ -60,8 +61,8 @@ jobs:
       max-parallel: 5
       fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
-        python-version: ["3.8.16"]
-        poetry-version: ["1.3.2"]
+        python-version: [3.8.16]
+        poetry-version: [1.3.2]
         libs:
           - name: core
             integration: false
@@ -75,9 +76,17 @@ jobs:
             integration: false
             functional: false
 
+          - name: serving
+            integration: false
+            functional: false
+
           - name: tracking
             integration: false
             functional: false # TODO: turn this to true when self hosted runners are available.
+
+          - name: nlp
+            integration: false
+            functional: false
 
     with:
       lib: ${{ matrix.libs.name }}
@@ -100,21 +109,12 @@ jobs:
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
-        image:
-          [
-            python-base,
-            neuron-compile,
-            neuron-inference,
-            kubeflow-jupyter,
-            kubeflow-torch-cpu,
-            kubeflow-data-science,
-            fastapi-serve,
-          ]
+        image: [python-base, neuron-compile, neuron-inference, kubeflow-jupyter, kubeflow-torch-cpu, kubeflow-data-science, fastapi-serve]
         validate-build: [false]
     with:
       environment: prod
       image: ${{ matrix.image }}
-      tag: "${{ needs.run-repository-state.outputs.tag }}"
+      tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
       release: ${{ github.ref_name == 'main' }}
@@ -145,17 +145,20 @@ jobs:
           # KEYWORDS
           # ========================
 
-          - name: keywords
-            component: serve
-            integration: true
-
+          # train
           - name: keywords
             component: train
             integration: false
 
+          # compile
           - name: keywords
             component: compile
             integration: false
+
+          # serve
+          - name: keywords
+            component: serve
+            integration: true
 
           # ========================
           # SUMMARIZATION
@@ -204,9 +207,9 @@ jobs:
       matrix:
         models:
           - runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-type: inf1.2xlarge
             project: keywords
-            tag: 2023.5.14
+            tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
       environment: prod
@@ -214,8 +217,8 @@ jobs:
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every release
-      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every release
+      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every merge into develop/prod
+      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every merge into develop/prod
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
