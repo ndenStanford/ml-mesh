@@ -5,7 +5,7 @@ import os
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest import (
+from onclusiveml.serving.rest.serve import (
     FastAPISettings,
     ServingParams,
     UvicornSettings,

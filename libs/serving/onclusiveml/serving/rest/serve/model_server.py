@@ -6,7 +6,6 @@ import uvicorn
 from fastapi import FastAPI
 
 # Internal libraries
-from onclusiveml.serving.rest.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
     get_liveness_router,
@@ -15,6 +14,7 @@ from onclusiveml.serving.rest.serve.server_utils import (
     get_readiness_router,
     get_root_router,
 )
+from onclusiveml.serving.rest.serve.serving_params import ServingParams
 
 
 class ModelServer(FastAPI):
@@ -85,7 +85,6 @@ class ModelServer(FastAPI):
                 model=model, api_version=configuration.api_version
             )
             self.include_router(model_bio_router)
-
         # finally, generate and attach the uvicorn server process configuration object instance
         self.generate_uvicorn_config()
 
@@ -105,7 +104,6 @@ class ModelServer(FastAPI):
 
     def serve(self) -> None:
         """Utility for running the fully configured app programmatically."""
-
         # ensure the serving parameters have populated a server config by this point
         if not hasattr(self, "uvicorn_configuration"):
             self.generate_uvicorn_config()
