@@ -1,5 +1,4 @@
 # Standard Library
-import json
 from typing import Type
 
 # 3rd party libraries
@@ -17,7 +16,7 @@ from src.server_models import (
     PredictRequestModel,
     PredictResponseModel,
 )
-from src.serving_params import ServedModelParams
+from src.serving_params import ServedModelArtifacts
 
 
 class ServedKeywordsModel(ServedModel):
@@ -26,22 +25,21 @@ class ServedKeywordsModel(ServedModel):
     predict_response_model: Type[BaseModel] = PredictResponseModel
     bio_response_model: Type[BaseModel] = BioResponseModel
 
-    def __init__(self, served_model_params: ServedModelParams):
+    def __init__(self, served_model_artifacts: ServedModelArtifacts):
 
-        self.served_model_params = served_model_params
+        self.served_model_artifacts = served_model_artifacts
 
-        super().__init__(name=served_model_params.model_name)
+        super().__init__(name=served_model_artifacts.model_name)
 
     def load(self) -> None:
 
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = CompiledKeyBERT.from_pretrained(
-            self.served_model_params.model_artifact_directory
+            self.served_model_artifacts.model_artifact_directory
         )
 
         # load model card json file into dict
-        with open(self.served_model_params.model_card_file, "r") as json_file:
-            self.model_card = json.load(json_file)
+        self.model_card = self.served_model_artifacts.model_card
 
         self.ready = True
 

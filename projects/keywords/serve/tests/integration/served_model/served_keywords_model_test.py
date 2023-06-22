@@ -15,16 +15,16 @@ from src.server_models import (
 
 
 @pytest.mark.order(1)
-def test_served_keywords_model__init__(test_served_model_params):
+def test_served_keywords_model__init__(test_served_model_artifacts):
 
-    ServedKeywordsModel(served_model_params=test_served_model_params)
+    ServedKeywordsModel(served_model_artifacts=test_served_model_artifacts)
 
 
 @pytest.mark.order(2)
-def test_served_keywords_model_load(test_served_model_params):
+def test_served_keywords_model_load(test_served_model_artifacts):
 
     served_keywords_model = ServedKeywordsModel(
-        served_model_params=test_served_model_params
+        served_model_artifacts=test_served_model_artifacts
     )
 
     assert not served_keywords_model.is_ready()
@@ -37,7 +37,7 @@ def test_served_keywords_model_load(test_served_model_params):
 @pytest.mark.order(3)
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
 def test_served_keywords_model_predict(
-    test_served_model_params,
+    test_served_model_artifacts,
     test_inputs,
     test_inference_params,
     test_predictions,
@@ -45,7 +45,7 @@ def test_served_keywords_model_predict(
 ):
 
     served_keywords_model = ServedKeywordsModel(
-        served_model_params=test_served_model_params
+        served_model_artifacts=test_served_model_artifacts
     )
     served_keywords_model.load()
 
@@ -72,11 +72,11 @@ def test_served_keywords_model_predict(
 
 @pytest.mark.order(3)
 def test_served_keywords_model_bio(
-    test_model_name, test_served_model_params, test_model_card
+    test_model_name, test_served_model_artifacts, test_model_card
 ):
 
     served_keywords_model = ServedKeywordsModel(
-        served_model_params=test_served_model_params
+        served_model_artifacts=test_served_model_artifacts
     )
 
     served_keywords_model.load()

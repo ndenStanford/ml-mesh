@@ -21,11 +21,7 @@ def test_served_model_params_env_prefix():
     "test_field_name, test_field_value_expected",
     [
         ("model_name", "test_model_name"),
-        ("model_artifact_directory", "test_dir"),
-        ("model_card_file", "test_model_card"),
-        ("inputs_test_file", "test_inputs_location"),
-        ("inference_params_test_file", "test_inference_params_location"),
-        ("predictions_test_file", "test_predictions_location"),
+        ("model_directory", "test_dir"),
     ],
 )
 def test_served_model_params_set_fields_via_env_vars(

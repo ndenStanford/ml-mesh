@@ -219,6 +219,8 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["python", "-m", "src.model_server"]
+    environment:
+      onclusiveml_serving_model_directory: models/keywords_model_88
     profiles: ["unit", "integration", "functional"]
     ports:
       - 8000:8000
@@ -264,13 +266,12 @@ services:
       - /dev/neuron1:/dev/neuron1 # needs to be different from the `serve` service device
     volumes:
       - type: bind
-        source: serve/src
-        target: /projects/keywords/serve/src
-      - type: bind
-        source: serve/tests
-        target: /projects/keywords/serve/tests
+        source: serve
+        target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
+    environment:
+      onclusiveml_serving_model_directory: models/keywords_model_88
     profiles: ["integration"]
     hostname: onclusiveml
     networks:
@@ -294,13 +295,12 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
-        source: serve/src
-        target: /projects/keywords/serve/src
-      - type: bind
-        source: serve/tests
-        target: /projects/keywords/serve/tests
+        source: serve/
+        target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: ["pytest", "tests/functional", "-ra", "-vv", "--capture=no"]
+    environment:
+      onclusiveml_serving_model_directory: models/keywords_model_88
     profiles: ["functional"]
     hostname: onclusiveml
     networks:
