@@ -22,7 +22,7 @@ class TrackedNERModelSpecs(TrackedModelSpecs):
 
 class Inputs(TrackedParams):
 
-    sample_documents: List[str]
+    sample_documents: List[str] = [""]
 
     class Config:
         env_file = "config/dev.env"
