@@ -3,8 +3,9 @@ extends: default
 
 rules  :
   colons:
-    max-spaces-before: 8
+    max-spaces-before: 20
+    max-spaces-after: 20
     level: warning
   line-length:
-    max: 180
+    max: 200
     level: warning
