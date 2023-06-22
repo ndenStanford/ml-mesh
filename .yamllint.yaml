@@ -1,0 +1,10 @@
+---
+extends: default
+
+rules  :
+  colons:
+    max-spaces-before: 8
+    level: warning
+  line-length:
+    max: 180
+    level: warning
