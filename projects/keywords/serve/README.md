@@ -10,7 +10,7 @@ This section outlines the 4 main steps involved in running a configured `keyword
 
 ### 1.1 Downloading a compiled keywords model
 
-To run `integration` and `functional` tests, as well as running the `serve` component at all, you
+To run `integration` and `functional` tests, as well as running the `serve` component, you
 will need to have model version of a compiled keywords model available on your machine.
 
 The easiest way to achieve this is to use the `tracking` library to download a given model version
@@ -59,13 +59,14 @@ interface with the model server (see below section). In particular, implements:
   - it uses the custom data model classes `PredictRequestModel` and `PredictResponseModel` to do
     said validation
 - the `bio` method to make the loaded ML model's meta data accessible via an endpoint
-  - it uses the custom data model class `BioResponseModel` to validate the outgoing Ml model meta
+  - it uses the custom data model class `BioResponseModel` to validate the outgoing ML model meta
     data
 
 To ensure the `load` method works as expected, all required artifact files (see previous section)
 referenced in the `ServedModelParams` class need to be accessible on the local disk (including
 mounted volumes in a `Docker` or `K8s` setting). These can be specified via the corresponding
-environment variable `onclusiveml_serving_model_directory` .
+environment variable `onclusiveml_serving_model_directory`. For example, to point towards the ML
+model version downloaded in the previous step, set `onclusiveml_serving_model_directory=projects/keywords/serve/models/keywords_model_88`
 
 ### 1.3 Configuring the model server
 
@@ -76,12 +77,12 @@ environment variables, as described in the `serving` library documentation.
 
 ### 1.4 Running the model server
 
-To run the model server locally without containers:
+To run the model server locally without containers (not recommended):
 
 - make sure you are in the `/projects/keywords/serve` directory
 - run `python -m src.model_server`
 
-To run the model server using the `docker-compose.dev.yaml` file:
+To run the model server using the `docker-compose.dev.yaml` file (recommended):
 
 - run `make projects.start/keywords COMPONENT=serve`
 
@@ -106,7 +107,7 @@ The following test suites are currently implemented:
   - requires model artifact in `serve` server component - requires completing steps `1.1` and `1.2`
   - model server will be run in `serve` component
     - requires completing step `1.3`
-  - additional client will be run in `serve-integration` component, sending genuine `http` requests
+  - additional client will be run in `serve-functional` component, sending genuine `http` requests
     to the model server running in `serve` over the `docker compose` network
 
 A load test suite will be implemented once the `serving` library has been extended to support an
