@@ -22,6 +22,9 @@ The `serving` library provides a tested framework to consistently implement and 
 
 TBC - see `ServingParams` and its attribute classes in the `rest.params`module for now
 
+- `UvicornSettings`
+  - a [uvicorn configuration](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py) specification; serving process configuration - see the `serving` library documentation for details
+
 ## 3 ModelServer
 
 TBC - see
