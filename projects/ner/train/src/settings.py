@@ -29,9 +29,17 @@ class Inputs(TrackedParams):
         env_file_encoding = "utf-8"
 
 
+class NERSettings(TrackedParams):
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
 class NERModelParams(TrackedParams):
     huggingface_pipeline_task: str = "token-classification"
     huggingface_model_reference: str = "dslim/bert-base-NER"
+
+    ner_settings: NERSettings = NERSettings()
 
     class Config:
         env_file = "config/dev.env"

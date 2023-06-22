@@ -6,7 +6,11 @@ from typing import Dict, List, Union
 from transformers import AutoTokenizer, BertForTokenClassification, pipeline
 
 # Internal libraries
+from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
+
+
+logger = get_default_logger(__name__)
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
@@ -23,7 +27,6 @@ def main() -> None:
         os.makedirs(model_card.local_output_dir)
     # initialize registered model on neptune ai
     model_version = TrackedModelVersion(**model_specs.dict())
-
     # --- initialize models
     # get pretrained model and tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
@@ -32,22 +35,28 @@ def main() -> None:
     model = BertForTokenClassification.from_pretrained(
         model_card.model_params.huggingface_model_reference, return_dict=False
     )
-
     # Create pipeline using ner model and tokenizer
     hf_pipeline = pipeline(
         task=model_card.model_params.huggingface_pipeline_task,
         model=model,
         tokenizer=tokenizer,
     )
+    # ner settings
+    ner_settings = model_card.model_params.ner_settings.dict()
     # --- create prediction files
     ner_predictions: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline(
         model_card.model_inputs.sample_documents
     )
+    # Convert score's value from np.float32 to just float
+    # Reason for this is because float32 types are not JSON serializable
+    for sublist in ner_predictions:
+        for dictionary in sublist:
+            dictionary["score"] = float(dictionary["score"])
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     for (test_file, test_file_attribute_path) in [
         (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
-        (model_card.model_test_files.inference_params),
+        (ner_settings, model_card.model_test_files.inference_params),
         (ner_predictions, model_card.model_test_files.predictions),
     ]:
         model_version.upload_config_to_model_version(
