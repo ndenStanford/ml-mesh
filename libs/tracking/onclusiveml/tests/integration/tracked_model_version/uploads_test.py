@@ -94,7 +94,6 @@ def test_upload_model_card_to_model_version(
     test_model_version.upload_config_to_model_version(
         config=test_model_card_expected,
         neptune_attribute_path=f"s3_{False}/test_model_card",
-        use_s3=False,
     )
 
     test_model_version.stop()

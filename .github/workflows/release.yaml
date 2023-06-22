@@ -1,6 +1,7 @@
-name: ML-Mesh Draft Release
+---
+name       : ML-Mesh Draft Release
 
-on:
+on         :
   issues:
     types:
       - opened
@@ -9,7 +10,7 @@ concurrency:
   cancel-in-progress: true
   group: ${{ github.event.issue.title }}
 
-jobs:
+jobs       :
   run-repository-state:
     name: Get Repository metadata
     uses: ./.github/workflows/_repository-state.yaml
@@ -37,7 +38,7 @@ jobs:
         id: regex-match-version
         with:
           text: ${{ github.event.issue.title }}
-          regex: '(\d+\.)?(\d+\.)?(\*|\d+)$'
+          regex: (\d+\.)?(\d+\.)?(\*|\d+)$
 
       - name: Check release version is correct
         id: check-release-version

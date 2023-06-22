@@ -28,9 +28,12 @@ ALL_DOCKER_IMGS:= \
 
 # all python libraries
 ALL_LIBS:= \
+	compile \
 	core \
-	ml_compile \
-	nlp
+	models \
+	nlp \
+	serving \
+	tracking
 
 # all projects
 ALL_PROJECTS:= \
