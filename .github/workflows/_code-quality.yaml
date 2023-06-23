@@ -1,20 +1,21 @@
+---
 name: Run Code Quality Checks
-on:
+on  :
   workflow_call:
     inputs:
       environment:
         required: true
         type: string
-        description: "Environment where code is deployed [prod, stage]"
+        description: Environment where code is deployed [prod, stage]
       pull-request:
         required: true
         default: true
         type: boolean
-        description: "Indicates whether this worfklow is running for a Pull Request."
+        description: Indicates whether this worfklow is running for a Pull Request.
       timeout:
         default: 30
         type: number
-        description: "Pre-commit checks timeout in minutes."
+        description: Pre-commit checks timeout in minutes.
 
 jobs:
   pre-commits:
@@ -36,7 +37,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version-file: ".python-version"
+          python-version-file: .python-version
 
       - name: Code Quality Checks For Changed Files
         if: ${{ inputs.pull-request }}

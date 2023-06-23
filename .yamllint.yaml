@@ -1,0 +1,14 @@
+---
+extends: default
+
+rules  :
+  colons: disable
+    # max-spaces-before: 20
+    # max-spaces-after: 20
+    # level: warning
+  comments: disable
+  comments-indentation: disable
+  line-length:
+    max: 250
+    level: warning
+  truthy: disable

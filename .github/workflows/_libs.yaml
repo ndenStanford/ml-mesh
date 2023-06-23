@@ -1,39 +1,40 @@
+---
 name: Apps
-on:
+on  :
   workflow_call:
     inputs:
       lib:
         required: true
         type: string
-        description: "Library name."
+        description: Library name.
       integration:
         required: true
         default: true
         type: boolean
-        description: "Whether to run integrations."
+        description: Whether to run integrations.
       functional:
         required: true
         default: true
         type: boolean
-        description: "Whether to run functional tests."
+        description: Whether to run functional tests.
       python-version:
         required: false
         type: string
-        description: "Python version."
+        description: Python version.
       poetry-version:
         required: false
         type: string
-        description: "Python version."
+        description: Python version.
       pull-request:
         required: true
         default: true
         type: boolean
-        description: "Indicates whether this workflow is running for a Pull Request."
+        description: Indicates whether this workflow is running for a Pull Request.
       release:
         required: true
         default: true
         type: boolean
-        description: "If false, only the libs that have been changed are ran, otherwise every lib is ran."
+        description: If false, only the libs that have been changed are ran, otherwise every lib is ran.
 
 jobs:
   deploy:

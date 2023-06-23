@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   # =====================================================
@@ -16,8 +17,8 @@ services:
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
-    command: ["npm", "start"]
-    profiles: ["frontend"]
+    command: [npm, start]
+    profiles: [frontend]
     ports:
       - 3000:3000
     environment:
@@ -37,8 +38,8 @@ services:
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
-    command: ["/bin/sh", "-c", "sleep 3s"]
-    profiles: ["frontend", "unit"]
+    command: [/bin/sh, -c, sleep 3s]
+    profiles: [frontend, unit]
     environment:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234
@@ -59,19 +60,8 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "4000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
-    profiles: ["backend"]
+    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    profiles: [backend]
     ports:
       - 4000:4000
     environment:
@@ -80,8 +70,8 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
-      DB_HOST: "http://dynamodb:8000"
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
       - dynamodb
@@ -101,16 +91,16 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
-      DB_HOST: "http://dynamodb:8000"
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DB_HOST: http://dynamodb:8000
     networks:
       - onclusive-net
 
@@ -126,15 +116,15 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
-    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
     depends_on:
       dynamodb:
@@ -145,18 +135,18 @@ services:
       - onclusive-net
 
   dynamodb:
-    command: "-jar DynamoDBLocal.jar -sharedDb"
-    image: "amazon/dynamodb-local:latest"
+    command: -jar DynamoDBLocal.jar -sharedDb
+    image: amazon/dynamodb-local:latest
     restart: always
     expose:
       - 8000
     ports:
       - 8000:8000
-    profiles: ["backend", "integration"]
+    profiles: [backend, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      test: [CMD-SHELL, sleep 3s || exit 1]
       interval: 5s
       retries: 5
       start_period: 5s
@@ -165,17 +155,17 @@ services:
       - onclusive-net
 
   redisdb:
-    image: "redis:7.0"
+    image: redis:7.0
     restart: always
     expose:
       - 6379
     ports:
       - 6379:6379
-    profiles: ["backend", "integration"]
+    profiles: [backend, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      test: [CMD-SHELL, sleep 3s || exit 1]
       interval: 5s
       retries: 5
       start_period: 5s
