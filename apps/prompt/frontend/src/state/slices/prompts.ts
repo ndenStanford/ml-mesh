@@ -111,8 +111,17 @@ export const generateTextFromPrompt = createAsyncThunk(
 
 export const generateText = createAsyncThunk(
   "prompts/generate/string",
-  async (prompt: string) => {
-    const response = await fetch(`${API_URI}/prompts/generate/${prompt}`, {
+  async (
+    { prompt, modelName }: { prompt: string; modelName: string },
+    thunkAPI: any
+  ) => {
+    var suffix = "";
+    if (modelName != "gpt-3.5-turbo") {
+      suffix = `prompts/generate/${prompt}/model/${modelName}`;
+    } else {
+      suffix = `prompts/generate/${prompt}`;
+    }
+    const response = await fetch(`${API_URI}/${suffix}`, {
       method: "GET",
       headers: {
         accept: "application/json",

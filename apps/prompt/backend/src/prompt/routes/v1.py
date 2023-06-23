@@ -190,7 +190,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
 def generate_test(prompt: str):
     """Retrieves prompt via id.
     Args:
-        id (str): prompt id
+        prompt (str): prompt input from chat
     """
     return {
         "generated": generate_text(
@@ -198,5 +198,23 @@ def generate_test(prompt: str):
             ModelEnum.GPT3_5.value,
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
+        ),
+    }
+
+
+@router.get("/generate/{prompt}/model/{model_name}", status_code=status.HTTP_200_OK)
+def generate_test_with_diff_model(prompt: str, model_name: str):
+    """Retrieves prompt via id.
+    Args:
+        prompt (str): prompt input from chat
+        model_name (str): model name
+    """
+    model = ModelSchema.get(model_name)
+    return {
+        "generated": generate_text(
+            prompt,
+            model.model_name,
+            int(json.loads(model.parameters)["max_tokens"]),
+            float(json.loads(model.parameters)["temperature"]),
         ),
     }

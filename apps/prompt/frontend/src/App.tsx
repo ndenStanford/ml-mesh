@@ -57,7 +57,7 @@ export default function App() {
     }
   }, []);
 
-  async function handleSendMessage(content: string) {
+  async function handleSendMessage(content: string, modelName: string) {
     const message = {
       id: uuidv4(),
       date: new Date().toLocaleString(),
@@ -79,7 +79,9 @@ export default function App() {
       isUser: false,
     } as Message;
     dispatch(addMessage(response));
-    dispatch(generateText(message.content)).then((content) => {
+    dispatch(
+      generateText({ prompt: message.content, modelName: modelName })
+    ).then((content) => {
       const final_response = {
         id: response.id,
         date: response.date,
@@ -228,7 +230,7 @@ export default function App() {
             dispatch(clearMessages());
           }}
           onChatSendClick={(content: string) => {
-            handleSendMessage(content);
+            handleSendMessage(content, modelName);
           }}
         />
       </Layout>

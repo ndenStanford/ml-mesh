@@ -122,7 +122,7 @@ export default class SideBar extends React.Component<SidebarProps, any> {
             actions={[
               <Button
                 key="send"
-                text={"Save Settings"}
+                text={"Save"}
                 onClick={() => {
                   this.props.onSettingsActionClick?.(this.state.modelNameValue);
                   this.props.hideSettingsModal();
