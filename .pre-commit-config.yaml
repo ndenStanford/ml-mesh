@@ -21,14 +21,22 @@ repos                   :
       - id: check-merge-conflict
       - id: detect-private-key
 
- # Autoformat: YAML,docker...
+ # Checks yaml syntax
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.29.0    # or other specific tag
+    hooks:
+      - id: yamllint
+        args: [--strict, -c=.yamllint.yaml]
+        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml)
 
+# Autoformat: YAML,docker...
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
     rev: 0.2.1    # or other specific tag
     hooks:
       - id: yamlfmt
         args: [--mapping, '2', --sequence, '4', --offset, '2', --colons]
         exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml)
+
 
   # =================================
   # PYTHON
