@@ -12,7 +12,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
-
+      day: monday
   # ====================================
   # DOCKER
   # ====================================
@@ -26,6 +26,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
 
     ignore:
       - dependency-name: '*'
@@ -41,6 +42,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -55,6 +57,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -68,6 +71,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -82,6 +86,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -95,6 +100,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -112,6 +118,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -125,6 +132,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -138,6 +146,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -151,6 +160,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -170,6 +180,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -182,6 +193,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -194,6 +206,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -209,6 +222,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -223,6 +237,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -240,6 +255,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -255,6 +271,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -268,6 +285,7 @@ updates:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
+      day: monday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
