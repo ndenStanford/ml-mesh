@@ -20,8 +20,8 @@ secondary = true
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.2"
-transformers = "^4.29.2"
+pytest = "^7.3.2"
+transformers = "^4.30.2"
 
 [build-system]
 requires = ["poetry-core"]

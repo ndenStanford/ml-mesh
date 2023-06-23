@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   # =============================================
@@ -18,19 +19,8 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "9000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
-    profiles: ["serve"]
+    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '9000', --reload, --log-level, debug]
+    profiles: [serve]
     ports:
       - 9000:9000
     volumes:
@@ -64,8 +54,8 @@ services:
         source: serve/tests
         target: /home/projects/entity-linking/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -94,8 +84,8 @@ services:
         source: serve/tests
         target: /home/projects/entity-linking/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
-    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
