@@ -199,7 +199,7 @@ def test_model_server_serve_predict(
     "test_response_model",
     [TestBioResponseModel],
 )
-def test_modeel_server_serve_bio(
+def test_model_server_serve_bio(
     test_api_version,
     test_port,
     test_model_name,

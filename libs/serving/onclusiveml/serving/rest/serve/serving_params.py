@@ -1,16 +1,8 @@
 # Standard Library
 from typing import Dict, Optional, Union
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
-
-class ServingBaseParams(BaseSettings):
-    """Base class implementing the environment variable prefix"""
-
-    class Config:
-        env_prefix = "onclusiveml_serving_"
-        env_file_encoding = "utf-8"
+# Internal libraries
+from onclusiveml.serving.rest.serving_base_params import ServingBaseParams
 
 
 class FastAPISettings(ServingBaseParams):
@@ -77,9 +69,7 @@ class ServingParams(ServingBaseParams):
     add_model_predict: bool = True
     add_model_bio: bool = True
     api_version: str = "v1"
-
     # fastapi settings
     fastapi_settings: FastAPISettings = FastAPISettings()
-
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
