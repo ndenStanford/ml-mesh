@@ -95,8 +95,36 @@ def test_detect_language_decorator_exceptions(
 ):
     with pytest.raises(exception, match=expected):
 
-        @filter_language(supported_languages)
+        @filter_language(supported_languages, raise_if_none=True)
         def some_func(content: str, language: str = None) -> str:
             return "Processing content: " + content
 
         some_func(content, language)
+
+
+@pytest.mark.parametrize(
+    "content, language, supported_languages, expected",
+    [
+        (
+            "Hola, cómo estás",
+            None,
+            [LanguageIso.EN],
+            None,
+        ),
+        (
+            "Test string",
+            "abc",
+            [LanguageIso.EN],
+            None,
+        ),
+    ],
+)
+def test_detect_language_decorator_return_None(
+    content, language, supported_languages, expected
+):
+    @filter_language(supported_languages, raise_if_none=False)
+    def some_func(content: str, language: str = None) -> str:
+        return "Processing content: " + content
+
+    result = some_func(content, language)
+    assert result == expected
