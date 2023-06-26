@@ -106,12 +106,6 @@ def test_detect_language_decorator_exceptions(
     "content, language, supported_languages, expected",
     [
         (
-            "Hola, cómo estás",
-            None,
-            [LanguageIso.EN],
-            None,
-        ),
-        (
             "Test string",
             "abc",
             [LanguageIso.EN],

@@ -81,10 +81,7 @@ def filter_language(
                 if lang in supported_languages:
                     return func(content, lang)
                 else:
-                    if raise_if_none:
-                        raise LanguageFilterException(language=lang)
-                    else:
-                        return None
+                    raise LanguageFilterException(language=lang)
 
         return wrapper
 
