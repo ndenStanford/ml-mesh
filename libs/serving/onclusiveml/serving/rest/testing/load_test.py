@@ -3,12 +3,10 @@
 # licence: https://github.com/FutureSharks/invokust/blob/master/LICENSE
 
 # Standard Library
-import json
 import logging
 import signal
 import sys
 import time
-from typing import Dict
 
 # 3rd party libraries
 import gevent
@@ -18,7 +16,14 @@ from locust.stats import stats_printer
 from locust.util.timespan import parse_timespan
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import LoadTestingParams
+from onclusiveml.serving.rest.testing import (
+    EndpointReport,
+    LoadTestingParams,
+    Measurement,
+    Measurements,
+    PercentileMeasurement,
+    TestReport,
+)
 
 
 setup_logging("INFO", None)
@@ -32,7 +37,8 @@ def sig_term_handler() -> None:
 
 class LocustLoadTest(object):
     """
-    Runs a Locust load test and returns statistics
+    Runs a Locust load test and generates a qantitative report that integrates with the
+    `Criteria` class from the `load_testing_params` module.
     """
 
     def __init__(self, settings: LoadTestingParams):
@@ -41,12 +47,12 @@ class LocustLoadTest(object):
         self.end_time: float = -1
         gevent.signal_handler(signal.SIGTERM, sig_term_handler)
 
-    def stats(self) -> Dict:
+    def report(self) -> TestReport:
         """
         Returns the statistics from the load test in JSON
         """
-        statistics = {
-            "requests": {},
+        test_report = {
+            "completed": {},
             "failures": {},
             "num_requests": self.env.runner.stats.num_requests,
             "num_requests_fail": self.env.runner.stats.num_failures,
@@ -54,35 +60,105 @@ class LocustLoadTest(object):
             "end_time": self.end_time,
         }
 
-        for name, value in self.env.runner.stats.entries.items():
-            locust_task_name = "{0}_{1}".format(name[1], name[0])
-            statistics["requests"][locust_task_name] = {
-                "request_type": name[1],
-                "num_requests": value.num_requests,
-                "min_response_time": value.min_response_time,
-                "median_response_time": value.median_response_time,
-                "avg_response_time": value.avg_response_time,
-                "max_response_time": value.max_response_time,
-                "response_times": value.response_times,
-                "response_time_percentiles": {
-                    55: value.get_response_time_percentile(0.55),
-                    65: value.get_response_time_percentile(0.65),
-                    75: value.get_response_time_percentile(0.75),
-                    85: value.get_response_time_percentile(0.85),
-                    95: value.get_response_time_percentile(0.95),
-                },
-                "total_rps": value.total_rps,
-                "total_rpm": value.total_rps * 60,
-            }
+        for endpoint_test_result in self.env.runner.stats.entries.values():
+
+            endpoint_url = endpoint_test_result.name
+            endpoint_type = endpoint_test_result.method
+            endpoint_id = f"{endpoint_type}_{endpoint_url}"
+
+            test_report["completed"][endpoint_id] = EndpointReport(
+                endpoint_url=endpoint_url,
+                endpoint_type=endpoint_type,
+                measurements=Measurements(
+                    avg_response_time=Measurement(
+                        name="avg_response_time",
+                        value=endpoint_test_result.avg_response_time,
+                    ),
+                    # latency min
+                    min_response_time=Measurement(
+                        name="min_response_time",
+                        value=endpoint_test_result.min_response_time,
+                    ),
+                    # latency percentiles
+                    response_time_p50=PercentileMeasurement(
+                        name="response_time_p50",
+                        percentile=0.50,
+                        value=endpoint_test_result.get_response_time_percentile(0.50),
+                    ),
+                    response_time_p55=PercentileMeasurement(
+                        name="response_time_p55",
+                        percentile=0.55,
+                        value=endpoint_test_result.get_response_time_percentile(0.55),
+                    ),
+                    response_time_p65=PercentileMeasurement(
+                        name="response_time_p65",
+                        percentile=0.65,
+                        value=endpoint_test_result.get_response_time_percentile(0.65),
+                    ),
+                    response_time_p75=PercentileMeasurement(
+                        name="response_time_p75",
+                        percentile=0.75,
+                        value=endpoint_test_result.get_response_time_percentile(0.75),
+                    ),
+                    response_time_p85=PercentileMeasurement(
+                        name="response_time_p85",
+                        percentile=0.85,
+                        value=endpoint_test_result.get_response_time_percentile(0.85),
+                    ),
+                    response_time_p90=PercentileMeasurement(
+                        name="response_time_p90",
+                        percentile=0.90,
+                        value=endpoint_test_result.get_response_time_percentile(0.90),
+                    ),
+                    response_time_p95=PercentileMeasurement(
+                        name="response_time_p95",
+                        percentile=0.95,
+                        value=endpoint_test_result.get_response_time_percentile(0.95),
+                    ),
+                    response_time_p99=PercentileMeasurement(
+                        name="response_time_p99",
+                        percentile=0.99,
+                        value=endpoint_test_result.get_response_time_percentile(0.90),
+                    ),
+                    # latency max
+                    max_response_time=Measurement(
+                        name="max_response_time",
+                        value=endpoint_test_result.max_response_time,
+                    ),
+                    # --- request counts&rates
+                    # all
+                    requests_total=Measurement(
+                        name="requests_total", value=endpoint_test_result.num_requests
+                    ),
+                    requests_rps=Measurement(
+                        name="requests_rps", value=endpoint_test_result.total_rps
+                    ),
+                    requests_rpm=Measurement(
+                        name="requests_rpm",
+                        value=endpoint_test_result.total_rps * 60,
+                    ),
+                    # # failure only
+                    failures_total=Measurement(
+                        name="failures_total", value=endpoint_test_result.num_failures
+                    ),
+                    failures_percent=Measurement(
+                        name="failures_percent",
+                        value=endpoint_test_result.num_failures
+                        / endpoint_test_result.num_requests,  # noqa: W503
+                    ),
+                ),
+            )
 
         for _, error in self.env.runner.errors.items():
             error_dict = error.serialize()
             locust_task_name = "{0}_{1}".format(
                 error_dict["method"], error_dict["name"]
             )
-            statistics["failures"][locust_task_name] = error_dict
+            test_report["failures"][locust_task_name] = error_dict
+        # cast as data model
+        test_report_validated = TestReport(**test_report)
 
-        return statistics
+        return test_report_validated
 
     def set_run_time_in_sec(self, run_time_str: str) -> None:
         try:
@@ -121,7 +197,7 @@ class LocustLoadTest(object):
                     f"Locust completed {self.env.runner.stats.num_requests} requests with "
                     f"{len(self.env.runner.errors)} errors"
                 )
-                logger.info(json.dumps(self.stats()))
+                logger.info(self.report())
 
             gevent.spawn_later(self.run_time_in_sec, timelimit_stop)
 
