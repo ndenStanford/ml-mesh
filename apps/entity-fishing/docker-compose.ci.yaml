@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   backend:
@@ -13,19 +14,8 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
-    command:
-      [
-        "./gradlew",
-        "--no-daemon",
-        "run",
-        "-x",
-        "compileJava",
-        "-x",
-        "processResources",
-        "-x",
-        "classes",
-      ]
-    profiles: ["backend"]
+    command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes]
+    profiles: [backend]
     ports:
       - 8090:8090
       - 8091:8091
@@ -46,8 +36,8 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: v2023.3.2
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
-    command: ["./gradlew", "test"]
-    profiles: ["unit"]
+    command: [./gradlew, test]
+    profiles: [unit]
     environment:
       ENVIRONMENT: dev
     networks:
