@@ -9,6 +9,10 @@ from langdetect import detect
 # Internal libraries
 from onclusiveml.nlp.language import constants
 from onclusiveml.nlp.language.constants import LanguageIso
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
 
 
 def detect_language(content: str, language: Optional[str] = None) -> LanguageIso:
@@ -66,10 +70,13 @@ def filter_language(supported_languages: List[LanguageIso]) -> Callable:
 
             """
             lang = detect_language(content=content, language=language)
-            if lang in supported_languages:
-                return func(content, language)
+            if lang is None:
+                raise LanguageDetectionException(language=language)
             else:
-                return None
+                if lang in supported_languages:
+                    return func(content, lang)
+                else:
+                    raise LanguageFilterException(language=lang)
 
         return wrapper
 

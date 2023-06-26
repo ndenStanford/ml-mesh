@@ -6,6 +6,10 @@ import pytest
 # Internal libraries
 from onclusiveml.nlp.language import detect_language, filter_language
 from onclusiveml.nlp.language.constants import LanguageIso
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
 
 
 def test_detect_language():
@@ -46,20 +50,8 @@ def test_detect_language_content_fr():
         (
             "Salut comment tu t'appelles?",
             "fr",
-            [LanguageIso.EN],
-            None,
-        ),
-        (
-            "Salut comment tu t'appelles?",
-            "fr",
             [LanguageIso.EN, LanguageIso.FR],
             "Processing content: Salut comment tu t'appelles?",
-        ),
-        (
-            "Hola, cómo estás",
-            None,
-            [LanguageIso.EN],
-            None,
         ),
     ],
 )
@@ -70,3 +62,41 @@ def test_detect_language_decorator(content, language, supported_languages, expec
 
     result = some_func(content, language)
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "content, language, supported_languages, exception, expected",
+    [
+        (
+            "Salut comment tu t'appelles?",
+            "fr",
+            [LanguageIso.EN],
+            LanguageFilterException,
+            "The language, 'LanguageIso.FR', is currently not supported.",
+        ),
+        (
+            "Hola, cómo estás",
+            None,
+            [LanguageIso.EN],
+            LanguageFilterException,
+            "The language, 'LanguageIso.ES', is currently not supported.",
+        ),
+        (
+            "Test string",
+            "abc",
+            [LanguageIso.EN],
+            LanguageDetectionException,
+            "The language, 'abc', cannot be found",
+        ),
+    ],
+)
+def test_detect_language_decorator_exceptions(
+    content, language, supported_languages, exception, expected
+):
+    with pytest.raises(exception, match=expected):
+
+        @filter_language(supported_languages)
+        def some_func(content: str, language: str = None) -> str:
+            return "Processing content: " + content
+
+        some_func(content, language)
