@@ -90,9 +90,23 @@ class TrackedModelVersion(ModelVersion):
             f"{self.s3_storage_backend_config}"
         )
 
-    @staticmethod
-    def get_s3_bucket_client(s3_backend_bucket: str) -> Any:
-        """Utility to retrieve S3 bucket client instance.
+    def get_s3_bucket_client(self, s3_backend_bucket: str) -> Any:
+        """Utility to retrieve S3 bucket client instance. Supports assumption of roles as following:
+        - if the environment variable AWS_ROLE_TO_ASSUME is not set, no role will be assumed, and
+            the only the standard authentication environment variables
+            - AWS_ACCESS_KEY_ID and
+            - AWS_SECRET_ACCESS_KEY
+            will be used implicitly by boto3 to authenticate the s3 client
+        - if the environment variable AWS_ROLE_TO_ASSUME is set, it is assumed to be the full role
+            reference string. An sts client will then attempt to assume that role using the values
+            frrom the standard authentication environment variables
+            - AWS_ACCESS_KEY_ID and
+            - AWS_SECRET_ACCESS_KEY
+            and pass the resulting temporary credentials downstream onto the S3 bucket client
+            generation step.
+
+        This should get refactored into tracking library settings or another internal lib at a later
+        point.
 
         Args:
             s3_backend_bucket (str): Name of the S3 bucket
@@ -101,7 +115,49 @@ class TrackedModelVersion(ModelVersion):
             boto3.resource.Bucket: An initialized S3 bucket client
         """
 
-        return boto3.resource("s3").Bucket(s3_backend_bucket)
+        sts_client = boto3.client("sts")
+        id_pre = sts_client.get_caller_identity()
+        logger.debug(f"AWS sts client identity before generating role object: {id_pre}")
+
+        aws_role_arn_to_assume = os.environ.get("AWS_ROLE_TO_ASSUME", "")
+
+        if aws_role_arn_to_assume:
+
+            logger.debug(
+                f"AWS role set. Attempting to assume role {aws_role_arn_to_assume}."
+            )
+
+            # generate assumed role object. presumably the
+            # - AWS_ACCESS_KEY_ID and
+            # - AWS_SECRET_ACCESS_KEY
+            # are required for this step
+            assumed_role_object = sts_client.assume_role(
+                RoleArn=aws_role_arn_to_assume,
+                RoleSessionName=f"AssumeRoleSession_{self._sys_id}",
+            )
+
+            id_post = sts_client.get_caller_identity()
+            logger.debug(
+                "AWS sts client identity after generating role object for role "
+                f"{aws_role_arn_to_assume}: {id_post}"
+            )
+
+            # From the response that contains the assumed role, get the temporary
+            # credentials that can be used to make subsequent API calls
+            credentials = assumed_role_object["Credentials"]
+
+            # Use the temporary credentials that AssumeRole returns to make a
+            # connection to Amazon S3
+            s3_resource = boto3.resource(
+                "s3",
+                aws_access_key_id=credentials["AccessKeyId"],
+                aws_secret_access_key=credentials["SecretAccessKey"],
+                aws_session_token=credentials["SessionToken"],
+            )
+        else:
+            s3_resource = boto3.resource("s3")
+
+        return s3_resource.Bucket(s3_backend_bucket)
 
     def derive_model_version_s3_prefix(self, s3_prefix: str = "") -> str:
         """
@@ -157,27 +213,45 @@ class TrackedModelVersion(ModelVersion):
             FileExistsError: If the specified `local_file_path` does not point to a valid file, this
                 exception will be raised.
         """
-        # validate file specs
-        if not local_file_path and not file_object:
-            raise ValueError(
-                "At least one of `local_file_path` or `file_object` must be provided."
+
+        # if the use of s3 storage is not specified at the file upload level, fall back on
+        # `s3_storage_backend_config` parameter
+        use_s3 = kwargs.get("use_s3", self.s3_storage_backend_config.use_s3_backend)
+
+        # if a file object is specified, enforce neptune ai storage backend as uploading configs
+        # directly is not yet supported by S3 backend
+        # if no file object is specified, ensure a valid local file path is specified and create a
+        # neptune file object from it
+        if file_object is not None:
+
+            logger.info("File object specified. Enforcing neptune storage backend.")
+            use_s3 = False
+
+        elif file_object is None and local_file_path:
+
+            logger.debug(
+                "File object not specified, but file path specified. Attempting to create "
+                f"file object from file path {local_file_path}."
             )
-        # create neptune file type object from local path - this is the default upload object
-        # when using the neptune server storage backend
-        if local_file_path:
+
             if not os.path.exists(local_file_path):
                 raise FileExistsError(
                     f"Specified file {local_file_path} could not be located."
                 )
             else:
                 file_object = File.from_path(local_file_path)
+                logger.debug(f"Created file object from file path {local_file_path}.")
 
-        logger.debug(
-            f"Uploading file {local_file_path} into attribute {neptune_attribute_path}."
-        )
-        # if the use of s3 storage is not specified at the file upload level, fall back on
-        # `s3_storage_backend_config` parameter
-        use_s3 = kwargs.get("use_s3", self.s3_storage_backend_config.use_s3_backend)
+        elif file_object is None and not local_file_path:
+            raise ValueError(
+                "At least one of `local_file_path` or `file_object` must be provided."
+            )
+        else:
+            raise NotImplementedError(
+                f"Unforeseen specification: File object {file_object}."
+                f"File path {local_file_path}."
+            )
+
         # upload the file:
         # - if storage backend is configured to neptune ai servers, upload the file object
         # - if storage backend is configured to internal S3:
@@ -189,15 +263,14 @@ class TrackedModelVersion(ModelVersion):
         # implementing a read method required for boto3's upload_fileobj method
         if not use_s3:
             self[neptune_attribute_path].upload(file_object)
+            logger.debug(
+                f"Uploaded file object {file_object} into attribute {neptune_attribute_path}."
+            )
         else:
             _ = self.upload_tracked_file_to_s3(
                 neptune_attribute_path=neptune_attribute_path,
                 local_file_path=local_file_path,
             )
-
-        logger.debug(
-            f"Uploaded file {local_file_path} into attribute {neptune_attribute_path}."
-        )
 
     def upload_tracked_file_to_s3(
         self,
@@ -236,11 +309,16 @@ class TrackedModelVersion(ModelVersion):
 
         s3_client.upload_file(local_file_path, s3_file_prefix)
 
-        self[neptune_attribute_path].track_files(s3_file_uri)
-
         logger.debug(
             f"Uploaded file {local_file_path} into S3 bucket {s3_bucket}: "
             f"{s3_file_prefix}."
+        )
+
+        self[neptune_attribute_path].track_files(s3_file_uri)
+
+        logger.debug(
+            f"Tracked file in S3 bucket {s3_bucket}: {s3_file_prefix} under attribute path "
+            f"{neptune_attribute_path}"
         )
 
         return s3_file_uri

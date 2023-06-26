@@ -80,10 +80,12 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
       DB_HOST: "http://dynamodb:8000"
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
       - dynamodb
+      - redisdb
     networks:
       - onclusive-net
 
@@ -107,7 +109,7 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
       DB_HOST: "http://dynamodb:8000"
     networks:
       - onclusive-net
@@ -132,10 +134,12 @@ services:
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
+      REDIS_CONNECTION_STRING: "redis://redisdb:6379"
       DB_HOST: http://dynamodb:8000
     depends_on:
       dynamodb:
+        condition: service_healthy
+      redisdb:
         condition: service_healthy
     networks:
       - onclusive-net
@@ -148,6 +152,25 @@ services:
       - 8000
     ports:
       - 8000:8000
+    profiles: ["backend", "integration"]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: ["CMD-SHELL", "sleep 3s || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+  redisdb:
+    image: "redis:7.0"
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
     profiles: ["backend", "integration"]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
