@@ -43,7 +43,7 @@ jobs       :
     needs: [run-code-quality-checks]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
-      target-branch: ${{ github.ref_name }}
+      target-branch: main
       prerelease: ${{ github.ref_name == 'develop' }}
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
