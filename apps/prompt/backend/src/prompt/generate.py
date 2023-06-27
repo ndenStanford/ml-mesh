@@ -51,4 +51,4 @@ def generate_text(
             )
             return response["choices"][0]["text"]
     else:
-        return "Sorry, the backend for this model is in development"
+        return "Model is unknown or not supported"

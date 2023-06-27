@@ -434,5 +434,5 @@ def test_generate_text_with_diff_model_model_not_found(
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "prompt": template.format(**values),
-        "generated": "Sorry, the backend for this model is in development",
+        "generated": "Model is unknown or not supported",
     }
