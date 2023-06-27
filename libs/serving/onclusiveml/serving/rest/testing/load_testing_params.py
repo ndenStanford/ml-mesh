@@ -70,6 +70,15 @@ class ValidEndpointTypes(Enum):
     put: str = "PUT"
     delete: str = "DELETE"
 
+    @classmethod
+    def list(cls) -> List[str]:
+
+        valid_endpoint_types = [
+            valid_endpoint_type.value for valid_endpoint_type in cls
+        ]
+
+        return valid_endpoint_types
+
 
 class ValidMeasurements(Enum):
     # --- latency
@@ -95,33 +104,25 @@ class ValidMeasurements(Enum):
     failures_total: str = "failures_total"
     failures_percent: str = "failures_percent"
 
+    @classmethod
+    def list(cls) -> List[str]:
+
+        valid_measurements = [valid_measurement.value for valid_measurement in cls]
+
+        return valid_measurements
+
 
 class BaseMeasurementValidator(BaseModel):
 
     name: str
-    value: float
 
     @validator("name")
     def check_valid_measurement(cls, value: str) -> str:
 
-        valid_measurements = [
-            valid_measurement.value for valid_measurement in ValidMeasurements
-        ]
-
-        if value not in valid_measurements:
+        if value not in ValidMeasurements.list():
             raise ValueError(
-                f"Invalid measurement {value}. Must be one of " f"{valid_measurements}."
-            )
-
-        return value
-
-    @validator("value")
-    def check_valid_rate_or_latency(cls, value: float) -> float:
-
-        if value < 0:
-            raise ValueError(
-                f"Invalid value for observed latency or rate metric: {value}. Must be"
-                "0 or greater."
+                f"Invalid measurement {value}. Must be one of "
+                f"{ValidMeasurements.list()}."
             )
 
         return value
@@ -134,16 +135,12 @@ class BaseEndpointTypeValidator(BaseModel):
     endpoint_id: str = ""
 
     @validator("endpoint_type")
-    def check_valid_target_measurement(cls, value: str) -> str:
+    def check_valid_endpoint_type(cls, value: str) -> str:
 
-        valid_endpoint_types = [
-            valid_endpoint_type.value for valid_endpoint_type in ValidEndpointTypes
-        ]
-
-        if value not in valid_endpoint_types:
+        if value not in ValidEndpointTypes.list():
             raise ValueError(
                 f"Invalid endpoint type {value}. Must be one of "
-                f"{valid_endpoint_types}."
+                f"{ValidEndpointTypes.list()}."
             )
 
         return value
@@ -157,10 +154,11 @@ class BaseEndpointTypeValidator(BaseModel):
 
 
 class Measurement(BaseMeasurementValidator):
-    pass
+    value: float
 
 
 class PercentileMeasurement(BaseMeasurementValidator):
+    value: float
     percentile: float
 
     @validator("percentile")
@@ -224,10 +222,55 @@ class Criteria(BaseEndpointTypeValidator, BaseMeasurementValidator):
     threshold: float
     ensure_lower: bool = True
 
-    def was_met(self, test_report: TestReport) -> bool:
+    def was_met_in_measurement(self, test_measurement: Measurement) -> bool:
+        """Utility method to verify whether the criteria was met in a load test measuremtn by
+        comparing the threshold against the observed value of the specified Measurement instance
+
+        Args:
+            test_measurement (Measurement): The measurement (i.e. observation) that is being
+                evaluated against the criteria
+
+        Raises:
+            ValueError: If the criteria's name does not match the specified test report's name, a
+                ValueError is raised.
+
+        Returns:
+            bool: Whether the criteria was met in the specified Measurement
+        """
+
+        if self.name != test_measurement.name:
+            raise ValueError(
+                f"The criteria's name {self.name} does not match the measurement's "
+                f"name {test_measurement.name}. Please make sure you are applying "
+                "this criteria to the correct measurement"
+            )
+
+        is_lower = test_measurement.value < self.threshold
+        criteria_was_met = is_lower == self.ensure_lower
+
+        return criteria_was_met
+
+    def was_met_in_report(self, test_report: TestReport) -> bool:
         """Utility method to verify whether the criteria was met in a load test by comparing the
         threshold against the observed value of the relevant measurement, picked out from a
-        dictionary of type (endpoint_id, stat_for_that_endpoint_id)"""
+        specified TestReport instance
+
+        Args:
+            test_report (TestReport): The TestReport instance as returned by a LocusLoadTest's
+                `report` method.
+
+        Raises:
+            ValueError: If the criteria's endpoint report is available but is missing the criteria's
+                measurement, this exeception is raised. This indicates that Locust was able to
+                perform a load test successfully, but did not collect the measurement needed to
+                evaluate this criteria.
+
+                Note that if the entire endpoint report for the criteria's endpoint id could not be
+                found, we return `False`.
+
+        Returns:
+            bool: Whether the criteria was met in the specified TestReport.
+        """
 
         endpoint_report: Optional[EndpointReport] = test_report.completed.get(
             self.endpoint_id
@@ -237,25 +280,24 @@ class Criteria(BaseEndpointTypeValidator, BaseMeasurementValidator):
             # if the corresponding endpoint report is available, try and extract the specified
             # measurement
             all_measurements = endpoint_report.measurements
-            relevant_measurement: Optional[Measurement] = all_measurements.dict().get(
-                self.endpoint_id
+
+            test_measurement: Optional[Measurement] = all_measurements.dict().get(
+                self.name
             )
 
-            if relevant_measurement is None:
+            if test_measurement is None:
                 raise ValueError(
                     f"The specified measure {self.name} could not be found in the "
                     f"endpoint report for id {self.endpoint_id}. Are you sure these "
                     "specs are correct?"
                 )
 
-            criteria_was_met = bool(
-                self.ensure_lower * (self.threshold < relevant_measurement.value)
-            )
+            criteria_was_met = self.was_met_in_measurement(test_measurement)
 
         else:
-            # criteria couldnt be found, we will return False for now. A failed endpoint scenario
-            # would mean the entire endpoint report would be missing, so in those cases this would
-            # be sensible default behaviour.
+            # A failed endpoint scenario would mean the entire endpoint report would be missing,
+            # from the TestReport, so in those cases returning False would be a sensible evaluation
+            # outcome against a measurement that could not be taken due to more fundamental issues.
             criteria_was_met = False
 
         return criteria_was_met
