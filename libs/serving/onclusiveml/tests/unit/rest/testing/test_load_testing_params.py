@@ -33,7 +33,7 @@ def test_criteria(test_measurement, test_endpoint_type, test_ensure_lower):
 @pytest.mark.parametrize(
     "test_measurement, test_value, test_threshold, test_ensure_lower, test_criteria_met_expected",
     [
-        # (ValidMeasurements.requests_rps.value, 2, 3, False, False),
+        (ValidMeasurements.requests_rps.value, 2, 3, False, False),
         (ValidMeasurements.requests_total.value, 2, 1, False, True),
         (ValidMeasurements.failures_total.value, 5, 4, True, False),
         (ValidMeasurements.avg_response_time.value, 5, 6, True, True),

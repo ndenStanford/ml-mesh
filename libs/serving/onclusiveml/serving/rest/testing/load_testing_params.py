@@ -157,21 +157,6 @@ class Measurement(BaseMeasurementValidator):
     value: float
 
 
-class PercentileMeasurement(BaseMeasurementValidator):
-    value: float
-    percentile: float
-
-    @validator("percentile")
-    def check_percentile(cls, value: float) -> float:
-
-        if not (0 < value and value < 1):
-            raise ValueError(
-                f"Invalid percentile: {value}. Percentile level needs to be (0,1)."
-            )
-
-        return value
-
-
 class Measurements(BaseModel):
     """Utility class to define data model for the load test measurements of a given endpoint &
     request type."""
@@ -181,14 +166,14 @@ class Measurements(BaseModel):
     avg_response_time: Measurement
     # percentiles
     min_response_time: Measurement
-    response_time_p50: PercentileMeasurement
-    response_time_p55: PercentileMeasurement
-    response_time_p65: PercentileMeasurement
-    response_time_p75: PercentileMeasurement
-    response_time_p85: PercentileMeasurement
-    response_time_p90: PercentileMeasurement
-    response_time_p95: PercentileMeasurement
-    response_time_p99: PercentileMeasurement
+    response_time_p50: Measurement
+    response_time_p55: Measurement
+    response_time_p65: Measurement
+    response_time_p75: Measurement
+    response_time_p85: Measurement
+    response_time_p90: Measurement
+    response_time_p95: Measurement
+    response_time_p99: Measurement
     max_response_time: Measurement
     # # --- request counts&rates
     # all

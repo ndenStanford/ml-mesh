@@ -3,7 +3,6 @@ from onclusiveml.serving.rest.testing.load_testing_params import (  # noqa: F401
     ValidEndpointTypes,
     LoadTestingParams,
     Measurement,
-    PercentileMeasurement,
     Measurements,
     EndpointReport,
     TestReport,

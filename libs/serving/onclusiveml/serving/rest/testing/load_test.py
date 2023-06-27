@@ -21,7 +21,6 @@ from onclusiveml.serving.rest.testing import (
     LoadTestingParams,
     Measurement,
     Measurements,
-    PercentileMeasurement,
     TestReport,
 )
 
@@ -80,44 +79,36 @@ class LocustLoadTest(object):
                         value=endpoint_test_result.min_response_time,
                     ),
                     # latency percentiles
-                    response_time_p50=PercentileMeasurement(
+                    response_time_p50=Measurement(
                         name="response_time_p50",
-                        percentile=0.50,
                         value=endpoint_test_result.get_response_time_percentile(0.50),
                     ),
-                    response_time_p55=PercentileMeasurement(
+                    response_time_p55=Measurement(
                         name="response_time_p55",
-                        percentile=0.55,
                         value=endpoint_test_result.get_response_time_percentile(0.55),
                     ),
-                    response_time_p65=PercentileMeasurement(
+                    response_time_p65=Measurement(
                         name="response_time_p65",
-                        percentile=0.65,
                         value=endpoint_test_result.get_response_time_percentile(0.65),
                     ),
-                    response_time_p75=PercentileMeasurement(
+                    response_time_p75=Measurement(
                         name="response_time_p75",
-                        percentile=0.75,
                         value=endpoint_test_result.get_response_time_percentile(0.75),
                     ),
-                    response_time_p85=PercentileMeasurement(
+                    response_time_p85=Measurement(
                         name="response_time_p85",
-                        percentile=0.85,
                         value=endpoint_test_result.get_response_time_percentile(0.85),
                     ),
-                    response_time_p90=PercentileMeasurement(
+                    response_time_p90=Measurement(
                         name="response_time_p90",
-                        percentile=0.90,
                         value=endpoint_test_result.get_response_time_percentile(0.90),
                     ),
-                    response_time_p95=PercentileMeasurement(
+                    response_time_p95=Measurement(
                         name="response_time_p95",
-                        percentile=0.95,
                         value=endpoint_test_result.get_response_time_percentile(0.95),
                     ),
-                    response_time_p99=PercentileMeasurement(
+                    response_time_p99=Measurement(
                         name="response_time_p99",
-                        percentile=0.99,
                         value=endpoint_test_result.get_response_time_percentile(0.90),
                     ),
                     # latency max
