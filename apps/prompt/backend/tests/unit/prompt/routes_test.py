@@ -327,7 +327,7 @@ def test_generate_text(
 )
 @patch.object(ModelSchema, "get")
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.Completion.create")
 def test_generate_text_with_diff_model(
     mock_openai_chat,
     mock_prompt_get,
@@ -343,7 +343,7 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    mock_openai_chat.return_value = {"choices": [{"text": generated}]}
     mock_prompt_get.return_value = [
         PromptTemplateSchema(id=id, template=template, alias=alias)
     ]
@@ -366,7 +366,7 @@ def test_generate_text_with_diff_model(
     # check openai method is called
     mock_openai_chat.assert_called_with(
         model=model_name,
-        messages=[{"role": "user", "content": template.format(**values)}],
+        prompt=template.format(**values),
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
     )
@@ -376,7 +376,10 @@ def test_generate_text_with_diff_model(
     assert mock_openai_chat.call_count == 1
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"generated": generated}
+    assert response.json() == {
+        "prompt": template.format(**values),
+        "generated": generated,
+    }
 
 
 @pytest.mark.parametrize(
@@ -430,5 +433,6 @@ def test_generate_text_with_diff_model_model_not_found(
     assert mock_prompt_get.call_count == 1
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "generated": "Sorry, the backend for this model is in development"
+        "prompt": template.format(**values),
+        "generated": "Model is unknown or not supported",
     }

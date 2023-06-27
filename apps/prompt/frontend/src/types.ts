@@ -23,9 +23,15 @@ export interface SidebarProps {
   subtitle: string;
   children?: JSX.Element;
   onActionClick?: (() => void) | ((arg0: any) => void);
+  onSettingsClick?: (() => void) | ((arg0: any) => void);
   isNewPromptModalVisible: boolean;
+  isSettingsVisible: boolean;
   hideModal: any;
+  hideSettingsModal: any;
   onModalActionClick?: (() => void) | ((arg0: any, arg1: any) => void);
+  onSettingsActionClick?: (() => void) | ((arg0: any) => void);
+  defaultModelName: string;
+  models: any;
 }
 
 export interface IErrorBoundaryState {
@@ -54,6 +60,10 @@ export interface ModalsState {
 
 export interface PromptsState {
   list: PromptListItemProps[];
+}
+
+export interface ModelsState {
+  list: ModelListItemProps[];
 }
 
 export interface Message {
@@ -86,6 +96,16 @@ export interface PromptListItemProps {
   onDeleteClick: (alias: string) => void;
 }
 
+export interface ModelListItemProps {
+  id: string;
+  model_name: string;
+  parameters: string;
+  created_at: string;
+  selected?: boolean;
+  onClick?: () => void;
+  onSendClick: (model_name: string) => void;
+}
+
 export interface ChatProps {
   header: string;
   subtitle: string;
@@ -98,6 +118,7 @@ export interface ChatProps {
 export interface GlobalState {
   app: AppState;
   prompts: PromptsState;
+  models: ModelsState;
   modals: ModalsState;
   chat: ChatState;
 }

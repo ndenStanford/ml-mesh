@@ -34,13 +34,21 @@ def generate_text(
         or model_name == ModelEnum.DAVINCI.value  # noqa: W503
         or model_name == ModelEnum.CURIE.value  # noqa: W503
     ):
-
-        response = openai.ChatCompletion.create(
-            model=model_name,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=max_tokens,
-            temperature=temperature,
-        )
-        return response["choices"][0]["message"]["content"]
+        if model_name == "gpt-3.5-turbo" or model_name == "gpt-4":
+            response = openai.ChatCompletion.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=max_tokens,
+                temperature=temperature,
+            )
+            return response["choices"][0]["message"]["content"]
+        else:
+            response = openai.Completion.create(
+                model=model_name,
+                prompt=prompt,
+                max_tokens=max_tokens,
+                temperature=temperature,
+            )
+            return response["choices"][0]["text"]
     else:
-        return "Sorry, the backend for this model is in development"
+        return "Model is unknown or not supported"
