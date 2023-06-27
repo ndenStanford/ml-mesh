@@ -30,7 +30,7 @@ import { MESSAGE_SEND_ANIMATION_DELAY } from "./constants";
 
 export default function App() {
   var modelName = String(localStorage.getItem("modelName"));
-  if (!modelName || modelName == "" || modelName == null) {
+  if (!modelName || modelName == "" || modelName == null || modelName == "null") {
     modelName = "gpt-3.5-turbo";
   }
   const dispatch = useGlobalDispatch();
