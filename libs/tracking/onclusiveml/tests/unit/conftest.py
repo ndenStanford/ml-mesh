@@ -4,6 +4,7 @@ from typing import Any, List
 
 # 3rd party libraries
 import pytest
+from neptune.attributes.atoms.artifact import Artifact
 from neptune.attributes.atoms.file import File
 
 
@@ -77,6 +78,11 @@ def test_file(path: List[Any]):
     return File(container=[], path=path)
 
 
+def test_artifact(path: List[Any]):
+
+    return Artifact(container=[], path=path)
+
+
 @pytest.fixture
 def test_uploaded_attributes():
 
@@ -84,16 +90,16 @@ def test_uploaded_attributes():
         "a": 1,
         "b": test_file(["b"]),
         "c": {
-            "d": {"e": test_file(path=["c", "d", "e"]), "f": 2},
+            "d": {"e": test_artifact(path=["c", "d", "e"]), "f": 2},
             "g": test_file(path=["c", "g"]),
         },
     }
 
 
 @pytest.fixture
-def test_extracted_file_attributes_expected():
+def test_extracted_data_attributes_expected():
 
-    return [test_file(["b"]), test_file(["c", "d", "e"]), test_file(["c", "g"])]
+    return [test_file(["b"]), test_artifact(["c", "d", "e"]), test_file(["c", "g"])]
 
 
 @pytest.fixture

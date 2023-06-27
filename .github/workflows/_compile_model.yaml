@@ -1,0 +1,188 @@
+---
+name: Model Compilation
+on  :
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: Environment where code is deployed [prod, stage]
+      runner-kind:
+        required: true
+        default: custom
+        type: string
+        description: If 'custom', a customized self hosted runner will be provided. Otherwise needs to be a valid Github Actions runner kind reference.
+      self-hosted-runner-type:
+        required: false
+        default: inf1.6xlarge
+        type: string
+        description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
+      project:
+        required: true
+        type: string
+        description: Project.
+      tag:
+        required: true
+        type: string
+        description: Version tag of image providing the compilation runtime context.
+      compile:
+        required: false
+        default: true
+        type: boolean
+        description: Whether to run the compilation pipeline. Useful for testing runner provisioning.
+      upload-compiled-model:
+        required: false
+        type: boolean
+        default: true
+        description: Whether to upload the compiled model to the Neptune AI model registry
+    secrets:
+      AWS_ACCOUNT_ID:
+        required: true
+        description: AWS account ID.
+      AWS_DEFAULT_REGION:
+        required: true
+        description: AWS account region
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: AWS access key ID.
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: AWS secret access key
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: Github PAT to allow EC2 instance to connect to Github repository content.
+      NEPTUNE_API_TOKEN:
+        required: true
+        description: The API token for the neptune service account managing the model registry.
+
+jobs:
+  provision-customized-runner:
+    name: Provision self-hosted & customized runner
+    uses: ./.github/workflows/_provision_customized_runner.yaml
+    if: ${{ inputs.runner-kind == 'custom' }}
+    with:
+      environment: ${{ inputs.environment }}
+      self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
+      setup-docker-compose: true
+      setup-neuron: true
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+  set-runner-specs:
+    name: Set runner specs conditional on hosting requirements
+    needs: provision-customized-runner
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    outputs:
+      runner-label: ${{ steps.set-runner-label.outputs.value }}
+      runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
+    steps:
+      - name: Toggle runner label
+        uses: haya14busa/action-cond@v1
+        id: set-runner-label
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
+          if_false: ${{ inputs.runner-kind }}
+
+      - name: Toggle runner instance type
+        uses: haya14busa/action-cond@v1
+        id: set-runner-instance-id
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
+          if_false: ''
+
+  compile-model:
+    name: Compile and register a base or trained model
+    needs: set-runner-specs
+    runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    environment: ${{ inputs.environment }}
+    if: ${{ inputs.compile }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
+
+      - name: Download uncompiled model
+        run: |
+          echo 'Downloading Uncompiled Model'
+          make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=download-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
+
+      - name: Compile Model
+        run: |
+          echo 'Compiling Model'
+          make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=compile-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
+
+      - name: Validate Compiled Model
+        run: |
+          echo 'Validating Compiled Model'
+          make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=validate-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
+
+      - name: Upload Compiled Model
+        run: |
+          echo 'Uploading Compiled Model'
+          make projects.compile/${{ inputs.project }} \
+            ENVIRONMENT=ci \
+            PIPELINE_COMPONENT=upload-model \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
+
+  stop-runner:
+    name: Stop self-hosted EC2 runner
+    needs: [set-runner-specs, compile-model]
+
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    if: ${{ always() && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Stop EC2 runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          label: ${{ needs.set-runner-specs.outputs.runner-label }}
+          ec2-instance-id: ${{ needs.set-runner-specs.outputs.runner-instance-id }}

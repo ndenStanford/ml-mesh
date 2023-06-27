@@ -44,13 +44,15 @@ public class NerdRestProcessQuery {
      * the enriched and disambiguated query.
      */
     public String processQuery(String theQuery) {
-
-        LOGGER.debug(methodLogIn());
-        LOGGER.debug(">> received query to process: " + theQuery);
+        
+        System.out.println(">> Call processQuery function" + theQuery);
+        System.out.println(methodLogIn());
+        System.out.println(">> received query to process: " + theQuery);
         NerdQuery nerdQuery = NerdQuery.fromJson(theQuery);
+        long start = System.currentTimeMillis();
 
         // we analyze the query object in order to determine the kind of object to be processed
-        LOGGER.debug(">> set query object for stateless service...");
+        System.out.println(">> set query object for stateless service...");
 
         // tuning the species only mention selection
         NerdRestProcessFile.tuneSpeciesMentions(nerdQuery);
@@ -88,7 +90,10 @@ public class NerdRestProcessQuery {
                 throw new QueryException();
         }
 
-        LOGGER.debug(methodLogOut());
+        long end = System.currentTimeMillis();
+        System.out.println("runtime: " + (end - start));
+
+        System.out.println(methodLogOut());
         return output;
     }
 
@@ -125,7 +130,7 @@ public class NerdRestProcessQuery {
      * the enriched and disambiguated query.
      */
     public String processQueryText(NerdQuery nerdQuery, boolean segmentation) {
-        LOGGER.debug(methodLogIn());
+        System.out.println(methodLogIn());
         long start = System.currentTimeMillis();
 
         // language identification
@@ -194,7 +199,7 @@ public class NerdRestProcessQuery {
 
         //Collections.sort(nerdQuery.getEntities());
         Collections.sort(nerdQuery.getEntities(), new SortEntitiesBySelectionScore());
-        LOGGER.debug(methodLogOut());
+        System.out.println(methodLogOut());
         return nerdQuery.toJSONClean(); 
     }
 
@@ -300,9 +305,9 @@ public class NerdRestProcessQuery {
             LanguageUtilities languageUtilities = LanguageUtilities.getInstance();
             lang = languageUtilities.runLanguageId(text);
             nerdQuery.setLanguage(lang);
-            LOGGER.debug(">> identified language: " + lang.toString());
+            System.out.println(">> identified language: " + lang.toString());
         } else {
-            LOGGER.debug(">> language already identified: " + lang.getLang().toString());
+            System.out.println(">> language already identified: " + lang.getLang().toString());
         }
 
         if (!nerdQuery.hasValidLanguage()) {
@@ -386,7 +391,7 @@ public class NerdRestProcessQuery {
      * @return a response JSON object containing the weighted term vector with the resolved entities.
      */
     public String processQueryTermVector(NerdQuery nerdQuery) {
-        LOGGER.debug(methodLogIn());
+        System.out.println(methodLogIn());
         long start = System.currentTimeMillis();
 
         // language identification
@@ -418,7 +423,7 @@ public class NerdRestProcessQuery {
         nerdQuery.setDate(java.time.Clock.systemUTC().instant().toString());
 
         //Collections.sort(nerdQuery.getEntities());
-        LOGGER.debug(methodLogOut());
+        System.out.println(methodLogOut());
         return nerdQuery.toJSONClean();
 
     }

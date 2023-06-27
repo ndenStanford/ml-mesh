@@ -56,7 +56,7 @@ def test_from__init__(
     # TrackedModelCard attributes
     assert (
         tracked_model_card.model_artifact_attribute_path
-        == model_artifact_attribute_path
+        == model_artifact_attribute_path  # noqa: W503
     )
     assert tracked_model_card.model_type == model_type
 

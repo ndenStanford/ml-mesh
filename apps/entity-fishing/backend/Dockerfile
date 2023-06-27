@@ -45,7 +45,11 @@ RUN ./gradlew clean assemble --no-daemon  --info --stacktrace
 RUN chmod -R 755 /opt/grobid/grobid-home/pdfalto
 
 # install grobid-ner
-RUN git clone https://github.com/kermitt2/grobid-ner.git
+# NOTE: Using the version of the repo before the update to grobid 0.7.2
+# Source: https://github.com/kermitt2/grobid-ner/commits/master
+RUN git clone https://github.com/kermitt2/grobid-ner.git \
+    && cd grobid-ner \
+    && git checkout dd14dfb9619f1687569a515b24b79a8f69671d47
 WORKDIR /opt/grobid/grobid-ner
 RUN ./gradlew copyModels
 RUN ./gradlew clean install --no-daemon  --info --stacktrace

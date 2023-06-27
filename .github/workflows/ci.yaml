@@ -1,12 +1,15 @@
-name: ML-Mesh Prod Workflow
+---
+name       : ML-mesh CI Workflow
 
-on:
+on         :
   push:
     branches:
-      - prod
+      - main
+      - develop
   pull_request:
     branches:
-      - prod
+      - main
+      - develop
     types:
       - ready_for_review
       - opened
@@ -17,7 +20,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
   group: Deployment ${{ github.ref_name }}
 
-jobs:
+jobs       :
   # ===============================================
   # QUALITY CHECKS
   # ===============================================
@@ -27,7 +30,7 @@ jobs:
     uses: ./.github/workflows/_code-quality.yaml
     with:
       environment: prod
-      pull-request: ${{ github.event_name == 'pull_request' }}
+      pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
       timeout: 10
 
   # ===============================================
@@ -40,7 +43,8 @@ jobs:
     needs: [run-code-quality-checks]
     with:
       pull-request: ${{ github.event_name == 'pull_request' }}
-      current-branch: ${{ github.ref_name }}
+      target-branch: ${{ github.ref_name }}
+      prerelease: ${{ github.ref_name == 'develop' }}
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,9 +58,11 @@ jobs:
     needs: [run-repository-state]
 
     strategy:
+      max-parallel: 5
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
-        python-version: ["3.8.16"]
-        poetry-version: ["1.3.2"]
+        python-version: [3.8.16]
+        poetry-version: [1.3.2]
         libs:
           - name: core
             integration: false
@@ -70,9 +76,17 @@ jobs:
             integration: false
             functional: false
 
+          - name: serving
+            integration: false
+            functional: false
+
           - name: tracking
             integration: false
             functional: false # TODO: turn this to true when self hosted runners are available.
+
+          - name: nlp
+            integration: false
+            functional: false
 
     with:
       lib: ${{ matrix.libs.name }}
@@ -80,6 +94,8 @@ jobs:
       functional: ${{ matrix.libs.functional }}
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
 
   # ===============================================
   # DOCKER
@@ -91,30 +107,22 @@ jobs:
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 1
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
-        image:
-          [
-            python-base,
-            neuron-compile,
-            neuron-inference,
-            kubeflow-jupyter,
-            kubeflow-torch-cpu,
-            kubeflow-data-science,
-            fastapi-serve,
-          ]
+        image: [python-base, neuron-compile, neuron-inference, kubeflow-jupyter, kubeflow-torch-cpu, kubeflow-data-science, fastapi-serve]
         validate-build: [false]
     with:
       environment: prod
       image: ${{ matrix.image }}
-      tag: "${{ needs.run-repository-state.outputs.tag }}"
+      tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
+      release: ${{ github.ref_name == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
   # ===============================================
   # PROJECTS
@@ -128,6 +136,7 @@ jobs:
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         projects:
           # NOTE: list of project components to run
@@ -136,17 +145,20 @@ jobs:
           # KEYWORDS
           # ========================
 
-          - name: keywords
-            component: serve
-            integration: true
-
+          # train
           - name: keywords
             component: train
             integration: false
 
+          # compile
           - name: keywords
             component: compile
             integration: false
+
+          # serve
+          - name: keywords
+            component: serve
+            integration: true
 
           # ========================
           # SUMMARIZATION
@@ -171,13 +183,48 @@ jobs:
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.projects.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+
+  # ===============================================
+  # COMPILE MODELS
+  # ===============================================
+
+  run-ml-compilation-pipelines:
+    name: Compile ML models
+    uses: ./.github/workflows/_compile_model.yaml
+    needs: [run-repository-state, run-projects]
+
+    strategy:
+      fail-fast: ${{ github.ref_name != 'main' }}
+      matrix:
+        models:
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.2xlarge
+            project: keywords
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
+    with:
+      environment: prod
+      runner-kind: ${{ matrix.models.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
+      project: ${{ matrix.models.project }}
+      tag: ${{ matrix.models.tag }}
+      compile: ${{ github.event_name == 'push' }} # run the compilation pipeline on every merge into develop/prod
+      upload-compiled-model: ${{ github.event_name == 'push' }} # upload the compiled model on every merge into develop/prod
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
 
   # ===============================================
@@ -190,6 +237,7 @@ jobs:
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         apps:
           # NOTE: list of apps components to run
@@ -217,9 +265,9 @@ jobs:
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}

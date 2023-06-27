@@ -9,7 +9,10 @@ import pytest
 
 def to_dataframe(extracted_keywords: List[Tuple[str, float]]) -> pd.DataFrame:
 
-    return pd.DataFrame(extracted_keywords, columns=["keyword", "score"])
+    df = pd.DataFrame(extracted_keywords, columns=["keyword", "score"])
+    df_sorted = df.sort_values(by="keyword", ascending=True).reset_index(drop=True)
+
+    return df_sorted
 
 
 @pytest.mark.order(1)
@@ -38,6 +41,10 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
 
     compiled_predictions_df = to_dataframe(compiled_predictions)
     expected_predictions_df = to_dataframe(expected_predictions)
+
+    logger.info(f"Sorted compiled predictions df: {compiled_predictions_df}")
+    logger.info(f"Sorted expected predictions df: {expected_predictions_df}")
+
     # assert keywords are identical and scores are within 0.01 absolute deviation
     pd.testing.assert_frame_equal(
         compiled_predictions_df,

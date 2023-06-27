@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version : '3.9'
 
 services:
   # =============================================
@@ -17,13 +18,13 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     ports:
-      - "8888:8888"
+      - 8888:8888
     volumes:
       - type: bind
         source: train/src
         target: /home/projects/keywords/train/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
-    profiles: ["train"]
+    profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
@@ -48,8 +49,8 @@ services:
         source: train/tests
         target: /projects/keywords/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["train", "unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [train, unit]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
@@ -69,27 +70,14 @@ services:
         PROJECT: keywords
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
-    profiles: ["compile"]
+    profiles: [compile, unit, integration, pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: compile/src
@@ -98,12 +86,112 @@ services:
         source: compile/tests
         target: /projects/keywords/compile/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
+    depends_on:
+      - compile
+
+  compile-download-model:
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    command: [python, -m, src.download_uncompiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/keywords/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+    depends_on:
+      - compile
+
+  compile-compile-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    command: [python, -m, src.compile_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/keywords/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+    depends_on:
+      - compile
+
+  compile-validate-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/keywords/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+    depends_on:
+      - compile
+
+  compile-upload-model:
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+    command: [python, -m, src.upload_compiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/keywords/compile/outputs
+      GITHUB_REPOSITORY: development-repository
+      GITHUB_ACTOR: development-actor
+      GITHUB_ENV: development-env
+      GITHUB_WORKFLOW: development-workflow
+      GITHUB_JOB: development-job
+      GITHUB_REF: development-ref
+      GITHUB_BASE_REF: development-base-ref
+      GITHUB_HEAD_REF: development-head-ref
+      GITHUB_SHA: development-sha
+      GITHUB_EVENT_NAME: development-event-name
+      GITHUB_RUN_ID: development-run-id
+      GITHUB_RUN_NUMBER: development-run-number
+      RUNNER_ARCH: development-arch
+      RUNNER_NAME: development-name
+      RUNNER_OS: development-os
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+    depends_on:
+      - compile
 
   # =============================================
   # SERVE
@@ -122,19 +210,8 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command:
-      [
-        "uvicorn",
-        "src.app:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--reload",
-        "--log-level",
-        "debug",
-      ]
-    profiles: ["serve"]
+    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8000', --reload, --log-level, debug]
+    profiles: [serve]
     ports:
       - 8000:8000
     volumes:
@@ -168,8 +245,8 @@ services:
         source: serve/tests
         target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/unit", "-ra", "-vv", "--capture=no"]
-    profiles: ["unit"]
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     ports:
       - 8000:8000
     environment:
@@ -199,8 +276,8 @@ services:
         source: serve/tests
         target: /projects/keywords/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: ["pytest", "tests/integration", "-ra", "-vv", "--capture=no"]
-    profiles: ["integration"]
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     ports:
       - 8000:8000
     environment:
@@ -212,3 +289,6 @@ services:
 
 networks:
   onclusive-net:
+
+volumes :
+  compile-pipeline-vol:

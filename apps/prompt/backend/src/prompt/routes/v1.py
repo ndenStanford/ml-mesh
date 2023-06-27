@@ -5,14 +5,13 @@ import json
 from typing import Any, Dict
 
 # 3rd party libraries
-from fastapi import APIRouter, HTTPException, Security, status
+from fastapi import APIRouter, HTTPException, status
 from slugify import slugify
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.helpers import get_api_key
 from src.model.constants import ModelEnum
 from src.model.schemas import ModelSchema
 from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
@@ -67,9 +66,7 @@ def get_prompt(alias: str):
     return PromptTemplateOutputSchema.from_template_schema(prompt)[0]
 
 
-@router.post(
-    "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
-)
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create_prompt(template: str, alias: str):
     """Creates prompt.
 
@@ -91,9 +88,7 @@ def create_prompt(template: str, alias: str):
     return prompt.update(template=template)
 
 
-@router.put(
-    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
-)
+@router.put("/{alias}", status_code=status.HTTP_200_OK)
 def update_prompt(alias: str, template: str):
     """Updates latest version of a prompt.
 
@@ -115,9 +110,7 @@ def update_prompt(alias: str, template: str):
     return PromptTemplateSchema.get(alias)[0]
 
 
-@router.delete(
-    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
-)
+@router.delete("/{alias}", status_code=status.HTTP_200_OK)
 def delete_prompt(alias: str):
     """Deletes prompt from database.
 

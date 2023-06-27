@@ -6,8 +6,10 @@ import json
 from unittest.mock import patch
 
 # 3rd party libraries
+import fakeredis
 import pytest
 from fastapi import status
+from redis_cache import RedisCache
 
 # Source
 from src.model.schemas import ModelSchema
@@ -233,6 +235,12 @@ def test_delete_prompt_protection_404(
     assert mock_prompt_table_delete.call_count == 0
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+patch(
+    "redis_cache.RedisCache",
+    return_value=RedisCache(redis_client=fakeredis.FakeStrictRedis()),
+).start()
 
 
 @pytest.mark.parametrize(
