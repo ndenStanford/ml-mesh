@@ -5,6 +5,7 @@ import {
   Chat,
   PromptListItem,
   PromptList,
+  SearchBar,
 } from "./components";
 import { useGlobalSelector, useGlobalDispatch } from "./hooks/use-dispatch";
 import { GlobalState } from "./state";
@@ -38,6 +39,7 @@ export default function App() {
   const { app, prompts, models, modals, chat } = useGlobalSelector(
     (state: GlobalState) => state
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const firstRender = useRef(true);
   function delay(ms: number) {
@@ -195,31 +197,40 @@ export default function App() {
           }}
         >
           <PromptList>
-            {prompts.list.map((item) => (
-              <PromptListItem
-                item={{
-                  id: item.id,
-                  alias: item.alias,
-                  template: item.template,
-                  variables: item.variables,
-                  created_at: item.created_at,
-                  selected: item.selected,
-                  onClick: () => {
-                    dispatch(showModal(item.id));
-                  },
-                  onSendClick: (dct: Dictionary, id: string, alias: string) => {
-                    handleSendMessageWithPrompt(dct, id, alias, modelName);
-                  },
-                  onDeleteClick: (alias: string) => {
-                    handleDeletePrompt(alias);
-                  },
-                }}
-                isModalVisible={modals.list[item.id]}
-                hideModal={() => {
-                  dispatch(hideModal(item.id));
-                }}
-              />
-            ))}
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            {prompts.list
+              .filter((item) =>
+                item.alias.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((item) => (
+                <PromptListItem
+                  item={{
+                    id: item.id,
+                    alias: item.alias,
+                    template: item.template,
+                    variables: item.variables,
+                    created_at: item.created_at,
+                    selected: item.selected,
+                    onClick: () => {
+                      dispatch(showModal(item.id));
+                    },
+                    onSendClick: (
+                      dct: Dictionary,
+                      id: string,
+                      alias: string
+                    ) => {
+                      handleSendMessageWithPrompt(dct, id, alias, modelName);
+                    },
+                    onDeleteClick: (alias: string) => {
+                      handleDeletePrompt(alias);
+                    },
+                  }}
+                  isModalVisible={modals.list[item.id]}
+                  hideModal={() => {
+                    dispatch(hideModal(item.id));
+                  }}
+                />
+              ))}
           </PromptList>
         </SideBar>
         <Chat
