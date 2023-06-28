@@ -2,9 +2,8 @@
 from typing import List, Optional
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import (
+from onclusiveml.serving.rest.testing.load_testing_params import (
     Criterion,
-    EnvironmentCriteria,
     EnvironmentCriterion,
     EvaluatedCriteria,
     EvaluatedCriterion,
@@ -12,7 +11,7 @@ from onclusiveml.serving.rest.testing import (
 )
 
 
-class TestCriteria:
+class LoadTestCriteria:
     def __init__(self, criteria: List[Criterion] = []):
         # storage attributes for hard&soft criteria instances
         self.criteria = criteria
@@ -27,7 +26,7 @@ class TestCriteria:
 
         self.evaluation: Optional[EvaluatedCriteria] = None
 
-    def generate(self, n_criteria: int = 10) -> EnvironmentCriteria:
+    def generate(self, n_criteria: int = 10) -> List[EnvironmentCriterion]:
         """_summary_
 
         Returns:
@@ -56,6 +55,10 @@ class TestCriteria:
             self.criteria.append(indexed_environment_criteria)
 
         self.n_criteria = n_criteria
+
+        # return the populatd attribute
+
+        return self.criteria
 
     def evaluate(self, test_report: TestReport) -> EvaluatedCriteria:
         """Utility method to verify whether the criteria where met in a load test by comparing the

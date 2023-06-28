@@ -16,7 +16,7 @@ from locust.stats import stats_printer
 from locust.util.timespan import parse_timespan
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import (
+from onclusiveml.serving.rest.testing.load_testing_params import (
     EndpointReport,
     LoadTestingParams,
     Measurement,
@@ -34,7 +34,7 @@ def sig_term_handler() -> None:
     sys.exit(0)
 
 
-class LocustLoadTest(object):
+class LoadTest(object):
     """
     Runs a Locust load test and generates a qantitative report that integrates with the
     `Criteria` class from the `load_testing_params` module.

@@ -3,7 +3,7 @@ import pytest
 from locust import HttpUser, between, task
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import LoadTestingParams, LocustLoadTest
+from onclusiveml.serving.rest.testing import LoadTest, LoadTestingParams
 
 
 class TestWebsiteUser(HttpUser):
@@ -37,7 +37,7 @@ def test_locus_load_test(test_user_classes, test_locustfile):
         reset_stats=True,
     )
 
-    load_test = LocustLoadTest(settings=load_test_settings)
+    load_test = LoadTest(settings=load_test_settings)
     load_test.run()
     test_report = load_test.report()
 
