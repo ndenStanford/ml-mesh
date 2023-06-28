@@ -3,7 +3,10 @@ import pytest
 
 # Internal libraries
 from onclusiveml.serving.rest.testing import (
-    Criteria,
+    Criterion,
+    EnvironmentCriterion,
+    EvaluatedCriteria,
+    EvaluatedCriterion,
     Measurement,
     ValidEndpointTypes,
     ValidMeasurements,
@@ -19,9 +22,9 @@ def test_measurement(test_measurement):
 @pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
 @pytest.mark.parametrize("test_ensure_lower", [True, False])
 @pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.list())
-def test_criteria(test_measurement, test_endpoint_type, test_ensure_lower):
+def test_criterion(test_measurement, test_endpoint_type, test_ensure_lower):
 
-    Criteria(
+    Criterion(
         name=test_measurement,
         threshold=10,
         endpoint_type=test_endpoint_type,
@@ -41,7 +44,7 @@ def test_criteria(test_measurement, test_endpoint_type, test_ensure_lower):
         (ValidMeasurements.response_time_p65.value, 0.01, 0.05, True, True),
     ],
 )
-def test_criteria_was_met_in_measurement(
+def test_criterion_was_met_in_measurement(
     test_measurement,
     test_value,
     test_threshold,
@@ -54,7 +57,7 @@ def test_criteria_was_met_in_measurement(
         value=test_value,
     )
 
-    criteria = Criteria(
+    criteria = Criterion(
         name=test_measurement,
         threshold=test_threshold,
         endpoint_url="http://dummy_url",
@@ -64,3 +67,48 @@ def test_criteria_was_met_in_measurement(
     test_criteria_met_actual = criteria.was_met_in_measurement(measurement)
 
     assert test_criteria_met_actual == test_criteria_met_expected
+
+
+def test_evaluated_criterion():
+
+    EvaluatedCriterion(
+        name=ValidMeasurements.failures_total.value,
+        threshold=0.5,
+        endpoint_url="http://dummy_url",
+        ensure_lower=False,
+        passed=True,
+    )
+
+
+def test_evaluated_criteria():
+
+    EvaluatedCriteria(
+        evaluated_criteria=[
+            EvaluatedCriterion(
+                name=ValidMeasurements.requests_rpm.value,
+                hard=True,
+                threshold=0.5,
+                endpoint_url="http://dummy_url",
+                ensure_lower=False,
+                passed=True,
+            ),
+            EvaluatedCriterion(
+                name=ValidMeasurements.failures_total.value,
+                hard=False,
+                threshold=0.5,
+                endpoint_url="http://dummy_url",
+                ensure_lower=False,
+                passed=False,
+            ),
+        ],
+        passed=True,
+    )
+
+
+def test_environment_criterion():
+
+    EnvironmentCriterion(
+        name=ValidMeasurements.avg_response_time.value,
+        threshold=10,
+        endpoint_url="http://dummy_url",
+    )

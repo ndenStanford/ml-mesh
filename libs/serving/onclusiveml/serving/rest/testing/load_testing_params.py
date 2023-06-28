@@ -200,12 +200,16 @@ class TestReport(BaseModel):
     end_time: str
 
 
-class Criteria(BaseEndpointTypeValidator, BaseMeasurementValidator):
+class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
     """Utility class to define load testing success criteria based on quantitative latency
     and response type metrics."""
 
     threshold: float
     ensure_lower: bool = True
+
+    # if True, failing this criterion as part of an EnvironmentCriteria assessment will fail the
+    # entire test; otherwise, failing will simply emit a warning
+    hard: bool = True
 
     def was_met_in_measurement(self, test_measurement: Measurement) -> bool:
         """Utility method to verify whether the criteria was met in a load test measuremtn by
@@ -236,7 +240,7 @@ class Criteria(BaseEndpointTypeValidator, BaseMeasurementValidator):
         return criteria_was_met
 
     def was_met_in_report(self, test_report: TestReport) -> bool:
-        """Utility method to verify whether the criteria was met in a load test by comparing the
+        """Utility method to verify whether the criterion was met in a load test by comparing the
         threshold against the observed value of the relevant measurement, picked out from a
         specified TestReport instance
 
@@ -266,16 +270,16 @@ class Criteria(BaseEndpointTypeValidator, BaseMeasurementValidator):
             # measurement
             all_measurements = endpoint_report.measurements
 
-            test_measurement: Optional[Measurement] = all_measurements.dict().get(
-                self.name
-            )
+            test_measurement_dict: Dict = all_measurements.dict().get(self.name)
 
-            if test_measurement is None:
+            if test_measurement_dict is None:
                 raise ValueError(
                     f"The specified measure {self.name} could not be found in the "
                     f"endpoint report for id {self.endpoint_id}. Are you sure these "
                     "specs are correct?"
                 )
+            else:
+                test_measurement = Measurement(**test_measurement_dict)
 
             criteria_was_met = self.was_met_in_measurement(test_measurement)
 
@@ -286,3 +290,22 @@ class Criteria(BaseEndpointTypeValidator, BaseMeasurementValidator):
             criteria_was_met = False
 
         return criteria_was_met
+
+
+class EvaluatedCriterion(Criterion):
+
+    passed: bool
+
+
+class EvaluatedCriteria(BaseModel):
+
+    evaluated_criteria: List[EvaluatedCriterion]
+    passed: bool
+
+
+class EnvironmentCriterion(ServingBaseParams, Criterion):
+    """Criteria subclass that can be configured via environment variables. Used to auto-generate
+    criteria objects with indexed environment prefixes to support the configuration of entire
+    test requirements containing multiple criteria completely via environment variables."""
+
+    pass
