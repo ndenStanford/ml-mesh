@@ -40,6 +40,10 @@ def test_locus_load_test(test_user_classes, test_locustfile):
     load_test = LoadTest(settings=load_test_settings)
     load_test.run()
     test_report = load_test.report()
+    # Standard Library
+    import pdb
+
+    pdb.set_trace()
 
     assert test_report.num_requests > 5
     assert test_report.end_time > test_report.start_time
