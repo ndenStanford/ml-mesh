@@ -211,7 +211,7 @@ services:
     command: [python, -m, src.model_server]
     environment:
       onclusiveml_serving_model_directory: models/keywords_model_88
-    profiles: [unit, integration, functional]
+    profiles: [unit, integration, functional, load]
     ports:
       - 8000:8000
     volumes:
@@ -279,6 +279,26 @@ services:
     environment:
       onclusiveml_serving_model_directory: models/keywords_model_88
     profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # load tests
+  # - include model artifact
+  # - include REST model server process
+  serve-load:
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/keywords/serve/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: [pytest, tests/load, -ra, -vv, --capture=no]
+    environment:
+      onclusiveml_serving_model_directory: models/keywords_model_88
+    profiles: [load]
     hostname: onclusiveml
     networks:
       - onclusive-net

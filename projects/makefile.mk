@@ -32,6 +32,12 @@ projects.functional/%: ## Run functional tests for project component
 	# ensure the `serve` component that the `serve-functional` component usually depends on shuts down as well
 	make projects.stop/$(notdir $@)
 
+projects.load/%: ## Run load tests for project component
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile load up $(COMPONENT)-load --exit-code-from $(COMPONENT)-load --force-recreate
+
+	# ensure the `serve` component that the `serve-functional` component usually depends on shuts down as well
+	make projects.stop/$(notdir $@)
+
 projects.compile/%: ## Run model compilation pipeline component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile pipeline up compile-$(PIPELINE_COMPONENT) --exit-code-from compile-$(PIPELINE_COMPONENT)
 
