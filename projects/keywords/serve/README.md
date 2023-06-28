@@ -40,7 +40,7 @@ mv.stop()
 ```
 
 Note: Make sure you have
-- installed the `tracking` library, and
+- installed the `tracking` library by running `make libs.install/tracking`, and
 -  exported the `NEPTUNE_API_TOKEN` environment variable before.
 
 This will download all model artifacts for the specified model version `KEYWORDS-COMPILED-88` to
