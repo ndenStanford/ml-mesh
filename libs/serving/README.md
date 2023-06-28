@@ -46,21 +46,27 @@ for now
 
 ### Unit
 
-Same `make` targets as for all other libs
+- Install the library
+- Run `make libs.unit/serving`
 
 ### Integration
 
-Since the core feature of this library is to help implement (ML) server runtimes, the integration
+- Install the library
+- Run `make libs.integration/serving`
+
+### Functional
+
+Since the core feature of this library is to help implement (ML) server runtimes, the functional
 test requires a `server <-> client` setup, implying 2 parallel processes. This is not achievable in
-the current `libs` integration test approach of simple `pytest` suites, so for now the
-`integration` test suite will be disabled in the CI for `serving`. The below shows how to run it
+the current `libs` functional test approach of simple `pytest` suites, so for now the
+`functional` test suite will be disabled in the CI for `serving`. The below shows how to run it
 manually on local.
 
 - Install the library
   - `make libs.install/serving`
 - Start the model server by running the `server` side test suite
-  - `python -m pytest libs/serving/onclusiveml/tests/integration -ra -vv --capture=no -m server`
+  - `python -m pytest libs/serving/onclusiveml/tests/functional -ra -vv --capture=no -m server`
   - This will run on port 8000 by default, so make sure the port is free
 - Run the `client` side regression test suite
-  - `python -m pytest libs/serving/onclusiveml/tests/integration -ra -vv --capture=no -m client`
+  - `python -m pytest libs/serving/onclusiveml/tests/functional -ra -vv --capture=no -m client`
 - Make sure to stop (`ctrl+c`) the `server` side test process once you are done testing
