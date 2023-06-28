@@ -35,7 +35,7 @@ def detect_language(content: str, language: Optional[str] = None) -> LanguageIso
 
 
 def filter_language(
-    supported_languages: List[LanguageIso], raise_if_none: Optional[bool] = False
+    supported_languages: List[LanguageIso], raise_if_none: Optional[bool] = True
 ) -> Callable:
     """
     Decorator that filters supported language for a given function
