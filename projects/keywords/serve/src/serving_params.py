@@ -12,21 +12,6 @@ class ServedModelParams(ServingBaseParams):
 
     model_name: str = "keywords_model"
     model_directory: Union[str, Path] = "."
-    # model_artifact_directory: Union[str, Path] = os.path.join(
-    #     "src", "keywords_model_artifacts"
-    # )
-    # model_card_file: Union[str, Path] = os.path.join(
-    #     "src", "keywords_model_artifacts", "model_card.json"
-    # )
-    # inputs_test_file: Union[str, Path] = os.path.join(
-    #     "src", "keywords_model_artifacts", "inputs.json"
-    # )
-    # inference_params_test_file: Union[str, Path] = os.path.join(
-    #     "src", "keywords_model_artifacts", "inference_params.json"
-    # )
-    # predictions_test_file: Union[str, Path] = os.path.join(
-    #     "src", "keywords_model_artifacts", "predictions.json"
-    # )
 
 
 class ServedModelArtifacts(object):
