@@ -39,7 +39,9 @@ mv.download_directory_from_model_version(
 mv.stop()
 ```
 
-Note: Make sure you have exported the `NEPTUNE_API_TOKEN` environment variable before.
+Note: Make sure you have
+- installed the `tracking` library, and
+-  exported the `NEPTUNE_API_TOKEN` environment variable before.
 
 This will download all model artifacts for the specified model version `KEYWORDS-COMPILED-88` to
 your local directory `projects/keywords/serve/models/keywords_model_88`, creating it if it doesnt
