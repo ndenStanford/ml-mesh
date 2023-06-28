@@ -1,5 +1,6 @@
 # 3rd party libraries
 import pytest
+from locust import HttpUser, between, task
 from pydantic import ValidationError
 
 # Internal libraries
@@ -9,12 +10,35 @@ from onclusiveml.serving.rest.testing import (
     EnvironmentCriterion,
     EvaluatedCriteria,
     EvaluatedCriterion,
+    LoadTestingParams,
     Measurement,
     Measurements,
     TestReport,
     ValidEndpointTypes,
     ValidMeasurements,
 )
+
+
+class TestWebsiteUser(HttpUser):
+    wait_time = between(1, 2)
+
+    @task()
+    def get_home_page(self):
+        """
+        Gets /
+        """
+        self.client.get("/")
+
+
+def test_load_testing_params_no_locust_file():
+
+    LoadTestingParams(locustfile="", user_classes=[TestWebsiteUser])
+
+
+def test_load_testing_params_raise_no_locust_file():
+
+    with pytest.raises(FileNotFoundError):
+        LoadTestingParams()
 
 
 @pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
@@ -126,10 +150,11 @@ def test_test_report():
     )
 
 
+@pytest.mark.parametrize("test_hard", [True, False])
 @pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
 @pytest.mark.parametrize("test_ensure_lower", [True, False])
 @pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.list())
-def test_criterion(test_measurement, test_endpoint_type, test_ensure_lower):
+def test_criterion(test_measurement, test_endpoint_type, test_ensure_lower, test_hard):
 
     Criterion(
         name=test_measurement,
@@ -137,6 +162,7 @@ def test_criterion(test_measurement, test_endpoint_type, test_ensure_lower):
         endpoint_type=test_endpoint_type,
         endpoint_url="http://dummy_url",
         ensure_lower=test_ensure_lower,
+        hard=test_hard,
     )
 
 

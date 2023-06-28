@@ -26,7 +26,9 @@ class LoadTestCriteria:
 
         self.evaluation: Optional[EvaluatedCriteria] = None
 
-    def generate(self, n_criteria: int = 10) -> List[EnvironmentCriterion]:
+    def generate_from_environment(
+        self, n_criteria: int = 10
+    ) -> List[EnvironmentCriterion]:
         """_summary_
 
         Returns:
@@ -37,9 +39,22 @@ class LoadTestCriteria:
             # we dynamically subclass, changing only the environment prefix for the fields using
             # the current index as a suffix
             class IndexedEnvironmentCriterion(EnvironmentCriterion):
+                """This auto-generated class needs to be instantiated by exporting all of the
+                `Criterion`'s class's fields as environment variables with the correct indexed
+                prefix. i.e. the following environment variables need to be exported:
+                - onclusiveml_serving_criteria_{index}_name
+                - onclusiveml_serving_criteria_{index}_threshold
+                - onclusiveml_serving_criteria_{index}_ensure_lower
+                - onclusiveml_serving_criteria_{index}_endpoint_type
+                - onclusiveml_serving_criteria_{index}_endpoint_url
+
+                Args:
+                    EnvironmentCriterion (_type_): _description_
+                """
+
                 class Config:
                     base_prefix = EnvironmentCriterion.__config__.env_prefix
-                    env_prefix = f"{base_prefix}_criteria_{criteria_index}"
+                    env_prefix = f"{base_prefix}_criteria_{criteria_index}_"
                     env_file_encoding = "utf-8"
 
             self.indexed_environment_criteria_classes.append(
