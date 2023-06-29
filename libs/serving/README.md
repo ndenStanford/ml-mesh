@@ -72,27 +72,28 @@ To instantiate a configured load test to
 run
 
 ```python
+from onclusiveml.serving.rest.testing import LoadTestingParams, LoadTest
+
+from locust import HttpUser, between, task
 
 # define client behaviour
 class WebsiteUser(HttpUser):
-    wait_time = between(1, 2)
+  wait_time = between(1, 2)
 
-    @task()
-    def get_home_page(self):
-        """
-        Gets /
-        """
-        self.client.get("/")
+  @task()
+  def get_home_page(self):
+    """Gets /"""
+    self.client.get("/")
 
 load_test_settings = LoadTestingParams(
-        user_classes=[WebsiteUser],
-        locustfile="",
-        host="http://github.com",
-        run_time="20s",
-        num_users=10,
-        spawn_rate=2,
-        reset_stats=True,
-    )
+  user_classes=[WebsiteUser],
+  locustfile="",
+  host="http://github.com",
+  run_time="20s",
+  num_users=10,
+  spawn_rate=2,
+  reset_stats=True,
+)
 
 load_test = LoadTest(settings=load_test_settings)
 ```
@@ -121,14 +122,15 @@ with open("report.json","w") as report_file:
 ## 6 LoadTestCriteria
 
 To create a `LoadTestCriteria` instance that
-- ensures the average latency is below 50ms against the `GET`-type `http://github.com` endpoint, and
-- ensures the average failure rate is below 5% against the `GET`-type `http://github.com` endpoint
+- ensures the average latency is below 50ms against the `GET`-type `/` endpoint, and
+- ensures the average failure rate is below 5% against the `GET`-type `/` endpoint
 
 run
 
 ```python
-from serving.rest.testing import (
+from onclusiveml.serving.rest.testing import (
   ValidEndpointTypes,
+  ValidMeasurements,
   Criterion,
   LoadTestCriteria
 )
@@ -138,14 +140,14 @@ criteria = [
       name=ValidMeasurements.avg_response_time.value,
       threshold=50,
       endpoint_type=ValidEndpointTypes.get.value,
-      endpoint_url="http://github.com",
+      endpoint_url="/",
       ensure_lower=True,
   ),
   Criterion(
       name=ValidMeasurements.failures_percent.value,
       threshold=0.05,
-      endpoint_type=ValidEndpointTypes.post.value,
-      endpoint_url="http://github.com",
+      endpoint_type=ValidEndpointTypes.get.value,
+      endpoint_url="/",
       ensure_lower=True,
   ),
 ]
