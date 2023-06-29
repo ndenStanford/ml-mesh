@@ -14,7 +14,7 @@ To run `integration` and `functional` tests, as well as running the `serve` comp
 will need to have model version of a compiled keywords model available on your machine.
 
 The easiest way to achieve this is to use the `tracking` library to download a given model version
-frrom the model registry. For example to
+from the model registry. For example to
 
 - download [the model version `KEYWORDS-COMPILED-88`](https://app.neptune.ai/o/onclusive/org/keywords/models?shortId=KEYWORDS-COMPILED-88&type=modelVersion&path=.) and
 - saved it locally in the `projects/keywords/serve/models/keywords_model_88` directory, run
@@ -39,7 +39,9 @@ mv.download_directory_from_model_version(
 mv.stop()
 ```
 
-Note: Make sure you have exported the `NEPTUNE_API_TOKEN` environment variable before.
+Note: Make sure you have
+- installed the `tracking` library by running `make libs.install/tracking`, and
+-  exported the `NEPTUNE_API_TOKEN` environment variable before.
 
 This will download all model artifacts for the specified model version `KEYWORDS-COMPILED-88` to
 your local directory `projects/keywords/serve/models/keywords_model_88`, creating it if it doesnt
