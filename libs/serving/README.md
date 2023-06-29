@@ -60,9 +60,7 @@ TBC - see
 
 for now
 
-
-
-## 5 `LoadTest`
+## 5 LoadTest
 
 To instantiate a configured load test to
 - ping the `GET` type endpoint `http://github.com`
@@ -118,8 +116,9 @@ import json
 
 with open("report.json","w") as report_file:
   json.dump(report.json(),report_file)
+```
 
-## 6 `LoadTestCriteria`
+## 6 LoadTestCriteria
 
 To create a `LoadTestCriteria` instance that
 - ensures the average latency is below 50ms against the `GET`-type `http://github.com` endpoint, and
