@@ -1,4 +1,4 @@
-""" Constants """
+""" Chat """
 
 # 3rd party libraries
 from pydantic import BaseModel
