@@ -23,7 +23,7 @@ class LoadTestCriteria:
 
     The list of `Criteria` instances stored in the `criteria` attribute together define the profile
     of a `LoadTest` level criterion. If and only if all `hard` type criteria in that list pass
-    individually, will the overall evaluation pass.
+    individually, will the overall evaluation pass. See also the method `evaluate`.
     """
 
     def __init__(self, criteria: List[Criterion] = []):
@@ -91,9 +91,6 @@ class LoadTestCriteria:
                 - onclusiveml_serving_criteria_{index}_ensure_lower
                 - onclusiveml_serving_criteria_{index}_endpoint_type
                 - onclusiveml_serving_criteria_{index}_endpoint_url
-
-                Args:
-                    EnvironmentCriterion (_type_): _description_
                 """
 
                 class Config:
@@ -104,9 +101,7 @@ class LoadTestCriteria:
             self.indexed_environment_criteria_classes.append(
                 IndexedEnvironmentCriterion
             )
-        # instantiate all the subclasses and persist the resulting EnvironmnentCriterion-like
-        # instances in either the hard or soft criteria attributes for easier test report level
-        # evaluation later
+        # instantiate all the subclasses and persist the resulting EnvironmnentCriterion instances
         for (
             indexed_environment_criteria_class
         ) in self.indexed_environment_criteria_classes:
@@ -156,8 +151,10 @@ class LoadTestCriteria:
         hard_criteria_passes = []
 
         for criterion in self.criteria:
+            # evaluate criterion on report
             criterion_passed = criterion.was_met_in_report(test_report)
 
+            # generate evaluated criterion for the original criterion and its evaluation & persist
             evaluated_criterion_kwargs = {
                 **{"passed": criterion_passed},
                 **criterion.dict(),
@@ -165,11 +162,18 @@ class LoadTestCriteria:
             evaluated_criterion = EvaluatedCriterion(**evaluated_criterion_kwargs)
             evaluated_criteria.append(evaluated_criterion)
 
+            # keep track of the hard criterion evaluation outcomes - they are what drives the
+            # overall load test performance pass/fail
             if criterion.hard:
                 hard_criteria_passes.append(criterion_passed)
 
+        # evaluate the load test as a whole
         evaluation_pass = all(hard_criteria_passes)
 
+        # assemble the evaluated criteria instance, capturing
+        # - the individual `Criterion`s/`EnvironmentCriterion`s specs
+        # - all the individual `Criterion`s/`EnvironmentCriterion`s evluation outcomes
+        # - the overall evaluation outcome
         self.evaluation = EvaluatedCriteria(
             evaluated_criteria=evaluated_criteria, passed=evaluation_pass
         )
