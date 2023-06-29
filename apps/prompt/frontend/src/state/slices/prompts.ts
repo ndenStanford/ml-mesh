@@ -122,7 +122,7 @@ export const generateText = createAsyncThunk(
     if (modelName == "gpt-4") {
       suffix = `prompts/generate/model/${modelName}`;
     } else {
-      suffix = `prompts/generate/`;
+      suffix = `prompts/generate`;
     }
     const response = await fetch(`${API_URI}/${suffix}`, {
       method: "POST",
