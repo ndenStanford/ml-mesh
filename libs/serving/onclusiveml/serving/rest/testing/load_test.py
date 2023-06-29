@@ -41,6 +41,17 @@ class LoadTest(object):
     """
 
     def __init__(self, settings: LoadTestingParams):
+        """The constructor for the `LoadTest` class. Accepts a `LoadTestingParams` configuration
+        class instance that configures the load test.
+
+        Note that this does not include criteria of any kind - the evaluation of a load test's
+        report is implemented in the `LoadTestCriteria` class' `evaluate` method.
+
+        Args:
+            settings (LoadTestingParams): Load test configuration. Includes client behaviour,
+                test duration and more. See the `LoadTestingParams` class in the
+                `load_testing_params` module for details.
+        """
         self.settings = settings
         self.start_time: float = -1
         self.end_time: float = -1

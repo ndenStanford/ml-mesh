@@ -14,6 +14,15 @@ from onclusiveml.serving.rest.serving_base_params import ServingBaseParams
 
 
 class LoadTestingParams(ServingBaseParams):
+    """A configuration class defining the data model for the `LoadTest` class' `settings`
+    constructor argument.
+
+    Note: If a locustfile is being used to define client behaviour, that file must be available when
+        instantiating a `LoadTestingParams` instance as it will be loaded during the validation
+        stage of this pydantic BaseSetting subclass.
+
+    """
+
     # --- load test client behaviour specification. Two options:
     # - customized classes (preferred), or
     # - reference to locustfile containing customized classes (not preferred - requires an
@@ -212,26 +221,26 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
     hard: bool = True
 
     def was_met_in_measurement(self, test_measurement: Measurement) -> bool:
-        """Utility method to verify whether the criteria was met in a load test measuremtn by
+        """Utility method to verify whether the criterion was met in a load test measuremebt by
         comparing the threshold against the observed value of the specified Measurement instance
 
         Args:
             test_measurement (Measurement): The measurement (i.e. observation) that is being
-                evaluated against the criteria
+                evaluated against the criterion
 
         Raises:
-            ValueError: If the criteria's name does not match the specified test report's name, a
+            ValueError: If the criterion's name does not match the specified test report's name, a
                 ValueError is raised.
 
         Returns:
-            bool: Whether the criteria was met in the specified Measurement
+            bool: Whether the criterion was met in the specified Measurement
         """
 
         if self.name != test_measurement.name:
             raise ValueError(
-                f"The criteria's name {self.name} does not match the measurement's "
+                f"The criterion's name {self.name} does not match the measurement's "
                 f"name {test_measurement.name}. Please make sure you are applying "
-                "this criteria to the correct measurement"
+                "this criterion to the correct measurement"
             )
 
         is_lower = test_measurement.value < self.threshold
@@ -249,16 +258,16 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
                 `report` method.
 
         Raises:
-            ValueError: If the criteria's endpoint report is available but is missing the criteria's
-                measurement, this exeception is raised. This indicates that Locust was able to
-                perform a load test successfully, but did not collect the measurement needed to
-                evaluate this criteria.
+            ValueError: If the criterion's endpoint report is available but is missing the
+                criterion's measurement, this exeception is raised. This indicates that Locust was
+                able to perform a load test successfully, but did not collect the measurement needed
+                to evaluate this criterion.
 
-                Note that if the entire endpoint report for the criteria's endpoint id could not be
+                Note that if the entire endpoint report for the criterion's endpoint id could not be
                 found, we return `False`.
 
         Returns:
-            bool: Whether the criteria was met in the specified TestReport.
+            bool: Whether the criterion was met in the specified TestReport.
         """
 
         endpoint_report: Optional[EndpointReport] = test_report.completed.get(
@@ -304,8 +313,15 @@ class EvaluatedCriteria(BaseModel):
 
 
 class EnvironmentCriterion(ServingBaseParams, Criterion):
-    """Criteria subclass that can be configured via environment variables. Used to auto-generate
+    """Criterion subclass that can be configured via environment variables. Used to auto-generate
     criteria objects with indexed environment prefixes to support the configuration of entire
     test requirements containing multiple criteria completely via environment variables."""
 
-    pass
+    # to ensure validation errors for missing environment variables, we unset the default values for
+    # all fields
+    name: str
+    threshold: float
+    ensure_lower: bool
+    hard: bool
+    endpoint_type: str
+    endpoint_url: str
