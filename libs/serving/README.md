@@ -115,7 +115,7 @@ To export the report as a `json` file, run
 import json
 
 with open("report.json","w") as report_file:
-  json.dump(report.json(),report_file)
+  json.dump(report.dict(),report_file)
 ```
 
 ## 6 LoadTestCriteria
@@ -165,7 +165,7 @@ To export the evaluation results as a `json` file, run
 import json
 
 with open("evaluation.json","w") as evaluation_file:
-  json.dump(evaluation.json(),evaluation_file)
+  json.dump(evaluation.dict(),evaluation_file)
 ```
 
 ## Testing
