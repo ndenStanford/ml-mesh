@@ -47,8 +47,10 @@ class LoadTest(object):
         gevent.signal_handler(signal.SIGTERM, sig_term_handler)
 
     def report(self) -> TestReport:
-        """
-        Returns the statistics from the load test in JSON
+        """Returns the statistics from the load test in JSON
+
+        Returns:
+            TestReport: The result of the load test
         """
         test_report = {
             "completed": {},
