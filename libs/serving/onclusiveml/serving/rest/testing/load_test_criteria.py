@@ -4,6 +4,7 @@ from typing import List, Optional
 # Internal libraries
 from onclusiveml.serving.rest.testing.load_testing_params import (
     Criterion,
+    EnvironmentCriteriaCount,
     EnvironmentCriterion,
     EvaluatedCriteria,
     EvaluatedCriterion,
@@ -42,14 +43,13 @@ class LoadTestCriteria:
             self.n_criteria = len(self.criteria)
         else:
             self.n_criteria = 0
-
         # storage attribute for the dynamic criterion class definitions
         self.indexed_environment_criteria_classes: List[EnvironmentCriterion] = []
 
         self.evaluation: Optional[EvaluatedCriteria] = None
 
     def generate_from_environment(
-        self, n_criteria: int = 10
+        self, n_criteria: Optional[int] = None
     ) -> List[EnvironmentCriterion]:
         """A utility method to dynamically define and create a list of `EnvironmentCriteria`
         instances sourced exclusively from the corresponding environment variables. The resulting
@@ -71,13 +71,17 @@ class LoadTestCriteria:
         configured using environment variables.
 
         Args:
-            n_criteria (int, optional): The number of environment criteria to generate. Defaults to
-                10.
+            n_criteria (int, optional): The number of environment criteria to generate. If not
+                specified, attempts to obtain the value from reading the corresponding environment
+                variable from the `EnvironmentCriteriaCount` class' `n_criteria` field.
 
         Returns:
             List[EnvironmentCriterion]: A list of `EnvironmentCriterion` instances definine the
             `LoadTest` level performance requirements
         """
+        # if the number of criteria is not specified in function call, obtain it from environment
+        if n_criteria is None:
+            n_criteria = EnvironmentCriteriaCount().n_criteria
         # dynamically define subclasses with indexed env prefix
         for criteria_index in range(1, n_criteria + 1):
             # we dynamically subclass, changing only the environment prefix for the fields using
@@ -95,7 +99,7 @@ class LoadTestCriteria:
 
                 class Config:
                     base_prefix = EnvironmentCriterion.__config__.env_prefix
-                    env_prefix = f"{base_prefix}_criteria_{criteria_index}_"
+                    env_prefix = f"{base_prefix}criteria_{criteria_index}_"
                     env_file_encoding = "utf-8"
 
             self.indexed_environment_criteria_classes.append(
@@ -109,9 +113,7 @@ class LoadTestCriteria:
             self.criteria.append(indexed_environment_criteria)
 
         self.n_criteria = n_criteria
-
         # return the populatd attribute
-
         return self.criteria
 
     def evaluate(self, test_report: TestReport) -> EvaluatedCriteria:
@@ -153,7 +155,6 @@ class LoadTestCriteria:
         for criterion in self.criteria:
             # evaluate criterion on report
             criterion_passed = criterion.was_met_in_report(test_report)
-
             # generate evaluated criterion for the original criterion and its evaluation & persist
             evaluated_criterion_kwargs = {
                 **{"passed": criterion_passed},
@@ -161,15 +162,12 @@ class LoadTestCriteria:
             }
             evaluated_criterion = EvaluatedCriterion(**evaluated_criterion_kwargs)
             evaluated_criteria.append(evaluated_criterion)
-
             # keep track of the hard criterion evaluation outcomes - they are what drives the
             # overall load test performance pass/fail
             if criterion.hard:
                 hard_criteria_passes.append(criterion_passed)
-
         # evaluate the load test as a whole
         evaluation_pass = all(hard_criteria_passes)
-
         # assemble the evaluated criteria instance, capturing
         # - the individual `Criterion`s/`EnvironmentCriterion`s specs
         # - all the individual `Criterion`s/`EnvironmentCriterion`s evluation outcomes

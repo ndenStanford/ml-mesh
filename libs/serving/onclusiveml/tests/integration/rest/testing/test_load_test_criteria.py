@@ -50,28 +50,32 @@ def test_load_test_criteria_generate_from_environment(
 ):
 
     load_test_criteria = LoadTestCriteria()
+
+    # export the variable specifying the number of environment criteria
+    os.environ[f"{ServingBaseParams.__config__.env_prefix}n_criteria"] = "10"
+
     # export all indexed environment variables. Include the ones with default values to illustrate
     # what would go into the docker compose `environment` section. We set the non-default value
     # to make sure the environment variable is dictating the final field value, and not the default
     # settings
     for index in range(1, 11):
         os.environ[
-            f"{ServingBaseParams.__config__.env_prefix}_criteria_{index}_name"
+            f"{ServingBaseParams.__config__.env_prefix}criteria_{index}_name"
         ] = "avg_response_time"
         os.environ[
-            f"{ServingBaseParams.__config__.env_prefix}_criteria_{index}_threshold"
+            f"{ServingBaseParams.__config__.env_prefix}criteria_{index}_threshold"
         ] = "0.1"
         os.environ[
-            f"{ServingBaseParams.__config__.env_prefix}_criteria_{index}_endpoint_type"
+            f"{ServingBaseParams.__config__.env_prefix}criteria_{index}_endpoint_type"
         ] = "POST"
         os.environ[
-            f"{ServingBaseParams.__config__.env_prefix}_criteria_{index}_endpoint_url"
+            f"{ServingBaseParams.__config__.env_prefix}criteria_{index}_endpoint_url"
         ] = "http://dummy_url"
         os.environ[
-            f"{ServingBaseParams.__config__.env_prefix}_criteria_{index}_ensure_lower"
+            f"{ServingBaseParams.__config__.env_prefix}criteria_{index}_ensure_lower"
         ] = "no"
         os.environ[
-            f"{ServingBaseParams.__config__.env_prefix}_criteria_{index}_hard"
+            f"{ServingBaseParams.__config__.env_prefix}criteria_{index}_hard"
         ] = "no"
 
     load_test_criteria.generate_from_environment(n_criteria=10)
@@ -82,7 +86,7 @@ def test_load_test_criteria_generate_from_environment(
         assert isinstance(environment_criterion, EnvironmentCriterion)
         assert (
             environment_criterion.__config__.env_prefix
-            == f"{test_serving_base_params_env_prefix}_criteria_{index}_"  # noqa: W503
+            == f"{test_serving_base_params_env_prefix}criteria_{index}_"  # noqa: W503
         )
         assert environment_criterion.name == "avg_response_time"
         assert environment_criterion.threshold == 0.1

@@ -310,12 +310,16 @@ def test_evaluated_criteria():
 
 @pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
 @pytest.mark.parametrize("test_ensure_lower", [True, False])
+@pytest.mark.parametrize("test_hard", [True, False])
 @pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.list())
-def test_environment_criterion(test_measurement, test_endpoint_type, test_ensure_lower):
+def test_environment_criterion(
+    test_measurement, test_hard, test_endpoint_type, test_ensure_lower
+):
 
     EnvironmentCriterion(
         name=test_measurement,
         threshold=10,
+        hard=test_hard,
         endpoint_type=test_endpoint_type,
         endpoint_url="http://dummy_url",
         ensure_lower=test_ensure_lower,

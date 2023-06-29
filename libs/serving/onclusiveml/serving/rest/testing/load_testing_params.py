@@ -325,3 +325,8 @@ class EnvironmentCriterion(ServingBaseParams, Criterion):
     hard: bool
     endpoint_type: str
     endpoint_url: str
+
+
+class EnvironmentCriteriaCount(ServingBaseParams):
+
+    n_criteria: int
