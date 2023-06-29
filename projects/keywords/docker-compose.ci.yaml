@@ -216,7 +216,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.15-pre.d9d0a22}
     volumes:
       - type: bind
         source: serve/
