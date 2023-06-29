@@ -12,7 +12,29 @@ from onclusiveml.serving.rest.testing.load_testing_params import (
 
 
 class LoadTestCriteria:
+    """A utility class to
+    - provide `Criteria` instances either through
+        - direct specification via the constructor argument, or
+        - dynamic definition and creation, using exclusively indexed environment variables to set
+            the fields' values - see `generate_from_environment`
+    - evaluate `Criteria` instances against a `TestReport` instance, and collecting the individual
+        fail/pass results into one final fail/pass, taking into account the `hard` attribute of each
+        `Criteria` instance
+
+    The list of `Criteria` instances stored in the `criteria` attribute together define the profile
+    of a `LoadTest` level criterion. If and only if all `hard` type criteria in that list pass
+    individually, will the overall evaluation pass.
+    """
+
     def __init__(self, criteria: List[Criterion] = []):
+        """Constructor of the class. A list of
+
+        Args:
+            criteria (List[Criterion], optional): The criteria that define the `LoadTest` level
+                performance requirements. Defaults to []. Populates the `criteria` attribute.
+                If not specified, the `criteria` attribute can be set via the
+                `generate_from_environment` method.
+        """
         # storage attributes for hard&soft criteria instances
         self.criteria = criteria
 
@@ -29,10 +51,32 @@ class LoadTestCriteria:
     def generate_from_environment(
         self, n_criteria: int = 10
     ) -> List[EnvironmentCriterion]:
-        """_summary_
+        """A utility method to dynamically define and create a list of `EnvironmentCriteria`
+        instances sourced exclusively from the corresponding environment variables. The resulting
+        list of `Criteria` instances will populate the `criteria` attribute.
+
+        More specifically: For each index 1,...,n_criteria:
+        - the following environment variables need to be exported with the correct values:
+            - onclusiveml_serving_criteria_{index}_name
+            - onclusiveml_serving_criteria_{index}_threshold
+            - onclusiveml_serving_criteria_{index}_ensure_lower
+            - onclusiveml_serving_criteria_{index}_endpoint_type
+            - onclusiveml_serving_criteria_{index}_endpoint_url
+        - an `EnvironmentCriteria` subclass will be defined, with the only difference being the
+            environment variable prefix being extended by `criteria_{index}_`
+        - an instance of the above subclass will be instantiated, assuming the above environment
+            variables have been export correctly
+
+        This is useful in CI settings, were entire `LoadTest` performance profiles can now be
+        configured using environment variables.
+
+        Args:
+            n_criteria (int, optional): The number of environment criteria to generate. Defaults to
+                10.
 
         Returns:
-            EnvironmentCriteria: _description_
+            List[EnvironmentCriterion]: A list of `EnvironmentCriterion` instances definine the
+            `LoadTest` level performance requirements
         """
         # dynamically define subclasses with indexed env prefix
         for criteria_index in range(1, n_criteria + 1):
@@ -76,16 +120,19 @@ class LoadTestCriteria:
         return self.criteria
 
     def evaluate(self, test_report: TestReport) -> EvaluatedCriteria:
-        """Utility method to verify whether the criteria where met in a load test by comparing the
-        threshold(s) against the observed value of the relevant measurement(s), picked out from a
-        specified TestReport instance. More specifically:
-
-        - evaluate each listed criterion against the specified test report by calling its
-        `was_met_in_report` method.
-        - use return to instantiate `EvaluatedCriterion` instances,
-        - passes the overall evlaluation if and only if each of the hard-type criteria passes
-        - populate the `evaluation` attribute of this instance with a corresponding
-            `EvaluatedCriteria` instance
+        """Utility method to verify whether
+            - the individual `Criterion`/`EnvironmentCriterion` instances in the `criteria`
+                attribute where met in a load test by comparing the threshold(s) against the
+                observed value of the relevant measurement(s), picked out from a specified
+                TestReport instance, by calling the criterion's `was_met_in_report` method
+            - the overall evaluation has passed, based on the above individual outcomes. The overall
+                evaluation is considered a pass if and only if all the `hard` type `Criterion`
+                instances in the `criteria` attribute return a successful pass result from their
+                respective `was_met_in_report` method calls against the `test_report`.
+            - return an `EvaluatedCriteria` instance that captures:
+                - the individual `Criterion`s/`EnvironmentCriterion`s specs
+                - all the individual `Criterion`s/`EnvironmentCriterion`s evluation outcomes
+                - the overall evaluation outcome
 
         Args:
             test_report (TestReport): The TestReport instance as returned by a LocusLoadTest's
@@ -101,7 +148,8 @@ class LoadTestCriteria:
                 found, we return `False`.
 
         Returns:
-            bool: Whether the criteria was met in the specified TestReport.
+            EvaluatedCriteria: The outcome of the evaluation of the load test performance
+                requirements against the load test report.
         """
 
         evaluated_criteria = []
