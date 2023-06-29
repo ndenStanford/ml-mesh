@@ -170,6 +170,8 @@ services:
 
   # serving image
   serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
     build:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
@@ -179,66 +181,85 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8000', --reload, --log-level, debug]
-    profiles: [serve]
+    command: [python, -m, src.model_server]
+    environment:
+      onclusiveml_serving_model_directory: models/keywords_model_88
+    profiles: [unit, integration, functional]
     ports:
       - 8000:8000
-    environment:
-      ENVIRONMENT: ci
-      DOCS_URL: /docs
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/keywords/serve/
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
-    ports:
-      - 8000:8000
-    environment:
-      ENVIRONMENT: ci
-      DOCS_URL: /docs
     hostname: onclusiveml
     networks:
       - onclusive-net
+    depends_on:
+      - serve # this allows us to avoid duplicating the `build` section
 
   # integration tests
+  # - include model artifact
+  # - do NOT include REST model server process
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
+    devices:
+      - /dev/neuron1:/dev/neuron1 # needs to be different from the `serve` service device
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
-    profiles: [integration]
-    ports:
-      - 8000:8000
     environment:
-      ENVIRONMENT: ci
-      DOCS_URL: /docs
+      onclusiveml_serving_model_directory: models/keywords_model_88
+    profiles: [integration]
     hostname: onclusiveml
     networks:
       - onclusive-net
+    depends_on:
+      - serve # this allows us to avoid duplicating the `build` section
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/keywords/serve/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      onclusiveml_serving_model_directory: models/keywords_model_88
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
 
 networks:
   onclusive-net:
