@@ -206,7 +206,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.model_server]
     environment:
@@ -232,6 +232,16 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
+    build:
+      context: ../../
+      dockerfile: projects/keywords/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: keywords
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     volumes:
       - type: bind
         source: serve/
@@ -242,8 +252,6 @@ services:
     hostname: onclusiveml
     networks:
       - onclusive-net
-    depends_on:
-      - serve # this allows us to avoid duplicating the `build` section
 
   # integration tests
   # - include model artifact
