@@ -9,7 +9,7 @@ from onclusiveml.tracking import TrackedModelSpecs
 from src.serving_params import ServedModelParams  # noqa: F401
 
 
-class CompiledKeyWordModelSpecs(TrackedModelSpecs):
+class TrackedCompiledModelSpecs(TrackedModelSpecs):
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
     with_id: str = Field("KEYWORDS-COMPILED-88", env="neptune_model_version_id")

@@ -6,14 +6,14 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.downloading_params import CompiledKeyWordModelSpecs, ServedModelParams
+from src.downloading_params import ServedModelParams, TrackedCompiledModelSpecs
 
 
 if __name__ == "__main__":
 
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
-    model_version_specs = CompiledKeyWordModelSpecs().dict()
+    model_version_specs = TrackedCompiledModelSpecs().dict()
     # output directory specs
     model_export_params = ServedModelParams()
     # initialize client for specific model version
