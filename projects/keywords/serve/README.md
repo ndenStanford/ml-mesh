@@ -10,43 +10,26 @@ This section outlines the 4 main steps involved in running a configured `keyword
 
 ### 1.1 Downloading a compiled keywords model
 
-To run `integration` and `functional` tests, as well as running the `serve` component, you
-will need to have model version of a compiled keywords model available on your machine.
+To run
+- the `serve` component,
+- the `integration` test suite or
+- te `functional` test suite
 
-The easiest way to achieve this is to use the `tracking` library to download a given model version
-from the model registry. For example to
+you will need to have model version of a compiled keywords model available on your machine. When running any of these using the respective `make` commands (see sections 1.4 and 2), this model download is triggered automatically.
 
-- download [the model version `KEYWORDS-COMPILED-88`](https://app.neptune.ai/o/onclusive/org/keywords/models?shortId=KEYWORDS-COMPILED-88&type=modelVersion&path=.) and
-- saved it locally in the `projects/keywords/serve/models/keywords_model_88` directory, run
+However, you can also run this manually by invoking the following commmand:
 
-```python
-from onclusiveml import tracking
+`make projects.start/keywords COMPONENT=serve-download-model ENVIRONMENT=dev`
 
-# initialize client for specific model version
-mv = tracking.TrackedModelVersion(
-  project="onclusive/keywords",
-  model="KEYWORDS-TRAINED",
-  with_id="KEYWORDS-COMPILED-88"
-)
+Note: Make sure you have exported the following environment variables in your CLI before running the
+above command:
+- `NEPTUNE_API_TOKEN`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_ACCESS_KEY_ID`
 
-# download all model artifacts for the model version to local
-mv.download_directory_from_model_version(
-  local_directory_path='projects/keywords/serve/models/keywords_model_88',
-  neptune_attribute_path="model"
-)
+See the `serve-download-model` service entry in the docker compose file to configure this step w.r.t model version being downloaded, local export directory, etc.
 
-# shutdown client
-mv.stop()
-```
-
-Note: Make sure you have
-- installed the `tracking` library by running `make libs.install/tracking`, and
--  exported the `NEPTUNE_API_TOKEN` environment variable before.
-
-This will download all model artifacts for the specified model version `KEYWORDS-COMPILED-88` to
-your local directory `projects/keywords/serve/models/keywords_model_88`, creating it if it doesnt
-already exist. You can then later reference that directory to ensure the relevant processes can
-find the model artifacts required to serve the `keywords` model (see below sections).
+Note also that if the specified output directory is not empty, the download will be skipped.
 
 ### 1.2 Configuring the served model
 
@@ -67,8 +50,11 @@ interface with the model server (see below section). In particular, implements:
 To ensure the `load` method works as expected, all required artifact files (see previous section)
 referenced in the `ServedModelParams` class need to be accessible on the local disk (including
 mounted volumes in a `Docker` or `K8s` setting). These can be specified via the corresponding
-environment variable `onclusiveml_serving_model_directory`. For example, to point towards the ML
-model version downloaded in the previous step, set `onclusiveml_serving_model_directory=projects/keywords/serve/models/keywords_model_88`
+environment variable `ONCLUSIVEML_SERVING_MODEL_DIRECTORY`. For example, to point towards the ML
+model version downloaded in the previous step, set `ONCLUSIVEML_SERVING_MODEL_DIRECTORY=models/keywords_model_88`
+
+A working configuration is implemented in the `serve` service of the `docker-compose.dev.yaml` file.
+
 
 ### 1.3 Configuring the model server
 
@@ -76,6 +62,9 @@ The keywords model server is implemented using the internal `serving` library's 
 It is configured entirely by an `ServingParams` instance taken from the `serving` library. The
 recommended way to configure the `keywords` model server is therefore to use the corresponding
 environment variables, as described in the `serving` library documentation.
+
+A working model server configuration is implemented via the environment variables of the `serve`
+ service in the `docker-compose.dev.yaml` file.
 
 ### 1.4 Running the model server
 
@@ -86,7 +75,7 @@ To run the model server locally without containers (not recommended):
 
 To run the model server using the `docker-compose.dev.yaml` file (recommended):
 
-- run `make projects.start/keywords COMPONENT=serve`
+- run `make projects.start/keywords COMPONENT=serve ENVIRONMENT=dev`
 
 ## 2 Testing the model server
 
@@ -101,14 +90,12 @@ The following test suites are currently implemented:
   - Code + ML model dependency
   - requires `neuron` device
   - requires model artifact
-    - requires completing steps `1.1` and `1.2`
   - no model server will be run
 - `functional`
   - Code + Ml model dependency
   - requires `neuron` device in `serve` server component
-  - requires model artifact in `serve` server component - requires completing steps `1.1` and `1.2`
+  - requires model artifact in `serve` server component
   - model server will be run in `serve` component
-    - requires completing step `1.3`
   - additional client will be run in `serve-functional` component, sending genuine `http` requests
     to the model server running in `serve` over the `docker compose` network
 
@@ -131,6 +118,9 @@ To run the `integration` tests for the `serve` component, simply run:
 make projects.integration/keywords COMPONENT=serve ENVIRONMENT=dev
 ```
 
+Note: This will automatically download the model artifact if the specified output directory is
+empty.
+
 ### 2.3 Run `functional` tests
 
 To run the `functional` tests for the `serve` component, simply run:
@@ -138,3 +128,6 @@ To run the `functional` tests for the `serve` component, simply run:
 ```bash
 make projects.functional/keywords COMPONENT=serve ENVIRONMENT=dev
 ```
+
+Note: This will automatically download the model artifact if the specified output directory is
+empty.
