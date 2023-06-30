@@ -63,6 +63,8 @@ You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a dif
 ```docker
 docker run \
   --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
+  -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
   --env-file $PATH_TO_REPOSITORY/projects/ner/train/config/dev.env \
   -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-train:latest \
   python -m src.register_trained_model
