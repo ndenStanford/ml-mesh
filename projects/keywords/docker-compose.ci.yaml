@@ -207,16 +207,6 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     volumes:
       - type: bind
         source: serve/
