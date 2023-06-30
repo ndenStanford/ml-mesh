@@ -45,6 +45,7 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       target-branch: ${{ github.ref_name }}
       prerelease: ${{ github.ref_name == 'develop' }}
+      include-pre-releases: ${{ github.ref_name == 'develop' }}
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
