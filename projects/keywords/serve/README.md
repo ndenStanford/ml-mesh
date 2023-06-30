@@ -6,103 +6,31 @@ design for ML serving images](https://onclusive01-my.sharepoint.com/:w:/r/person
 
 ## 1 Running the model server
 
-This section outlines the 4 main steps involved in running a configured `keywords` ML model server.
-
-### 1.1 Downloading a compiled keywords model
-
-To run
-- the `serve` component,
-- the `integration` test suite or
-- te `functional` test suite
-
-you will need to have model version of a compiled keywords model available on your machine. When running any of these using the respective `make` commands (see sections 1.4 and 2), this model download is triggered automatically.
-
-However, you can also run this manually by invoking the following commmand:
-
-`make projects.start/keywords COMPONENT=serve-download-model ENVIRONMENT=dev`
-
-Note: Make sure you have exported the following environment variables in your CLI before running the
-above command:
-- `NEPTUNE_API_TOKEN`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_ACCESS_KEY_ID`
-
-See the `serve-download-model` service entry in the docker compose file to configure this step w.r.t model version being downloaded, local export directory, etc.
-
-Note also that if the specified output directory is not empty, the download will be skipped.
-
-### 1.2 Configuring the served model
-
-The `ServedKeywordsModel` subclasses the `serving` library's `ServedModel` to provide the required
-interface with the model server (see below section). In particular, implements:
-
-- the `load` method to load in all required model artifacts from the local disk
-  - all relevant file locations are automatically derived via the `ServedModelParams` and
-    `ServedModelArtifacts` settings classes in the `serving_params` module
-- the `predict` method to score the loaded `CompiledKeyBERT` model instance on validated input data,
-  auto-validating the output predictions data, too
-  - it uses the custom data model classes `PredictRequestModel` and `PredictResponseModel` to do
-    said validation
-- the `bio` method to make the loaded ML model's meta data accessible via an endpoint
-  - it uses the custom data model class `BioResponseModel` to validate the outgoing ML model meta
-    data
-
-To ensure the `load` method works as expected, all required artifact files (see previous section)
-referenced in the `ServedModelParams` class need to be accessible on the local disk (including
-mounted volumes in a `Docker` or `K8s` setting). These can be specified via the corresponding
-environment variable `ONCLUSIVEML_SERVING_MODEL_DIRECTORY`. For example, to point towards the ML
-model version downloaded in the previous step, set `ONCLUSIVEML_SERVING_MODEL_DIRECTORY=models/keywords_model_88`
-
-A working configuration is implemented in the `serve` service of the `docker-compose.dev.yaml` file.
-
-
-### 1.3 Configuring the model server
-
-The keywords model server is implemented using the internal `serving` library's `ModelServer` class.
-It is configured entirely by an `ServingParams` instance taken from the `serving` library. The
-recommended way to configure the `keywords` model server is therefore to use the corresponding
-environment variables, as described in the `serving` library documentation.
-
-A working model server configuration is implemented via the environment variables of the `serve`
- service in the `docker-compose.dev.yaml` file.
-
-### 1.4 Running the model server
-
-To run the model server locally without containers (not recommended):
-
-- make sure you are in the `/projects/keywords/serve` directory
-- run `python -m src.model_server`
-
 To run the model server using the `docker-compose.dev.yaml` file (recommended):
 
 - run `make projects.start/keywords COMPONENT=serve ENVIRONMENT=dev`
+
+Note: This will automatically download the model artifact if the specified output directory is
+empty.
 
 ## 2 Testing the model server
 
 The following test suites are currently implemented:
 
 - `unit`
-  - Code only
-  - no `neuron` device dependency
-  - no model artifact dependency
-  - no model server will be run
 - `integration`
-  - Code + ML model dependency
-  - requires `neuron` device
-  - requires model artifact
-  - no model server will be run
 - `functional`
-  - Code + Ml model dependency
-  - requires `neuron` device in `serve` server component
-  - requires model artifact in `serve` server component
-  - model server will be run in `serve` component
-  - additional client will be run in `serve-functional` component, sending genuine `http` requests
-    to the model server running in `serve` over the `docker compose` network
 
 A load test suite will be implemented once the `serving` library has been extended to support an
 internally consistent load testing framework.
 
 ### 2.1 Run `unit` tests
+
+`unit` test scope:
+  - Code only
+  - no `neuron` device dependency
+  - no model artifact dependency
+  - no model server will be run
 
 To run the `unit` tests for the `serve` component, simply run:
 
@@ -111,6 +39,13 @@ make projects.unit/keywords COMPONENT=serve ENVIRONMENT=dev
 ```
 
 ### 2.2 Run `integration` tests
+
+`integration` test scope:
+  - Code + ML model dependency
+  - requires `neuron` device
+  - requires model artifact
+  - no model server will be run
+
 
 To run the `integration` tests for the `serve` component, simply run:
 
@@ -122,6 +57,14 @@ Note: This will automatically download the model artifact if the specified outpu
 empty.
 
 ### 2.3 Run `functional` tests
+
+`functional` test scope:
+  - Code + Ml model dependency
+  - requires `neuron` device in `serve` server component
+  - requires model artifact in `serve` server component
+  - model server will be run in `serve` component
+  - additional client will be run in `serve-functional` component, sending genuine `http` requests
+    to the model server running in `serve` over the `docker compose` network
 
 To run the `functional` tests for the `serve` component, simply run:
 
