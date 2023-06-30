@@ -14,6 +14,7 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.model.constants import ModelEnum
 from src.model.schemas import ModelSchema
+from src.prompt.chat import PromptChat
 from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
 from src.prompt.generate import generate_text
 from src.prompt.schemas import (
@@ -179,15 +180,16 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
     }
 
 
-@router.get("/generate/{prompt}", status_code=status.HTTP_200_OK)
-def generate_test(prompt: str):
+@router.post("/generate", status_code=status.HTTP_200_OK)
+def generate_text_from_chat(values: PromptChat):
     """Retrieves prompt via id.
     Args:
-        prompt (str): prompt input from chat
+        values Dict[str, Any]: input from chat
     """
+
     return {
         "generated": generate_text(
-            prompt,
+            values.prompt,
             ModelEnum.GPT3_5.value,
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
@@ -195,17 +197,18 @@ def generate_test(prompt: str):
     }
 
 
-@router.get("/generate/{prompt}/model/{model_name}", status_code=status.HTTP_200_OK)
-def generate_test_with_diff_model(prompt: str, model_name: str):
+@router.post("/generate/model/{model_name}", status_code=status.HTTP_200_OK)
+def generate_text_from_chat_diff_model(model_name: str, values: PromptChat):
     """Retrieves prompt via id.
     Args:
-        prompt (str): prompt input from chat
+        values Dict[str, Any]: input from chat
         model_name (str): model name
     """
+
     model = ModelSchema.get(model_name)
     return {
         "generated": generate_text(
-            prompt,
+            values.prompt,
             model.model_name,
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
