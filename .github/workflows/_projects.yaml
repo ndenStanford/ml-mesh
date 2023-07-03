@@ -171,6 +171,16 @@ jobs:
           PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
 
+      - name: download model
+        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
+        run: |
+          make projects.start/${{ inputs.project }} COMPONENT=serve-download-model \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM=linux/amd64 \
+          ENVIRONMENT="ci"
+
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
         run: |
