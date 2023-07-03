@@ -37,6 +37,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share \
+ && chown -R ${USER}:users /usr/local/include \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
 # switch user

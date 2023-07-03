@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "neuron_inference"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "3.8.16"
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
 
@@ -20,8 +20,8 @@ secondary = true
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.2"
-transformers = "^4.30.2"
+pytest = "7.3.2"
+transformers = "4.30.2"
 
 [build-system]
 requires = ["poetry-core"]

@@ -11,7 +11,7 @@ class ModelTable(BaseTable):
     """Dynamodb table for Model."""
 
     class Meta(BaseTable.Meta):
-        table_name = "model"
+        table_name = "model_v2"
 
     model_name = UnicodeAttribute(null=False, hash_key=True)
     parameters = UnicodeAttribute(null=True)

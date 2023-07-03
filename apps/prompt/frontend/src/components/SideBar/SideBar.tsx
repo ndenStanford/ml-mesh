@@ -3,6 +3,7 @@ import styles from "./side-bar.module.scss";
 import { Button } from "../Button";
 import { Modal } from "../Modal";
 import { ReactComponent as AddIcon } from "../../icons/add.svg";
+import { ReactComponent as SettingsIcon } from "../../icons/settings.svg";
 import { SidebarProps } from "@/src/types";
 
 export default class SideBar extends React.Component<SidebarProps, any> {
@@ -11,6 +12,7 @@ export default class SideBar extends React.Component<SidebarProps, any> {
     this.state = {
       textAreaValue: "",
       textAliasValue: "",
+      modelNameValue: this.props.defaultModelName,
     };
   }
 
@@ -19,6 +21,9 @@ export default class SideBar extends React.Component<SidebarProps, any> {
   };
   handleTextAliasChange = (event: any) => {
     this.setState({ textAliasValue: event.target.value });
+  };
+  handleModelNameChange = (event: any) => {
+    this.setState({ modelNameValue: event.target.value });
   };
 
   render() {
@@ -34,11 +39,18 @@ export default class SideBar extends React.Component<SidebarProps, any> {
           <div className={styles["sidebar-body"]}>{this.props.children}</div>
           <div className={styles["sidebar-tail"]}>
             <div className={styles["sidebar-actions"]}>
-              <div className={styles["sidebar-action"]}>
+              <div className={styles["sidebar-actions"]}>
                 <Button
                   icon={<AddIcon />}
                   text="New Prompt"
                   onClick={this.props.onActionClick}
+                />
+              </div>
+              <div className={styles["sidebar-actions"]}>
+                <Button
+                  icon={<SettingsIcon />}
+                  text="Settings"
+                  onClick={this.props.onSettingsClick}
                 />
               </div>
             </div>
@@ -100,6 +112,45 @@ export default class SideBar extends React.Component<SidebarProps, any> {
                   className={styles["context-input"]}
                   onChange={this.handleTextAliasChange}
                 ></textarea>
+              </div>
+            </div>
+          </Modal>
+        )}
+        {this.props.isSettingsVisible && (
+          <Modal
+            title={"Settings"}
+            actions={[
+              <Button
+                key="send"
+                text={"Save"}
+                onClick={() => {
+                  this.props.onSettingsActionClick?.(this.state.modelNameValue);
+                  this.props.hideSettingsModal();
+                }}
+              />,
+            ]}
+            onClose={this.props.hideSettingsModal}
+          >
+            <div className={styles["context-prompt"]}>
+              <div className={styles["context-prompt-row"]}>
+                <div className={styles["context-prompt-header"]}>
+                  <span>Onclusive Prompt Settings</span>
+                </div>
+              </div>
+
+              <div className={styles["context-prompt-row"]}>
+                <div className={styles["context-role"]}>
+                  <label>Models</label>
+                </div>
+                <select
+                  className={styles["context-input"]}
+                  value={this.state.modelNameValue}
+                  onChange={this.handleModelNameChange}
+                >
+                  {this.props.models.map((model: any, index: any) => (
+                    <option value={model.model_name}>{model.model_name}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </Modal>
