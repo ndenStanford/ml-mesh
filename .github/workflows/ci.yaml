@@ -137,7 +137,7 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: false #${{ github.ref_name != 'main' }}
       matrix:
         projects:
           # NOTE: list of project components to run
@@ -204,10 +204,10 @@ jobs       :
       integration: ${{ matrix.projects.integration }}
       functional: ${{ matrix.projects.functional }}
       load: ${{ matrix.projects.load }}
-      runner-kind: ${{ matrix.projects.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       release: ${{ github.ref_name == 'main' }}
+      runner-kind: ${{ matrix.projects.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
