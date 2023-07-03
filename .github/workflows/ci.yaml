@@ -150,13 +150,18 @@ jobs       :
           - name: keywords
             component: train
             integration: false
+            functional: false
+            load: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-type: n/a
 
           # compile
           - name: keywords
             component: compile
             integration: false
+            load: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-type: n/a
 
           # serve
           - name: keywords
@@ -164,7 +169,6 @@ jobs       :
             integration: true
             functional: true
             load: true
-            runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
 
           # ========================
@@ -174,7 +178,10 @@ jobs       :
           - name: summarization
             component: serve
             integration: true
+            functional: false
+            load: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-type: n/a
 
           # ========================
           # ENTITY LINKING
@@ -183,6 +190,8 @@ jobs       :
           - name: entity-linking
             component: serve
             integration: false
+            functional: false
+            load: false
             runner-kind: ubuntu-20.04
 
     with:
