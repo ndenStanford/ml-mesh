@@ -7,14 +7,16 @@ packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-pytest = "7.2.0"
-pytest-order = "1.1.0"
 neptune = "1.1.1"
 boto3 = "1.16.0" # not specifying this causes the lock command to run forever
 numpy = "1.18.5" # not specifying this causes 1.24.3 to be installed, clashing with the `compile` lib reqs
 core = {path = "../core"}
 pydantic = {version = "1.10.4", extras = ["dotenv"]}
 
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.3.2"
+pytest-order = "1.1.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

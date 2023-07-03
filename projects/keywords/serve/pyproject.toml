@@ -17,6 +17,7 @@ pytest-mock = "3.10.0"
 pytest-order = "1.1.0"
 httpx = "0.24.1"
 requests-toolbelt = "^1.0.0"
+tracking = {path = "../../../libs/tracking"}
 
 [build-system]
 requires = ["poetry-core"]
