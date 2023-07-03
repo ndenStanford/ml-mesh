@@ -105,7 +105,8 @@ jobs       :
   run-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests]
+    #needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state]
     strategy:
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
@@ -260,7 +261,8 @@ jobs       :
   run-apps:
     name: Web Applications
     uses: ./.github/workflows/_apps.yaml
-    needs: [run-repository-state, run-libs-tests]
+    #needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state]
     strategy:
       max-parallel: 10
       fail-fast: ${{ github.ref_name != 'main' }}
