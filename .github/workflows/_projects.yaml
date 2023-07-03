@@ -224,7 +224,7 @@ jobs:
 
   stop-runner:
     name: Stop self-hosted EC2 runner
-    needs: [set-runner-specs, compile-model]
+    needs: [set-runner-specs, deploy]
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
