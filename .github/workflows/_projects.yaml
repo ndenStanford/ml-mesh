@@ -127,7 +127,6 @@ jobs:
     needs: set-runner-specs
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     environment: ${{ inputs.environment }}
-    if: ${{ inputs.compile }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
