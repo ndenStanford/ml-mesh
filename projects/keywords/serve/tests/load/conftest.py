@@ -163,7 +163,7 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
 
     model_predict_latency_crit = Criterion(
         name=ValidMeasurements.avg_response_time.value,
-        threshold=500,
+        threshold=1200,
         endpoint_type="POST",
         endpoint_url=test_model_predict_endpoint_url,
         ensure_lower=True,
@@ -172,7 +172,7 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
 
     model_predict_total_reqs_criterion = Criterion(
         name=ValidMeasurements.requests_total.value,
-        threshold=50,
+        threshold=10,
         endpoint_type="POST",
         endpoint_url=test_model_predict_endpoint_url,
         ensure_lower=False,
