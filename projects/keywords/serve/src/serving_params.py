@@ -10,7 +10,7 @@ from onclusiveml.serving.rest.serve import ServingBaseParams
 
 class ServedModelParams(ServingBaseParams):
 
-    model_name: str = "keywords_model"
+    model_name: str = "keywords"
     model_directory: Union[str, Path] = "."
 
 
