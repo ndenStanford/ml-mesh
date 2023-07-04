@@ -318,8 +318,6 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
       serve:
         condition: service_healthy
 
@@ -340,15 +338,13 @@ services:
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
       ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
       ONCLUSIVEML_SERVING_RESET_STATS: No
-      ONCLUSIVEML_SERVING_RUN_TIME: 30s
+      ONCLUSIVEML_SERVING_RUN_TIME: 45s
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
     profiles: [load]
     hostname: onclusiveml
     networks:
       - onclusive-net
     depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
       serve:
         condition: service_healthy
 
