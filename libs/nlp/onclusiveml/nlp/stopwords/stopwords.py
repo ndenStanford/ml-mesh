@@ -10,14 +10,34 @@ from onclusiveml.nlp.stopwords.stopwords_exception import StopwordsFileException
 
 
 def _get_stopword_filepath(lang: str) -> str:
-    """Returns stopword filename for a language."""
+    """
+    Returns file path for the stopword file of a given language.
+
+    Args:
+        lang (str): The language for which the stopword file path is required
+
+    Returns:
+        str; File path for the stopword file
+
+    """
     directory = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(directory, "data", f"{lang}.json")
 
 
 @lru_cache()
 def load_stop_words_file(lang: str) -> List[str]:
-    """Loads stop words from file."""
+    """
+    Loads stopwords from the corresponding file for a given language.
+
+    Args:
+        lang (str): The language for which the stopwords are to be loaded
+
+    Returns:
+        List[str]: The list of stopwords for the specified language
+
+    Raises:
+        StopwordsFileException: If the stopword file for the specified language is not found
+    """
     content = []
     try:
         with open(_get_stopword_filepath(lang)) as f:
@@ -31,6 +51,16 @@ def load_stop_words_file(lang: str) -> List[str]:
 def stopwords(
     lang: str, content: Optional[List[str]] = None, lowercase: Optional[bool] = False
 ) -> List[str]:
+    """
+    Filters out stop words from the provided content for a given language
+
+    Args:
+        lang (str): The language for which stopwords are to be filtered
+        Content Optional[List[str]]: Content from which stopwords are to be filtered.
+            Defaults to None
+        Lowercase Optional[bool]: Flag indicating whetehr to convert the content to lowercase
+            before filtering out the stopwords. Defaults to false.
+    """
     if content:
         if len(content) > 0:
             if lowercase:
