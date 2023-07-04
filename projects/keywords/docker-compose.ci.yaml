@@ -188,7 +188,7 @@ services:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-77
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
-    profiles: [serve, unit, integration, functional]
+    profiles: [serve, unit, integration, functional, load]
     ports:
       - 8000:8000
     volumes:
