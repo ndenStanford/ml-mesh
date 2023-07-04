@@ -245,7 +245,7 @@ services:
   # - do NOT include REST model server process
   serve-integration:
     devices:
-      - /dev/neuron1:/dev/neuron1 # needs to be different from the `serve` service device
+      - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
     volumes:
       - type: bind
         source: serve/
