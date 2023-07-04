@@ -172,7 +172,7 @@ jobs       :
             functional: true
             load: true
             runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-type: inf1.2xlarge
 
           # ========================
           # SUMMARIZATION
