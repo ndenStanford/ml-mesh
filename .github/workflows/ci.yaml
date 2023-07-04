@@ -227,7 +227,8 @@ jobs       :
   run-ml-compilation-pipelines:
     name: Compile ML models
     uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-repository-state, run-projects]
+    #needs: [run-repository-state, run-projects]
+    needs: [run-repository-state]
 
     strategy:
       fail-fast: ${{ github.ref_name != 'main' }}
