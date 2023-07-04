@@ -160,6 +160,7 @@ jobs       :
           - name: keywords
             component: compile
             integration: false
+            functional: false
             load: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-type: n/a
