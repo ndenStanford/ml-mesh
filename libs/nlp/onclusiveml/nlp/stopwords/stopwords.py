@@ -11,7 +11,8 @@ from onclusiveml.nlp.stopwords.stopwords_exception import StopwordsFileException
 
 def _get_stopword_filepath(lang: str) -> str:
     """Returns stopword filename for a language."""
-    return os.path.join("libs/nlp/onclusiveml/nlp/stopwords/data", f"{lang}.json")
+    directory = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(directory, "data", f"{lang}.json")
 
 
 @lru_cache()
