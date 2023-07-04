@@ -50,8 +50,8 @@ on  :
         type: string
         description: If 'custom', a customized self hosted runner will be provided. Otherwise needs to be a valid Github Actions runner kind reference.
       self-hosted-runner-type:
-        required: false
-        default: inf1.6xlarge
+        required: true
+        default: inf1.2xlarge
         type: string
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
 
