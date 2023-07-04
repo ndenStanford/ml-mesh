@@ -126,6 +126,7 @@ jobs:
     name: Run project test suite(s)
     needs: set-runner-specs
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    if: ${{ always() }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
