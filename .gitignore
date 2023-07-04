@@ -4,12 +4,12 @@ __pycache__/
 *$py.class
 test_model
 */**/*.pt
-test_file_directory_downloaded/
-libs/models/onclusiveml/models/keywords/compiled_pipeline_long
-libs/models/onclusiveml/models/keywords/compiled_pipeline_short
-libs/models/onclusiveml/models/keywords/compiled_pipeline_medium
-neuron_compiled_document_pipeline
-neuron_compiled_word_pipeline
+
+# project `compile` pipeline artifacts
+projects/**/compile/outputs/
+
+# project `serve` component model artifacts
+projects/**/serve/models/
 
 # C extensions
 *.so
