@@ -6,7 +6,7 @@ from typing import List, Optional
 
 # Internal libraries
 # Internal Libraries
-from onclusiveml.nlp.stopwords.stopwords_exception import StopwordsFileException
+from onclusiveml.nlp.stopwords.exception import StopwordsFileException
 
 
 def _get_stopword_filepath(lang: str) -> str:

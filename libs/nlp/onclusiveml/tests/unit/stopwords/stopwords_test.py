@@ -9,7 +9,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.nlp.stopwords import load_stop_words_file, stopwords
-from onclusiveml.nlp.stopwords.stopwords_exception import StopwordsFileException
+from onclusiveml.nlp.stopwords.exception import StopwordsFileException
 
 
 stopword_file = os.listdir("libs/nlp/onclusiveml/nlp/stopwords/data/")
