@@ -15,7 +15,7 @@ projects.start/%: # Start development container of component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --force-recreate
 
 projects.stop/%: # Start development container of component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) --profile functional down
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 
 projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
 	echo "Running all tests."
