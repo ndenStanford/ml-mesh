@@ -6,7 +6,6 @@ import uvicorn
 from fastapi import FastAPI
 
 # Internal libraries
-from onclusiveml.serving.rest.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
     get_liveness_router,
@@ -15,6 +14,7 @@ from onclusiveml.serving.rest.serve.server_utils import (
     get_readiness_router,
     get_root_router,
 )
+from onclusiveml.serving.rest.serve.serving_params import ServingParams
 
 
 class ModelServer(FastAPI):
@@ -30,6 +30,10 @@ class ModelServer(FastAPI):
         *args: Any,
         **kwargs: Any,
     ):
+
+        self.configuration = configuration
+        self.model = model
+
         # if model is specified, ensure model loads are done in individual worker processes by
         # specifying start up behaviour
         if model is not None:
@@ -47,7 +51,6 @@ class ModelServer(FastAPI):
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
 
-        self.configuration = configuration
         # add root endpoint with API meta data
         self.include_router(
             get_root_router(
@@ -85,6 +88,8 @@ class ModelServer(FastAPI):
                 model=model, api_version=configuration.api_version
             )
             self.include_router(model_bio_router)
+        # finally, generate and attach the uvicorn server process configuration object instance
+        self.generate_uvicorn_config()
 
     def generate_uvicorn_config(self) -> uvicorn.Config:
         """Utility for generating and attaching a uvicorn configuration.
@@ -94,7 +99,7 @@ class ModelServer(FastAPI):
         self.uvicorn_configuration = uvicorn.Config(
             app=self,
             host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",
-            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type. can be None
+            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type
             port=self.configuration.uvicorn_settings.http_port,
         )
 
@@ -102,8 +107,9 @@ class ModelServer(FastAPI):
 
     def serve(self) -> None:
         """Utility for running the fully configured app programmatically."""
-
-        self.generate_uvicorn_config()
+        # ensure the serving parameters have populated a server config by this point
+        if not hasattr(self, "uvicorn_configuration"):
+            self.generate_uvicorn_config()
 
         server = uvicorn.Server(self.uvicorn_configuration)
         server.run()

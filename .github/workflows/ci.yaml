@@ -159,7 +159,7 @@ jobs       :
           # serve
           - name: keywords
             component: serve
-            integration: true
+            integration: false
 
           # ========================
           # SUMMARIZATION

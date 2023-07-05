@@ -1,7 +1,7 @@
 # 1 Overview
 
 The `serving` library provides a tested framework to consistently implement and serve both ML
-`apps` and `projects`. The utilities it provides include - but are not limieted to:
+`apps` and `projects`. The utilities it provides include - but are not limited to:
 
 - a fully configurable `ModelServer` class for hosting REST-based apis with and without ML models
   - leverages `fastapi` to [auto-generate customized endpoint swagger docs](https://fastapi.tiangolo.com/features/#automatic-docs)
@@ -20,7 +20,10 @@ The `serving` library provides a tested framework to consistently implement and 
 
 ## 2 Configuration
 
-TBC - see `ServingParams` in the `rest.paraclass for now
+TBC - see `ServingParams` and its attribute classes in the `rest.params`module for now
+
+- `UvicornSettings`
+  - a [uvicorn configuration](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py) specification; serving process configuration - see the `serving` library documentation for details
 
 ## 3 ModelServer
 

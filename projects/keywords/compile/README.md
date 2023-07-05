@@ -68,11 +68,24 @@ make projects.build/keywords \
   IMAGE_TAG="some-tag"
 ```
 
-#### 2.2.2 Running the components inside docker
+#### 2.2.2 Running the components inside containers using `make` and `docker compose`
 
-1. Export run environment variables:
+Running the below steps will create an additional `outputs` directory in the
+`projects/keywords/compile` directory, holding all the below 4 steps' outputs in 4 separate
+subdirectories for easier inspection & developing:
 
-   - `export NEPTUNE_API_TOKEN=?`
+- `projects/keywords/compile/outputs/download`
+- `projects/keywords/compile/outputs/compile`
+- `projects/keywords/compile/outputs/validate`
+- `projects/keywords/compile/outputs/upload`
+
+To run the pipeline locally using the configurations in the `docker-compose.dev.yaml` file and internal `projects` level `make` utilities, follow the below steps.
+
+1. Ensure the following variables are exported in your CLI:
+
+   - `NEPTUNE_API_TOKEN`
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
 
 2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
    variable values directly from the file into the running container (see below) to allow for
@@ -83,44 +96,36 @@ make projects.build/keywords \
 - Download the uncompiled model:
 
   ```docker
-  make projects.compile/${{ inputs.project }} \
+  make projects.compile/keywords \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=download-model \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
-            IMAGE_TAG="some-tag"
+            IMAGE_TAG="some-tag" # whichever keywords-compile image tag you want to run
   ```
 
 - Compile the model:
 
   ```docker
-  make projects.compile/${{ inputs.project }} \
+  make projects.compile/keywords \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=compile-model \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             IMAGE_TAG="some-tag"
   ```
 
 - Test compiled model:
 
   ```docker
-  make projects.compile/${{ inputs.project }} \
+  make projects.compile/keywords \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=validate-model \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             IMAGE_TAG="some-tag"
   ```
 
 - Upload compiled model:
 
   ```docker
-  make projects.compile/${{ inputs.project }} \
+  make projects.compile/keywords \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=upload-model \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             IMAGE_TAG="some-tag"
   ```
 

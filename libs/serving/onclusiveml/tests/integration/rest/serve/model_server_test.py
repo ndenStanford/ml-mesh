@@ -7,11 +7,6 @@ import requests
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.serving.rest.params import (
-    FastAPISettings,
-    ServingParams,
-    UvicornSettings,
-)
 from onclusiveml.serving.rest.serve import (
     LivenessProbeResponse,
     ModelServer,
@@ -19,6 +14,11 @@ from onclusiveml.serving.rest.serve import (
     ServedModel,
 )
 from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
+from onclusiveml.serving.rest.serve.serving_params import (
+    FastAPISettings,
+    ServingParams,
+    UvicornSettings,
+)
 
 
 class RootResponse(BaseModel):
