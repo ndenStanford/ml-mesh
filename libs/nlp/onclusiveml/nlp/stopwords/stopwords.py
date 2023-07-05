@@ -1,55 +1,15 @@
 # Standard Library
-import json
-import os
-from functools import lru_cache
 from typing import List, Optional
 
 # Internal libraries
-# Internal Libraries
-from onclusiveml.nlp.stopwords.exception import StopwordsFileException
-
-
-def _get_stopword_filepath(lang: str) -> str:
-    """
-    Returns file path for the stopword file of a given language.
-
-    Args:
-        lang (str): The language for which the stopword file path is required
-
-    Returns:
-        str; File path for the stopword file
-
-    """
-    directory = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(directory, "data", f"{lang}.json")
-
-
-@lru_cache()
-def load_stop_words_file(lang: str) -> List[str]:
-    """
-    Loads stopwords from the corresponding file for a given language.
-
-    Args:
-        lang (str): The language for which the stopwords are to be loaded
-
-    Returns:
-        List[str]: The list of stopwords for the specified language
-
-    Raises:
-        StopwordsFileException: If the stopword file for the specified language is not found
-    """
-    content = []
-    try:
-        with open(_get_stopword_filepath(lang)) as f:
-            content = json.loads(f.read())
-    except FileNotFoundError:
-        raise StopwordsFileException(language=lang)
-    return content
-    # return files
+from onclusiveml.nlp.language.constants import LanguageIso
+from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
 
 
 def stopwords(
-    lang: str, content: Optional[List[str]] = None, lowercase: Optional[bool] = False
+    lang: Optional[LanguageIso] = None,
+    content: Optional[List[str]] = None,
+    lowercase: Optional[bool] = False,
 ) -> List[str]:
     """
     Filters out stop words from the provided content for a given language
@@ -61,7 +21,7 @@ def stopwords(
         Lowercase Optional[bool]: Flag indicating whetehr to convert the content to lowercase
             before filtering out the stopwords. Defaults to false.
     """
-    if content:
+    if content and lang:
         if len(content) > 0:
             if lowercase:
                 content = list(map(str.lower, content))
