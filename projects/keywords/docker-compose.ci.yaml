@@ -164,7 +164,7 @@ services:
     depends_on:
       - compile
 
-  # =============================================
+# =============================================
   # SERVE
   # =============================================
 
@@ -188,7 +188,7 @@ services:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-88
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
-    profiles: [serve, unit, integration, functional]
+    profiles: [serve, functional, load]
     ports:
       - 8000:8000
     volumes:
@@ -216,7 +216,7 @@ services:
         target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.download_compiled_model]
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -245,7 +245,7 @@ services:
   # - do NOT include REST model server process
   serve-integration:
     devices:
-      - /dev/neuron1:/dev/neuron1 # needs to be different from the `serve` service device
+      - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
     volumes:
       - type: bind
         source: serve/
@@ -281,8 +281,6 @@ services:
     depends_on:
       serve-download-model:
         condition: service_completed_successfully
-      serve:
-        condition: service_healthy
 
   # load tests
   # - include model artifact

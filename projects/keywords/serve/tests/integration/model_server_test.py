@@ -14,6 +14,9 @@ from src.served_model import ServedKeywordsModel
 
 @pytest.mark.order(4)
 def test_get_model_server():
+    """Tests the utility method get_model_server to provide an initialized (but not running)
+    ModelServer instance. Also checks that the expected ServedKeywordsModel instance is attached
+    and not loaded."""
 
     model_server = get_model_server()
 
@@ -23,6 +26,8 @@ def test_get_model_server():
 
 @pytest.mark.order(5)
 def test_model_server_root(test_client):
+    """Tests the root endpoint of a ModelServer (not running) instance using starlette's
+    TestClient"""
 
     root_response = test_client.get("/v1/")
 
@@ -31,6 +36,8 @@ def test_model_server_root(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
+    """Tests the liveness endpoint of a ModelServer (not running) instance using starlette's
+    TestClient"""
 
     liveness_response = test_client.get("/v1/live")
 
@@ -40,6 +47,8 @@ def test_model_server_liveness(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_readiness(test_client):
+    """Tests the readiness endpoint of a ModelServer (not running) instance using starlette's
+    TestClient"""
 
     readiness_response = test_client.get("/v1/ready")
 

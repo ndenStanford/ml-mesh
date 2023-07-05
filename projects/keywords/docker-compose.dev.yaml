@@ -213,7 +213,7 @@ services:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-88
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
-    profiles: [serve, unit, integration, functional, load]
+    profiles: [serve, functional, load]
     ports:
       - 8000:8000
     volumes:
@@ -241,7 +241,7 @@ services:
         target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.download_compiled_model]
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -258,16 +258,6 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     volumes:
       - type: bind
         source: serve/

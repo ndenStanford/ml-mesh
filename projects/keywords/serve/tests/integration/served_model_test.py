@@ -16,12 +16,16 @@ from src.server_models import (
 
 @pytest.mark.order(1)
 def test_served_keywords_model__init__(test_served_model_artifacts):
+    """Tests the constructor of the ServedKeywordsModel, EXCLUDING the loading of genuine model
+    artifacts from local disk"""
 
     ServedKeywordsModel(served_model_artifacts=test_served_model_artifacts)
 
 
 @pytest.mark.order(2)
 def test_served_keywords_model_load(test_served_model_artifacts):
+    """Tests the constructor of the ServedKeywordsModel, INCLUDING the loading of genuine model
+    artifacts from local disk"""
 
     served_keywords_model = ServedKeywordsModel(
         served_model_artifacts=test_served_model_artifacts
@@ -43,6 +47,9 @@ def test_served_keywords_model_predict(
     test_predictions,
     test_record_index,
 ):
+    """Tests the fully initialized and loaded ServedKeywordsModel's predict method, using the
+    custom data models for validation and the test files from the model artifact as ground truth
+    for the regression test element."""
 
     served_keywords_model = ServedKeywordsModel(
         served_model_artifacts=test_served_model_artifacts
@@ -74,6 +81,9 @@ def test_served_keywords_model_predict(
 def test_served_keywords_model_bio(
     test_model_name, test_served_model_artifacts, test_model_card
 ):
+    """Tests the fully initialized and loaded ServedKeywordsModel's bio method, using the
+    custom data models for validation and the model card from the model artifact as ground truth
+    for the regression test element."""
 
     served_keywords_model = ServedKeywordsModel(
         served_model_artifacts=test_served_model_artifacts

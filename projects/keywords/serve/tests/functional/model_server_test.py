@@ -21,6 +21,8 @@ from src.server_models import (
 
 @pytest.mark.order(5)
 def test_model_server_root(test_client):
+    """Tests the running ModelServer instance's root endpoint by making a genuine http
+    request"""
 
     root_response = test_client.get("/v1/")
 
@@ -29,6 +31,8 @@ def test_model_server_root(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
+    """Tests the running ModelServer instance's liveness endpoint by making a genuine http
+    request"""
 
     liveness_response = test_client.get("/v1/live")
 
@@ -38,6 +42,8 @@ def test_model_server_liveness(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_readiness(test_client):
+    """Tests the running ModelServer instance's readiness endpoint by making a genuine http
+    request"""
 
     readiness_response = test_client.get("/v1/ready")
 
@@ -55,6 +61,9 @@ def test_model_server_predict(
     test_predictions,
     test_record_index,
 ):
+    """Tests the running ModelServer's predict endpoint by making genuine http requests, using the
+    custom data models for validation and the test files from the model artifact as ground truth
+    for the regression test element."""
 
     input = PredictRequestModel(
         configuration=PredictConfiguration(**test_inference_params),
@@ -84,6 +93,9 @@ def test_model_server_predict(
 
 @pytest.mark.order(7)
 def test_model_server_bio(test_model_name, test_client, test_model_card):
+    """Tests the running ModelServer's bio endpoint by making genuine http requests, using the
+    custom data models for validation and the model card from the model artifact as ground truth
+    for the regression test element."""
 
     test_response = test_client.get(f"/v1/model/{test_model_name}/bio")
 
