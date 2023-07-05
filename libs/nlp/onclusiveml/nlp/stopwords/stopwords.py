@@ -2,12 +2,11 @@
 from typing import List, Optional
 
 # Internal libraries
-from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
 
 
 def stopwords(
-    lang: Optional[LanguageIso] = None,
+    lang: Optional[str] = None,
     content: Optional[List[str]] = None,
     lowercase: Optional[bool] = False,
 ) -> List[str]:
