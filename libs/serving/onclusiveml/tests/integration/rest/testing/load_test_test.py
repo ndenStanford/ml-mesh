@@ -32,6 +32,8 @@ class TestWebsiteUser(HttpUser):
     ],
 )
 def test_locus_load_test_run_and_report(test_user_classes, test_locustfile):
+    """Tests the running and reporting methods of the LoadTest class by running a genuine load test
+    against http://github.com and producing a report."""
 
     load_test_settings = LoadTestingParams(
         user_classes=test_user_classes,
