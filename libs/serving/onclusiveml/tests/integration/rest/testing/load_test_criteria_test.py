@@ -21,6 +21,9 @@ from onclusiveml.serving.rest.testing import (
 
 
 def test_load_test_criteria():
+    """Tests the initialization of a LoadTestCriteria instance passing actual criteria in the
+    contructor, and checking for the resulting number of criteria being attached to the
+    LoadTestCriteria instace."""
 
     test_criteria = [
         Criterion(
@@ -48,6 +51,9 @@ def test_load_test_criteria():
 def test_load_test_criteria_generate_from_environment(
     test_serving_base_params_env_prefix,
 ):
+    """Tests the generate_from_environment method of the LoadTestCriteria class. We export the
+    required environment variables in the local test scope, and generate criteria by calling the
+    method, and validate the resulting criteria against defined ground truth criteria attributes."""
 
     load_test_criteria = LoadTestCriteria()
 
@@ -150,6 +156,11 @@ def test_load_test_criteria_evaluate(
     test_evaluated_criteria_passed_expected,
     test_evaluation_passed_expected,
 ):
+    """Tests the evaluate method of the LoadTestCriteria class. We call it on a TestReport instance,
+    and validate the resulting EvaluatedCritera instance against defined ground truth criteria
+    attributes, checking for
+    - overall evaluation outcome
+    - individual criterion evaluation outcomes."""
 
     test_report = TestReport(
         completed={

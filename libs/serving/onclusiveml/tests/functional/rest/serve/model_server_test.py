@@ -51,6 +51,7 @@ class TestBioResponseModel(ServedModel.bio_response_model):
 
 
 class TestServedModel(ServedModel):
+    """A minimal working example of a subclasses custom model for testing purposes"""
 
     predict_request_model = TestModelPredictRequestModel
     predict_response_model = TestModelPredictResponseModel
@@ -60,7 +61,10 @@ class TestServedModel(ServedModel):
         self,
         payload: predict_request_model,
     ) -> predict_response_model:
-        """Inference method."""
+        """Inference method. Implements a very basic animal classifier using the
+        - TestModelPredictRequestModel and
+        - TestModelPredictResponseModel
+        test classes"""
 
         predictions = []
 
@@ -77,6 +81,8 @@ class TestServedModel(ServedModel):
         return self.predict_response_model(predictions=predictions)
 
     def bio(self) -> bio_response_model:
+        """Model meta data method. Implements a basic model bio data model using the
+        TestBioResponseModel test class"""
 
         return self.bio_response_model(name=self.name)
 
@@ -85,6 +91,11 @@ class TestServedModel(ServedModel):
 @pytest.mark.order(1)
 @pytest.mark.server
 def test_model_server_serve_with_model(test_api_version, test_port, test_model_name):
+    """Launches a fully fledged ModelServer hosting all utility endpoints as well as a loaded
+    instance of the TestServedModel model class, and keeps it running until stopped manually.
+
+    Designed for manual testing during development, not for CI due to library test suite setup
+    limitations."""
 
     test_serving_params = ServingParams(
         add_liveness=True,
@@ -117,6 +128,14 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
 def test_model_server_client_no_model(
     test_api_version, test_port, test_url_reference, test_probe_response_model
 ):
+    """Tests the availability and response format of a live ModelServer's
+    - root,
+    - liveness,
+    -readiness
+    endpoints, as launched by the
+    test_model_server_serve_with_model test case.
+
+    Requires test_model_server_serve_with_model to have been called on the same machine"""
     test_model_server_urls = get_model_server_urls(api_version=test_api_version)
 
     url = f"http://localhost:{test_port}" + getattr(
@@ -176,6 +195,10 @@ def test_model_server_serve_predict(
     test_response_model,
     test_response_expected,
 ):
+    """Tests the availability and response format of a live ModelServer's model predict endpoint
+    endpoints, as launched by the test_model_server_serve_with_model test case.
+
+    Requires test_model_server_serve_with_model to have been called on the same machine"""
 
     test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
@@ -205,6 +228,10 @@ def test_model_server_serve_bio(
     test_model_name,
     test_response_model,
 ):
+    """Tests the availability and response format of a live ModelServer's model bio endpoint
+    endpoints, as launched by the test_model_server_serve_with_model test case.
+
+    Requires test_model_server_serve_with_model to have been called on the same machine"""
 
     test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name

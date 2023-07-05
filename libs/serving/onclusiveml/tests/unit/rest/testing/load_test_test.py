@@ -3,6 +3,7 @@ from onclusiveml.serving.rest.testing import LoadTest
 
 
 def test_load_test():
+    """Tests the initialization of a LoadTest instance"""
 
     test_load_test = LoadTest(settings=None)
 
