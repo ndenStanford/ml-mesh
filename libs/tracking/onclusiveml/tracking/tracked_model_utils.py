@@ -38,6 +38,12 @@ class TrackedGithubActionsSpecs(TrackedParams):
     runner_os: str = "runner_os"
 
 
+class TrackedImageSpecs(TrackedParams):
+
+    docker_image_name: str = "iamge_name"
+    docker_image_tag: str = "image_tag"
+
+
 class TrackedModelSpecs(TrackedParams):
     """A utility to specify the neptune ai project and model level resources.
     Also includes the parsing of the api token to help instantiate ModelVersion's..
