@@ -13,11 +13,13 @@ from onclusiveml.serving.rest.serve import (
 
 
 def test_serving_params():
+    """Tests the initialization of a ServingParams instance with default values"""
 
     ServingParams()
 
 
 def test_serving_params_env_prefix():
+    """Tests the inherited environment prefix of the ServingParams class"""
     assert ServingParams.__config__.env_prefix == "onclusiveml_serving_"
 
 
