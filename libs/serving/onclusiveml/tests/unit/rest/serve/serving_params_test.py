@@ -27,7 +27,8 @@ def test_serving_params_env_prefix():
     "test_subsettings_field", ["uvicorn_settings", "fastapi_settings"]
 )
 def test_serving_params_env_prefix_nested_settings(test_subsettings_field):
-    """Check that the original prefix still applies to nested fields"""
+    """Tests that the nested fields (subclasses from ServingParams) retain their respective
+    environment prefixes"""
     keyword_serving_params = ServingParams()
 
     subsettings = getattr(keyword_serving_params, test_subsettings_field)
@@ -68,8 +69,8 @@ def test_serving_params_env_prefix_nested_settings(test_subsettings_field):
 def test_serving_params_set_fields_via_env_vars(
     test_field_name, test_field_value_raw_expected, test_field_value_expected
 ):
-    """Check if the prefix inherited from `KeywordsServingBaseParams` works as expected for direct
-    fields"""
+    """Tests the initialization of a ServingParams instance using environment variables exported in
+    the local test scope."""
 
     prefixed_field_env_var_ref = f"onclusiveml_serving_{test_field_name}"
     os.environ[prefixed_field_env_var_ref] = test_field_value_raw_expected

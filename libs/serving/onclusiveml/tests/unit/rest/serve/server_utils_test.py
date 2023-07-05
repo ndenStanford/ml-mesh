@@ -44,6 +44,9 @@ def test_get_model_server_urls(
     predict_url_expected,
     bio_url_expected,
 ):
+    """Tests the utility method get_model_server_urls to produce correctly parametrized urls
+    - with & without specified api version
+    - with & without a model"""
 
     test_urls = get_model_server_urls(**test_kwargs)
 
@@ -82,6 +85,11 @@ def test_get_model_server_urls(
     ],
 )
 def test_get_routers(get_router_method, test_api_version, test_route_url_expected):
+    """Tests the following router creation utility methods
+    - get_root_router
+    - get_liveness_router
+    - get_readiness_router
+    and validates the url paths against the (previously tested) get_model_server_urls outputs"""
 
     test_router = get_router_method(api_version=test_api_version)
     test_route_url_actual = test_router.routes[0].path
@@ -137,6 +145,13 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
 def test_get_model_routers(
     test_served_model_class, test_model_endpoint_type, test_api_version, test_model_name
 ):
+    """Tests the following router creation utility methods
+    - get_model_predict_router
+    - get_model_bio_router
+    and validates
+    - the url paths against the (previously tested) get_model_server_urls outputs
+    - the response model against the data model attributes of a TestServedModel instance
+    """
 
     test_served_model = test_served_model_class(name=test_model_name)
 
