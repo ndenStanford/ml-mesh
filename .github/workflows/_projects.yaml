@@ -212,7 +212,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Upload project component load test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.load }}
+        if: ${{ always() && ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.load }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-upload-results \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
