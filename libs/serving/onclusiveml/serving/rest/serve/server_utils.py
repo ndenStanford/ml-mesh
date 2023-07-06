@@ -5,7 +5,6 @@ from typing import Callable, Dict
 from fastapi import APIRouter, status
 
 # Internal libraries
-from onclusiveml.serving.rest.params import FastAPISettings
 from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.serving.rest.serve.server_models import (
     LivenessProbeResponse,
@@ -13,6 +12,7 @@ from onclusiveml.serving.rest.serve.server_models import (
     ReadinessProbeResponse,
     ServedModelMethods,
 )
+from onclusiveml.serving.rest.serve.serving_params import FastAPISettings
 
 
 def get_model_server_urls(
@@ -46,7 +46,6 @@ def get_model_server_urls(
 
     model_predict_url = f"{root_url}model/{model_name}/{served_model_methods.predict}"
     model_bio_url = f"{root_url}model/{model_name}/{served_model_methods.bio}"
-
     # dump into url data model with auto validation
     model_server_urls = ModelServerURLs(
         root=root_url,
