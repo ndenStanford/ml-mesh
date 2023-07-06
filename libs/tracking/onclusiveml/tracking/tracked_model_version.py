@@ -714,9 +714,10 @@ class TrackedModelVersion(ModelVersion):
                 f"Removing non-trivial neptune data prefix {neptune_attribute_prefix}/ from"
             )
             logger.debug(f" neptune data path {neptune_attribute_path}")
-            neptune_attribute_path = neptune_attribute_path.replace(
-                f"{neptune_attribute_prefix}/", ""
-            )
+
+            neptune_attribute_path = neptune_attribute_path[
+                len(neptune_attribute_prefix) + 1 :  # noqa: E203
+            ]
         # convert to valid relative file path by inserting OS specific separators
         local_file_path = neptune_attribute_path.replace("/", os.sep)
         logger.debug(

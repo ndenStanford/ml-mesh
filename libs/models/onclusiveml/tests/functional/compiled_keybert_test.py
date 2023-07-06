@@ -50,7 +50,7 @@ def test_compiled_keybert_extract_keywords_regression(
         compiled_word_pipeline=compiled_word_pipeline,
     )
 
-    keywords_actual = compiled_keybert.extract_keywords(docs=test_document)
+    keywords_actual = compiled_keybert.extract_keywords(docs=test_document)[0]
     keywords_actual_df = pd.DataFrame(keywords_actual, columns=["keyword", "score"])
 
     # generic keybert - ground truth behaviour

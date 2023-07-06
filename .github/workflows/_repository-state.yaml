@@ -23,6 +23,11 @@ on  :
         type: boolean
         default: true
         description: If true a pre-release is created.
+      include-pre-releases:
+        required: false
+        type: boolean
+        default: false
+        description: Include pre releases as "full" releases when drafting release notes.
     secrets:
       GITHUB_TOKEN_:
         required: true
@@ -88,7 +93,7 @@ jobs:
           fi
 
       - name: Generate Release Notes
-        uses: release-drafter/release-drafter@v5.22.0
+        uses: release-drafter/release-drafter@v5.24.0
         if: ${{ !inputs.pull-request }}
         id: release-drafter
         with:
@@ -99,3 +104,4 @@ jobs:
           tag: v${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
+          include-pre-releases: ${{ inputs.include-pre-releases }}
