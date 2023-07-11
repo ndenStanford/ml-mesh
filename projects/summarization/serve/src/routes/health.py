@@ -17,7 +17,7 @@ router = APIRouter()
 @router.get("/health", status_code=status.HTTP_200_OK)
 async def health() -> str:
     """health endpoint"""
-    if settings.ENVIRONMENT in ("stage", "prod", "dev"):
+    if settings.ENVIRONMENT in ("stage", "prod"):
         requests.post(
             "https://uptime.betterstack.com/api/v1/heartbeat/{}".format(
                 settings.BETTERSTACK_KEY
