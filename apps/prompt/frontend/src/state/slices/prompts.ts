@@ -116,19 +116,22 @@ export const generateText = createAsyncThunk(
     { prompt, modelName }: { prompt: string; modelName: string },
     thunkAPI: any
   ) => {
+    let body = {prompt: prompt}
     var suffix = "";
     // Use different route if model is not gpt-3.5-turbo
     if (modelName == "gpt-4") {
-      suffix = `prompts/generate/${prompt}/model/${modelName}`;
+      suffix = `prompts/generate/model/${modelName}`;
     } else {
-      suffix = `prompts/generate/${prompt}`;
+      suffix = `prompts/generate`;
     }
     const response = await fetch(`${API_URI}/${suffix}`, {
-      method: "GET",
+      method: "POST",
       headers: {
         accept: "application/json",
         "x-api-key": API_KEY,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(body),
     });
     if (response.status !== 200) {
       console.log("Error generating text");

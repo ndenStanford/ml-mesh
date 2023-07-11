@@ -1,5 +1,5 @@
 ---
-categories         :
+categories          :
   - title: 🚀 Features
     labels:
       - feature
@@ -14,8 +14,9 @@ categories         :
       - chore
       - dependencies
       - patch
-change-template    : '- $TITLE - PR: #$NUMBER (@$AUTHOR)'
-template           : |
+change-template     : '- $TITLE - PR: #$NUMBER (@$AUTHOR)'
+template            : |
   ## What’s Changed
   $CHANGES
-filter-by-commitish: true
+filter-by-commitish : true
+include-pre-releases: true
