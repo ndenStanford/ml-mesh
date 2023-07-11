@@ -33,7 +33,7 @@ services:
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -67,7 +67,7 @@ services:
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -123,7 +123,7 @@ services:
     ports:
       - 4000:4000
     environment:
-      ENVIRONMENT: ci
+      ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
