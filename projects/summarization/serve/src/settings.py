@@ -135,3 +135,6 @@ class Settings(BaseSettings):
 def get_settings() -> BaseSettings:
     """Returns instanciated Settings class."""
     return Settings()
+
+
+settings = get_settings()
