@@ -9,6 +9,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 compile = {path = "../compile"}
 keybert = "0.7.0"
+numpy = "^1.19.1"
 
 
 [[tool.poetry.source]]
