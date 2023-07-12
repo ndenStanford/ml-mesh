@@ -137,4 +137,4 @@ def get_settings() -> BaseSettings:
     return Settings()
 
 
-settings = Settings()
+settings = get_settings()
