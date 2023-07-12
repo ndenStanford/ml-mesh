@@ -133,8 +133,10 @@ services:
       DB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
-      - dynamodb
-      - redisdb
+      dynamodb:
+        condition: service_healthy
+      redisdb:
+        condition: service_healthy
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
