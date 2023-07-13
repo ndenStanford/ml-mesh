@@ -1,6 +1,5 @@
 # Standard Library
 from typing import Dict
-import os
 
 # ML libs
 from transformers import pipeline
@@ -8,6 +7,7 @@ from transformers import pipeline
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.models.ner import CompiledNER
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
@@ -50,8 +50,10 @@ def main() -> None:
         pipeline=base_model_pipeline,
         **ner_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
     )
+
+    compiled_ner = CompiledNER(compiled_ner_pipeline)
     # export compiled ner model for next workflow component: test
-    compiled_ner_pipeline.save_pretrained(os.path.join(io_settings.compile.model_directory, "compiled_ner_pipeline"))
+    compiled_ner.save_pretrained(io_settings.compile.model_directory)
 
     logger.debug(
         f"Successfully exported compiled ner model to {io_settings.compile.model_directory}"
