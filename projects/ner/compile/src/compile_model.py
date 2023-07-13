@@ -1,5 +1,6 @@
 # Standard Library
 from typing import Dict
+import os
 
 # ML libs
 from transformers import pipeline
@@ -50,7 +51,7 @@ def main() -> None:
         **ner_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
     )
     # export compiled ner model for next workflow component: test
-    compiled_ner_pipeline.save_pretrained(io_settings.compile.model_directory)
+    compiled_ner_pipeline.save_pretrained(os.path.join(io_settings.compile.model_directory, "compiled_ner_pipeline"))
 
     logger.debug(
         f"Successfully exported compiled ner model to {io_settings.compile.model_directory}"
