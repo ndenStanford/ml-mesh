@@ -22,6 +22,8 @@ services:
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -41,6 +43,8 @@ services:
     profiles: [unit]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]

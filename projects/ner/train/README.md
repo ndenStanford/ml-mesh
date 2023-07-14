@@ -60,6 +60,8 @@ You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a dif
 
 3. Run the container:
 
+You can run the command with this command:
+
 ```docker
 docker run \
   --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
@@ -68,6 +70,12 @@ docker run \
   --env-file $PATH_TO_REPOSITORY/projects/ner/train/config/dev.env \
   -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-train:latest \
   python -m src.register_trained_model
+```
+
+or run using the make command (which uses docker compose):
+
+```
+make projects.start/ner COMPONENT=train
 ```
 
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
