@@ -60,7 +60,13 @@ You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a dif
 
 3. Run the container:
 
-You can run the command with this command:
+You can run the command with this command (which uses docker compose):
+
+```
+make projects.start/ner COMPONENT=train
+```
+
+Or run this docker command:
 
 ```docker
 docker run \
@@ -72,13 +78,7 @@ docker run \
   python -m src.register_trained_model
 ```
 
-or run using the make command (which uses docker compose):
-
-```
-make projects.start/ner COMPONENT=train
-```
-
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
 
-- Note: If the `--env-file` command is omitted in the above steps,
+- Note: If the `--env-file` command is omitted in the docker command,
   the pipeline will fall back on the default values defined in the `settings.py` file.
