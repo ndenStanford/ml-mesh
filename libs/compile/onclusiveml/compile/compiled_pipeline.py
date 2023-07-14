@@ -158,7 +158,10 @@ class CompiledPipeline(object):
     def __getattr__(self, name: str) -> Any:
         """Surfaces selected pipeline attributes to the CompiledPipeline instance."""
 
-        if name in ("tokenizer",):
+        if name in (
+            "tokenizer",
+            "model",
+        ):
             attribute = self.compiled_pipeline.__getattribute__(name)
         else:
             attribute = self.__dict__[attribute]

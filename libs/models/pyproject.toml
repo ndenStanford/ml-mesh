@@ -8,9 +8,11 @@ packages = [{include = "onclusiveml"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 compile = {path = "../compile"}
+nlp = {path = "../nlp"}
 keybert = "0.7.0"
 numpy = "^1.19.1"
-
+regex = "^2023.6.3"
+beautifulsoup4 = "^4.12.2"
 
 [[tool.poetry.source]]
 name = "aws-neuron"
