@@ -1,12 +1,12 @@
 # Source
-from src.settings import TrackedNERBaseModelCard, TrackedNERModelSpecs
+from src.settings import TrackedSENTBaseModelCard, TrackedSENTModelSpecs
 
 
-def test_tracked_ner_model_specs():
+def test_tracked_sent_model_specs():
 
-    TrackedNERModelSpecs()
+    TrackedSENTModelSpecs()
 
 
-def test_tracked_ner_base_model_card():
+def test_tracked_sent_base_model_card():
 
-    TrackedNERBaseModelCard()
+    TrackedSENTBaseModelCard()
