@@ -177,6 +177,14 @@ jobs       :
             component: serve
             integration: false
 
+          # ========================
+          # NER
+          # ========================
+          # serve
+          - name: ner
+            component: train
+            integration: false
+
     with:
       environment: prod
       project: ${{ matrix.projects.name }}
