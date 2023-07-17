@@ -126,7 +126,7 @@ To run the pipeline locally using the configurations in the `docker-compose.dev.
   make projects.compile/ner \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=upload-model \
-            IMAGE_TAG="some-tag"
+            IMAGE_TAG=$IMAGE_TAG
   ```
 
   - Note: If the `--env-file` command is omitted in the above steps,
