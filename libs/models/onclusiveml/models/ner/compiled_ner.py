@@ -18,10 +18,17 @@ from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
 class CompiledNER:
+    """Class for performing Named Entity Recognition (NER) using neuron compiled NER pipeline"""
+
     def __init__(
         self,
         compiled_ner_pipeline: CompiledPipeline,
     ):
+        """
+        Initalize the CompiledNER object.
+        Args:
+            compiled_ner_pipeline (CompiledPipeline): The compiled NER pipline used for inference
+        """
         self.compiled_ner_pipeline = compiled_ner_pipeline
         self.id2label: Dict[int, str] = {
             0: "O",
@@ -40,13 +47,25 @@ class CompiledNER:
         self.device: str = "cpu"
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        # export compiled ner pipeline
+        """
+        Save compiled NER pipeline to specified directory
+        Args:
+            Directory (Union[Path, str]): Directory to save the compiled NER pipeline
+        """
         self.compiled_ner_pipeline.save_pretrained(
             os.path.join(directory, "compiled_ner_pipeline")
         )
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledNER":
+        """
+        Load compiledNER object from specfied directory
+        Args:
+            directory (Union[Path, str]): The directory path contained the pretrained compiled
+                ner pipeline
+        Returns:
+            CompiledNER: The loaded pre-trained CompiledNER object
+        """
         compiled_ner_pipeline = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_ner_pipeline")
         )
@@ -56,14 +75,37 @@ class CompiledNER:
         )
 
     def remove_html(self, text: str) -> str:
+        """
+        Remove HTML tags from input text
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with HTML tags removed
+        """
         text = BeautifulSoup(text, "html.parser").text
         return text
 
     def remove_whitespace(self, text: str) -> str:
+        """
+        Remove extra white spaces from input text."
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with extra whitespaces removed
+        """
+
         text = re.sub(r"\s+", " ", text)
         return text
 
     def preprocess(self, sentences: str) -> List[str]:
+        """
+        Preprocess the input sentences by removing unwanted content inside text and tokenizing
+
+        Args:
+            sentences (str): Input sentences
+        Return:
+            List[str]: Tokenized sentences
+        """
         sentences = self.remove_html(sentences)
         sentences = self.remove_whitespace(sentences)
         tokenizer = SentenceTokenizer()
@@ -75,6 +117,15 @@ class CompiledNER:
         return list_sentences
 
     def _extract_main_label(self, label: str) -> str:
+        """
+        Extract the main label from the given NER label
+
+        Args:
+            label (str): The NER label to extract the main label from.
+
+        Returns:
+            str: The main label extracted from the NER label
+        """
         if label != "O":
             label = label.split("-")[1]
         return label
@@ -83,6 +134,14 @@ class CompiledNER:
         self,
         word_labels: List[Tuple[List[int], str, Union[int, float], int]],
     ) -> List[Tuple[str, str, Union[float, int]]]:
+        """
+        Join word labels without positional information to form full word labels
+        Args:
+            word_labels (List[Tuple[List[int], str, Union[int, float], int]]): The word labels
+                to join
+        Returns:
+        List[Tuple[str, str, Union[float, int]]]: The joiend full word labels
+        """
         full_word_labels = []
         combined_word = []
         combined_word_id = []
@@ -123,6 +182,14 @@ class CompiledNER:
     def _join_word_labels(
         self, word_labels: List[Tuple[List[int], str, Union[int, float], int, Any]]
     ) -> List[Tuple[str, str, Union[float, int], int, int]]:
+        """
+        Join word labels with positional information to form full word labels
+        Args:
+            word_labels (List[Tuple[List[int], str, Union[int, float], int, Any]]): The word
+                labels to join
+        Returns:
+            List[Tuple[str, str, Union[float, int], int, int]]: Joined full word labels
+        """
         full_word_labels = []
         combined_word = []
         combined_word_id = []
@@ -165,16 +232,28 @@ class CompiledNER:
 
     def filter_word_preds(
         self,
-        # Doesn't accept
-        # Union[
-        #     List[Tuple[List[int], str, Union[int, float], int, Any]],
-        #     List[Tuple[List[int], str, Union[int, float], int]],
-        # ]
         word_preds: Any,
     ) -> Union[
         List[Tuple[List[int], str, Union[int, float], int, Any]],
         List[Tuple[List[int], str, Union[int, float], int]],
     ]:
+        """
+        Filter out word predictions based on the label to remove 'O' labels
+        Args:
+            word_preds (Any): The word predictions to filter
+        Returns:
+            Union[
+                List[Tuple[List[int], str, Union[int, float], int, Any]],
+                List[Tuple[List[int], str, Union[int, float], int]],
+            ]: Filtered word predictions
+
+        NOTE: word_preds mypy seems to reject typing:
+        Union[
+            List[Tuple[List[int], str, Union[int, float], int, Any]],
+            List[Tuple[List[int], str, Union[int, float], int]],
+        ]
+
+        """
         output = []
         for info in word_preds:
             # second index holds label
@@ -188,6 +267,21 @@ class CompiledNER:
         List[List[Tuple[str, str, Union[int, float], int, int]]],
         List[List[Tuple[str, str, Union[int, float]]]],
     ]:
+        """
+        Performs inference on a batch of sentences to extract NER labels
+
+        Args:
+            sentences (List[str]): The list of sentencess to perform inference on
+            sample_index (int): Index of the sentences
+            return_pos (bool): Flag indicating whether to return positional information in the
+                output
+
+        Returns:
+            ) -> Union[
+                List[List[Tuple[str, str, Union[int, float], int, int]]],
+                List[List[Tuple[str, str, Union[int, float]]]],
+            ]: Inferred NER labels for each sentence in the batch
+        """
         ner_batch_labels = []
         if return_pos:
             self.inputs = self.compiled_ner_pipeline.tokenizer(
@@ -310,6 +404,17 @@ class CompiledNER:
     def inference(
         self, sentences: List[str], return_pos: bool
     ) -> List[Tuple[str, str, Union[int, float], int, int, int]]:
+        """
+        Perform inference on a list of sentences to extract NER labels
+        Args:
+            sentences (List[str]): The list of sentences to perform inference on
+            return_pos (bool): Flag indicating whether ot return positional information
+                in the output
+
+        Returns:
+            List[Tuple[str, str, Union[int, float], int, int, int]]: The inferred NER labels
+        """
+
         def flatten(list: Any) -> Generator:
             for el in list:
                 if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
@@ -339,6 +444,13 @@ class CompiledNER:
     def postprocess(
         self, ner_labels: Any, return_pos: bool
     ) -> List[Dict[str, Union[float, int, str]]]:
+        """
+        Postprocess NER labels to dictionary format
+        Args:
+            ner-Labels (Any): NER labels to postprocess
+            return_pos (bool): Flag indicating whether the input NER labels contain positional
+                information
+        """
         ner_labels = set(ner_labels)
         sorted_entities = []
         entities = []
@@ -374,6 +486,16 @@ class CompiledNER:
     def extract_entities(
         self, sentences: str, return_pos: bool
     ) -> List[Dict[str, Union[float, int, str]]]:
+        """
+        Extract named entities from input sentence using NER
+        Args:
+            sentences (str): The input sentences to extract entities from
+            return_pos (bool): Flag indiciating whether to return positional information in the
+                output
+        Returns:
+            List[Dict[str, Union[float, int, str]]]: Extracted named entities in dictionary
+                format
+        """
         list_sentences = self.preprocess(sentences)
         ner_labels = self.inference(list_sentences, return_pos)
         entities = self.postprocess(ner_labels, return_pos)
