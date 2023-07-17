@@ -58,7 +58,8 @@ export AWS_PROFILE=dev
 As all images used in projects and apps are based on our core docker images. It helps save time to build all images. Run the command
 
 ```shell
-make docker.build-all
+make docker.build/python-base
+make docker.build/fastapi-serve
 ```
 
 It takes about 10 minutes to run, go stretch your legs, get a coffee, or consult our [Contribution Guide](https://onclusive.atlassian.net/l/cp/u1Mz7m6M).
