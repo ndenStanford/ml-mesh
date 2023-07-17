@@ -1,6 +1,7 @@
 """Settings."""
 
 # Standard Library
+from functools import lru_cache
 from typing import Optional
 
 # 3rd party libraries
@@ -11,35 +12,28 @@ class Settings(BaseSettings):
     """API configuration."""
 
     # Generic settings
-
     # API name
     API_NAME: str = "Summarization Prediction"
-
     # API description
     API_DESCRIPTION: str = ""
-
     # API environment
-    ENVIRONMENT: str = "stage"
-
+    ENVIRONMENT: str = "dev"
+    # Betterstack heartbeat key
+    BETTERSTACK_KEY: str = ""
     # Debug level
     DEBUG: bool = True
-
     # API runtime
     KUBERNETES_IN_POD: bool = False
-
     # Logging level
     LOGGING_LEVEL: str = "info"
-
     # documentation endpoint
     DOCS_URL: Optional[str] = "/summarization/docs"
     OPENAPI_URL: Optional[str] = "/summarization/openapi.json"
-
     # OpenAI api key
     OPENAI_API_KEY: str = ""
-
     # Prompt url
     PROMPT_API: str = "https://internal.api.ml.dev.onclusive.org"
-    INTERNAL_ML_ENDPOINT_API_KEY: str
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
 
     PROMPT_DICT = {
         "en": {
@@ -137,4 +131,10 @@ class Settings(BaseSettings):
     }
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> BaseSettings:
+    """Returns instanciated Settings class."""
+    return Settings()
+
+
+settings = get_settings()

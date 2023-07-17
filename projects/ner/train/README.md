@@ -1,8 +1,8 @@
-# `keywords-train`
+# `NER-train`
 
 ## 1 Overview
 
-The `keywords-train` container image provides the code and runtime environment for retrieving a
+The `ner-train` container image provides the code and runtime environment for retrieving a
 specified feature extraction pipeline from huggingface and registering it on our internal neptun AI
 model registry.
 
@@ -24,8 +24,8 @@ For development purposes, the pipeline can be run locally without containers.
 
 1. Set the neptune authentication token value
    - `export NEPTUNE_API_TOKEN==?`
-2. Change into the `projects/keywords/train/src` directory
-   - `cd projects/keywords/train`
+2. Change into the `projects/ner/train/src` directory
+   - `cd projects/ner/train`
 3. Run the model retrieval + registering step
    - `python -m src.register_trained_model`
 
@@ -38,13 +38,14 @@ Editing that file allows for configuring development pipeline runs.
 #### 2.2.1 Building the docker container
 
 To locally build the image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest`, run the `make` target:
+`063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-train:latest`, run the `make` target:
 
 ```make
-make projects.build/keywords \
+make projects.build/ner \
   COMPONENT=train \
   ENVIRONMENT=dev
 ```
+You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a different name. Make sure you've exported a value for `$IMAGE_TAG`
 
 #### 2.2.2 Running the components inside docker
 
@@ -59,15 +60,25 @@ make projects.build/keywords \
 
 3. Run the container:
 
+You can run the command with this command (which uses docker compose):
+
+```
+make projects.start/ner COMPONENT=train
+```
+
+Or run this docker command:
+
 ```docker
 docker run \
   --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
   -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
   -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  --env-file $PATH_TO_REPOSITORY/projects/keywords/train/config/dev.env \
-  -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:latest \
+  --env-file $PATH_TO_REPOSITORY/projects/ner/train/config/dev.env \
+  -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-train:latest \
   python -m src.register_trained_model
 ```
 
-- Note: If the `--env-file` command is omitted in the above steps,
+If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
+
+- Note: If the `--env-file` command is omitted in the docker command,
   the pipeline will fall back on the default values defined in the `settings.py` file.

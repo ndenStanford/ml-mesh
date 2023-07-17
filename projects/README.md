@@ -16,6 +16,7 @@ This folder contains the implmentation of all our machine learning projects. Eac
 | Sentiment     | Document Sentiment classification | Text      |         |       |         |       |     |
 | Keywords      | Keyword extractions from text     | Text      |         |       |         |       | x   |
 | Summarization | Text summarization                | Text      |         |       |         |       | x   |
+| NER           | Named Entity Recognition          | Text      |         |       |         |       | x   |
 
 - **keybert**: keyword extraction
 
