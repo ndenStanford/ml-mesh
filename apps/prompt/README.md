@@ -25,7 +25,7 @@ To locally build the prompt-frontend image tagged as
 make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
 ```
 
-Note, if you haven't exported a value for `IMAGE_TAG`, the image will be tagged as `latest`
+Note, if you haven't exported a value for `IMAGE_TAG`, the image will be tagged as `latest`. To avoid this, initalise your `.envrc` by running `. .envrc` (have to be in same directory) or run `direnv allow`
 
 ## 3 Running the containers
 
@@ -42,7 +42,7 @@ make apps.start/prompt COMPONENT=frontend ENVIRONMENT=dev
 ```
 
 If you were to run `docker ps` you will see various containers starting including `dyanmodb` as database and `redis` for caching:
-![Alt text](prompt-app-containers.PNG)
+![Alt text](images/prompt-app-containers.PNG)
 
 You can find out more on how these containers start in [docker-compose.dev.yaml](https://github.com/AirPR/ml-mesh/blob/chore/add-prompt-readme/apps/prompt/docker-compose.dev.yaml)
 
@@ -54,13 +54,13 @@ If you are not able to, you need to portforward the left out container. To do th
 - Enter the missing port (most likely `3000`)
 
 The ports tab should look like this once done
-![Alt text](prompt-app-port-forward.PNG)
+![Alt text](images/prompt-app-port-forward.PNG)
 
 Refresh your browser and you should be able to load up the UI at `http://localhost:3000/prompt`
 
 Now you are fully ready to interact with the Prompt App!
 
-## 3 Running Backend tests
+## 4 Running Backend tests
 
 To run unit tests on `prompt-backend`, use the following command:
 
@@ -71,4 +71,25 @@ make apps.unit/prompt COMPONENT=backend ENVIRONMENT=dev
 To run integration tests on `prompt-backend`, use the following command:
 ```
 make apps.integration/prompt COMPONENT=backend ENVIRONMENT=dev
+```
+
+## 4 Deploying Images to ECR
+
+To push your images to ECR you need to first authenticate to our Amazon ECR registry which is done by running:
+
+```
+make docker.login
+```
+
+To push the backend image to ECR run the following:
+
+```
+make apps.deploy/prompt COMPONENT=backend
+```
+
+
+Similarly for the frontend image:
+
+```
+make apps.deploy/prompt COMPONENT=frontend
 ```
