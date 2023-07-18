@@ -13,7 +13,7 @@ from onclusiveml.tracking import (
 # --- settings classes
 class TrackedSENTModelSpecs(TrackedModelSpecs):
     project: str = "onclusive/sent"
-    model = "SENT-TRAINED"
+    model = "SEN-TRAINED"
 
     class Config:
         env_file = "config/dev.env"

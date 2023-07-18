@@ -71,11 +71,11 @@ def main() -> None:
     hf_pipeline_local_dir = os.path.join(model_card.local_output_dir, "hf_pipeline")
     hf_pipeline.save_pretrained(hf_pipeline_local_dir)
 
-    # model_version.upload_directory_to_model_version(
-    #     local_directory_path=hf_pipeline_local_dir,
-    #     neptune_attribute_path=model_card.model_artifact_attribute_path,
-    # )
-    # # model card
+    model_version.upload_directory_to_model_version(
+        local_directory_path=hf_pipeline_local_dir,
+        neptune_attribute_path=model_card.model_artifact_attribute_path,
+    )
+    # model card
     model_version.upload_config_to_model_version(
         config=model_card.dict(), neptune_attribute_path="model/model_card"
     )
