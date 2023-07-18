@@ -108,14 +108,15 @@ class CompiledSent(BaseHandler, ABC):
             compiled_sent_pipeline=compiled_sent_pipeline,
         )
 
-    #A proprocessing function to add dead characters so all sequences are the same length
+    
     def pad_sequence(self, seq, value):
         """
-        Remove HTML tags from input text
+        Add dead characters so all sequences are the same length
         Args:
-            text (str): Input text
+            seq (list): Input list
+            value (str): Padded value
         Returns:
-            str: Text with HTML tags removed
+            seq (list): Ourpur list with padded value
         """
         seq = seq[0:self.MAX_LEN]
         seq = seq + [value] * (self.MAX_LEN - len(seq))
