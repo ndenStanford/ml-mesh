@@ -38,8 +38,17 @@ def main() -> None:
         model_card.model_params.huggingface_model_reference
     )
     model = AutoModelForSequenceClassification.from_pretrained(
-        model_card.model_params.huggingface_model_reference, return_dict=False
+        model_card.model_params.huggingface_model_reference
     )
+
+    # model_2 = AutoModelForSequenceClassification.from_pretrained(
+    #         model_card.model_params.huggingface_model_reference
+    #     )
+    # text = "I love you"
+    # encoded_input = tokenizer(text, return_tensors='pt')
+    # output = model(**encoded_input)
+    # output_2 = model_2(**encoded_input)
+
     # Create pipeline using sent model and tokenizer
     logger.info("Creating huggingface pipeline")
     hf_pipeline = pipeline(
@@ -51,14 +60,13 @@ def main() -> None:
     sent_settings = model_card.model_params.sent_settings.dict()
     # --- create prediction files
     logger.info("Making predictions from example inputs")
-    sent_predictions: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline(
+    sent_predictions: List[Dict[str, Union[str, float, int]]] = hf_pipeline(
         model_card.model_inputs.sample_documents
     )
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
-    for sublist in sent_predictions:
-        for dictionary in sublist:
-            dictionary["score"] = float(dictionary["score"])
+    for dictionary in sent_predictions:
+        dictionary["score"] = float(dictionary["score"])
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")

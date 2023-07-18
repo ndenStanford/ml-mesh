@@ -17,7 +17,7 @@ print("b")
 print(model)
 
 hf_pipeline = pipeline(
-    task="text-classification",
+    task="sentiment-analysis",
     model=model,
     tokenizer=tokenizer,
 )
