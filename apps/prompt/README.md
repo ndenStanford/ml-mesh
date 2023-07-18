@@ -12,14 +12,14 @@ Code for the frontend can be found in `ml-mesh/apps/prompt/frontend` (Typescript
 ## 2 Building the containers
 
 To locally build the prompt-backend image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:$IMAGE_TAG`, run the `make` target:
+`063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:$IMAGE_TAG`, run the following command:
 
 ```
 make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
 ```
 
 To locally build the prompt-frontend image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:$IMAGE_TAG`, run the `make` target:
+`063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:$IMAGE_TAG`, run the following command:
 
 ```
 make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
@@ -58,4 +58,17 @@ The ports tab should look like this once done
 
 Refresh your browser and you should be able to load up the UI at `http://localhost:3000/prompt`
 
-Now you can are fully ready to interact with the Prompt App!
+Now you are fully ready to interact with the Prompt App!
+
+## 3 Running Backend tests
+
+To run unit tests on `prompt-backend`, use the following command:
+
+```
+make apps.unit/prompt COMPONENT=backend ENVIRONMENT=dev
+```
+
+To run integration tests on `prompt-backend`, use the following command:
+```
+make apps.integration/prompt COMPONENT=backend ENVIRONMENT=dev
+```
