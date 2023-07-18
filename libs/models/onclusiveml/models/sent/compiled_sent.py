@@ -137,15 +137,15 @@ class CompiledSent(BaseHandler, ABC):
         return(input_ids, attention_masks, tags, tokenized_texts)
 
 
-    ###MODEL INTERPRETATION HELPERS
-    #convenience functions for extracting entities as a list of dicts
-    def get_label_name(self, label_val):
-        label_str = {
-            0: 'negative',
-            1: 'neutral',
-            2: 'positive'
-        }
-        return label_str.get(label_val, "Invalid label value")
+    # ###MODEL INTERPRETATION HELPERS
+    # #convenience functions for extracting entities as a list of dicts
+    # def get_label_name(self, label_val):
+    #     label_str = {
+    #         0: 'negative',
+    #         1: 'neutral',
+    #         2: 'positive'
+    #     }
+    #     return label_str.get(label_val, "Invalid label value")
 
     def _add_entity_sentiment(sentences, res, entities):
         sentence_pos_probs = res['sentence_pos_probs']
