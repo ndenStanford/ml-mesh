@@ -9,6 +9,7 @@ import datetime
 
 import numpy as np
 import torch
+from bs4 import BeautifulSoup
 
 import regex
 from pathlib import Path
@@ -108,6 +109,47 @@ class CompiledSent(BaseHandler, ABC):
             compiled_sent_pipeline=compiled_sent_pipeline,
         )
 
+    def remove_html(self, text: str) -> str:
+        """
+        Remove HTML tags from input text
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with HTML tags removed
+        """
+        text = BeautifulSoup(text, "html.parser").text
+        return text
+
+    def remove_whitespace(self, text: str) -> str:
+        """
+        Remove extra white spaces from input text."
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with extra whitespaces removed
+        """
+
+        text = re.sub(r"\s+", " ", text)
+        return text
+
+    def preprocess(self, sentences: str) -> List[str]:
+        """
+        Preprocess the input sentences by removing unwanted content inside text and tokenizing
+
+        Args:
+            sentences (str): Input sentences
+        Return:
+            List[str]: Tokenized sentences
+        """
+        sentences = self.remove_html(sentences)
+        sentences = self.remove_whitespace(sentences)
+        tokenizer = SentenceTokenizer()
+        list_sentences = tokenizer.tokenize(content=sentences)[
+            "sentences"
+        ]  # default is english
+        # very short sentences are likely somehow wrong
+        list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
+        return list_sentences
     
     def pad_sequence(self, seq, value):
         """
@@ -204,6 +246,8 @@ class CompiledSent(BaseHandler, ABC):
         inputs = (input_ids, attention_masks)
 
         return inputs
+    
+    def preprocess(self, sentences):
 
     #Put Preprocessed IDs into the model
     def inference(self, inputs):
