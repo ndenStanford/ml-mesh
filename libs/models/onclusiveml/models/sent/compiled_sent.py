@@ -147,49 +147,47 @@ class CompiledSent(BaseHandler, ABC):
     #     }
     #     return label_str.get(label_val, "Invalid label value")
 
-    def _add_entity_sentiment(sentences, res, entities):
-        sentence_pos_probs = res['sentence_pos_probs']
-        sentence_neg_probs = res['sentence_neg_probs']
-        sentence_neu_probs = [1 - pos - neg for pos, neg
-                              in zip(sentence_pos_probs, sentence_neg_probs)]
+    # def _add_entity_sentiment(sentences, res, entities):
+    #     sentence_pos_probs = res['sentence_pos_probs']
+    #     sentence_neg_probs = res['sentence_neg_probs']
+    #     sentence_neu_probs = [1 - pos - neg for pos, neg
+    #                           in zip(sentence_pos_probs, sentence_neg_probs)]
 
-        entity_sentiment = []
-        for entity in entities:
-            try:
-                entity_text = entity.get('text')
-                indexes = [i for i, sentence in enumerate(sentences) if (sentence.find(entity_text) != -1)]
+    #     entity_sentiment = []
+    #     for entity in entities:
+    #         try:
+    #             entity_text = entity.get('text')
+    #             indexes = [i for i, sentence in enumerate(sentences) if (sentence.find(entity_text) != -1)]
 
-                i = 0
-                pos = 0
-                neg = 0
-                neu = 0
-                for index in indexes:
-                    pos += sentence_pos_probs[index]
-                    neg += sentence_neg_probs[index]
-                    neu += sentence_neu_probs[index]
-                    i += 1
+    #             i = 0
+    #             pos = 0
+    #             neg = 0
+    #             neu = 0
+    #             for index in indexes:
+    #                 pos += sentence_pos_probs[index]
+    #                 neg += sentence_neg_probs[index]
+    #                 neu += sentence_neu_probs[index]
+    #                 i += 1
 
-                if i == 0:
-                    logger.info(f'can not find indexes for entity: {entity}')
-                    entity['sentiment'] = "neutral"
-                else:
-                    pos = pos / i
-                    neg = neg / i
-                    neu = neu / i
-                    entity['sentiment'] = "positive" if (pos > neg) and (pos > neu) else \
-                        "neutral" if (neu > neg) and (neu > pos) else \
-                            "negative" if (neg > pos) and (neg > neu) else \
-                                "neutral"
-                entity_sentiment.append(entity)
-            except Exception as e:
-                logger.error((f"invalid entity..."
-                              f"entity = {entity}..."), exc_info=True)
-                entity['sentiment'] = "neutral"
-                entity_sentiment.append(entity)
+    #             if i == 0:
+    #                 logger.info(f'can not find indexes for entity: {entity}')
+    #                 entity['sentiment'] = "neutral"
+    #             else:
+    #                 pos = pos / i
+    #                 neg = neg / i
+    #                 neu = neu / i
+    #                 entity['sentiment'] = "positive" if (pos > neg) and (pos > neu) else \
+    #                     "neutral" if (neu > neg) and (neu > pos) else \
+    #                         "negative" if (neg > pos) and (neg > neu) else \
+    #                             "neutral"
+    #             entity_sentiment.append(entity)
+    #         except Exception as e:
+    #             logger.error((f"invalid entity..."
+    #                           f"entity = {entity}..."), exc_info=True)
+    #             entity['sentiment'] = "neutral"
+    #             entity_sentiment.append(entity)
 
-        return (entity_sentiment)
-
-
+    #     return (entity_sentiment)
 
 
     #Make text into ids, also handles sentence splitting
@@ -266,6 +264,17 @@ class CompiledSent(BaseHandler, ABC):
         return(datum)
 
     def _add_entity_sentiment(self, sentences, res, entities):
+        """
+        Augment the entity with the corresponding sentiment
+
+        Args:
+            sentences (List[str]): List of sentences from the article
+            res (List[dict]): List of sentiment probability corresponding to sentences
+            entities (List[dict]): List of detected entities from the NER model
+
+        Returns:
+            entity_sentiment (List[dict]): List of detected entities with sentiment attached to them
+        """
         sentence_pos_probs = res['sentence_pos_probs']
         sentence_neg_probs = res['sentence_neg_probs']
         sentence_neu_probs = [1 - pos - neg for pos, neg
@@ -306,6 +315,17 @@ class CompiledSent(BaseHandler, ABC):
         return (entity_sentiment)
 
     def _decide_label(self, pos, neu, neg):
+        """
+        Helper function to decide final sentiment. The threshold has been calibrated to align with the customer expectation
+
+        Args:
+            pos (float): Probability of positive sentiment
+            neu (float): Probability of neutral sentiment
+            neg (float): Probability of negative sentiment
+
+        Returns:
+            val (str): Final sentiment label
+        """
         neg=neg-0.2*pos
         pos=pos*1.7
         if pos>1 or neg<0:
@@ -318,24 +338,24 @@ class CompiledSent(BaseHandler, ABC):
                         "neutral"
         return(val)
 
-    def initialize_test(self):
+    # def initialize_test(self):
 
-        self.device = torch.device("cuda:" + str(properties.get("gpu_id")) if torch.cuda.is_available() else "cpu")
+    #     self.device = torch.device("cuda:" + str(properties.get("gpu_id")) if torch.cuda.is_available() else "cpu")
 
-        self.unicode_strp = regex.compile(r'\p{P}')
+    #     self.unicode_strp = regex.compile(r'\p{P}')
 
-        self.model = torch.jit.load("model_dir/sent_neuron_v2.pt")
-        self.tokenizer = pickle.load(open("neuron/tokenizer_v2.vocab", "rb"))
+    #     self.model = torch.jit.load("model_dir/sent_neuron_v2.pt")
+    #     self.tokenizer = pickle.load(open("neuron/tokenizer_v2.vocab", "rb"))
 
-        #self.arr_err = pickle.load(open("./neuron/sent_err_arr.pkl", 'rb'))
+    #     #self.arr_err = pickle.load(open("./neuron/sent_err_arr.pkl", 'rb'))
 
-        self.model.to(self.device)
-        self.model.eval()
+    #     self.model.to(self.device)
+    #     self.model.eval()
 
-        self.initialized = True
-        self.NUM_LABELS = 3
-        self.MAX_SEQ_LENGTH = 128
-        self.MAX_BATCH_SIZE = 6
+    #     self.initialized = True
+    #     self.NUM_LABELS = 3
+    #     self.MAX_SEQ_LENGTH = 128
+    #     self.MAX_BATCH_SIZE = 6
 
 
 _service = TransformersSequenceClassificationHandler()
