@@ -26,6 +26,7 @@ make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
 ```
 
 Note, if you haven't exported a value for `IMAGE_TAG`, the image will be tagged as `latest`. To avoid this, initalise your `.envrc` by running `. .envrc` (have to be in same directory) or run `direnv allow`
+If you do not have a `.envrc` file, your remote machine may not be setup correctly in which please read [Setup your remove machine](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3274145830/Setup+your+remote+machine) to setup your environment correctly.
 
 ## 3 Running the containers
 
