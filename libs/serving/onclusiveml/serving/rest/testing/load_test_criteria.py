@@ -12,7 +12,7 @@ from onclusiveml.serving.rest.testing.load_testing_params import (
 )
 
 
-class LoadTestCriteria:
+class LoadTestCriteria(object):
     """A utility class to
     - provide `Criteria` instances either through
         - direct specification via the constructor argument, or
