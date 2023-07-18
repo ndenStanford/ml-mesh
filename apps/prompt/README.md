@@ -1,13 +1,11 @@
 # `Onclusive Prompt Manager App`
-- overview
-- running container
-- running on browser with port forwarding
 
 ## 1 Overview
 The Onclusive Prompt Manager App is split into two componenets. The `prompt-frontend` and `prompt-backend`. Prompt frontend component is responsible for the UI of the application and communicates
-with the `prompt-backend` for the UI features to function. The backend is our API and backbone of the UI application. It handles (CRUD) prompts created by the user as well as run inference with given prompt on a chosen models.
+with the `prompt-backend` for the UI features to function. The backend is our API and backbone of the UI application. It handles prompts created by the user (CRUD) as well as run inference with the given prompt on a chosen models.
 
-Code for the backend can be found in `ml-mesh/apps/prompt/backend` (python)
+Code for the backend can be found in `ml-mesh/apps/prompt/backend` (Python)
+
 Code for the frontend can be found in `ml-mesh/apps/prompt/frontend` (Typescript)
 
 
@@ -27,7 +25,7 @@ To locally build the prompt-frontend image tagged as
 make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
 ```
 
-Note `$IMAGE_TAG` needs to be set, if you haven't exported a value for `IMAGE_TAG`, the image will be tagged as `latest`
+Note, if you haven't exported a value for `IMAGE_TAG`, the image will be tagged as `latest`
 
 ## 3 Running the containers
 
@@ -43,12 +41,13 @@ Similarly, for `prompt-frontend`
 make apps.start/prompt COMPONENT=frontend ENVIRONMENT=dev
 ```
 
-If you were to run `docker ps` you will see various containers starting including `dyanmodb` as database and `redis` for caching
+If you were to run `docker ps` you will see various containers starting including `dyanmodb` as database and `redis` for caching:
+![Alt text](prompt-app-containers.PNG)
 
 You can find out more on how these containers start in [docker-compose.dev.yaml](https://github.com/AirPR/ml-mesh/blob/chore/add-prompt-readme/apps/prompt/docker-compose.dev.yaml)
 
 ### 3.1 Portforwarding
-Now that your containers are running, you should be able to load up the Prompt Manager App webpage using `http://localhost:3000/prompt` (or using public ip address).
+Now that your containers are running, you should be able to load up the Prompt Manager App webpage using `http://localhost:3000/prompt`.
 If you are not able to, you need to portforward the left out container. To do that on VSCode:
 - Click on `PORTS` which is by the bottom window next to the terminal tab
 - Click Add Port
