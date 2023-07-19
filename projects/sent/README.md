@@ -1,3 +1,3 @@
-# Named Entity Recognition
+# Sentiment Analysis
 
-Please find this project documentation [here](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192652408/Entity).
+Please find this project documentation [here](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815818/Sentiment).
