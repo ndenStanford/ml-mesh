@@ -57,6 +57,15 @@ class LoadTest(object):
         self.end_time: float = -1
         gevent.signal_handler(signal.SIGTERM, sig_term_handler)
 
+        self.env = Environment(
+            user_classes=self.settings.user_classes,
+            host=self.settings.host,
+            tags=self.settings.tags,
+            exclude_tags=self.settings.exclude_tags,
+            reset_stats=self.settings.reset_stats,
+            stop_timeout=self.settings.stop_timeout,
+        )
+
     def report(self) -> TestReport:
         """Returns the statistics from the load test in JSON
 
@@ -207,15 +216,6 @@ class LoadTest(object):
 
         try:
             logger.info(f"Starting Locust with settings {self.settings.dict()} ")
-
-            self.env = Environment(
-                user_classes=self.settings.user_classes,
-                host=self.settings.host,
-                tags=self.settings.tags,
-                exclude_tags=self.settings.exclude_tags,
-                reset_stats=self.settings.reset_stats,
-                stop_timeout=self.settings.stop_timeout,
-            )
 
             self.env.create_local_runner()
             gevent.spawn(stats_printer(self.env.stats))
