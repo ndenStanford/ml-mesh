@@ -1,4 +1,4 @@
-# `train`
+# `Train Manual`
 
 Replace <project_name> with "ner" or "sent"
 
