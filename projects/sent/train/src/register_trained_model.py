@@ -41,14 +41,6 @@ def main() -> None:
         model_card.model_params.huggingface_model_reference
     )
 
-    # model_2 = AutoModelForSequenceClassification.from_pretrained(
-    #         model_card.model_params.huggingface_model_reference
-    #     )
-    # text = "I love you"
-    # encoded_input = tokenizer(text, return_tensors='pt')
-    # output = model(**encoded_input)
-    # output_2 = model_2(**encoded_input)
-
     # Create pipeline using sent model and tokenizer
     logger.info("Creating huggingface pipeline")
     hf_pipeline = pipeline(
