@@ -6,12 +6,13 @@ import pytest
 from served_model_test import TestServedModel
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ModelServer, ServedModel
-from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
-from onclusiveml.serving.rest.serve.serving_params import (
+from onclusiveml.serving.rest.serve import (
     FastAPISettings,
+    ModelServer,
+    ServedModel,
     ServingParams,
 )
+from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
 
 
 @pytest.mark.parametrize(
