@@ -1,8 +1,9 @@
+"""Functional Tests"""
+
 # Standard Library
 import time
 
 # 3rd party libraries
-import pandas as pd
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
@@ -12,6 +13,7 @@ from onclusiveml.models.ner import CompiledNER
 
 
 logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
+
 
 @pytest.mark.latency
 @pytest.mark.parametrize(
@@ -41,8 +43,9 @@ def test_compiled_ner_extract_entities_latency(
     for i in range(n_runs):
         compiled_ner.extract_entities(test_document, return_pos=True)
     average_compiled_duration = (time.time() - compiled_start) / n_runs
-    logger.info(f"Average compiled ner inference duration: ")
-    logger.info(f"{average_compiled_duration}s")
+    logger.info(
+        f"Average compiled ner inference duration: {average_compiled_duration}s"
+    )
 
     # time generic ner
     start = time.time()

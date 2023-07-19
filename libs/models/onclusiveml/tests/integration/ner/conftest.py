@@ -1,3 +1,5 @@
+"""Conftest"""
+
 # ML libs
 from transformers.pipelines import pipeline
 
@@ -49,6 +51,4 @@ def test_documents():
     return """Elon Reeve Musk (born June 28, 1971) is a business magnate and investor.
     He is the founder, CEO, and chief engineer of SpaceX; angel investor, CEO and product architect of Tesla, Inc.; owner and CTO of Twitter; founder of the Boring Company; co-founder of Neuralink and OpenAI; and president of the philanthropic Musk Foundation.
     Musk is the wealthiest person in the world with an estimated net worth, as of July 12, 2023, of around US$239 billion according to the Bloomberg Billionaires Index and $248.
-    8 billion according to Forbes's Real Time Billionaires list, primarily from his ownership stakes in Tesla and SpaceX."""
-
-
+    8 billion according to Forbes's Real Time Billionaires list, primarily from his ownership stakes in Tesla and SpaceX."""  # noqa: E501

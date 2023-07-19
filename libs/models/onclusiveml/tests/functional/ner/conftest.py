@@ -1,3 +1,5 @@
+"""Conftest"""
+
 # ML libs
 from transformers.pipelines import pipeline
 
@@ -34,7 +36,6 @@ def test_neuron_compiled_ner_pipeline(test_hf_pipeline):
     return neuron_compiled_ner_pipeline
 
 
-
 @pytest.fixture
 def test_document():
 
@@ -60,4 +61,4 @@ def test_document():
         In 2001, the original Mac OS was replaced with the completely new Mac OS X (later known as macOS), based on NeXT's NeXTSTEP platform, giving the operating system a modern Unix-based foundation for the first time.
         In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor.
         He died of respiratory arrest related to the tumor in 2011, at the age of 56, with Tim Cook succeeding him as CEO of Apple.
-        In 2022, he was posthumously awarded the Presidential Medal of Freedom."""
+        In 2022, he was posthumously awarded the Presidential Medal of Freedom."""  # noqa: E501
