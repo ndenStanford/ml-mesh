@@ -2,7 +2,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ServingBaseParams
+from onclusiveml.serving import ServingBaseParams
 
 
 @pytest.fixture

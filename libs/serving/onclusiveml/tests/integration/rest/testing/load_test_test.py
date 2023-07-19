@@ -3,7 +3,7 @@ import pytest
 from locust import HttpUser, between, task
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import (
+from libs.serving.onclusiveml.serving.rest.testing.load_test import (
     LoadTest,
     LoadTestingParams,
     TestReport,

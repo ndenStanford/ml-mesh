@@ -2,7 +2,9 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import LoadTestCriteria
+from libs.serving.onclusiveml.serving.rest.testing.load_test import (
+    LoadTestCriteria,
+)
 
 
 @pytest.mark.parametrize(

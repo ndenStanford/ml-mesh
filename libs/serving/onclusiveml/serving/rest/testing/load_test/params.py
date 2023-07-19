@@ -10,7 +10,7 @@ from locust.main import load_locustfile
 from pydantic import BaseModel, root_validator, validator
 
 # Internal libraries
-from onclusiveml.serving.rest.serving_base_params import ServingBaseParams
+from libs.serving.onclusiveml.serving.params import ServingBaseParams
 
 
 class LoadTestingParams(ServingBaseParams):

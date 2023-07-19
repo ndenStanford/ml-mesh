@@ -2,7 +2,10 @@
 from locust import HttpUser
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import LoadTest, LoadTestingParams
+from libs.serving.onclusiveml.serving.rest.testing.load_test import (
+    LoadTest,
+    LoadTestingParams,
+)
 
 
 def test_load_test():

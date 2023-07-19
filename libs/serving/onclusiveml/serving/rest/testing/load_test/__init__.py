@@ -1,4 +1,4 @@
-from onclusiveml.serving.rest.testing.load_testing_params import (  # noqa: F401
+from onclusiveml.serving.rest.testing.load_test.params import (  # noqa: F401
     ValidMeasurements,
     ValidEndpointTypes,
     LoadTestingParams,
@@ -11,7 +11,7 @@ from onclusiveml.serving.rest.testing.load_testing_params import (  # noqa: F401
     EvaluatedCriteria,
     EnvironmentCriterion,
 )
-from onclusiveml.serving.rest.testing.load_test_criteria import (  # noqa: F401
+from onclusiveml.serving.rest.testing.load_test.criteria import (  # noqa: F401
     LoadTestCriteria,
 )
-from onclusiveml.serving.rest.testing.load_test import LoadTest  # noqa: F401
+from onclusiveml.serving.rest.testing.load_test.load_test import LoadTest  # noqa: F401

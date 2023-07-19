@@ -4,7 +4,7 @@ from locust import HttpUser, between, task
 from pydantic import ValidationError
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import (
+from onclusiveml.serving.rest.testing.load_test import (
     Criterion,
     EndpointReport,
     EnvironmentCriterion,

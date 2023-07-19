@@ -3,7 +3,9 @@ import pytest
 from locust import HttpUser
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import LoadTestingParams
+from libs.serving.onclusiveml.serving.rest.testing.load_test import (
+    LoadTestingParams,
+)
 
 
 def test_load_testing_params_with_user_classes():

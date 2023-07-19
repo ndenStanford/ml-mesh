@@ -2,7 +2,7 @@
 from typing import List, Optional
 
 # Internal libraries
-from onclusiveml.serving.rest.testing.load_testing_params import (
+from onclusiveml.serving.rest.testing.load_test.params import (
     Criterion,
     EnvironmentCriteriaCount,
     EnvironmentCriterion,

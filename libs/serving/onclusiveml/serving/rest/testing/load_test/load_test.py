@@ -16,7 +16,7 @@ from locust.stats import stats_printer
 from locust.util.timespan import parse_timespan
 
 # Internal libraries
-from onclusiveml.serving.rest.testing.load_testing_params import (
+from onclusiveml.serving.rest.testing.load_test.params import (
     EndpointReport,
     LoadTestingParams,
     Measurement,
