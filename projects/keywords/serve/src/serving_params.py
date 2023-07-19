@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Union
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ServingBaseParams
+from onclusiveml.serving import ServingBaseParams
 
 
 class ServedModelParams(ServingBaseParams):
