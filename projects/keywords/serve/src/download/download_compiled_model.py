@@ -6,7 +6,8 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.downloading_params import ServedModelParams, TrackedCompiledModelSpecs
+from src.download.params import TrackedCompiledModelSpecs
+from src.params import ServedModelParams
 
 
 if __name__ == "__main__":

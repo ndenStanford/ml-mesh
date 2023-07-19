@@ -2,8 +2,8 @@
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.served_model import ServedKeywordsModel
-from src.serving_params import ServedModelArtifacts
+from src.serve.params import ServedModelArtifacts
+from src.serve.served_model import ServedKeywordsModel
 
 
 def get_model_server() -> ModelServer:

@@ -1,17 +1,18 @@
 # Standard Library
 import json
 import os
-from pathlib import Path
-from typing import Union
 
-# Internal libraries
-from onclusiveml.serving import ServingBaseParams
+# Source
+from src.params import ServedModelParams
 
 
-class ServedModelParams(ServingBaseParams):
+# from onclusiveml.serving import ServingBaseParams
 
-    model_name: str = "keywords"
-    model_directory: Union[str, Path] = "."
+
+# class ServedModelParams(ServingBaseParams):
+
+#     model_name: str = "keywords"
+#     model_directory: Union[str, Path] = "."
 
 
 class ServedModelArtifacts(object):
