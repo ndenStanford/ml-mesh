@@ -57,8 +57,8 @@ class Settings(BaseSettings):
             },
             "en": {
                 "alias": "ml-summarization-french-english",
-                "template": "Donner un résumé abstrait en français tout en retenant l'important \
-                            citations de discours en moins de {desired_length} \
+                "template": "Donner un résumé abstrait en français tout en retenant les importantes \
+                            citations du discours en moins de {desired_length} \
                             mots: \n {content} \n English summary: ",
             },
         },
