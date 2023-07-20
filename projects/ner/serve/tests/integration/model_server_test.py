@@ -9,18 +9,18 @@ from onclusiveml.serving.rest.serve import (
 
 # Source
 from src.model_server import get_model_server
-from src.served_model import ServedKeywordsModel
+from src.served_model import ServedNERModel
 
 
 @pytest.mark.order(4)
 def test_get_model_server():
     """Tests the utility method get_model_server to provide an initialized (but not running)
-    ModelServer instance. Also checks that the expected ServedKeywordsModel instance is attached
+    ModelServer instance. Also checks that the expected ServedNERModel instance is attached
     and not loaded."""
 
     model_server = get_model_server()
 
-    assert isinstance(model_server.model, ServedKeywordsModel)
+    assert isinstance(model_server.model, ServedNERModel)
     assert not model_server.model.is_ready()
 
 

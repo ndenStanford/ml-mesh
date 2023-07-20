@@ -52,40 +52,26 @@ class ServedNERModel(ServedModel):
         predicted_documents = self.model.extract_entities(
             sentences=inputs.content, **configuration.dict()
         )
-        # assemble validated response model instance
-        predicted_payload_list = []
 
+        predicted_document_list = []
         for predicted_document in predicted_documents:
 
-            predicted_document_list = []
-
-            for (
-                extracted_entity,
-                extracted_score,
-                extracted_index,
-                extracted_word,
-                extracted_start,
-                extracted_end,
-            ) in predicted_document:
-
-                predicted_document_list.append(
-                    PredictionExtractedEntity(
-                        entity=extracted_entity,
-                        score=extracted_score,
-                        index=extracted_index,
-                        word=extracted_word,
-                        start=extracted_start,
-                        end=extracted_end,
-                    )
+            predicted_document_list.append(
+                PredictionExtractedEntity(
+                    entity_type=predicted_document["entity_type"],
+                    entity_text=predicted_document["entity_text"],
+                    score=predicted_document["score"],
+                    sentence_index=predicted_document["sentence_index"],
+                    start=predicted_document["start"],
+                    end=predicted_document["end"],
                 )
-
-            predicted_document_model = PredictionOutputContent(
-                predicted_document=predicted_document_list
             )
 
-            predicted_payload_list.append(predicted_document_model)
+            predicted_document_model = PredictionOutputContent(
+                predicted_content=predicted_document_list
+            )
 
-        return PredictResponseModel(outputs=predicted_payload_list)
+        return PredictResponseModel(outputs=predicted_document_model)
 
     def bio(self) -> BioResponseModel:
 

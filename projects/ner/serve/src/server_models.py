@@ -25,10 +25,10 @@ class PredictRequestModel(BaseModel):
 # --- prediction response models
 class PredictionExtractedEntity(BaseModel):
 
-    entity: str
+    entity_type: str
+    entity_text: str
     score: float
-    index: int
-    word: str
+    sentence_index: int
     start: Optional[int] = None
     end: Optional[int] = None
 
@@ -40,7 +40,7 @@ class PredictionOutputContent(BaseModel):
 
 class PredictResponseModel(BaseModel):
 
-    outputs: List[PredictionOutputContent]
+    outputs: PredictionOutputContent
 
 
 # --- bio response models
