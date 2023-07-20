@@ -319,7 +319,7 @@ services:
         source: serve/
         target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload_test_results]
+    command: [python, -m, src.util.upload_test_results]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
