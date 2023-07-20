@@ -1,4 +1,6 @@
 # Standard LibraryR
+
+# Standard Library
 from datetime import datetime as dt
 
 # 3rd party libraries
@@ -23,7 +25,6 @@ def main() -> None:
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
-
     # --- upload compiled model
     compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
