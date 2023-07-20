@@ -23,7 +23,7 @@ services:
       - type: bind
         source: train/src
         target: /home/projects/sent/train/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sent-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
     environment:
@@ -51,7 +51,7 @@ services:
       - type: bind
         source: train/tests
         target: /projects/sent/train/tests
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sent-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
