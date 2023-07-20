@@ -208,7 +208,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [python, -m, src.model_server]
+    command: [python, -m, src.serve.model_server]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-88
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
@@ -240,7 +240,7 @@ services:
         source: serve/
         target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [python, -m, src.download_compiled_model]
+    command: [python, -m, src.util.download_compiled_model]
     profiles: [serve, integration, functional, load]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -345,7 +345,7 @@ services:
         source: serve/
         target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload_test_results]
+    command: [python, -m, src.util.upload_test_results]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}

@@ -6,13 +6,13 @@ from fastapi import APIRouter, status
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.serving.rest.serve.params import FastAPISettings
 from onclusiveml.serving.rest.serve.server_models import (
     LivenessProbeResponse,
     ModelServerURLs,
     ReadinessProbeResponse,
     ServedModelMethods,
 )
-from onclusiveml.serving.rest.serve.serving_params import FastAPISettings
 
 
 def get_model_server_urls(

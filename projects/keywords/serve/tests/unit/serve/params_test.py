@@ -8,7 +8,8 @@ import os
 import pytest
 
 # Source
-from src.serving_params import ServedModelArtifacts, ServedModelParams
+from src.params import ServedModelParams
+from src.serve.params import ServedModelArtifacts
 
 
 @pytest.mark.parametrize(

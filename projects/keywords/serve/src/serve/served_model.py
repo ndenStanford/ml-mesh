@@ -9,14 +9,14 @@ from onclusiveml.models.keywords import CompiledKeyBERT
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.server_models import (
+from src.serve.params import ServedModelArtifacts
+from src.serve.server_models import (
     BioResponseModel,
     PredictionExtractedKeyword,
     PredictionOutputDocument,
     PredictRequestModel,
     PredictResponseModel,
 )
-from src.serving_params import ServedModelArtifacts
 
 
 class ServedKeywordsModel(ServedModel):
@@ -32,12 +32,10 @@ class ServedKeywordsModel(ServedModel):
         super().__init__(name=served_model_artifacts.model_name)
 
     def load(self) -> None:
-
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = CompiledKeyBERT.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
-
         # load model card json file into dict
         self.model_card = self.served_model_artifacts.model_card
 

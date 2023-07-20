@@ -5,8 +5,7 @@ import os
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ServingBaseParams
-from onclusiveml.serving.rest.testing import (
+from libs.serving.onclusiveml.serving.rest.testing.load_test import (
     Criterion,
     EndpointReport,
     EnvironmentCriterion,
@@ -18,6 +17,7 @@ from onclusiveml.serving.rest.testing import (
     ValidEndpointTypes,
     ValidMeasurements,
 )
+from onclusiveml.serving import ServingBaseParams
 
 
 def test_load_test_criteria():
@@ -56,10 +56,8 @@ def test_load_test_criteria_generate_from_environment(
     method, and validate the resulting criteria against defined ground truth criteria attributes."""
 
     load_test_criteria = LoadTestCriteria()
-
     # export the variable specifying the number of environment criteria
     os.environ[f"{ServingBaseParams.__config__.env_prefix}n_criteria"] = "10"
-
     # export all indexed environment variables. Include the ones with default values to illustrate
     # what would go into the docker compose `environment` section. We set the non-default value
     # to make sure the environment variable is dictating the final field value, and not the default

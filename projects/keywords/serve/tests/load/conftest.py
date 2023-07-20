@@ -8,19 +8,19 @@ import pytest
 from locust import HttpUser, between, task
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import (
+from onclusiveml.serving.rest.testing.load_test import (
     Criterion,
     LoadTestingParams,
     ValidMeasurements,
 )
 
 # Source
-from src.server_models import (
+from src.serve.params import ServedModelArtifacts
+from src.serve.server_models import (
     PredictConfiguration,
     PredictInputDocumentModel,
     PredictRequestModel,
 )
-from src.serving_params import ServedModelArtifacts
 
 
 @pytest.fixture

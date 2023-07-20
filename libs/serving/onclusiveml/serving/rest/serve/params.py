@@ -2,7 +2,7 @@
 from typing import Dict, Optional, Union
 
 # Internal libraries
-from onclusiveml.serving.rest.serving_base_params import ServingBaseParams
+from onclusiveml.serving.params import ServingBaseParams
 
 
 class FastAPISettings(ServingBaseParams):

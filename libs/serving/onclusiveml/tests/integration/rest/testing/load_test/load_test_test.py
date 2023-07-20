@@ -3,7 +3,7 @@ import pytest
 from locust import HttpUser, between, task
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import (
+from libs.serving.onclusiveml.serving.rest.testing.load_test import (
     LoadTest,
     LoadTestingParams,
     TestReport,
@@ -22,18 +22,18 @@ class TestWebsiteUser(HttpUser):
 
 
 @pytest.mark.parametrize(
-    "test_user_classes, test_locustfile",
+    "test_user_classes",
     [
-        ([TestWebsiteUser], ""),  # configure test using user classes
-        (
-            [],
-            "libs/serving/onclusiveml/tests/integration/rest/testing/test_locustfile.py",
-        ),  # configure test using locustfile
+        [TestWebsiteUser],  # configure test using user classes
+        [],  # configure test using locustfile
     ],
 )
 def test_locus_load_test_run_and_report(test_user_classes, test_locustfile):
     """Tests the running and reporting methods of the LoadTest class by running a genuine load test
     against http://github.com and producing a report."""
+
+    if test_user_classes:
+        test_locustfile = ""
 
     load_test_settings = LoadTestingParams(
         user_classes=test_user_classes,

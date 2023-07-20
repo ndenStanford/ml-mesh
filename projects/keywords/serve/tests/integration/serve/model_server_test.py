@@ -8,8 +8,8 @@ from onclusiveml.serving.rest.serve import (
 )
 
 # Source
-from src.model_server import get_model_server
-from src.served_model import ServedKeywordsModel
+from src.serve.model_server import get_model_server
+from src.serve.served_model import ServedKeywordsModel
 
 
 @pytest.mark.order(4)

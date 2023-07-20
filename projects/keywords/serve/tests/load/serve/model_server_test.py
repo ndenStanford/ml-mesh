@@ -3,10 +3,13 @@ import json
 import os
 
 # Internal libraries
-from onclusiveml.serving.rest.testing import LoadTest, LoadTestCriteria
+from onclusiveml.serving.rest.testing.load_test import (
+    LoadTest,
+    LoadTestCriteria,
+)
 
 # Source
-from src.registered_model_params import ServedModelParams
+from src.params import ServedModelParams
 
 
 def test_load_model(test_load_test_settings, test_model_criteria):

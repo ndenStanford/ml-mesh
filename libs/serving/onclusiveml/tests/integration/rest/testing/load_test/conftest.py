@@ -2,7 +2,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ServingBaseParams
+from onclusiveml.serving import ServingBaseParams
 
 
 @pytest.fixture
@@ -10,7 +10,7 @@ def test_locustfile():
     """The relative path to the locust file needed for the initialization of the LoadTest instance
     when defining client behaviour using the file approach (default)."""
 
-    return "libs/serving/onclusiveml/tests/integration/rest/testing/test_locustfile.py"
+    return "libs/serving/onclusiveml/tests/integration/rest/testing/load_test/test_locustfile.py"
 
 
 @pytest.fixture
