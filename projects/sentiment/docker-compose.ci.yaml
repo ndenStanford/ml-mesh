@@ -9,12 +9,12 @@ services:
   train:
     build:
       context: ../../
-      dockerfile: projects/sent/train/Dockerfile
+      dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: sent
+        PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
@@ -30,12 +30,12 @@ services:
   train-unit:
     build:
       context: ../../
-      dockerfile: projects/sent/train/Dockerfile
+      dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: sent
+        PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}

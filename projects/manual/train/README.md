@@ -1,6 +1,6 @@
 # `Train Manual`
 
-Replace <project_name> with "ner" or "sent"
+Replace <project_name> with "ner" or "sentiment"
 
 ## 1 Overview
 

@@ -9,12 +9,12 @@ services:
   train:
     build:
       context: ../../
-      dockerfile: projects/sent/train/Dockerfile
+      dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: sent
+        PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     ports:
@@ -22,7 +22,7 @@ services:
     volumes:
       - type: bind
         source: train/src
-        target: /home/projects/sent/train/src
+        target: /home/projects/sentiment/train/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
@@ -36,21 +36,21 @@ services:
   train-unit:
     build:
       context: ../../
-      dockerfile: projects/sent/train/Dockerfile
+      dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: sent
+        PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: train/src
-        target: /projects/sent/train/src
+        target: /projects/sentiment/train/src
       - type: bind
         source: train/tests
-        target: /projects/sent/train/tests
+        target: /projects/sentiment/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
