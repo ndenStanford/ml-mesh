@@ -11,9 +11,9 @@ from onclusiveml.serving.rest.serve import (
 from src.server_models import (
     BioResponseModel,
     PredictConfiguration,
-    PredictInputDocumentModel,
-    PredictionExtractedKeyword,
-    PredictionOutputDocument,
+    PredictInputContentModel,
+    PredictionExtractedEntity,
+    PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
 )
@@ -66,8 +66,10 @@ def test_model_server_predict(
     for the regression test element."""
 
     input = PredictRequestModel(
-        configuration=PredictConfiguration(**test_inference_params),
-        inputs=[PredictInputDocumentModel(document=test_inputs[test_record_index])],
+        configuration=PredictConfiguration(
+            return_pos=test_inference_params["return_pos"]
+        ),
+        inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
     test_response = test_client.post(
@@ -78,14 +80,19 @@ def test_model_server_predict(
     actual_output = test_response.json()
 
     expected_output = PredictResponseModel(
-        outputs=[
-            PredictionOutputDocument(
-                predicted_document=[
-                    PredictionExtractedKeyword(keyword_token=kt, keyword_score=ks)
-                    for kt, ks in test_predictions[test_record_index]
-                ]
-            )
-        ]
+        outputs=PredictionOutputContent(
+            predicted_content=[
+                PredictionExtractedEntity(
+                    entity_type=i["entity_type"],
+                    entity_text=i["entity_text"],
+                    score=i["score"],
+                    sentence_index=i["sentence_index"],
+                    start=i["start"],
+                    end=i["end"],
+                )
+                for i in test_predictions[test_record_index]
+            ]
+        )
     ).dict()
 
     assert actual_output == expected_output

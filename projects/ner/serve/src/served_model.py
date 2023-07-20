@@ -44,34 +44,32 @@ class ServedNERModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
-        # extract documents and inference call configuration from validated payload
+        # content and configuration from payload
         configuration = payload.configuration
         inputs = payload.inputs
 
         # score the model
-        predicted_documents = self.model.extract_entities(
+        entities = self.model.extract_entities(
             sentences=inputs.content, **configuration.dict()
         )
 
-        predicted_document_list = []
-        for predicted_document in predicted_documents:
+        entities_list = []
+        for entity in entities:
 
-            predicted_document_list.append(
+            entities_list.append(
                 PredictionExtractedEntity(
-                    entity_type=predicted_document["entity_type"],
-                    entity_text=predicted_document["entity_text"],
-                    score=predicted_document["score"],
-                    sentence_index=predicted_document["sentence_index"],
-                    start=predicted_document["start"],
-                    end=predicted_document["end"],
+                    entity_type=entity["entity_type"],
+                    entity_text=entity["entity_text"],
+                    score=entity["score"],
+                    sentence_index=entity["sentence_index"],
+                    start=entity["start"],
+                    end=entity["end"],
                 )
             )
 
-            predicted_document_model = PredictionOutputContent(
-                predicted_content=predicted_document_list
-            )
+            entity_model = PredictionOutputContent(predicted_content=entities_list)
 
-        return PredictResponseModel(outputs=predicted_document_model)
+        return PredictResponseModel(outputs=entity_model)
 
     def bio(self) -> BioResponseModel:
 

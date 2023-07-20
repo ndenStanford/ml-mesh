@@ -1,6 +1,6 @@
 # Overview
 
-The `serve` image implements both the ML `keywords` model serving application as well as all
+The `serve` image implements both the ML `ner` model serving application as well as all
 accompanying test suites as defined in [the post model registry flow `Model CI pipeline (2)` of the
  continuous integration design for ML serving images](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3198812161/MLOPs).
 
@@ -8,7 +8,7 @@ accompanying test suites as defined in [the post model registry flow `Model CI p
 
 To run the model server using the `docker-compose.dev.yaml` file (recommended):
 
-- run `make projects.start/keywords COMPONENT=serve ENVIRONMENT=dev`
+- run `make projects.start/ner COMPONENT=serve ENVIRONMENT=dev`
 
 Note: This will automatically download the model artifact if the specified output directory is
 empty.
@@ -35,7 +35,7 @@ internally consistent load testing framework.
 To run the `unit` tests for the `serve` component, simply run:
 
 ```bash
-make projects.unit/keywords COMPONENT=serve ENVIRONMENT=dev
+make projects.unit/ner COMPONENT=serve ENVIRONMENT=dev
 ```
 
 ### 2.2 Run `integration` tests
@@ -50,7 +50,7 @@ make projects.unit/keywords COMPONENT=serve ENVIRONMENT=dev
 To run the `integration` tests for the `serve` component, simply run:
 
 ```bash
-make projects.integration/keywords COMPONENT=serve ENVIRONMENT=dev
+make projects.integration/ner COMPONENT=serve ENVIRONMENT=dev
 ```
 
 Note: This will automatically download the model artifact if the specified output directory is
@@ -69,7 +69,7 @@ empty.
 To run the `functional` tests for the `serve` component, simply run:
 
 ```bash
-make projects.functional/keywords COMPONENT=serve ENVIRONMENT=dev
+make projects.functional/ner COMPONENT=serve ENVIRONMENT=dev
 ```
 
 Note: This will automatically download the model artifact if the specified output directory is

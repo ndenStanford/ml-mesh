@@ -54,14 +54,10 @@ def test_served_ner_model_predict(
         served_model_artifacts=test_served_model_artifacts
     )
     served_ner_model.load()
-
-    # input = PredictRequestModel(
-    #     configuration=PredictConfiguration(**test_inference_params),
-    #     inputs=[PredictInputContentModel(content=test_inputs[test_record_index])],
-    # )
-
     input = PredictRequestModel(
-        configuration=PredictConfiguration(return_pos=True),
+        configuration=PredictConfiguration(
+            return_pos=test_inference_params["return_pos"]
+        ),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
