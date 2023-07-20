@@ -336,21 +336,21 @@ services:
       DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
-      GITHUB_REPOSITORY: development-repository
-      GITHUB_ACTOR: development-actor
-      GITHUB_ENV: development-env
-      GITHUB_WORKFLOW: development-workflow
-      GITHUB_JOB: development-job
-      GITHUB_REF: development-ref
-      GITHUB_BASE_REF: development-base-ref
-      GITHUB_HEAD_REF: development-head-ref
-      GITHUB_SHA: development-sha
-      GITHUB_EVENT_NAME: development-event-name
-      GITHUB_RUN_ID: development-run-id
-      GITHUB_RUN_NUMBER: development-run-number
-      RUNNER_ARCH: development-arch
-      RUNNER_NAME: development-name
-      RUNNER_OS: development-os
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      GITHUB_ACTOR: ${GITHUB_ACTOR}
+      GITHUB_ENV: ${GITHUB_ENV}
+      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
+      GITHUB_JOB: ${GITHUB_JOB}
+      GITHUB_REF: ${GITHUB_REF}
+      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
+      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
+      GITHUB_SHA: ${GITHUB_SHA}
+      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
+      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
+      RUNNER_ARCH: ${RUNNER_ARCH}
+      RUNNER_NAME: ${RUNNER_NAME}
+      RUNNER_OS: ${RUNNER_OS}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
