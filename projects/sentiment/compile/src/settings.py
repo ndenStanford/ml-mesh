@@ -29,7 +29,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "SEN-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "SEN-TRAINED-24"
+    with_id: str = "SEN-TRAINED-16"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
@@ -154,7 +154,7 @@ class PipelineCompilationSettings(TrackedParams):
     model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
 
 
-class SENTPipelineCompilationSettings(PipelineCompilationSettings):
+class SentPipelineCompilationSettings(PipelineCompilationSettings):
 
     pipeline_name: str = "sent_model"
     max_length = 128
@@ -176,7 +176,7 @@ class CompilationTestSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class CompiledSENTTrackedModelCard(TrackedModelCard):
+class CompiledSentTrackedModelCard(TrackedModelCard):
 
     model_type: str = "compiled"
     # --- custom fields
@@ -184,7 +184,7 @@ class CompiledSENTTrackedModelCard(TrackedModelCard):
     uncompiled_model: UncompiledTrackedModelSpecs = UncompiledTrackedModelSpecs()
     # model compilation params
     sent_model_compilation_settings: PipelineCompilationSettings = (
-        SENTPipelineCompilationSettings()
+        SentPipelineCompilationSettings()
     )
 
     compilation_test_settings: CompilationTestSettings = CompilationTestSettings()
