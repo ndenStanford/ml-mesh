@@ -7,6 +7,7 @@ test_model
 
 # project `compile` pipeline artifacts
 projects/**/compile/outputs/
+docker/**/tests/output*
 
 # project `serve` component model artifacts
 projects/**/serve/models/
