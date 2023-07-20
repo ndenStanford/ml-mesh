@@ -1,8 +1,10 @@
-# `NER-train`
+# `Train Manual`
+
+Replace <project_name> with "ner" or "sentiment"
 
 ## 1 Overview
 
-The `ner-train` container image provides the code and runtime environment for retrieving a
+The `<project_name>-train` container image provides the code and runtime environment for retrieving a
 specified feature extraction pipeline from huggingface and registering it on our internal neptun AI
 model registry.
 
@@ -24,8 +26,8 @@ For development purposes, the pipeline can be run locally without containers.
 
 1. Set the neptune authentication token value
    - `export NEPTUNE_API_TOKEN==?`
-2. Change into the `projects/ner/train/src` directory
-   - `cd projects/ner/train`
+2. Change into the `projects/<project_name>/train/src` directory
+   - `cd projects/<project_name>/train`
 3. Run the model retrieval + registering step
    - `python -m src.register_trained_model`
 
@@ -38,10 +40,10 @@ Editing that file allows for configuring development pipeline runs.
 #### 2.2.1 Building the docker container
 
 To locally build the image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-train:latest`, run the `make` target:
+`063759612765.dkr.ecr.us-east-1.amazonaws.com/<project_name>-train:latest`, run the `make` target:
 
 ```make
-make projects.build/ner \
+make projects.build/<project_name> \
   COMPONENT=train \
   ENVIRONMENT=dev
 ```
@@ -63,7 +65,7 @@ You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a dif
 You can run the command with this command (which uses docker compose):
 
 ```
-make projects.start/ner COMPONENT=train
+make projects.start/<project_name> COMPONENT=train
 ```
 
 Or run this docker command:
@@ -73,8 +75,8 @@ docker run \
   --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
   -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
   -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  --env-file $PATH_TO_REPOSITORY/projects/ner/train/config/dev.env \
-  -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-train:latest \
+  --env-file $PATH_TO_REPOSITORY/projects/<project_name>/train/config/dev.env \
+  -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/<project_name>-train:latest \
   python -m src.register_trained_model
 ```
 
