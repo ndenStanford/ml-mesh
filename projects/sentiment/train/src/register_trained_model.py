@@ -18,14 +18,14 @@ logger = get_default_logger(__name__)
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    TrackedSENTBaseModelCard,
-    TrackedSENTModelSpecs,
+    TrackedSentBaseModelCard,
+    TrackedSentModelSpecs,
 )
 
 
 def main() -> None:
-    model_specs = TrackedSENTModelSpecs()
-    model_card = TrackedSENTBaseModelCard()
+    model_specs = TrackedSentModelSpecs()
+    model_card = TrackedSentBaseModelCard()
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
