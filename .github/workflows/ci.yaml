@@ -180,9 +180,14 @@ jobs       :
           # ========================
           # NER
           # ========================
-          # serve
+          # train
           - name: ner
             component: train
+            integration: false
+
+          # compile
+          - name: ner
+            component: compile
             integration: false
 
           # serve
