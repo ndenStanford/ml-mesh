@@ -6,10 +6,6 @@ from pydantic import Field
 from onclusiveml.tracking import TrackedModelSpecs
 
 
-# # Source
-# from src.serving_params import ServedModelParams  # noqa: F401
-
-
 class TrackedCompiledModelSpecs(TrackedModelSpecs):
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one

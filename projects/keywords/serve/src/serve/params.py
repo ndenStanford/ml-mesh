@@ -6,15 +6,6 @@ import os
 from src.params import ServedModelParams
 
 
-# from onclusiveml.serving import ServingBaseParams
-
-
-# class ServedModelParams(ServingBaseParams):
-
-#     model_name: str = "keywords"
-#     model_directory: Union[str, Path] = "."
-
-
 class ServedModelArtifacts(object):
     def __init__(self, remove_model_prefix: bool = True):
         """Utility class that reads in the model card and assembles model artifact local paths
