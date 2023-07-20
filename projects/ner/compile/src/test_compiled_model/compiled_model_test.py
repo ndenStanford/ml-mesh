@@ -132,9 +132,8 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     compilation_test_settings,
 ):
     compiled_predictions = compiled_ner.extract_entities(
-        test_files["inputs"][test_sample_index], True
+        test_files["inputs"][test_sample_index], **test_files["inference_params"]
     )
-    print(compiled_predictions)
 
     assert compiled_predictions == expected_predictions
     compiled_predictions_df = to_dataframe(compiled_predictions)
