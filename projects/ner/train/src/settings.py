@@ -30,6 +30,8 @@ class Inputs(TrackedParams):
 
 
 class NERSettings(TrackedParams):
+    return_pos: bool = True
+
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
