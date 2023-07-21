@@ -13,6 +13,17 @@ To run the model server using the `docker-compose.dev.yaml` file (recommended):
 Note: This will automatically download the model artifact if the specified output directory is
 empty.
 
+While the server is running, you can open another terminal and trigger the API. For example:
+
+```
+curl -X 'POST' 'http://0.0.0.0:8000/v1/model/ner/predict' -H 'Content-Type: application/json' -d '{"configuration": {"return_pos": true}, "inputs": {"content": "Google is cool"}}'
+```
+
+Which will output:
+
+```
+{"outputs":{"predicted_content":[{"entity_type":"ORG","entity_text":"Google","score":0.9729547,"sentence_index":0,"start":0,"end":6}]}}
+```
 ## 2 Testing the model server
 
 The following test suites are currently implemented:
