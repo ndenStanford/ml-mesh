@@ -7,10 +7,8 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-torch = "1.9.1"
-transformers = "4.17.0"
-core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
+models = {path = "../../../libs/models"}
 sentencepiece = "^0.1.99"
 protobuf = "^3.20"
 

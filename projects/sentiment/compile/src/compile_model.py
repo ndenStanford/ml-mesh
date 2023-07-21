@@ -7,13 +7,13 @@ from transformers import pipeline
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sent import CompiledSENT
+from onclusiveml.models.sent import CompiledSent
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     IOSettings,
-    SENTPipelineCompilationSettings,
+    SentPipelineCompilationSettings,
     UncompiledTrackedModelSpecs,
 )
 
@@ -39,7 +39,7 @@ def main() -> None:
         model=io_settings.download.model_directory,
     )
     # compile base model pipeline for sent
-    sent_pipeline_compilation_settings = SENTPipelineCompilationSettings()
+    sent_pipeline_compilation_settings = SentPipelineCompilationSettings()
 
     logger.debug(
         f"Using the following sent pipeline compilation settings: "
@@ -51,7 +51,7 @@ def main() -> None:
         **sent_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
     )
 
-    compiled_sent = CompiledSENT(compiled_sent_pipeline)
+    compiled_sent = CompiledSent(compiled_sent_pipeline)
     # export compiled sent model for next workflow component: test
     compiled_sent.save_pretrained(io_settings.compile.model_directory)
 

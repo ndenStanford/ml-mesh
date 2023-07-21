@@ -40,10 +40,10 @@ For development purposes, the pipeline can be run locally without containers.
 
 1. Set the neptune authentication token value
    - `export NEPTUNE_API_TOKEN==?`
-2. Change into the `projects/ner/compile` directory
-   - `cd projects/ner/compile`
+2. Change into the `projects/sentiment/compile` directory
+   - `cd projects/sentiment/compile`
 3. Running the below one after the other will export outputs to the local
-   `projects/ner/compile/src/outputs` directory:
+   `projects/sentiment/compile/src/outputs` directory:
 
 - `python -m src.download_uncompiled_model`
 - `python -m src.compile_model`
@@ -59,10 +59,10 @@ Editing that file allows for configuring development pipeline runs.
 #### 2.2.1 Building the docker container
 
 To locally build the image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/ner-compile:latest`, run the `make` target:
+`063759612765.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:latest`, run the `make` target:
 
 ```make
-make projects.build/ner \
+make projects.build/sentiment \
   COMPONENT=compile \
   ENVIRONMENT=dev \
   IMAGE_TAG=$IMAGE_TAG
@@ -71,13 +71,13 @@ make projects.build/ner \
 #### 2.2.2 Running the components inside containers using `make` and `docker compose`
 
 Running the below steps will create an additional `outputs` directory in the
-`projects/ner/compile` directory, holding all the below 4 steps' outputs in 4 separate
+`projects/sentiment/compile` directory, holding all the below 4 steps' outputs in 4 separate
 subdirectories for easier inspection & developing:
 
-- `projects/ner/compile/outputs/download`
-- `projects/ner/compile/outputs/compile`
-- `projects/ner/compile/outputs/validate`
-- `projects/ner/compile/outputs/upload`
+- `projects/sentiment/compile/outputs/download`
+- `projects/sentiment/compile/outputs/compile`
+- `projects/sentiment/compile/outputs/validate`
+- `projects/sentiment/compile/outputs/upload`
 
 To run the pipeline locally using the configurations in the `docker-compose.dev.yaml` file and internal `projects` level `make` utilities, follow the below steps.
 
@@ -96,7 +96,7 @@ To run the pipeline locally using the configurations in the `docker-compose.dev.
 - Download the uncompiled model:
 
   ```docker
-  make projects.compile/ner \
+  make projects.compile/sentiment \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=download-model \
             IMAGE_TAG=$IMAGE_TAG
@@ -105,7 +105,7 @@ To run the pipeline locally using the configurations in the `docker-compose.dev.
 - Compile the model:
 
   ```docker
-  make projects.compile/ner \
+  make projects.compile/sentiment \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=compile-model \
             IMAGE_TAG=$IMAGE_TAG
@@ -114,7 +114,7 @@ To run the pipeline locally using the configurations in the `docker-compose.dev.
 - Test compiled model:
 
   ```docker
-  make projects.compile/ner \
+  make projects.compile/sentiment \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=validate-model \
             IMAGE_TAG=$IMAGE_TAG
@@ -123,7 +123,7 @@ To run the pipeline locally using the configurations in the `docker-compose.dev.
 - Upload compiled model:
 
   ```docker
-  make projects.compile/ner \
+  make projects.compile/sentiment \
             ENVIRONMENT=dev \
             PIPELINE_COMPONENT=upload-model \
             IMAGE_TAG=$IMAGE_TAG
