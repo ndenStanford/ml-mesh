@@ -70,6 +70,7 @@ services:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: sentiment
