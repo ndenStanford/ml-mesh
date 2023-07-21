@@ -1,6 +1,6 @@
 # `Train Manual`
 
-Replace PROJECT_NAME to "keywords", "ner", or "sentiment"
+Set PROJECT_NAME to "keywords", "ner", or "sentiment"
 
 `export PROJECT_NAME==?`
 
