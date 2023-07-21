@@ -2,6 +2,8 @@
 
 Replace <project_name> with "ner" or "sentiment"
 
+`export PROJECT_NAME==?`
+
 ## 1 Overview
 
 The `<project_name>-train` container image provides the code and runtime environment for retrieving a
