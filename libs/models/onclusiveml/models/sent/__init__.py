@@ -1,3 +1,3 @@
-from onclusiveml.models.ner.compiled_ner import (  # noqa: F401
-    CompiledNER,
+from onclusiveml.models.sent.compiled_sent import (  # noqa: F401
+    CompiledSent,
 )
