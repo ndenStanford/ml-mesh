@@ -11,6 +11,11 @@ on  :
         required: true
         type: string
         description: Image to build and test.
+      region:
+        required: false
+        default: us-east-1
+        type: string
+        description: Image ECR repo region.
       tag:
         required: true
         type: string
