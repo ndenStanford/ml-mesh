@@ -13,9 +13,7 @@ from nltk.tokenize import word_tokenize as nltk_word_tokenize
 # Internal libraries
 # Internal library
 from onclusiveml.core.logging import get_default_logger
-
-# Source
-from src.predict.datasketch import MinHash, MinHashLSH
+from onclusiveml.datasketch import MinHash, MinHashLSH
 
 
 nltk.download("punkt")
@@ -33,7 +31,7 @@ class LshHandler:
 
         if k > num_words:
             return []
-        return [" ".join(words[i: i + k]) for i in range(len(words) - k + 1)]
+        return [" ".join(words[i : i + k]) for i in range(len(words) - k + 1)]  # noqa
 
     def generate_lsh_signature(
         self, shingle_list: List[str], num_perm: int = 128, threshold: float = 0.6

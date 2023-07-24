@@ -174,13 +174,13 @@ tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pyte
 
 [[package]]
 name = "certifi"
-version = "2023.7.22"
+version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2023.7.22-py3-none-any.whl", hash = "sha256:92d6037539857d8206b8f6ae472e8b77db8058fec5937a1ef3f54304089edbb9"},
-    {file = "certifi-2023.7.22.tar.gz", hash = "sha256:539cc1d13202e33ca466e88b2807e29f4c13049d6d87031a3c110744495cb082"},
+    {file = "certifi-2023.5.7-py3-none-any.whl", hash = "sha256:c6c2e98f5c7869efca1f8916fed228dd91539f9f1b444c314c06eef02980c716"},
+    {file = "certifi-2023.5.7.tar.gz", hash = "sha256:0f0d56dc5a6ad56fd4ba36484d6cc34451e1c6548c61daad8c320169f91eddc7"},
 ]
 
 [[package]]
@@ -1507,29 +1507,6 @@ files = [
 ]
 
 [[package]]
-name = "syndicate"
-version = "0.1.0"
-description = "Syndicate library"
-optional = false
-python-versions = "3.8.16"
-files = []
-develop = false
-
-[package.dependencies]
-core = {path = "../core"}
-mypy = "1.4.1"
-nltk = "^3.8.1"
-numpy = "1.21.1"
-openai = "0.27.2"
-regex = "2022.10.31"
-scipy = "1.7.3"
-stopwordsiso = "^0.6.1"
-
-[package.source]
-type = "directory"
-url = "../../../libs/syndicate"
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1959,4 +1936,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "1049da313d46f8bbccf5cb35ec6207ecef63ddeb2e44818ba57d65bf97cff9f5"
+content-hash = "7b4198f03cee0edb56f146e3f700add5458657c844ad300ed2218aa4f743fb8c"

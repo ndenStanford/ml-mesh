@@ -7,8 +7,8 @@ from typing import Any, Callable, List, Optional, Set, Tuple, Type
 import numpy as np
 from scipy.integrate import quad as integrate
 
-# Source
-from src.predict.datasketch.storage import (
+# Internal libraries
+from onclusiveml.datasketch.storage import (
     _random_name,
     ordered_storage,
     unordered_storage,

@@ -6,8 +6,8 @@ from typing import Any, Callable, Generator, Iterable, List, Optional, Union
 # 3rd party libraries
 import numpy as np
 
-# Source
-from src.predict.datasketch.hashfunc import sha1_hash32
+# Internal libraries
+from onclusiveml.datasketch.hashfunc import sha1_hash32
 
 
 # The size of a hash value in number of bytes
