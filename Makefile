@@ -19,6 +19,7 @@ ENVIRONMENT?=dev
 # all core docker images
 ALL_DOCKER_IMGS:= \
 	python-base \
+	gpu-base \
 	neuron-compile \
 	neuron-inference \
 	fastapi-serve \
