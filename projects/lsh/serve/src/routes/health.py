@@ -5,10 +5,10 @@
 from fastapi import APIRouter, status
 
 # Source
-from src.settings import get_settings
+from src.settings import settings as settings
 
 
-settings = get_settings()
+settings = settings
 
 router = APIRouter()
 
