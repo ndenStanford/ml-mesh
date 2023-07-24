@@ -1,4 +1,3 @@
-
 # ML libs
 import torch
 from transformers import BertModel, BertTokenizer
