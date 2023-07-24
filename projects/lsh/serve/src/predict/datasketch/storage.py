@@ -21,11 +21,11 @@ from typing import (
 )
 
 
-try:
+#try:
     # 3rd party libraries
-    import redis
-except ImportError:
-    redis = None
+#    import redis
+#except ImportError:
+#    redis = None
 try:
     # Standard Library
     import logging
