@@ -120,7 +120,7 @@ jobs       :
 
     with:
       environment: prod
-      image: ${{ matrix.image.name }}
+      image: ${{ matrix.image }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
