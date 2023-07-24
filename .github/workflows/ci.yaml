@@ -110,7 +110,7 @@ jobs       :
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
-        image: [python-base, neuron-compile, neuron-inference, kubeflow-jupyter, kubeflow-torch-cpu, kubeflow-data-science, fastapi-serve]
+        image: [python-base, gpu-base, neuron-compile, neuron-inference, kubeflow-jupyter, kubeflow-torch-cpu, kubeflow-data-science, fastapi-serve]
         validate-build: [false]
     with:
       environment: prod

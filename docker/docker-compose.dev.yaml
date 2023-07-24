@@ -53,6 +53,19 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
 
   gpu-base-tests:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+            # that's the closest analogue to --gpus; provide
+            # an integer amount of devices or 'all'
+              count: 1
+            # Devices are reserved using a list of capabilities, making
+            # capabilities the only required field. A device MUST
+            # satisfy all the requested capabilities for a successful
+            # reservation.
+              capabilities: [gpu]
     volumes:
       - type: bind
         source: gpu-base/tests
