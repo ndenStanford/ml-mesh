@@ -1,6 +1,5 @@
 # Standard Library
 import base64
-import pickle
 import struct
 from typing import Any, Callable, List, Optional, Set, Tuple, Type
 
@@ -107,7 +106,6 @@ class MinHashLSH(object):
         weights: Tuple[float, float] = (0.5, 0.5),
         params: Optional[Tuple[int, int]] = None,
         storage_config: Optional[dict] = None,
-        prepickle: Optional[bool] = None,
         hashfunc: Optional[Callable] = None,
     ) -> None:
         storage_config = {"type": "dict"} if not storage_config else storage_config
@@ -136,10 +134,6 @@ class MinHashLSH(object):
             self.b, self.r = _optimal_param(
                 threshold, num_perm, false_positive_weight, false_negative_weight
             )
-
-        self.prepickle = (
-            storage_config["type"] == "redis" if prepickle is None else prepickle
-        )
 
         self.hashfunc = hashfunc
         if hashfunc:
@@ -190,8 +184,6 @@ class MinHashLSH(object):
             raise ValueError(
                 "Expecting minhash with length %d, got %d" % (self.h, len(minhash))
             )
-        if self.prepickle:
-            key = pickle.dumps(key)
         if check_duplication and key in self.keys:
             raise ValueError("The given key already exists")
         Hs = [self._H(minhash.hashvalues[start:end]) for start, end in self.hashranges]
@@ -220,10 +212,7 @@ class MinHashLSH(object):
             H = self._H(minhash.hashvalues[start:end])
             for key in hashtable.get(H):
                 candidates.add(key)
-        if self.prepickle:
-            return [pickle.loads(key) for key in candidates]
-        else:
-            return list(candidates)
+        return list(candidates)
 
     def add_to_query_buffer(self, minhash: Any) -> None:
         """
@@ -266,10 +255,6 @@ class MinHashLSH(object):
         ]
         if not collected_result_sets:
             return []
-        if self.prepickle:
-            return [
-                pickle.loads(key) for key in set.intersection(*collected_result_sets)
-            ]
         return list(set.intersection(*collected_result_sets))
 
     def __contains__(self, key: Any) -> bool:
@@ -280,8 +265,6 @@ class MinHashLSH(object):
         Returns:
             bool: True only if the key exists in the index.
         """
-        if self.prepickle:
-            key = pickle.dumps(key)
         return key in self.keys
 
     def remove(self, key: Any) -> None:
@@ -292,8 +275,6 @@ class MinHashLSH(object):
             key (hashable): The unique identifier of a set.
 
         """
-        if self.prepickle:
-            key = pickle.dumps(key)
         if key not in self.keys:
             raise ValueError("The given key does not exist")
         for H, hashtable in zip(self.keys[key], self.hashtables):
@@ -341,10 +322,7 @@ class MinHashLSH(object):
             if H in hashtable:
                 for key in hashtable[H]:
                     candidates.add(key)
-        if self.prepickle:
-            return {pickle.loads(key) for key in candidates}
-        else:
-            return candidates
+        return candidates
 
     def get_counts(self) -> List[List[int]]:
         """
@@ -363,10 +341,7 @@ class MinHashLSH(object):
             *keys (hashable): the keys for which to get the bucket allocation
                 counts
         """
-        if self.prepickle:
-            key_set = [pickle.dumps(key) for key in set(keys)]
-        else:
-            key_set = list(set(keys))
+        key_set = list(set(keys))
         hashtables = [unordered_storage({"type": "dict"}) for _ in range(self.b)]
         Hss = self.keys.getmany(*key_set)
         for key, Hs in zip(key_set, Hss):
