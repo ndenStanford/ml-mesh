@@ -133,7 +133,7 @@ jobs       :
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   run-kubeflow-docker:
-    name: Core Docker Images.
+    name: Core Kubeflow Docker Images.
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, run-docker]
     strategy:
