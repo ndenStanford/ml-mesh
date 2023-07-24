@@ -1,6 +1,7 @@
 """Data models."""
 
 # Standard Library
+import datetime
 import json
 from typing import List, Optional
 
@@ -21,7 +22,7 @@ class ModelSchema(BaseModel):
 
     id: Optional[str] = None
     model_name: str
-    created_at: Optional[str] = None
+    created_at: Optional[datetime.datetime] = None
     parameters: Optional[str] = None
 
     def save(self) -> "ModelSchema":
@@ -62,7 +63,7 @@ class ModelSchema(BaseModel):
         return cls(
             id=model.id,
             model_name=model.model_name,
-            created_at=str(model.created_at),
+            created_at=model.created_at,
             parameters=model.parameters,
         )
 
