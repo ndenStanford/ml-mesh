@@ -29,8 +29,14 @@ projects.integration/%: ## Run integration tests for project component
 projects.functional/%: ## Run functional tests for project component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile functional up $(COMPONENT)-functional --exit-code-from $(COMPONENT)-functional --force-recreate
 
+	# ensure dependency service(s) shuts down
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
+
 projects.load/%: ## Run load tests for project component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile load up $(COMPONENT)-load --exit-code-from $(COMPONENT)-load --force-recreate
+
+	# ensure dependency service(s) shuts down
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 
 projects.compile/%: ## Run model compilation pipeline component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile pipeline up compile-$(PIPELINE_COMPONENT) --exit-code-from compile-$(PIPELINE_COMPONENT)
