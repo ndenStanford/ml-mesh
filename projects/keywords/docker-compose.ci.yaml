@@ -279,8 +279,8 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
+      serve:
+        condition: service_healthy
 
   # load tests
   # - include model artifact
@@ -306,8 +306,6 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
       serve:
         condition: service_healthy
 
