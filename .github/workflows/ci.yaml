@@ -102,7 +102,7 @@ jobs       :
   # DOCKER
   # ===============================================
 
-  run-docker:
+  run-us-east-1-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests]
@@ -132,10 +132,10 @@ jobs       :
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-  run-kubeflow-docker:
+  run-us-east-2-docker:
     name: Core Kubeflow Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, run-docker]
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
     strategy:
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
@@ -152,9 +152,9 @@ jobs       :
 
     with:
       environment: prod
-      image: ${{ matrix.image }}
+      image: ${{ matrix.image.name }}
       region: ${{ matrix.region }}
-      base-region: ${{ matrix.base-region }}
+      base-region: ${{ matrix.image.base-region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
