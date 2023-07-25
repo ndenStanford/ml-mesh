@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-jupyter:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:$IMAGE_TAG as builder
 
 ARG IMAGE_NAME
 
