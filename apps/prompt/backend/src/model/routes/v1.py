@@ -7,8 +7,8 @@ from fastapi import APIRouter, HTTPException, status
 from onclusiveml.core.logging import get_default_logger
 
 # Source
+from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelListSchema, ModelSchema
-from src.model.tables import ModelTable
 
 
 logger = get_default_logger(__name__)
@@ -40,10 +40,11 @@ def get_model(model_name: str):
     Args:
         model_name (str): model name
     """
+
     try:
-        return ModelSchema.get(model_name)
-    except ModelTable.DoesNotExist as e:
+        return ModelSchema.get(model_name, raises_if_not_found=True)
+    except ModelNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"{str(e)} - (model_name={str(model_name)})",
+            detail=str(e),
         )
