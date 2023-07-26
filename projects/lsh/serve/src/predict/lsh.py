@@ -49,6 +49,15 @@ class LshHandler:
             words = word_tokenizers["en"](text)
         return words
 
+    def pre_processing(self, text: str, lang: str = "en") -> List[str]:
+        text = text.lower()
+        text = re.sub(r"[^\w\s]", "", text)
+        text = text.rstrip()
+        language = lang
+        words = self.word_tokenizer(text, language)
+        words = stop_word_remover(content=words, lang=language)
+        return words
+
 
 _service = LshHandler()
 
@@ -77,13 +86,8 @@ def handle(data: Any) -> Optional[Dict[str, Optional[List[str]]]]:
             return {"signature": None}  # Returning None here if text is empty or None
         else:
             logger.warning(text)
-        # Simple text pre-processing
-        text = text.lower()
-        text = re.sub(r"[^\w\s]", "", text)
-        text = text.rstrip()
         language = data["language"]
-        words = _service.word_tokenizer(text, language)
-        words = stop_word_remover(content=words, lang=language)
+        words = _service.pre_processing(text=text, lang=language)
 
         shingle_list = _service.k_shingle(words, k=data["shingle_list"])
         if len(shingle_list) < 1:
