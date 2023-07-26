@@ -180,8 +180,16 @@ jobs       :
           # ========================
           # NER
           # ========================
-          # serve
+          # train
           - name: ner
+            component: train
+            integration: false
+
+          # ========================
+          # Sentiment
+          # ========================
+          # train
+          - name: sent
             component: train
             integration: false
 
