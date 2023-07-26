@@ -1,9 +1,8 @@
 # Standard Library
 import os
 import re
-from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 # ML libs
 import torch
@@ -41,6 +40,7 @@ class CompiledNER:
             7: "B-LOC",
             8: "I-LOC",
         }
+        self.sentence_tokenizer = SentenceTokenizer()
         self.MAX_BATCH_SIZE: int = 6
         self.DUMMY_SENTENCE: str = "Dummy sentence"
         self.MAX_SEQ_LENGTH: int = 128
@@ -97,6 +97,14 @@ class CompiledNER:
         text = re.sub(r"\s+", " ", text)
         return text
 
+    def sentence_tokenize(self, sentences: str) -> List[str]:
+        list_sentences = self.sentence_tokenizer.tokenize(content=sentences)[
+            "sentences"
+        ]  # default is english
+        # very short sentences are likely somehow wrong
+        list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
+        return list_sentences
+
     def preprocess(self, sentences: str) -> List[str]:
         """
         Preprocess the input sentences by removing unwanted content inside text and tokenizing
@@ -108,12 +116,7 @@ class CompiledNER:
         """
         sentences = self.remove_html(sentences)
         sentences = self.remove_whitespace(sentences)
-        tokenizer = SentenceTokenizer()
-        list_sentences = tokenizer.tokenize(content=sentences)[
-            "sentences"
-        ]  # default is english
-        # very short sentences are likely somehow wrong
-        list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
+        list_sentences = self.sentence_tokenize(sentences)
         return list_sentences
 
     def _extract_main_label(self, label: str) -> str:
@@ -414,13 +417,6 @@ class CompiledNER:
         Returns:
             List[Tuple[str, str, Union[int, float], int, int, int]]: The inferred NER labels
         """
-
-        def flatten(list: Any) -> Generator:
-            for el in list:
-                if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
-                    yield from flatten(el)
-                else:
-                    yield el
 
         loader = DataLoader(sentences, batch_size=self.MAX_BATCH_SIZE, shuffle=False)
         ner_labels: List[Any] = []
