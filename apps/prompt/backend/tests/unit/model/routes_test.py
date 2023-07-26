@@ -49,7 +49,10 @@ def test_get_model(mock_model_get, model_name, test_client):
     response = test_client.get(
         f"/api/v1/models/{model_name}", headers={"x-api-key": "1234"}
     )
-    mock_model_get.assert_called_with(f"{model_name}")
+    raises_if_not_found = True
+    mock_model_get.assert_called_with(
+        f"{model_name}", raises_if_not_found=raises_if_not_found
+    )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "created_at": None,

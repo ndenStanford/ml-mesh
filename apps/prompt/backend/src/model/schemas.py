@@ -1,6 +1,7 @@
 """Data models."""
 
 # Standard Library
+import datetime
 import json
 from typing import List, Optional
 
@@ -8,6 +9,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 # Source
+from src.model.exceptions import ModelNotFound
 from src.model.tables import ModelTable
 from src.settings import get_settings
 
@@ -20,7 +22,7 @@ class ModelSchema(BaseModel):
 
     id: Optional[str] = None
     model_name: str
-    created_at: Optional[str] = None
+    created_at: Optional[datetime.datetime] = None
     parameters: Optional[str] = None
 
     def save(self) -> "ModelSchema":
@@ -40,7 +42,9 @@ class ModelSchema(BaseModel):
         )
 
     @classmethod
-    def get(cls, model_name: Optional[str] = None) -> "ModelSchema":
+    def get(
+        cls, model_name: Optional[str] = None, raises_if_not_found: bool = False
+    ) -> Optional["ModelSchema"]:
         """Returns row of the table."""
         if model_name is None:
             return list(
@@ -49,7 +53,19 @@ class ModelSchema(BaseModel):
                     list(ModelTable.scan()),
                 )
             )
-        return ModelSchema(**json.loads(ModelTable.get(model_name).to_json()))
+        model = ModelTable.query(model_name)
+        model = list(model)
+        if not model:
+            if raises_if_not_found:
+                raise ModelNotFound(model_name=model_name)
+            return None
+        model = model[0]
+        return cls(
+            id=model.id,
+            model_name=model.model_name,
+            created_at=model.created_at,
+            parameters=model.parameters,
+        )
 
     def get_model_name(self) -> str:
         """Returns the model name."""

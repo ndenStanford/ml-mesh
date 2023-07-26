@@ -56,7 +56,7 @@ def test_save_model_schema(mock_save, model_name, max_tokens, temperature):
     mock_save.assert_called_once()
 
     assert isinstance(saved_model_name.id, str)
-    assert isinstance(saved_model_name.created_at, str)
+    assert isinstance(saved_model_name.created_at, datetime)
     assert isinstance(saved_model_name.model_name, str)
     assert isinstance(saved_model_name.parameters, str)
 
@@ -65,19 +65,21 @@ def test_save_model_schema(mock_save, model_name, max_tokens, temperature):
     "id",
     ["39ba8bf2-3a40-42a2-9ca1-27fa3de39e2b", "69095223-dae8-47ad-a077-150e5c5986db"],
 )
-@patch.object(ModelTable, "get")
+@patch.object(ModelTable, "query")
 def test_get_model_properties_schema_with_id(mock_get, id):
     """Test retrieve model properties with id."""
-    mock_get.return_value = ModelTable(
-        id=id,
-        model_name="model_name",
-        parameters=json.dumps(
-            {
-                "max_tokens": settings.OPENAI_MAX_TOKENS,
-                "temperature": settings.OPENAI_TEMPERATURE,
-            }
-        ),
-        created_at=datetime.now(timezone.utc),
-    )
+    mock_get.return_value = [
+        ModelTable(
+            id=id,
+            model_name="model_name",
+            parameters=json.dumps(
+                {
+                    "max_tokens": settings.OPENAI_MAX_TOKENS,
+                    "temperature": settings.OPENAI_TEMPERATURE,
+                }
+            ),
+            created_at=datetime.now(timezone.utc),
+        )
+    ]
     _ = ModelSchema.get(id)
     mock_get.assert_called_with(id)

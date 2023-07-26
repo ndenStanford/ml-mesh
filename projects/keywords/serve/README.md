@@ -74,3 +74,26 @@ make projects.functional/keywords COMPONENT=serve ENVIRONMENT=dev
 
 Note: This will automatically download the model artifact if the specified output directory is
 empty.
+
+### 2.4 Run `load` tests
+
+`load` test scope:
+  - Code + Ml model dependency
+  - requires `neuron` device in `serve` server component
+  - requires model artifact in `serve` server component
+  - model server will be run in `serve` component
+  - additional client will be run in `serve-load` component, sending genuine `http` requests
+    to the model server running in `serve` over the `docker compose` network
+  - export of two `json` files:
+    - `load_test_report.json`: The performance metrics captured during the load test
+    - `load_test_evaluation.json`: Individual and final fail/pass outcomes against specified
+      criteria
+
+To run the `load` tests for the `serve` component, simply run:
+
+```bash
+make projects.load/keywords COMPONENT=serve ENVIRONMENT=dev
+```
+
+Note: This will automatically download the model artifact if the specified output directory is
+empty.

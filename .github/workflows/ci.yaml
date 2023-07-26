@@ -102,7 +102,7 @@ jobs       :
   # DOCKER
   # ===============================================
 
-  run-docker:
+  run-us-east-1-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests]
@@ -110,11 +110,51 @@ jobs       :
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
-        image: [python-base, neuron-compile, neuron-inference, kubeflow-jupyter, kubeflow-torch-cpu, kubeflow-data-science, fastapi-serve]
+        image:
+          - python-base
+          - neuron-compile
+          - neuron-inference
+          - fastapi-serve
         validate-build: [false]
+        region: [us-east-1]
+
     with:
       environment: prod
       image: ${{ matrix.image }}
+      region: ${{ matrix.region }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      validate-build: ${{ matrix.validate-build }}
+      release: ${{ github.ref_name == 'main' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  run-us-east-2-docker:
+    name: Core Kubeflow Docker Images.
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
+    strategy:
+      max-parallel: 1
+      fail-fast: ${{ github.ref_name != 'main' }}
+      matrix:
+        image:
+          - name: kubeflow-jupyter
+            base-region: us-east-1
+          - name: kubeflow-torch-cpu
+            base-region: us-east-2
+          - name: kubeflow-data-science
+            base-region: us-east-2
+        validate-build: [false]
+        region: [us-east-2]
+
+    with:
+      environment: prod
+      image: ${{ matrix.image.name }}
+      region: ${{ matrix.region }}
+      base-region: ${{ matrix.image.base-region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
@@ -175,6 +215,22 @@ jobs       :
           # serve
           - name: entity-linking
             component: serve
+            integration: false
+
+          # ========================
+          # NER
+          # ========================
+          # train
+          - name: ner
+            component: train
+            integration: false
+
+          # ========================
+          # Sentiment
+          # ========================
+          # train
+          - name: sent
+            component: train
             integration: false
 
     with:
