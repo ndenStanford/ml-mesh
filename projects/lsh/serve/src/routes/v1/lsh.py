@@ -1,10 +1,5 @@
 """Summarization prediction."""
 
-# Standard lib
-
-# Standard Library
-from typing import Dict, List, Optional
-
 # 3rd party libraries
 # Third party libs
 from fastapi import APIRouter, status
@@ -28,7 +23,7 @@ router = APIRouter(
 @router.post("/predict", response_model=Response, status_code=status.HTTP_200_OK)
 def get_lsh(
     item: Request,
-) -> Optional[Dict[str, List[str]]]:
+) -> Response:
     """Returns signature of item content.
 
     Args:

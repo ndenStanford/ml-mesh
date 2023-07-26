@@ -15,8 +15,8 @@ def test_health_route(test_client):
 def test_lsh_prompt(example_content_input, example_lsh_output, test_client):
     """Test lsh linking endpoint."""
     response = test_client.post(
-        "/lsh",
-        json={"content": example_content_input, "signature": example_lsh_input},
+        "/v1/lsh/predict",
+        json={"content": example_content_input},
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"signature": example_lsh_output}
@@ -25,8 +25,8 @@ def test_lsh_prompt(example_content_input, example_lsh_output, test_client):
 def test_empty_input(test_client):
     """Test lsh endpoint with empty input."""
     response = test_client.post(
-        "/lsh",
-        json={"content": "", "signature": None},  # Empty content input
+        "/v1/lsh/predict",
+        json={},  # Empty content input
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert response.json() == {
@@ -38,3 +38,13 @@ def test_empty_input(test_client):
             }
         ]
     }
+
+
+def test_empty_string_input(test_client):
+    """Test lsh endpoint with empty input."""
+    response = test_client.post(
+        "/v1/lsh/predict",
+        json={"content": ""},  # Empty content input
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"signature": None}

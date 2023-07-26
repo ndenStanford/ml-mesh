@@ -185,6 +185,14 @@ jobs       :
             component: train
             integration: false
 
+          # ========================
+          # LSH
+          # ========================
+          # serve
+          - name: lsh
+            component: serve
+            integration: false
+
     with:
       environment: prod
       project: ${{ matrix.projects.name }}

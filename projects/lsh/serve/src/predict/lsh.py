@@ -54,7 +54,7 @@ class LshHandler:
         text = re.sub(r"[^\w\s]", "", text)
         text = text.rstrip()
         language = lang
-        words = self.word_tokenizer(text, language)
+        words = self.word_tokenizer(text, lang)
         words = stop_word_remover(content=words, lang=language)
         return words
 

@@ -26,7 +26,7 @@ class Request(BaseModel):
         weights (tuple)
     """
 
-    content: str = "Call functions to generate hash signatures for each article"
+    content: str
     language: Optional[str] = "en"
     shingle_list: Optional[int] = 5
     threshold: Optional[float] = 0.6

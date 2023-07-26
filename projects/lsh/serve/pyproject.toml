@@ -14,10 +14,6 @@ syndicate = {path = "../../../libs/syndicate"}
 nlp = {path = "../../../libs/nlp"}
 
 [tool.poetry.group.dev.dependencies]
-pydantic = "1.10.4"
-uvicorn = "0.20.0"
-starlette = "0.25.0"
-fastapi = {version = "0.92.0", extras = ["all"]}
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 
