@@ -75,7 +75,7 @@ def main() -> None:
         local_directory_path=hf_pipeline_local_dir,
         neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
-    # # model card
+    # model card
     model_version.upload_config_to_model_version(
         config=model_card.dict(), neptune_attribute_path="model/model_card"
     )
