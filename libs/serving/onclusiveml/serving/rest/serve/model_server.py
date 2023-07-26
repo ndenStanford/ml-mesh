@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI
 
 # Internal libraries
+from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
     get_liveness_router,
@@ -14,7 +15,6 @@ from onclusiveml.serving.rest.serve.server_utils import (
     get_readiness_router,
     get_root_router,
 )
-from onclusiveml.serving.rest.serve.serving_params import ServingParams
 
 
 class ModelServer(FastAPI):
@@ -33,7 +33,6 @@ class ModelServer(FastAPI):
 
         self.configuration = configuration
         self.model = model
-
         # if model is specified, ensure model loads are done in individual worker processes by
         # specifying start up behaviour
         if model is not None:
@@ -50,7 +49,6 @@ class ModelServer(FastAPI):
             on_startup=on_startup,
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
-
         # add root endpoint with API meta data
         self.include_router(
             get_root_router(
