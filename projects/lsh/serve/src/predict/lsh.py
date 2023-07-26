@@ -6,21 +6,16 @@ from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
 import nltk
-import stopwordsiso
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize as nltk_word_tokenize
 
 # Internal libraries
 # Internal library
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.datasketch import MinHash, MinHashLSH
+from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
 
 
 nltk.download("punkt")
-nltk.download("stopwords")
-STOP_WORDS = {lang: stopwordsiso.stopwords(lang) for lang in stopwordsiso.langs()}
-STOP_WORDS["en"] = set(stopwords.words("english"))
-
 
 logger = get_default_logger(__name__)
 
@@ -54,21 +49,11 @@ class LshHandler:
             words = word_tokenizers["en"](text)
         return words
 
-    def stop_word_remover(self, words: List[str], lang: str) -> List[str]:
-        if lang in STOP_WORDS:
-            cur_stopwords = STOP_WORDS[lang]
-            words = [word for word in words if word not in cur_stopwords]
-
-        return words
-
 
 _service = LshHandler()
 
 
 def handle(data: Any) -> Optional[Dict[str, Optional[List[str]]]]:
-    # Setup stopwords
-    STOP_WORDS = {lang: stopwordsiso.stopwords(lang) for lang in stopwordsiso.langs()}
-    STOP_WORDS["en"] = set(stopwords.words("english"))
     try:
         if data is None:
             return None
@@ -98,7 +83,7 @@ def handle(data: Any) -> Optional[Dict[str, Optional[List[str]]]]:
         text = text.rstrip()
         language = data["language"]
         words = _service.word_tokenizer(text, language)
-        words = _service.stop_word_remover(words, language)
+        words = stop_word_remover(content=words, lang=language)
 
         shingle_list = _service.k_shingle(words, k=data["shingle_list"])
         if len(shingle_list) < 1:

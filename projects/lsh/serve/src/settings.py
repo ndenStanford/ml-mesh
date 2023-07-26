@@ -18,8 +18,6 @@ class Settings(BaseSettings):
     API_DESCRIPTION: str = ""
     # API environment
     ENVIRONMENT: str = "dev"
-    # Betterstack heartbeat key
-    BETTERSTACK_KEY: str = ""
     # Debug level
     DEBUG: bool = True
     # API runtime
@@ -28,10 +26,6 @@ class Settings(BaseSettings):
     LOGGING_LEVEL: str = "info"
     # documentation endpoint
     DOCS_URL: Optional[str] = None
-    # lsh endpoint
-    LSH_ENDPOINT: str = "https://eks-data-prod.onclusive.com/lsh"
-
-    API_KEY_NAME: str = "x-api-key"
 
 
 @lru_cache

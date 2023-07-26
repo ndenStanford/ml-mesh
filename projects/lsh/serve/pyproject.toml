@@ -7,18 +7,11 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-openai = "0.27.2"
 regex = "2022.10.31"
 
 core = {path = "../../../libs/core"}
 syndicate = {path = "../../../libs/syndicate"}
-nltk = "^3.8.1"
-numpy = "1.21.1"
-stopwordsiso = "^0.6.1"
-scipy = "1.7.3"
-mypy = "1.4.1"
-redis = "4.6.0"
-types-redis = "^4.6.0.3"
+nlp = {path = "../../../libs/nlp"}
 
 [tool.poetry.group.dev.dependencies]
 pydantic = "1.10.4"

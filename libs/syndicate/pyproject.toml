@@ -7,23 +7,11 @@ packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-openai = "0.27.2"
-regex = "2022.10.31"
 
 core = {path = "../core"}
 nltk = "^3.8.1"
 numpy = "1.21.1"
-stopwordsiso = "^0.6.1"
 scipy = "1.7.3"
-mypy = "1.4.1"
-
-[tool.poetry.group.dev.dependencies]
-pydantic = "1.10.4"
-uvicorn = "0.20.0"
-starlette = "0.25.0"
-fastapi = {version = "0.92.0", extras = ["all"]}
-pytest = "7.2.0"
-pytest-mock = "3.10.0"
 
 [build-system]
 requires = ["poetry-core"]

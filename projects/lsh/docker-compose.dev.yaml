@@ -51,7 +51,7 @@ services:
         target: /home/projects/lsh/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/lsh/serve/train
+        target: /home/projects/lsh/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -80,7 +80,7 @@ services:
         target: /home/projects/lsh/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/lsh/serve/train
+        target: /home/projects/lsh/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]

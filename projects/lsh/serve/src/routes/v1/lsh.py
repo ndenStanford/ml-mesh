@@ -3,7 +3,7 @@
 # Standard lib
 
 # Standard Library
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 # 3rd party libraries
 # Third party libs
@@ -28,7 +28,7 @@ router = APIRouter(
 @router.post("/predict", response_model=Response, status_code=status.HTTP_200_OK)
 def get_lsh(
     item: Request,
-) -> Optional[Dict[str, str]]:
+) -> Optional[Dict[str, List[str]]]:
     """Returns signature of item content.
 
     Args:
@@ -40,7 +40,6 @@ def get_lsh(
     #  language = item.language
     #  if language in ["zh-tw", "zh-cn"]:
     #      language = "zh"
-
     signature = handle(
         data=[
             {
