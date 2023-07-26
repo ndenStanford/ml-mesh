@@ -3681,7 +3681,7 @@ optional = false
 python-versions = "*"
 files = [
     {file = "tensorflow-1.15.5-cp310-cp310-manylinux2014_x86_64.whl", hash = "sha256:cf537d84340cb53d0a0f447ed1323beb3d974c0839c93f310488a9aea2ab4384"},
-    {file = "tensorflow-1.15.5-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:ad23efd6cae1367348acbdad5b513954ab15ebb2c9b88e46bd384919392e2c1b"},
+    {file = "tensorflow-1.15.5-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:83e8cc3d0d78a15b6165b3c7c26ed7c6d0e4c8572edcf1d44808175a1db04024"},
     {file = "tensorflow-1.15.5-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:cc29b8cc7e93cc5fc556304e158f9bb9a72f962ae07f9fb3f82bfb6210634800"},
 ]
 
