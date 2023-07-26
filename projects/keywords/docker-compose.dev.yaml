@@ -255,7 +255,7 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  # unit tsts
+  # unit tests
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
