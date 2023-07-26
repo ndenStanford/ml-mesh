@@ -179,7 +179,7 @@ def compile_pipeline(
     validation_atol: float = 1e-02,
     tokenizer_settings: Dict = {},
     model_tracing_settings: Dict = {},
-    in_place_compilation: bool = False,
+    in_place_compilation: bool = True,
     **kwargs: Any
 ) -> Pipeline:
     """Utility function to take a conventional huggingface transformers pipeline and replace

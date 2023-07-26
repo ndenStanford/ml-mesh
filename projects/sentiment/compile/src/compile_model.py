@@ -52,6 +52,14 @@ def main() -> None:
     )
 
     compiled_sent = CompiledSent(compiled_sent_pipeline)
+
+    # test ----------------------------------------
+    text = "I love you. I hate you"
+    sentiment = compiled_sent.extract_sentiment(text, None)
+    sentiment
+
+    # test ----------------------------------------
+
     # export compiled sent model for next workflow component: test
     compiled_sent.save_pretrained(io_settings.compile.model_directory)
 

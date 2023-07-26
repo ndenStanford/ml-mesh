@@ -62,7 +62,7 @@ def test_document():
 
 
 sentiment_pipeline = test_hf_pipeline()
-compiled_sentiment_pipeline = test_neuron_compiled_sent_pipeline(sentiment_pipeline)
+# compiled_sentiment_pipeline = test_neuron_compiled_sent_pipeline(sentiment_pipeline)
 document = test_document()
 
 # Internal libraries
@@ -71,7 +71,8 @@ from onclusiveml.models.sent import CompiledSent
 
 # time compiled sentiment
 compiled_sentiment = CompiledSent(
-    compiled_sentiment_pipeline=compiled_sentiment_pipeline,
+    # compiled_sentiment_pipeline=compiled_sentiment_pipeline,
+    compiled_sentiment_pipeline=sentiment_pipeline,
 )
 
 compiled_sentiment.extract_sentiment(document, return_pos=True)
