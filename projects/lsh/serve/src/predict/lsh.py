@@ -20,6 +20,16 @@ class LshHandler:
         self.tokenizer = WordTokenizer()
 
     def k_shingle(self, words: List[str], k: int = 5) -> List[str]:
+        """
+        Generates k-shingles from a list of words.
+
+        Args:
+            words (List[str]): List of words to generate k-shingles from.
+            k (int, optional): The length of the shingles (default is 5).
+
+        Returns:
+            List[str]: A list of k-shingles generated from the input words.
+        """
         num_words = len(words)
 
         if k > num_words:
@@ -29,6 +39,17 @@ class LshHandler:
     def generate_lsh_signature(
         self, shingle_list: List[str], num_perm: int = 128, threshold: float = 0.6
     ) -> str:
+        """
+        Generates an LSH signature for a list of shingles.
+
+        Args:
+            shingle_list (List[str]): List of shingles for which to generate the signature.
+            num_perm (int, optional): Number of permutations for MinHash (default is 128).
+            threshold (float, optional): Jaccard similarity threshold for LSH (default is 0.6).
+
+        Returns:
+            str: The LSH signature generated for the input shingles.
+        """
         shingle_set = set(shingle_list)
 
         m = MinHash(num_perm)
@@ -40,6 +61,16 @@ class LshHandler:
         return signature
 
     def pre_processing(self, text: str, lang: str = "en") -> List[str]:
+        """
+        Pre-processes the input text for further analysis.
+
+        Args:
+            text (str): The input text to be pre-processed.
+            lang (str, optional): Language of the text (default is "en").
+
+        Returns:
+            List[str]: A list of pre-processed words after tokenization and stop-word removal.
+        """
         text = text.lower()
         text = re.sub(r"[^\w\s]", "", text)
         text = text.rstrip()

@@ -1,4 +1,4 @@
-# LSH API - Locality-Sensitive Hashing
+# LSH API - LOCALITY-SENSITIVE HASHING
 
 This repository contains an implementation of the LSH API, utilizing Locality-Sensitive Hashing to efficiently perform nearest neighbor search in high-dimensional spaces.
 
@@ -6,9 +6,8 @@ This repository contains an implementation of the LSH API, utilizing Locality-Se
 
 1. [Introduction](#introduction)
 2. [Files](#files)
-3. [Setup and Installation](#setup-and-installation)
-4. [Usage](#usage)
-5. [API Endpoints](#api-endpoints)
+3. [Usage](#usage)
+4. [API Endpoints](#api-endpoints)
 
 ## Introduction
 
@@ -29,21 +28,6 @@ The project is structured into the following files and directories:
 - **src/routes/v1/lsh.py**: Defines the API endpoint `/lsh/predict`, which receives requests and returns LSH signatures for the input content.
 
 - **src/predict/lsh.py**: Implements the LSH handler, which performs the core LSH operations such as shingling, generating LSH signatures, and preprocessing text data.
-
-## Setup and Installation
-
-To set up the LSH API and its dependencies, follow these steps:
-
-1. Ensure you have Python 3.8.16 installed.
-
-2. Install the required dependencies by running the following command:
-```
-make projects.lock/lsh COMPONENT=serve
-```
-This will update the poetry.lock if it is not the case already.
-Essentially, the libraries you need to immport are mostly our custom librairies: core, nlp and syndicate.
-
-3. Optionally, create a virtual environment to isolate the project dependencies.
 
 ## Usage
 
@@ -86,4 +70,4 @@ make projects.start/lsh
 
 ## Syndicate library
 
-As you noticed yourself, the syndicate library is essential to the functioning of the API. Thus I encourage to check it out at /ml-mesh/libs/syndicate
+As you noticed yourself, the syndicate library is essential to the functioning of the API. Thus I encourage to check it out at [here](/libs/syndicate)
