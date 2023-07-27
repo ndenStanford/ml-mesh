@@ -9,11 +9,7 @@ from starlette.testclient import TestClient
 
 # Internal libraries
 from onclusiveml.serving.rest.observability import Instrumentator
-from onclusiveml.serving.rest.serve import (
-    ModelServer,
-    ServedModel,
-    ServingParams,
-)
+from onclusiveml.serving.rest.serve import ServedModel
 
 
 # import TestServedModel in serve directory
@@ -24,31 +20,6 @@ sys.path.insert(0, serve_dir)
 
 # 3rd party libraries
 from served_model_test import TestServedModel
-
-
-@pytest.fixture
-def setup_model_server(
-    test_served_model_class,
-    test_add_model_predict,
-    test_add_model_bio,
-    test_api_version,
-    test_on_startup,
-    test_model_name,
-):
-    test_serving_params = ServingParams(
-        add_liveness=False,
-        add_readiness=False,
-        add_model_predict=test_add_model_predict,
-        add_model_bio=test_add_model_bio,
-        api_version=test_api_version,
-    )
-
-    model_server = ModelServer(
-        configuration=test_serving_params,
-        model=test_served_model_class(name=test_model_name),
-        on_startup=[test_on_startup],
-    )
-    return model_server
 
 
 @pytest.mark.parametrize("test_served_model_class", [ServedModel, TestServedModel])
