@@ -6,12 +6,13 @@ import pytest
 from served_model_test import TestServedModel
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ModelServer, ServedModel
-from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
-from onclusiveml.serving.rest.serve.serving_params import (
+from onclusiveml.serving.rest.serve import (
     FastAPISettings,
+    ModelServer,
+    ServedModel,
     ServingParams,
 )
+from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
 
 
 @pytest.mark.parametrize(
@@ -26,6 +27,11 @@ from onclusiveml.serving.rest.serve.serving_params import (
 def test_model_server___init__no_model(
     test_add_liveness, test_add_readiness, test_api_version, test_api_name
 ):
+    """Tests initialization of the ModelServer class without passing a model, validating
+    - toggling of liveness endpoint
+    - toggling of readiness endpoint
+    - capturing of api name and api version
+    - the configuration attribute capturing the serving params"""
 
     test_serving_params = ServingParams(
         add_liveness=test_add_liveness,
@@ -76,6 +82,11 @@ def test_model_server___init__with_model(
     test_on_startup,
     test_model_name,
 ):
+    """Tests initialization of the ModelServer class without passing a model, validating
+    - toggling of liveness endpoint
+    - toggling of readiness endpoint
+    - capturing of api name and api version
+    - the configuration attribute capturing the serving params"""
 
     test_serving_params = ServingParams(
         add_liveness=False,

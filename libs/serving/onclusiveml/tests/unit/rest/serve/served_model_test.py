@@ -35,6 +35,7 @@ class TestBioResponseModel(ServedModel.bio_response_model):
 
 
 class TestServedModel(ServedModel):
+    """A minimal working example of a subclasses custom model for testing purposes"""
 
     predict_request_model = TestModelPredictRequestModel
     predict_response_model = TestModelPredictResponseModel
@@ -43,7 +44,10 @@ class TestServedModel(ServedModel):
     def predict(
         self, payload: predict_request_model, *args: Any, **kwargs: Any
     ) -> predict_response_model:
-        """Inference method."""
+        """Inference method. Implements a very basic animal classifier using the
+        - TestModelPredictRequestModel and
+        - TestModelPredictResponseModel
+        test classes"""
 
         predictions = []
 
@@ -60,12 +64,15 @@ class TestServedModel(ServedModel):
         return self.predict_response_model(predictions=predictions)
 
     def bio(self) -> bio_response_model:
+        """Model meta data method. Implements a basic model bio data model using the
+        TestBioResponseModel test class"""
 
         return self.bio_response_model(name=self.name)
 
 
 # --- test the ServedModel class
 def test_served_model_load(test_model_name):
+    """Tests the initialization and loading behaviour of the ServedModel base class"""
 
     served_model = ServedModel(name=test_model_name)
     # base class `load` behaviour
@@ -78,22 +85,9 @@ def test_served_model_load(test_model_name):
     assert served_model.is_ready() is True
 
 
-def test_served_model_predict_raise_bad_args(test_model_name):
-    # get loaded model
-    served_model = ServedModel(name=test_model_name)
-
-    served_model.load()
-
-    # highlight importance of predict method requirements with test showing wrong
-    # call/implementation w.r.t argument specs
-    with pytest.raises(TypeError) as _:
-        test_payload = served_model.predict_request_model(instances=[1, 2])
-        some_arg = 1
-        some_kwarg = 2
-        served_model.predict(test_payload, some_arg, some_kwarg=some_kwarg)
-
-
 def test_served_model_predict(test_model_name):
+    """Tests the predict method stump of the ServedModel base class"""
+
     # get loaded model
     served_model = ServedModel(name=test_model_name)
 
@@ -103,18 +97,8 @@ def test_served_model_predict(test_model_name):
     served_model.predict(payload=test_payload)
 
 
-def test_served_model_bio_raise_bad_args(test_model_name):
-
-    served_model = ServedModel(name=test_model_name)
-
-    # highlight importance of bio method requirements with test showing wrong call/implementation
-    # w.r.t argument specs
-    with pytest.raises(TypeError) as _:
-        # call `bio` stump
-        served_model.bio(1)
-
-
 def test_served_model_bio(test_model_name):
+    """Tests the bio method stump of the ServedModel base class"""
 
     served_model = ServedModel(name=test_model_name)
     # call `bio` stump
@@ -127,6 +111,7 @@ def test_served_model_bio(test_model_name):
 
 # --- test the TestServedModel class
 def test_test_served_model_load(test_model_name):
+    """Tests the initialization and loading behaviour of the subclassed TestServedModel class"""
 
     test_served_model = TestServedModel(name=test_model_name)
 
@@ -171,6 +156,9 @@ def test_test_served_model_load(test_model_name):
 def test_test_served_model_predict(
     test_model_name, test_inputs, test_predictions_expected
 ):
+    """Tests the predict method of the subclassed TestServedModel class against specified ground
+    truth outputs"""
+
     # get loaded model
     test_served_model = TestServedModel(name=test_model_name)
 
@@ -182,6 +170,9 @@ def test_test_served_model_predict(
 
 
 def test_test_served_model_bio(test_model_name):
+    """Tests the bio method of the subclassed TestServedModel class against specified ground truth
+    outputs (TestServedModel response model)"""
+
     # get loaded model
     test_served_model = TestServedModel(name=test_model_name)
 

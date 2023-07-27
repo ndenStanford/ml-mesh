@@ -11,6 +11,16 @@ on  :
         required: true
         type: string
         description: Image to build and test.
+      base-region:
+        required: false
+        default: us-east-1
+        type: string
+        description: Bade image ECR repo region.
+      region:
+        required: false
+        default: us-east-1
+        type: string
+        description: Image ECR repo region.
       tag:
         required: true
         type: string
@@ -72,11 +82,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: ${{ inputs.region }}
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION="${{ inputs.base-region }}"
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         if: ${{ steps.files-changed.outputs.this == 'true' }}
@@ -102,6 +112,10 @@ jobs:
           TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \
           ENVIRONMENT="ci"
+
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' || inputs.region == inputs.base-region }}
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}

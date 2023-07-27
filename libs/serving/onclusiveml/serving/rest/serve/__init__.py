@@ -15,8 +15,7 @@ from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
     get_model_bio_router,
 )
 
-from onclusiveml.serving.rest.serve.serving_params import (  # noqa: F401
-    ServingBaseParams,
+from onclusiveml.serving.rest.serve.params import (  # noqa: F401
     FastAPISettings,
     UvicornSettings,
     LogConfigSettings,
