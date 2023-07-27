@@ -246,6 +246,10 @@ jobs       :
           - name: ner
             component: train
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-type: n/a
 
           # ========================
           # Sentiment
@@ -254,6 +258,10 @@ jobs       :
           - name: sent
             component: train
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-type: n/a
 
     with:
       environment: prod
