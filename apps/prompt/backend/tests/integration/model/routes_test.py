@@ -1,4 +1,8 @@
 """Routes test."""
+# Standard
+
+# Standard Library
+import datetime
 
 # 3rd party libraries
 import pytest
@@ -26,7 +30,10 @@ def test_get_model(test_client, create_models):
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["id"] == model.id
     assert response.json()["model_name"] == model.model_name
-    assert response.json()["created_at"] == model.created_at
+    assert (
+        datetime.datetime.fromisoformat(response.json()["created_at"])
+        == model.created_at  # noqa: W503
+    )
     assert response.json()["parameters"] == model.parameters
 
 
@@ -45,5 +52,5 @@ def test_get_model_fail(test_client, create_models, model_name):
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {
-        "detail": "Item does not exist - (model_name={})".format(model_name)
+        "detail": "Model '{}' was not found in database.".format(model_name)
     }
