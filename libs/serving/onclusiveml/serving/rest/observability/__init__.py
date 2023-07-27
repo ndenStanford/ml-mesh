@@ -8,5 +8,5 @@ from onclusiveml.serving.rest.observability.metrics import (  # noqa: F401
     RESPONSES,  # noqa: F401
 )  # noqa: F401
 from onclusiveml.serving.rest.observability.instrumentator import (  # noqa: F401
-    Instrumentator,  # noqa
+    Instrumentator,  # noqa: F401
 )  # noqa: F401
