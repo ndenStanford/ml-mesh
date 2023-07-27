@@ -28,16 +28,6 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    build:
-      context: ../../
-      dockerfile: projects/sentiment/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: sentiment
-        COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -46,6 +36,9 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
+    depends_on:
+      train:
+        condition: service_completed_successfully
     hostname: onclusive-ml
     networks: [onclusive-net]
 
