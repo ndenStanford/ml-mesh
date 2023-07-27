@@ -2,10 +2,10 @@
 
 # Standard Library
 from enum import Enum
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
-
-# from onclusiveml.nlp.language.helpers import load_stop_words_file
+# Internal libraries
+from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
 
 
 class LanguageIso(Enum):
@@ -74,9 +74,10 @@ class LanguageIso(Enum):
         """Returns all locales for a given language."""
         return _LOCALES[self]
 
-    # def get_stop_words(self) -> List[str]:
-    #     """Returns list of stop words for language."""
-    #     return load_stop_words_file(self.value)
+    def get_stop_words(self) -> List[str]:
+        """Returns list of stop words for language."""
+        return load_stop_words_file(self.value)
+
     @classmethod
     def exists(cls, lang: str) -> bool:
         """Checks if a language exists in the supported list."""
