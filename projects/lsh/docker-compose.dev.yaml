@@ -38,13 +38,6 @@ services:
       - onclusive-net
   # unit tests
   serve-unit:
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /home/projects/lsh/serve/src
-      - type: bind
-        source: serve/tests
-        target: /home/projects/lsh/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -57,23 +50,6 @@ services:
 
   # integration tests
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/lsh/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: lsh
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /home/projects/lsh/serve/src
-      - type: bind
-        source: serve/tests
-        target: /home/projects/lsh/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
