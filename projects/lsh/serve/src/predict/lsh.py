@@ -4,23 +4,21 @@
 import re
 from typing import Any, Dict, List, Optional
 
-# 3rd party libraries
-import nltk
-from nltk.tokenize import word_tokenize as nltk_word_tokenize
-
 # Internal libraries
 # Internal library
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.datasketch import MinHash, MinHashLSH
 from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
+from onclusiveml.nlp.word_tokenize import WordTokenizer
 
-
-nltk.download("punkt")
 
 logger = get_default_logger(__name__)
 
 
 class LshHandler:
+    def __init__(self) -> None:
+        self.tokenizer = WordTokenizer()
+
     def k_shingle(self, words: List[str], k: int = 5) -> List[str]:
         num_words = len(words)
 
@@ -41,20 +39,13 @@ class LshHandler:
         signature = lsh.generate_signature(m)
         return signature
 
-    def word_tokenizer(self, text: str, lang: str) -> List[str]:
-        word_tokenizers = {"en": nltk_word_tokenize}
-        if lang in word_tokenizers:
-            words = word_tokenizers[lang](text)
-        else:
-            words = word_tokenizers["en"](text)
-        return words
-
     def pre_processing(self, text: str, lang: str = "en") -> List[str]:
         text = text.lower()
         text = re.sub(r"[^\w\s]", "", text)
         text = text.rstrip()
         language = lang
-        words = self.word_tokenizer(text, lang)
+        words = self.tokenizer.tokenize(content=text, language="english")
+        words = words["words"]
         words = stop_word_remover(content=words, lang=language)
         return words
 
