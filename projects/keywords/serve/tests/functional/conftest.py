@@ -9,7 +9,7 @@ from requests_toolbelt.sessions import BaseUrlSession
 from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
-from src.serving_params import ServedModelArtifacts
+from src.serve.params import ServedModelArtifacts
 
 
 @pytest.fixture

@@ -148,7 +148,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-jupyter
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
     depends_on:
       - python-base
 
@@ -166,7 +166,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-cpu
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
     depends_on:
       - kubeflow-jupyter
 
@@ -184,7 +184,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-data-science
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     depends_on:
       - kubeflow-torch-cpu
 

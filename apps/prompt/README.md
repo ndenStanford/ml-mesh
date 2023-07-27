@@ -62,6 +62,19 @@ Refresh your browser and you should be able to load up the UI at `http://localho
 
 Now you are fully ready to interact with the Prompt App!
 
+### 3.2 Triggering API via curl
+
+You can run curl commands on the API, an example is:
+
+```
+curl -X 'POST' 'http://0.0.0.0:4000/api/v1/prompts/generate/model/gpt-4' -H 'Content-Type: application/json' -d '{"prompt":"Hello"}'
+```
+
+Which would return
+```
+{"generated":"Hello! How can I assist you today?"}
+```
+
 ## 4 Running Backend tests
 
 To run unit tests on `prompt-backend`, use the following command:

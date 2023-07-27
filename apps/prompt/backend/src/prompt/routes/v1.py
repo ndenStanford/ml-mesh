@@ -13,6 +13,7 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.model.constants import ModelEnum
+from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelSchema
 from src.prompt.chat import PromptChat
 from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
@@ -166,9 +167,22 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
         model_name (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
-    prompt = prompt_template.prompt(**values)
-    model = ModelSchema.get(model_name)
+    try:
+        prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(
+            alias, raises_if_not_found=True
+        )[0]
+        prompt = prompt_template.prompt(**values)
+        model = ModelSchema.get(model_name=model_name, raises_if_not_found=True)
+    except ModelNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except PromptNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
     return {
         "prompt": prompt,
         "generated": generate_text(
@@ -204,8 +218,13 @@ def generate_text_from_chat_diff_model(model_name: str, values: PromptChat):
         values Dict[str, Any]: input from chat
         model_name (str): model name
     """
-
-    model = ModelSchema.get(model_name)
+    try:
+        model = ModelSchema.get(model_name=model_name, raises_if_not_found=True)
+    except ModelNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
     return {
         "generated": generate_text(
             values.prompt,
