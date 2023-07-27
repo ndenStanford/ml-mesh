@@ -20,8 +20,8 @@ def setup_model_server(
     test_model_name,
 ):
     test_serving_params = ServingParams(
-        add_liveness=False,
-        add_readiness=False,
+        add_liveness=True,
+        add_readiness=True,
         add_model_predict=test_add_model_predict,
         add_model_bio=test_add_model_bio,
         api_version=test_api_version,
