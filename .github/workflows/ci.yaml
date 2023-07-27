@@ -291,7 +291,7 @@ jobs       :
       matrix:
         models:
           - runner-kind: custom
-            self-hosted-runner-type: inf1.6xlarge
+            self-hosted-runner-type: inf1.2xlarge
             project: keywords
             tag: ${{ needs.run-repository-state.outputs.tag }}
 

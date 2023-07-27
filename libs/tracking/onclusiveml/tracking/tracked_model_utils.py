@@ -40,7 +40,7 @@ class TrackedGithubActionsSpecs(TrackedParams):
 
 class TrackedImageSpecs(TrackedParams):
 
-    docker_image_name: str = "iamge_name"
+    docker_image_name: str = "image_name"
     docker_image_tag: str = "image_tag"
 
 
