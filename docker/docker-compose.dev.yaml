@@ -76,6 +76,45 @@ services:
       - gpu-base
 
   # ===========================================================
+  # GPU TRAIN
+  # ===========================================================
+  gpu-train:
+    build:
+      context: ..
+      dockerfile: ./docker/gpu-train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
+        IMAGE_NAME: gpu-train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
+
+  gpu-train-tests:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+            # that's the closest analogue to --gpus; provide
+            # an integer amount of devices or 'all'
+              count: 1
+            # Devices are reserved using a list of capabilities, making
+            # capabilities the only required field. A device MUST
+            # satisfy all the requested capabilities for a successful
+            # reservation.
+              capabilities: [gpu]
+    volumes:
+      - type: bind
+        source: gpu-train/tests
+        target: /docker/gpu-train/tests
+    command: [pytest, tests/core, -ra, -vv, --capture=no]
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
+    depends_on:
+      - gpu-train
+
+  # ===========================================================
   # NEURON COMPILE
   # ===========================================================
 

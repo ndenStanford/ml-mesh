@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "gpu-base"
+version = "0.1.0"
+description = "PyTorch-flavoured GPU base image dependencies"
+authors = ["Sebastian sebastian.scherer@onclusive.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+tracking = {path = "../../libs/tracking"}
+transformers = "^4.31.0"
+accelerate = "^0.21.0"
+datasets = "^2.14.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
