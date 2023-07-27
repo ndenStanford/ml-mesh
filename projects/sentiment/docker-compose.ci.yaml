@@ -24,6 +24,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -35,10 +36,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: train/config/dev.env
-    depends_on:
-      train:
-        condition: service_completed_successfully
+    env_file: train/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 

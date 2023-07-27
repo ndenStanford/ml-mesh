@@ -2,7 +2,7 @@
 
 Set PROJECT_NAME to "keywords", "ner", or "sentiment"
 
-`export PROJECT_NAME==?`
+`export PROJECT_NAME=?`
 
 ## 1 Overview
 

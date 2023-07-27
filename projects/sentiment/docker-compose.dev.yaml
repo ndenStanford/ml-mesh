@@ -17,12 +17,10 @@ services:
         PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    ports:
-      - 8888:8888
     volumes:
       - type: bind
-        source: train/src
-        target: /home/projects/sentiment/train/src
+        source: train
+        target: /home/projects/sentiment/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
@@ -30,17 +28,15 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   train-unit:
     volumes:
       - type: bind
-        source: train/src
-        target: /projects/sentiment/train/src
-      - type: bind
-        source: train/tests
-        target: /projects/sentiment/train/tests
+        source: train
+        target: /projects/sentiment/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -48,9 +44,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    depends_on:
-      train:
-        condition: service_completed_successfully
+    env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
