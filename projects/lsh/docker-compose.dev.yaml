@@ -27,24 +27,17 @@ services:
       - type: bind
         source: serve/src
         target: /home/projects/lsh/serve/src
+      - type: bind
+        source: serve/tests
+        target: /home/projects/lsh/serve/tests
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
       - onclusive-net
   # unit tests
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/lsh/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: lsh
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
@@ -57,7 +50,7 @@ services:
     profiles: [unit]
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -86,7 +79,7 @@ services:
     profiles: [integration]
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
       - onclusive-net
