@@ -114,7 +114,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' || inputs.region == inputs.base-region }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
