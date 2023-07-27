@@ -178,7 +178,7 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      fail-fast: false #${{ github.ref_name != 'main' }}
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         projects:
           # NOTE: list of project components to run
@@ -213,7 +213,7 @@ jobs       :
             load: true
             upload-test-results: true
             runner-kind: custom
-            self-hosted-runner-type: inf1.6xlarge
+            self-hosted-runner-type: inf1.1xlarge
 
           # ========================
           # SUMMARIZATION
