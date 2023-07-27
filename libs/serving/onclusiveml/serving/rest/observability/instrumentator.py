@@ -28,14 +28,15 @@ class Instrumentator:
         self.metrics_endpoint = metrics_endpoint
         self.setup_otl_exporter = setup_otl_exporter
 
-    def setup(self) -> None:
+    def setup(self) -> "Instrumentator":
         # Setting metrics middleware
         self.app.add_middleware(PrometheusMiddleware, app_name=self.app_name)
         self.app.add_route(self.metrics_endpoint, metrics)
         # Setting OpenTelemetry exporter
         if self.setup_otl_exporter:
             setting_otlp(self.app, self.app_name, OTLP_GRPC_ENDPOINT)
+        return self
 
     @staticmethod
-    def enable(app: FastAPI, app_name: str) -> None:
-        Instrumentator(app, app_name=app_name).setup()
+    def enable(app: FastAPI, app_name: str) -> "Instrumentator":
+        return Instrumentator(app, app_name=app_name).setup()
