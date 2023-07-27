@@ -211,6 +211,7 @@ jobs       :
             integration: true
             functional: true
             load: true
+            upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
 
