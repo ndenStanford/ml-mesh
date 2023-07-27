@@ -121,7 +121,13 @@ class CompiledSent:
         return list_sentences
 
     def inference(self, list_sentences: List[str]) -> np.ndarray:
-
+        """
+        Compute sentiment probability of each sentence
+        Args:
+            list_sentences (List[str]): Input list of sentences
+        Returns:
+            sentiment_probs (List[float]): List of sentiment probability
+        """
         self.inputs = self.compiled_sent_pipeline.tokenizer(
             list_sentences,
             padding="max_length",
@@ -133,7 +139,7 @@ class CompiledSent:
         input_ids = self.inputs["input_ids"].to(self.device)
         attention_masks = self.inputs["attention_mask"].to(self.device)
 
-        probs = []
+        sentiment_probs = []
         # input_ids, attention_masks = inputs
         n_sentence = len(input_ids)
 
@@ -166,17 +172,17 @@ class CompiledSent:
                 res = res[: (self.MAX_BATCH_SIZE - diff_size)]
 
             try:
-                probs += res.tolist()
+                sentiment_probs += res.tolist()
             except Exception as e:
                 raise e
 
             input_ids = input_ids[self.MAX_BATCH_SIZE :]
             attention_masks = attention_masks[self.MAX_BATCH_SIZE :]
 
-        probs = np.array(probs)
+        sentiment_probs = np.array(sentiment_probs)
 
-        assert probs.shape[0] == n_sentence
-        return probs
+        assert sentiment_probs.shape[0] == n_sentence
+        return sentiment_probs
 
     def postprocess(
         self, probs: np.ndarray, list_sentences: List[str], entities: List[dict]
@@ -188,16 +194,21 @@ class CompiledSent:
 
         agg_probs = np.around(np.mean(probs, axis=0), 4)
 
-        datum = {}
-        datum["label"] = self._decide_label(
+        sentiment_result = {}
+        sentiment_result["label"] = self._decide_label(
             agg_probs[2], agg_probs[1], agg_probs[0]
         )  # agg_probs:neg,neu,pos
-        datum["sentence_pos_probs"] = probs[:, 2].tolist()
-        datum["sentence_neg_probs"] = probs[:, 0].tolist()
-        datum["negative_prob"] = agg_probs[0]
-        datum["positive_prob"] = agg_probs[2]
+        sentiment_result["sentence_pos_probs"] = probs[:, 2].tolist()
+        sentiment_result["sentence_neg_probs"] = probs[:, 0].tolist()
+        sentiment_result["negative_prob"] = agg_probs[0]
+        sentiment_result["positive_prob"] = agg_probs[2]
 
-        return datum
+        if entities is not None:
+            sentiment_result["entities"] = self._add_entity_sentiment(
+                list_sentences, sentiment_result, entities
+            )
+
+        return sentiment_result
 
     def _decide_label(self, pos: float, neu: float, neg: float) -> str:
         """
