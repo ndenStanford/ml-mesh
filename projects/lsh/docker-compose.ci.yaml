@@ -36,7 +36,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      ENVIRONMENT: ci
+      ENVIRONMENT: dev
       DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
@@ -48,7 +48,7 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      ENVIRONMENT: ci
+      ENVIRONMENT: dev
       DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
