@@ -2,8 +2,8 @@
 
 The `serving` library provides a tested framework to consistently
 
-- implement and serve, as well as
-- load test
+- implement and serve,
+- load test, as well as
 - observability
 
 both ML `apps` and `projects` REST API services. The utilities it provides are split into three
