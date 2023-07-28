@@ -4,8 +4,9 @@ The `serving` library provides a tested framework to consistently
 
 - implement and serve, as well as
 - load test
+- observability
 
-both ML `apps` and `projects` REST API services. The utilities it provides are split into two
+both ML `apps` and `projects` REST API services. The utilities it provides are split into three
 main modules:
 
 - `rest.serve`
@@ -35,6 +36,23 @@ main modules:
   - a `LoadTestCriteria` class to define and evaluate performance requirements via the
     `Criterion` and `EnvironmentCriterion` classes, either in code or purely through environment
     variables, against a `LoadTest` instance's `TestReport` output
+- `rest.observability`
+  - Observability module that is composed of instrumentator, metrics, middlewares, handlers and utility functions.
+    - instrumentator: an entry point to metrics instrumentation
+    - metrics: list of metrics to track
+    - middlewares: instrument metrics
+    - handlers/registry: acts as a container for various metrics and provides methods to register and manage them
+    - utility functions
+
+  - How to enable observability e.g. Keywords project
+    In `projects/keywords/serve/src/serve/model_server.py`, expose /keywords/metrics endpoint by adding this code below, so that AMP (prometheus-for-amp-server) can scrape metrics from the endpoint:
+    ```python
+    Instrumentator.enable(model_server, app_name="keywords")
+    ```
+    Then the metrics will contain app_name, method, path and value:
+    ```sh
+    fastapi_requests_total{app_name="keywords",method="GET",path="/v1/live"} 3.0
+    ```
 
 ## 2 Configuration
 
