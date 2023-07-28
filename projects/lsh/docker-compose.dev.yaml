@@ -32,21 +32,17 @@ services:
         target: /home/projects/lsh/serve/tests
     environment:
       ENVIRONMENT: dev
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
       - onclusive-net
   # unit tests
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       ENVIRONMENT: dev
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
@@ -59,8 +55,6 @@ services:
     profiles: [integration]
     environment:
       ENVIRONMENT: dev
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       DOCS_URL: /lsh
     hostname: onclusiveml
     networks:
