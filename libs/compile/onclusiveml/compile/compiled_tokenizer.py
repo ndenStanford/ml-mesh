@@ -39,6 +39,9 @@ class CompiledTokenizer(object):
         # of the common methods and simulate subclassig w.r.t available methods
         self.set_all_delegated_tokenizer_methods(tokenizer)
 
+        # the model_max_length should be set to the max length of the compilation
+        self.model_max_length = self.tokenization_settings["max_length"]
+
     @classmethod
     def get_tokenization_settings(
         cls,
@@ -72,12 +75,18 @@ class CompiledTokenizer(object):
         as much as possible."""
 
         for tokenizer_method_reference in (
+            # methods
             "encode_plus",
             "encode",
             "decode",
             "create_token_type_ids_from_sequences",
+            "convert_ids_to_tokens",  # required by token-classification
             "convert_tokens_to_string",
             "clean_up_tokenization",
+            # attributes
+            "is_fast",
+            "_tokenizer",  # required by token-classification
+            "unk_token_id",  # required by token-classification
         ):
             self.set_delegated_tokenizer_method(tokenizer, tokenizer_method_reference)
 
