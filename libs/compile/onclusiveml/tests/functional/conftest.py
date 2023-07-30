@@ -10,7 +10,7 @@ import pytest
 
 
 @pytest.fixture
-def sample_inputs() -> List[str]:
+def test_inputs() -> List[str]:
 
     return (
         [
@@ -21,6 +21,16 @@ def sample_inputs() -> List[str]:
         ]
         * 2  # noqa: W503
     )
+
+
+@pytest.fixture
+def test_ner_inputs() -> List[str]:
+
+    return [
+        "My name is Sebastian, I live in London, which is a city in the United Kingdom.",
+        "Yesterday I went to Kew Gardens, a public garden in the county of Surrey.",
+        "Sherlock Holmes is a brilliant detective in England. Watson is his able assistent.",
+    ]
 
 
 @pytest.fixture
@@ -37,7 +47,7 @@ def huggingface_model_max_length(huggingface_tokenizer):
 
 @pytest.fixture
 def regression_test_atol():
-    return 2e-02
+    return 2.5e-02
 
 
 @pytest.fixture

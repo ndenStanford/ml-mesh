@@ -14,7 +14,10 @@ from onclusiveml.compile import CompiledTokenizer
 
 @pytest.mark.parametrize(
     "huggingface_model_reference",
-    ["sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"],
+    [
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "dslim/bert-base-NER",
+    ],
 )
 @pytest.mark.parametrize(
     "tokenization_kwargs,expected_tokenization_settings",
