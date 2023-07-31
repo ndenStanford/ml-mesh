@@ -63,6 +63,7 @@ clean: ## Clean build artifacts.
 	rm -rf dist
 	rm -rf *.egg-info
 	rm -rf htmlcov
+	rm -r ~/.cache/*
 
 install:
 	poetry install
