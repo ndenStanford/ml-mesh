@@ -39,6 +39,7 @@ class TrackedGithubActionsSpecs(TrackedParams):
 
 
 class TrackedImageSpecs(TrackedParams):
+    """A class to capture the specs of a given docker image."""
 
     docker_image_name: str = "image_name"
     docker_image_tag: str = "image_tag"
