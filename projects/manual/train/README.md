@@ -71,6 +71,3 @@ make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
 
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
-
-- Note: If the `--env-file` command is omitted in the docker command,
-  the pipeline will fall back on the default values defined in the `settings.py` file.
