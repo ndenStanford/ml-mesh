@@ -194,7 +194,6 @@ jobs       :
             functional: false
             load: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-type: n/a
 
           # compile
           - name: keywords
@@ -203,7 +202,6 @@ jobs       :
             functional: false
             load: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-type: n/a
 
           # serve
           - name: keywords
@@ -225,7 +223,6 @@ jobs       :
             functional: false
             load: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-type: n/a
 
           # ========================
           # ENTITY LINKING
@@ -237,7 +234,6 @@ jobs       :
             functional: false
             load: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-type: n/a
 
           # ========================
           # NER
@@ -249,7 +245,6 @@ jobs       :
             functional: false
             load: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-type: n/a
 
           # ========================
           # Sentiment
@@ -261,7 +256,6 @@ jobs       :
             functional: false
             load: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-type: n/a
 
     with:
       environment: prod
