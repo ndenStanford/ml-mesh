@@ -65,61 +65,61 @@ into one tag and so modify expected predictions here
                 },
             ],
         ),
-        # (
-        #     1,
-        #     [
-        #         {
-        #             "entity_type": "LOC",
-        #             "entity_text": "Gulf Stream",
-        #             "score": "0.9890644",
-        #             "sentence_index": 0,
-        #             "start": 21,
-        #             "end": 32,
-        #         },
-        #         {
-        #             "entity_type": "LOC",
-        #             "entity_text": "Cape Cod",
-        #             "score": "0.9871611",
-        #             "sentence_index": 0,
-        #             "start": 81,
-        #             "end": 89,
-        #         },
-        #     ],
-        # ),
-        # (
-        #     2,
-        #     [
-        #         {
-        #             "entity_type": "LOC",
-        #             "entity_text": "Jupiter",
-        #             "score": "0.99254674",
-        #             "sentence_index": 0,
-        #             "start": 105,
-        #             "end": 112,
-        #         }
-        #     ],
-        # ),
-        # (
-        #     3,
-        #     [
-        #         {
-        #             "entity_type": "ORG",
-        #             "entity_text": "Loggerhead",
-        #             "score": "0.62161815",
-        #             "sentence_index": 0,
-        #             "start": 10,
-        #             "end": 20,
-        #         },
-        #         {
-        #             "entity_type": "LOC",
-        #             "entity_text": "Marinelife Center",
-        #             "score": "0.8719994",
-        #             "sentence_index": 0,
-        #             "start": 21,
-        #             "end": 38,
-        #         },
-        #     ],
-        # ),
+        (
+            1,
+            [
+                {
+                    "entity_type": "LOC",
+                    "entity_text": "Gulf Stream",
+                    "score": "0.9890644",
+                    "sentence_index": 0,
+                    "start": 21,
+                    "end": 32,
+                },
+                {
+                    "entity_type": "LOC",
+                    "entity_text": "Cape Cod",
+                    "score": "0.9871611",
+                    "sentence_index": 0,
+                    "start": 81,
+                    "end": 89,
+                },
+            ],
+        ),
+        (
+            2,
+            [
+                {
+                    "entity_type": "LOC",
+                    "entity_text": "Jupiter",
+                    "score": "0.99254674",
+                    "sentence_index": 0,
+                    "start": 105,
+                    "end": 112,
+                }
+            ],
+        ),
+        (
+            3,
+            [
+                {
+                    "entity_type": "ORG",
+                    "entity_text": "Loggerhead",
+                    "score": "0.62161815",
+                    "sentence_index": 0,
+                    "start": 10,
+                    "end": 20,
+                },
+                {
+                    "entity_type": "LOC",
+                    "entity_text": "Marinelife Center",
+                    "score": "0.8719994",
+                    "sentence_index": 0,
+                    "start": 21,
+                    "end": 38,
+                },
+            ],
+        ),
     ],
 )
 def compiled_model_regression_test(  # type: ignore[no-untyped-def]
@@ -132,7 +132,9 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     compilation_test_settings,
 ):
     compiled_predictions = compiled_ner.extract_entities(
-        test_files["inputs"][test_sample_index], **test_files["inference_params"]
+        test_files["inputs"][test_sample_index],
+        language="en",
+        **test_files["inference_params"]
     )
 
     assert compiled_predictions == expected_predictions

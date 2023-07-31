@@ -26,7 +26,7 @@ def test_tokenize_fr():
     Il est le fils d'Errol Musk, riche ingénieur et promoteur immobilier sud-africain aux origines afrikaner et anglo-sud-africaine, ayant eu des parts d’une mine d'émeraudes en Zambie, et de Maye Haldeman, une nutritionniste et mannequin canadienne.
     Après le divorce de ses parents en 1979, il continue de vivre avec son père. À l'âge de 12 ans, il vend son premier programme de jeu vidéo pour l'équivalent de 500 dollars"""  # noqa: E501
     tokenizer = SentenceTokenizer()
-    res = tokenizer.tokenize(content=text, language="french")
+    res = tokenizer.tokenize(content=text, language="fr")
     assert res["sentences"] == [
         "Elon Reeve Musk naît le 28 juin 1971 à Pretoria, en Afrique du Sud.",
         "Il est le fils d'Errol Musk, riche ingénieur et promoteur immobilier sud-africain aux origines afrikaner et anglo-sud-africaine, ayant eu des parts d’une mine d'émeraudes en Zambie, et de Maye Haldeman, une nutritionniste et mannequin canadienne.",  # noqa: E501

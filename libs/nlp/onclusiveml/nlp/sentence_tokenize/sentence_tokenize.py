@@ -11,6 +11,7 @@ import nltk
 nltk.download("punkt")
 
 # Internal libraries
+from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
 
 
@@ -19,7 +20,7 @@ class SentenceTokenizer:
 
     regex = re.compile(r"|".join(SPECIAL_CHARACTERS))
 
-    def tokenize(self, content: str, language: str = "english") -> Dict[str, List[Any]]:
+    def tokenize(self, content: str, language: str = "en") -> Dict[str, List[Any]]:
         """
         Tokenizes the input content into sentences.
         Uses both nltk sentence tokenize and regex using list of unique characters
@@ -31,8 +32,12 @@ class SentenceTokenizer:
         Returns:
             dict: Dictionary containing tokenized setences
         """
+        # return language iso equivalent of language e.g. fr is LanguageIso.FR
+        langIso = LanguageIso.from_language_iso(language)
+        # return english equivalent of LanguageIso e.g. LanguageIso.FR is french
+        lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
 
-        sentences_first = nltk.sent_tokenize(content, language)
+        sentences_first = nltk.sent_tokenize(content, lang_simplified)
         sentences = []
 
         for sentence in sentences_first:
