@@ -13,6 +13,8 @@ from transformers import (
 
 # Internal libraries
 from onclusiveml.compile.compile_utils import (
+    DelegatedTokenizerAttributes,
+    DelegatedTokenizerMethods,
     duplicate_huggingface_transformer_via_local_cache,
 )
 
@@ -37,10 +39,22 @@ class CompiledTokenizer(object):
         self.compiled = True
         # attach base suite of delegated methods implemented by the hf tokenizer to preserve most
         # of the common methods and simulate subclassig w.r.t available methods
-        self.set_all_delegated_tokenizer_methods(tokenizer)
-
+        # self.set_all_delegated_tokenizer_methods(tokenizer)
         # the model_max_length should be set to the max length of the compilation
         self.model_max_length = self.tokenization_settings["max_length"]
+
+    def __getattr__(self, name: str) -> Any:
+        """Surfaces selected tokenizer attributes/methods to the CompiledTokenizer instance."""
+
+        if (
+            name
+            in DelegatedTokenizerMethods.list() + DelegatedTokenizerAttributes.list()
+        ):
+            attribute = self.tokenizer.__getattribute__(name)
+        else:
+            attribute = self.__dict__[attribute]
+
+        return attribute
 
     @classmethod
     def get_tokenization_settings(
@@ -67,41 +81,38 @@ class CompiledTokenizer(object):
 
         return tokenization_settings
 
-    def set_all_delegated_tokenizer_methods(
-        self, tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast]
-    ) -> None:
-        """Because of the wrapper nature of this class, we need to re-attached the `tokenizer`
-        attribute's methods to this instance to ensure a genuine huggingface tokenizer experience
-        as much as possible."""
-
-        for tokenizer_method_reference in (
-            # methods
-            "encode_plus",
-            "encode",
-            "decode",
-            "create_token_type_ids_from_sequences",
-            "convert_ids_to_tokens",  # required by token-classification
-            "convert_tokens_to_string",
-            "clean_up_tokenization",
-            # attributes
-            "is_fast",
-            "_tokenizer",  # required by token-classification
-            "unk_token_id",  # required by token-classification
-        ):
-            self.set_delegated_tokenizer_method(tokenizer, tokenizer_method_reference)
-
-    def set_delegated_tokenizer_method(
-        self,
-        tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast],
-        tokenizer_method_reference: str,
-    ) -> None:
-        """Utility function to help re-attach the `tokenizer` attribute's methods to this
-        instance."""
-        # retrieve the target method from the attached huggingface tokenizer instance
-        tokenizer_method = getattr(tokenizer, tokenizer_method_reference)
-        # attach method to CompiledTokenizer instance
-        setattr(self, tokenizer_method_reference, tokenizer_method)
-
+    # def set_all_delegated_tokenizer_methods(
+    #     self, tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast]
+    # ) -> None:
+    #     """Because of the wrapper nature of this class, we need to re-attached the `tokenizer`
+    #     attribute's methods to this instance to ensure a genuine huggingface tokenizer experience
+    #     as much as possible."""
+    #     for tokenizer_method_reference in (
+    #         # methods
+    #         "encode_plus",
+    #         "encode",
+    #         "decode",
+    #         "create_token_type_ids_from_sequences",
+    #         "convert_ids_to_tokens",  # required by token-classification
+    #         "convert_tokens_to_string",
+    #         "clean_up_tokenization",
+    #         # attributes
+    #         "is_fast", # required by token-classification
+    #         "_tokenizer",  # required by token-classification
+    #         "unk_token_id",  # required by token-classification
+    #     ):
+    #         self.set_delegated_tokenizer_method(tokenizer, tokenizer_method_reference)
+    # def set_delegated_tokenizer_method(
+    #     self,
+    #     tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast],
+    #     tokenizer_method_reference: str,
+    # ) -> None:
+    #     """Utility function to help re-attach the `tokenizer` attribute's methods to this
+    #     instance."""
+    #     # retrieve the target method from the attached huggingface tokenizer instance
+    #     tokenizer_method = getattr(tokenizer, tokenizer_method_reference)
+    #     # attach method to CompiledTokenizer instance
+    #     setattr(self, tokenizer_method_reference, tokenizer_method)
     @classmethod
     def from_tokenizer(
         cls,

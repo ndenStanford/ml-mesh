@@ -1,11 +1,43 @@
 # Standard Library
 import shutil
 from datetime import datetime as dt
-from typing import Union
+from enum import Enum
+from typing import List, Union
 
 # ML libs
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast
 from transformers.pipelines import Pipeline, pipeline
+
+
+class Listnum(Enum):
+    @classmethod
+    def list(cls) -> List[str]:
+
+        return [field.value for field in cls]
+
+
+class DelegatedTokenizerMethods(Listnum):
+
+    encode_plus: str = "encode_plus"
+    encode: str = "encode"
+    decode: str = "decode"
+    create_token_type_ids_from_sequences: str = "create_token_type_ids_from_sequences"
+    convert_ids_to_tokens: str = "convert_ids_to_tokens"
+    convert_tokens_to_string: str = "convert_tokens_to_string"
+    clean_up_tokenization: str = "clean_up_tokenization"
+
+
+class DelegatedTokenizerAttributes(Listnum):
+
+    is_fast: str = "is_fast"
+    _tokenizer: str = "_tokenizer"
+    unk_token_id: str = "unk_token_id"
+
+
+class DelegatedPipelineAttributes(Listnum):
+
+    tokenizer: str = "tokenizer"
+    model: str = "model"
 
 
 def duplicate_huggingface_transformer_via_local_cache(
