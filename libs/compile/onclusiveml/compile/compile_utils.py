@@ -1,22 +1,17 @@
 # Standard Library
 import shutil
 from datetime import datetime as dt
-from enum import Enum
-from typing import List, Union
+from typing import Union
 
 # ML libs
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast
 from transformers.pipelines import Pipeline, pipeline
 
-
-class Listnum(Enum):
-    @classmethod
-    def list(cls) -> List[str]:
-
-        return [field.value for field in cls]
+# Internal libraries
+from onclusiveml.core.base import OnclusiveEnum
 
 
-class DelegatedTokenizerMethods(Listnum):
+class DelegatedTokenizerMethods(OnclusiveEnum):
 
     encode_plus: str = "encode_plus"
     encode: str = "encode"
@@ -27,14 +22,14 @@ class DelegatedTokenizerMethods(Listnum):
     clean_up_tokenization: str = "clean_up_tokenization"
 
 
-class DelegatedTokenizerAttributes(Listnum):
+class DelegatedTokenizerAttributes(OnclusiveEnum):
 
     is_fast: str = "is_fast"
     _tokenizer: str = "_tokenizer"
     unk_token_id: str = "unk_token_id"
 
 
-class DelegatedPipelineAttributes(Listnum):
+class DelegatedPipelineAttributes(OnclusiveEnum):
 
     tokenizer: str = "tokenizer"
     model: str = "model"
