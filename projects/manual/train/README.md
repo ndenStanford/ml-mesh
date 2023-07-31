@@ -24,7 +24,11 @@ Specs defined in the `config/prod.env` is used only during CI processes.
 
 ### 2.1 Without containers
 
-For development purposes, the pipeline can be run locally without containers.
+For development purposes, the pipeline can be run locally without containers. Note that while this could ease the development process, it has some downsides since you are now outside of your bespoke container runtime environment. The following risks should be considered. It's important to test the functionality of your code via make command once the development is finished. 
+
+- Some dependencies might be missing
+- Some env vars might be missing
+- All potential dependency docker services (none in the case of train, but there will be some for compile for example) will have to be manually run
 
 1. Set the neptune authentication token value
    - `export NEPTUNE_API_TOKEN==?`
