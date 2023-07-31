@@ -9,6 +9,10 @@ import pytest
 
 # Internal libraries
 from onclusiveml.compile import CompiledTokenizer
+from onclusiveml.compile.compile_utils import (
+    DelegatedTokenizerAttributes,
+    DelegatedTokenizerMethods,
+)
 
 
 MODEL_MAX_LENGTH = 50
@@ -139,14 +143,30 @@ def compiled_tokenizer(custom_tokenization_settings):
 
 
 @pytest.fixture
-def all_delegated_method_references_with_sample_inputs():
+def delegated_tokenizer_methods_w_input():
 
     return (
-        ("encode_plus", "some example text"),
-        ("encode", "some example text"),
-        ("decode", base64.b64encode("some example text".encode("utf-8"))),
-        ("create_token_type_ids_from_sequences", ["some", "example", "text"]),
-        ("convert_tokens_to_string", [0, 1, 2]),
-        ("clean_up_tokenization", "some ,example text ."),
-        ("convert_ids_to_tokens", [1, 2, 3]),
+        (DelegatedTokenizerMethods.encode_plus.value, "some example text"),
+        (DelegatedTokenizerMethods.encode.value, "some example text"),
+        (
+            DelegatedTokenizerMethods.decode.value,
+            base64.b64encode("some example text".encode("utf-8")),
+        ),
+        (
+            DelegatedTokenizerMethods.create_token_type_ids_from_sequences.value,
+            ["some", "example", "text"],
+        ),
+        (DelegatedTokenizerMethods.convert_ids_to_tokens.value, [1, 2, 3]),
+        (DelegatedTokenizerMethods.convert_tokens_to_string.value, [0, 1, 2]),
+        (DelegatedTokenizerMethods.clean_up_tokenization.value, "some ,example text ."),
+    )
+
+
+@pytest.fixture
+def delegated_tokenizer_attributes():
+
+    return (
+        DelegatedTokenizerAttributes.is_fast.value,
+        DelegatedTokenizerAttributes._tokenizer.value,
+        DelegatedTokenizerAttributes.unk_token_id.value,
     )

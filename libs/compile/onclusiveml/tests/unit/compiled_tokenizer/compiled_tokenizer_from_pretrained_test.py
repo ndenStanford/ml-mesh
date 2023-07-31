@@ -23,7 +23,7 @@ def test_compiled_tokenizer__from_pretrained(
     mock_tokenizer,
     tokenization_kwargs,
     monkeypatch,
-    all_delegated_method_references_with_sample_inputs,
+    delegated_tokenizer_methods_w_input,
 ):
     # --- export compiled tokenizer to local
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
@@ -54,7 +54,7 @@ def test_compiled_tokenizer__from_pretrained(
     for (
         delegated_method_reference,
         sample_input,
-    ) in all_delegated_method_references_with_sample_inputs:
+    ) in delegated_tokenizer_methods_w_input:
         assert getattr(reloaded_test_compiled_tokenizer, delegated_method_reference)(
             sample_input
         ) == getattr(compiled_tokenizer.tokenizer, delegated_method_reference)(
@@ -62,7 +62,7 @@ def test_compiled_tokenizer__from_pretrained(
         )
     # validate configured __call__ method of reloaded compiled tokenizer against original compiled
     # tokenizer's __call__ method
-    tokenization___call___input = all_delegated_method_references_with_sample_inputs[0][
+    tokenization___call___input = delegated_tokenizer_methods_w_input[0][
         1
     ]  # text string for tokenizer() call
     assert reloaded_test_compiled_tokenizer(

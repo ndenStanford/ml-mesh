@@ -23,7 +23,7 @@ def test_compiled_tokenizer__init(
     mock_tokenizer,
     tokenization_kwargs,
     expected_tokenization_settings,
-    all_delegated_method_references_with_sample_inputs,
+    delegated_tokenizer_methods_w_input,
 ):
 
     compiled_tokenizer = CompiledTokenizer(
@@ -37,14 +37,14 @@ def test_compiled_tokenizer__init(
     for (
         delegated_method_reference,
         sample_input,
-    ) in all_delegated_method_references_with_sample_inputs:
+    ) in delegated_tokenizer_methods_w_input:
         assert getattr(compiled_tokenizer, delegated_method_reference)(
             sample_input
         ) == getattr(compiled_tokenizer.tokenizer, delegated_method_reference)(
             sample_input
         )
     # validate configured __call__ method
-    tokenization___call___input = all_delegated_method_references_with_sample_inputs[0][
+    tokenization___call___input = delegated_tokenizer_methods_w_input[0][
         1
     ]  # text string for tokenizer() call
     assert compiled_tokenizer(
