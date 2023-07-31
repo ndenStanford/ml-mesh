@@ -81,38 +81,6 @@ class CompiledTokenizer(object):
 
         return tokenization_settings
 
-    # def set_all_delegated_tokenizer_methods(
-    #     self, tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast]
-    # ) -> None:
-    #     """Because of the wrapper nature of this class, we need to re-attached the `tokenizer`
-    #     attribute's methods to this instance to ensure a genuine huggingface tokenizer experience
-    #     as much as possible."""
-    #     for tokenizer_method_reference in (
-    #         # methods
-    #         "encode_plus",
-    #         "encode",
-    #         "decode",
-    #         "create_token_type_ids_from_sequences",
-    #         "convert_ids_to_tokens",  # required by token-classification
-    #         "convert_tokens_to_string",
-    #         "clean_up_tokenization",
-    #         # attributes
-    #         "is_fast", # required by token-classification
-    #         "_tokenizer",  # required by token-classification
-    #         "unk_token_id",  # required by token-classification
-    #     ):
-    #         self.set_delegated_tokenizer_method(tokenizer, tokenizer_method_reference)
-    # def set_delegated_tokenizer_method(
-    #     self,
-    #     tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast],
-    #     tokenizer_method_reference: str,
-    # ) -> None:
-    #     """Utility function to help re-attach the `tokenizer` attribute's methods to this
-    #     instance."""
-    #     # retrieve the target method from the attached huggingface tokenizer instance
-    #     tokenizer_method = getattr(tokenizer, tokenizer_method_reference)
-    #     # attach method to CompiledTokenizer instance
-    #     setattr(self, tokenizer_method_reference, tokenizer_method)
     @classmethod
     def from_tokenizer(
         cls,
