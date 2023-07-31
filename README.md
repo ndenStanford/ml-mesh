@@ -111,6 +111,14 @@ Run the following command:
 export DOCKER_BUILDKIT=0
 ```
 
+#### No space left on disk (remote instance)
+
+If you run into this error, you can use the make command:
+
+```
+make clean
+```
+
 ## Resources
 
 - [Poetry](https://python-poetry.org/docs/)
