@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, List
+import base64
 
 # ML libs
 import torch
@@ -10,6 +10,10 @@ from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
 from onclusiveml.compile import CompiledTokenizer
+from onclusiveml.compile.compile_utils import (
+    DelegatedTokenizerAttributes,
+    DelegatedTokenizerMethods,
+)
 
 
 @pytest.mark.parametrize(
@@ -49,52 +53,152 @@ def test_compiled_tokenizer__init(
     tokenization_kwargs,
     expected_tokenization_settings,
     huggingface_model_max_length,
-    delegated_tokenizer_methods_w_input,
 ):
+    """Checks __init__ call and tokenizer settings value fallback logic"""
 
     compiled_tokenizer = CompiledTokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )
-    # --- validation suite: compiled tokenizer against passed mock tokenizer and expected ground
-    # truths
-    # for ground truth, set the only tokenization settings value that depends on the huggingface
-    # reference model
+
     if "max_length" not in tokenization_kwargs:
         expected_tokenization_settings["max_length"] = huggingface_model_max_length
     # validate tokenization settings
     assert compiled_tokenizer.tokenization_settings == expected_tokenization_settings
-    # validate delegated tokenization methods
-    for (
-        delegated_method_reference,
-        sample_input,
-    ) in delegated_tokenizer_methods_w_input:
-        assert getattr(compiled_tokenizer, delegated_method_reference)(
-            sample_input
-        ) == getattr(huggingface_tokenizer, delegated_method_reference)(sample_input)
+
+
+@pytest.mark.parametrize(
+    "huggingface_model_reference",
+    [
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "dslim/bert-base-NER",
+    ],
+)
+@pytest.mark.parametrize(
+    "tokenization_kwargs",
+    [
+        {},
+        lazy_fixture("custom_tokenization_settings_1"),
+        lazy_fixture("custom_tokenization_settings_2"),
+        lazy_fixture("custom_tokenization_settings_3"),
+    ],
+)
+@pytest.mark.parametrize(
+    "return_tensors",
+    [
+        "pt",
+        None,
+    ],
+)
+def test_compiled_tokenizer___call__(
+    huggingface_tokenizer, tokenization_kwargs, return_tensors
+):
+    """Checks tokenizer __call__ method"""
+
+    compiled_tokenizer = CompiledTokenizer(
+        tokenizer=huggingface_tokenizer, **tokenization_kwargs
+    )
     # validate configured __call__ method
-    # list outputs
-    tokenization___call___input = delegated_tokenizer_methods_w_input[0][
-        1
-    ]  # text string for tokenizer() call
-    list_compiled_tokenizer_output: Dict[str, List] = compiled_tokenizer(
-        tokenization___call___input
-    )
-    list_huggingface_tokenizer_output: Dict[str, List] = huggingface_tokenizer(
-        tokenization___call___input, **compiled_tokenizer.tokenization_settings
-    )
-    assert list_compiled_tokenizer_output == list_huggingface_tokenizer_output
-    # torch outputs
-    torch_compiled_tokenizer_output: Dict[str, torch.Tensor] = compiled_tokenizer(
-        tokenization___call___input, return_tensors="pt"
-    )
-    torch_huggingface_tokenizer_output: Dict[str, torch.Tensor] = huggingface_tokenizer(
-        tokenization___call___input,
-        return_tensors="pt",
-        **compiled_tokenizer.tokenization_settings
+    tokenization___call___input = "some example text"
+
+    compiled_tokenizer_output = compiled_tokenizer(
+        tokenization___call___input, return_tensors=return_tensors
     )
 
-    for token_type in torch_huggingface_tokenizer_output:
-        torch.testing.assert_close(
-            torch_huggingface_tokenizer_output[token_type],
-            torch_compiled_tokenizer_output[token_type],
-        )
+    huggingface_tokenizer_output = compiled_tokenizer.tokenizer(
+        tokenization___call___input,
+        return_tensors=return_tensors,
+        **compiled_tokenizer.tokenization_settings,
+    )
+
+    if return_tensors == "pt":
+        for token_type in huggingface_tokenizer_output:
+            torch.testing.assert_close(
+                huggingface_tokenizer_output[token_type],
+                compiled_tokenizer_output[token_type],
+            )
+    else:
+        assert huggingface_tokenizer_output == compiled_tokenizer_output
+
+
+@pytest.mark.parametrize(
+    "huggingface_model_reference",
+    [
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "dslim/bert-base-NER",
+    ],
+)
+@pytest.mark.parametrize(
+    "tokenization_kwargs",
+    [
+        {},
+        lazy_fixture("custom_tokenization_settings_1"),
+        lazy_fixture("custom_tokenization_settings_2"),
+        lazy_fixture("custom_tokenization_settings_3"),
+    ],
+)
+@pytest.mark.parametrize(
+    "delegated_tokenizer_method, method_input",
+    [
+        (DelegatedTokenizerMethods.encode_plus.value, "some example text"),
+        (DelegatedTokenizerMethods.encode.value, "some example text"),
+        (
+            DelegatedTokenizerMethods.decode.value,
+            base64.b64encode("some example text".encode("utf-8")),
+        ),
+        (
+            DelegatedTokenizerMethods.create_token_type_ids_from_sequences.value,
+            ["some", "example", "text"],
+        ),
+        (DelegatedTokenizerMethods.convert_ids_to_tokens.value, [1, 2, 3]),
+        # (DelegatedTokenizerMethods.convert_tokens_to_string.value, [0, 1, 2]),
+        (DelegatedTokenizerMethods.clean_up_tokenization.value, "some ,example text ."),
+    ],
+)
+def test_compiled_tokenizer_delegated_methods(
+    huggingface_tokenizer, tokenization_kwargs, delegated_tokenizer_method, method_input
+):
+    """Checks all delegated tokenizer methods"""
+    compiled_tokenizer = CompiledTokenizer(
+        tokenizer=huggingface_tokenizer, **tokenization_kwargs
+    )
+
+    assert getattr(compiled_tokenizer, delegated_tokenizer_method)(
+        method_input
+    ) == getattr(compiled_tokenizer.tokenizer, delegated_tokenizer_method)(method_input)
+
+
+@pytest.mark.parametrize(
+    "huggingface_model_reference",
+    [
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "dslim/bert-base-NER",
+    ],
+)
+@pytest.mark.parametrize(
+    "tokenization_kwargs",
+    [
+        {},
+        lazy_fixture("custom_tokenization_settings_1"),
+        lazy_fixture("custom_tokenization_settings_2"),
+        lazy_fixture("custom_tokenization_settings_3"),
+    ],
+)
+@pytest.mark.parametrize(
+    "delegated_tokenizer_attribute",
+    [
+        DelegatedTokenizerAttributes.is_fast.value,
+        DelegatedTokenizerAttributes._tokenizer.value,
+        DelegatedTokenizerAttributes.unk_token_id.value,
+    ],
+)
+def test_compiled_tokenizer_delegated_attributes(
+    huggingface_tokenizer, tokenization_kwargs, delegated_tokenizer_attribute
+):
+    """Checks all delegated tokenizer attributes"""
+    compiled_tokenizer = CompiledTokenizer(
+        tokenizer=huggingface_tokenizer, **tokenization_kwargs
+    )
+
+    assert getattr(compiled_tokenizer, delegated_tokenizer_attribute) == getattr(
+        compiled_tokenizer.tokenizer, delegated_tokenizer_attribute
+    )

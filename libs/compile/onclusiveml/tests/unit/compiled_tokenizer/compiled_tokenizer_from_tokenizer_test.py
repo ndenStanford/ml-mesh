@@ -26,7 +26,7 @@ from onclusiveml.compile.compile_utils import (
         ),
     ],
 )
-def test_compiled_tokenizer___init(
+def test_compiled_tokenizer_from_tokenizer(
     mock_tokenizer,
     tokenization_kwargs,
     expected_tokenization_settings,
