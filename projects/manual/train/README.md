@@ -70,18 +70,6 @@ You can run the command with this command (which uses docker compose):
 make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
 
-Or run this docker command:
-
-```docker
-docker run \
-  --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-  -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  --env-file $PATH_TO_REPOSITORY/projects/${PROJECT_NAME}/train/config/dev.env \
-  -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:latest \
-  python -m src.register_trained_model
-```
-
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
 
 - Note: If the `--env-file` command is omitted in the docker command,
