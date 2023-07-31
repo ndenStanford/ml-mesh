@@ -8,6 +8,13 @@ from transformers.pipelines import pipeline
 # 3rd party libraries
 import pytest
 
+# Internal libraries
+from onclusiveml.compile.compile_utils import (
+    DelegatedPipelineAttributes,
+    DelegatedTokenizerAttributes,
+    DelegatedTokenizerMethods,
+)
+
 
 @pytest.fixture
 def test_inputs() -> List[str]:
@@ -90,23 +97,35 @@ def custom_tokenization_settings_3():
 
 
 @pytest.fixture
-def all_delegated_method_references_with_sample_inputs():
+def delegated_tokenizer_methods_w_input():
 
     return (
         (
-            "encode_plus",
+            DelegatedTokenizerMethods.encode_plus.value,
             """This is some example text to tokenize. It is used to regression test the compiled
             tokenizer.""",
         ),
         (
-            "encode",
+            DelegatedTokenizerMethods.encode.value,
             """This is some example text to tokenize. It is used to regression test the compiled
             tokenizer.""",
         ),
-        # ('decode',None),
-        ("create_token_type_ids_from_sequences", ["some", "example", "text"]),
-        # ('convert_tokens_to_string',[0,1,2]),
-        ("clean_up_tokenization", "some ,example text ."),
+        (
+            DelegatedTokenizerMethods.create_token_type_ids_from_sequences.value,
+            ["some", "example", "text"],
+        ),
+        (DelegatedTokenizerMethods.convert_ids_to_tokens.value, [1, 2, 3]),
+        (DelegatedTokenizerMethods.clean_up_tokenization.value, "some ,example text ."),
+    )
+
+
+@pytest.fixture
+def delegated_tokenizer_attributes():
+
+    return (
+        DelegatedTokenizerAttributes.is_fast.value,
+        DelegatedTokenizerAttributes._tokenizer.value,
+        DelegatedTokenizerAttributes.unk_token_id.value,
     )
 
 
@@ -124,3 +143,12 @@ def huggingface_pipeline(
 ):
 
     return pipeline(task=huggingface_pipeline_task, model=huggingface_model_reference)
+
+
+@pytest.fixture
+def delegated_pipeline_attributes():
+
+    return (
+        DelegatedPipelineAttributes.tokenizer.value,
+        DelegatedPipelineAttributes.model.value,
+    )
