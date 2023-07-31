@@ -7,11 +7,12 @@ from string import Formatter
 from typing import List, Optional
 
 # 3rd party libraries
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 # Source
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
+    PromptInvalidTemplate,
     PromptNotFound,
     PromptVersionNotFound,
 )
@@ -34,6 +35,13 @@ class PromptTemplateSchema(BaseModel):
     alias: str
     version: int = 0
     created_at: Optional[datetime.datetime] = None
+
+    @validator("template")
+    def validate_template(cls, value, values):
+        if value == "" or value == "{}" or value == '""':
+            raise PromptInvalidTemplate(template=value)
+        else:
+            return value
 
     @property
     def variables(self) -> List[str]:
@@ -133,11 +141,12 @@ class PromptTemplateSchema(BaseModel):
     def update(self, **kwargs) -> "PromptTemplateSchema":
         """Updates table record from latest version."""
         query = list(PromptTemplateTable.query(self.alias, scan_index_forward=False))
-        return PromptTemplateSchema(
+        updated_template = PromptTemplateSchema(
             template=kwargs.get("template"),
             alias=self.alias,
             version=int(query[0].version) + 1,
-        ).save()
+        )
+        return updated_template.save()
 
 
 class PromptTemplateOutputSchema(BaseModel):

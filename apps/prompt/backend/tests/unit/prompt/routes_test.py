@@ -436,3 +436,21 @@ def test_generate_text_with_diff_model_model_not_found(
         "prompt": template.format(**values),
         "generated": "Model is unknown or not supported",
     }
+
+
+@pytest.mark.parametrize(
+    "template",
+    ["", "{}"],
+)
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt_bad_template(mock_prompt_get, template, test_client):
+    """Test get prompt endpoint."""
+    mock_prompt_get.return_value = None
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias=test-alias",
+        headers={"x-api-key": "1234"},
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    data = response.json()
+    assert data == {"detail": "Prompt template: '" + template + "' is invalid"}
