@@ -2,7 +2,6 @@
 import os
 
 # Internal libraries
-from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
@@ -14,9 +13,8 @@ from src.params import ServedModelParams
 from src.util.params import TrackedCompiledModelSpecs
 
 
-if __name__ == "__main__":
+def main() -> None:
 
-    logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
     model_version_specs = TrackedCompiledModelSpecs()
     # output directory specs
@@ -59,3 +57,8 @@ if __name__ == "__main__":
     )
     # shutdown client
     mv.stop()
+
+
+if __name__ == "__main__":
+
+    main()
