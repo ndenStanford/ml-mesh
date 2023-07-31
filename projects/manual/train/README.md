@@ -24,7 +24,7 @@ Specs defined in the `config/prod.env` is used only during CI processes.
 
 ### 2.1 Without containers
 
-For development purposes, the pipeline can be run locally without containers. Note that while this could ease the development process, it has some downsides since you are now outside of your bespoke container runtime environment. The following risks should be considered. It's important to test the functionality of your code via make command once the development is finished. 
+For development purposes, the pipeline can be run locally without containers. Note that while this could ease the development process, it has some downsides since you are now outside of your bespoke container runtime environment. The following risks should be considered. It's important to test the functionality of your code via make command once the development is finished.
 
 - Some dependencies might be missing
 - Some env vars might be missing
