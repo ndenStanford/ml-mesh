@@ -25,11 +25,8 @@ services:
       - 8080:8080
     volumes:
       - type: bind
-        source: serve/src
-        target: /home/projects/lsh/serve/src
-      - type: bind
-        source: serve/tests
-        target: /home/projects/lsh/serve/tests
+        source: serve
+        target: /home/projects/lsh/serve
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs

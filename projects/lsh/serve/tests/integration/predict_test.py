@@ -12,7 +12,7 @@ input = (
 
 @pytest.mark.parametrize("input", input)
 class TestParametrized:
-    def test_turbo(self, test_client, input):
+    def test_lsh(self, test_client, input):
         """Test prediction endpoint."""
         response = test_client.post(
             "/v1/lsh/predict",
