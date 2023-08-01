@@ -26,7 +26,7 @@ class Request(BaseModel):
         weights (Optional[Tuple[float]])
     """
 
-    content: str
+    content: Optional[str]
     language: Optional[str] = "en"
     shingle_list: Optional[int] = 5
     threshold: Optional[float] = 0.6
