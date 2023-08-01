@@ -1,8 +1,3 @@
 # Internal libraries
-from onclusiveml.datasketch.lsh import MinHashLSH
-from onclusiveml.datasketch.minhash import MinHash
-
-
-# Alias
-WeightedMinHashLSH = MinHashLSH
-WeightedMinHash = MinHash
+from onclusiveml.datasketch.lsh import MinHashLSH  # noqa
+from onclusiveml.datasketch.minhash import MinHash  # noqa

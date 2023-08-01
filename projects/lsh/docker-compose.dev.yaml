@@ -32,7 +32,7 @@ services:
         target: /home/projects/lsh/serve/tests
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /lsh
+      DOCS_URL: /lsh/docs
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -43,7 +43,7 @@ services:
     profiles: [unit]
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /lsh
+      DOCS_URL: /lsh/docs
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -55,7 +55,7 @@ services:
     profiles: [integration]
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /lsh
+      DOCS_URL: /lsh/docs
     hostname: onclusiveml
     networks:
       - onclusive-net

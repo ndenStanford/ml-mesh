@@ -38,7 +38,7 @@ class LshHandler:
 
     def generate_lsh_signature(
         self, shingle_list: List[str], num_perm: int = 128, threshold: float = 0.6
-    ) -> str:
+    ) -> List[str]:
         """
         Generates an LSH signature for a list of shingles.
 
@@ -115,15 +115,12 @@ def handle(data: Any) -> Optional[Dict[str, Optional[List[str]]]]:
         if len(shingle_list) < 1:
             return {"signature": None}
 
-        shingle_set = set(shingle_list)
-
-        m = MinHash(data["num_perm"])
-        # change this to bulk update later
-        for s in shingle_set:
-            m.update(s.encode("utf8"))
-
-        lsh = MinHashLSH(data["threshold"], data["num_perm"], data["weights"])
-        signature = lsh.generate_signature(m)
+        signature = _service.generate_lsh_signature(
+            shingle_list=shingle_list,
+            num_perm=data["num_perm"],
+            threshold=data["threshold"],
+        )
         return {"signature": signature}
+
     except Exception as e:
         raise e

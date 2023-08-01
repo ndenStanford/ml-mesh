@@ -1,7 +1,7 @@
 """Request model."""
 
 # Standard Library
-from typing import Optional
+from typing import Optional, Tuple
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -15,15 +15,15 @@ class Request(BaseModel):
     Attributes:
         content (str): Text to generate signature for. An empty string is needed (at least)
 
-        lang (int): Text to indicate the language
+        lang (Optional[str]): Text to indicate the language
 
-        shingle_list (int)
+        shingle_list (Optional[int])
 
-        threshold (float)
+        threshold (Optional[float])
 
-        num_perm (int)
+        num_perm (Optional[int]))
 
-        weights (tuple)
+        weights (Optional[Tuple[float]])
     """
 
     content: str
@@ -31,4 +31,4 @@ class Request(BaseModel):
     shingle_list: Optional[int] = 5
     threshold: Optional[float] = 0.6
     num_perm: Optional[int] = 128
-    weights: Optional[tuple] = (0.5, 0.5)
+    weights: Optional[Tuple[float, float]] = (0.5, 0.5)

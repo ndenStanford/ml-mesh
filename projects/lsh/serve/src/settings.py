@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     # Logging level
     LOGGING_LEVEL: str = "info"
     # documentation endpoint
-    DOCS_URL: Optional[str] = None
+    DOCS_URL: Optional[str] = "/lsh/docs"
 
 
 @lru_cache
