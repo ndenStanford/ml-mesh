@@ -6,9 +6,9 @@ authors = ["Sebastian sebastian.scherer@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-torch = "1.12.1"
 nvidia-ml-py3 = "7.352.0"
 urllib3 = "1.26.15"
+torch = {version = "1.12.1+cu116", source = "torch-gpu"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
@@ -16,3 +16,10 @@ pytest = "7.2.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[[tool.poetry.source]]
+name = "torch-gpu"
+url = "https://download.pytorch.org/whl/cu116"
+default = false
+secondary = true

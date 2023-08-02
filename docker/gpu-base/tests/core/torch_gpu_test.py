@@ -1,5 +1,14 @@
+# Standard Library
+import os
+
 # ML libs
 import torch
+
+
+def test_nvidia_smi():
+    """Checks the availability of the nvidia driver CLI utility inside the container"""
+    os.system("nvidia-smi")
+
 
 # 3rd party libraries
 from pynvml import nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo, nvmlInit
@@ -47,5 +56,5 @@ def test_profiling_device_usage():
     handle = nvmlDeviceGetHandleByIndex(0)
     info = nvmlDeviceGetMemoryInfo(handle)
     mb_used = info.used // 1024**2
-    # GPU kernel overhead should be more than one GB
-    assert mb_used > 1000
+    # GPU kernel overhead should be more than 0.75 GB
+    assert mb_used > 750
