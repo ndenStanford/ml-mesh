@@ -135,7 +135,6 @@ jobs:
   set-runner-specs:
     name: Set runner specs conditional on hosting requirements
     needs: [check-run-crtieria, provision-customized-runner]
-    runs-on: ubuntu-latest
     if: ${{ needs.check-run-critera.run && always() }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
@@ -281,8 +280,6 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs: [check-run-criteria, set-runner-specs, deploy]
-
-    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     if: ${{ always() && needs.check-run-critera.run && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
     steps:
