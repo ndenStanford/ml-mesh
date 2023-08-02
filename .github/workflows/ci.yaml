@@ -190,22 +190,17 @@ jobs       :
           # train
           - name: keywords
             component: train
-            integration: false
-            functional: false
-            load: false
             runner-kind: ubuntu-20.04
 
           # compile
           - name: keywords
             component: compile
-            integration: false
-            functional: false
-            load: false
             runner-kind: ubuntu-20.04
 
           # serve
           - name: keywords
             component: serve
+            download-model: true
             integration: true
             functional: true
             load: true
@@ -220,8 +215,6 @@ jobs       :
           - name: summarization
             component: serve
             integration: true
-            functional: false
-            load: false
             runner-kind: ubuntu-20.04
 
           # ========================
@@ -230,9 +223,6 @@ jobs       :
           # serve
           - name: entity-linking
             component: serve
-            integration: false
-            functional: false
-            load: false
             runner-kind: ubuntu-20.04
 
           # ========================
@@ -241,9 +231,6 @@ jobs       :
           # train
           - name: ner
             component: train
-            integration: false
-            functional: false
-            load: false
             runner-kind: ubuntu-20.04
 
           # ========================
@@ -252,9 +239,6 @@ jobs       :
           # train
           - name: sentiment
             component: train
-            integration: false
-            functional: false
-            load: false
             runner-kind: ubuntu-20.04
 
     with:

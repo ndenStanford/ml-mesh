@@ -19,9 +19,14 @@ on  :
         required: true
         type: string
         description: Version tag of image.
+      download-model:
+        required: false
+        default: false
+        type: boolean
+        description: Whether to download a specified model version from the neptune model registry.
       integration:
-        required: true
-        default: true
+        required: false
+        default: false
         type: boolean
         description: Whether to run integration test suite.
       functional:
@@ -176,10 +181,8 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"
 
-      - name: (Serve component only) Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component
-          }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && ( inputs.integration || inputs.functional || inputs.load ) && inputs.component
-          == 'serve' }}
+      - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.download-model }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
