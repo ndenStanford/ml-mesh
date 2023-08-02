@@ -105,8 +105,7 @@ jobs       :
   run-us-east-1-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    #needs: [run-repository-state, run-libs-tests]
-    needs: [run-repository-state]
+    needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
