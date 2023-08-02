@@ -94,7 +94,7 @@ jobs:
   provision-customized-runner:
     name: Provision self-hosted & customized runner
     uses: ./.github/workflows/_provision_customized_runner.yaml
-    if: ${{ inputs.runner-kind == 'custom' }}
+    if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
@@ -110,7 +110,7 @@ jobs:
     name: Set runner specs conditional on hosting requirements
     needs: provision-customized-runner
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && always() }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
@@ -119,7 +119,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: set-runner-label
         with:
-          cond: ${{ inputs.runner-kind == 'custom' }}
+          cond: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }}
           if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
           if_false: ${{ inputs.runner-kind }}
 
@@ -127,7 +127,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: set-runner-instance-id
         with:
-          cond: ${{ inputs.runner-kind == 'custom' }}
+          cond: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }}
           if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
           if_false: ''
 
@@ -135,7 +135,7 @@ jobs:
     name: Run project test suite(s)
     needs: set-runner-specs
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    if: ${{ always() }}
+    if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && always() }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
@@ -158,11 +158,9 @@ jobs:
               - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -172,7 +170,6 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -182,7 +179,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.download-model }}
+        if: ${{ inputs.download-model }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -195,7 +192,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
+        if: ${{ inputs.integration }}
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -205,7 +202,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
+        if: ${{ inputs.functional }}
         run: |
           make projects.functional/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -215,7 +212,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.load }}
+        if: ${{ inputs.load }}
         run: |
           make projects.load/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -225,7 +222,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ always() && ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.load }}
+        if: ${{ always() && inputs.load }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-upload-results \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -238,7 +235,6 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -248,7 +244,6 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -263,7 +258,7 @@ jobs:
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ always() && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
