@@ -250,7 +250,7 @@ jobs       :
           # Sentiment
           # ========================
           # train
-          - name: sent
+          - name: sentiment
             component: train
             integration: false
             functional: false
