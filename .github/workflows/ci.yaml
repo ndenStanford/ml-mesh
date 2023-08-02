@@ -274,11 +274,11 @@ jobs       :
       project: ${{ matrix.projects.name }}
       component: ${{ matrix.projects.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      download-model: ${{ matrix.download-model }}
+      download-model: ${{ matrix.projects.download-model }}
       integration: ${{ matrix.projects.integration }}
       functional: ${{ matrix.projects.functional }}
       load: ${{ matrix.projects.load }}
-      upload-test-results: ${{ matrix.upload-test-results }}
+      upload-test-results: ${{ matrix.projects.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       release: ${{ github.ref_name == 'main' }}
       runner-kind: ${{ matrix.projects.runner-kind }}
