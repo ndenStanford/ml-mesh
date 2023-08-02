@@ -126,7 +126,6 @@ jobs:
       - name: Print criteria
         run: |
           echo Criteria: ${{ needs.check-run-criteria.outputs.run }}
-          echo Criteria with always: ${{ needs.check-run-criteria.outputs.run && always() }}
 
   provision-customized-runner:
     name: Provision self-hosted & customized runner
