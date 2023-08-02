@@ -91,10 +91,36 @@ on  :
         description: Github PAT to allow EC2 instance to connect to Github repository content.
 
 jobs:
+  check-run-criteria:
+    name: Check if the project's component flow needs to be run
+    environment: ${{ inputs.environment }}
+    outputs:
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+
   provision-customized-runner:
     name: Provision self-hosted & customized runner
+    needs: check-run-criteria
     uses: ./.github/workflows/_provision_customized_runner.yaml
-    if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }}
+    if: ${{ needs.check-run-critera.run && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
@@ -108,9 +134,9 @@ jobs:
 
   set-runner-specs:
     name: Set runner specs conditional on hosting requirements
-    needs: provision-customized-runner
+    needs: [check-run-crtieria, provision-customized-runner]
     runs-on: ubuntu-latest
-    if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && always() }}
+    if: ${{ needs.check-run-critera.run && always() }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
@@ -119,7 +145,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: set-runner-label
         with:
-          cond: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }}
+          cond: ${{ needs.check-run-critera.run && inputs.runner-kind == 'custom' }}
           if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
           if_false: ${{ inputs.runner-kind }}
 
@@ -127,15 +153,15 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: set-runner-instance-id
         with:
-          cond: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }}
+          cond: ${{ needs.check-run-critera.run && inputs.runner-kind == 'custom' }}
           if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
           if_false: ''
 
   deploy:
     name: Run project test suite(s)
-    needs: set-runner-specs
+    needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && always() }}
+    if: ${{ needs.check-run-critera.run && always() }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
@@ -254,11 +280,11 @@ jobs:
 
   stop-runner:
     name: Stop self-hosted EC2 runner
-    needs: [set-runner-specs, deploy]
+    needs: [check-run-criteria, set-runner-specs, deploy]
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ always() && (inputs.release || steps.files-changed.outputs.this == 'true') && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && needs.check-run-critera.run && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
