@@ -189,11 +189,21 @@ jobs       :
           # train
           - name: keywords
             component: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
             runner-kind: ubuntu-20.04
 
           # compile
           - name: keywords
             component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
             runner-kind: ubuntu-20.04
 
           # serve
@@ -213,7 +223,11 @@ jobs       :
           # serve
           - name: summarization
             component: serve
+            download-model: false
             integration: true
+            functional: false
+            load: false
+            upload-test-results: false
             runner-kind: ubuntu-20.04
 
           # ========================
@@ -222,6 +236,11 @@ jobs       :
           # serve
           - name: entity-linking
             component: serve
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
             runner-kind: ubuntu-20.04
 
           # ========================
@@ -230,6 +249,11 @@ jobs       :
           # train
           - name: ner
             component: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
             runner-kind: ubuntu-20.04
 
           # ========================
@@ -238,16 +262,23 @@ jobs       :
           # train
           - name: sentiment
             component: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
             runner-kind: ubuntu-20.04
 
     with:
       environment: prod
       project: ${{ matrix.projects.name }}
       component: ${{ matrix.projects.component }}
+      download-model: ${{ inputs.download-model}}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.projects.integration }}
       functional: ${{ matrix.projects.functional }}
       load: ${{ matrix.projects.load }}
+      upload-test-results: ${{ matrix.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       release: ${{ github.ref_name == 'main' }}
       runner-kind: ${{ matrix.projects.runner-kind }}
