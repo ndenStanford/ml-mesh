@@ -72,8 +72,6 @@ services:
         target: /docker/gpu-base/tests
     command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
-    depends_on:
-      - gpu-base
 
   # ===========================================================
   # NEURON COMPILE
