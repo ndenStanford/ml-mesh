@@ -262,7 +262,12 @@ jobs       :
           # serve
           - name: lsh
             component: serve
+            download-model: false
             integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # ========================
           # Sentiment
