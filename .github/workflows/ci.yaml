@@ -105,7 +105,8 @@ jobs       :
   run-us-east-1-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests]
+    #needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state]
     strategy:
       max-parallel: 1
       fail-fast: ${{ github.ref_name != 'main' }}
@@ -190,16 +191,27 @@ jobs       :
           - name: keywords
             component: train
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
 
           # compile
           - name: keywords
             component: compile
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
 
           # serve
           - name: keywords
             component: serve
-            integration: false
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
 
           # ========================
           # SUMMARIZATION
@@ -208,6 +220,9 @@ jobs       :
           - name: summarization
             component: serve
             integration: true
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
 
           # ========================
           # ENTITY LINKING
@@ -216,6 +231,9 @@ jobs       :
           - name: entity-linking
             component: serve
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
 
           # ========================
           # NER
@@ -224,6 +242,9 @@ jobs       :
           - name: ner
             component: train
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
 
           # ========================
           # Sentiment
@@ -232,6 +253,9 @@ jobs       :
           - name: sent
             component: train
             integration: false
+            functional: false
+            load: false
+            runner-kind: ubuntu-20.04
 
     with:
       environment: prod
@@ -239,13 +263,18 @@ jobs       :
       component: ${{ matrix.projects.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.projects.integration }}
+      functional: ${{ matrix.projects.functional }}
+      load: ${{ matrix.projects.load }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       release: ${{ github.ref_name == 'main' }}
+      runner-kind: ${{ matrix.projects.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}

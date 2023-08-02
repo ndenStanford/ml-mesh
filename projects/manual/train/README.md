@@ -2,7 +2,7 @@
 
 Set PROJECT_NAME to "keywords", "ner", or "sentiment"
 
-`export PROJECT_NAME==?`
+`export PROJECT_NAME=?`
 
 ## 1 Overview
 
@@ -24,7 +24,11 @@ Specs defined in the `config/prod.env` is used only during CI processes.
 
 ### 2.1 Without containers
 
-For development purposes, the pipeline can be run locally without containers.
+For development purposes, the pipeline can be run locally without containers. Note that while this could ease the development process, it has some downsides since you are now outside of your bespoke container runtime environment. The following risks should be considered. It's important to test the functionality of your code via make command once the development is finished.
+
+- Some dependencies might be missing
+- Some env vars might be missing
+- All potential dependency docker services (none in the case of train, but there will be some for compile for example) will have to be manually run
 
 1. Set the neptune authentication token value
    - `export NEPTUNE_API_TOKEN==?`
@@ -70,19 +74,4 @@ You can run the command with this command (which uses docker compose):
 make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
 
-Or run this docker command:
-
-```docker
-docker run \
-  --env NEPTUNE_API_TOKEN=$NEPTUNE_API_TOKEN \
-  -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  --env-file $PATH_TO_REPOSITORY/projects/${PROJECT_NAME}/train/config/dev.env \
-  -t 063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:latest \
-  python -m src.register_trained_model
-```
-
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
-
-- Note: If the `--env-file` command is omitted in the docker command,
-  the pipeline will fall back on the default values defined in the `settings.py` file.
