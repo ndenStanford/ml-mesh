@@ -141,7 +141,7 @@ jobs:
 
   provision-customized-runner:
     name: Provision self-hosted & customized runner
-    needs: [check-run-criteria, print-criteria-output]
+    needs: check-run-criteria
     uses: ./.github/workflows/_provision_customized_runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run && inputs.runner-kind == 'custom' }}
     with:
