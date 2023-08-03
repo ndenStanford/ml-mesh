@@ -177,7 +177,7 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      fail-fast: false #${{ github.ref_name != 'main' }}
+      fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         projects:
           # NOTE: list of project components to run
