@@ -146,7 +146,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: set-runner-label
         with:
-          cond: ${{ needs.check-run-criteria.outputs.run && inputs.runner-kind == 'custom' }}
+          cond: ${{ inputs.runner-kind == 'custom' }}
           if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
           if_false: ${{ inputs.runner-kind }}
 
@@ -154,7 +154,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: set-runner-instance-id
         with:
-          cond: ${{ needs.check-run-criteria.outputs.run && inputs.runner-kind == 'custom' }}
+          cond: ${{ inputs.runner-kind == 'custom' }}
           if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
           if_false: ''
 
@@ -174,15 +174,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
-      - uses: dorny/paths-filter@v2
-        id: files-changed
-        name: Get a list of modified files.
-        with:
-          list-files: shell
-          filters: |
-            this:
-              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
@@ -284,7 +275,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
-    if: ${{ always() && needs.check-run-criteria.outputs.run && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    if: ${{ needs.check-run-criteria.outputs.run && inputs.runner-kind == 'custom' && always() }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
