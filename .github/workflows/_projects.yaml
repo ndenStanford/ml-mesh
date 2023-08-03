@@ -204,6 +204,7 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            INTERNAL_ML_ENDPOINT_API_KEY="${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}" \
             ENVIRONMENT="ci"
 
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
@@ -228,6 +229,7 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            INTERNAL_ML_ENDPOINT_API_KEY="${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}" \
             ENVIRONMENT="ci"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
