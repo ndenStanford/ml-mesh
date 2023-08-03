@@ -117,9 +117,21 @@ jobs:
             this:
               - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
 
-  print-criteria-output:
+  print-criteria-output-true:
     name: Print out the criteria check output
     needs: check-run-criteria
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Print criteria
+        run: |
+          echo ${{ needs.check-run-criteria.outputs.run }}
+
+  print-criteria-output-false:
+    name: Print out the criteria check output
+    needs: check-run-criteria
+    if: ${{ needs.check-run-criteria.outputs.run == 'false' }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
