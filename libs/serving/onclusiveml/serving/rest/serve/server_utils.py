@@ -2,11 +2,15 @@
 from typing import Callable, Dict
 
 # 3rd party libraries
+import requests
 from fastapi import APIRouter, status
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
-from onclusiveml.serving.rest.serve.params import FastAPISettings
+from onclusiveml.serving.rest.serve.params import (
+    FastAPISettings,
+    get_betterstack_settings,
+)
 from onclusiveml.serving.rest.serve.server_models import (
     LivenessProbeResponse,
     ModelServerURLs,
@@ -83,12 +87,23 @@ def get_liveness_router(api_version: str = "v1") -> Callable:
 
     model_server_urls = get_model_server_urls(api_version=api_version)
 
+    betterstack_settings = get_betterstack_settings()
+
     @liveness_router.get(
         model_server_urls.liveness,
         response_model=LivenessProbeResponse,
         status_code=status.HTTP_200_OK,
     )
     async def live() -> LivenessProbeResponse:
+        if (
+            betterstack_settings.environment in ("stage", "prod")
+            and betterstack_settings.betterstack_key
+        ):
+            requests.post(
+                "https://uptime.betterstack.com/api/v1/heartbeat/{}".format(
+                    betterstack_settings.betterstack_key
+                )
+            )
         return LivenessProbeResponse()
 
     return liveness_router

@@ -1,4 +1,5 @@
 # Standard Library
+import os
 from typing import Dict, Optional, Union
 
 # Internal libraries
@@ -60,6 +61,20 @@ class UvicornSettings(ServingBaseParams):
     workers: int = 1
 
 
+class BetterStackParams(ServingBaseParams):
+    """setting variables for betterstack"""
+
+    # API/lib environment
+    environment: str = os.environ.get("environment", "dev")
+    # Betterstack heartbeat key
+    betterstack_key: str = os.environ.get("SERVING_LIB_BETTERSTACK_KEY", "")
+
+
+def get_betterstack_settings() -> ServingBaseParams:
+    """Returns instanciated Settings class."""
+    return BetterStackParams()
+
+
 class ServingParams(ServingBaseParams):
     """A functional base class for specifying a configuration for the `ModelServer` constructor
     method's `configuration` argument"""
@@ -73,3 +88,4 @@ class ServingParams(ServingBaseParams):
     fastapi_settings: FastAPISettings = FastAPISettings()
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
+    betterstack_settings = get_betterstack_settings()

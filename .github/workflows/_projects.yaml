@@ -89,6 +89,9 @@ on  :
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: Github PAT to allow EC2 instance to connect to Github repository content.
+      SERVING_LIB_BETTERSTACK_KEY:
+        required: false
+        description: Key to be used by projects using serving library for betterstack liveness check
 
 jobs:
   check-run-criteria:
