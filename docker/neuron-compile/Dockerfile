@@ -68,6 +68,11 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+RUN pip install \
+    tensorflow==1.15.5 \
+    --extra-index-url=https://pip.repos.neuron.amazonaws.com/ \
+    --no-cache-dir
+
 # --- production stage
 FROM builder as production
 
