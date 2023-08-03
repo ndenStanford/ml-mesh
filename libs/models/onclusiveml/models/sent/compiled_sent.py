@@ -140,7 +140,6 @@ class CompiledSent:
         attention_masks = self.inputs["attention_mask"].to(self.device)
 
         sentiment_probs = []
-        # input_ids, attention_masks = inputs
         n_sentence = len(input_ids)
 
         while len(input_ids) > 0:
@@ -185,23 +184,34 @@ class CompiledSent:
         return sentiment_probs
 
     def postprocess(
-        self, probs: np.ndarray, list_sentences: List[str], entities: List[dict]
+        self,
+        sentiment_probs: np.ndarray,
+        list_sentences: List[str],
+        entities: List[dict],
     ) -> dict:
+        """
+        Compute sentiment probability of each sentence
+        Args:
+            sentiment_probs (List[float]): List of sentiment probability
+            list_sentences (List[str]): Input list of sentences
+            entities (List[dict]): List of detected entities from the NER model
+        Returns:
+            sentiment_probs (List[float]): List of sentiment probability
+        """
+        logits = np.exp(sentiment_probs.reshape(-1, self.NUM_LABELS))
 
-        logits = np.exp(probs.reshape(-1, self.NUM_LABELS))
+        sentiment_probs = np.around(logits / np.sum(logits, axis=1).reshape(-1, 1), 4)
 
-        probs = np.around(logits / np.sum(logits, axis=1).reshape(-1, 1), 4)
-
-        agg_probs = np.around(np.mean(probs, axis=0), 4)
+        agg_sentiment_probs = np.around(np.mean(sentiment_probs, axis=0), 4)
 
         sentiment_result = {}
         sentiment_result["label"] = self._decide_label(
-            agg_probs[2], agg_probs[1], agg_probs[0]
-        )  # agg_probs:neg,neu,pos
-        sentiment_result["sentence_pos_probs"] = probs[:, 2].tolist()
-        sentiment_result["sentence_neg_probs"] = probs[:, 0].tolist()
-        sentiment_result["negative_prob"] = agg_probs[0]
-        sentiment_result["positive_prob"] = agg_probs[2]
+            agg_sentiment_probs[2], agg_sentiment_probs[1], agg_sentiment_probs[0]
+        )
+        sentiment_result["sentence_pos_probs"] = sentiment_probs[:, 2].tolist()
+        sentiment_result["sentence_neg_probs"] = sentiment_probs[:, 0].tolist()
+        sentiment_result["negative_prob"] = agg_sentiment_probs[0]
+        sentiment_result["positive_prob"] = agg_sentiment_probs[2]
 
         if entities is not None:
             sentiment_result["entities"] = self._add_entity_sentiment(
@@ -246,9 +256,11 @@ class CompiledSent:
         Args:
             sentences (List[str]): List of sentences from the article
             res (dict): List of sentiment probability corresponding to sentences
-            entities (List[dict]): List of detected entities from the NER model
+            entities (List[Dict[str, Union[float, int, str]]]):
+                List of detected entities from the NER model
         Returns:
-            entity_sentiment (List[dict]): List of detected entities with sentiment attached to them
+            entity_sentiment (List[Dict[str, str]]):
+                List of detected entities with sentiment attached to them
         """
         sentence_pos_probs = res["sentence_pos_probs"]
         sentence_neg_probs = res["sentence_neg_probs"]

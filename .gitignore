@@ -240,3 +240,4 @@ docker/neuron-compile/tests/output_compile
 outputs/compile
 projects/sentiment/compile/projects/sentiment/compile/nltk_data
 outputs/download/model_artifacts
+*.keras
