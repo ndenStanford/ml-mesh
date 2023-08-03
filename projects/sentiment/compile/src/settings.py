@@ -146,7 +146,7 @@ class PipelineCompilationSettings(TrackedParams):
     pipeline_name: str
     max_length: int
     batch_size: int = 6
-    neuron: bool = False
+    neuron: bool = True
     validate_compilation: bool = True
     validation_rtol: float = 1e-02
     validation_atol: float = 1e-02

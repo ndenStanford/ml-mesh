@@ -53,11 +53,11 @@ def main() -> None:
 
     compiled_sent = CompiledSent(compiled_sent_pipeline)
 
-    # test ----------------------------------------
-    text = "I love John. I hate Jack"
-    entities = [{"text": "John"}, {"text": "Jack"}]
-    sentiment = compiled_sent.extract_sentiment(text, entities)
-    sentiment
+    # # test ----------------------------------------
+    # text = "I love John. I hate Jack"
+    # entities = [{"text": "John"}, {"text": "Jack"}]
+    # sentiment = compiled_sent.extract_sentiment(text, entities)
+    # sentiment
 
     # test ----------------------------------------
 
