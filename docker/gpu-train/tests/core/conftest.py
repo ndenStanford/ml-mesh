@@ -1,6 +1,9 @@
+
+# 3rd party libraries
 import numpy as np
-from datasets import Dataset
 import pytest
+from datasets import Dataset
+
 
 @pytest.fixture(scope="session")
 def test_train_dataset():
@@ -11,10 +14,11 @@ def test_train_dataset():
     }
     ds = Dataset.from_dict(dummy_data)
     ds.set_format("pt")
-    
+
     return ds
+
 
 @pytest.fixture
 def test_model_reference():
-    
+
     return "distilbert-base-uncased"
