@@ -117,6 +117,16 @@ jobs:
             this:
               - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
 
+  print-criteria-output:
+    name: Print out the criteria check output
+    needs: check-run-criteria
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Print criteria
+        run: |
+          echo ${{ needs.check-run-criteria.outputs.run }}
+
   provision-customized-runner:
     name: Provision self-hosted & customized runner
     needs: check-run-criteria
