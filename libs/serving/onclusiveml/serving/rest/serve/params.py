@@ -71,7 +71,7 @@ class BetterStackParams(ServingBaseParams):
 
 
 def get_betterstack_settings() -> ServingBaseParams:
-    """Returns instanciated Settings class."""
+    """Returns instanciated BetterStackParams class."""
     return BetterStackParams()
 
 
