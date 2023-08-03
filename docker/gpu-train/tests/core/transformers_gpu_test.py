@@ -1,9 +1,5 @@
-
 # ML libs
 import torch
-from torch.utils.checkpoint import (  # https://github.com/huggingface/transformers/issues/9919
-    checkpoint,
-)
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
@@ -13,14 +9,9 @@ from transformers import (
 from transformers.trainer_pt_utils import get_parameter_names
 
 # 3rd party libraries
+import bitsandbytes as bnb
 from accelerate import Accelerator
 from pynvml import nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo, nvmlInit
-
-
-# import bitsandbytes as bnb
-
-
-
 
 
 def print_gpu_utilization():
@@ -61,10 +52,14 @@ def test_training_gpu(test_train_dataset, test_model_reference):
     result = trainer.train()
 
     print_summary(result)
+
+
 def test_training_w_optimizer_gpu(test_train_dataset, test_model_reference):
     """Checks transoformers library abilitiy to use GPU device for 8bit optimizer-based training
     (without accelerate)"""
-    model = AutoModelForSequenceClassification.from_pretrained(test_model_reference).to("cuda")
+    model = AutoModelForSequenceClassification.from_pretrained(test_model_reference).to(
+        "cuda"
+    )
     training_args = TrainingArguments(
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
@@ -81,7 +76,9 @@ def test_training_w_optimizer_gpu(test_train_dataset, test_model_reference):
             "weight_decay": training_args.weight_decay,
         },
         {
-            "params": [p for n, p in model.named_parameters() if n not in decay_parameters],
+            "params": [
+                p for n, p in model.named_parameters() if n not in decay_parameters
+            ],
             "weight_decay": 0.0,
         },
     ]
@@ -100,14 +97,18 @@ def test_training_w_optimizer_gpu(test_train_dataset, test_model_reference):
         model=model,
         args=training_args,
         train_dataset=test_train_dataset,
-        optimizers=(adam_bnb_optim,None)
+        optimizers=(adam_bnb_optim, None),
     )
     result = trainer.train()
     print_summary(result)
+
+
 def test_accelerated_training_w_optimizer_gpu(test_train_dataset, test_model_reference):
     """Checks transoformers library abilitiy to use GPU device for 8bit optimizer-based training
     using the accelerate extension library"""
-    model = AutoModelForSequenceClassification.from_pretrained(test_model_reference).to("cuda")
+    model = AutoModelForSequenceClassification.from_pretrained(test_model_reference).to(
+        "cuda"
+    )
     training_args = TrainingArguments(
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
@@ -123,7 +124,9 @@ def test_accelerated_training_w_optimizer_gpu(test_train_dataset, test_model_ref
             "weight_decay": training_args.weight_decay,
         },
         {
-            "params": [p for n, p in model.named_parameters() if n not in decay_parameters],
+            "params": [
+                p for n, p in model.named_parameters() if n not in decay_parameters
+            ],
             "weight_decay": 0.0,
         },
     ]
@@ -139,13 +142,14 @@ def test_accelerated_training_w_optimizer_gpu(test_train_dataset, test_model_ref
         lr=training_args.learning_rate,
     )
     dataloader = torch.utils.data.dataloader.DataLoader(
-        test_train_dataset,
-        batch_size=training_args.per_device_train_batch_size
+        test_train_dataset, batch_size=training_args.per_device_train_batch_size
     )
     if training_args.gradient_checkpointing:
         model.gradient_checkpointing_enable()
     accelerator = Accelerator(mixed_precision="fp16")
-    model, optimizer, dataloader = accelerator.prepare(model, adam_bnb_optim, dataloader)
+    model, optimizer, dataloader = accelerator.prepare(
+        model, adam_bnb_optim, dataloader
+    )
     model.train()
     for step, batch in enumerate(dataloader, start=1):
         loss = model(**batch).loss
@@ -154,6 +158,8 @@ def test_accelerated_training_w_optimizer_gpu(test_train_dataset, test_model_ref
         if step % training_args.gradient_accumulation_steps == 0:
             optimizer.step()
             optimizer.zero_grad()
+
+
 def test_bert_inference_gpu(test_model_reference):
     """Checks transformers library ability to use GPU device for tokenizing * inference"""
 

@@ -1,4 +1,3 @@
-
 # 3rd party libraries
 import numpy as np
 import pytest
