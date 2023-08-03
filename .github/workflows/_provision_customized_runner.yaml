@@ -9,7 +9,7 @@ on  :
         description: Environment where code is deployed [prod, stage]
       self-hosted-runner-type:
         required: true
-        default: inf1.xlarge
+        default: inf1.2xlarge
         type: string
         description: The EC2 instance type of the self hosted runner.
       setup-docker-compose:

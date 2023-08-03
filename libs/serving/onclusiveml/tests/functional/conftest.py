@@ -18,3 +18,9 @@ def test_port():
 def test_model_name():
 
     return "test-model"
+
+
+@pytest.fixture
+def test_locustfile():
+
+    return "libs/serving/onclusiveml/tests/integration/rest/testing/test_locustfile.py"
