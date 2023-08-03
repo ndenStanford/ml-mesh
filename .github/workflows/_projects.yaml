@@ -184,7 +184,7 @@ jobs:
     name: Run project test suite(s)
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
