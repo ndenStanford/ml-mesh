@@ -38,6 +38,8 @@ def main() -> None:
         task=base_model_card["model_params"]["huggingface_pipeline_task"],
         model=io_settings.download.model_directory,
     )
+    logger.debug(type(base_model_pipeline))
+    print(type(base_model_pipeline))
     # compile base model pipeline for sent
     sent_pipeline_compilation_settings = SentPipelineCompilationSettings()
 
@@ -50,8 +52,12 @@ def main() -> None:
         pipeline=base_model_pipeline,
         **sent_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
     )
+    logger.debug(type(compiled_sent_pipeline))
+    print(type(compiled_sent_pipeline))
 
     compiled_sent = CompiledSent(compiled_sent_pipeline)
+    logger.debug(type(compiled_sent))
+    print(type(compiled_sent))
 
     # # test ----------------------------------------
     # text = "I love John. I hate Jack"

@@ -29,7 +29,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "SEN-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "SEN-TRAINED-17"
+    with_id: str = "SEN-TRAINED-18"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
@@ -146,7 +146,7 @@ class PipelineCompilationSettings(TrackedParams):
     pipeline_name: str
     max_length: int
     batch_size: int = 6
-    neuron: bool = True
+    neuron: bool = False  # True
     validate_compilation: bool = True
     validation_rtol: float = 1e-02
     validation_atol: float = 1e-02
