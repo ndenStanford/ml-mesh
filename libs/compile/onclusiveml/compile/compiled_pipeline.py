@@ -1,6 +1,7 @@
 # Standard Library
 import json
 import os
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -220,7 +221,7 @@ def compile_pipeline(
     if not in_place_compilation:
         compiled_pipeline = duplicate_huggingface_transformer_via_local_cache(pipeline)
     else:
-        compiled_pipeline = pipeline
+        compiled_pipeline = deepcopy(pipeline)
     # overwrite potential max_length value in the tokenizer settings to ensure alignment with
     # compiled model
     tokenizer_settings["max_length"] = max_length
