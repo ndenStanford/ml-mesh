@@ -31,7 +31,7 @@ from onclusiveml.compile import CompiledModel
     ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
-@pytest.mark.parametrize("batch_size", [4])
+@pytest.mark.parametrize("batch_size", [2])
 def test_compiled_model_from_pretrained(
     huggingface_tokenizer,
     huggingface_model,
