@@ -3,6 +3,12 @@ docker.build/%: docker.set ## Build app
 	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml build $(notdir $@) --no-cache
 	@echo "::endgroup::"
 
+docker.start/%: ## run a bash in interactive mode
+	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml up $(notdir $@) --force-recreate
+
+docker.stop/%: ## run a bash in interactive mode
+	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml down --remove-orphans
+
 docker.deploy/%: docker.set ## Deploy project IMAGE docker image to ECR.
 	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml push $(notdir $@)
 
