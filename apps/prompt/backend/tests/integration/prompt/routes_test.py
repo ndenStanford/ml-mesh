@@ -36,7 +36,7 @@ def test_get_prompt(test_client, create_prompts):
     assert response.json()["template"] == prompt["template"]
     assert (
         datetime.datetime.fromisoformat(response.json()["created_at"])
-        == prompt["created_at"]
+        == prompt["created_at"]  # noqa: W503
     )
     assert response.json()["alias"] == prompt["alias"]
 

@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { PromptListItemProps, PromptsState } from "@/src/types";
+import {
+  ModelListItemProps,
+  PromptListItemProps,
+  PromptsState,
+} from "@/src/types";
 import { API_URI, API_KEY } from "../../constants";
 
 export const getPrompts = createAsyncThunk("prompts/list", async () => {
@@ -77,8 +81,18 @@ export const deletePrompt = createAsyncThunk(
 
 export const generateTextFromPrompt = createAsyncThunk(
   "prompts/generate/prompt",
-  async ({ alias, body }: { alias: string; body: any }, thunkAPI: any) => {
-    const response = await fetch(`${API_URI}/prompts/${alias}/generate`, {
+  async (
+    { alias, body, modelName }: { alias: string; body: any; modelName: string },
+    thunkAPI: any
+  ) => {
+    var suffix = "";
+    // Use different route if model is not gpt-3.5-turbo
+    if (modelName == "gpt-4") {
+      suffix = `prompts/${alias}/generate/model/${modelName}`;
+    } else {
+      suffix = `prompts/${alias}/generate`;
+    }
+    const response = await fetch(`${API_URI}/${suffix}`, {
       method: "POST",
       headers: {
         accept: "application/json",
@@ -98,13 +112,26 @@ export const generateTextFromPrompt = createAsyncThunk(
 
 export const generateText = createAsyncThunk(
   "prompts/generate/string",
-  async (prompt: string) => {
-    const response = await fetch(`${API_URI}/prompts/generate/${prompt}`, {
-      method: "GET",
+  async (
+    { prompt, modelName }: { prompt: string; modelName: string },
+    thunkAPI: any
+  ) => {
+    let body = {prompt: prompt}
+    var suffix = "";
+    // Use different route if model is not gpt-3.5-turbo
+    if (modelName == "gpt-4") {
+      suffix = `prompts/generate/model/${modelName}`;
+    } else {
+      suffix = `prompts/generate`;
+    }
+    const response = await fetch(`${API_URI}/${suffix}`, {
+      method: "POST",
       headers: {
         accept: "application/json",
         "x-api-key": API_KEY,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(body),
     });
     if (response.status !== 200) {
       console.log("Error generating text");

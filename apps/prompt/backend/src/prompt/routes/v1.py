@@ -5,16 +5,17 @@ import json
 from typing import Any, Dict
 
 # 3rd party libraries
-from fastapi import APIRouter, HTTPException, Security, status
+from fastapi import APIRouter, HTTPException, status
 from slugify import slugify
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.helpers import get_api_key
 from src.model.constants import ModelEnum
+from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelSchema
+from src.prompt.chat import PromptChat
 from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
 from src.prompt.generate import generate_text
 from src.prompt.schemas import (
@@ -67,9 +68,7 @@ def get_prompt(alias: str):
     return PromptTemplateOutputSchema.from_template_schema(prompt)[0]
 
 
-@router.post(
-    "", status_code=status.HTTP_201_CREATED, dependencies=[Security(get_api_key)]
-)
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create_prompt(template: str, alias: str, parameters: dict = {}):
     """Creates prompt.
 
@@ -94,9 +93,7 @@ def create_prompt(template: str, alias: str, parameters: dict = {}):
     return prompt.update(template=template)
 
 
-@router.put(
-    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
-)
+@router.put("/{alias}", status_code=status.HTTP_200_OK)
 def update_prompt(alias: str, template: str):
     """Updates latest version of a prompt.
 
@@ -118,9 +115,7 @@ def update_prompt(alias: str, template: str):
     return PromptTemplateSchema.get(alias)[0]
 
 
-@router.delete(
-    "/{alias}", status_code=status.HTTP_200_OK, dependencies=[Security(get_api_key)]
-)
+@router.delete("/{alias}", status_code=status.HTTP_200_OK)
 def delete_prompt(alias: str):
     """Deletes prompt from database.
 
@@ -185,30 +180,69 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
         model_name (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
-    prompt = prompt_template.prompt(**values)
-    model = ModelSchema.get(model_name)
+    try:
+        prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(
+            alias, raises_if_not_found=True
+        )[0]
+        prompt = prompt_template.prompt(**values)
+        model = ModelSchema.get(model_name=model_name, raises_if_not_found=True)
+    except ModelNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except PromptNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
     return {
+        "prompt": prompt,
         "generated": generate_text(
             prompt,
             model.model_name,
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
-        )
+        ),
     }
 
 
-@router.get("/generate/{prompt}", status_code=status.HTTP_200_OK)
-def generate_test(prompt: str):
+@router.post("/generate", status_code=status.HTTP_200_OK)
+def generate_text_from_chat(values: PromptChat):
     """Retrieves prompt via id.
     Args:
-        id (str): prompt id
+        values Dict[str, Any]: input from chat
     """
+
     return {
         "generated": generate_text(
-            prompt,
+            values.prompt,
             ModelEnum.GPT3_5.value,
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
+        ),
+    }
+
+
+@router.post("/generate/model/{model_name}", status_code=status.HTTP_200_OK)
+def generate_text_from_chat_diff_model(model_name: str, values: PromptChat):
+    """Retrieves prompt via id.
+    Args:
+        values Dict[str, Any]: input from chat
+        model_name (str): model name
+    """
+    try:
+        model = ModelSchema.get(model_name=model_name, raises_if_not_found=True)
+    except ModelNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    return {
+        "generated": generate_text(
+            values.prompt,
+            model.model_name,
+            int(json.loads(model.parameters)["max_tokens"]),
+            float(json.loads(model.parameters)["temperature"]),
         ),
     }

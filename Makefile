@@ -28,13 +28,19 @@ ALL_DOCKER_IMGS:= \
 
 # all python libraries
 ALL_LIBS:= \
-	core
+	compile \
+	core \
+	models \
+	nlp \
+	serving \
+	tracking
 
 # all projects
 ALL_PROJECTS:= \
 	keywords \
 	summarization \
-	entity-linking
+	entity-linking \
+	ner
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk
@@ -57,6 +63,7 @@ clean: ## Clean build artifacts.
 	rm -rf dist
 	rm -rf *.egg-info
 	rm -rf htmlcov
+	rm -r ~/.cache/*
 
 install:
 	poetry install

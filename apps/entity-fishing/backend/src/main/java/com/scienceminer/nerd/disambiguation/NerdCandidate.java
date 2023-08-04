@@ -414,9 +414,7 @@ public class NerdCandidate implements Comparable<NerdCandidate> {
 				buffer.append(entity.getRawName() + "\t");
 			}
 		}
-		
-		//if (definitions != null)
-		//	buffer.append("[" + definitions.toString() + "]\t");	
+	
 		if (wiktionaryExternalRef != -1) {
 			buffer.append(wiktionaryExternalRef + "\t");	
 		} 
@@ -438,13 +436,11 @@ public class NerdCandidate implements Comparable<NerdCandidate> {
 		
 		if (isSubTerm)
 			buffer.append("isSubTerm\t");
-		
-		//if (nerdScore > 0.0) 
+
 		{
 			buffer.append(nerdScore + "(nerd)\t");
 		}
 		
-		//if (selectionScore > 0.0) 
 		{
 			buffer.append(selectionScore + "(selection)\t");
 		}
@@ -536,7 +532,6 @@ public class NerdCandidate implements Comparable<NerdCandidate> {
 			}
 			else {
 				// pruning pass
-				//System.out.println("remove " + terms.get(reduced).toString());
 				terms.remove(reduced);								
 			}
 
@@ -583,12 +578,7 @@ public class NerdCandidate implements Comparable<NerdCandidate> {
 				result.add(terms.get(i));
 			}
 		}
-		
-		/*for(int i=terms.size()-1; i>=0; i--) {
-			if (toRemove.contains(new Integer(i)))
-				terms.remove(i);
-		}*/
-		
+
 		return result;
 	}
 
@@ -629,22 +619,6 @@ public class NerdCandidate implements Comparable<NerdCandidate> {
 		
 		// update entity information
 		term1.setEntity(term2.getEntity());
-		/*if (term1.getEntity().getNormalisedName() == null) {
-			term1.getEntity().setNormalisedName(term2.getNormalisedName());
-		}
-		if (term1.getType() == null) {
-			term1.setType(term2.getType());
-		}
-		if ( (term1.getSubTypes() == null) || (term1.getSubTypes().size() == 0)) {
-			term1.setSubTypes(term2.getSubTypes());
-		}
-		else {
-			if ( (term2.getSubTypes() != null) && (term2.getSubTypes().size() != 0)) {
-				for(String subType2 : term2.getSubTypes()) {
-					term1.getSubTypes().add(subType2);
-				}
-			}
-		}*/
 		
 		// update definitions
 		if (term2.getDefinitions() != null) {
@@ -685,7 +659,6 @@ public class NerdCandidate implements Comparable<NerdCandidate> {
 		
 		//descending order
 		int val = ((int)((compareNerdCandidate.getNerdScore() - this.nerdScore) * 1000));
-		//return ((int)((compareQuantity - this.selectionScore) * 1000));
 
 		if (val == 0) {
 			val = ((int)((compareNerdCandidate.getSelectionScore() - this.selectionScore) * 1000));

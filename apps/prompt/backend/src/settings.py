@@ -33,13 +33,12 @@ class Settings(BaseSettings):
     DOCS_URL: Optional[str] = None
     # initialize database
     INITIALIZE: bool = True
-    # API key for secure endpoints access
-    API_KEY: str
-    API_KEY_NAME: str = "x-api-key"
     # OpenAI API key
     OPENAI_API_KEY: str
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
+    # Betterstack heartbeat key
+    BETTERSTACK_KEY: str = ""
 
     OPENAI_PARAMETERS = json.dumps(
         {
@@ -50,15 +49,16 @@ class Settings(BaseSettings):
     # predefined models
     LIST_OF_MODELS: Dict[str, List[str]] = {
         "1": [ModelEnum.GPT3_5.value, OPENAI_PARAMETERS],
-        "2": [ModelEnum.DAVINCI.value, OPENAI_PARAMETERS],
-        "3": [ModelEnum.CURIE.value, OPENAI_PARAMETERS],
-        "4": [ModelEnum.GPT4.value, OPENAI_PARAMETERS],
+        "2": [ModelEnum.GPT4.value, OPENAI_PARAMETERS],
     }
     LIST_OF_PROMPTS: Dict[str, List[str]] = {
         "1": [PromptEnum.EN.value[0], PromptEnum.EN.value[1]]
     }
 
     AWS_REGION: str = "us-east-1"
+
+    REDIS_CONNECTION_STRING: str = ""
+    REDIS_TTL_SECONDS: int = 604800
 
     DB_HOST: Optional[str] = None
     CORS_ORIGIN: List[str] = ["*"]

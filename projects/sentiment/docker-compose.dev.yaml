@@ -1,0 +1,51 @@
+---
+version : '3.9'
+
+services:
+  # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/sentiment/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: sentiment
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: train
+        target: /home/projects/sentiment/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.register_trained_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/sentiment/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+networks:
+  onclusive-net:

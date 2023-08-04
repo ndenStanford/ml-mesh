@@ -32,7 +32,8 @@ async def readycheck() -> Optional[str]:
     result = get_entity_linking(text, lang, entities)
     if (
         result[0].get("text") == "England"
-        and result[0].get("wiki_link") == "https://www.wikidata.org/wiki/Q21"
+        and result[0].get("wiki_link")  # noqa: W503
+        == "https://www.wikidata.org/wiki/Q21"  # noqa: W503
     ):
         return "OK"
     else:

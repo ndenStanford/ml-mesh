@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -46,3 +46,7 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction
+
+# required to access mounted docker volume with write permission
+# hadolint ignore=DL3002
+USER root

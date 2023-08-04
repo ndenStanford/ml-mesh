@@ -1,23 +1,40 @@
+---
 name: Repository state
-on:
+on  :
   workflow_call:
     inputs:
       pull-request:
         required: true
         default: true
         type: boolean
-        description: "Indicates whether this workflow is running for a Pull Request."
-      current-branch:
-        required: true
+        description: Indicates whether this workflow is running for a Pull Request.
+      target-branch:
+        required: false
         type: string
-        description: "Current branch name."
+        default: main
+        description: Release target branch.
+      prerelease:
+        required: false
+        type: boolean
+        default: false
+        description: If true a pre-release is created.
+      publish:
+        required: false
+        type: boolean
+        default: true
+        description: If true a pre-release is created.
+      include-pre-releases:
+        required: false
+        type: boolean
+        default: false
+        description: Include pre releases as "full" releases when drafting release notes.
     secrets:
       GITHUB_TOKEN_:
         required: true
-        description: "Github Token to interact with repo."
+        description: Github Token to interact with repo.
     outputs:
       tag:
-        description: "Final tag to attach to images built within the workflow"
+        description: Final tag to attach to images built within the workflow
         value: ${{ jobs.get-stage.outputs.tag }}
 
 jobs:
@@ -28,10 +45,16 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
       tag: ${{ steps.export-tag.outputs.tag }}
+      release-notes: ${{ steps.release-drafter.outputs.body }}
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Export current working directory
+        id: export-working-dir
+        run: |
+          echo "workdir=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
 
       - name: Tag Pull Request
         uses: TimonVS/pr-labeler-action@v4
@@ -39,12 +62,19 @@ jobs:
         with:
           configuration-path: .github/pr-labeler.yaml
 
+      - name: Lookup current version
+        id: version-lookup
+        run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-lookup
+        shell: bash
+
       - name: Get next version
+        id: version-increment
         if: ${{ !inputs.pull-request }}
-        id: get-version
-        uses: reecetech/version-increment@2023.4.1
-        with:
-          scheme: calver
+        run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
+        shell: bash
+        env:
+          current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
+          is_pre_release: ${{ inputs.prerelease }}
 
       - name: Get short commit SHA
         id: get-commit-sha
@@ -59,18 +89,19 @@ jobs:
           if [[ ${{ inputs.pull-request }} = true ]]; then
             echo "tag=ci-${{ github.run_id }}" >> $GITHUB_OUTPUT
           else
-            echo "tag=${{ steps.get-version.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "tag=v${{ steps.version-increment.outputs.version }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Generate Release Notes
-        uses: release-drafter/release-drafter@v5.22.0
+        uses: release-drafter/release-drafter@v5.24.0
         if: ${{ !inputs.pull-request }}
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          publish: true
-          commitish: ${{ github.ref_name }}
-          prerelease: false
-          tag: v${{ steps.get-version.outputs.version }}
-          name: ${{ steps.get-version.outputs.version }}
-          version: ${{ steps.get-version.outputs.version }}
+          publish: ${{ inputs.publish }}
+          commitish: ${{ inputs.target-branch }}
+          prerelease: ${{ inputs.prerelease }}
+          tag: v${{ steps.version-increment.outputs.version }}
+          name: ${{ steps.version-increment.outputs.version }}
+          version: ${{ steps.version-increment.outputs.version }}
+          include-pre-releases: ${{ inputs.include-pre-releases }}

@@ -18,4 +18,5 @@ export const DEFAULT_THEME = Theme.LIGHT;
 
 export enum APP_MODALS {
   NEW_PROMPT = "NEW PROMPT",
+  SETTINGS = "SETTINGS",
 }

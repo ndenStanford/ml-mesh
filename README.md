@@ -26,19 +26,43 @@ Not all of these steps are mandatory: for instance, pre-trained model used for z
 
 ### Setting up your local environment
 
-If you are on MacOS, you can run the script `./bin/boostrap/darwin` that will set up your local machine for development. If you are using Linux, the next section describes the installation steps.
+If you are on MacOS, you can run the script `./bin/boostrap/darwin` that will set up your local machine for development. If you are using Linux, use `./bin/boostrap/linux`.
 
-**Windows and Linux setup is not supported yet - to be explored**. If you want to contribute to this please reach out to the MLOPs team.
+**Windows setup is not supported yet - to be explored**. If you want to contribute to this please reach out to the MLOPs team.
 
-### Manual installation
+#### Setup AWS credentials
 
-In order to setup your local development enviroment, please follow these steps:
+Setup your aws credentials for dev and prod ML accounts (Default region name  should be us-east-1 and Default output format should be JSON). Ask @mlops on slack to get your credentials created if you
+don't have them already.
 
-- [ ] Install core dependencies
-- [ ] Setup your AWS config
-- [ ] Install poetry
-- [ ] Setup your python environment
-- [ ] Install git hooks (optional)
+For your dev credentials:
+
+```shell
+aws configure --profile dev
+```
+
+For your prod credentials:
+
+```shell
+aws configure --profile prod
+```
+
+You can also switch profiles at any time by updating the environment variable as follows
+
+```shell
+export AWS_PROFILE=dev
+```
+
+#### Build all base images
+
+As all images used in projects and apps are based on our core docker images. It helps save time to build all images. Run the command
+
+```shell
+make docker.build/python-base
+make docker.build/fastapi-serve
+```
+
+It takes about 10 minutes to run, go stretch your legs, get a coffee, or consult our [Contribution Guide](https://onclusive.atlassian.net/l/cp/u1Mz7m6M).
 
 ### Contributing to the codebase
 
@@ -85,6 +109,14 @@ Run the following command:
 
 ```shell
 export DOCKER_BUILDKIT=0
+```
+
+#### No space left on disk (remote instance)
+
+If you run into this error, you can use the make command:
+
+```
+make clean
 ```
 
 ## Resources

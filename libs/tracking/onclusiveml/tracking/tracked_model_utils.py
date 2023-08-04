@@ -13,6 +13,38 @@ class TrackedParams(BaseSettings):
     pass
 
 
+class TrackedGithubActionsSpecs(TrackedParams):
+    """A class used for capturing the most relevent Github Actions build environment variables to
+    generate a CI lineage for any process being executed by Github Actions workflows, e.g. model
+    compilation.
+
+    For details on the definitions of these and all other variables available, see
+    https://docs.github.com/en/actions/learn-github-actions/variables"""
+
+    github_repository: str = "github_repository"
+    github_actor: str = "github_actor"
+    github_env: str = "github_env"
+    github_workflow: str = "github_workflow"
+    github_job: str = "github_job"
+    github_ref: str = "github_ref"
+    github_base_ref: str = "github_base_ref"
+    github_head_ref: str = "github_head_ref"
+    github_sha: str = "github_sha"
+    github_event_name: str = "github_event_name"
+    github_run_id: str = "github_run_id"
+    github_run_number: str = "github_run_number"
+    runner_arch: str = "runner_arch"
+    runner_name: str = "runner_name"
+    runner_os: str = "runner_os"
+
+
+class TrackedImageSpecs(TrackedParams):
+    """A class to capture the specs of a given docker image."""
+
+    docker_image_name: str = "image_name"
+    docker_image_tag: str = "image_tag"
+
+
 class TrackedModelSpecs(TrackedParams):
     """A utility to specify the neptune ai project and model level resources.
     Also includes the parsing of the api token to help instantiate ModelVersion's..
@@ -21,7 +53,9 @@ class TrackedModelSpecs(TrackedParams):
     # neptune ai model registry specs
     project: str = Field(..., env="neptune_project")
     model: str = Field(..., env="neptune_model_id")
-    api_token: SecretStr = Field(..., env="neptune_api_token", exclude=True)
+    api_token: SecretStr = Field(
+        default="api_token", env="neptune_api_token", exclude=True
+    )
 
 
 class TrackedModelTestFiles(TrackedParams):
@@ -80,3 +114,5 @@ class TrackedModelCard(TrackedParams):
             )
 
         return v
+
+    github_action_context: TrackedGithubActionsSpecs = TrackedGithubActionsSpecs()

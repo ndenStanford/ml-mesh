@@ -44,7 +44,7 @@ public class NerdRestProcessString {
      * @return a response object containing the identified language with a confidence score.
      */
     public static Response processLanguageIdentification(String text) {
-        LOGGER.debug(methodLogIn());
+        System.out.println(methodLogIn());
         Response response = null;
         String retVal = null;
         try {
@@ -85,7 +85,7 @@ public class NerdRestProcessString {
             LOGGER.error("An unexpected exception occurs. ", e);
             response = Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
-        LOGGER.debug(methodLogOut());
+        System.out.println(methodLogOut());
 
         return response;
     }
@@ -99,7 +99,7 @@ public class NerdRestProcessString {
      * @return a response object containing the offsets of the identified sentences.
      */
     public static Response processSentenceSegmentation(String text) {
-        LOGGER.debug(methodLogIn());
+        System.out.println(methodLogIn());
 
         Response response = null;
         StringBuilder buffer = new StringBuilder();
@@ -129,7 +129,7 @@ public class NerdRestProcessString {
             LOGGER.error("An unexpected exception occurs. ", e);
             response = Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
-        LOGGER.debug(methodLogOut());
+        System.out.println(methodLogOut());
 
         return response;
     }

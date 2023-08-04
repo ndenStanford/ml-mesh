@@ -25,7 +25,7 @@ RUN wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEU
 # Install Neuron Driver
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get -yq install --no-install-recommends aws-neuronx-dkms aws-neuronx-tools && \
+    apt-get -yq install --no-install-recommends aws-neuronx-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -37,6 +37,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share \
+ && chown -R ${USER}:users /usr/local/include \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
 # switch user
@@ -82,6 +83,11 @@ RUN poetry install \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+WORKDIR "/"
+
 COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-RUN mkdir -p "${HOME}/tests/output"
+WORKDIR "${HOME}"
+
+# hadolint ignore=DL3002
+USER root

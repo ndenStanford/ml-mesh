@@ -108,7 +108,7 @@ public class NerdRestKB {
             } else
                 definition.setDefinition(wikiText);
         } catch (Exception e) {
-            LOGGER.debug("Error when getFirstParagraphWikiText for page id " + identifier);
+            System.out.println("Error when getFirstParagraphWikiText for page id " + identifier);
         }
         definition.setSource("wikipedia-" + lang);
         definition.setLang(lang);
@@ -203,7 +203,7 @@ public class NerdRestKB {
                         } else
                             definition.setDefinition(wikiText);
                     } catch (Exception e) {
-                        LOGGER.debug("Error when getFirstParagraphWikiTextfor page id " + id);
+                        System.out.println("Error when getFirstParagraphWikiTextfor page id " + id);
                     }
                     definition.setSource("wikipedia-en");
                     definition.setLang(Language.EN);
