@@ -17,6 +17,7 @@ from onclusiveml.compile import CompiledModel
     "huggingface_model_reference, sample_inputs",
     [
         # 'prajjwal1/bert-tiny',
+        ("cardiffnlp/twitter-xlm-roberta-base-sentiment", lazy_fixture("test_inputs")),
         (
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
             lazy_fixture("test_inputs"),

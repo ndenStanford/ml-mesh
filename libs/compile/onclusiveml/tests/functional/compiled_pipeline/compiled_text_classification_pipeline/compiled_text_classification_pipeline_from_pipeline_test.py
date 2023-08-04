@@ -12,7 +12,10 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.mark.parametrize(
     "huggingface_pipeline_task, huggingface_model_reference",
-    [("text-classification", "prajjwal1/bert-tiny")],
+    [
+        ("text-classification", "prajjwal1/bert-tiny"),
+        ("sentiment-analysis", "cardiffnlp/twitter-xlm-roberta-base-sentiment"),
+    ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
 @pytest.mark.parametrize("batch_size", [1, 2, 4])
