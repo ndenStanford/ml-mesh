@@ -33,7 +33,7 @@ from onclusiveml.compile import CompiledPipeline
         # and takes a long time for neuron tracing
     ],
 )
-def compiled_text_classification_pipeline_from_pretrained_test(
+def test_compiled_text_classification_pipeline_from_pretrained(
     huggingface_pipeline_task,
     huggingface_model_reference,
     huggingface_pipeline,
