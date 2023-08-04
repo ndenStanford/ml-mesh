@@ -19,9 +19,14 @@ on  :
         required: true
         type: string
         description: Version tag of image.
+      download-model:
+        required: false
+        default: false
+        type: boolean
+        description: Whether to download a specified model version from the neptune model registry.
       integration:
-        required: true
-        default: true
+        required: false
+        default: false
         type: boolean
         description: Whether to run integration test suite.
       functional:
@@ -86,10 +91,37 @@ on  :
         description: Github PAT to allow EC2 instance to connect to Github repository content.
 
 jobs:
+  check-run-criteria:
+    name: Check if the project's component flow needs to be run
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+
   provision-customized-runner:
     name: Provision self-hosted & customized runner
+    needs: check-run-criteria
     uses: ./.github/workflows/_provision_customized_runner.yaml
-    if: ${{ inputs.runner-kind == 'custom' }}
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
@@ -103,9 +135,9 @@ jobs:
 
   set-runner-specs:
     name: Set runner specs conditional on hosting requirements
-    needs: provision-customized-runner
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    needs: [check-run-criteria, provision-customized-runner]
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
@@ -128,9 +160,9 @@ jobs:
 
   deploy:
     name: Run project test suite(s)
-    needs: set-runner-specs
+    needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    if: ${{ always() }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
@@ -143,21 +175,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - uses: dorny/paths-filter@v2
-        id: files-changed
-        name: Get a list of modified files.
-        with:
-          list-files: shell
-          filters: |
-            this:
-              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
-
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -167,7 +188,6 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -176,10 +196,8 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"
 
-      - name: (Serve component only) Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component
-          }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && ( inputs.integration || inputs.functional || inputs.load ) && inputs.component
-          == 'serve' }}
+      - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ inputs.download-model }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -192,7 +210,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
+        if: ${{ inputs.integration }}
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -202,7 +220,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
+        if: ${{ inputs.functional }}
         run: |
           make projects.functional/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -212,7 +230,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.load }}
+        if: ${{ inputs.load }}
         run: |
           make projects.load/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -222,7 +240,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ always() && ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.load }}
+        if: ${{ inputs.upload-test-results }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-upload-results \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -235,7 +253,6 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -245,7 +262,6 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -256,11 +272,10 @@ jobs:
 
   stop-runner:
     name: Stop self-hosted EC2 runner
-    needs: [set-runner-specs, deploy]
-
     runs-on: ubuntu-latest
+    needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
-    if: ${{ always() && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
