@@ -9,6 +9,10 @@ python = "3.8.16"
 jupyterlab = "4.0.1"
 notebook = "6.4.12"
 ipykernel = "6.25.0"
+core = {path = "../../libs/core"}
+nlp = {path = "../../libs/nlp"}
+serving = {path = "../../libs/serving"}
+tracking = {path = "../../libs/tracking"}
 
 [build-system]
 requires = ["poetry-core"]
