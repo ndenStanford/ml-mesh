@@ -32,6 +32,24 @@ def assert_request_count(
     method: str = "GET",
     status_code: str = "200",
 ) -> None:
+    """
+    A utility function that asserts that the request count for the given parameters
+    in the Prometheus metrics registry matches the expected value.
+
+    Args:
+        expected (float): The expected count of requests that should be recorded
+                          in the metrics.
+        name (str, optional): The name of the metric to check.
+        app_name (str, optional): The name of the application to filter the metric by.
+        path (str, optional): The endpoint path to filter the metric by.
+        method (str, optional): The HTTP method to filter the metric by.
+        status_code (str, optional): The HTTP status code to filter the metric by.
+
+    Raises:
+        AssertionError: If the retrieved count from the Prometheus registry does not match
+                        the expected value, or if incrementing the retrieved count by 1
+                        still equals the expected value.
+    """
     result = REGISTRY.get_sample_value(
         name,
         {

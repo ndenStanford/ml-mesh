@@ -7,6 +7,21 @@ from starlette.routing import Match
 
 
 def get_path(request: Request) -> Tuple[str, bool]:
+    """
+    Retrieve the path of the matched route for the given request.
+    If a full match is found among the application's routes, returns the path and True.
+    If no full match is found, returns the URL path of the request and False.
+
+    Args:
+        request (Request): The HTTP request object containing information about
+                           the incoming request.
+
+    Returns:
+        Tuple[str, bool]: A tuple containing two elements:
+            - A string representing the path of the matched route if a full match is found,
+              or the URL path of the request if no full match is found.
+            - A boolean value that is True if a full match is found, and False otherwise.
+    """
     for route in request.app.routes:
         match, child_scope = route.matches(request.scope)
         if match == Match.FULL:
