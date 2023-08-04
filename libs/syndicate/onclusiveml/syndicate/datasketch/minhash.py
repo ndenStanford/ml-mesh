@@ -7,7 +7,7 @@ from typing import Any, Callable, Generator, Iterable, List, Optional, Union
 import numpy as np
 
 # Internal libraries
-from onclusiveml.datasketch.hashfunc import sha1_hash32
+from onclusiveml.syndicate.datasketch.hashfunc import sha1_hash32
 
 
 # The size of a hash value in number of bytes

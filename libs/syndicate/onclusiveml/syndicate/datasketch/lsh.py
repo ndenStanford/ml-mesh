@@ -8,7 +8,7 @@ import numpy as np
 from scipy.integrate import quad as integrate
 
 # Internal libraries
-from onclusiveml.datasketch.storage import (
+from onclusiveml.syndicate.datasketch.storage import (
     _random_name,
     ordered_storage,
     unordered_storage,

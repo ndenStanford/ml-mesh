@@ -7,9 +7,9 @@ from typing import Any, Dict, List, Optional
 # Internal libraries
 # Internal library
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.datasketch import MinHash, MinHashLSH
 from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
 from onclusiveml.nlp.word_tokenize import WordTokenizer
+from onclusiveml.syndicate.datasketch import MinHash, MinHashLSH
 
 
 logger = get_default_logger(__name__)

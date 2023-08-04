@@ -1,7 +1,7 @@
 """Sentence tokenizer test."""
 
 # Internal libraries
-from onclusiveml.datasketch import MinHash, MinHashLSH
+from onclusiveml.syndicate.datasketch import MinHash, MinHashLSH
 
 
 def test_syndicate():
