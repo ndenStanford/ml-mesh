@@ -76,3 +76,12 @@ compiled_sentiment = CompiledSent(
 )
 
 compiled_sentiment.extract_sentiment(document, return_pos=True)
+
+
+# # test ----------------------------------------
+# text = "I love John. I hate Jack"
+# entities = [{"text": "John"}, {"text": "Jack"}]
+# sentiment = compiled_sent.extract_sentiment(text, entities)
+# sentiment
+
+# test ----------------------------------------

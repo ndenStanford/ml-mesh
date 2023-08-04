@@ -1,7 +1,6 @@
 # Standard Library
 import json
 import os
-from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -180,7 +179,7 @@ def compile_pipeline(
     validation_atol: float = 1e-02,
     tokenizer_settings: Dict = {},
     model_tracing_settings: Dict = {},
-    in_place_compilation: bool = True,
+    in_place_compilation: bool = False,
     **kwargs: Any
 ) -> Pipeline:
     """Utility function to take a conventional huggingface transformers pipeline and replace
@@ -221,7 +220,7 @@ def compile_pipeline(
     if not in_place_compilation:
         compiled_pipeline = duplicate_huggingface_transformer_via_local_cache(pipeline)
     else:
-        compiled_pipeline = deepcopy(pipeline)
+        compiled_pipeline = pipeline
     # overwrite potential max_length value in the tokenizer settings to ensure alignment with
     # compiled model
     tokenizer_settings["max_length"] = max_length
