@@ -12,7 +12,7 @@ from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    CompiledSENTTrackedModelCard,
+    CompiledSentTrackedModelCard,
     CompiledTrackedModelSpecs,
     IOSettings,
     UncompiledTrackedModelSpecs,
@@ -29,7 +29,7 @@ def main() -> None:
     compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
 
-    compiled_model_card = CompiledSENTTrackedModelCard()
+    compiled_model_card = CompiledSentTrackedModelCard()
     # upload model card - holds all settings
     compiled_model_version.upload_config_to_model_version(
         config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
@@ -55,7 +55,7 @@ def main() -> None:
 
     compiled_model_version.upload_file_to_model_version(
         neptune_attribute_path=compiled_model_card.model_test_files.predictions,
-        local_file_path=io_settings.test.test_files["predictions"],
+        local_file_path=io_settings.download.test_files["predictions"],
     )
     # --- update uncompiled model
     # get read-only base model version

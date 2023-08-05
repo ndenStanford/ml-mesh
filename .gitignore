@@ -247,3 +247,4 @@ outputs/download/model_artifacts
 *.keras
 projects/sentiment/compile/outputs_old
 projects/ner/compile/projects/ner/compile/nltk_data
+outputs/
