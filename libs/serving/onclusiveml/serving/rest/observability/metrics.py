@@ -28,3 +28,12 @@ REQUESTS_IN_PROGRESS = Gauge(
     "Gauge of requests by method and path currently being processed",
     ["method", "path", "app_name"],
 )
+
+REGISTERED_METRICS = [
+    EXCEPTIONS,
+    INFO,
+    REQUESTS,
+    REQUESTS_IN_PROGRESS,
+    REQUESTS_PROCESSING_TIME,
+    RESPONSES,
+]

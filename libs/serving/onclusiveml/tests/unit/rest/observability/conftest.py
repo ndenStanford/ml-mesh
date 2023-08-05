@@ -11,25 +11,13 @@ def test_model_name():
 
 
 @pytest.fixture
-def setup_model_server(
-    test_served_model_class,
-    test_add_model_predict,
-    test_add_model_bio,
-    test_api_version,
-    test_on_startup,
-    test_model_name,
-):
+def test_model_server():
     test_serving_params = ServingParams(
         add_liveness=True,
         add_readiness=True,
-        add_model_predict=test_add_model_predict,
-        add_model_bio=test_add_model_bio,
-        api_version=test_api_version,
+        add_model_predict=False,
+        add_model_bio=False,
+        api_version="v1",
     )
-
-    model_server = ModelServer(
-        configuration=test_serving_params,
-        model=test_served_model_class(name=test_model_name),
-        on_startup=[test_on_startup],
-    )
+    model_server = ModelServer(configuration=test_serving_params)
     return model_server

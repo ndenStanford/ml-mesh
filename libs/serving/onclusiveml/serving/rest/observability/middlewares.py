@@ -25,8 +25,8 @@ from onclusiveml.serving.rest.observability.utils import get_path
 
 
 class PrometheusMiddleware(BaseHTTPMiddleware):
-    """
-    A middleware class for monitoring HTTP requests and responses using Prometheus.
+    """A middleware class for monitoring HTTP requests and responses
+       using Prometheus.
 
     Args:
         app (ASGIApp): The ASGI application instance.
@@ -38,9 +38,8 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp, app_name: str = "fastapi-app") -> None:
-        """
-        Initialize the PrometheusMiddleware with the ASGI application instance and
-        an optional app name.
+        """Initialize the PrometheusMiddleware with the ASGI application
+           instance andan optional app name.
 
         Args:
             app (ASGIApp): The ASGI application instance.
@@ -54,8 +53,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        """
-        Process the request, capture metrics, and generate the response.
+        """Process the request, capture metrics, and generate the response.
 
         Args:
             request (Request): The incoming HTTP request.

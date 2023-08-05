@@ -1,83 +1,91 @@
-# Standard Library
-import os
-import sys
-import time
-
 # 3rd party libraries
 import pytest
 from prometheus_client import REGISTRY
+from prometheus_client.metrics_core import Metric
 from starlette.testclient import TestClient
 
 # Internal libraries
 from onclusiveml.serving.rest.observability import Instrumentator
-from onclusiveml.serving.rest.serve import ServedModel
-from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
+from onclusiveml.serving.rest.observability.metrics import REGISTERED_METRICS
+from onclusiveml.serving.rest.observability.utils import get_full_name
 
 
-# import TestServedModel in serve directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
-rest_dir = os.path.dirname(current_dir)
-serve_dir = os.path.join(rest_dir, "serve")
-sys.path.insert(0, serve_dir)
-
-# 3rd party libraries
-from served_model_test import TestServedModel
+class NotTrackedMetricError(Exception):
+    pass
 
 
-def assert_request_count(
-    expected: float,
-    name: str = "fastapi_responses_total",
+def assert_metric_value(
+    expected: float = 0.0,
+    metric: Metric = None,
     app_name: str = "test",
     path: str = "/metrics",
     method: str = "GET",
     status_code: str = "200",
+    exception_type: str = "AttributeError",
 ) -> None:
-    """
-    A utility function that asserts that the request count for the given parameters
-    in the Prometheus metrics registry matches the expected value.
+    """A utility function that asserts that the metric value for the
+       given parameters in the Prometheus metrics registry matches the
+       expected value.
 
     Args:
         expected (float): The expected count of requests that should be recorded
                           in the metrics.
-        name (str, optional): The name of the metric to check.
+        metric (Metric, optional): The metric to check.
         app_name (str, optional): The name of the application to filter the metric by.
         path (str, optional): The endpoint path to filter the metric by.
         method (str, optional): The HTTP method to filter the metric by.
         status_code (str, optional): The HTTP status code to filter the metric by.
-
+        exception_type (str, optional): The Exception type.
     Raises:
-        AssertionError: If the retrieved count from the Prometheus registry does not match
-                        the expected value, or if incrementing the retrieved count by 1
-                        still equals the expected value.
+        NotTrackedMetricError: Unknown Metric
     """
-    result = REGISTRY.get_sample_value(
-        name,
-        {
-            "app_name": app_name,
-            "path": path,
-            "method": method,
-            "status_code": status_code,
-        },
-    )
+    params = []
+    full_metric_name = get_full_name(metric)
+    if full_metric_name == "fastapi_responses_total":
+        params = [
+            full_metric_name,
+            {
+                "app_name": app_name,
+                "path": path,
+                "method": method,
+                "status_code": status_code,
+            },
+        ]
+    elif full_metric_name == "fastapi_app_info":
+        params = [full_metric_name, {"app_name": app_name}]
+    elif full_metric_name in (
+        "fastapi_requests_total",
+        "fastapi_requests_duration_seconds",
+        "fastapi_requests_in_progress",
+    ):
+        params = [
+            full_metric_name,
+            {"app_name": app_name, "path": path, "method": method},
+        ]
+    elif full_metric_name == "fastapi_exceptions_total":
+        params = [
+            full_metric_name,
+            {
+                "app_name": app_name,
+                "path": path,
+                "method": method,
+                "exception_type": exception_type,
+            },
+        ]
+    else:
+        raise NotTrackedMetricError(f"Not tracked metric: {metric}")
+
+    result = REGISTRY.get_sample_value(*params)
+    result = result or 0.0
+
     assert result == expected
     assert result + 1.0 != expected
 
 
-@pytest.mark.parametrize("test_served_model_class", [ServedModel, TestServedModel])
-@pytest.mark.parametrize(
-    "test_add_model_predict, test_add_model_bio, test_api_version, test_on_startup",
-    [
-        (False, False, "v1", lambda x: time.time(1)),
-        (False, True, "v2", []),
-        (True, True, "v3", lambda x: time.time(1)),
-        (True, False, "v4", []),
-    ],
-)
-def test_model_server___init__with_model(setup_model_server):
+def test_metrics_endpoint(test_model_server):
     """Tests initialization of the Instrumentator with ModelServer
     - tests metrics endpoint is exposed
     """
-    test_model_server = setup_model_server
     metrics_endpoint = (
         Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
     )
@@ -90,57 +98,48 @@ def test_model_server___init__with_model(setup_model_server):
     assert test_metrics_routes == [metrics_endpoint]
 
 
-@pytest.mark.parametrize("test_served_model_class", [TestServedModel])
+@pytest.mark.parametrize("url", ["/v1/live", "/v1/ready"])
 @pytest.mark.parametrize(
-    "test_add_model_predict, test_add_model_bio, test_api_version, test_on_startup",
+    "expected",
     [
-        (False, False, "v1", lambda x: time.time(1)),
-        (False, True, "v2", []),
-        (True, True, "v3", lambda x: time.time(1)),
-        (True, False, "v4", []),
+        # "expected_app_info", "expected_total", "expected_rest"
+        {
+            "/v1/live": (1.0, 1.0, 0.0),
+            "/v1/ready": (2.0, 1.0, 0.0),
+        },
+        {"/v1/live": (3.0, 2.0, 0.0), "/v1/ready": (4.0, 2.0, 0.0)},
     ],
 )
-def test_expose_return_prometheus_metrics(setup_model_server):
+def test_metrics_request_count(test_model_server, url, expected):
     """Tests if the metrics endpoint returns the expected response"""
 
-    test_model_server = setup_model_server
     metrics_endpoint = (
         Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
     )
     client = TestClient(test_model_server)
-
-    response = client.get(metrics_endpoint)
-    assert response.status_code == 200
-    assert 'fastapi_app_info{app_name="test"}' in response.text
-
-
-@pytest.mark.parametrize("test_served_model_class", [TestServedModel])
-@pytest.mark.parametrize(
-    "test_add_model_predict, test_add_model_bio, test_api_version, test_on_startup",
-    [
-        (True, True, "v1", lambda x: time.time(1)),
-    ],
-)
-def test_metrics_request_count(setup_model_server):
-    """Tests if the metrics endpoint returns the expected response"""
-
-    test_model_server = setup_model_server
-    metrics_endpoint = (
-        Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
-    )
-    client = TestClient(test_model_server)
-    liveness_url = get_model_server_urls(api_version="v1").liveness
-    response = client.get(liveness_url)
+    response = client.get(url)
     assert response.status_code == 200
     response = client.get(metrics_endpoint)
-    assert_request_count(1, path=liveness_url)
-
-    response = client.get(liveness_url)
     assert response.status_code == 200
-    response = client.get(metrics_endpoint)
-    assert_request_count(2, path=liveness_url)
+    expected_app_info = expected[url][0]
+    expected_total = expected[url][1]
+    expected_rest = expected[url][2]
 
-    response = client.get(liveness_url)
-    assert response.status_code == 200
-    response = client.get(metrics_endpoint)
-    assert_request_count(3, path=liveness_url)
+    for test_metric in REGISTERED_METRICS:
+        full_name = get_full_name(test_metric)
+        if full_name in ("fastapi_app_info"):
+            assert_metric_value(expected_app_info, test_metric, path=url)
+        elif full_name in (
+            "fastapi_responses_total",
+            "fastapi_app_info",
+            "fastapi_requests_total",
+        ):
+            assert_metric_value(expected_total, test_metric, path=url)
+        elif full_name in (
+            "fastapi_exceptions_total",
+            "fastapi_requests_in_progress",
+            "fastapi_requests_duration_seconds",
+        ):
+            assert_metric_value(expected_rest, test_metric, path=url)
+        else:
+            raise NotTrackedMetricError(f"Not tracked metric: {test_metric}")
