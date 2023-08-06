@@ -306,7 +306,7 @@ class CompiledSent:
         return entity_sentiment
 
     def extract_sentiment(
-        self, sentences: str, entities: Dict[str, Union[float, int, str]]
+        self, sentences: str, entities: Dict[str, Union[float, int, str]] = None
     ) -> List[Dict[str, Union[float, int, str]]]:
         """
         Sentiment detection of each entity input sentence

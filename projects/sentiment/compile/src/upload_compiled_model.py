@@ -55,7 +55,7 @@ def main() -> None:
 
     compiled_model_version.upload_file_to_model_version(
         neptune_attribute_path=compiled_model_card.model_test_files.predictions,
-        local_file_path=io_settings.download.test_files["predictions"],
+        local_file_path=io_settings.test.test_files["predictions"],
     )
     # --- update uncompiled model
     # get read-only base model version

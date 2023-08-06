@@ -1,6 +1,6 @@
 # Source
 from src.settings import (
-    CompiledNERTrackedModelCard,
+    CompiledSentTrackedModelCard,
     CompiledTrackedModelSpecs,
     IOSettings,
 )
@@ -18,4 +18,4 @@ def test_compiled_tracked_model_specs():
 
 def test_compiled_ner_tracked_model_card():
 
-    CompiledNERTrackedModelCard()
+    CompiledSentTrackedModelCard()

@@ -7,7 +7,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.ner import CompiledNER
+from onclusiveml.models.sent import CompiledSent
 
 # Source
 from src.settings import CompilationTestSettings, IOSettings
@@ -34,11 +34,11 @@ def logger(io_settings: IOSettings) -> Any:
 
 
 @pytest.fixture
-def compiled_ner(io_settings: IOSettings) -> CompiledNER:
-    # load compiled NER from previous workflow component
-    compiled_ner = CompiledNER.from_pretrained(io_settings.compile.model_directory)
+def compiled_sent(io_settings: IOSettings) -> CompiledSent:
+    # load compiled Sent from previous workflow component
+    compiled_sent = CompiledSent.from_pretrained(io_settings.compile.model_directory)
 
-    return compiled_ner
+    return compiled_sent
 
 
 @pytest.fixture
@@ -53,6 +53,16 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
             test_files[test_file_reference] = json.load(test_file)
 
     return test_files
+
+
+@pytest.fixture
+def regression_test_atol() -> float:
+    return 2e-02
+
+
+@pytest.fixture
+def regression_test_rtol() -> float:
+    return 1e-02
 
 
 @pytest.fixture
