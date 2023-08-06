@@ -132,16 +132,14 @@ USER "${NB_USER}"
 
 EXPOSE 8888
 
-# --- production stage
-FROM builder as production
-
-ENTRYPOINT ["/init"]
-
-# --- test build stage
-FROM builder as development
-
 # hadolint ignore=DL3002
 USER root
 
-# dummy entrypoint to pass the CI docker run stage
-ENTRYPOINT ["pwd"]
+ENTRYPOINT ["/init"]
+
+# --- production stage
+FROM builder as production
+
+
+# --- test build stage
+FROM builder as development
