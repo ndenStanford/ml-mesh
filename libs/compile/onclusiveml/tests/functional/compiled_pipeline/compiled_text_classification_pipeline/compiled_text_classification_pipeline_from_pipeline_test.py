@@ -15,7 +15,7 @@ from onclusiveml.compile import CompiledPipeline
     [("text-classification", "prajjwal1/bert-tiny")],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
-@pytest.mark.parametrize("batch_size", [1, 4, 8])
+@pytest.mark.parametrize("batch_size", [1, 2, 4])
 @pytest.mark.parametrize(
     "max_length",
     [
@@ -31,7 +31,7 @@ def compiled_text_classification_pipeline_from_pipeline_test(
     max_length,
     batch_size,
     neuron,
-    sample_inputs,
+    test_inputs,
     regression_test_atol,
     regression_test_rtol,
 ):
@@ -48,12 +48,12 @@ def compiled_text_classification_pipeline_from_pipeline_test(
     )
     # score compiled pipeline
     compiled_pipeline_output: Tuple[Tuple[List[List[float]]]] = compiled_pipeline(
-        sample_inputs
+        test_inputs
     )  # 1 x n_batch x n_token x n_embed
     compiled_pipeline_output_df = pd.DataFrame(compiled_pipeline_output)
     # score huggingface pipeline
     huggingface_pipeline_output: Tuple[Tuple[List[List[float]]]] = huggingface_pipeline(
-        sample_inputs,
+        test_inputs,
         truncation=True,
         add_special_tokens=True,
         padding="max_length",

@@ -9,6 +9,7 @@ from transformers.pipelines import Pipeline, pipeline
 
 # Internal libraries
 from onclusiveml.compile.compile_utils import (
+    DelegatedPipelineAttributes,
     duplicate_huggingface_transformer_via_local_cache,
 )
 from onclusiveml.compile.compiled_model import CompiledModel
@@ -158,10 +159,7 @@ class CompiledPipeline(object):
     def __getattr__(self, name: str) -> Any:
         """Surfaces selected pipeline attributes to the CompiledPipeline instance."""
 
-        if name in (
-            "tokenizer",
-            "model",
-        ):
+        if name in DelegatedPipelineAttributes.list():
             attribute = self.compiled_pipeline.__getattribute__(name)
         else:
             attribute = self.__dict__[attribute]

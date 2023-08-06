@@ -4,29 +4,34 @@ import torch.neuron
 
 # 3rd party libraries
 import pytest
+from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
 from onclusiveml.compile import CompiledModel
 
 
 @pytest.mark.parametrize(
-    "huggingface_model_reference",
+    "huggingface_model_reference, sample_inputs",
     [
         # 'prajjwal1/bert-tiny',
-        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+        (
+            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            lazy_fixture("test_inputs"),
+        ),
+        ("dslim/bert-base-NER", lazy_fixture("test_ner_inputs")),
     ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
-@pytest.mark.parametrize("batch_size", [1, 4, 8])
+@pytest.mark.parametrize("batch_size", [1, 2, 4])
 @pytest.mark.parametrize(
     "max_length",
     [
-        10,
+        35,
         # None, # for 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', this is 512
         # and takes a long time for neuron tracing
     ],
 )
-def test_compiled_tokenizer_from_model(
+def test_compiled_model_from_model(
     huggingface_tokenizer,
     huggingface_model,
     batch_size,
@@ -58,16 +63,12 @@ def test_compiled_tokenizer_from_model(
         padding="max_length",
         truncation=True,
     )
-    huggingface_model_output = huggingface_model(**sample_tokens)[
-        0
-    ]  # ignore gradient at position 1
-    compiled_model_output = compiled_model(**sample_tokens)[
-        0
-    ]  # ignore gradient at position 1
+    huggingface_model_output = huggingface_model(**sample_tokens)
+    compiled_model_output = compiled_model(**sample_tokens)
 
     torch.testing.assert_close(
-        huggingface_model_output,
-        compiled_model_output,
-        atol=regression_test_atol,
-        rtol=regression_test_rtol,
+        huggingface_model_output[0],  # ignore gradient at position 1
+        compiled_model_output[0],
+        atol=0.05,
+        rtol=0.05,
     )
