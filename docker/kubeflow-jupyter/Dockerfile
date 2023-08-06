@@ -8,10 +8,10 @@ ARG IMAGE_NAME
 ENV HOME="docker/${IMAGE_NAME}"
 
 # common environemnt variables
-ENV NB_USER jovyan
-ENV NB_UID 1000
-ENV NB_PREFIX /
-ENV SHELL /bin/bash
+ENV NB_USER=jovyan
+ENV NB_UID=1000
+ENV NB_PREFIX=/
+ENV SHELL=/bin/bash
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
@@ -45,15 +45,20 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     locales \
     lsb-release \
     nano \
-    nodejs \
+    npm \
     software-properties-common \
     tzdata \
     unzip \
     vim \
-    wget \
     zip \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
+
+# add the PPA sources for NodeJS 18
+RUN curl -s https://deb.nodesource.com/setup_18.x | bash
+
+# hadolint ignore=DL3008
+RUN apt-get -yq install --no-install-recommends nodejs
 
 # install - s6 overlay
 RUN export GNUPGHOME=/tmp/ \
@@ -72,11 +77,14 @@ RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_A
  && rm /tmp/kubectl.sha256 \
  && chmod +x /usr/local/bin/kubectl
 
+ WORKDIR "/"
+
 # create user and set required ownership
 # new user is not added to lastlog and faillog databases
 # https://stackoverflow.com/questions/48671214/docker-image-size-for-different-user
 RUN useradd -l -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
  && mkdir -p ${HOME} \
+ && mkdir -p ${HOME}/notebooks \
  && chown -R ${NB_USER}:users ${HOME} \
  && chown -R ${NB_USER}:users /usr/local \
  && chown -R ${NB_USER}:users /etc/profile
@@ -91,8 +99,6 @@ ENV LC_ALL en_GB.UTF-8
 # switch to NB_UID for installs
 USER "${NB_UID}"
 
-WORKDIR "/"
-
 # install - poetry requirements
 COPY --chown="${NB_USER}:users" ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
 
@@ -100,6 +106,9 @@ COPY --chown="${NB_USER}:users" ${HOME}/.jupyter/jupyter_notebook_config.py /etc
 
 # s6 - copy scripts
 COPY --chown="${NB_USER}:users" ${HOME}/s6 /etc/
+
+# copy libraries - ensure relative difference '../..' between home app dir and lib as listed in poetry toml
+COPY --chown=${USER}:users libs/ libs/
 
 WORKDIR "${HOME}"
 
@@ -109,14 +118,17 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 RUN poetry cache clear pypi --all -q \
     && chown -R "${NB_USER}:users" "${HOME}"
 
+RUN jupyter lab build --debug
+
 USER root
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
  && cp -r "${HOME}" /tmp_home \
- && chown -R "${NB_USER}:users" /tmp_home
+ && chown -R "${NB_USER}:users" /tmp_home \
+ && chown -R ${NB_USER}:users ${HOME}
 
-USER "${NB_UID}"
+USER "${NB_USER}"
 
 EXPOSE 8888
 
@@ -127,6 +139,9 @@ ENTRYPOINT ["/init"]
 
 # --- test build stage
 FROM builder as development
+
+# hadolint ignore=DL3002
+USER root
 
 # dummy entrypoint to pass the CI docker run stage
 ENTRYPOINT ["pwd"]
