@@ -1,36 +1,15 @@
 # Standard Library
 import json
-from typing import List
 
 # ML libs
 import torch
 
 # 3rd party libraries
-import pandas as pd
-
-
-def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
-
-    df = pd.DataFrame(
-        extract_entites,
-        columns=[
-            "entity_type",
-            "entity_text",
-            "score",
-            "sentence_index",
-            "start",
-            "end",
-        ],
-    )
-    df_sorted = df.sort_values(by="sentence_index", ascending=True).reset_index(
-        drop=True
-    )
-
-    return df_sorted
+import pytest
 
 
 def compiled_model_regression_test(  # type: ignore[no-untyped-def]
-    io_settings, compiled_sent, test_files, regression_test_atol, regression_test_rtol
+    io_settings, compiled_sent, test_files, test_atol, test_rtol
 ):
 
     assert len(test_files["inputs"]) == len(test_files["predictions"])
@@ -58,8 +37,8 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
         torch.testing.assert_close(
             compiled_predictions_score,
             expected_predictions["score"],
-            atol=regression_test_atol,
-            rtol=regression_test_rtol,
+            atol=test_atol,
+            rtol=test_rtol,
         )
         # create new export file or append prediction to existing exported prediction file
         try:
@@ -76,3 +55,34 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
             io_settings.test.test_files["predictions"], "w"
         ) as compiled_predictions_file:
             json.dump(all_compiled_predictions, compiled_predictions_file)
+
+
+@pytest.mark.parametrize(
+    "test_sample_content, test_sample_entities, test_sample_response",
+    [
+        (
+            "I love John. I hate Jack",
+            [{"text": "John"}, {"text": "Jack"}],
+            {
+                "label": "negative",
+                "negative_prob": 0.4735,
+                "positive_prob": 0.4508,
+                "entities": [
+                    {"text": "John", "sentiment": "positive"},
+                    {"text": "Jack", "sentiment": "negative"},
+                ],
+            },
+        )
+    ],
+)
+def compiled_model_entity_sentiment_test(  # type: ignore[no-untyped-def]
+    compiled_sent, test_sample_content, test_sample_entities, test_sample_response
+):
+
+    compiled_predictions = compiled_sent.extract_sentiment(
+        test_sample_content, test_sample_entities
+    )
+
+    assert (compiled_predictions["entities"].sort(key=lambda x: x["text"])) == (
+        test_sample_response["entities"].sort(key=lambda x: x["text"])
+    )

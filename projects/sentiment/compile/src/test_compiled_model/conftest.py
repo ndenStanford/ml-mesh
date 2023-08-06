@@ -56,22 +56,10 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def regression_test_atol() -> float:
+def test_atol() -> float:
     return 2e-02
 
 
 @pytest.fixture
-def regression_test_rtol() -> float:
+def test_rtol() -> float:
     return 1e-02
-
-
-@pytest.fixture
-def indexed_test_input(test_files: dict, test_sample_index: int) -> Any:
-
-    return test_files["inputs"][test_sample_index]
-
-
-@pytest.fixture
-def indexed_test_expected_prediction(test_files: dict, test_sample_index: int) -> Any:
-
-    return test_files["prediction"][test_sample_index]
