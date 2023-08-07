@@ -6,11 +6,6 @@ from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 
 @pytest.fixture
-def test_model_name():
-    return "test_animal_classifier"
-
-
-@pytest.fixture
 def test_model_server():
     test_serving_params = ServingParams(
         add_liveness=True,

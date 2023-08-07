@@ -107,7 +107,7 @@ def test_metrics_endpoint(test_model_server):
         {"/v1/live": (3.0, 2.0, 0.0), "/v1/ready": (4.0, 2.0, 0.0)},
     ],
 )
-def test_metrics_request_count(test_model_server, url, expected):
+def test_metrics_values(test_model_server, url, expected):
     """Tests if the metrics endpoint returns the expected response"""
 
     metrics_endpoint = (
