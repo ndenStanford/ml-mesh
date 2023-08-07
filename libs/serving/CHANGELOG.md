@@ -6,8 +6,8 @@ All notable changes to this library will be documented in this file.
 
 ### Added
 - New observability module.
-- Support for default metrics to track and metrics endpoint
-  in ModelServer - e.g. /metrics.
+- Support for the default metrics to track and metrics endpoint
+  in ModelServer. i.e. /metrics by default.
 - Support for Instrumentator.
 
 ## [0.1.0] - 2023-06-09
