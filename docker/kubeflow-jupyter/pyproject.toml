@@ -8,7 +8,7 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 python = "3.8.16"
 jupyterlab = "4.0.1"
 notebook = "6.4.12"
-ipykernel = "6.23.0"
+ipykernel = "6.25.0"
 
 [build-system]
 requires = ["poetry-core"]

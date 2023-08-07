@@ -189,17 +189,33 @@ jobs       :
           # train
           - name: keywords
             component: train
+            download-model: false
             integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # compile
           - name: keywords
             component: compile
+            download-model: false
             integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # serve
           - name: keywords
             component: serve
-            integration: false
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
 
           # ========================
           # SUMMARIZATION
@@ -207,15 +223,25 @@ jobs       :
           # serve
           - name: summarization
             component: serve
-            integration: true
-
-          # ========================
-          # ENTITY LINKING
-          # ========================
-          # serve
-          - name: entity-linking
-            component: serve
+            download-model: false
             integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # # ========================
+          # # ENTITY LINKING
+          # # ========================
+          # # serve
+          # - name: entity-linking
+          #   component: serve
+          #   download-model: false
+          #   integration: false
+          #   functional: false
+          #   load: false
+          #   upload-test-results: false
+          #   runner-kind: ubuntu-20.04
 
           # ========================
           # NER
@@ -223,29 +249,46 @@ jobs       :
           # train
           - name: ner
             component: train
+            download-model: false
             integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # ========================
           # Sentiment
           # ========================
           # train
-          - name: sent
+          - name: sentiment
             component: train
+            download-model: false
             integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
     with:
       environment: prod
       project: ${{ matrix.projects.name }}
       component: ${{ matrix.projects.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
+      download-model: ${{ matrix.projects.download-model }}
       integration: ${{ matrix.projects.integration }}
+      functional: ${{ matrix.projects.functional }}
+      load: ${{ matrix.projects.load }}
+      upload-test-results: ${{ matrix.projects.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       release: ${{ github.ref_name == 'main' }}
+      runner-kind: ${{ matrix.projects.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}

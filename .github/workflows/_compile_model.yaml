@@ -59,7 +59,7 @@ jobs:
   provision-customized-runner:
     name: Provision self-hosted & customized runner
     uses: ./.github/workflows/_provision_customized_runner.yaml
-    if: ${{ inputs.runner-kind == 'custom' }}
+    if: ${{ inputs.compile && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
@@ -75,7 +75,7 @@ jobs:
     name: Set runner specs conditional on hosting requirements
     needs: provision-customized-runner
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ inputs.compile && always() }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
@@ -101,7 +101,7 @@ jobs:
     needs: set-runner-specs
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     environment: ${{ inputs.environment }}
-    if: ${{ inputs.compile }}
+    if: ${{ inputs.compile && always() }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -170,7 +170,7 @@ jobs:
 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: ${{ always() && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && inputs.compile && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
