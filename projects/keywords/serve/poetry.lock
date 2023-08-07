@@ -3283,7 +3283,7 @@ files = [
 
 [[package]]
 name = "serving"
-version = "0.1.0"
+version = "0.2.0"
 description = "Internal serving library for REST and gRPC based (ML model) servers"
 category = "main"
 optional = false
