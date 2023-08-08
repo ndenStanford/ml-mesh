@@ -259,17 +259,13 @@ jobs       :
           # compile
           - name: ner
             component: compile
-            integration: false
-
-          # serve
-          - name: ner
-            component: compile
             download-model: false
             integration: false
             functional: false
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+
           # ========================
           # Sentiment
           # ========================
