@@ -65,7 +65,7 @@ class BetterStackParams(ServingBaseParams):
     """setting variables for betterstack"""
 
     # API/lib environment
-    environment: str = os.environ.get("environment", "dev")
+    environment: str = os.environ.get("ENVIRONMENT", "dev")
     # Betterstack heartbeat key
     betterstack_key: str = os.environ.get("SERVING_LIB_BETTERSTACK_KEY", "")
 
