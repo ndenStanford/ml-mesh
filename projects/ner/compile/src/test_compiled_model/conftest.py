@@ -10,7 +10,10 @@ from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.models.ner import CompiledNER
 
 # Source
-from src.settings import CompilationTestSettings, IOSettings
+from src.settings import (  # type: ignore[attr-defined]
+    CompilationTestSettings,
+    IOSettings,
+)
 
 
 @pytest.fixture
