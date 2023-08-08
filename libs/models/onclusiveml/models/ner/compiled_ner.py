@@ -2,17 +2,14 @@
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
-
-# ML libs
-import torch
-from torch.utils.data import DataLoader
+from typing import List, Union
 
 # 3rd party libraries
 from bs4 import BeautifulSoup
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
+from onclusiveml.models.ner.settings import InferenceOutput, PostprocessOutput
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
@@ -29,24 +26,8 @@ class CompiledNER:
             compiled_ner_pipeline (CompiledPipeline): The compiled NER pipline used for inference
         """
         self.compiled_ner_pipeline = compiled_ner_pipeline
-        self.id2label: Dict[int, str] = {
-            0: "O",  # 'O' label indicates no named entity
-            1: "B-MISC",  # 'B-' prefix indicates the beginning of a named entity
-            2: "I-MISC",  # 'I-' prefix indicates a continuation of a named entity
-            3: "B-PER",
-            4: "I-PER",
-            5: "B-ORG",
-            6: "I-ORG",
-            7: "B-LOC",
-            8: "I-LOC",
-        }
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
-
-        self.MAX_BATCH_SIZE: int = 6
-        self.DUMMY_SENTENCE: str = "Dummy sentence"
-        self.MAX_SEQ_LENGTH: int = 128
-        self.device: str = "cpu"
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
         """
@@ -103,7 +84,6 @@ class CompiledNER:
         list_sentences = self.sentence_tokenizer.tokenize(
             content=sentences, language=language
         )["sentences"]
-
         # Filter out very short sentences as they likely be incorrect
         list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
         return list_sentences
@@ -122,438 +102,142 @@ class CompiledNER:
         list_sentences = self.sentence_tokenize(sentences, language)
         return list_sentences
 
-    def _extract_main_label(self, label: str) -> str:
+    def inference(self, sentences: List[str]) -> InferenceOutput:
         """
-        Extract the main label from the given NER label
+        Perform NER inference on a list of sentences.
 
         Args:
-            label (str): The NER label to extract the main label from.
+            sentences (List[str]): list of sentences
 
         Returns:
-            str: The main label extracted from the NER label
+            List[List[Dict[str, Union[str, int, float]]]]: List of lists of NER predictions
         """
-        if label != "O":
-            label = label.split("-")[1]
-        return label
+        entities = self.compiled_ner_pipeline(sentences)
+        for sublist in entities:
+            for dictionary in sublist:
+                dictionary.pop("index", None)
 
-    def _join_word_labels_no_pos(
-        self,
-        word_labels: List[Tuple[List[int], str, Union[int, float], int]],
-    ) -> List[Tuple[str, str, Union[float, int]]]:
+        return InferenceOutput(ner_labels=entities)
+
+    def compute_moving_average(self, scores: List[float]) -> float:
         """
-        Join word labels without positional information to form full word labels
-        Args:
-            word_labels (List[Tuple[List[int], str, Union[int, float], int]]):
-                The word labels to join, each tuple contains:
-                - List of token IDs representing a word
-                - A string representing the NER label of the word
-                - A float or int representing the score of NER label
-                - An int representing the word's ID within the sentence
-        Returns:
-            List[Tuple[str, str, Union[float, int]]]: The joiend full word labels
-                Each tuple contains:
-                - A string representing the full word
-                - A string representing the NER label of the word
-                - A float or int representing the score of the NER label
-        """
-        full_word_labels = []  # List to store the joined full word labels
-        combined_word = []  # List to combine the tokenIDs of a word for decoding
-
-        for i in range(len(word_labels)):
-            (word, label, sco, word_id) = word_labels[i]
-
-            # Extract main NER label (removing 'B-' and 'I-' prefixes)
-            label = self._extract_main_label(label)
-
-            # Combine token IDs of the word into a single list
-            combined_word += word
-
-            # Check if we have reached the last word in the sentence
-            if i == len(word_labels) - 1:
-                if label != "O":
-                    # Decode the combined word token IDs to get full word string
-                    # And add the full word label to the list
-                    full_word_labels += [
-                        (
-                            self.compiled_ner_pipeline.tokenizer.decode(combined_word),
-                            label,
-                            sco,
-                        )
-                    ]
-                break
-
-            # Check the NER label of the next word and the word's ID to determine
-            # if it's a seperate entity
-            (_, label_next, sco_next, word_id_next) = word_labels[i + 1]
-            label_next = self._extract_main_label(label_next)
-
-            # If the label changes or the word IDs are not consecutive, it's a seperate entity
-            # Flush out the combined_word and add the full word label to the full_word_labels list
-            if (label != label_next) or (word_id != word_id_next - 1):
-                if label != "O":
-                    # Decode the combined word token IDs to get full word string
-                    # And add the full word label to the list
-                    full_word_labels += [
-                        (
-                            self.compiled_ner_pipeline.tokenizer.decode(combined_word),
-                            label,
-                            sco,
-                        )
-                    ]
-                combined_word = []  # reset for the next entity
-        return full_word_labels
-
-    def _join_word_labels(
-        self, word_labels: List[Tuple[List[int], str, Union[int, float], int, Any]]
-    ) -> List[Tuple[str, str, Union[float, int], int, int]]:
-        """
-        Join word labels with positional information to form full word labels
-        Args:
-            word_labels (List[Tuple[List[int], str, Union[int, float], int, Any]]): The word
-                labels to join2, each tuple contains:
-                - A list of token IDs representing a word
-                - A string representing the NER label of the word
-                - A float or int representing the score of the NER label
-                - An int representing the word's ID within the sentence
-                - An additional 'span' value used for positional information
-        Returns:
-            List[Tuple[str, str, Union[float, int], int, int]]: Joined full word labels
-                each tuple contains:
-                - A string representing the full word
-                - A string representing the NER label of the word
-                - A float or int representing the score of the NER label
-                - An int representing sentence index
-                - An int representing the start position of the word
-                - An int representing the end position of the word
-        """
-        full_word_labels = []  # List to store the joined full word labels
-        combined_word = []  # List to combined the token IDs of a word for decoding
-        combined_span = []  # List to combine the span alues for positional info
-
-        for i in range(len(word_labels)):
-            (word, label, sco, word_id, span) = word_labels[i]
-            # Extract the main NER label (removing 'B-' and 'I'' prefixes)
-            label = self._extract_main_label(label)
-            combined_word += word  # Combine token IDs of the word into a single list
-            combined_span += span  # Combine the span values for positional information
-
-            # Check if we have reached the last word in the sentence
-            if i == len(word_labels) - 1:
-                if label != "O":
-                    # Decode the combined word token IDs to get the full word string
-                    x = self.compiled_ner_pipeline.tokenizer.decode(combined_word)
-
-                    # Calculate the start position of the word in the sentence
-                    start_pos = int(combined_span[0])
-                    # Calculate the end position of teh word in the sentence
-                    end_pos = start_pos + len(x)
-                    # Add the full word label to the list along with positional information
-                    full_word_labels += [(x, label, sco, start_pos, end_pos)]
-                break
-
-            # Check the NER label of the next word, the word's ID, and the span to determine
-            # if it's a seperate entity
-            (_, label_next, sco_next, word_id_next, span) = word_labels[i + 1]
-            label_next = self._extract_main_label(label_next)
-
-            # If the label changes or the word IDs are not consecutive, it's a seperate entity
-            # Flush out the combined_word and combined_span and add the full word label to the list
-            if (label != label_next) or (word_id != word_id_next - 1):
-                if label != "O":
-                    # Decode the combined word token IDs to get the full word string
-                    x = self.compiled_ner_pipeline.tokenizer.decode(combined_word)
-
-                    # Calculate the start position of the word in the sentence
-                    start_pos = int(combined_span[0])
-
-                    # Calculate the end position of the word in the sentence
-                    end_pos = start_pos + len(x)
-
-                    # Add the full word label to the list along with positional information
-                    full_word_labels += [(x, label, sco, start_pos, end_pos)]
-                combined_word = []  # Reset combined_word for the next entity
-                combined_span = []  # Reset combined_span for the next entity
-        return full_word_labels
-
-    def filter_word_preds(
-        self,
-        word_preds: Any,
-    ) -> Union[
-        List[Tuple[List[int], str, Union[int, float], int, Any]],
-        List[Tuple[List[int], str, Union[int, float], int]],
-    ]:
-        """
-        Filter out word predictions based on the label to remove 'O' labels
-        Args:
-            word_preds (Any): The word predictions to filter
-                Each element contains:
-                - A list of token IDs representing a word
-                - A string representing the NER label of the word
-                - A float or int representing the score of the NER label
-                - An int representing the word's ID within the sentence
-                - An additional 'span' value used for positional information
-        Returns:
-            Union[
-                List[Tuple[List[int], str, Union[int, float], int, Any]],
-                List[Tuple[List[int], str, Union[int, float], int]],
-            ]: Filtered word predictions
-
-        NOTE: word_preds mypy seems to reject typing:
-        Union[
-            List[Tuple[List[int], str, Union[int, float], int, Any]],
-            List[Tuple[List[int], str, Union[int, float], int]],
-        ]
-
-        """
-        output = []  # List to store filtered word predictions
-        for info in word_preds:
-            # second index holds NER label
-            # 'O' label indicates no named entity, so we filter it out
-            if info[1] != "O":
-                # Add the word prediction to the output list if the label is not 'O'
-                output += [info]
-        return output
-
-    def inference_batch(
-        self, sentences: List[str], sample_index: int, return_pos: bool
-    ) -> Union[
-        List[List[Tuple[str, str, Union[int, float], int, int]]],
-        List[List[Tuple[str, str, Union[int, float]]]],
-    ]:
-        """
-        Performs inference on a batch of sentences to extract NER labels
+        Compute the moving average of a list of scores.
 
         Args:
-            sentences (List[str]): The list of sentencess to perform inference on
-            sample_index (int): Index of the sentences
-            return_pos (bool): Flag indicating whether to return positional information in the
-                output
+            scores (List[float]): List of scores for which to compute the moving average
 
         Returns:
-            ) -> Union[
-                List[List[Tuple[str, str, Union[int, float], int, int]]],
-                List[List[Tuple[str, str, Union[int, float]]]],
-            ]: Inferred NER labels for each sentence in the batch
+            float: The computed moving average
         """
-        # List to store the inferred NER labels for each sentence in the batch
-        ner_batch_labels = []
-        if return_pos:
-            # Tokenise the sentences using the NER pipeline's tokenizer and get the offset mappings
-            self.inputs = self.compiled_ner_pipeline.tokenizer(
-                sentences,
-                padding="max_length",
-                max_length=self.MAX_SEQ_LENGTH,
-                truncation=True,
-                return_tensors="pt",
-                return_offsets_mapping=True,
-            )
-            offset_mappings = self.inputs["offset_mapping"]
-        else:
-            # Tokenise the sentences using the NER pipeline's tokenizer without offset mappings
-            self.inputs = self.compiled_ner_pipeline.tokenizer(
-                sentences,
-                padding="max_length",
-                max_length=self.MAX_SEQ_LENGTH,
-                truncation=True,
-                return_tensors="pt",
-            )
-
-        ids = self.inputs["input_ids"].to(self.device)
-        mask = self.inputs["attention_mask"].to(self.device)
-        neuron_inputs = ids, mask
-
-        # Perform forward pass on the NER model to get the outputs
-        outputs = self.compiled_ner_pipeline.model.forward(*neuron_inputs)[0]
-
-        # transfer output to probabilities
-        out = torch.nn.functional.softmax(outputs, dim=2)
-        # Get the index of the highest probability (NER label)
-        predictions = torch.argmax(outputs, dim=2)
-
-        prob = torch.max(out, dim=2).values
-
-        # Loop through each sentence in the batch to retrieve all full NER labels
-        for sentence_index in range(len(sentences)):
-            # Get the tokens of the current sentence
-            tokens = self.inputs.tokens(sentence_index)
-
-            # List to store word-level predictions for each token in the sentence
-            wordpiece_preds = [
-                (token, self.id2label[prediction], pro)
-                for token, prediction, pro in zip(
-                    tokens,
-                    predictions[sentence_index].detach().numpy(),
-                    prob[sentence_index].detach().numpy(),
-                )
-            ]
-            # List to store the word-level predictions for the sentence
-            word_preds: Union[
-                List[Tuple[List[int], str, Union[int, float], int, Any]],
-                List[Tuple[List[int], str, Union[int, float], int]],
-            ] = []  # type: ignore
-
-            word_ids = self.inputs.word_ids(batch_index=sentence_index)
-            word_id_prev = -1
-            i = 0
-
-            while i < len(word_ids):
-                word_id = word_ids[i]
-                token = tokens[i]
-
-                if token == "[SEP]":
-                    break
-
-                if word_id is not None:
-                    # Check if the word ID has chaged, indicating a new word entity
-                    if word_id != word_id_prev:
-                        word_range = self.inputs.word_to_tokens(
-                            batch_or_word_index=sentence_index, word_index=word_id
-                        )
-                        token_id_list = ids[sentence_index][
-                            word_range[0] : word_range[1]  # noqa: E203
-                        ].tolist()
-                        # Append the word-level prediction
-                        # (token IDs label, score, word ID, and offset span)
-                        if return_pos:
-                            word_preds.extend(
-                                [
-                                    (  # type: ignore
-                                        token_id_list,
-                                        wordpiece_preds[i][1],
-                                        wordpiece_preds[i][2],
-                                        word_id,
-                                        offset_mappings[sentence_index][i],
-                                    )
-                                ]
-                            )
-
-                        else:
-                            # Append the word-level prediction (token IDs label, score, word ID)
-                            word_preds.extend(
-                                [
-                                    (  # type: ignore
-                                        token_id_list,
-                                        wordpiece_preds[i][1],
-                                        wordpiece_preds[i][2],
-                                        word_id,
-                                    )
-                                ]
-                            )
-
-                word_id_prev = word_id
-                i += 1
-
-            # Filter out 'O' labels from word_preds to get only named entites
-            word_preds = self.filter_word_preds(word_preds)
-
-            # Get the sentence index for the current sentence in the batch
-            sen_index = sample_index * self.MAX_BATCH_SIZE + sentence_index
-            ent: str
-            catg: str
-            sco: Union[int, float]
-            start_pos: int
-            end_pos: int
-            if return_pos:
-                # Join the word labels with pos information to form full word labels
-                full_word_preds = self._join_word_labels(word_preds)  # type: ignore
-
-                # Add sentence index and positional information to the full word labels
-                full_word_preds = [
-                    (ent, catg, sco, sen_index, start_pos, end_pos)  # type: ignore
-                    for ent, catg, sco, start_pos, end_pos in full_word_preds
-                ]
-            else:
-                # Join word labels without positional information to form full word labels
-                full_word_preds = self._join_word_labels_no_pos(word_preds)  # type: ignore
-
-                # Add sentence index to the full word labels
-                full_word_preds = [  # type: ignore
-                    (ent, catg, sco, sen_index)  # type: ignore
-                    for ent, catg, sco in full_word_preds
-                ]
-
-            # Add the full word labels to ner_batch_labels
-            ner_batch_labels += [full_word_preds]
-        return ner_batch_labels
-
-    def inference(
-        self, sentences: List[str], return_pos: bool
-    ) -> List[Tuple[str, str, Union[int, float], int, int, int]]:
-        """
-        Perform inference on a list of sentences to extract NER labels
-        Args:
-            sentences (List[str]): The list of sentences to perform inference on
-            return_pos (bool): Flag indicating whether ot return positional information
-                in the output
-
-        Returns:
-            List[Tuple[str, str, Union[int, float], int, int, int]]: The inferred NER labels
-        """
-
-        loader = DataLoader(sentences, batch_size=self.MAX_BATCH_SIZE, shuffle=False)
-        ner_labels: List[Any] = []
-
-        sample_index = 0  # to record sentence index
-        for sample in loader:
-            len_sample = len(sample)
-
-            if len_sample < self.MAX_BATCH_SIZE:
-                sample += [self.DUMMY_SENTENCE] * (self.MAX_BATCH_SIZE - len_sample)
-
-            ner_batch_labels = self.inference_batch(sample, sample_index, return_pos)
-
-            ner_batch_labels = ner_batch_labels[:len_sample]
-            for n in ner_batch_labels:
-                ner_labels += n
-
-            sample_index += 1
-        return ner_labels
+        return sum(scores) / len(scores)
 
     def postprocess(
-        self, ner_labels: Any, return_pos: bool
-    ) -> List[Dict[str, Union[float, int, str]]]:
+        self, ner_labels: InferenceOutput, return_pos: bool
+    ) -> List[PostprocessOutput]:
         """
-        Postprocess NER labels to dictionary format
-        Args:
-            ner-Labels (Any): NER labels to postprocess
-            return_pos (bool): Flag indicating whether the input NER labels contain positional
-                information
-        """
-        ner_labels = set(ner_labels)
-        sorted_entities = []
-        entities = []
-        if return_pos:
-            for word, label, sco, coun, start_pos, end_pos in ner_labels:
-                entities += [
-                    {
-                        "entity_type": label,
-                        "entity_text": word,
-                        "score": str(sco),
-                        "sentence_index": coun,
-                        "start": start_pos,
-                        "end": end_pos,
-                    }
-                ]
-            sorted_entities = sorted(
-                entities, key=lambda e: (e["sentence_index"], e["start"])
-            )
-        else:
-            for word, label, sco, coun in ner_labels:
-                entities += [
-                    {
-                        "entity_type": label,
-                        "entity_text": word,
-                        "score": str(sco),
-                        "sentence_index": coun,
-                    }
-                ]
-            sorted_entities = sorted(entities, key=lambda e: e["sentence_index"])
+        Postprocess NER labels to merge contiguous entities and compute scores
 
-        return sorted_entities
+        Args:
+            ner_labels List[List[Dict[str, Union[str, int, float]]]]: List of NER labels
+                for each sentence
+            return_pos (bool): Flag indicating whether to return positional information
+
+        Returns:
+            List[Dict[str, Union[str, int, float]]]: List of postprocessed NER labels
+        """
+        output_list = []  # List to store the postprocessed NER labels
+        sentence_index = 0  # Initialize sentence index for tracking
+        # Loop through each sublist of NER labels (one sublist per sentence)
+        for sublist in ner_labels.ner_labels:
+            merged_sublist = (
+                []
+            )  # List to store merged contiguous entities for the current sentence
+            current_entity = (
+                None  # init variables for tracking current entity and properties
+            )
+            current_score_list = []  # List to store scores of contiguous entities
+            current_word = ""  # Initialise variable for tracking current merged word
+            current_start = (
+                None  # Initalize variable for tracking start pos of merged entity
+            )
+            current_end = (
+                None  # Initalize variable for tracking end pos of merged entity
+            )
+            # loop through each dictionary (NER label) in the sublist
+            for dictionary in sublist:
+                entity = dictionary.entity
+                score = dictionary.score
+                word = dictionary.word
+                start = dictionary.start
+                end = dictionary.end
+                # Check if the 'end' value of the current entity matches the 'start' value
+                # of the next entity
+                if current_end == start:
+                    # Append the next entity if the 'end' value is the same as the 'start'
+                    # value of the next entity.
+                    current_score_list.append(score)
+                    current_word += (
+                        "" + word[2:]
+                    )  # merge words while skipping the 'B-' or 'I-' prefix
+                    current_end = end
+                # Check if the current entity is a continuation of the previouss entity
+                elif entity.startswith("I-"):
+                    if current_entity is not None:
+                        current_score_list.append(score)  # type: ignore[unreachable]
+                        current_word += " " + word
+                        current_end = end
+                # Check if the current entity is the beginning of a new entity
+                elif entity.startswith("B-"):
+                    if current_entity is not None:
+                        # Append the merged entity with computed score to the merged_sublist
+                        merged_sublist.append(  # type: ignore[unreachable]
+                            PostprocessOutput(
+                                entity=current_entity,
+                                score=float(
+                                    self.compute_moving_average(current_score_list)
+                                    if len(current_score_list) > 1
+                                    else current_score_list[0]
+                                ),
+                                sentence_index=sentence_index,
+                                word=current_word,
+                                start=current_start,
+                                end=current_end,
+                            )
+                        )
+                    # update the current entity
+                    current_entity = entity
+                    current_score_list = [score]
+                    current_word = word
+                    current_start = start
+                    current_end = end
+            # Check if there is an unprocessed entity left at the end of the sublist
+            if current_entity is not None:
+                # Append the merged entity with computed score to the merged_sublist
+                merged_sublist.append(
+                    PostprocessOutput(
+                        entity=current_entity,
+                        score=float(
+                            self.compute_moving_average(current_score_list)
+                            if len(current_score_list) > 1
+                            else current_score_list[0]
+                        ),
+                        sentence_index=sentence_index,
+                        word=current_word,
+                        start=current_start,
+                        end=current_end,
+                    )
+                )
+            # Append the merged_sublist for the current sentence to the output_list
+            output_list.append(merged_sublist)
+            # Increment the sentence index for the next iteration
+            sentence_index += 1
+        # Flatten the output list
+        output_list = [item for sublist in output_list for item in sublist]
+        return output_list
 
     def extract_entities(
         self, sentences: str, language: str, return_pos: bool
-    ) -> List[Dict[str, Union[float, int, str]]]:
+    ) -> List[PostprocessOutput]:
         """
         Extract named entities from input sentence using NER
         Args:
@@ -561,10 +245,10 @@ class CompiledNER:
             return_pos (bool): Flag indiciating whether to return positional information in the
                 output
         Returns:
-            List[Dict[str, Union[float, int, str]]]: Extracted named entities in dictionary
+            List[Dict[str, Union[str, int, float]]]: list of extracted named entities in dictionary
                 format
         """
         list_sentences = self.preprocess(sentences, language)
-        ner_labels = self.inference(list_sentences, return_pos)
+        ner_labels = self.inference(list_sentences)
         entities = self.postprocess(ner_labels, return_pos)
         return entities
