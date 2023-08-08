@@ -19,15 +19,12 @@ from onclusiveml.compile.compile_utils import (
 @pytest.fixture
 def test_inputs() -> List[str]:
 
-    return (
-        [
-            "This is an extremely bad and short sample input.",
-            "This is a pretty neutral sentence."
-            """This is another, much, much better sample input. It is amazing! This is to test how
+    return [
+        "This is an extremely bad and short sample input.",
+        "This is a pretty neutral sentence."
+        """This is another, much, much better sample input. It is amazing! This is to test how
         the compiled model handles more than one tokenized sample at a time.""",
-        ]
-        * 2  # noqa: W503
-    )
+    ]
 
 
 @pytest.fixture
