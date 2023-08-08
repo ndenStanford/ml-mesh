@@ -1,6 +1,7 @@
 # Standard Library
 import json
 import os
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -8,9 +9,7 @@ from typing import Any, Dict, Union
 from transformers.pipelines import Pipeline, pipeline
 
 # Internal libraries
-from onclusiveml.compile.compile_utils import (
-    duplicate_huggingface_transformer_via_local_cache,
-)
+from onclusiveml.compile.compile_utils import DelegatedPipelineAttributes
 from onclusiveml.compile.compiled_model import CompiledModel
 from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer
 
@@ -133,9 +132,7 @@ class CompiledPipeline(object):
             task=pipeline_task, model=os.path.join(directory, "pipeline")
         )
 
-        compiled_pipeline = duplicate_huggingface_transformer_via_local_cache(
-            original_pipeline
-        )
+        compiled_pipeline = deepcopy(original_pipeline)
         # import and insert compiled tokenizer into designated attribute
         compiled_pipeline.tokenizer = CompiledTokenizer.from_pretrained(
             os.path.join(directory, "compiled_tokenizer")
@@ -158,7 +155,7 @@ class CompiledPipeline(object):
     def __getattr__(self, name: str) -> Any:
         """Surfaces selected pipeline attributes to the CompiledPipeline instance."""
 
-        if name in ("tokenizer",):
+        if name in DelegatedPipelineAttributes.list():
             attribute = self.compiled_pipeline.__getattribute__(name)
         else:
             attribute = self.__dict__[attribute]
@@ -215,7 +212,7 @@ def compile_pipeline(
     """
     # get copy of passed pipeline instance if needed
     if not in_place_compilation:
-        compiled_pipeline = duplicate_huggingface_transformer_via_local_cache(pipeline)
+        compiled_pipeline = deepcopy(pipeline)
     else:
         compiled_pipeline = pipeline
     # overwrite potential max_length value in the tokenizer settings to ensure alignment with

@@ -13,7 +13,10 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.mark.parametrize(
     "huggingface_pipeline_task, huggingface_model_reference",
-    [("text-classification", "prajjwal1/bert-tiny")],
+    [
+        ("text-classification", "prajjwal1/bert-tiny"),
+        ("sentiment-analysis", "cardiffnlp/twitter-xlm-roberta-base-sentiment"),
+    ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
 @pytest.mark.parametrize(
@@ -30,14 +33,14 @@ from onclusiveml.compile import CompiledPipeline
         # and takes a long time for neuron tracing
     ],
 )
-def compiled_text_classification_pipeline_from_pretrained_test(
+def test_compiled_text_classification_pipeline_from_pretrained(
     huggingface_pipeline_task,
     huggingface_model_reference,
     huggingface_pipeline,
     max_length,
     batch_size,
     neuron,
-    sample_inputs,
+    test_inputs,
     regression_test_atol,
     regression_test_rtol,
 ):
@@ -54,7 +57,7 @@ def compiled_text_classification_pipeline_from_pretrained_test(
     )
     # score compiled pipeline
     compiled_pipeline_output: Tuple[Tuple[List[List[float]]]] = compiled_pipeline(
-        sample_inputs
+        test_inputs
     )  # 1 x n_batch x n_token x n_embed
     compiled_pipeline_output_df: pd.DataFrame = pd.DataFrame(compiled_pipeline_output)
     # export and re-import compiled pipeline
@@ -66,7 +69,7 @@ def compiled_text_classification_pipeline_from_pretrained_test(
     reloaded_compiled_pipeline_output: Tuple[
         Tuple[List[List[float]]]
     ] = reloaded_compiled_pipeline(
-        sample_inputs
+        test_inputs
     )  # 1 x n_batch x n_token x n_embed
     reloaded_compiled_pipeline_output_df: pd.DataFrame = pd.DataFrame(
         reloaded_compiled_pipeline_output

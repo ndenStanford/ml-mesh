@@ -2,7 +2,7 @@
 
 apps.build/%: apps.set ## Build app
 	@echo "::group::Build $(OWNER)/$(notdir apps/$@)-$(COMPONENT) (system architecture)"
-	docker compose -f ./apps/$(notdir apps/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) --no-cache
+	docker compose -f ./apps/$(notdir apps/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) $(DOCKER_FLAGS)
 	@echo "::endgroup::"
 
 apps.install/%:
