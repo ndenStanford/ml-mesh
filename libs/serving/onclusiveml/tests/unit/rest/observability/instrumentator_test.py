@@ -98,16 +98,18 @@ def test_metrics_endpoint(test_model_server):
     assert test_metrics_routes == [metrics_endpoint]
 
 
-@pytest.mark.parametrize("url", ["/v1/live", "/v1/ready"])
 @pytest.mark.parametrize(
-    "expected",
+    "url, expected_app_info, expected_total, expected_rest",
     [
-        # "expected_app_info", "expected_total", "expected_rest"
-        {"/v1/live": (1.0, 1.0, 0.0), "/v1/ready": (2.0, 1.0, 0.0)},
-        {"/v1/live": (3.0, 2.0, 0.0), "/v1/ready": (4.0, 2.0, 0.0)},
+        ("/v1/live", 1.0, 1.0, 0.0),
+        ("/v1/ready", 2.0, 1.0, 0.0),
+        ("/v1/live", 3.0, 2.0, 0.0),
+        ("/v1/ready", 4.0, 2.0, 0.0),
     ],
 )
-def test_metrics_values(test_model_server, url, expected):
+def test_metrics_values(
+    test_model_server, url, expected_app_info, expected_total, expected_rest
+):
     """Tests if the metrics endpoint returns the expected response"""
 
     metrics_endpoint = (
@@ -118,9 +120,6 @@ def test_metrics_values(test_model_server, url, expected):
     assert response.status_code == 200
     response = client.get(metrics_endpoint)
     assert response.status_code == 200
-    expected_app_info = expected[url][0]
-    expected_total = expected[url][1]
-    expected_rest = expected[url][2]
 
     for test_metric in REGISTERED_METRICS:
         full_name = get_full_name(test_metric)
