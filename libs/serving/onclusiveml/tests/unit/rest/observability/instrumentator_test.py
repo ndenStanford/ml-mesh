@@ -128,7 +128,6 @@ def test_metrics_values(test_model_server, url, expected):
             assert_metric_value(expected_app_info, test_metric, path=url)
         elif full_name in (
             "fastapi_responses_total",
-            "fastapi_app_info",
             "fastapi_requests_total",
         ):
             assert_metric_value(expected_total, test_metric, path=url)
