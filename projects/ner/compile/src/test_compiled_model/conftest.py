@@ -35,7 +35,7 @@ def logger(io_settings: IOSettings) -> Any:
 
 @pytest.fixture
 def compiled_ner(io_settings: IOSettings) -> CompiledNER:
-    # load compiled NER from previous workflow component
+    # load compiled NERs from previous workflow component
     compiled_ner = CompiledNER.from_pretrained(io_settings.compile.model_directory)
 
     return compiled_ner
