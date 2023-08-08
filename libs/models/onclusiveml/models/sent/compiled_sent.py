@@ -3,7 +3,7 @@ import os
 import re
 import string
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 # ML libs
 import torch
@@ -12,6 +12,7 @@ import torch
 import numpy as np
 import regex
 from bs4 import BeautifulSoup
+from nptyping import NDArray
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
@@ -88,7 +89,6 @@ class CompiledSent:
         Returns:
             str: Text with extra whitespaces removed
         """
-
         text = re.sub(r"\s+", " ", text)
         return text
 
@@ -120,7 +120,7 @@ class CompiledSent:
 
         return list_sentences
 
-    def inference(self, list_sentences: List[str]) -> np.ndarray:
+    def inference(self, list_sentences: NDArray) -> NDArray:
         """
         Compute sentiment probability of each sentence
         Args:
@@ -178,23 +178,24 @@ class CompiledSent:
             input_ids = input_ids[self.MAX_BATCH_SIZE :]
             attention_masks = attention_masks[self.MAX_BATCH_SIZE :]
 
-        sentiment_probs = np.array(sentiment_probs)
+        sentiment_probs_arr: NDArray = np.array(sentiment_probs)
 
-        assert sentiment_probs.shape[0] == n_sentence
-        return sentiment_probs
+        assert sentiment_probs_arr.shape[0] == n_sentence
+        return sentiment_probs_arr
 
     def postprocess(
         self,
         sentiment_probs: np.ndarray,
         list_sentences: List[str],
-        entities: List[dict],
-    ) -> dict:
+        entities: Optional[List[Dict[str, Union[str, List]]]],
+    ) -> Dict[str, Union[float, str, List]]:
         """
         Compute sentiment probability of each sentence
         Args:
             sentiment_probs (List[float]): List of sentiment probability
             list_sentences (List[str]): Input list of sentences
-            entities (List[dict]): List of detected entities from the NER model
+            entities (Optional[List[Dict[str, Union[float, str]]]]):
+                List of detected entities from the NER model
         Returns:
             sentiment_probs (List[float]): List of sentiment probability
         """
@@ -204,7 +205,7 @@ class CompiledSent:
 
         agg_sentiment_probs = np.around(np.mean(sentiment_probs, axis=0), 4)
 
-        sentiment_result = {}
+        sentiment_result: Dict[str, Union[float, str, List[Any]]] = {}
         sentiment_result["label"] = self._decide_label(
             agg_sentiment_probs[2], agg_sentiment_probs[1], agg_sentiment_probs[0]
         )
@@ -214,9 +215,10 @@ class CompiledSent:
         sentiment_result["positive_prob"] = agg_sentiment_probs[2]
 
         if entities is not None:
-            sentiment_result["entities"] = self._add_entity_sentiment(
-                list_sentences, sentiment_result, entities
-            )
+            entity_sentiment: List[
+                Dict[str, Union[str, List[Any]]]
+            ] = self._add_entity_sentiment(list_sentences, sentiment_result, entities)
+            sentiment_result["entities"] = entity_sentiment
 
         return sentiment_result
 
@@ -249,14 +251,17 @@ class CompiledSent:
         return val
 
     def _add_entity_sentiment(
-        self, sentences: List[Any], res: dict, entities: List[dict]
-    ) -> List[dict]:
+        self,
+        sentences: List[Any],
+        res: Dict,
+        entities: List[Dict[str, Union[str, List]]],
+    ) -> List[Dict[str, Union[str, List]]]:
         """
         Augment the entity with the corresponding sentiment
         Args:
             sentences (List[str]): List of sentences from the article
             res (dict): List of sentiment probability corresponding to sentences
-            entities (List[Dict[str, Union[float, int, str]]]):
+            entities (List[Dict[str, Union[float, str]]]):
                 List of detected entities from the NER model
         Returns:
             entity_sentiment (List[Dict[str, str]]):
@@ -281,13 +286,13 @@ class CompiledSent:
                     ]
 
                 i = 0
-                pos = 0
-                neg = 0
-                neu = 0
+                pos: float = 0
+                neg: float = 0
+                neu: float = 0
                 for index in indexes:
                     pos += sentence_pos_probs[index]
                     neg += sentence_neg_probs[index]
-                    neu += sentence_neu_probs[index]
+                    neu += sentence_neu_probs[index]  # type: ignore
                     i += 1
 
                 if i == 0:
@@ -306,8 +311,10 @@ class CompiledSent:
         return entity_sentiment
 
     def extract_sentiment(
-        self, sentences: str, entities: Dict[str, Union[float, int, str]] = None
-    ) -> List[Dict[str, Union[float, int, str]]]:
+        self,
+        sentences: str,
+        entities: Optional[List[Dict[str, Union[str, List]]]] = None,
+    ) -> Dict[str, Union[float, str, List]]:
         """
         Sentiment detection of each entity input sentence
         Args:
@@ -315,10 +322,12 @@ class CompiledSent:
             return_pos (bool): Flag indiciating whether to return positional information in the
                 output
         Returns:
-            List[Dict[str, Union[float, int, str]]]: Extracted named entities in dictionary
+            List[Dict[str, Union[float, str]]]: Extracted named entities in dictionary
                 format
         """
         list_sentences = self.preprocess(sentences)
         sentiment_prob_list = self.inference(list_sentences)
-        entities = self.postprocess(sentiment_prob_list, list_sentences, entities)
-        return entities
+        sentiment_output = self.postprocess(
+            sentiment_prob_list, list_sentences, entities
+        )
+        return sentiment_output
