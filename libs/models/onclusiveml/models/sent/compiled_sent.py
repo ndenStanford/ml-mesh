@@ -319,8 +319,8 @@ class CompiledSent:
         Sentiment detection of each entity input sentence
         Args:
             sentences (str): The input sentences to extract entities from
-            return_pos (bool): Flag indiciating whether to return positional information in the
-                output
+            entities (List[Dict[str, Union[float, int, str]]]):
+                List of detected entities from the NER model
         Returns:
             List[Dict[str, Union[float, str]]]: Extracted named entities in dictionary
                 format

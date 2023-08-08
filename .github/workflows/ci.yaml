@@ -269,6 +269,16 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # compile
+          - name: sentiment
+            component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
     with:
       environment: prod
       project: ${{ matrix.projects.name }}
