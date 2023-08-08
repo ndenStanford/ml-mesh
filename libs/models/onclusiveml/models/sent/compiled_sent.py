@@ -124,9 +124,9 @@ class CompiledSent:
         """
         Compute sentiment probability of each sentence
         Args:
-            list_sentences (List[str]): Input list of sentences
+            list_sentences (NDArray): Input list of sentences
         Returns:
-            sentiment_probs (List[float]): List of sentiment probability
+            sentiment_probs (NDArray): List of sentiment probability
         """
         self.inputs = self.compiled_sent_pipeline.tokenizer(
             list_sentences,
@@ -185,19 +185,19 @@ class CompiledSent:
 
     def postprocess(
         self,
-        sentiment_probs: np.ndarray,
+        sentiment_probs: NDArray,
         list_sentences: List[str],
         entities: Optional[List[Dict[str, Union[str, List]]]],
     ) -> Dict[str, Union[float, str, List]]:
         """
         Compute sentiment probability of each sentence
         Args:
-            sentiment_probs (List[float]): List of sentiment probability
+            sentiment_probs (NDArray): List of sentiment probability
             list_sentences (List[str]): Input list of sentences
-            entities (Optional[List[Dict[str, Union[float, str]]]]):
+            entities (Optional[List[Dict[str, Union[str, List]]]]):
                 List of detected entities from the NER model
         Returns:
-            sentiment_probs (List[float]): List of sentiment probability
+            sentiment_result (Dict[str, Union[float, str, List]]): List of sentiment probability
         """
         logits = np.exp(sentiment_probs.reshape(-1, self.NUM_LABELS))
 
@@ -259,12 +259,12 @@ class CompiledSent:
         """
         Augment the entity with the corresponding sentiment
         Args:
-            sentences (List[str]): List of sentences from the article
-            res (dict): List of sentiment probability corresponding to sentences
-            entities (List[Dict[str, Union[float, str]]]):
+            sentences (List[Any]): List of sentences from the article
+            res (Dict): List of sentiment probability corresponding to sentences
+            entities (List[Dict[str, Union[str, List]]]):
                 List of detected entities from the NER model
         Returns:
-            entity_sentiment (List[Dict[str, str]]):
+            entity_sentiment (List[Dict[str, Union[str, List]]]):
                 List of detected entities with sentiment attached to them
         """
         sentence_pos_probs = res["sentence_pos_probs"]
@@ -319,11 +319,11 @@ class CompiledSent:
         Sentiment detection of each entity input sentence
         Args:
             sentences (str): The input sentences to extract entities from
-            entities (List[Dict[str, Union[float, int, str]]]):
+            entities (Optional[List[Dict[str, Union[str, List]]]]):
                 List of detected entities from the NER model
         Returns:
-            List[Dict[str, Union[float, str]]]: Extracted named entities in dictionary
-                format
+            sentiment_output (Dict[str, Union[float, str, List]]):
+                Extracted named entities in dictionary format
         """
         list_sentences = self.preprocess(sentences)
         sentiment_prob_list = self.inference(list_sentences)
