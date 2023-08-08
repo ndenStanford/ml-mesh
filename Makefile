@@ -16,7 +16,7 @@ PORT?=8888
 ENVIRONMENT?=dev
 
 ## VARIABLES
-ifeq ($(USE_DOCKER_CACHE),true)
+ifeq ($(USE_DOCKER_CACHE),false)
 	DOCKER_FLAGS += --no-cache
 endif
 
