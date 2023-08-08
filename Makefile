@@ -11,10 +11,14 @@ IMAGE_TAG?=latest
 TARGET_BUILD_STAGE?=development
 USE_DOCKER_CACHE?=false
 WITH_DOCKER?=false
+DOCKER_FLAGS?=
 PORT?=8888
 ENVIRONMENT?=dev
 
 ## VARIABLES
+ifeq ($(USE_DOCKER_CACHE),false)
+	DOCKER_FLAGS += --no-cache
+endif
 
 # all core docker images
 ALL_DOCKER_IMGS:= \
@@ -63,6 +67,7 @@ clean: ## Clean build artifacts.
 	rm -rf dist
 	rm -rf *.egg-info
 	rm -rf htmlcov
+	rm -r ~/.cache/*
 
 install:
 	poetry install
