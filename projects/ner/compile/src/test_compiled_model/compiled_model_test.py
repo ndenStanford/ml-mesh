@@ -34,7 +34,6 @@ into one tag and so modify expected predictions here
 
 
 @pytest.mark.parametrize("test_sample_index", [0, 1, 2, 3])
-# @pytest.mark.parametrize("test_sample_index", [0])
 def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     logger,
     io_settings,

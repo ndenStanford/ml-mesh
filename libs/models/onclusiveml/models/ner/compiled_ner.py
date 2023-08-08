@@ -9,7 +9,11 @@ from bs4 import BeautifulSoup
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
-from onclusiveml.models.ner.settings import InferenceOutput, PostprocessOutput
+from onclusiveml.models.ner.settings import (
+    InferenceOutput,
+    PostprocessOutput,
+    PostprocessOutputNoPos,
+)
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
@@ -110,7 +114,12 @@ class CompiledNER:
             sentences (List[str]): list of sentences
 
         Returns:
-            List[List[Dict[str, Union[str, int, float]]]]: List of lists of NER predictions
+            InferenceOutput: List of lists of NER predictions which has the attributes:
+                - entity (str): entity type
+                - score (float): probability of given entity
+                - word (str): targeted word for given entity
+                - start (int): starting position of word
+                - end (int): ending position of word
         """
         entities = self.compiled_ner_pipeline(sentences)
         for sublist in entities:
@@ -133,19 +142,39 @@ class CompiledNER:
 
     def postprocess(
         self, ner_labels: InferenceOutput, return_pos: bool
-    ) -> List[PostprocessOutput]:
+    ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
         """
         Postprocess NER labels to merge contiguous entities and compute scores
 
         Args:
-            ner_labels List[List[Dict[str, Union[str, int, float]]]]: List of NER labels
-                for each sentence
+            InferenceOutput: List of lists of NER predictions which has the attributes:
+                - entity (str): entity type
+                - score (float): probability of given entity
+                - word (str): targeted word for given entity
+                - start (int): starting position of word
+                - end (int): ending position of word
             return_pos (bool): Flag indicating whether to return positional information
 
         Returns:
-            List[Dict[str, Union[str, int, float]]]: List of postprocessed NER labels
+            Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
+                entities in dictionary format.
+                PostprocessOutput has attributes:
+                    - entity (str): entity type
+                    - score (float): probability of given entity
+                    - word (str): targeted word for given entity
+                    - start (int): starting position of word
+                    - end (int): ending position of word
+                    - sentence index (int): sentence location of word
+
+                PostprocessOutputNoPos has attributes:
+                    - entity (str): entity type
+                    - score (float): probability of given entity
+                    - word (str): targeted word for given entity
+                    - start (int): starting position of word
         """
-        output_list = []  # List to store the postprocessed NER labels
+        output_list: List[
+            PostprocessOutput
+        ] = []  # List to store the postprocessed NER labels
         sentence_index = 0  # Initialize sentence index for tracking
         # Loop through each sublist of NER labels (one sublist per sentence)
         for sublist in ner_labels.ner_labels:
@@ -233,11 +262,20 @@ class CompiledNER:
             sentence_index += 1
         # Flatten the output list
         output_list = [item for sublist in output_list for item in sublist]
+
+        # Remove start and end key from output if we do not want to have the word positions
+        if not return_pos:
+            output_list_no_pos = []
+            for ent in output_list:
+                output_list_no_pos.append(
+                    PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
+                )
+            return output_list_no_pos
         return output_list
 
     def extract_entities(
         self, sentences: str, language: str, return_pos: bool
-    ) -> List[PostprocessOutput]:
+    ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
         """
         Extract named entities from input sentence using NER
         Args:
@@ -245,8 +283,21 @@ class CompiledNER:
             return_pos (bool): Flag indiciating whether to return positional information in the
                 output
         Returns:
-            List[Dict[str, Union[str, int, float]]]: list of extracted named entities in dictionary
-                format
+            Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
+                entities in dictionary format.
+                PostprocessOutput has attributes:
+                    - entity (str): entity type
+                    - score (float): probability of given entity
+                    - word (str): targeted word for given entity
+                    - start (int): starting position of word
+                    - end (int): ending position of word
+                    - sentence index (int): sentence location of word
+
+                PostprocessOutputNoPos has attributes:
+                    - entity (str): entity type
+                    - score (float): probability of given entity
+                    - word (str): targeted word for given entity
+                    - start (int): starting position of word
         """
         list_sentences = self.preprocess(sentences, language)
         ner_labels = self.inference(list_sentences)
