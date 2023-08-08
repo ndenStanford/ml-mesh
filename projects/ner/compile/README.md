@@ -2,7 +2,7 @@
 
 ## 1 Overview
 
-The `NER-compile` container image provides the runtime environment for all 4 components of the
+The `NER-compile` container image provides the runtime environment for all four components of the
 **model compilation** segment of
 [the CI pipeline outlined in this RFC](https://onclusive01-my.sharepoint.com/:w:/g/personal/sebastian_scherer_onclusive_com/EXMw2nQrwSpBn4uKzY90Hb4BBFq1NHsYByDAo9-uc83iLg?e=B9ULGd):
 

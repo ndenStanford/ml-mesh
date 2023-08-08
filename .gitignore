@@ -7,6 +7,7 @@ test_model
 
 # project `compile` pipeline artifacts
 projects/**/compile/outputs/
+docker/**/tests/output*
 
 # project `serve` component model artifacts
 projects/**/serve/models/
@@ -32,6 +33,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+projects/keywords/serve/models
+projects/keywords/compile/outputs
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -234,3 +238,9 @@ bazel-ml-mesh/
 
 # neptune
 .neptune
+
+# random compile artifact
+docker/neuron-compile/tests/output_compile
+outputs/compile
+projects/sentiment/compile/projects/sentiment/compile/nltk_data
+outputs/download/model_artifacts
