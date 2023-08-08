@@ -10,6 +10,7 @@ from onclusiveml.compile import CompiledTokenizer
     "huggingface_model_reference",
     [
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "cardiffnlp/twitter-xlm-roberta-base-sentiment",
         "dslim/bert-base-NER",
     ],
 )

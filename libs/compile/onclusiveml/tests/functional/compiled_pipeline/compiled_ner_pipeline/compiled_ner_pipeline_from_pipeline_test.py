@@ -19,7 +19,7 @@ from onclusiveml.compile import CompiledPipeline
     ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
-@pytest.mark.parametrize("batch_size", [1, 4, 8])
+@pytest.mark.parametrize("batch_size", [1, 2, 4])
 @pytest.mark.parametrize(
     "max_length",
     [
