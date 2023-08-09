@@ -60,7 +60,11 @@ def test_get_prompt(mock_prompt_get, alias, test_client):
         "created_at": "2022-11-02T08:34:01",
         "template": "test template",
         "id": None,
-        "parameters": {},
+        "parameters": {
+            "max_tokens": 512,
+            "model_name": "gpt-3.5-turbo",
+            "temperature": 0.7,
+        },
         "variables": [],
         "version": 0,
     }
@@ -173,7 +177,7 @@ def test_create_prompt_same_alias(
 
 
 @pytest.mark.parametrize(
-    "id, template, alias, parameters, update",
+    "id, template, alias, parameters, update, expected_params",
     [
         (
             53463,
@@ -181,6 +185,7 @@ def test_create_prompt_same_alias(
             "alias1",
             {},
             "I would like a brief two-line summary of this text: {text}",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
         ),
         (
             "874285",
@@ -188,6 +193,7 @@ def test_create_prompt_same_alias(
             "alias2",
             {},
             "What's the most popular {type} framework?",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
         ),
     ],
 )
@@ -201,6 +207,7 @@ def test_update_prompt(
     alias,
     parameters,
     update,
+    expected_params,
     test_client,
 ):
     """Test update prompt endpoint."""
@@ -217,7 +224,7 @@ def test_update_prompt(
         "alias": alias,
         "created_at": None,
         "id": f"{id}",
-        "parameters": parameters,
+        "parameters": expected_params,
         "template": template,
         "version": 0,
     }

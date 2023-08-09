@@ -155,9 +155,9 @@ def generate(alias: str, values: Dict[str, Any]):
     temperature = settings.OPENAI_TEMPERATURE
 
     if prompt_template.parameters is not None and prompt_template.parameters != {}:
-        model_name = prompt_template.parameters["model_name"]
-        max_tokens = int(prompt_template.parameters["max_tokens"])
-        temperature = float(prompt_template.parameters["temperature"])
+        model_name = prompt_template.parameters.model_name
+        max_tokens = int(prompt_template.parameters.max_tokens)
+        temperature = float(prompt_template.parameters.temperature)
 
     # if parameters field exists, replace model and parameter values
     return {

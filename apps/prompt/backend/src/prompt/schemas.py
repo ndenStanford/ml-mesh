@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 # Source
+from src.model.constants import ModelEnum
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
     PromptNotFound,
@@ -20,6 +21,12 @@ from src.settings import get_settings
 
 
 settings = get_settings()
+
+
+class Parameters(BaseModel):
+    model_name: str = ModelEnum.GPT3_5.value
+    max_tokens: int = settings.OPENAI_MAX_TOKENS
+    temperature: float = settings.OPENAI_TEMPERATURE
 
 
 class PromptTemplateSchema(BaseModel):
@@ -34,7 +41,7 @@ class PromptTemplateSchema(BaseModel):
     alias: str
     version: int = 0
     created_at: Optional[datetime.datetime] = None
-    parameters: Optional[Dict[str, Any]] = {}
+    parameters: Optional[Parameters] = Parameters()
 
     @property
     def variables(self) -> List[str]:
@@ -53,7 +60,7 @@ class PromptTemplateSchema(BaseModel):
             template=self.template,
             alias=self.alias,
             version=self.version,
-            parameters=self.parameters,
+            parameters=self.parameters.dict(),
         )
         prompt.save()
         prompt_dict = json.loads(prompt.to_json())
