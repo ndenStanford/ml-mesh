@@ -1,9 +1,9 @@
 # Standard Library
 import shutil
-from typing import List, Tuple
+from typing import Dict, List
 
 # 3rd party libraries
-import numpy as np
+import pandas as pd
 import pytest
 
 # Internal libraries
@@ -14,8 +14,8 @@ from onclusiveml.compile import CompiledPipeline
     "huggingface_pipeline_task, huggingface_model_reference",
     [
         (
-            "feature-extraction",
-            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+            "ner",
+            "dslim/bert-base-NER",
         ),
     ],
 )
@@ -29,19 +29,19 @@ from onclusiveml.compile import CompiledPipeline
 @pytest.mark.parametrize(
     "max_length",
     [
-        15,
-        # None, # for 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', this is 512
+        35,
+        # None, # for 'dslim/bert-base-NER', this is 512
         # and takes a long time for neuron tracing
     ],
 )
-def test_compiled_feature_extraction_pipeline_from_pretrained(
+def test_compiled_token_classification_pipeline_from_pretrained(
     huggingface_pipeline_task,
     huggingface_model_reference,
     huggingface_pipeline,
     max_length,
     batch_size,
     neuron,
-    test_inputs,
+    test_ner_inputs,
     regression_test_atol,
     regression_test_rtol,
 ):
@@ -57,30 +57,33 @@ def test_compiled_feature_extraction_pipeline_from_pretrained(
         tokenizer_settings={"add_special_tokens": True},
     )
     # score compiled pipeline
-    compiled_pipeline_output: Tuple[Tuple[List[List[float]]]] = compiled_pipeline(
-        test_inputs
-    )  # 1 x n_batch x n_token x n_embed
-    compiled_pipeline_output_arr: np.array = np.array(compiled_pipeline_output)
+    compiled_pipeline_output: List[Dict] = compiled_pipeline(test_ner_inputs)
+
+    compiled_pipeline_output_df = pd.concat(
+        [pd.DataFrame(named_entity) for named_entity in compiled_pipeline_output]
+    )
     # export and re-import compiled pipeline
-    compiled_pipeline.save_pretrained("test_compiled_feature_extraction_pipeline")
+    compiled_pipeline.save_pretrained("test_compiled_ner_pipeline")
     reloaded_compiled_pipeline = CompiledPipeline.from_pretrained(
-        "test_compiled_feature_extraction_pipeline"
+        "test_compiled_ner_pipeline"
     )
-    # score re-imported compiled pipeline
-    reloaded_compiled_pipeline_output: Tuple[
-        Tuple[List[List[float]]]
-    ] = reloaded_compiled_pipeline(
-        test_inputs
-    )  # 1 x n_batch x n_token x n_embed
-    reloaded_compiled_pipeline_output_arr: np.array = np.array(
-        reloaded_compiled_pipeline_output
+    # score huggingface pipeline
+    reloaded_compiled_pipeline_output: List[Dict] = reloaded_compiled_pipeline(
+        test_ner_inputs
     )
-    # validation: regression test embedding vectors
-    np.testing.assert_allclose(
-        reloaded_compiled_pipeline_output_arr,
-        compiled_pipeline_output_arr,
+
+    reloaded_compiled_pipeline_output_df = pd.concat(
+        [
+            pd.DataFrame(named_entity)
+            for named_entity in reloaded_compiled_pipeline_output
+        ]
+    )
+    # validation: regression test extracted named entity scores and other meta data
+    pd.testing.assert_frame_equal(
+        compiled_pipeline_output_df,
+        reloaded_compiled_pipeline_output_df,
         rtol=regression_test_rtol,
         atol=regression_test_atol,
     )
 
-    shutil.rmtree("test_compiled_feature_extraction_pipeline")
+    shutil.rmtree("test_compiled_ner_pipeline")

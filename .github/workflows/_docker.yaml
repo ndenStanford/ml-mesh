@@ -111,7 +111,8 @@ jobs:
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \
-          ENVIRONMENT="ci"
+          ENVIRONMENT="ci" \
+          USE_DOCKER_CACHE=true
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
