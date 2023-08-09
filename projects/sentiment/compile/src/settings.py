@@ -25,7 +25,7 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
-    project: str = "onclusive/sent"
+    project: str = "onclusive/sentiment"
     model: str = "SEN-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
@@ -41,7 +41,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
-    project: str = "onclusive/sent"
+    project: str = "onclusive/sentiment"
     model: str = "SEN-COMPILED"
 
     class Config:

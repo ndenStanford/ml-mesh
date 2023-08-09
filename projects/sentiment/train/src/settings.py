@@ -12,7 +12,7 @@ from onclusiveml.tracking import (
 
 # --- settings classes
 class TrackedSentModelSpecs(TrackedModelSpecs):
-    project: str = "onclusive/sent"
+    project: str = "onclusive/sentiment"
     model = "SEN-TRAINED"
 
     class Config:
