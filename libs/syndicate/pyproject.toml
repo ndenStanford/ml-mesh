@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "syndicate"
+version = "0.1.0"
+description = "Syndicate library"
+authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
+packages = [{include = "onclusiveml"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+
+core = {path = "../core"}
+nlp = {path = "../nlp"}
+nltk = "^3.8.1"
+numpy = "1.21.1"
+scipy = "1.7.3"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
