@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
-from onclusiveml.syndicate.datasketch import LshHandler
+from onclusiveml.syndicate.datasketch.lsh import LshHandler
 
 # Source
 from src.serve.server_models import (

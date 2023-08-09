@@ -41,8 +41,8 @@ class PredictInputDocumentModel(BaseModel):
 
 class PredictRequestModel(BaseModel):
 
-    configuration: PredictConfiguration = PredictConfiguration()
-    inputs: PredictInputDocumentModel = PredictInputDocumentModel()
+    configuration: PredictConfiguration
+    inputs: PredictInputDocumentModel
 
 
 class PredictResponseModel(BaseModel):

@@ -26,7 +26,7 @@ services:
     volumes:
       - type: bind
         source: serve
-        target: /home/projects/lsh/serve
+        target: /projects/lsh/serve
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
@@ -41,7 +41,7 @@ services:
     volumes:
       - type: bind
         source: serve
-        target: /home/projects/lsh/serve
+        target: /projects/lsh/serve
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
@@ -57,7 +57,7 @@ services:
     volumes:
       - type: bind
         source: serve
-        target: /home/projects/lsh/serve
+        target: /projects/lsh/serve
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs

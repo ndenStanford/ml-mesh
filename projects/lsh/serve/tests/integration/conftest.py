@@ -1,8 +1,14 @@
 """Conftest."""
 
+# Standard Library
+from typing import List
+
 # 3rd party libraries
 import pytest
 from fastapi.testclient import TestClient
+
+# Source
+from src.serve.server_models import BioResponseModel
 
 
 @pytest.fixture
@@ -12,14 +18,13 @@ def test_client(app):
 
 
 @pytest.fixture
-def test_input() -> str:
-    content = "Call functions to generate hash signatures for each article"
-    return content
+def test_predict_input() -> str:
+    return "Call functions to generate hash signatures for each article"
 
 
 @pytest.fixture
-def test_expected_output() -> str:
-    output = [
+def test_expected_predict_output() -> List[str]:
+    return [
         "AAAAAD7VrJYAAAAAUtj2YwAAAABnUo5LAAAAAKEQ6osAAAAAGN7zAQAAAACvI05uAAAAAP5T14M=",
         "AAAAAImeBE8AAAAArLzBiwAAAABXJtUuAAAAADuLk0EAAAAABdQyawAAAABsuvhdAAAAAA1DABQ=",
         "AAAAAN80jQ0AAAAA4AMsTwAAAAAdQ+nJAAAAADQX7AwAAAAAOInWSgAAAADW8ezsAAAAALmkSmc=",
@@ -39,4 +44,9 @@ def test_expected_output() -> str:
         "AAAAANrB0GcAAAAAkNMRaAAAAAA0QhyKAAAAABLE06gAAAAAzi1LqAAAAACo+jipAAAAAIUoHM4=",
         "AAAAAHxFrisAAAAAkf5FlgAAAACQ7ru+AAAAAO4TeqUAAAAAcsOYLwAAAAAHk+gFAAAAAHSHwzQ=",
     ]
-    return output
+
+
+@pytest.fixture
+def test_expected_bio_output():
+
+    return BioResponseModel(model_name="lsh")
