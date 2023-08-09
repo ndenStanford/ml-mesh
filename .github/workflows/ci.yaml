@@ -263,8 +263,8 @@ jobs       :
           - name: lsh
             component: serve
             download-model: false
-            integration: false
-            functional: false
+            integration: true
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
