@@ -120,7 +120,8 @@ jobs:
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \
-          ENVIRONMENT="ci"
+          ENVIRONMENT="ci" \
+          USE_DOCKER_CACHE=true
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
