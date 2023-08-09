@@ -43,11 +43,9 @@ def test_served_lsh_model_predict(test_predict_input, test_expected_predict_outp
 
     input = PredictRequestModel(
         configuration=PredictConfiguration(),
-        inputs=[
-            PredictInputDocumentModel(
-                content=test_predict_input,
-            )
-        ],
+        inputs=PredictInputDocumentModel(
+            content=test_predict_input,
+        ),
     )
 
     test_actual_predict_output = served_lsh_model.predict(input)
