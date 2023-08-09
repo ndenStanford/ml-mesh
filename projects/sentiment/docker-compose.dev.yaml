@@ -72,11 +72,8 @@ services:
   compile-unit:
     volumes:
       - type: bind
-        source: compile/src
-        target: /projects/sentiment/compile/src
-      - type: bind
-        source: compile/tests
-        target: /projects/sentiment/compile/tests
+        source: compile
+        target: /projects/sentiment/compile
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
