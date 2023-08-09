@@ -6,12 +6,12 @@ from typing import Any, Callable, List, Optional, Set, Tuple, Type
 
 # 3rd party libraries
 import numpy as np
-from minhash import MinHash
 from scipy.integrate import quad as integrate
 
 # Internal libraries
 from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
 from onclusiveml.nlp.word_tokenize import WordTokenizer
+from onclusiveml.syndicate.datasketch.minhash import MinHash
 from onclusiveml.syndicate.datasketch.storage import (
     _random_name,
     ordered_storage,

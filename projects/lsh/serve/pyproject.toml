@@ -11,7 +11,6 @@ regex = "2022.10.31"
 
 core = {path = "../../../libs/core"}
 syndicate = {path = "../../../libs/syndicate"}
-nlp = {path = "../../../libs/nlp"}
 serving = {path = "../../../libs/serving"}
 
 [tool.poetry.group.dev.dependencies]

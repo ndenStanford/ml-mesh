@@ -2,15 +2,13 @@
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.serve.params import ServedModelArtifacts
 from src.serve.served_model import ServedLshModel
 
 
 def get_model_server() -> ModelServer:
     """Utility method for prepping a fully configured model server instance ready to serve."""
     # initialize model
-    served_model_artifacts = ServedModelArtifacts()
-    lsh_served_model = ServedLshModel(served_model_artifacts=served_model_artifacts)
+    lsh_served_model = ServedLshModel()
     # initialize model server
     serving_params = ServingParams()
     model_server = ModelServer(configuration=serving_params, model=lsh_served_model)

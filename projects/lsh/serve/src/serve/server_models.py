@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -12,7 +12,6 @@ class PredictConfiguration(BaseModel):
     Holds the required information to be provided in the payload and their type
 
     Attributes:
-        content (str): Text to generate signature for. An empty string is needed (at least)
 
         lang (Optional[str]): Text to indicate the language
 
@@ -22,29 +21,31 @@ class PredictConfiguration(BaseModel):
 
         num_perm (Optional[int]))
 
-        weights (Optional[Tuple[float]])
     """
 
-    content: str
     language: Optional[str] = "en"
     shingle_list: Optional[int] = 5
     threshold: Optional[float] = 0.6
     num_perm: Optional[int] = 128
-    weights: Optional[Tuple[float, float]] = (0.5, 0.5)
 
 
 class PredictInputDocumentModel(BaseModel):
+    """
+    Attributes:
 
-    document: str
+        content (str): Text to generate signature for. An empty string is needed (at least)
+    """
+
+    content: str
 
 
 class PredictRequestModel(BaseModel):
 
-    configuration: PredictConfiguration = PredictConfiguration()
-    inputs: PredictInputDocumentModel = PredictInputDocumentModel()
+    configuration: PredictConfiguration
+    inputs: PredictInputDocumentModel
 
 
-class PredictionExtractedSignature(BaseModel):
+class PredictResponseModel(BaseModel):
     """Signature response item.
 
     Holds the information on expected output at inference
@@ -56,16 +57,7 @@ class PredictionExtractedSignature(BaseModel):
     signature: Optional[List[str]]
 
 
-class PredictResponseModel(BaseModel):
-
-    outputs: List[PredictionExtractedSignature]
-
-
 # --- bio response models
 class BioResponseModel(BaseModel):
 
     model_name: str = "lsh-model"
-    # difficult to link up all the way back to the `CompiledLshTrackedModelCard` here, so for
-    # now we leave this unmodelled ith an understanding that that is what will come through in this
-    # field
-    model_card: Dict
