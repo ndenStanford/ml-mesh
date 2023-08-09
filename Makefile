@@ -37,14 +37,16 @@ ALL_LIBS:= \
 	models \
 	nlp \
 	serving \
-	tracking
+	tracking \
+	syndicate
 
 # all projects
 ALL_PROJECTS:= \
 	keywords \
 	summarization \
 	entity-linking \
-	ner
+	ner \
+	lsh
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk
