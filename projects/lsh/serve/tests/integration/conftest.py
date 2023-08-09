@@ -8,13 +8,16 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Source
+from src.serve.model_server import get_model_server
 from src.serve.server_models import BioResponseModel, PredictResponseModel
 
 
 @pytest.fixture
-def test_client(app):
-    client = TestClient(app)
-    yield client
+def test_client():
+
+    model_server = get_model_server()
+
+    return TestClient(model_server)
 
 
 @pytest.fixture
