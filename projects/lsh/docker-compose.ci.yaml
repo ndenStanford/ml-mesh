@@ -19,16 +19,22 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8080', --reload, --log-level, debug]
-    profiles: [serve]
+    command: [python, -m, src.serve.model_server]
+    profiles: [serve, functional]
     ports:
-      - 8080:8080
+      - 8000:8000
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   # unit tests
   serve-unit:
@@ -53,6 +59,23 @@ services:
     hostname: onclusiveml
     networks:
       - onclusive-net
+
+  # functional tests
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
 
 networks:
   onclusive-net:
