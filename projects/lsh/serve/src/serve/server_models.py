@@ -31,8 +31,8 @@ class PredictConfiguration(BaseModel):
 
 class PredictInputDocumentModel(BaseModel):
     """
-    Attributes: 
-    
+    Attributes:
+
         content (str): Text to generate signature for. An empty string is needed (at least)
     """
 
@@ -61,4 +61,3 @@ class PredictResponseModel(BaseModel):
 class BioResponseModel(BaseModel):
 
     model_name: str = "lsh-model"
-    

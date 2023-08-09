@@ -4,16 +4,13 @@
 import pytest
 from fastapi.testclient import TestClient
 
-"""Conftest."""
-
-# 3rd party libraries
-import pytest
 
 @pytest.fixture
 def test_client(app):
     client = TestClient(app)
     yield client
-    
+
+
 @pytest.fixture
 def test_input() -> str:
     content = "Call functions to generate hash signatures for each article"

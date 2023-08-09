@@ -33,12 +33,14 @@ class ServedLshModel(ServedModel):
         self.model_card = BioResponseModel(model_name="lsh")
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
-        
+
         # extract inputs data and inference specs from incoming payload
         inputs = payload.inputs
         configuration = payload.configuration
 
-        words = self.model.pre_processing(text=inputs.content, lang=configuration.language)
+        words = self.model.pre_processing(
+            text=inputs.content, lang=configuration.language
+        )
 
         shingle_list = self.model.k_shingle(words, k=configuration.shingle_list)
         if len(shingle_list) < 1:
