@@ -1,6 +1,5 @@
 [tool.poetry]
 name = "serving"
-version = "0.1.1"
 version = "0.2.0"
 description = "Internal serving library for REST and gRPC based (ML model) servers"
 authors = ["Sebastian Scherer <scherersebastian@yahoo.de>"]
