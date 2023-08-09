@@ -1,5 +1,10 @@
+# Standard Library
+from unittest.mock import Mock, patch
+
 # 3rd party libraries
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 from served_model_test import TestServedModel
 
 # Internal libraries
@@ -55,6 +60,35 @@ def test_get_model_server_urls(
     assert test_urls.readiness == readiness_url_expected
     assert test_urls.model_predict == predict_url_expected
     assert test_urls.model_bio == bio_url_expected
+
+
+@pytest.fixture
+def mocked_requests(mocker):
+    return mocker.patch("onclusiveml.serving.rest.serve.server_utils.requests")
+
+
+def test_liveness_router_with_betterstack_settings(mocked_requests):
+    """Test liveness router with BetterStack settings"""
+    # Mock the betterstack_settings environment and betterstack_key
+    with patch(
+        "onclusiveml.serving.rest.serve.server_utils.get_betterstack_settings"
+    ) as mock_get_betterstack_settings:
+        mock_betterstack_settings = Mock()
+        mock_betterstack_settings.environment = "prod"
+        mock_betterstack_settings.betterstack_key = "test-key"
+        mock_get_betterstack_settings.return_value = mock_betterstack_settings
+        # Create a test client and call the liveness endpoint
+        app = FastAPI()
+
+        test_client = TestClient(app)
+        response = test_client.get("/live")
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == {"status": "alive"}
+        # Verify that the request to BetterStack API was made
+        mocked_requests.post.assert_called_once_with(
+            "https://uptime.betterstack.com/api/v1/heartbeat/test-key"
+        )
 
 
 @pytest.mark.parametrize(
