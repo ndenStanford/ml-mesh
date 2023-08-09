@@ -7,7 +7,7 @@ from transformers import pipeline
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sent import CompiledSent
+from onclusiveml.models.sentiment import CompiledSent
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source

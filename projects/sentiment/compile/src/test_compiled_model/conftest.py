@@ -7,7 +7,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sent import CompiledSent
+from onclusiveml.models.sentiment import CompiledSent
 
 # Source
 from src.settings import CompilationTestSettings, IOSettings

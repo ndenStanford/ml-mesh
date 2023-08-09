@@ -9,7 +9,7 @@ from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sent import CompiledSent
+from onclusiveml.models.sentiment import CompiledSent
 
 
 logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
