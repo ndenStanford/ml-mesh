@@ -54,7 +54,7 @@ class Parameters(BaseModel):
         ):
             raise PromptTokenExceedModel(
                 model=values.get("model_name"),
-                max_token_length=settings.LIST_OF_MODELS["1"][2],
+                max_token_length=settings.LIST_OF_MODELS["2"][2],
             )
 
         return value

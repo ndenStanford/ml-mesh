@@ -157,7 +157,7 @@ def test_create_prompt_with_parameters(
             },
         ),
         (
-            "Prompt parameter, max_tokens must be between 1 and 4098 for model gpt-4",
+            "Parameter max_tokens must be between 1 and 8192 for model gpt-4",
             {
                 "model_name": "gpt-4",
                 "max_tokens": 999999,
@@ -165,7 +165,7 @@ def test_create_prompt_with_parameters(
             },
         ),
         (
-            "Prompt parameter, max_tokens must be between 1 and 4098 for model gpt-4",
+            "Parameter max_tokens must be between 1 and 8192 for model gpt-4",
             {
                 "model_name": "gpt-4",
                 "max_tokens": -1,
@@ -181,7 +181,7 @@ def test_create_prompt_with_parameters(
             },
         ),
         (  # This is a test to see if default values are used for missing attributes
-            "Prompt parameter, max_tokens must be between 1 and 4098 for model gpt-3.5-turbo",
+            "Parameter max_tokens must be between 1 and 4098 for model gpt-3.5-turbo",
             {
                 "max_tokens": 4099,
                 "temperature": 3,
@@ -289,6 +289,59 @@ def test_update_prompt(
         "created_at": None,
         "id": f"{id}",
         "parameters": expected_params,
+        "template": template,
+        "version": 0,
+    }
+
+
+@pytest.mark.parametrize(
+    "id, template, alias, update, update_parameters",
+    [
+        (
+            53463,
+            "Quiero un breve resumen de dos líneas de este texto: {text}",
+            "alias1",
+            "I would like a brief two-line summary of this text: {text}",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+        ),
+        (
+            "874285",
+            "Quel est le framework {type} le plus populaire?",
+            "alias2",
+            "What's the most popular {type} framework?",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+        ),
+    ],
+)
+@patch.object(PromptTemplateSchema, "get")
+@patch("src.prompt.schemas.PromptTemplateSchema.update")
+def test_update_prompt_parameters(
+    mock_prompt_update,
+    mock_prompt_get,
+    id,
+    template,
+    alias,
+    update,
+    update_parameters,
+    test_client,
+):
+    """Test update prompt endpoint."""
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
+    response = test_client.put(
+        f"/api/v1/prompts/{alias}?template={update}",
+        json=update_parameters,
+        headers={"x-api-key": "1234"},
+    )
+    assert mock_prompt_get.call_count == 2
+    assert mock_prompt_update.call_count == 1
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "alias": alias,
+        "created_at": None,
+        "id": f"{id}",
+        "parameters": update_parameters,
         "template": template,
         "version": 0,
     }

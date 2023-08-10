@@ -161,7 +161,7 @@ class PromptTemplateSchema(BaseModel):
                 template=kwargs.get("template"),
                 alias=self.alias,
                 version=int(query[0].version) + 1,
-                parameters=kwargs.get("parameters"),
+                parameters=Parameters(kwargs.get("parameters")),
             ).save()
 
 

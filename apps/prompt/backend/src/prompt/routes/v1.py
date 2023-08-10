@@ -146,7 +146,11 @@ def update_prompt(alias: str, template: str, parameters: Dict = None):
 
     if not prompt.template == template:
         try:
-            prompt.update(template=template, parameters=parameters)
+            if parameters is None:
+                prompt.update(template=template)
+            else:
+                params_instance = Parameters.from_dict(parameters)
+                prompt.update(template=template, parameters=params_instance)
         except (
             PromptTokenExceedModel,
             PromptOutsideTempLimit,
