@@ -18,8 +18,8 @@ from src.model.schemas import ModelSchema
 from src.prompt.chat import PromptChat
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
+    PromptInvalidParameters,
     PromptModelUnsupported,
-    PromptNoneParameters,
     PromptNotFound,
     PromptOutsideTempLimit,
     PromptTokenExceedModel,
@@ -102,7 +102,7 @@ def create_prompt(template: str, alias: str, parameters: Dict = None):
             PromptTokenExceedModel,
             PromptOutsideTempLimit,
             PromptModelUnsupported,
-            PromptNoneParameters,
+            PromptInvalidParameters,
         ) as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -119,7 +119,7 @@ def create_prompt(template: str, alias: str, parameters: Dict = None):
         PromptTokenExceedModel,
         PromptOutsideTempLimit,
         PromptModelUnsupported,
-        PromptNoneParameters,
+        PromptInvalidParameters,
     ) as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -155,7 +155,7 @@ def update_prompt(alias: str, template: str, parameters: Dict = None):
             PromptTokenExceedModel,
             PromptOutsideTempLimit,
             PromptModelUnsupported,
-            PromptNoneParameters,
+            PromptInvalidParameters,
         ) as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

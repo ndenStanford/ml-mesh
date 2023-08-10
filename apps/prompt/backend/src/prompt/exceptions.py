@@ -24,10 +24,10 @@ class DeletionProtectedPrompt(BasePromptException):
     message_format = "Prompt '{alias}' cannot be deleted."
 
 
-class PromptNoneParameters(BasePromptException):
+class PromptInvalidParameters(BasePromptException):
     """Invalid Parameters."""
 
-    message_format = "Prompt parameter, {param}, is invalid"
+    message_format = "Parameter {param_name} = {param}, is invalid"
 
 
 class PromptTokenExceedModel(BasePromptException):

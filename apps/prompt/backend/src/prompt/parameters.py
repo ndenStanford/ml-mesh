@@ -1,3 +1,4 @@
+
 # Standard Library
 from typing import Optional
 
@@ -7,6 +8,7 @@ from pydantic import BaseModel, validator
 # Source
 from src.model.constants import ModelEnum
 from src.prompt.exceptions import (
+    PromptInvalidParameters,
     PromptModelUnsupported,
     PromptOutsideTempLimit,
     PromptTokenExceedModel,
@@ -29,8 +31,8 @@ class Parameters(BaseModel):
     @validator("model_name")
     def validate_model_name(cls, value):
         # Reject None
-        if value is None:
-            raise PromptNoneParameters(param=value)
+        if value is None or value in [""]:
+            raise PromptInvalidParameters(param_name="model_name", param=value)
         # if model is not supported then reject
         elif value not in ModelEnum.list():
             raise PromptModelUnsupported(model=value)
@@ -39,8 +41,8 @@ class Parameters(BaseModel):
     @validator("max_tokens")
     def validate_max_tokens(cls, value, values):
         # If max tokens is None then raise exception
-        if value is None:
-            raise PromptNoneParameters(param=value)
+        if value is None or value in [""]:
+            raise PromptInvalidParameters(param_name="max_tokens", param=value)
         # if max tokens is over the limit or less than 0 then raise exception
         elif values.get("model_name") == settings.LIST_OF_MODELS["1"][0] and (
             value > int(settings.LIST_OF_MODELS["1"][2]) or value <= 0
@@ -62,8 +64,8 @@ class Parameters(BaseModel):
     @validator("temperature")
     def validate_temperature(cls, value):
         # Reject None
-        if value is None:
-            raise PromptNoneParameters(param=value)
+        if value is None or value in [""]:
+            raise PromptInvalidParameters(param_name="temperature", param=value)
         # check if temperature is between 0 and 1
         if not (0.0 <= value <= 1.0):
             raise PromptOutsideTempLimit()

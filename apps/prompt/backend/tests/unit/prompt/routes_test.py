@@ -176,7 +176,7 @@ def test_create_prompt_with_parameters(
             "Temperature must be between 0.0 and 1.0",
             {
                 "model_name": "gpt-4",
-                "max_tokens": 123,
+                "max_tokens": "",
                 "temperature": 3,
             },
         ),
