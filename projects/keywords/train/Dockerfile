@@ -50,15 +50,16 @@ ENV PYTHONPATH=${HOME}
 # --- sagemaker stage
 FROM production as sagemaker
 
-ENV SAGEMAKER_ENTRYPOINT = "${HOME}/train.sh"
+ENV SAGEMAKER_ENTRYPOINT = "${HOME}/train"
 
 # copy over sagemaker entrypoint
-COPY --chown=${USER}:users "${HOME}/train.sh" "${SAGEMAKER_ENTRYPOINT}"
+COPY --chown=${USER}:users "${SAGEMAKER_ENTRYPOINT}" "${SAGEMAKER_ENTRYPOINT}"
 RUN ls "${HOME}"
 
 # update PATH so sagemaker invocation can find entrypoint bash script as per
 # https://sagemaker-workshop.com/custom/containers.html
-ENV PATH="{HOME}:${PATH}"
+ENV PATH="${HOME}:${PATH}"
+RUN echo "${PATH}"
 
 # --- test build stage
 FROM builder as development
