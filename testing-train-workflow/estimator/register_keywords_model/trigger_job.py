@@ -13,7 +13,6 @@ def trigger_sagemaker_train(instance_type):
 
     estimator = Estimator(
         image_uri='063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train:seb-test-sagemaker',
-        #image_uri='427cdea66e52',
         base_job_name="register-keywords-model",
         role='arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-dev',
         instance_count=1,
