@@ -27,6 +27,7 @@ jobs       :
   # ===============================================
   check-github-refs:
     name: Check github refs
+    runs-on: ubuntu-latest
 
     steps:
       - name: Print all
