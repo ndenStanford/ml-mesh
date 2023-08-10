@@ -21,6 +21,22 @@ concurrency:
   group: Deployment ${{ github.ref_name }}
 
 jobs       :
+
+  # ===============================================
+  # DEBUGGING
+  # ===============================================
+  check-github-refs:
+    name: Check github refs
+
+    steps:
+      - name: Print all
+        run: |
+          echo github.ref_name: ${{ github.ref_name }}
+          echo github.event_name: ${{ github.event_name }}
+          echo github.head_ref (PR only): ${{ github.head_ref }}
+          echo github.ref: ${{ github.ref }}
+          echo github.type: ${{ github.type }}
+
   # ===============================================
   # QUALITY CHECKS
   # ===============================================
