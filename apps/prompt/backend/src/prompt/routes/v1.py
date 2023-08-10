@@ -16,8 +16,16 @@ from src.model.constants import ModelEnum
 from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelSchema
 from src.prompt.chat import PromptChat
-from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
+from src.prompt.exceptions import (
+    DeletionProtectedPrompt,
+    PromptModelUnsupported,
+    PromptNoneParameters,
+    PromptNotFound,
+    PromptOutsideTempLimit,
+    PromptTokenExceedModel,
+)
 from src.prompt.generate import generate_text
+from src.prompt.parameters import Parameters
 from src.prompt.schemas import (
     PromptTemplateListSchema,
     PromptTemplateOutputSchema,
@@ -27,7 +35,6 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-
 
 logger = get_default_logger(__name__)
 
@@ -69,7 +76,7 @@ def get_prompt(alias: str):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_prompt(template: str, alias: str, parameters: dict = {}):
+def create_prompt(template: str, alias: str, parameters: Dict = None):
     """Creates prompt.
 
     Args:
@@ -82,19 +89,46 @@ def create_prompt(template: str, alias: str, parameters: dict = {}):
     # if prompt does exist, create a new version
     # otherwise create a new prompt with version 0.
     if not prompt:
-        return PromptTemplateSchema(
-            template=template, alias=alias, parameters=parameters
-        ).save()
+        try:
+            if parameters is None:
+                return PromptTemplateSchema(template=template, alias=alias).save()
+            else:
+                params_instance = Parameters.from_dict(parameters)
+                return PromptTemplateSchema(
+                    template=template, alias=alias, parameters=params_instance
+                ).save()
+
+        except (
+            PromptTokenExceedModel,
+            PromptOutsideTempLimit,
+            PromptModelUnsupported,
+            PromptNoneParameters,
+        ) as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
 
     prompt = prompt[0]
     if prompt.template == template:
         # if no change in the template return the current version
         return prompt
-    return prompt.update(template=template)
+    try:
+        return prompt.update(template=template, parameters=parameters)
+    except (
+        PromptTokenExceedModel,
+        PromptOutsideTempLimit,
+        PromptModelUnsupported,
+        PromptNoneParameters,
+    ) as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
 
 
 @router.put("/{alias}", status_code=status.HTTP_200_OK)
-def update_prompt(alias: str, template: str):
+def update_prompt(alias: str, template: str, parameters: Dict = None):
     """Updates latest version of a prompt.
 
     Args:
@@ -111,7 +145,18 @@ def update_prompt(alias: str, template: str):
     prompt = prompt[0]
 
     if not prompt.template == template:
-        prompt.update(template=template)
+        try:
+            prompt.update(template=template, parameters=parameters)
+        except (
+            PromptTokenExceedModel,
+            PromptOutsideTempLimit,
+            PromptModelUnsupported,
+            PromptNoneParameters,
+        ) as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
     return PromptTemplateSchema.get(alias)[0]
 
 
@@ -150,15 +195,15 @@ def generate(alias: str, values: Dict[str, Any]):
     """
     prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
+    # defaul parameters
     model_name = ModelEnum.GPT3_5.value
     max_tokens = settings.OPENAI_MAX_TOKENS
     temperature = settings.OPENAI_TEMPERATURE
-
-    if prompt_template.parameters is not None and prompt_template.parameters != {}:
+    # Override if parameters exist
+    if prompt_template.parameters is not None:
         model_name = prompt_template.parameters.model_name
         max_tokens = int(prompt_template.parameters.max_tokens)
         temperature = float(prompt_template.parameters.temperature)
-
     # if parameters field exists, replace model and parameter values
     return {
         "prompt": prompt,

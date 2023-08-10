@@ -11,3 +11,7 @@ class ModelEnum(Enum):
     GPT4 = "gpt-4"
     DAVINCI = "text-davinci-003"
     CURIE = "text-curie-001"
+
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.value, cls))

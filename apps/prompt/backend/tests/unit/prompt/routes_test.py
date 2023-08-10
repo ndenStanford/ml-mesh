@@ -111,8 +111,8 @@ def test_create_prompt(mock_prompt_get, mock_table_save, template, alias, test_c
             "joke-in-different-language",
             {
                 "model_name": "gpt-4",
-                "max_tokens": settings.OPENAI_MAX_TOKENS,
-                "temperature": settings.OPENAI_TEMPERATURE,
+                "max_tokens": 123,
+                "temperature": 0.3,
             },
         ),
     ],
@@ -125,7 +125,8 @@ def test_create_prompt_with_parameters(
     """Test get prompt endpoint."""
     mock_prompt_get.return_value = None
     response = test_client.post(
-        f"/api/v1/prompts?template={template}&alias={alias}&parameters={parameters}",
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        json=parameters,
         headers={"x-api-key": "1234"},
     )
 
@@ -140,7 +141,70 @@ def test_create_prompt_with_parameters(
     assert isinstance(data["alias"], str)
     assert isinstance(data["version"], int)
     assert isinstance(data["parameters"], dict)
+    assert data["parameters"] == parameters
     assert data["version"] == 0
+
+
+@pytest.mark.parametrize(
+    "expected, parameters",
+    [
+        (
+            "gpt-5 is not supported",
+            {
+                "model_name": "gpt-5",
+                "max_tokens": 123,
+                "temperature": 0.3,
+            },
+        ),
+        (
+            "Prompt parameter, max_tokens must be between 1 and 4098 for model gpt-4",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 999999,
+                "temperature": 0.3,
+            },
+        ),
+        (
+            "Prompt parameter, max_tokens must be between 1 and 4098 for model gpt-4",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": -1,
+                "temperature": 0.3,
+            },
+        ),
+        (
+            "Temperature must be between 0.0 and 1.0",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 123,
+                "temperature": 3,
+            },
+        ),
+        (  # This is a test to see if default values are used for missing attributes
+            "Prompt parameter, max_tokens must be between 1 and 4098 for model gpt-3.5-turbo",
+            {
+                "max_tokens": 4099,
+                "temperature": 3,
+            },
+        ),
+    ],
+)
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt_with_parameters_fail(
+    mock_prompt_get, expected, parameters, test_client
+):
+    """Test get prompt endpoint."""
+    mock_prompt_get.return_value = None
+    template = "test template"
+    alias = "test-alias"
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        json=parameters,
+        headers={"x-api-key": "1234"},
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    data = response.json()
+    assert data["detail"] == expected
 
 
 @pytest.mark.parametrize(

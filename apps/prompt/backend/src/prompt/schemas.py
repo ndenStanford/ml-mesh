@@ -16,17 +16,12 @@ from src.prompt.exceptions import (
     PromptNotFound,
     PromptVersionNotFound,
 )
+from src.prompt.parameters import Parameters
 from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
 
 
 settings = get_settings()
-
-
-class Parameters(BaseModel):
-    model_name: str = ModelEnum.GPT3_5.value
-    max_tokens: int = settings.OPENAI_MAX_TOKENS
-    temperature: float = settings.OPENAI_TEMPERATURE
 
 
 class PromptTemplateSchema(BaseModel):
@@ -41,7 +36,11 @@ class PromptTemplateSchema(BaseModel):
     alias: str
     version: int = 0
     created_at: Optional[datetime.datetime] = None
-    parameters: Optional[Parameters] = Parameters()
+    parameters: Optional[Parameters] = Parameters(
+        model_name=ModelEnum.GPT3_5.value,
+        temperature=settings.OPENAI_TEMPERATURE,
+        max_tokens=settings.OPENAI_MAX_TOKENS,
+    )
 
     @property
     def variables(self) -> List[str]:
@@ -150,11 +149,20 @@ class PromptTemplateSchema(BaseModel):
     def update(self, **kwargs) -> "PromptTemplateSchema":
         """Updates table record from latest version."""
         query = list(PromptTemplateTable.query(self.alias, scan_index_forward=False))
-        return PromptTemplateSchema(
-            template=kwargs.get("template"),
-            alias=self.alias,
-            version=int(query[0].version) + 1,
-        ).save()
+        if kwargs.get("parameters") is None:
+            return PromptTemplateSchema(
+                template=kwargs.get("template"),
+                alias=self.alias,
+                version=int(query[0].version) + 1,
+                parameters=self.parameters,
+            ).save()
+        else:
+            return PromptTemplateSchema(
+                template=kwargs.get("template"),
+                alias=self.alias,
+                version=int(query[0].version) + 1,
+                parameters=kwargs.get("parameters"),
+            ).save()
 
 
 class PromptTemplateOutputSchema(BaseModel):
