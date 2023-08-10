@@ -47,18 +47,16 @@ FROM builder as production
 
 ENV PYTHONPATH=${HOME}
 
-# --- sagemaker stage
-FROM production as sagemaker
+ENV SAGEMAKER_ENTRYPOINT="${HOME}/train"
 
-ENV SAGEMAKER_ENTRYPOINT = "${HOME}/train"
-
-# copy over sagemaker entrypoint
-COPY --chown=${USER}:users "${SAGEMAKER_ENTRYPOINT}" "${SAGEMAKER_ENTRYPOINT}"
-RUN ls "${HOME}"
-
-# update PATH so sagemaker invocation can find entrypoint bash script as per
+# copy over sagemaker entrypoint and rename to "train" as per
 # https://sagemaker-workshop.com/custom/containers.html
-ENV PATH="${HOME}:${PATH}"
+COPY --chown=${USER}:users "${SAGEMAKER_ENTRYPOINT}.sh" train
+RUN chmod u+x train
+
+# update PATH with ABSOLUTE path to /projects/{project_name}/{component}, so sagemaker invocation
+# can find entrypoint bash script as per https://sagemaker-workshop.com/custom/containers.html
+ENV PATH="${PWD}:${PATH}"
 RUN echo "${PATH}"
 
 # --- test build stage
