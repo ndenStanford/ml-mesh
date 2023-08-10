@@ -50,14 +50,15 @@ ENV PYTHONPATH=${HOME}
 # --- sagemaker stage
 FROM production as sagemaker
 
-ENV SAGEMAKER_CODE_DIR="/opt/ml/code"
+ENV SAGEMAKER_ENTRYPOINT = "${HOME}/train.sh"
 
-# create sagemaker directory structure
-RUN mkdir "${SAGEMAKER_CODE_DIR}"
+# copy over sagemaker entrypoint
+COPY --chown=${USER}:users "${HOME}/train.sh" "${SAGEMAKER_ENTRYPOINT}"
+RUN ls "${HOME}"
 
-# copy over sagemaker entrypoiny
-COPY --chown=${USER}:users "${HOME}/sagemaker_entrypoint.sh" "${SAGEMAKER_CODE_DIR}"
-RUN ls "${SAGEMAKER_CODE_DIR}"
+# update PATH so sagemaker invocation can find entrypoint bash script as per
+# https://sagemaker-workshop.com/custom/containers.html
+ENV PATH="{HOME}:${PATH}"
 
 # --- test build stage
 FROM builder as development
