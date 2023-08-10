@@ -47,6 +47,18 @@ FROM builder as production
 
 ENV PYTHONPATH=${HOME}
 
+# --- sagemaker stage
+FROM production as sagemaker
+
+ENV SAGEMAKER_CODE_DIR="/opt/ml/code"
+
+# create sagemaker directory structure
+RUN mkdir "${SAGEMAKER_CODE_DIR}"
+
+# copy over sagemaker entrypoiny
+COPY --chown=${USER}:users "${HOME}/sagemaker_entrypoint.sh" "${SAGEMAKER_CODE_DIR}"
+RUN ls "${SAGEMAKER_CODE_DIR}"
+
 # --- test build stage
 FROM builder as development
 
