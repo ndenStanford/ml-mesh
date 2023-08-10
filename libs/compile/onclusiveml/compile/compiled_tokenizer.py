@@ -1,6 +1,7 @@
 # Standard Library
 import json
 import os
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -15,7 +16,6 @@ from transformers import (
 from onclusiveml.compile.compile_utils import (
     DelegatedTokenizerAttributes,
     DelegatedTokenizerMethods,
-    duplicate_huggingface_transformer_via_local_cache,
 )
 
 
@@ -32,7 +32,7 @@ class CompiledTokenizer(object):
         **tokenization_kwargs: Any
     ):
 
-        self.tokenizer = duplicate_huggingface_transformer_via_local_cache(tokenizer)
+        self.tokenizer = deepcopy(tokenizer)
         self.tokenization_settings = self.get_tokenization_settings(
             tokenizer, **tokenization_kwargs
         )

@@ -6,9 +6,14 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-jupyterlab = "4.0.1"
+jupyterlab = "3.6.5"
 notebook = "6.4.12"
 ipykernel = "6.25.0"
+core = {path = "../../libs/core"}
+nlp = {path = "../../libs/nlp"}
+serving = {path = "../../libs/serving"}
+tracking = {path = "../../libs/tracking"}
+neptune-notebooks = "^0.9.3"
 
 [build-system]
 requires = ["poetry-core"]

@@ -12,7 +12,10 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.mark.parametrize(
     "huggingface_pipeline_task, huggingface_model_reference",
-    [("text-classification", "prajjwal1/bert-tiny")],
+    [
+        ("text-classification", "prajjwal1/bert-tiny"),
+        ("sentiment-analysis", "cardiffnlp/twitter-xlm-roberta-base-sentiment"),
+    ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
 @pytest.mark.parametrize("batch_size", [1, 2, 4])
@@ -24,7 +27,7 @@ from onclusiveml.compile import CompiledPipeline
         # and takes a long time for neuron tracing
     ],
 )
-def compiled_text_classification_pipeline_from_pipeline_test(
+def test_compiled_text_classification_pipeline_from_pipeline(
     huggingface_pipeline_task,
     huggingface_model_reference,
     huggingface_pipeline,
