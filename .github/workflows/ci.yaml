@@ -89,6 +89,10 @@ jobs       :
             integration: false
             functional: false
 
+          - name: syndicate
+            integration: false
+            functional: false
+
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
@@ -252,6 +256,19 @@ jobs       :
             download-model: false
             integration: false
             functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # ========================
+          # LSH
+          # ========================
+          # serve
+          - name: lsh
+            component: serve
+            download-model: false
+            integration: true
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04

@@ -11,26 +11,24 @@ from onclusiveml.compile import CompiledModel
 
 
 @pytest.mark.parametrize(
-    "huggingface_model_reference, sample_inputs",
+    "huggingface_model_reference, sample_inputs, max_length",
     [
         # 'prajjwal1/bert-tiny',
         (
+            "cardiffnlp/twitter-xlm-roberta-base-sentiment",
+            lazy_fixture("test_inputs"),
+            15,
+        ),
+        (
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
             lazy_fixture("test_inputs"),
+            15,
         ),
-        ("dslim/bert-base-NER", lazy_fixture("test_ner_inputs")),
+        ("dslim/bert-base-NER", lazy_fixture("test_ner_inputs"), 35),
     ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
 @pytest.mark.parametrize("batch_size", [1, 2, 4])
-@pytest.mark.parametrize(
-    "max_length",
-    [
-        35,
-        # None, # for 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', this is 512
-        # and takes a long time for neuron tracing
-    ],
-)
 def test_compiled_model_from_model(
     huggingface_tokenizer,
     huggingface_model,
