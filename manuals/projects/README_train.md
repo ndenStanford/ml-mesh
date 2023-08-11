@@ -39,9 +39,9 @@ For reference implementations of all below concepts, i.e.,
 - `config` directory and `dotenv` configuration files
 - `src` directory and source code layout
 - `test` suite implementations
-- `docker compose` services
+- `docker compose` files and services for `dev` and `ci`
 
-see the `keywords` project.
+**see the `keywords` project.**
 
 
 ## 2 Running the training component
@@ -57,7 +57,7 @@ the functionality of your code via make command once the development is finished
 - Some env vars might be missing
 
 1. Set the neptune authentication token value
-   - `export NEPTUNE_API_TOKEN==?`
+   - `export NEPTUNE_API_TOKEN==your_personal_neptune_api_token_here`
 2. Change into the `projects/${PROJECT_NAME}/train/src` directory
    - `cd projects/${PROJECT_NAME}/train`
 3. Run the model retrieval + registering step
