@@ -144,23 +144,26 @@ def update_prompt(alias: str, template: str, parameters: Dict = None):
         )
     prompt = prompt[0]
 
-    if not prompt.template == template:
-        try:
-            if parameters is None:
-                prompt.update(template=template)
-            else:
+    try:
+        if template != prompt.template or parameters is not None or parameters == {}:
+            if parameters is not None or parameters == {}:
                 params_instance = Parameters.from_dict(parameters)
-                prompt.update(template=template, parameters=params_instance)
-        except (
-            PromptTokenExceedModel,
-            PromptOutsideTempLimit,
-            PromptModelUnsupported,
-            PromptInvalidParameters,
-        ) as e:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=str(e),
-            )
+                if params_instance != prompt.parameters:
+                    prompt.update(template=template, parameters=params_instance)
+                else:
+                    prompt.update(template=template)
+            else:
+                prompt.update(template=template)
+    except (
+        PromptTokenExceedModel,
+        PromptOutsideTempLimit,
+        PromptModelUnsupported,
+        PromptInvalidParameters,
+    ) as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
     return PromptTemplateSchema.get(alias)[0]
 
 
