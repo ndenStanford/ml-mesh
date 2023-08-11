@@ -8,8 +8,8 @@ from fastapi import APIRouter, status
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.serving.rest.serve.params import (
+    BetterStackParams,
     FastAPISettings,
-    get_betterstack_settings,
 )
 from onclusiveml.serving.rest.serve.server_models import (
     LivenessProbeResponse,
@@ -87,7 +87,7 @@ def get_liveness_router(api_version: str = "v1") -> Callable:
 
     model_server_urls = get_model_server_urls(api_version=api_version)
 
-    betterstack_settings = get_betterstack_settings()
+    betterstack_settings = BetterStackParams()
 
     @liveness_router.get(
         model_server_urls.liveness,
@@ -95,15 +95,10 @@ def get_liveness_router(api_version: str = "v1") -> Callable:
         status_code=status.HTTP_200_OK,
     )
     async def live() -> LivenessProbeResponse:
-        if (
-            betterstack_settings.environment in ("stage", "prod")
-            and betterstack_settings.betterstack_key
-        ):
-            requests.post(
-                "https://uptime.betterstack.com/api/v1/heartbeat/{}".format(
-                    betterstack_settings.betterstack_key
-                )
-            )
+        if betterstack_settings.enable:
+
+            requests.post(betterstack_settings.betterstack_url)
+
         return LivenessProbeResponse()
 
     return liveness_router

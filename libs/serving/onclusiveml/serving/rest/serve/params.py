@@ -1,6 +1,8 @@
 # Standard Library
-import os
 from typing import Dict, Optional, Union
+
+# 3rd party libraries
+from pydantic import Field, SecretStr
 
 # Internal libraries
 from onclusiveml.serving.params import ServingBaseParams
@@ -62,17 +64,19 @@ class UvicornSettings(ServingBaseParams):
 
 
 class BetterStackParams(ServingBaseParams):
-    """setting variables for betterstack"""
+    """settings class for betterstack integration
+    Attributes:
+        enable : A switch for enabling/disabling betetrstack heartbeat check.
+        api_token: Token to authenticate with betterstack and identify the betterstack project.
+    """
 
-    # API/lib environment
-    environment: str = os.environ.get("ENVIRONMENT", "dev")
+    # API/lib switch
+    enable: bool = True
     # Betterstack heartbeat key
-    betterstack_key: str = os.environ.get("SERVING_LIB_BETTERSTACK_KEY", "")
+    betterstack_api_token: SecretStr = Field(..., exclude=True)
 
-
-def get_betterstack_settings() -> ServingBaseParams:
-    """Returns instanciated BetterStackParams class."""
-    return BetterStackParams()
+    base_url = "https://uptime.betterstack.com/api/v1/heartbeat/"
+    betterstack_url = f"{base_url}{betterstack_api_token.get_secret_value()}"
 
 
 class ServingParams(ServingBaseParams):
@@ -88,4 +92,3 @@ class ServingParams(ServingBaseParams):
     fastapi_settings: FastAPISettings = FastAPISettings()
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
-    betterstack_settings = get_betterstack_settings()
