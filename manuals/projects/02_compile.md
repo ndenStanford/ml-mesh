@@ -14,13 +14,13 @@ The `${PROJECT_NAME}-compile` container image provides the code and runtime envi
 
 Each of the 4 steps corresponds to a (set of) python module(s):
 
-1. `download_uncompiled_model.py`
-2. `compile_model.py`
-3. Regression test suite inside `test_compiled_model` directory:
+1. `src/download_uncompiled_model.py`
+2. `src/compile_model.py`
+3. Regression test suite inside `src/test_compiled_model` directory:
    - `pytest.ini`
    - `conftest.py`
    - `compiled_model_test.py`
-4. `upload_compiled_model.py`
+4. `src/upload_compiled_model.py`
 
 Each component draws its configurations from the `settings.py` module, which parses all required
 environment variable either
@@ -95,7 +95,7 @@ Editing that file allows for configuring development pipeline runs.
 
 To locally build the image
 - using the ${BASE_IMAGE_TAG} version of the base image, and
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-copmile:${IMAGE_TAG}`, run
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-compile:${IMAGE_TAG}`, run
 the `make` target:
 
 ```bash
@@ -163,12 +163,7 @@ To run the `compile` container locally as a pipeline using
    IMAGE_TAG=${IMAGE_TAG}
   ```
 
-  - Note: If the `--env-file` command is omitted in the above steps,
-    the pipeline will fall back on the default values defined in the `settings.py` file.
-  - Note: The `volume` mount command `--mount type=volume,source=...` will create a docker volume
-    named `keywords_compile-pipeline-vol` on your machine. Follow the docker docs to remove it to unblock repeated downloads when re-running the first component
-
-## 3 Testing the training component
+## 3 Testing the `compile` component
 
 To validate every change on the component, test suites should be run using the
 `docker-compose.dev.yaml` file. The following test suites are implemented:
@@ -182,7 +177,7 @@ To validate every change on the component, test suites should be run using the
 To run the `unit` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev
+make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
 ### 2.2 Run `integration` tests
@@ -190,7 +185,7 @@ make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev
 To run the `integration` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev
+make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
 ### 2.3 Run `functional` tests
@@ -198,5 +193,5 @@ make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev
 To run the `functional` tests for the `compile` component using the `docker-compose.dev.yaml` file,  run:
 
 ```bash
-make projects.functional/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev
+make projects.functional/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```

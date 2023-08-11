@@ -11,9 +11,9 @@ The `${PROJECT_NAME}-train` container image provides the code and runtime enviro
 - training it (optional) and
 - registering it on our internal neptune AI model registry.
 
-The python module implementing the above process is `register_trained_model.py`.
+The python module implementing the above process is `src/register_trained_model.py`.
 
-It draws its configurations from the `settings.py` module, which parses all required
+It draws its configurations from the `src/settings.py` module, which parses all required
 environment variable either
 
 - from the environment, or, if not specified,
@@ -78,8 +78,9 @@ Editing that file allows for configuring development pipeline runs.
 
 To locally build the image
 - using the ${BASE_IMAGE_TAG} version of the base image, and
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`, run
-the `make` target:
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`,
+
+run:
 
 ```bash
 make projects.build/${PROJECT_NAME} \
@@ -95,21 +96,18 @@ To run the `train` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
 - internal `projects` level `make` & `docker compose` utilities, follow the below steps.
 
-1. Update the `dev.env` file in the `config` directory as needed. We will inject environment
-   variable values directly from the file into the running container (see below) to allow for
-   pipeline runtime configurations without requiring a rebuild of the docker container.
-
-2. Run the container:
-
-You can run the command with this command (which uses docker compose):
+1. Update the `dev.env` file in the `config` directory as needed. `docker compose` will inject
+   the file's environment variable values directly from the file into the running container (see
+   below) to allow for pipeline runtime configurations without requiring a rebuild of the docker
+   container.
+2. Update the `train` service in your `docker compose` file accordingly
+3. Run the container:
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=train IMAGE_TAG=${IMAGE_TAG}
+make projects.start/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
-
-## 3 Testing the training component
+## 3 Testing the `train` component
 
 To validate every change on the component, test suites should be run using the `docker-compose.dev.yaml` file.
 The following test suites are implemented:
