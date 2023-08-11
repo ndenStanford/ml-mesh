@@ -1,14 +1,15 @@
 # `Train Manual`
 
-Set PROJECT_NAME to "keywords", "ner", or "sentiment"
+This document outlines how to run and test your project's `train` component.
 
-`export PROJECT_NAME=?`
+## 1 Scope of the training component
 
-## 1 Overview
+### 1.1 Overview
 
-The `${PROJECT_NAME}-train` container image provides the code and runtime environment for retrieving a
-specified feature extraction pipeline from huggingface and registering it on our internal neptun AI
-model registry.
+The `${PROJECT_NAME}-train` container image provides the code and runtime environment for
+- retrieving a specified model / pipeline from huggingface,
+- training it (optional) and
+- registering it on our internal neptune AI model registry.
 
 The python module implementing the above process is `register_trained_model.py`.
 
@@ -20,15 +21,38 @@ environment variable either
 
 Specs defined in the `config/prod.env` is used only during CI processes.
 
-## 2 Running the pipeline
+### 1.2 References
+
+Projects implementing a `train` component are
+- `keywords`
+- `ner`
+- `sentiment`
+
+To follow the instructions in this guide, run
+
+```export PROJECT_NAME=your_project_name_here```
+
+For reference implementations of all below concepts, i.e.,
+- `Dockerfile` structure
+- `config` directory and `dotenv` configuration files
+- `src` directory and source code layout
+- `test` suite implementations
+- `docker compose` services
+
+see the `keywords` project.
+
+
+## 2 Running the training component
 
 ### 2.1 Without containers
 
-For development purposes, the pipeline can be run locally without containers. Note that while this could ease the development process, it has some downsides since you are now outside of your bespoke container runtime environment. The following risks should be considered. It's important to test the functionality of your code via make command once the development is finished.
+For development purposes, the pipeline can be run locally without containers. Note that while this
+could ease the development process, it has some downsides since you are now outside of your bespoke
+container runtime environment. The following risks should be considered. It's important to test
+the functionality of your code via make command once the development is finished.
 
-- Some dependencies might be missing
+- Some python & OS-level dependencies might be missing
 - Some env vars might be missing
-- All potential dependency docker services (none in the case of train, but there will be some for compile for example) will have to be manually run
 
 1. Set the neptune authentication token value
    - `export NEPTUNE_API_TOKEN==?`
@@ -53,14 +77,14 @@ make projects.build/${PROJECT_NAME} \
   COMPONENT=train \
   ENVIRONMENT=dev
 ```
-You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a different name. Make sure you've exported a value for `$IMAGE_TAG`
+You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a different name. Make
+sure you've exported a value for `$IMAGE_TAG`
 
 #### 2.2.2 Running the components inside docker
 
 1. Export run environment variables
 
    - `export NEPTUNE_API_TOKEN=?`
-   - `export PATH_TO_REPOSITORY=?`
 
 2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
    variable values directly from the file into the running container (see below) to allow for
@@ -75,3 +99,40 @@ make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
 
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
+
+## 3 Testing the training component
+
+To validate every change on the component, test suites should be run using the `docker-compose.dev.yaml` file.
+The following test suites are implemented:
+
+- `unit`
+   - every `train` component requires this
+- `integration`
+   - optional
+- `functional` (optional)
+   - optional
+
+
+### 2.1 Run `unit` tests
+
+To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
+```
+
+### 2.2 Run `integration` tests
+
+To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
+```
+
+### 2.3 Run `functional` tests
+
+To run the `functional` tests for the `train` component using the `docker-compose.dev.yaml` file,  run:
+
+```bash
+make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
+```
