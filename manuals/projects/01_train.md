@@ -2,7 +2,7 @@
 
 This document outlines how to run and test your project's `train` component.
 
-## 1 Scope of the training component
+## 1 Scope of the `train` component
 
 ### 1.1 Overview
 
@@ -21,7 +21,7 @@ environment variable either
 
 Specs defined in the `config/prod.env` is used only during CI processes.
 
-### 1.2 References
+### 1.2 Setup & references
 
 Projects implementing a `train` component are
 - `keywords`
@@ -32,7 +32,14 @@ To follow the instructions in this guide, run
 
 ```bash
 export PROJECT_NAME=your_project_name_here
+export BASE_IMAGE_TAG=the_base_image_docker_tag_here
+export IMAGE_TAG=your_desired_train_container_docker_tag_here
+export NEPTUNE_API_TOKEN=your_personal_neptune_api_token_here
+export AWS_ACCESS_KEY_ID=your_aws_access_key_id_here
+export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 ```
+
+or update your `.envrc` file accordingly.
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -41,10 +48,10 @@ For reference implementations of all below concepts, i.e.,
 - `test` suite implementations
 - `docker compose` files and services for `dev` and `ci`
 
-**see the `keywords` project.**
+**see the [`keywords` project's `train` component](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L9).**
 
 
-## 2 Running the training component
+## 2 Running the `train` component
 
 ### 2.1 Without containers (initial development and debugging only)
 
@@ -56,11 +63,9 @@ the functionality of your code via make command once the development is finished
 - Some python & OS-level dependencies might be missing
 - Some env vars might be missing
 
-1. Set the neptune authentication token value
-   - `export NEPTUNE_API_TOKEN==your_personal_neptune_api_token_here`
-2. Change into the `projects/${PROJECT_NAME}/train/src` directory
+1. Change into the `projects/${PROJECT_NAME}/train/src` directory
    - `cd projects/${PROJECT_NAME}/train`
-3. Run the model retrieval + registering step
+2. Run the model retrieval + registering step
    - `python -m src.register_trained_model`
 
 As described in the previous section the `settings.py` script will fall back onto the
@@ -71,33 +76,35 @@ Editing that file allows for configuring development pipeline runs.
 
 #### 2.2.1 Building the docker container
 
-To locally build the image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:latest`, run the `make` target:
+To locally build the image
+- using the ${BASE_IMAGE_TAG} version of the base image, and
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`, run
+the `make` target:
 
 ```bash
 make projects.build/${PROJECT_NAME} \
   COMPONENT=train \
-  ENVIRONMENT=dev
+  ENVIRONMENT=dev \
+  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  IMAGE_TAG=${IMAGE_TAG}
 ```
-You can replace `latest` with `$IMAGE_TAG` if you would prefer to tag with a different name. Make
-sure you've exported a value for `$IMAGE_TAG`
 
-#### 2.2.2 Running the components inside docker
+#### 2.2.2 Running the docker container using docker compose
 
-1. Export run environment variables
+To run the `train` container locally using
+- the services implemented in the `projects` `docker-compose.dev.yaml` file and
+- internal `projects` level `make` & `docker compose` utilities, follow the below steps.
 
-   - `export NEPTUNE_API_TOKEN=?`
-
-2. Update the `dev.env` file in the `config` directory as needed. We will inject environment
+1. Update the `dev.env` file in the `config` directory as needed. We will inject environment
    variable values directly from the file into the running container (see below) to allow for
    pipeline runtime configurations without requiring a rebuild of the docker container.
 
-3. Run the container:
+2. Run the container:
 
 You can run the command with this command (which uses docker compose):
 
-```
-make projects.start/${PROJECT_NAME} COMPONENT=train
+```bash
+make projects.start/${PROJECT_NAME} COMPONENT=train IMAGE_TAG=${IMAGE_TAG}
 ```
 
 If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest` with it.
@@ -116,7 +123,7 @@ The following test suites are implemented:
 To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
+make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
 ### 2.2 Run `integration` tests
@@ -124,7 +131,7 @@ make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
 To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
+make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
 ### 2.3 Run `functional` tests
@@ -132,5 +139,5 @@ make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
 To run the `functional` tests for the `train` component using the `docker-compose.dev.yaml` file,  run:
 
 ```bash
-make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev
+make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
