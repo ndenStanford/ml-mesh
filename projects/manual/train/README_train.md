@@ -30,7 +30,9 @@ Projects implementing a `train` component are
 
 To follow the instructions in this guide, run
 
-```export PROJECT_NAME=your_project_name_here```
+```bash
+export PROJECT_NAME=your_project_name_here
+```
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -72,7 +74,7 @@ Editing that file allows for configuring development pipeline runs.
 To locally build the image tagged as
 `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:latest`, run the `make` target:
 
-```make
+```bash
 make projects.build/${PROJECT_NAME} \
   COMPONENT=train \
   ENVIRONMENT=dev
