@@ -9,15 +9,16 @@ This document outlines how to run and test your project's `serve` component.
 The `${PROJECT_NAME}-serve` container image provides the code and runtime environment for
 - downloading a model registered on the neptune AI model registry (if applicable - see below)
 - serving a model **owned & maintained internally** by the ML team
+- uploading test results to the neptune AI model registry (if applicable - see above)
 
-This can be both a
+The model in question can be a
 - (trained &) compiled ML model with artifact files that are stored in the AI model registry, as is
    the case for
   - `keywords`
   - `sentiment`
   - `ner`,
   or
-- a "code-only" model without artifacts and no AI model registry entry, as is the case for
+- "code-only" model without artifact files and no AI model registry entry, as is the case for
   - `lsh`
 
 The python module implementing the serving process is `src/serve/model_server.py`.
