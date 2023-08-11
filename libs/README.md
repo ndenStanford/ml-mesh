@@ -10,7 +10,7 @@ Internal libraries implement abstractions that allow us to build our ML applicat
 - **compile**: Support for optimizing models for serving purposes.
 - **models**: Custom model wrappers.
 - **nlp**: internal NLP utilities.
-- **serving**: model wrappers for serving.
+- **serving**: model wrappers for serving and observability instrumentation.
 - **training**: object suite to enable training models at scale.
 
 ## Makefile Targets
