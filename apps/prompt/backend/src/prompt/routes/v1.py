@@ -2,7 +2,7 @@
 
 # Standard Library
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 # 3rd party libraries
 from fastapi import APIRouter, HTTPException, status
@@ -76,7 +76,7 @@ def get_prompt(alias: str):
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_prompt(template: str, alias: str, parameters: Dict = None):
+def create_prompt(template: str, alias: str, parameters: Optional[Dict] = None):
     """Creates prompt.
 
     Args:
