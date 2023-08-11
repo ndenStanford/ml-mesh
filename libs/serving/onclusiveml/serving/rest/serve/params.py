@@ -75,8 +75,8 @@ class BetterStackParams(ServingBaseParams):
             to, including the api_token. See `assemble_betterstack_url` for details.
     """
 
-    enable: bool = True
-    api_token: SecretStr = Field(..., exclude=True)
+    enable: bool = False
+    api_token: SecretStr = Field("dummy_api_token", exclude=True)
     base_url: str = "https://uptime.betterstack.com/api/v1/heartbeat/"
     full_url: str = ""
 
