@@ -20,4 +20,5 @@ from onclusiveml.serving.rest.serve.params import (  # noqa: F401
     UvicornSettings,
     LogConfigSettings,
     ServingParams,
+    BetterStackParams,
 )
