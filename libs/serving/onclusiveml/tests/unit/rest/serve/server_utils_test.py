@@ -81,7 +81,7 @@ def test_liveness_router_with_betterstack_settings(mocked_requests):
         app = FastAPI()
 
         test_client = TestClient(app)
-        response = test_client.get("/live")
+        response = test_client.get("/v1/live")
         # Assertions
         assert response.status_code == 200
         assert response.json() == {"status": "alive"}
