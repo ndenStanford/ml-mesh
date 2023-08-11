@@ -1,6 +1,6 @@
 # The `compile` component
 
-This document outlines how to run and test your project's `train` component.
+This document outlines how to run and test your project's `compile` component.
 
 ## 1 Scope of the `compile` component
 
