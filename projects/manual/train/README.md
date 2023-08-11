@@ -1,4 +1,4 @@
-# `Train Manual`
+# The `train` component
 
 This document outlines how to run and test your project's `train` component.
 
