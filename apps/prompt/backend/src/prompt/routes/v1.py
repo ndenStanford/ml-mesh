@@ -128,7 +128,7 @@ def create_prompt(template: str, alias: str, parameters: Optional[Dict] = None):
 
 
 @router.put("/{alias}", status_code=status.HTTP_200_OK)
-def update_prompt(alias: str, template: str, parameters: Dict = None):
+def update_prompt(alias: str, template: str, parameters: Optional[Dict] = None):
     """Updates latest version of a prompt.
 
     Args:
