@@ -97,7 +97,7 @@ def get_liveness_router(api_version: str = "v1") -> Callable:
     async def live() -> LivenessProbeResponse:
         if betterstack_settings.enable:
 
-            requests.post(betterstack_settings.betterstack_url)
+            requests.post(betterstack_settings.full_url)
 
         return LivenessProbeResponse()
 

@@ -5,11 +5,35 @@ import os
 import pytest
 
 # Internal libraries
+from onclusiveml.serving import ServingBaseParams
 from onclusiveml.serving.rest.serve import (
+    BetterStackParams,
     FastAPISettings,
     ServingParams,
     UvicornSettings,
 )
+
+
+def test_better_stack_params_env_prefix():
+    """Tests the environment prefix of a BetterStackParams."""
+
+    assert (
+        BetterStackParams.Config.env_prefix
+        == f"{ServingBaseParams.Config.env_prefix}_betterstack_"  # noqa: W503
+    )
+
+
+def test_better_stack_params__init__():
+    """Tests the initialization of a BetterStackPArams instance with test values.
+    Also covers
+        - the root_validator assemble_betterstack_url
+        - the environment prefix"""
+
+    better_stack_params = BetterStackParams(
+        enable=True, api_token="test_token", base_url="test_url/"
+    )
+
+    assert better_stack_params.full_url == "test_url/test_token"
 
 
 def test_serving_params():
@@ -20,7 +44,7 @@ def test_serving_params():
 
 def test_serving_params_env_prefix():
     """Tests the inherited environment prefix of the ServingParams class"""
-    assert ServingParams.__config__.env_prefix == "onclusiveml_serving_"
+    assert ServingParams.Config.env_prefix == "onclusiveml_serving_"
 
 
 @pytest.mark.parametrize(
@@ -34,8 +58,7 @@ def test_serving_params_env_prefix_nested_settings(test_subsettings_field):
     subsettings = getattr(keyword_serving_params, test_subsettings_field)
 
     assert (
-        subsettings.__config__.env_prefix
-        == ServingParams.__config__.env_prefix  # noqa: W503
+        subsettings.Config.env_prefix == ServingParams.Config.env_prefix  # noqa: W503
     )
 
 
