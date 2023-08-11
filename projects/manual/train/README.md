@@ -44,7 +44,7 @@ see the `keywords` project.
 
 ## 2 Running the training component
 
-### 2.1 Without containers
+### 2.1 Without containers (initial development and debugging only)
 
 For development purposes, the pipeline can be run locally without containers. Note that while this
 could ease the development process, it has some downsides since you are now outside of your bespoke
@@ -65,7 +65,7 @@ As described in the previous section the `settings.py` script will fall back ont
 `config/dev.env` file for any environment variables that it cant obtain from the environment.
 Editing that file allows for configuring development pipeline runs.
 
-### 2.2 With containers
+### 2.2 With containers (recommended approach)
 
 #### 2.2.1 Building the docker container
 
