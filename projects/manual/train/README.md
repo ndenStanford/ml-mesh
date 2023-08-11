@@ -107,11 +107,8 @@ The following test suites are implemented:
 
 - `unit`
    - every `train` component requires this
-- `integration`
-   - optional
+- `integration` (optional)
 - `functional` (optional)
-   - optional
-
 
 ### 2.1 Run `unit` tests
 
