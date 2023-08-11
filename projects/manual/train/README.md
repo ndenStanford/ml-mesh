@@ -105,8 +105,7 @@ If you're using a different tag e.g. `$IMAGE_TAG`, make sure to replace `latest`
 To validate every change on the component, test suites should be run using the `docker-compose.dev.yaml` file.
 The following test suites are implemented:
 
-- `unit`
-   - every `train` component requires this
+- `unit` (mandatory)
 - `integration` (optional)
 - `functional` (optional)
 
