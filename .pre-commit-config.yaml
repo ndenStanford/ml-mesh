@@ -75,6 +75,13 @@ repos                   :
       - id: isort
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
 
+  # docstring
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        exclude: ^(libs/.*/tests/|projects/.*/tests)
+
   # =================================
   # DOCKER
   # =================================
