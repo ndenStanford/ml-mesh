@@ -80,7 +80,8 @@ repos                   :
     rev: 6.3.0
     hooks:
       - id: pydocstyle
-        exclude: ^(libs/.*/tests/|projects/.*/tests)
+        additional_dependencies: [toml, tomli]
+        exclude: ^(bin/)
 
   # =================================
   # DOCKER
