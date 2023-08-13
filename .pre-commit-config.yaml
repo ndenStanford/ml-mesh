@@ -80,6 +80,12 @@ repos                   :
     rev: 6.3.0
     hooks:
       - id: pydocstyle
+        args:
+          - --source
+          - --explain
+          - --convention=google
+          - --count
+          - --add-ignore=D105,D106,D107
         additional_dependencies: [toml, tomli]
         exclude: ^(bin/)
 
