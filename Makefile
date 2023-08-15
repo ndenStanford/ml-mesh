@@ -11,10 +11,14 @@ IMAGE_TAG?=latest
 TARGET_BUILD_STAGE?=development
 USE_DOCKER_CACHE?=false
 WITH_DOCKER?=false
+DOCKER_FLAGS?=
 PORT?=8888
 ENVIRONMENT?=dev
 
 ## VARIABLES
+ifeq ($(USE_DOCKER_CACHE),false)
+	DOCKER_FLAGS += --no-cache
+endif
 
 # all core docker images
 ALL_DOCKER_IMGS:= \
@@ -33,14 +37,16 @@ ALL_LIBS:= \
 	models \
 	nlp \
 	serving \
-	tracking
+	tracking \
+	syndicate
 
 # all projects
 ALL_PROJECTS:= \
 	keywords \
 	summarization \
 	entity-linking \
-	ner
+	ner \
+	lsh
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk

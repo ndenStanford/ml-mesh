@@ -41,7 +41,7 @@ def test_compiled_feature_extraction_pipeline_from_pretrained(
     max_length,
     batch_size,
     neuron,
-    sample_inputs,
+    test_inputs,
     regression_test_atol,
     regression_test_rtol,
 ):
@@ -58,7 +58,7 @@ def test_compiled_feature_extraction_pipeline_from_pretrained(
     )
     # score compiled pipeline
     compiled_pipeline_output: Tuple[Tuple[List[List[float]]]] = compiled_pipeline(
-        sample_inputs
+        test_inputs
     )  # 1 x n_batch x n_token x n_embed
     compiled_pipeline_output_arr: np.array = np.array(compiled_pipeline_output)
     # export and re-import compiled pipeline
@@ -70,7 +70,7 @@ def test_compiled_feature_extraction_pipeline_from_pretrained(
     reloaded_compiled_pipeline_output: Tuple[
         Tuple[List[List[float]]]
     ] = reloaded_compiled_pipeline(
-        sample_inputs
+        test_inputs
     )  # 1 x n_batch x n_token x n_embed
     reloaded_compiled_pipeline_output_arr: np.array = np.array(
         reloaded_compiled_pipeline_output

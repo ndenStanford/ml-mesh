@@ -28,7 +28,7 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
 
     compiled_predictions = compiled_keybert.extract_keywords(
         test_files["inputs"][test_sample_index], **test_files["inference_params"]
-    )
+    )[0]
     # regression test compiled vs uncompiled
     expected_predictions = test_files["predictions"][test_sample_index]
 
@@ -36,7 +36,13 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
         f"Compiled model predictions {test_sample_index} : {compiled_predictions}"
     )
     logger.info(
+        f"Compiled model predictions type {test_sample_index} : {type(compiled_predictions)}"
+    )
+    logger.info(
         f"Expected model predictions {test_sample_index}: {expected_predictions}"
+    )
+    logger.info(
+        f"Expected model predictions type {test_sample_index}: {type(expected_predictions)}"
     )
 
     compiled_predictions_df = to_dataframe(compiled_predictions)
