@@ -41,6 +41,11 @@ class PromptTemplateSchema(BaseModel):
         if value == "" or value == "{}" or value == '""':
             raise PromptInvalidTemplate(template=value)
         else:
+            # Test template using formatter. Raise error if incorrectly formatted
+            try:
+                [i[1] for i in Formatter().parse(value) if i[1] is not None]
+            except ValueError:
+                raise PromptInvalidTemplate(template=value)
             return value
 
     @property
