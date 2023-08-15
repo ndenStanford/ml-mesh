@@ -101,6 +101,8 @@ To run the pipeline locally using the configurations in the `docker-compose.dev.
 
 3. Run the pipeline
 
+It's imperative that pipelines need to be run in this specific order.
+
 - Download the uncompiled model:
 
   ```docker

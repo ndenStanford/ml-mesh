@@ -159,7 +159,7 @@ class CompiledSent:
                 it_attention_masks = torch.cat(
                     (
                         it_attention_masks,
-                        torch.tensor(np.zeros([diff_size, 128]), dtype=torch.float32),
+                        torch.tensor(np.zeros([diff_size, 128]), dtype=torch.int64),
                     ),
                     0,
                 )
