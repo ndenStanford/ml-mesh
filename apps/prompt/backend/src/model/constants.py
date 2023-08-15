@@ -1,17 +1,11 @@
 """Constants"""
 
-# Standard Library
-from enum import Enum
+# Internal libraries
+from onclusiveml.core.base.utils import OnclusiveEnum
 
 
-class ModelEnum(Enum):
+class ModelEnum(OnclusiveEnum):
     """Enum values for models"""
 
     GPT3_5 = "gpt-3.5-turbo"
     GPT4 = "gpt-4"
-    DAVINCI = "text-davinci-003"
-    CURIE = "text-curie-001"
-
-    @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))

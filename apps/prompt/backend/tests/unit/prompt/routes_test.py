@@ -550,7 +550,7 @@ def test_generate_text_override_parameters(
             "Write me a {count}-verse poem about {topic}",
             "poem",
             2,
-            "text-davinci-003",
+            "gpt-4",
             {"count": 3, "topic": "machine learning"},
             "Verse 1:\nIn the world of tech, there's a buzzword we hear,\nIt's called \"machine learning,\" and it's quite clear,\nIt's a way for computers to learn and adapt,\nTo make predictions and improve how they act.\n\nVerse 2:\nFrom speech recognition to self-driving cars,\nMachine learning is taking us far,\nIt can analyze data and find patterns we miss,\nAnd help us solve problems with greater success.\n\nVerse 3:\nIt's not just for tech, it's used in many fields,\nFrom medicine to finance, it yields great yields,\nWith algorithms that can sort through the noise,\nAnd make sense of data that's vast and diverse.\n\nVerse 4:\nAs we move forward, machine learning will grow,\nAnd change how we work, live, and know,\nIt's a tool that will help us achieve,\nAnd make the impossible, possible, we believe.",  # noqa: E501
         ),
@@ -559,7 +559,7 @@ def test_generate_text_override_parameters(
             "What's the most popular {type} framework?",
             "framework",
             "4",
-            "text-curie-001",
+            "gpt-4",
             {"type": "web"},
             "As an AI language model, I don't have access to current statistics or current trends. However, some of the most popular web frameworks currently include Angular, React, Vue.js, Django, Ruby on Rails, and Flask.",  # noqa: E501
         ),
@@ -567,7 +567,7 @@ def test_generate_text_override_parameters(
 )
 @patch.object(ModelSchema, "get")
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.Completion.create")
+@patch("openai.ChatCompletion.create")
 def test_generate_text_with_diff_model(
     mock_openai_chat,
     mock_prompt_get,
@@ -583,7 +583,7 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"text": generated}]}
+    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     mock_prompt_get.return_value = [
         PromptTemplateSchema(id=id, template=template, alias=alias)
     ]
@@ -606,7 +606,7 @@ def test_generate_text_with_diff_model(
     # check openai method is called
     mock_openai_chat.assert_called_with(
         model=model_name,
-        prompt=template.format(**values),
+        messages=[{"role": "user", "content": template.format(**values)}],
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
     )
