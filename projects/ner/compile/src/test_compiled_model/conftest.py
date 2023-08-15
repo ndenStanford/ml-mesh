@@ -63,7 +63,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
     return [
         [
             {
-                "entity": "B-ORG",
+                "entity": "ORG",
                 "score": 0.9981778860092163,
                 "sentence_index": 0,
                 "word": "Google",
@@ -71,7 +71,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 "end": 6,
             },
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.998550146818161,
                 "sentence_index": 0,
                 "word": "Mountain View",
@@ -79,7 +79,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 "end": 29,
             },
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.9993670582771301,
                 "sentence_index": 0,
                 "word": "CA",
@@ -89,7 +89,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         ],
         [
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.991286963224411,
                 "sentence_index": 0,
                 "word": "Gulf Stream",
@@ -97,7 +97,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 "end": 32,
             },
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.9935731490453085,
                 "sentence_index": 0,
                 "word": "Cape Cod",
@@ -107,7 +107,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         ],
         [
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.9925467371940613,
                 "sentence_index": 0,
                 "word": "Jupiter",
@@ -117,7 +117,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         ],
         [
             {
-                "entity": "B-ORG",
+                "entity": "ORG",
                 "score": 0.7017723023891449,
                 "sentence_index": 0,
                 "word": "Loggerhead Marinelife Center",
