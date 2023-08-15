@@ -24,6 +24,15 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+    """
+    Tracked specifications for an uncompiled model
+
+    Attributes:
+        project (str): The project name for the model.
+        model (str): Model name
+        with_id (str): Unique identifier for the model version
+        model (str): Mode of interaction with the model
+    """
 
     project: str = "onclusive/ner"
     model: str = "NER-TRAINED"
@@ -40,6 +49,13 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
+    """
+    Tracked specifications for a compiled model
+
+    Attributes:
+        project (str): The project name for the model
+        model (str): The model name
+    """
 
     project: str = "onclusive/ner"
     model: str = "NER-COMPILED"
@@ -51,6 +67,12 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class WorkflowOutputDir(TrackedParams):
+    """
+    Parameters for the output directory
+
+    Attributes:
+        outpath (str): The output directory path
+    """
 
     outpath: str = "./outputs"
 
@@ -61,6 +83,17 @@ class WorkflowOutputDir(TrackedParams):
 
 
 class WorkflowComponentIOSettings(object):
+    """
+    I/O settings for a workflow component
+
+    Attributes:
+        workflow_ouput_dir (str): Base output directory
+        workflow_component (str): Name of workflow component
+        workflow_component_output_dir (str): The output directory specific to the component
+        model_directory (str): The directory for model artifacts
+        test_files (dict): Paths to test related files
+
+    """
 
     workflow_ouput_dir: str = WorkflowOutputDir().outpath
 
@@ -102,7 +135,16 @@ class WorkflowComponentIOSettings(object):
 
 
 class IOSettings(object):
-    """Configuring container file system output locations for all 4 components"""
+    """
+    Configuring container file system output locations for all 4 components
+
+    Attributes:
+        download (WorkflowComponentIOSettings): I/O settings for download component
+        compile (WorkflowComponentIOSettings): I/O settings for compile component
+        test (WorkflowComponentIOSettings): I/O settings for test component
+        upload (WorkflowComponentIOSettings): I/O settings for upload component
+
+    """
 
     # admin
     download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
@@ -114,7 +156,12 @@ class IOSettings(object):
 
 
 class TokenizerSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details"""
+    """
+    See libs.compile.onclusiveml.compile.compiled_tokenizer for details
+
+    Attributes:
+        add_special_tokens (bool): Flag for adding special tokens
+    """
 
     add_special_tokens: bool = True
 
@@ -125,10 +172,17 @@ class TokenizerSettings(TrackedParams):
 
 
 class ModelTracingSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
+    """
+    See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
-    https://onclusive.atlassian.net/browse/DS-596"""
+    https://onclusive.atlassian.net/browse/DS-596
+
+    Attributes:
+        dynamic_batch_size (bool): Flag for using dynamic batch size
+        strict (bool): Flag for strict compilation
+        compiler_args (List[str]): List of compiler arguments
+    """
 
     dynamic_batch_size: bool = True
     strict: bool = True
@@ -141,7 +195,21 @@ class ModelTracingSettings(TrackedParams):
 
 
 class PipelineCompilationSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details"""
+    """
+    See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details
+
+    Attributes:
+        pipeline_name (str): Name of pipeline
+        max_length (int): max sequence length:
+        batch_size (int): Batch size for compilation
+        neuron (bool): Flag for neuron compilation
+        validate_compilation (bool): Flag for running validation tests
+        validation_rtol (float): Relative tolerance for validation
+        validation_atol (float): Absolute tolerance for validation
+        tokenizer_settings (TokenizerSettings): settings for tokenizer
+        model_tracing_settings (ModelTracingSettings): Settings for model tracing
+
+    """
 
     pipeline_name: str
     max_length: int
@@ -155,6 +223,13 @@ class PipelineCompilationSettings(TrackedParams):
 
 
 class NERPipelineCompilationSettings(PipelineCompilationSettings):
+    """
+    Tracked model card for a compiled NER model
+
+    Attributes:
+        pipeline_name (str): Name of the NER pipeline
+        max_length (int): Max sequence length for NER
+    """
 
     pipeline_name: str = "ner_model"
     max_length = 128
@@ -166,6 +241,13 @@ class NERPipelineCompilationSettings(PipelineCompilationSettings):
 
 
 class CompilationTestSettings(TrackedParams):
+    """
+    Settings for compilation tests
+
+    Attributes:
+        regression_atol (float): Relative tolerance for validation
+        regression_rtol (float): Absolute tolerance for validation
+    """
 
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
@@ -177,6 +259,15 @@ class CompilationTestSettings(TrackedParams):
 
 
 class CompiledNERTrackedModelCard(TrackedModelCard):
+    """
+    Tracked model card for a compiled NER model
+
+    Attributes:
+        model_type(str): Type of the model card
+        uncompiled_model (UncompiledTrackedModelSpecs): Specifications for the uncompiled model
+        ner_model_compilation_settings (PipelineCompilationSettings): Compilation settings
+        compilation_test_settings (CompilationTestSettings): Compilation test settings
+    """
 
     model_type: str = "compiled"
     # --- custom fields

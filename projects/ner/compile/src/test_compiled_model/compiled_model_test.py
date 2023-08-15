@@ -8,7 +8,15 @@ import pytest
 
 
 def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
+    """
+    Convert a list of extracted entities into a dataframe
 
+    Args:
+        extract_entities (List[dict]): List of dictionaries representing entities
+
+    Returns:
+        pd.DataFrame: Dataframe containing extracted enitities with specified columns
+    """
     df = pd.DataFrame(
         extract_entites,
         columns=[
@@ -27,12 +35,6 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
     return df_sorted
 
 
-"""
-NOTE: handler makes changes to the output by merging inner and outer tags
-into one tag and so modify expected predictions here
-"""
-
-
 @pytest.mark.parametrize("test_sample_index", [0, 1, 2, 3])
 def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     logger,
@@ -43,6 +45,17 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     test_sample_index,
     compilation_test_settings,
 ):
+    """
+    Perform regression testing for the compiled NER model
+    Args:
+        logger: Logger instance for logging
+        io_settings: IO settigns for workflow component
+        compiled_ner: Compiled NER model instance
+        test_files: Dictionary containing test input
+        test_files_predictions: List of expected predictions for test sample
+        test_sample_index (int): Index of the test sample being processed.
+        compilation_test_settings: Compilation settings
+    """
     compiled_predictions = compiled_ner.extract_entities(
         test_files["inputs"][test_sample_index], language="en", return_pos=True
     )

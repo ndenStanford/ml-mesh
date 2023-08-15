@@ -33,6 +33,24 @@ def test_compiled_ner_extract_entities_latency(
     n_runs,
     expected_speedup_factor,
 ):
+    """
+    Test latency performance of CompiledNER's extract_entities method. Measures inference duration
+        of the CompiledNER class and compares it against inference time from a generic NER pipeline
+    The purpose is to validate expected speedup factor achieved by the compiled model
+
+    Args:
+        compiled_ner_pipeline: Compiled NER pipeline fixture
+        test_hf_pipeline: Test huggingface pipeline fixture
+        test_document: Test document for NER inference
+        n_runs: number of inference runs for averaging
+        expected_speedup_factor: expected speedup factor for compiled ner model over generic
+            ner model
+    Returns:
+        None
+    Raises:
+        AssertionError: If the average duration of generic ner model is not greater or requal
+            to the expected speedup factor times the average duration of compiled model
+    """
 
     # time compiled ner
     compiled_ner = CompiledNER(
