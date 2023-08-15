@@ -440,7 +440,12 @@ def test_generate_text_with_diff_model_model_not_found(
 
 @pytest.mark.parametrize(
     "template",
-    ["", "{}"],
+    [
+        "",
+        "{}",
+        "Give an abstractive summary of this text: \n{text\n",
+        "List out all the names of this given article: {content]",
+    ],
 )
 @patch.object(PromptTemplateSchema, "get")
 def test_create_prompt_bad_template(mock_prompt_get, template, test_client):
