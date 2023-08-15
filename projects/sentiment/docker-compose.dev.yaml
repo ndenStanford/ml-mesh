@@ -79,8 +79,8 @@ services:
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
+    # depends_on:
+    #   - compile
 
   compile-download-model:
     volumes:
@@ -99,8 +99,6 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-compile-model:
     devices:
@@ -119,8 +117,6 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-validate-model:
     devices:
@@ -139,8 +135,6 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-upload-model:
     volumes:
@@ -175,8 +169,6 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
 networks:
   onclusive-net:

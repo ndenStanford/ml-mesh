@@ -143,8 +143,8 @@ class CompiledSent:
         n_sentence = len(input_ids)
 
         while len(input_ids) > 0:
-            it_input_ids = torch.tensor(input_ids[: self.MAX_BATCH_SIZE])
-            it_attention_masks = torch.tensor(attention_masks[: self.MAX_BATCH_SIZE])
+            it_input_ids = input_ids[: self.MAX_BATCH_SIZE].clone().detach()
+            it_attention_masks = attention_masks[: self.MAX_BATCH_SIZE].clone().detach()
 
             diff_size = self.MAX_BATCH_SIZE - it_input_ids.size()[0]
 
@@ -164,8 +164,8 @@ class CompiledSent:
                     0,
                 )
             res = self.compiled_sent_pipeline.model(
-                *(it_input_ids, it_attention_masks)
-            )[0]
+                *(it_input_ids, it_attention_masks), return_dict=False
+            )  # [0]
 
             if diff_size > 0:
                 res = res[: (self.MAX_BATCH_SIZE - diff_size)]

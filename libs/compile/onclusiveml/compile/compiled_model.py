@@ -105,8 +105,16 @@ class CompiledModel(PreTrainedModel):
                 "input_ids": tracing_inputs[0],
                 "attention_mask": tracing_inputs[1],
             }
-            model_output = model(**tracing_inputs_dict)[0]
-            traced_model_output = compiled_model(**tracing_inputs_dict)[0]
+
+            model_output = model(**tracing_inputs_dict)
+            # When return_dict = True
+            if not isinstance(model_output, torch.Tensor):
+                model_output = model_output[0]
+
+            traced_model_output = compiled_model(**tracing_inputs_dict)
+            # When return_dict = True
+            if not isinstance(traced_model_output, torch.Tensor):
+                traced_model_output = traced_model_output[0]
 
             torch.testing.assert_close(
                 model_output,
@@ -123,8 +131,13 @@ class CompiledModel(PreTrainedModel):
         attention_mask: torch.Tensor = None,
         **kwargs: Any
     ) -> ModelOutput:
+        self.return_dict = kwargs.pop("return_dict", None)
+
         # traced model requires positional arguments
         model_output = self.model(input_ids, attention_mask)
+        if not self.return_dict:
+            return model_output["logits"]
+
         # if original model graph returns a dict, convert to data type that can handle both
         # - integer and
         # - string-key based
