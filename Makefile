@@ -20,6 +20,7 @@ ENVIRONMENT?=dev
 ALL_DOCKER_IMGS:= \
 	python-base \
 	gpu-base \
+	gpu-train \
 	neuron-compile \
 	neuron-inference \
 	fastapi-serve \

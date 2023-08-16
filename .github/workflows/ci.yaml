@@ -113,6 +113,7 @@ jobs       :
         image:
           - python-base
           - gpu-base
+          - gpu-train
           - neuron-compile
           - neuron-inference
           - fastapi-serve
