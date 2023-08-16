@@ -19,7 +19,7 @@ def test_better_stack_params_env_prefix():
 
     assert (
         BetterStackParams.Config.env_prefix
-        == f"{ServingBaseParams.Config.env_prefix}_betterstack_"  # noqa: W503
+        == f"{ServingBaseParams.Config.env_prefix}betterstack_"  # noqa: W503
     )
 
 
