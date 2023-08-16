@@ -81,7 +81,7 @@ class BetterStackParams(ServingBaseParams):
     full_url: str = ""
 
     class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}_betterstack_"
+        env_prefix = f"{ServingBaseParams.Config.env_prefix}betterstack_"
         env_file_encoding = "utf-8"
 
     @root_validator
