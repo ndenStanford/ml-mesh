@@ -156,3 +156,6 @@ services:
 
 networks:
   onclusive-net:
+
+volumes :
+  compile-pipeline-vol:
