@@ -1,6 +1,6 @@
 docker.build/%: docker.set ## Build app
 	@echo "::group::Build$(notdir $@) (system architecture)"
-	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml build $(notdir $@)
+	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml build $(notdir $@) --no-cache
 	@echo "::endgroup::"
 
 docker.deploy/%: docker.set ## Deploy project IMAGE docker image to ECR.

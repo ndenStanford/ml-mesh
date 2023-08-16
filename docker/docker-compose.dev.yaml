@@ -47,9 +47,10 @@ services:
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        IMAGE_TAG: ${IMAGE_TAG}
+        CUDA_VERSION: 11.6.2
         PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: gpu-base
+        IMAGE_TAG: ${IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
 
   gpu-base-tests:
@@ -85,7 +86,6 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         IMAGE_TAG: ${IMAGE_TAG}
-        PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: gpu-train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
 
@@ -109,8 +109,6 @@ services:
         target: /docker/gpu-train/tests
     command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
-    depends_on:
-      - gpu-train
 
   # ===========================================================
   # NEURON COMPILE

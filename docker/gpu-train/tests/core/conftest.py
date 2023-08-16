@@ -21,3 +21,16 @@ def test_train_dataset():
 def test_model_reference():
 
     return "distilbert-base-uncased"
+
+
+@pytest.fixture
+def test_default_training_params():
+
+    return {
+        "output_dir": "tmp",
+        "evaluation_strategy": "steps",
+        "num_train_epochs": 1,
+        "optim": "adafactor",
+        "log_level": "error",
+        "report_to": "none",
+    }

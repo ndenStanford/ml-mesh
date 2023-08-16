@@ -488,7 +488,7 @@ graph = ["objgraph (>=1.7.2)"]
 name = "exceptiongroup"
 version = "1.1.2"
 description = "Backport of PEP 654 (exception groups)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -747,7 +747,7 @@ testing = ["pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)",
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1133,6 +1133,17 @@ files = [
 ]
 
 [[package]]
+name = "nvidia-ml-py3"
+version = "7.352.0"
+description = "Python Bindings for the NVIDIA Management Library"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "nvidia-ml-py3-7.352.0.tar.gz", hash = "sha256:390f02919ee9d73fe63a98c73101061a6b37fa694a793abf56673320f1f51277"},
+]
+
+[[package]]
 name = "oauthlib"
 version = "3.2.2"
 description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
@@ -1325,7 +1336,7 @@ files = [
 name = "pluggy"
 version = "1.2.0"
 description = "plugin and hook calling mechanisms for python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1478,7 +1489,7 @@ tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 name = "pytest"
 version = "7.2.0"
 description = "pytest: simple powerful testing with Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1497,6 +1508,21 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
+
+[[package]]
+name = "pytest-order"
+version = "1.1.0"
+description = "pytest plugin to run your tests in a specific order"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pytest-order-1.1.0.tar.gz", hash = "sha256:139d25b30826b78eebb42722f747eab14c44b88059d7a71d4f79d14a057269a5"},
+    {file = "pytest_order-1.1.0-py3-none-any.whl", hash = "sha256:3b3730969c97900fa5cd31ecff80847680ed56b2490954565c14949ba60d9371"},
+]
+
+[package.dependencies]
+pytest = {version = ">=5.0", markers = "python_version < \"3.10\""}
 
 [[package]]
 name = "python-dateutil"
@@ -2150,7 +2176,7 @@ testing = ["black (==22.3)", "datasets", "numpy", "pytest", "requests"]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2166,23 +2192,15 @@ category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "torch-1.12.1+cu116-cp310-cp310-linux_x86_64.whl", hash = "sha256:b6bc31244aa2818929fbb30c483c221df471e9d856e805c5a1ff72b131ae9e7b"},
-    {file = "torch-1.12.1+cu116-cp310-cp310-win_amd64.whl", hash = "sha256:832effad8b21109700323a5aa137a2e4bdea711dac3d8491ff542f798dab0101"},
-    {file = "torch-1.12.1+cu116-cp37-cp37m-linux_x86_64.whl", hash = "sha256:fc9b4786ec54be67eaa8b0c7c9999e2f4ae2b89a1c18e41de1515a190440c691"},
-    {file = "torch-1.12.1+cu116-cp37-cp37m-win_amd64.whl", hash = "sha256:bca5a77071d7eb901beb775648b125e6d9279f231d1f23e56530b5a189df8975"},
-    {file = "torch-1.12.1+cu116-cp38-cp38-linux_x86_64.whl", hash = "sha256:dda312901220895087cc83d3665464a3dc171d04460c61c31af463efbfb54896"},
-    {file = "torch-1.12.1+cu116-cp38-cp38-win_amd64.whl", hash = "sha256:b8e8906e770bcad12e67c269e1bcdd7661a8abd96519a4ba643e86440bbcc1bf"},
-    {file = "torch-1.12.1+cu116-cp39-cp39-linux_x86_64.whl", hash = "sha256:7725420dabebfcaf44984edce3283eea91f98f0f7d5874bc68c7a164bd8126e3"},
-    {file = "torch-1.12.1+cu116-cp39-cp39-win_amd64.whl", hash = "sha256:84f031e4ee25d95368d7531aa58e79da9808d3fa53b4b363ea03a2450b6fd0af"},
+    {file = "torch-1.12.1%2Bcu116-cp38-cp38-linux_x86_64.whl", hash = "sha256:dda312901220895087cc83d3665464a3dc171d04460c61c31af463efbfb54896"},
 ]
 
 [package.dependencies]
 typing-extensions = "*"
 
 [package.source]
-type = "legacy"
-url = "https://download.pytorch.org/whl/cu116"
-reference = "torch-gpu"
+type = "url"
+url = "https://download.pytorch.org/whl/cu116/torch-1.12.1%2Bcu116-cp38-cp38-linux_x86_64.whl"
 
 [[package]]
 name = "tqdm"
@@ -2588,4 +2606,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "ec9d9f446dcd8e41fa9efd4dc06f799a51e2658e56cdd759662b31ea4f712e67"
+content-hash = "414166ea06b8a444f2011458939ff0b10ce7f533335e0e8bb341546c5a502152"
