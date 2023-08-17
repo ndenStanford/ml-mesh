@@ -7,7 +7,12 @@ from src.serving_params import ServedModelArtifacts
 
 
 def get_model_server() -> ModelServer:
-    """Utility method for prepping a fully configured model server instance ready to serve."""
+    """
+    Utility method for prepping a fully configured model server instance ready to serve.
+
+    Returns:
+        ModelServer: Configured model server instance
+    """
     # initialize model
     served_model_artifacts = ServedModelArtifacts()
     ner_served_model = ServedNERModel(served_model_artifacts=served_model_artifacts)

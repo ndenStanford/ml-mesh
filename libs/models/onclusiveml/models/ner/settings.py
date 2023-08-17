@@ -12,7 +12,7 @@ class EntityOutputNoPos(BaseModel):
     Attributes:
         entity_type (str): The recognized entity's name
         score (float): confidence score for entity
-        word (str): Text representing entity
+        entity_text (str): Text representing entity
     """
 
     entity_type: str
