@@ -21,6 +21,24 @@ concurrency:
   group: Deployment ${{ github.ref_name }}
 
 jobs       :
+
+  # ===============================================
+  # DEBUGGING
+  # ===============================================
+  check-github-refs:
+    name: Check github refs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print all
+        run: |
+          echo github.ref_name: ${{ github.ref_name }}
+          echo github.event_name: ${{ github.event_name }}
+          echo "github.base_ref (PR only):" ${{ github.base_ref }}
+          echo "github.head_ref (PR only):" ${{ github.head_ref }}
+          echo github.ref: ${{ github.ref }}
+          echo github.type: ${{ github.type }}
+
   # ===============================================
   # QUALITY CHECKS
   # ===============================================
@@ -260,6 +278,15 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # compile
+          - name: ner
+            component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
           # ========================
           # LSH
           # ========================
@@ -327,6 +354,11 @@ jobs       :
             self-hosted-runner-type: inf1.2xlarge
             project: keywords
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.2xlarge
+            project: ner
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
 
     with:
       environment: prod

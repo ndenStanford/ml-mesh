@@ -20,6 +20,25 @@ tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.12.2"
+description = "Screen-scraping library"
+category = "main"
+optional = false
+python-versions = ">=3.6.0"
+files = [
+    {file = "beautifulsoup4-4.12.2-py3-none-any.whl", hash = "sha256:bd2520ca0d9d7d12694a53d44ac482d181b4ec1888909b035a3dbf40d0f57d4a"},
+    {file = "beautifulsoup4-4.12.2.tar.gz", hash = "sha256:492bbc69dca35d12daac71c4db1bfff0c876c00ef4a2ffacce226d4638eb72da"},
+]
+
+[package.dependencies]
+soupsieve = ">1.2"
+
+[package.extras]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
+
+[[package]]
 name = "certifi"
 version = "2023.7.22"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -469,6 +488,21 @@ test = ["black (>=19.3b0)", "flake8 (>=3.6.0)", "pre-commit (>=2.2.0)", "pytest 
 use = ["tensorflow", "tensorflow_hub", "tensorflow_text"]
 
 [[package]]
+name = "langdetect"
+version = "1.0.9"
+description = "Language detection library ported from Google's language-detection."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "langdetect-1.0.9-py2-none-any.whl", hash = "sha256:7cbc0746252f19e76f77c0b1690aadf01963be835ef0cd4b56dddf2a8f1dfc2a"},
+    {file = "langdetect-1.0.9.tar.gz", hash = "sha256:cbc1fef89f8d062739774bd51eda3da3274006b3661d199c2655f6b3f6d605a0"},
+]
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
@@ -565,6 +599,27 @@ tensorflow = ["tensorflow (<1.16)"]
 type = "legacy"
 url = "https://pip.repos.neuron.amazonaws.com"
 reference = "aws-neuron"
+
+[[package]]
+name = "nlp"
+version = "0.1.0"
+description = "NLP library with various utilities"
+category = "main"
+optional = false
+python-versions = "3.8.16"
+files = []
+develop = false
+
+[package.dependencies]
+core = {path = "../core"}
+langdetect = "1.0.9"
+nltk = "^3.8.1"
+pydantic = "1.10.4"
+typing-extensions = "^4.6.2"
+
+[package.source]
+type = "directory"
+url = "../nlp"
 
 [[package]]
 name = "nltk"
@@ -1332,6 +1387,18 @@ files = [
 ]
 
 [[package]]
+name = "soupsieve"
+version = "2.4.1"
+description = "A modern CSS selector implementation for Beautiful Soup."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "soupsieve-2.4.1-py3-none-any.whl", hash = "sha256:1c1bfee6819544a3447586c889157365a27e10d88cde3ad3da0cf0ddf646feb8"},
+    {file = "soupsieve-2.4.1.tar.gz", hash = "sha256:89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea"},
+]
+
+[[package]]
 name = "threadpoolctl"
 version = "3.2.0"
 description = "threadpoolctl"
@@ -1628,4 +1695,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "535b4376b97bbbef636bfed628ac8019c6e981901741b223cb766ee54c2fe7d5"
+content-hash = "e6ccad15e937f015e53cf20493f09768053273d83f2023241ebaaa924ca42d96"
