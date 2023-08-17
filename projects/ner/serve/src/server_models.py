@@ -9,6 +9,7 @@ from pydantic import BaseModel
 class PredictConfiguration(BaseModel):
 
     return_pos: Optional[bool] = True
+    language: Optional[str] = "en"
 
 
 class PredictInputContentModel(BaseModel):

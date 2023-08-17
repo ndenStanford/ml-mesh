@@ -10,14 +10,14 @@ class EntityOutputNoPos(BaseModel):
     Output info of an entity without position
 
     Attributes:
-        entity (str): The recognized entity's name
+        entity_type (str): The recognized entity's name
         score (float): confidence score for entity
         word (str): Text representing entity
     """
 
-    entity: str
+    entity_type: str
     score: float
-    word: str
+    entity_text: str
 
 
 class EntityOutput(EntityOutputNoPos):

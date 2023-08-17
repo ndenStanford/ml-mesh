@@ -55,17 +55,7 @@ class ServedNERModel(ServedModel):
 
         entities_list = []
         for entity in entities:
-
-            entities_list.append(
-                PredictionExtractedEntity(
-                    entity_type=entity["entity_type"],
-                    entity_text=entity["entity_text"],
-                    score=entity["score"],
-                    sentence_index=entity["sentence_index"],
-                    start=entity["start"],
-                    end=entity["end"],
-                )
-            )
+            entities_list.append(PredictionExtractedEntity(**entity.__dict__))
 
             entity_model = PredictionOutputContent(predicted_content=entities_list)
 

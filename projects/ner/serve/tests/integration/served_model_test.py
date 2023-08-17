@@ -55,9 +55,7 @@ def test_served_ner_model_predict(
     )
     served_ner_model.load()
     input = PredictRequestModel(
-        configuration=PredictConfiguration(
-            return_pos=test_inference_params["return_pos"]
-        ),
+        configuration=PredictConfiguration(return_pos=True, language="en"),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
@@ -66,20 +64,64 @@ def test_served_ner_model_predict(
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             predicted_content=[
-                PredictionExtractedEntity(
-                    entity_type=i["entity_type"],
-                    entity_text=i["entity_text"],
-                    score=i["score"],
-                    sentence_index=i["sentence_index"],
-                    start=i["start"],
-                    end=i["end"],
-                )
+                PredictionExtractedEntity(**i)
                 for i in test_predictions[test_record_index]
             ]
         )
     )
 
     assert actual_output == expected_output
+
+
+@pytest.mark.parametrize("test_record_index", [0, 1, 2])
+def test_served_ner_model_predict_no_pos(
+    test_served_model_artifacts,
+    test_inputs,
+    test_inference_params,
+    test_predictions,
+    test_record_index,
+):
+    """Tests the fully initialized and loaded ServedNERModel's predict method that doesn't return
+    start and end position, using the custom data models for validation and the test files from the
+     model artifact as ground truth for the regression test element."""
+
+    served_ner_model = ServedNERModel(
+        served_model_artifacts=test_served_model_artifacts
+    )
+    served_ner_model.load()
+    input = PredictRequestModel(
+        configuration=PredictConfiguration(return_pos=False, language="en"),
+        inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
+    )
+
+    actual_output = served_ner_model.predict(input)
+
+    expected_output = PredictResponseModel(
+        outputs=PredictionOutputContent(
+            predicted_content=[
+                PredictionExtractedEntity(**i)
+                for i in test_predictions[test_record_index]
+            ]
+        )
+    )
+    assert (
+        expected_output.outputs.predicted_content[0].entity_type
+        == actual_output.outputs.predicted_content[0].entity_type  # noqa: W503
+    )
+    assert (
+        expected_output.outputs.predicted_content[0].entity_text
+        == actual_output.outputs.predicted_content[0].entity_text  # noqa: W503
+    )
+    assert (
+        expected_output.outputs.predicted_content[0].score
+        == actual_output.outputs.predicted_content[0].score  # noqa: W503
+    )
+    assert (
+        expected_output.outputs.predicted_content[0].sentence_index
+        == actual_output.outputs.predicted_content[0].sentence_index  # noqa: W503
+    )
+    assert actual_output.outputs.predicted_content[0].start is None
+    assert actual_output.outputs.predicted_content[0].end is None
 
 
 @pytest.mark.order(3)

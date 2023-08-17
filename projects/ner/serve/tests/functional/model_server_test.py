@@ -66,9 +66,7 @@ def test_model_server_predict(
     for the regression test element."""
 
     input = PredictRequestModel(
-        configuration=PredictConfiguration(
-            return_pos=test_inference_params["return_pos"]
-        ),
+        configuration=PredictConfiguration(return_pos=True, language="en"),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
@@ -82,14 +80,7 @@ def test_model_server_predict(
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             predicted_content=[
-                PredictionExtractedEntity(
-                    entity_type=i["entity_type"],
-                    entity_text=i["entity_text"],
-                    score=i["score"],
-                    sentence_index=i["sentence_index"],
-                    start=i["start"],
-                    end=i["end"],
-                )
+                PredictionExtractedEntity(**i)
                 for i in test_predictions[test_record_index]
             ]
         )
