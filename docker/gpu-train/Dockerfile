@@ -69,5 +69,17 @@ RUN poetry install \
 
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
 
-# hadolint ignore=DL3002
-USER root
+# add sagemaker entrypoint to run tests with GPU requirment
+ENV PYTHONPATH=${HOME}
+
+ENV SAGEMAKER_ENTRYPOINT="${HOME}/train"
+
+# copy over sagemaker entrypoint and rename to "train" as per
+# https://sagemaker-workshop.com/custom/containers.html
+COPY --chown=${USER}:users "${SAGEMAKER_ENTRYPOINT}.sh" train
+RUN chmod u+x train
+
+# update PATH with ABSOLUTE path to /docker/gpu-train, so sagemaker invocation
+# can find entrypoint bash script as per https://sagemaker-workshop.com/custom/containers.html
+ENV PATH="/docker/gpu-train:${PATH}"
+RUN echo "${PATH}"
