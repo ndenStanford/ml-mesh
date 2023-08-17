@@ -28,13 +28,14 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
 
 EXPOSE 8888
 
-# --- production stage
-FROM builder as production
+# hadolint ignore=DL3002
+USER root
 
 ENTRYPOINT ["/init"]
 
+# --- production stage
+FROM builder as production
+
+
 # --- test build stage
 FROM builder as development
-
-# dummy entrypoint to pass the CI docker run stage
-ENTRYPOINT ["pwd"]

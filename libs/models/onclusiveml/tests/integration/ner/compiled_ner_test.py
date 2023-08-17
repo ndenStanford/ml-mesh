@@ -23,6 +23,16 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
     ],
 )
 def test_compiled_ner_extract_ner(compiled_ner_pipeline, test_documents):
+    """
+    Integration test extracting named entities using compiled NER pipeline
+
+    Args:
+        compiled_ner_pipeline (CompiledPipeline): A compild NER pipeline.
+        test_documents (List[str]): List of test documents
+
+    Returns:
+        None
+    """
 
     compiled_ner = CompiledNER(compiled_ner_pipeline=compiled_ner_pipeline)
 
@@ -42,6 +52,16 @@ def test_compiled_ner_extract_ner(compiled_ner_pipeline, test_documents):
 def test_compiled_ner_save_pretrained_from_pretrained(
     compiled_ner_pipeline, test_documents
 ):
+    """
+    Integration test for saving and loading a CompiledNER model using pretrained method
+
+    Args:
+        compiled_ner_pipeline (CompiledPipeline): A compiled NER pipeline.
+        test_documents (List[str]): List of test documents
+
+    Returns:
+        None
+    """
     # initialize with constructor and score
     compiled_ner = CompiledNER(
         compiled_ner_pipeline=compiled_ner_pipeline,
