@@ -7,12 +7,13 @@ from string import Formatter
 from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 # Source
 from src.model.constants import ModelEnum
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
+    PromptInvalidTemplate,
     PromptNotFound,
     PromptVersionNotFound,
 )
@@ -41,6 +42,27 @@ class PromptTemplateSchema(BaseModel):
         temperature=settings.OPENAI_TEMPERATURE,
         max_tokens=settings.OPENAI_MAX_TOKENS,
     )
+
+    @validator("template")
+    def validate_template(cls, value, values):
+        """
+        Validates the template
+        Args:
+            value (str): The template to be validated
+        Raises:
+            PromptInvalidTemplate: If the template is incorrectly formatted
+        Returns:
+            str: The validated template
+        """
+        if value == "" or value == "{}" or value == '""':
+            raise PromptInvalidTemplate(template=value)
+        else:
+            # Test template using formatter. Raise error if incorrectly formatted
+            try:
+                [i[1] for i in Formatter().parse(value) if i[1] is not None]
+            except ValueError:
+                raise PromptInvalidTemplate(template=value)
+            return value
 
     @property
     def variables(self) -> List[str]:

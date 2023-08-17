@@ -27,6 +27,7 @@ from src.prompt.exceptions import (
 from src.prompt.generate import generate_text
 from src.prompt.parameters import Parameters
 from src.prompt.schemas import (
+    PromptInvalidTemplate,
     PromptTemplateListSchema,
     PromptTemplateOutputSchema,
     PromptTemplateSchema,
@@ -103,6 +104,7 @@ def create_prompt(template: str, alias: str, parameters: Optional[Dict] = None):
             PromptOutsideTempLimit,
             PromptModelUnsupported,
             PromptInvalidParameters,
+            PromptInvalidTemplate,
         ) as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -120,6 +122,7 @@ def create_prompt(template: str, alias: str, parameters: Optional[Dict] = None):
         PromptOutsideTempLimit,
         PromptModelUnsupported,
         PromptInvalidParameters,
+        PromptInvalidTemplate,
     ) as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -159,6 +162,7 @@ def update_prompt(alias: str, template: str, parameters: Optional[Dict] = None):
         PromptOutsideTempLimit,
         PromptModelUnsupported,
         PromptInvalidParameters,
+        PromptInvalidTemplate,
     ) as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -178,7 +182,7 @@ def delete_prompt(alias: str):
         HTTPException.DoesNotExist if alias is not found in table.
     """
     try:
-        PromptTemplateSchema(alias=alias, template="").delete()
+        PromptTemplateSchema(alias=alias, template="prompt to be deleted").delete()
         return "deleted"
     except PromptNotFound as e:
         raise HTTPException(

@@ -10,6 +10,12 @@ class PromptNotFound(BasePromptException):
     message_format = "Prompt '{alias}' was not found in database."
 
 
+class PromptInvalidTemplate(BasePromptException):
+    """Prompt Not Found."""
+
+    message_format = "Prompt template: '{template}' is invalid"
+
+
 class PromptVersionNotFound(BasePromptException):
     """Prompt Version Not Found."""
 
