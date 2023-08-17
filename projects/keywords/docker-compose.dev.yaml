@@ -214,6 +214,7 @@ services:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-88
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
+      onclusiveml_serving_betterstack_enable: ${onclusiveml_serving_betterstack_enable}
     profiles: [serve, functional, load]
     ports:
       - 8000:8000

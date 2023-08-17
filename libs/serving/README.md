@@ -218,8 +218,8 @@ manually on local.
 - Install the library
   - `make libs.install/serving`
 - Export variables:
-  - In libs/serving/onclusiveml/serving/rest/serve/params.py set enable: bool = False .
-  - Export onclusiveml_serving_betterstack_api_token=Ex4mple to the environment.
+  - Export onclusiveml_serving_betterstack_enable=True.
+  - Export onclusiveml_serving_betterstack_api_token=Ex4mplef0r4Pit0k3n to the environment.
 - Start the model server by running the `server` side test suite
   - `python -m pytest libs/serving/onclusiveml/tests/functional -ra -vv --capture=no -m server`
   - This will run on port 8000 by default, so make sure the port is free
