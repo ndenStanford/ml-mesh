@@ -27,7 +27,7 @@ class SentenceTokenizer:
 
         Args:
             content (str): Text to be tokenized into sentences
-            language (str, optional): Language of the text (default English)
+            language (str, optional): Language of the text (default to "en")
 
         Returns:
             dict: Dictionary containing tokenized setences

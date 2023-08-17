@@ -18,19 +18,37 @@ from src.settings import (  # type: ignore[attr-defined]
 
 @pytest.fixture
 def io_settings() -> IOSettings:
+    """
+    Fixture to provide IOSettings instance
 
+    Returns:
+        IOSettings: Instance of IOSettings
+    """
     return IOSettings()
 
 
 @pytest.fixture
 def compilation_test_settings() -> CompilationTestSettings:
+    """
+    Fixture to provide CompilationTestSettings instance
 
+    Returns:
+        CompilationTestSettings: Instance of CompilationTestSettings
+    """
     return CompilationTestSettings()
 
 
 @pytest.fixture()
 def logger(io_settings: IOSettings) -> Any:
+    """
+    fixture to provide a logger instance
 
+    Args:
+        io_settings (IOSettings): IOSettings
+
+    Returns:
+        Any: Logger instance
+    """
     return get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
@@ -38,6 +56,15 @@ def logger(io_settings: IOSettings) -> Any:
 
 @pytest.fixture
 def compiled_ner(io_settings: IOSettings) -> CompiledNER:
+    """
+    Fixture to provide a compiled NER model instance
+
+    Args:
+        io_settings (IOSettings): IOSettings instance
+
+    Returns:
+        CompiledNER: Compiled NER model instance
+    """
     # load compiled NER from previous workflow component
     compiled_ner = CompiledNER.from_pretrained(io_settings.compile.model_directory)
 
@@ -46,6 +73,15 @@ def compiled_ner(io_settings: IOSettings) -> CompiledNER:
 
 @pytest.fixture
 def test_files(io_settings: IOSettings) -> Dict[str, Any]:
+    """
+    Fixture to provide test input files loaded into a dictionary
+
+    Args:
+        io_settings (IOSettings): IOSettings instance
+
+    Returns:
+        Dict[str, Any]: Dictionary containing test files data
+    """
     # get test files & load directly into dict
     test_files = io_settings.download.test_files.copy()
     # 'inputs', 'inference_params' & 'predictions'
@@ -60,10 +96,18 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
 
 @pytest.fixture
 def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
+    """
+    Fixture to provide expected test predictions as a list of dictionaries
+
+    Returns:
+        List[List[Dict[str, Union[str, int, float]]]]: Predictions in form of list of dictionaries
+    NOTE: handler makes changes to the output by merging inner and outer tags
+    into one tag and so modify expected predictions here
+    """
     return [
         [
             {
-                "entity": "B-ORG",
+                "entity": "ORG",
                 "score": 0.9981778860092163,
                 "sentence_index": 0,
                 "word": "Google",
@@ -71,7 +115,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 "end": 6,
             },
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.998550146818161,
                 "sentence_index": 0,
                 "word": "Mountain View",
@@ -79,7 +123,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 "end": 29,
             },
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.9993670582771301,
                 "sentence_index": 0,
                 "word": "CA",
@@ -89,7 +133,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         ],
         [
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.991286963224411,
                 "sentence_index": 0,
                 "word": "Gulf Stream",
@@ -97,7 +141,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 "end": 32,
             },
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.9935731490453085,
                 "sentence_index": 0,
                 "word": "Cape Cod",
@@ -107,7 +151,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         ],
         [
             {
-                "entity": "B-LOC",
+                "entity": "LOC",
                 "score": 0.9925467371940613,
                 "sentence_index": 0,
                 "word": "Jupiter",
@@ -117,7 +161,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         ],
         [
             {
-                "entity": "B-ORG",
+                "entity": "ORG",
                 "score": 0.7017723023891449,
                 "sentence_index": 0,
                 "word": "Loggerhead Marinelife Center",

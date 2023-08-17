@@ -19,6 +19,7 @@ from src.prompt.chat import PromptChat
 from src.prompt.exceptions import DeletionProtectedPrompt, PromptNotFound
 from src.prompt.generate import generate_text
 from src.prompt.schemas import (
+    PromptInvalidTemplate,
     PromptTemplateListSchema,
     PromptTemplateOutputSchema,
     PromptTemplateSchema,
@@ -81,13 +82,26 @@ def create_prompt(template: str, alias: str):
     # if prompt does exist, create a new version
     # otherwise create a new prompt with version 0.
     if not prompt:
-        return PromptTemplateSchema(template=template, alias=alias).save()
+        try:
+            return PromptTemplateSchema(template=template, alias=alias).save()
+        except PromptInvalidTemplate as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
 
     prompt = prompt[0]
     if prompt.template == template:
         # if no change in the template return the current version
         return prompt
-    return prompt.update(template=template)
+
+    try:
+        return prompt.update(template=template)
+    except PromptInvalidTemplate as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
 
 
 @router.put("/{alias}", status_code=status.HTTP_200_OK)
@@ -108,7 +122,13 @@ def update_prompt(alias: str, template: str):
     prompt = prompt[0]
 
     if not prompt.template == template:
-        prompt.update(template=template)
+        try:
+            prompt.update(template=template)
+        except PromptInvalidTemplate as e:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(e),
+            )
     return PromptTemplateSchema.get(alias)[0]
 
 
@@ -123,7 +143,7 @@ def delete_prompt(alias: str):
         HTTPException.DoesNotExist if alias is not found in table.
     """
     try:
-        PromptTemplateSchema(alias=alias, template="").delete()
+        PromptTemplateSchema(alias=alias, template="prompt to be deleted").delete()
         return "deleted"
     except PromptNotFound as e:
         raise HTTPException(

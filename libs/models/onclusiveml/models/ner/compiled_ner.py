@@ -221,7 +221,7 @@ class CompiledNER:
                         # Append the merged entity with computed score to the merged_sublist
                         merged_sublist.append(  # type: ignore[unreachable]
                             PostprocessOutput(
-                                entity=current_entity,
+                                entity=current_entity[2:],
                                 score=float(
                                     self.compute_moving_average(current_score_list)
                                     if len(current_score_list) > 1
@@ -244,7 +244,7 @@ class CompiledNER:
                 # Append the merged entity with computed score to the merged_sublist
                 merged_sublist.append(
                     PostprocessOutput(
-                        entity=current_entity,
+                        entity=current_entity[2:],
                         score=float(
                             self.compute_moving_average(current_score_list)
                             if len(current_score_list) > 1
