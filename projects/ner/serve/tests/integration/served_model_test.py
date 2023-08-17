@@ -2,8 +2,8 @@
 import pytest
 
 # Source
-from src.served_model import ServedNERModel
-from src.server_models import (
+from src.serve.served_model import ServedNERModel
+from src.serve.server_models import (
     BioResponseModel,
     PredictConfiguration,
     PredictInputContentModel,

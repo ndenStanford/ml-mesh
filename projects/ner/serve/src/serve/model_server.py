@@ -1,9 +1,10 @@
 # Internal libraries
+from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.served_model import ServedNERModel
-from src.serving_params import ServedModelArtifacts
+from src.serve.params import ServedModelArtifacts
+from src.serve.served_model import ServedNERModel
 
 
 def get_model_server() -> ModelServer:
@@ -19,6 +20,7 @@ def get_model_server() -> ModelServer:
     # initialize model server
     serving_params = ServingParams()
     model_server = ModelServer(configuration=serving_params, model=ner_served_model)
+    Instrumentator.enable(model_server, app_name="ner")
 
     return model_server
 

@@ -6,10 +6,11 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.downloading_params import ServedModelParams, TrackedCompiledModelSpecs
+from src.params import ServedModelParams
+from src.util.params import TrackedCompiledModelSpecs
 
 
-if __name__ == "__main__":
+def main() -> None:
 
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
@@ -41,3 +42,8 @@ if __name__ == "__main__":
         )
     # shutdown client
     mv.stop()
+
+
+if __name__ == "__main__":
+
+    main()

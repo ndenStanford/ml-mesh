@@ -184,10 +184,12 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.model_server]
+    command: [python, -m, src.serve.model_server]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
-    profiles: [serve, functional]
+      ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+    profiles: [serve, functional, load]
     ports:
       - 8000:8000
     volumes:
@@ -199,7 +201,7 @@ services:
       - onclusive-net
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/v1/ready]
-      interval: 5s
+      interval: 10s
       retries: 5
       start_period: 5s
       timeout: 10s
@@ -214,8 +216,8 @@ services:
         source: serve/
         target: /projects/ner/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.download_compiled_model]
-    profiles: [serve, integration, functional]
+    command: [python, -m, src.util.download_compiled_model]
+    profiles: [serve, integration, functional, load]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -224,8 +226,11 @@ services:
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
       NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-11
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
-    hostname: onclusive-ml
+    hostname: onclusiveml
     networks: [onclusive-net]
 
   # unit tests
@@ -244,7 +249,7 @@ services:
   # - do NOT include REST model server process
   serve-integration:
     devices:
-      - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
+      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: serve/
@@ -252,14 +257,11 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
-      onclusiveml_serving_model_directory: models/NER-COMPILED-11
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
     profiles: [integration]
     hostname: onclusiveml
     networks:
       - onclusive-net
-    depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
 
   # functional tests
   # - include model artifact
@@ -272,14 +274,83 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
-      onclusiveml_serving_model_directory: models/NER-COMPILED-11
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
     profiles: [functional]
     hostname: onclusiveml
     networks:
       - onclusive-net
     depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
+      serve:
+        condition: service_healthy
+
+  # load tests
+  # - include model artifact
+  # - include REST model server process
+  serve-load:
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/ner/serve/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [pytest, tests/load, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
+      # load test params
+      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
+      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
+      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
+      ONCLUSIVEML_SERVING_RESET_STATS: No
+      ONCLUSIVEML_SERVING_RUN_TIME: 45
+      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+    profiles: [load]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # utility service: uploading the relevant test results to the model registry
+  serve-upload-results:
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/ner/serve/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.util.upload_test_results]
+    profiles: [serve]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: async
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-11
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
+      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve
+      DOCKER_IMAGE_TAG: ${IMAGE_TAG}
+      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      GITHUB_ACTOR: ${GITHUB_ACTOR}
+      GITHUB_ENV: ${GITHUB_ENV}
+      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
+      GITHUB_JOB: ${GITHUB_JOB}
+      GITHUB_REF: ${GITHUB_REF}
+      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
+      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
+      GITHUB_SHA: ${GITHUB_SHA}
+      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
+      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
+      RUNNER_ARCH: ${RUNNER_ARCH}
+      RUNNER_NAME: ${RUNNER_NAME}
+      RUNNER_OS: ${RUNNER_OS}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
 
 networks:
   onclusive-net:

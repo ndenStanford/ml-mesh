@@ -16,7 +16,7 @@ empty.
 While the server is running, you can open another terminal and trigger the API. For example:
 
 ```
-curl -X 'POST' 'http://0.0.0.0:8000/v1/model/ner/predict' -H 'Content-Type: application/json' -d '{"configuration": {"return_pos": true}, "inputs": {"content": "Google is cool"}}'
+curl -X 'POST' 'http://0.0.0.0:8000/v1/model/ner/predict' -H 'Content-Type: application/json' -d '{"configuration": {"return_pos": true, "language": "en"}, "inputs": {"content": "Google is cool"}}'
 ```
 
 Which will output:
@@ -31,6 +31,7 @@ The following test suites are currently implemented:
 - `unit`
 - `integration`
 - `functional`
+- `load`
 
 A load test suite will be implemented once the `serving` library has been extended to support an
 internally consistent load testing framework.
@@ -85,3 +86,33 @@ make projects.functional/ner COMPONENT=serve ENVIRONMENT=dev
 
 Note: This will automatically download the model artifact if the specified output directory is
 empty.
+
+### 2.4 Run `load` tests
+
+`load` test scope:
+  - Code + Ml model dependency
+  - requires `neuron` device in `serve` server component
+  - requires model artifact in `serve` server component
+  - model server will be run in `serve` component
+  - additional client will be run in `serve-load` component, sending genuine `http` requests
+    to the model server running in `serve` over the `docker compose` network
+  - export of 4 `json` files into ``projects/keywords/serve/models/{$NEPTUNE_MODEL_VERSION_ID}/{$IMAGE_TAG}/test_results` directory:
+    - `load_test_report.json`: The performance metrics captured during the load test
+    - `load_test_evaluation.json`: Individual and final fail/pass outcomes against specified
+    - `serve_image_spec.json`: The full name and tag of the `serve` docker image used
+    - `github_action_context.json`: Github Action CI runtime context meta data
+      criteria
+
+To run the `load` tests for the `serve` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.load/ner COMPONENT=serve ENVIRONMENT=dev
+```
+
+## 3 Uploading results
+
+To upload our results to Neptune/S3 run:
+
+```bash
+make projects.start/ner COMPONENT=serve-upload-results ENVIRONMENT=dev
+```

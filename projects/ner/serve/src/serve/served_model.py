@@ -9,14 +9,14 @@ from onclusiveml.models.ner import CompiledNER
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.server_models import (
+from src.serve.params import ServedModelArtifacts
+from src.serve.server_models import (
     BioResponseModel,
     PredictionExtractedEntity,
     PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
 )
-from src.serving_params import ServedModelArtifacts
 
 
 class ServedNERModel(ServedModel):
@@ -52,7 +52,6 @@ class ServedNERModel(ServedModel):
         self.model = CompiledNER.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
-
         # load model card json file into dict
         self.model_card = self.served_model_artifacts.model_card
 
@@ -71,7 +70,6 @@ class ServedNERModel(ServedModel):
         # content and configuration from payload
         configuration = payload.configuration
         inputs = payload.inputs
-
         # score the model
         entities = self.model.extract_entities(
             sentences=inputs.content, **configuration.dict()

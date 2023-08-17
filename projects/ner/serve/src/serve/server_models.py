@@ -39,7 +39,7 @@ class PredictRequestModel(BaseModel):
         inputs (PredictInputContentModel): The input content for prediction
     """
 
-    configuration: PredictConfiguration = PredictConfiguration()
+    configuration: Optional[PredictConfiguration] = PredictConfiguration()
     inputs: PredictInputContentModel
 
 
