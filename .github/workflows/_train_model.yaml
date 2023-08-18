@@ -122,5 +122,5 @@ jobs:
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
-            --sagemaker-role arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-stage \
+            --sagemaker-role arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-prod \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }}
