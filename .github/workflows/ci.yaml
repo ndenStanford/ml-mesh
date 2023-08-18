@@ -340,13 +340,42 @@ jobs       :
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
+  # TRAIN MODELS
+  # ===============================================
+
+  run-ml-train-pipelines:
+    name: Train ML models
+    uses: ./.github/workflows/_train_model.yaml
+    needs: [run-repository-state, run-projects]
+
+    strategy:
+      fail-fast: ${{ github.ref_name != 'main' }}
+      matrix:
+        models:
+          - project: keywords
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+      with:
+        environment: prod
+        sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+        project: ${{ matrix.models.project }}
+        tag: ${{ matrix.models.tag }}
+      secrets:
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+        NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
   # COMPILE MODELS
   # ===============================================
 
   run-ml-compilation-pipelines:
     name: Compile ML models
     uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-repository-state, run-projects]
+    needs: [run-repository-state, run-projects, run-ml-train-pipelines]
 
     strategy:
       fail-fast: ${{ github.ref_name != 'main' }}
@@ -360,8 +389,6 @@ jobs       :
             self-hosted-runner-type: inf1.2xlarge
             project: ner
             tag: ${{ needs.run-repository-state.outputs.tag }}
-
-
     with:
       environment: prod
       runner-kind: ${{ matrix.models.runner-kind }}

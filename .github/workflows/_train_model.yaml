@@ -16,7 +16,7 @@ on  :
         type: string
         description: Version tag of image providing the compilation runtime context.
       sagemaker-runner-type:
-        required: false
+        required: true
         default: ml.m4.xlarge # non-gpu
         type: string
         description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
@@ -46,20 +46,13 @@ on  :
 jobs:
   check-run-criteria:
     name: Check if the project's component flow needs to be run
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - uses: dorny/paths-filter@v2
         id: files-changed
@@ -93,8 +86,22 @@ jobs:
       - name: Install mesh dependencies
         run: make install
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
       - name: Run project train component on sagemaker
-        run: python -m bin.project-train \ --ecr-account ${{ ?? }} \ --project-name ${{ inputs.project }} \ --project-train ${{ inputs.component }} \ --image-tag
-          ${{ inputs.tag }} \ --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \ --instance-type ${{ inputs.sagemaker-runner-type
-          }} \ --instance-count ${{ inputs.sagemaker-runner-count }} \ --sagemaker-role arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-stage
-          \ --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }}
+        run: |
+          python -m bin.project-train \
+            --ecr-account ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com \
+            --project-name ${{ inputs.project }} \
+            --project-component train \
+            --image-tag ${{ inputs.tag }} \
+            --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
+            --instance-type ${{ inputs.sagemaker-runner-type}} \
+            --instance-count ${{ inputs.sagemaker-runner-count }} \
+            --sagemaker-role arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-stage \
+            --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }}
