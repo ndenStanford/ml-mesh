@@ -1,0 +1,60 @@
+from sagemaker.estimator import Estimator
+import os
+from datetime import datetime as dt
+import click
+
+@click.command()
+@click.option(
+    '--image-name',
+    default='063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train',
+    help="Image name of contaienr to be run on sagemaker. Defaults to `063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train`."
+)
+@click.option(
+    '--image-tag',
+    default='seb-test',
+    help="Image tag of container to be run on sagemaker. Defaults to `latest`."
+)
+@click.option(
+    '--instance-type',
+    default='ml.m4.xlarge',
+    help="EC2 instance type to use to run container on Sagemaker. See `https://aws.amazon.com/sagemaker/pricing/` for more options. Select 'local'/'local_gpu' for testing. Defaults to `ml.m4.xlarge`."
+)
+@click.option(
+    '--sagemaker-role',
+    default='arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-dev',
+    help="The role passed to the sagemaker service to execute the given job. Defaults to `arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-dev`."
+)
+@click.option(
+    '--neptune-api-token',
+    default=None,
+    help="The neptune AI model registry authentication token. Defaults to `None`."
+)
+@click.option(
+    '--base-job-name',
+    default=f'Project-Train-{dt.now().strftime("%Y-%m-%d--%H-%M-%S")}',
+    help="The base name of the sagemaker job about to be created. Defaults to `Project-Train-{time_stamp}`."
+)
+def project_train(
+    image_name: str,
+    image_tag: str,
+    instance_type: str,
+    sagemaker_role: str,
+    neptune_api_token: str,
+    base_job_name: str) -> None:
+
+    estimator = Estimator(
+        image_uri=f'{image_name}:{image_tag}',
+        base_job_name=base_job_name,
+        role=sagemaker_role,
+        instance_count=1,
+        instance_type=instance_type,
+        # only sensitive env vars need to be passed here, the rest are defined in the container via
+        # dot.env file
+        environment = {'NEPTUNE_API_TOKEN': neptune_api_token},
+        container_log_level=10
+    )
+
+    estimator.fit(job_name=dt.now().strftime('%Y-%m-%d--%H-%M-%S'))
+
+if __name__ == "__main__":
+    project_train()
