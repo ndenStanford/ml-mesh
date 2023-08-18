@@ -25,7 +25,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/prod.env
-    hostname: onclusive-mlf
+    hostname: onclusive-ml
     networks: [onclusive-net]
 
   train-unit:
@@ -49,6 +49,10 @@ services:
     env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+  # =============================================
+  # COMPILE
+  # =============================================
 
   compile:
     build:
