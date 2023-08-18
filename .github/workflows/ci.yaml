@@ -380,7 +380,7 @@ jobs       :
   run-compilation-pipelines:
     name: Compile ML models
     uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-repository-state, run-projects, run-ml-train-pipelines]
+    needs: [run-repository-state, run-projects, run-train-pipelines]
 
     strategy:
       fail-fast: ${{ github.ref_name != 'main' }}
