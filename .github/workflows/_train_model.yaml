@@ -24,6 +24,11 @@ on  :
         required: false
         type: string
         default: 1
+      release:
+        required: true
+        type: boolean
+        default: true
+        description: Release flag
     secrets:
       AWS_ACCOUNT_ID:
         required: true
