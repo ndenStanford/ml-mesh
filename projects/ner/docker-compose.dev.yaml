@@ -213,7 +213,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: ner
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
@@ -236,9 +236,6 @@ services:
       retries: 5
       start_period: 5s
       timeout: 10s
-    depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
 
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
@@ -287,16 +284,13 @@ services:
         source: serve/
         target: /projects/ner/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
     profiles: [integration]
     hostname: onclusiveml
     networks:
       - onclusive-net
-    depends_on:
-      serve-download-model:
-        condition: service_completed_successfully
 
   # functional tests
   # - include model artifact
@@ -327,7 +321,7 @@ services:
         source: serve/
         target: /projects/ner/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [pytest, tests/load, -ra, -vv, --capture=no, -s]
+    command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
       # load test params
