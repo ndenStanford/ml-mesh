@@ -5,13 +5,13 @@ from typing import Type
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.models.ner import CompiledNER
+from onclusiveml.models.sentiment import CompiledSent
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
 from src.server_models import (
     BioResponseModel,
-    PredictionExtractedEntity,
+    InputEntity,
     PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
@@ -19,9 +19,9 @@ from src.server_models import (
 from src.serving_params import ServedModelArtifacts
 
 
-class ServedNERModel(ServedModel):
+class ServedSentModel(ServedModel):
     """
-    Served NER model
+    Served Sent model
 
     Attributes:
         predict_request_model (Type[BaseModel]):  Request model for prediction
@@ -35,7 +35,7 @@ class ServedNERModel(ServedModel):
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """
-        Initalize the served NER model with its artifacts
+        Initalize the served Sent model with its artifacts
 
         Args:
             served_model_artifacts (ServedModelArtifacts): Served model artifact
@@ -48,8 +48,8 @@ class ServedNERModel(ServedModel):
         """
         Load the model artifacts and prepare the model for prediction
         """
-        # load model artifacts into ready CompiledNER instance
-        self.model = CompiledNER.from_pretrained(
+        # load model artifacts into ready CompiledSent instance
+        self.model = CompiledSent.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
 
@@ -60,7 +60,7 @@ class ServedNERModel(ServedModel):
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
         """
-        Make predictions using the loaded NER model
+        Make predictions using the loaded Sent model
 
         Args:
             payload (PredictRequestModel): The input data for making predictions
@@ -73,21 +73,18 @@ class ServedNERModel(ServedModel):
         inputs = payload.inputs
 
         # score the model
-        entities = self.model.extract_entities(
+        sentiment = self.model.extract_sentiment(
             sentences=inputs.content, **configuration.dict()
         )
 
-        entities_list = []
-        for entity in entities:
-            entities_list.append(PredictionExtractedEntity(**entity.__dict__))
+        sentiment_model = PredictionOutputContent(label=sentiment['label'], negative_prob=sentiment['negative_prob'], 
+                                                  positive_prob=sentiment['positive_pro'], entities=sentiment['entities'])
 
-            entity_model = PredictionOutputContent(predicted_content=entities_list)
-
-        return PredictResponseModel(outputs=entity_model)
+        return PredictResponseModel(outputs=sentiment_model)
 
     def bio(self) -> BioResponseModel:
         """
-        Get bio information about the served NER model
+        Get bio information about the served Sent model
 
         Returns:
             BioResponseModel: Bio information about the model

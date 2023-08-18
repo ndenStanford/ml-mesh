@@ -2,7 +2,7 @@
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.served_model import ServedNERModel
+from src.served_model import ServedSentModel
 from src.serving_params import ServedModelArtifacts
 
 
@@ -15,10 +15,10 @@ def get_model_server() -> ModelServer:
     """
     # initialize model
     served_model_artifacts = ServedModelArtifacts()
-    ner_served_model = ServedNERModel(served_model_artifacts=served_model_artifacts)
+    sent_served_model = ServedSentModel(served_model_artifacts=served_model_artifacts)
     # initialize model server
     serving_params = ServingParams()
-    model_server = ModelServer(configuration=serving_params, model=ner_served_model)
+    model_server = ModelServer(configuration=serving_params, model=sent_served_model)
 
     return model_server
 
