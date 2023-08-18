@@ -22,7 +22,7 @@ on  :
         description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
       sagemaker-runner-count:
         required: false
-        type: int
+        type: string
         default: 1
     secrets:
       AWS_ACCOUNT_ID:
