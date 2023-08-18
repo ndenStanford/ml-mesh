@@ -371,6 +371,7 @@ jobs       :
             project: ner
             tag: ${{ needs.run-repository-state.outputs.tag }}
             upload-compiled-model: true
+            compile: true
 
 
     with:
