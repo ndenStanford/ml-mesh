@@ -70,13 +70,16 @@ class PredictionOutputContent(BaseModel):
     Output content containing extracted entities from a prediction
 
     Attributes:
-        predicted_content (List[PredictionExtractedEntity]): List of extracted entities
+        label (str): Overall sentiment of the article
+        negative_prob (float): Probablity of negative sentiment
+        positive_prob (float): Probablity of positive sentiment
+        entities (Optional[List[InputEntity]]): entities with detected sentiment
     """
 
     label: str
     negative_prob: float
     positive_prob: float
-    entities: Optional[InputEntity]
+    entities: Optional[List[InputEntity]]
 
 
 class PredictResponseModel(BaseModel):
