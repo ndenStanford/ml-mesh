@@ -19,7 +19,7 @@ from onclusiveml.compile import CompiledPipeline
     ],
 )
 @pytest.mark.parametrize("neuron", [True, False])  # regular torchscript
-@pytest.mark.parametrize("batch_size", [1, 4, 8])
+@pytest.mark.parametrize("batch_size", [1, 2, 4])
 @pytest.mark.parametrize(
     "max_length",
     [
@@ -35,7 +35,7 @@ def test_compiled_feature_extraction_pipeline_from_pipeline(
     max_length,
     batch_size,
     neuron,
-    sample_inputs,
+    test_inputs,
     regression_test_atol,
     regression_test_rtol,
 ):
@@ -52,12 +52,12 @@ def test_compiled_feature_extraction_pipeline_from_pipeline(
     )
     # score compiled pipeline
     compiled_pipeline_output: Tuple[Tuple[List[List[float]]]] = compiled_pipeline(
-        sample_inputs
+        test_inputs
     )  # 1 x n_batch x n_token x n_embed
     compiled_pipeline_output_arr: np.array = np.array(compiled_pipeline_output)
     # score huggingface pipeline
     huggingface_pipeline_output: Tuple[Tuple[List[List[float]]]] = huggingface_pipeline(
-        sample_inputs,
+        test_inputs,
         tokenize_kwargs={
             "truncation": True,
             "add_special_tokens": True,

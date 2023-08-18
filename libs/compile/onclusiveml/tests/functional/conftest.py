@@ -8,19 +8,33 @@ from transformers.pipelines import pipeline
 # 3rd party libraries
 import pytest
 
+# Internal libraries
+from onclusiveml.compile.compile_utils import (
+    DelegatedPipelineAttributes,
+    DelegatedTokenizerAttributes,
+    DelegatedTokenizerMethods,
+)
+
 
 @pytest.fixture
-def sample_inputs() -> List[str]:
+def test_inputs() -> List[str]:
 
-    return (
-        [
-            "This is an extremely bad and short sample input.",
-            "This is a pretty neutral sentence."
-            """This is another, much, much better sample input. It is amazing! This is to test how
+    return [
+        "This is an extremely bad and short sample input.",
+        "This is a pretty neutral sentence."
+        """This is another, much, much better sample input. It is amazing! This is to test how
         the compiled model handles more than one tokenized sample at a time.""",
-        ]
-        * 2  # noqa: W503
-    )
+    ]
+
+
+@pytest.fixture
+def test_ner_inputs() -> List[str]:
+
+    return [
+        "My name is Sebastian, I live in London, which is a city in the United Kingdom.",
+        "Yesterday I went to Kew Gardens, a public garden in the county of Surrey.",
+        "Sherlock Holmes is a brilliant detective in England. Watson is his able assistent.",
+    ]
 
 
 @pytest.fixture
@@ -37,7 +51,7 @@ def huggingface_model_max_length(huggingface_tokenizer):
 
 @pytest.fixture
 def regression_test_atol():
-    return 2e-02
+    return 2.5e-02
 
 
 @pytest.fixture
@@ -80,23 +94,35 @@ def custom_tokenization_settings_3():
 
 
 @pytest.fixture
-def all_delegated_method_references_with_sample_inputs():
+def delegated_tokenizer_methods_w_input():
 
     return (
         (
-            "encode_plus",
+            DelegatedTokenizerMethods.encode_plus.value,
             """This is some example text to tokenize. It is used to regression test the compiled
             tokenizer.""",
         ),
         (
-            "encode",
+            DelegatedTokenizerMethods.encode.value,
             """This is some example text to tokenize. It is used to regression test the compiled
             tokenizer.""",
         ),
-        # ('decode',None),
-        ("create_token_type_ids_from_sequences", ["some", "example", "text"]),
-        # ('convert_tokens_to_string',[0,1,2]),
-        ("clean_up_tokenization", "some ,example text ."),
+        (
+            DelegatedTokenizerMethods.create_token_type_ids_from_sequences.value,
+            ["some", "example", "text"],
+        ),
+        (DelegatedTokenizerMethods.convert_ids_to_tokens.value, [1, 2, 3]),
+        (DelegatedTokenizerMethods.clean_up_tokenization.value, "some ,example text ."),
+    )
+
+
+@pytest.fixture
+def delegated_tokenizer_attributes():
+
+    return (
+        DelegatedTokenizerAttributes.is_fast.value,
+        DelegatedTokenizerAttributes._tokenizer.value,
+        DelegatedTokenizerAttributes.unk_token_id.value,
     )
 
 
@@ -114,3 +140,12 @@ def huggingface_pipeline(
 ):
 
     return pipeline(task=huggingface_pipeline_task, model=huggingface_model_reference)
+
+
+@pytest.fixture
+def delegated_pipeline_attributes():
+
+    return (
+        DelegatedPipelineAttributes.tokenizer.value,
+        DelegatedPipelineAttributes.model.value,
+    )

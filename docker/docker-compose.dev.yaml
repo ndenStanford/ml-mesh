@@ -196,6 +196,8 @@ services:
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-jupyter
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
+    ports:
+      - 8888:8888
     depends_on:
       - python-base
 
@@ -214,6 +216,8 @@ services:
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-cpu
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
+    ports:
+      - 8888:8888
     depends_on:
       - kubeflow-jupyter
 
@@ -232,5 +236,7 @@ services:
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-data-science
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
+    ports:
+      - 8888:8888
     depends_on:
       - kubeflow-torch-cpu

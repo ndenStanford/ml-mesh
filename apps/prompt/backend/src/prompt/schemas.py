@@ -7,11 +7,12 @@ from string import Formatter
 from typing import List, Optional
 
 # 3rd party libraries
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 # Source
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
+    PromptInvalidTemplate,
     PromptNotFound,
     PromptVersionNotFound,
 )
@@ -34,6 +35,27 @@ class PromptTemplateSchema(BaseModel):
     alias: str
     version: int = 0
     created_at: Optional[datetime.datetime] = None
+
+    @validator("template")
+    def validate_template(cls, value, values):
+        """
+        Validates the template
+        Args:
+            value (str): The template to be validated
+        Raises:
+            PromptInvalidTemplate: If the template is incorrectly formatted
+        Returns:
+            str: The validated template
+        """
+        if value == "" or value == "{}" or value == '""':
+            raise PromptInvalidTemplate(template=value)
+        else:
+            # Test template using formatter. Raise error if incorrectly formatted
+            try:
+                [i[1] for i in Formatter().parse(value) if i[1] is not None]
+            except ValueError:
+                raise PromptInvalidTemplate(template=value)
+            return value
 
     @property
     def variables(self) -> List[str]:
@@ -133,11 +155,12 @@ class PromptTemplateSchema(BaseModel):
     def update(self, **kwargs) -> "PromptTemplateSchema":
         """Updates table record from latest version."""
         query = list(PromptTemplateTable.query(self.alias, scan_index_forward=False))
-        return PromptTemplateSchema(
+        updated_template = PromptTemplateSchema(
             template=kwargs.get("template"),
             alias=self.alias,
             version=int(query[0].version) + 1,
-        ).save()
+        )
+        return updated_template.save()
 
 
 class PromptTemplateOutputSchema(BaseModel):
