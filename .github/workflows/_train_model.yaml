@@ -114,7 +114,7 @@ jobs:
 
       - name: Run project train component on sagemaker
         run: |
-          python -m bin.project-train \
+          python bin/project-train \
             --ecr-account ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com \
             --project-name ${{ inputs.project }} \
             --project-component train \
