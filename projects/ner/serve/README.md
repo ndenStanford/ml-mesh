@@ -111,7 +111,7 @@ make projects.load/ner COMPONENT=serve ENVIRONMENT=dev
 
 ## 3 Uploading results
 
-To upload our results to Neptune/S3 run:
+To upload your results to Neptune/S3 run:
 
 ```bash
 make projects.start/ner COMPONENT=serve-upload-results ENVIRONMENT=dev
