@@ -7,9 +7,10 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 [tool.poetry.dependencies]
 python = "3.8.16"
 click = "8.1.0"
-boto3 = "1.26.58"
+boto3 = "1.26.131"
 core = {path = "libs/core"}
 pytest = "7.2.0"
+sagemaker = "^2.177.1"
 
 [tool.poetry.dev-dependencies]
 

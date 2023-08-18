@@ -1,5 +1,5 @@
 ---
-name: Libs
+name: Model training
 on  :
   workflow_call:
     inputs:
