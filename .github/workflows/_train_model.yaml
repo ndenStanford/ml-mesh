@@ -15,6 +15,14 @@ on  :
         required: true
         type: string
         description: Version tag of image providing the compilation runtime context.
+      sagemaker-runner-type:
+        required: false
+        default: ml.m4.xlarge # non-gpu
+        type: string
+        description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
+      sagemaker-runner-count:
+        required: false
+        default: 1
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -36,12 +44,22 @@ on  :
         description: The API token for the neptune service account managing the model registry.
 
 jobs:
-  deploy:
-    runs-on: ubuntu-20.04
-
+  check-run-criteria:
+    name: Check if the project's component flow needs to be run
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - uses: dorny/paths-filter@v2
         id: files-changed
@@ -50,32 +68,33 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'libs/${{ inputs.lib }}/**'
+              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+  train-model:
+    name: (Train and) register an uncompiled model
+    needs: check-run-criteria
+    runs-on: ubuntu-20.04
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
 
       - name: Setup Python
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
 
       - name: Setup Poetry
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ inputs.poetry-version }}
 
       - name: Install mesh dependencies
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make install
 
-      - name: Run unit tests
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        run: make libs.unit/${{ inputs.lib }}
-
-      - name: Run integration tests
-        if: ${{ ( inputs.integration && inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
-        run: make libs.integration/${{ inputs.lib }}
-
-      - name: Run functional tests
-        if: ${{ ( inputs.functional && inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
-        run: make libs.functional/${{ inputs.lib }}
+      - name: Run project train component on sagemaker
+        run: python -m bin.project-train \ --ecr-account ${{ ?? }} \ --project-name ${{ inputs.project }} \ --project-train ${{ inputs.component }} \ --image-tag
+          ${{ inputs.tag }} \ --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \ --instance-type ${{ inputs.sagemaker-runner-type
+          }} \ --instance-count ${{ inputs.sagemaker-runner-count }} \ --sagemaker-role arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-stage
+          \ --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }}

@@ -1,13 +1,25 @@
 from sagemaker.estimator import Estimator
-import os
+from dotenv import dotenv_values
 from datetime import datetime as dt
 import click
+import os
 
 @click.command()
 @click.option(
-    '--image-name',
-    default='063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train',
-    help="Image name of contaienr to be run on sagemaker. Defaults to `063759612765.dkr.ecr.us-east-1.amazonaws.com/keywords-train`."
+    '--ecr-account',
+    default='063759612765.dkr.ecr.us-east-1.amazonaws.com',
+    help="Image name of contaienr to be run on sagemaker. Defaults to `063759612765.dkr.ecr.us-east-1.amazonaws.com`."
+)
+@click.option(
+    '--project-name',
+    default=f'keywords',
+    help="The name of the ml-mesh project the train component belongs to. Defaults to `keywords`."
+)
+@click.option(
+    '--project-component',
+    default='train',
+    type=click.Choice(['train']),
+    help="The name of the ml-mesh project the train component belongs to. Defaults to `train`(onyl component currently supported)."
 )
 @click.option(
     '--image-tag',
@@ -15,9 +27,20 @@ import click
     help="Image tag of container to be run on sagemaker. Defaults to `latest`."
 )
 @click.option(
+    '--run-configuration-dotenv',
+    default=None,
+    help="Optional. The path to the dotenv file containing environment variables to configure the current run."
+)
+@click.option(
     '--instance-type',
     default='ml.m4.xlarge',
     help="EC2 instance type to use to run container on Sagemaker. See `https://aws.amazon.com/sagemaker/pricing/` for more options. Select 'local'/'local_gpu' for testing. Defaults to `ml.m4.xlarge`."
+)
+@click.option(
+    '--instance-count',
+    type=int,
+    default=1,
+    help="Number of EC2 instances to use to run container on Sagemaker. Note onclusiveml images do not currently support distributed model training."
 )
 @click.option(
     '--sagemaker-role',
@@ -26,35 +49,51 @@ import click
 )
 @click.option(
     '--neptune-api-token',
-    default=None,
+    default='dummy-token',
     help="The neptune AI model registry authentication token. Defaults to `None`."
 )
-@click.option(
-    '--base-job-name',
-    default=f'Project-Train-{dt.now().strftime("%Y-%m-%d--%H-%M-%S")}',
-    help="The base name of the sagemaker job about to be created. Defaults to `Project-Train-{time_stamp}`."
-)
 def project_train(
-    image_name: str,
+    ecr_account: str,
+    project_name: str,
+    project_component: str,
     image_tag: str,
     instance_type: str,
+    instance_count: int,
+    run_configuration_dotenv: str,
     sagemaker_role: str,
-    neptune_api_token: str,
-    base_job_name: str) -> None:
+    neptune_api_token: str) -> None:
+
+    # dotenv file based train spec
+    if run_configuration_dotenv is not None:
+        training_specifiation = dotenv_values(run_configuration_dotenv)
+    else:
+        probable_project_component_dotenv = os.path.join('projects',project_name,project_component,'config','prod.env')
+
+        try:
+            click.echo(f"No dotenv configuration provided. Falling back on likely candidate {probable_project_component_dotenv}")
+            training_specifiation = dotenv_values(probable_project_component_dotenv)
+        except FileNotFoundError as e:
+            click.echo(f"Could not fall back on likely candidate {probable_project_component_dotenv}: {e}. Defaulting to container configuration (if it exists).")
+            training_specifiation = {}
+
+    # add neptune api token to train spec to create env var spec
+    environment_specification = {**training_specifiation, **{'NEPTUNE_API_TOKEN':neptune_api_token}}
+
+    training_base_job_name = f"{project_name}-{project_component}"
 
     estimator = Estimator(
-        image_uri=f'{image_name}:{image_tag}',
-        base_job_name=base_job_name,
+        image_uri=f'{ecr_account}/{project_name}-{project_component}:{image_tag}',
+        base_job_name=training_base_job_name,
         role=sagemaker_role,
-        instance_count=1,
+        instance_count=instance_count,
         instance_type=instance_type,
         # only sensitive env vars need to be passed here, the rest are defined in the container via
         # dot.env file
-        environment = {'NEPTUNE_API_TOKEN': neptune_api_token},
+        environment = environment_specification,
         container_log_level=10
     )
 
-    estimator.fit(job_name=dt.now().strftime('%Y-%m-%d--%H-%M-%S'))
+    estimator.fit(job_name=f"{training_base_job_name}-{dt.now().strftime('%Y-%m-%d--%H-%M-%S')}")
 
 if __name__ == "__main__":
     project_train()
