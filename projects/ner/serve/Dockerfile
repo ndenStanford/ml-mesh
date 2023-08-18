@@ -47,6 +47,7 @@ WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction
 
+# TODO: switching user to root is security risk. Instead extend the permission of the app user
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
 USER root

@@ -6,12 +6,15 @@ accompanying test suites as defined in [the post model registry flow `Model CI p
 
 ## 1 Running the model server
 
+To download the model using the `docker-compose.dev.yaml` file (recommended):
+
+- run `make projects.start/ner COMPONENT=serve-download-model ENVIRONMENT=dev`
+
+
 To run the model server using the `docker-compose.dev.yaml` file (recommended):
 
 - run `make projects.start/ner COMPONENT=serve ENVIRONMENT=dev`
 
-Note: This will automatically download the model artifact if the specified output directory is
-empty.
 
 While the server is running, you can open another terminal and trigger the API. For example:
 
@@ -65,8 +68,6 @@ To run the `integration` tests for the `serve` component, simply run:
 make projects.integration/ner COMPONENT=serve ENVIRONMENT=dev
 ```
 
-Note: This will automatically download the model artifact if the specified output directory is
-empty.
 
 ### 2.3 Run `functional` tests
 
@@ -84,8 +85,6 @@ To run the `functional` tests for the `serve` component, simply run:
 make projects.functional/ner COMPONENT=serve ENVIRONMENT=dev
 ```
 
-Note: This will automatically download the model artifact if the specified output directory is
-empty.
 
 ### 2.4 Run `load` tests
 
