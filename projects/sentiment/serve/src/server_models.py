@@ -49,20 +49,20 @@ class InputEntity(BaseModel):
     Input entity information from NER result
 
     Attributes:
-        entity_type (str): The type of the extracted entity.
+        entity_type (Optional[str]): The type of the extracted entity.
         text (str): The text of the extracted entity
-        score (float): Confidence score of extracted entity
-        sentence_index (int): Index of the sentence containing the entity
+        score (Optional[float]): Confidence score of extracted entity
+        sentence_index (Optional[int]): Index of the sentence containing the entity
         start (Optiona[int]): Start position of entity in the sentence
         end (Optiona[int]): End position of entity in the sentence
     """
 
-    entity_type: str
+    entity_type: Optional[str]
     text: str
-    score: float
-    sentence_index: int
-    start: Optional[int] = None
-    end: Optional[int] = None
+    score: Optional[float]
+    sentence_index: Optional[int]
+    start: Optional[int]
+    end: Optional[int]
 
 
 class PredictionOutputContent(BaseModel):
