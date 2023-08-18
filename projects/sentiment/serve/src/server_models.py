@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -11,17 +11,18 @@ class PredictConfiguration(BaseModel):
     Configuration for prediction request
 
     Attributes:
-        return_pos (Optional[bool]): Flag used to return position info or not. Defaults to True
+        entities (Optional[List[Dict[str, Union[str, List]]]]):
+                List of detected entities from the NER model
         language (Optional[str]): Language used for prediction. Defaults to "en"
     """
 
-    return_pos: Optional[bool] = True
+    entities: Optional[List[Dict[str, Union[str, List]]]]
     language: Optional[str] = "en"
 
 
 class PredictInputContentModel(BaseModel):
     """
-    Input ocntent for a prediction rerquest
+    Input content for a prediction rerquest
 
     Attributes:
         content (str): The input content for prediction
@@ -43,13 +44,13 @@ class PredictRequestModel(BaseModel):
     inputs: PredictInputContentModel
 
 
-class PredictionExtractedEntity(BaseModel):
+class InputEntity(BaseModel):
     """
-    Extracted entity information from a prediction
+    Input entity information from NER result
 
     Attributes:
         entity_type (str): The type of the extracted entity.
-        entity_text (str): The text of the extracted entity
+        text (str): The text of the extracted entity
         score (float): Confidence score of extracted entity
         sentence_index (int): Index of the sentence containing the entity
         start (Optiona[int]): Start position of entity in the sentence
@@ -57,7 +58,7 @@ class PredictionExtractedEntity(BaseModel):
     """
 
     entity_type: str
-    entity_text: str
+    text: str
     score: float
     sentence_index: int
     start: Optional[int] = None
@@ -72,7 +73,10 @@ class PredictionOutputContent(BaseModel):
         predicted_content (List[PredictionExtractedEntity]): List of extracted entities
     """
 
-    predicted_content: List[PredictionExtractedEntity]
+    label: str
+    negative_prob: float
+    positive_prob: float
+    entities: Optional[InputEntity]
 
 
 class PredictResponseModel(BaseModel):
@@ -96,5 +100,5 @@ class BioResponseModel(BaseModel):
         model_card (Dict): Information about the model
     """
 
-    model_name: str = "ner-model"
+    model_name: str = "sentiment-model"
     model_card: Dict
