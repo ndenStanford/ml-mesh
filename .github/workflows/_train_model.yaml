@@ -103,7 +103,7 @@ jobs:
           poetry-version: ${{ inputs.poetry-version }}
 
       - name: Install mesh dependencies
-        run: make install
+        run: poetry install --with ci
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
