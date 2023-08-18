@@ -188,6 +188,7 @@ services:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-115
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_ENABLE: true
     profiles: [serve, functional, load]
     ports:
       - 8000:8000
@@ -227,7 +228,6 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-115
       ENVIRONMENT: ${ENVIRONMENT}
-      onclusiveml_serving_betterstack_enable: ${onclusiveml_serving_betterstack_enable}
     hostname: onclusiveml
     networks: [onclusive-net]
 
