@@ -91,9 +91,9 @@ jobs       :
             integration: false
             functional: false
 
-          - name: models
-            integration: false
-            functional: false
+          # - name: models
+          #   integration: false
+          #   functional: false
 
           - name: serving
             integration: false
@@ -228,16 +228,16 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
-          # serve
-          - name: keywords
-            component: serve
-            download-model: true
-            integration: true
-            functional: true
-            load: true
-            upload-test-results: true
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+          # # serve
+          # - name: keywords
+          #   component: serve
+          #   download-model: true
+          #   integration: true
+          #   functional: true
+          #   load: true
+          #   upload-test-results: true
+          #   runner-kind: custom
+          #   self-hosted-runner-type: inf1.xlarge
 
           # ========================
           # SUMMARIZATION
@@ -362,10 +362,10 @@ jobs       :
       fail-fast: ${{ github.ref_name != 'main' }}
       matrix:
         models:
-          - runner-kind: custom
-            self-hosted-runner-type: inf1.2xlarge
-            project: keywords
-            tag: ${{ needs.run-repository-state.outputs.tag }}
+          # - runner-kind: custom
+          #   self-hosted-runner-type: inf1.2xlarge
+          #   project: keywords
+          #   tag: ${{ needs.run-repository-state.outputs.tag }}
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: ner
@@ -380,8 +380,8 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: false
-      upload-compiled-model: false
+      compile: true
+      upload-compiled-model: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
