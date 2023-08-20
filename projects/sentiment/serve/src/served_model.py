@@ -11,7 +11,6 @@ from onclusiveml.serving.rest.serve import ServedModel
 # Source
 from src.server_models import (
     BioResponseModel,
-    InputEntity,
     PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
@@ -77,8 +76,12 @@ class ServedSentModel(ServedModel):
             sentences=inputs.content, **configuration.dict()
         )
 
-        sentiment_model = PredictionOutputContent(label=sentiment['label'], negative_prob=sentiment['negative_prob'], 
-                                                  positive_prob=sentiment['positive_pro'], entities=sentiment['entities'])
+        sentiment_model = PredictionOutputContent(
+            label=sentiment.get("label"),
+            negative_prob=sentiment.get("negative_prob"),
+            positive_prob=sentiment.get("positive_prob"),
+            entities=sentiment.get("entities"),
+        )
 
         return PredictResponseModel(outputs=sentiment_model)
 

@@ -17,7 +17,7 @@ class PredictConfiguration(BaseModel):
     """
 
     entities: Optional[List[Dict[str, Union[str, List]]]]
-    language: Optional[str] = "en"
+    # language: Optional[str] = "en"
 
 
 class PredictInputContentModel(BaseModel):
@@ -65,6 +65,17 @@ class InputEntity(BaseModel):
     end: Optional[int]
 
 
+class OutputEntity(InputEntity):
+    """
+    Input entity information from NER result
+
+    Attributes:
+        sentiment: str
+    """
+
+    sentiment: str
+
+
 class PredictionOutputContent(BaseModel):
     """
     Output content containing extracted entities from a prediction
@@ -73,13 +84,13 @@ class PredictionOutputContent(BaseModel):
         label (str): Overall sentiment of the article
         negative_prob (float): Probablity of negative sentiment
         positive_prob (float): Probablity of positive sentiment
-        entities (Optional[List[InputEntity]]): entities with detected sentiment
+        entities (Optional[List[OutputEntity]]): entities with detected sentiment
     """
 
     label: str
     negative_prob: float
     positive_prob: float
-    entities: Optional[List[InputEntity]]
+    entities: Optional[List[OutputEntity]]
 
 
 class PredictResponseModel(BaseModel):

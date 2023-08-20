@@ -250,3 +250,5 @@ projects/sentiment/compile/outputs_old_2
 projects/ner/compile/projects/ner/compile/nltk_data
 outputs/
 model/
+models/
+projects/sentiment/serve/projects

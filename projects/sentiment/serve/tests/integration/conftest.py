@@ -64,3 +64,13 @@ def test_client():
     model_server = get_model_server()
 
     return TestClient(model_server)
+
+
+@pytest.fixture
+def test_atol() -> float:
+    return 2e-02
+
+
+@pytest.fixture
+def test_rtol() -> float:
+    return 1e-02

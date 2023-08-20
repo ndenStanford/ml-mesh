@@ -70,3 +70,13 @@ def test_model_card(test_served_model_artifacts):
         test_model_card = json.load(json_file)
 
     return test_model_card
+
+
+@pytest.fixture
+def test_atol() -> float:
+    return 2e-02
+
+
+@pytest.fixture
+def test_rtol() -> float:
+    return 1e-02

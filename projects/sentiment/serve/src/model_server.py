@@ -14,7 +14,7 @@ def get_model_server() -> ModelServer:
         ModelServer: Configured model server instance
     """
     # initialize model
-    served_model_artifacts = ServedModelArtifacts()
+    served_model_artifacts = ServedModelArtifacts(remove_model_prefix=True)
     sent_served_model = ServedSentModel(served_model_artifacts=served_model_artifacts)
     # initialize model server
     serving_params = ServingParams()
