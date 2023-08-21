@@ -85,7 +85,7 @@ jobs:
 
       - name: Show release flag
         run: |
-          echo Target branch: ${{ steps.toggle-target-branch }}
+          echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
           echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
 
   get-stage:
