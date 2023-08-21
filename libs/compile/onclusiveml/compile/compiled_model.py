@@ -111,7 +111,7 @@ class CompiledModel(PreTrainedModel):
             if not isinstance(model_output, torch.Tensor):
                 model_output = model_output[0]
 
-            traced_model_output = compiled_model(**tracing_inputs_dict)[0]
+            traced_model_output = compiled_model(**tracing_inputs_dict)
 
             torch.testing.assert_close(
                 model_output,
