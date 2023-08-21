@@ -42,9 +42,11 @@ on  :
       tag:
         description: Final tag to attach to images built within the workflow
         value: ${{ jobs.get-stage.outputs.tag }}
+        type: string
       target-branch:
         description: The generalized target branch for the pull request or push event.
         value: ${{ jobs.get-target-branch.outputs.target-branch}}
+        type: string
       release-notes:
         description: (Pre-)release notes derived based on specified configuration
         value: ${{ jobs.get-stage.outputs.release-notes}}
