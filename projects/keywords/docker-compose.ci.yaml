@@ -72,8 +72,6 @@ services:
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-download-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
@@ -87,11 +85,11 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-compile-model:
     devices:
@@ -105,11 +103,11 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-validate-model:
     devices:
@@ -123,11 +121,11 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-upload-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
@@ -158,11 +156,11 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
 # =============================================
   # SERVE
@@ -350,6 +348,3 @@ services:
 
 networks:
   onclusive-net:
-
-volumes :
-  compile-pipeline-vol:
