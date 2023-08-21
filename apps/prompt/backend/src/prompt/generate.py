@@ -31,8 +31,6 @@ def generate_text(
     if (
         model_name == ModelEnum.GPT3_5.value
         or model_name == ModelEnum.GPT4.value  # noqa: W503
-        or model_name == ModelEnum.DAVINCI.value  # noqa: W503
-        or model_name == ModelEnum.CURIE.value  # noqa: W503
     ):
         if model_name == "gpt-3.5-turbo" or model_name == "gpt-4":
             response = openai.ChatCompletion.create(
