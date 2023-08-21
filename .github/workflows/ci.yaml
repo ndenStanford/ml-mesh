@@ -61,8 +61,7 @@ jobs       :
           echo Release target branch: ${{ needs.run-repository-state.outputs.release-target-branch }}
           echo Release flag: ${{ needs.run-repository-state.outputs.release-flag }}
           echo "(Release) tag:" ${{ needs.run-repository-state.outputs.tag }}
-          echo ${{ needs.run-repository-state.outputs.release-notes }} > release-notes
-          echo cat release-notes
+          echo ${{ toJSON(needs.run-repository-state.outputs.release-notes) }}
 
   # ===============================================
   # TEST LIBS
