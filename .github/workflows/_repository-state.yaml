@@ -79,7 +79,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: toggle-release-flag
         with:
-          cond: ${{ steps.toggle-target-branch == 'main' }}
+          cond: ${{ steps.toggle-target-branch.outputs.value == 'main' }}
           if_true: true
           if_false: false
 
