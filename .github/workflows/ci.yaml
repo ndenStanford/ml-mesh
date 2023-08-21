@@ -63,9 +63,6 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       push-target-branch: ${{ github.ref_name }}
       pull-request-target-branch: ${{ github.base_ref }}
-      #target-branch: ${{ github.ref_name }} # bugged. only populated with branch ref during PUSH events. needs to resolve to branch or commit
-      #prerelease: ${{ github.ref_name == 'develop' }} # bugged. incorrectly resolves to desired PUSH events to 'develop' only. desired: PR & PUSH to 'develop'
-      #include-pre-releases: ${{ github.ref_name == 'develop' }} # bugged. incorrectly resolves to desired PUSH events to 'develop' only. desired: PR & PUSH to 'develop'
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
@@ -80,7 +77,6 @@ jobs       :
 
     strategy:
       max-parallel: 5
-      #fail-fast: ${{ github.ref_name != 'main' }} # bugged. desired: TRUE for feature PR & PUSH events
       fail-fast: ${{ needs.run-repository-state.outputs.release == 'false' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         python-version: [3.8.16]
@@ -121,7 +117,6 @@ jobs       :
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      #release: ${{ github.ref_name == 'main' }}
       release: ${{ needs.run-repository-state.outputs.release == 'true' }}
 
   # ===============================================
@@ -134,7 +129,6 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 1
-      #fail-fast: ${{ github.ref_name != 'main' }} # bugged. desired: TRUE for feature PR & PUSH events
       fail-fast: ${{ needs.run-repository-state.outputs.release == 'false' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
@@ -152,7 +146,6 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      #release: ${{ github.ref_name == 'main' }}
       release: ${{ needs.run-repository-state.outputs.release  == 'true' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -166,7 +159,6 @@ jobs       :
     needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
     strategy:
       max-parallel: 1
-      #fail-fast: ${{ github.ref_name != 'main' }}
       fail-fast: ${{ needs.run-repository-state.outputs.release  == 'false' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
@@ -187,7 +179,6 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      #release: ${{ github.ref_name == 'main' }}
       release: ${{ needs.run-repository-state.outputs.release  == 'true' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -207,7 +198,6 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      #fail-fast: ${{ github.ref_name != 'main' }}
       fail-fast: ${{ needs.run-repository-state.outputs.release  == 'false' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         projects:
@@ -324,7 +314,6 @@ jobs       :
       load: ${{ matrix.projects.load }}
       upload-test-results: ${{ matrix.projects.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      #release: ${{ github.ref_name == 'main' }}
       release: ${{ needs.run-repository-state.outputs.release  == 'true' }}
       runner-kind: ${{ matrix.projects.runner-kind }}
       self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
@@ -348,7 +337,6 @@ jobs       :
     needs: [run-repository-state, run-projects]
 
     strategy:
-      #fail-fast: ${{ github.ref_name != 'main' }}
       fail-fast: ${{ needs.run-repository-state.outputs.release  == 'false' }}
       matrix:
         models:
@@ -383,7 +371,6 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      #fail-fast: ${{ github.ref_name != 'main' }}
       fail-fast: ${{ needs.run-repository-state.outputs.release == 'false' }}
       matrix:
         apps:
@@ -412,7 +399,6 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      #release: ${{ github.ref_name == 'main' }}
       release: ${{ needs.run-repository-state.outputs.release == 'true' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}

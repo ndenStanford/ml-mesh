@@ -14,26 +14,6 @@ on  :
       pull-request-target-branch:
         required: true
         type: string
-      # target-branch:
-      #   required: false
-      #   type: string
-      #   default: main
-      #   description: Release target branch.
-      # prerelease:
-      #   required: false
-      #   type: boolean
-      #   default: false
-      #   description: If true a pre-release is created.
-      # publish:
-      #   required: false
-      #   type: boolean
-      #   default: true
-      #   description: If true a pre-release is created.
-      # include-pre-releases:
-      #   required: false
-      #   type: boolean
-      #   default: false
-      #   description: Include pre releases as "full" releases when drafting release notes.
     secrets:
       GITHUB_TOKEN_:
         required: true
@@ -154,14 +134,10 @@ jobs:
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          #publish: ${{ inputs.publish }}
           publish: ${{ needs.get-release-specs.outputs.release == 'true' }}
-          #commitish: ${{ inputs.target-branch }}
           commitish: ${{ needs.get-release-specs.outputs.target-branch }}
-          #prerelease: ${{ inputs.prerelease }}
           prerelease: ${{ needs.get-release-specs.outputs.release == 'false' }}
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
-          #include-pre-releases: ${{ inputs.include-pre-releases }}
           include-pre-releases: ${{ needs.get-release-specs.outputs.release == 'false' }}

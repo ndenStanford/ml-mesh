@@ -19,10 +19,6 @@ jobs       :
       pull-request: false
       push-target-branch: main
       pull-request-target-branch: n/a
-      #prerelease: false
-      #publish: false
-      #target-branch: main
-      #include-pre-releases: false
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
