@@ -105,3 +105,5 @@ To run the `load` tests for the `serve` component using the `docker-compose.dev.
 ```bash
 make projects.load/keywords COMPONENT=serve ENVIRONMENT=dev
 ```
+
+dummy change to trigger serve CI build + test
