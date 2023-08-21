@@ -42,19 +42,15 @@ on  :
       target-branch:
         description: The generalized target branch for the pull request or push event.
         value: ${{ jobs.get-release-specs.outputs.target-branch }}
-        type: string
       release:
         description: Whether this is a full release or not. Evaluates to `False` for pre-releases, too.
         value: ${{ jobs.get-release-specs.outputs.release-flag }}
-        type: boolean
       tag:
         description: Final tag to attach to images built within the workflow
         value: ${{ jobs.get-stage.outputs.tag }}
-        type: string
       release-notes:
         description: (Pre-)release notes derived based on specified configuration
         value: ${{ jobs.get-stage.outputs.release-notes}}
-        type: string
 
 jobs:
   get-release-specs:
@@ -134,7 +130,7 @@ jobs:
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
           #is_pre_release: ${{ inputs.prerelease }}
-          is_pre_release: ${{ needs.get-release-specs.outputs.target-branch != 'main' }}
+          is_pre_release: ${{ needs.get-release-specs.outputs.release == 'false' }}
 
       - name: Get short commit SHA
         id: get-commit-sha
