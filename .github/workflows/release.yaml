@@ -17,10 +17,12 @@ jobs       :
     if: startsWith(github.event.issue.title, '[RELEASE]:')
     with:
       pull-request: false
-      prerelease: false
-      publish: false
-      target-branch: main
-      include-pre-releases: false
+      push-target-branch: main
+      pull-request-target-branch: n/a
+      #prerelease: false
+      #publish: false
+      #target-branch: main
+      #include-pre-releases: false
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 

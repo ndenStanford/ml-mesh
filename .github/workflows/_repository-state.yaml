@@ -8,26 +8,32 @@ on  :
         default: true
         type: boolean
         description: Indicates whether this workflow is running for a Pull Request.
-      target-branch:
-        required: false
+      push-target-branch:
+        required: true
         type: string
-        default: main
-        description: Release target branch.
-      prerelease:
-        required: false
-        type: boolean
-        default: false
-        description: If true a pre-release is created.
-      publish:
-        required: false
-        type: boolean
-        default: true
-        description: If true a pre-release is created.
-      include-pre-releases:
-        required: false
-        type: boolean
-        default: false
-        description: Include pre releases as "full" releases when drafting release notes.
+      pull-request-target-branch:
+        required: true
+        type: string
+      # target-branch:
+      #   required: false
+      #   type: string
+      #   default: main
+      #   description: Release target branch.
+      # prerelease:
+      #   required: false
+      #   type: boolean
+      #   default: false
+      #   description: If true a pre-release is created.
+      # publish:
+      #   required: false
+      #   type: boolean
+      #   default: true
+      #   description: If true a pre-release is created.
+      # include-pre-releases:
+      #   required: false
+      #   type: boolean
+      #   default: false
+      #   description: Include pre releases as "full" releases when drafting release notes.
     secrets:
       GITHUB_TOKEN_:
         required: true
@@ -36,10 +42,38 @@ on  :
       tag:
         description: Final tag to attach to images built within the workflow
         value: ${{ jobs.get-stage.outputs.tag }}
+      target-branch:
+        description: The generalized target branch for the pull request or push event.
+        value: ${{ jobs.get-target-branch.outputs.target-branch}}
+      release-notes:
+        description: (Pre-)release notes derived based on specified configuration
+        value: ${{ jobs.get-stage.outputs.release-notes}}
 
 jobs:
+  get-target-branch:
+    runs-on: ubuntu-20.04
+    environment: ${{ inputs.environment }}
+    ouputs:
+      target-branch: ${{ steps.toggle-target-branch.outputs.value }}
+
+    steps:
+      - name: Resolve generalized target branch
+        uses: haya14busa/action-cond@v1
+        id: toggle-target-branch
+        with:
+          cond: ${{ !inputs.pull-request }}
+          if_true: ${{ inputs.push-target-branch }}
+          if_false: ${{ inputs.pull-request-target-branch }}
+
+      - name: Show generalized target branch
+        run: |
+          echo Push target branch: ${{ inputs.push-target-branch }}
+          echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
+          echo ${{ steps.toggle-target-branch.outputs.value }}
+
   get-stage:
     runs-on: ubuntu-20.04
+    needs: [get-target-branch]
     environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
@@ -78,7 +112,8 @@ jobs:
         shell: bash
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
-          is_pre_release: ${{ inputs.prerelease }}
+          #is_pre_release: ${{ inputs.prerelease }}
+          is_pre_release: ${{ needs.get-target-branch.outputs.target-branch != 'main' }}
 
       - name: Get short commit SHA
         id: get-commit-sha
@@ -102,10 +137,14 @@ jobs:
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          publish: ${{ inputs.publish }}
-          commitish: ${{ inputs.target-branch }}
-          prerelease: ${{ inputs.prerelease }}
-          tag: v${{ steps.version-increment.outputs.version }}
+          #publish: ${{ inputs.publish }}
+          publish: ${{ needs.get-target-branch.outputs.target-branch == 'main' }}
+          #commitish: ${{ inputs.target-branch }}
+          commitish: ${{ needs.get-target-branch.outputs.target-branch }}
+          #prerelease: ${{ inputs.prerelease }}
+          prerelease: ${{ needs.get-target-branch.outputs.target-branch != 'main' }}
+          tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
-          include-pre-releases: ${{ inputs.include-pre-releases }}
+          #include-pre-releases: ${{ inputs.include-pre-releases }}
+          include-pre-releases: ${{ needs.get-target-branch.outputs.target-branch != 'main' }}
