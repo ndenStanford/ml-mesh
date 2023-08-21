@@ -33,40 +33,40 @@ on  :
         value: ${{ jobs.get-stage.outputs.release-notes}}
 
 jobs:
-  get-release-specs:
-    runs-on: ubuntu-20.04
-    environment: ${{ inputs.environment }}
-    outputs:
-      target-branch: ${{ steps.toggle-target-branch.outputs.value }}
-      release-flag: ${{ steps.toggle-release-flag.outputs.value }}
+  # get-release-specs:
+  #   runs-on: ubuntu-20.04
+  #   environment: ${{ inputs.environment }}
+  #   outputs:
+  #     target-branch: ${{ steps.toggle-target-branch.outputs.value }}
+  #     release-flag: ${{ steps.toggle-release-flag.outputs.value }}
 
-    steps:
-      - name: Resolve generalized target branch
-        uses: haya14busa/action-cond@v1
-        id: toggle-target-branch
-        with:
-          cond: ${{ !inputs.pull-request }}
-          if_true: ${{ inputs.push-target-branch }}
-          if_false: ${{ inputs.pull-request-target-branch }}
+  #   steps:
+  #     - name: Resolve generalized target branch
+  #       uses: haya14busa/action-cond@v1
+  #       id: toggle-target-branch
+  #       with:
+  #         cond: ${{ !inputs.pull-request }}
+  #         if_true: ${{ inputs.push-target-branch }}
+  #         if_false: ${{ inputs.pull-request-target-branch }}
 
-      - name: Show generalized target branch
-        run: |
-          echo Push target branch: ${{ inputs.push-target-branch }}
-          echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
-          echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
+  #     - name: Show generalized target branch
+  #       run: |
+  #         echo Push target branch: ${{ inputs.push-target-branch }}
+  #         echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
+  #         echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
 
-      - name: Resolve release flag based on target branch
-        uses: haya14busa/action-cond@v1
-        id: toggle-release-flag
-        with:
-          cond: ${{ steps.toggle-target-branch.outputs.value == 'main' }}
-          if_true: true
-          if_false: false
+  #     - name: Resolve release flag based on target branch
+  #       uses: haya14busa/action-cond@v1
+  #       id: toggle-release-flag
+  #       with:
+  #         cond: ${{ steps.toggle-target-branch.outputs.value == 'main' }}
+  #         if_true: true
+  #         if_false: false
 
-      - name: Show release flag
-        run: |
-          echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
-          echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
+  #     - name: Show release flag
+  #       run: |
+  #         echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
+  #         echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
 
   get-stage:
     runs-on: ubuntu-20.04
@@ -75,6 +75,8 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
+      release-target-branch: ${{ steps.toggle-release-target-branch.outputs.value }}
+      release-flag: ${{ steps.toggle-release-flag.outputs.value }}
       tag: ${{ steps.export-tag.outputs.tag }}
       release-notes: ${{ steps.release-drafter.outputs.body }}
 
@@ -85,6 +87,33 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Resolve generalized target branch
+        uses: haya14busa/action-cond@v1
+        id: toggle-release-target-branch
+        with:
+          cond: ${{ !inputs.pull-request }}
+          if_true: ${{ inputs.push-target-branch }}
+          if_false: ${{ inputs.pull-request-target-branch }}
+
+      - name: Show release target branch
+        run: |
+          echo Push target branch: ${{ inputs.push-target-branch }}
+          echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
+          echo Release target branch: ${{ steps.toggle-release-target-branch.outputs.value }}
+
+      - name: Resolve release flag based on target branch
+        uses: haya14busa/action-cond@v1
+        id: toggle-release-flag
+        with:
+          cond: ${{ steps.toggle-release-target-branch.outputs.value == 'main' }}
+          if_true: true
+          if_false: false
+
+      - name: Show release flag
+        run: |
+          echo Release target branch: ${{ steps.toggle-release-target-branch.outputs.value }}
+          echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
 
       - name: Export current working directory
         id: export-working-dir
@@ -109,8 +138,7 @@ jobs:
         shell: bash
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
-          #is_pre_release: ${{ inputs.prerelease }}
-          is_pre_release: ${{ needs.get-release-specs.outputs.release == 'false' }}
+          is_pre_release: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
 
       - name: Get short commit SHA
         id: get-commit-sha
@@ -134,10 +162,11 @@ jobs:
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          publish: ${{ needs.get-release-specs.outputs.release == 'true' }}
-          commitish: ${{ needs.get-release-specs.outputs.target-branch }}
-          prerelease: ${{ needs.get-release-specs.outputs.release == 'false' }}
+          #publish: ${{ needs.get-release-specs.outputs.release == 'true' }}
+          publish: ${{ !inputs.pull-request }}
+          commitish: ${{ steps.toggle-release-target-branch.outputs.value }}
+          prerelease: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
-          include-pre-releases: ${{ needs.get-release-specs.outputs.release == 'false' }}
+          include-pre-releases: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
