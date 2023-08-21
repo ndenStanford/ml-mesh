@@ -41,7 +41,7 @@ jobs:
   check-github-state:
     name: Check github refs
     runs-on: ubuntu-latest
-    if: ${{ $inputs.verbose }}
+    if: ${{ inputs.verbose }}
 
     steps:
       - name: Show all relevant github action context vars
