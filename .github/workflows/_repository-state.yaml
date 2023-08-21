@@ -68,9 +68,9 @@ jobs:
   #         echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
   #         echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
 
-  get-stage:
+  get-state:
     runs-on: ubuntu-20.04
-    needs: [get-release-specs]
+    #needs: [get-release-specs]
     environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
