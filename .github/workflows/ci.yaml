@@ -46,6 +46,7 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       push-target-branch: ${{ github.ref_name }}
       pull-request-target-branch: ${{ github.base_ref }}
+      verbose: true
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
