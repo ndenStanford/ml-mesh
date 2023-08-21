@@ -48,6 +48,10 @@ jobs:
       release-notes: ${{ steps.release-drafter.outputs.body }}
 
     steps:
+      - name: Print out github event
+        run: |
+          echo ${{ github.event.event_name }}
+
       - name: Check out code
         uses: actions/checkout@v3
 
