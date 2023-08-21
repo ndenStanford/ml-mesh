@@ -14,6 +14,10 @@ on  :
       pull-request-target-branch:
         required: true
         type: string
+      verbose:
+        required: false
+        default: true
+        type: boolean
     secrets:
       GITHUB_TOKEN_:
         required: true
@@ -21,56 +25,36 @@ on  :
     outputs:
       release-target-branch:
         description: The generalized target branch for the pull request or push event.
-        value: ${{ jobs.get-state.outputs.release-target-branch }}
+        value: ${{ jobs.get-repository-state.outputs.release-target-branch }}
       release-flag:
         description: Whether this is a full release or not. Evaluates to `False` for pre-releases, too.
-        value: ${{ jobs.get-state.outputs.release-flag }}
+        value: ${{ jobs.get-repository-state.outputs.release-flag }}
       tag:
         description: Final tag to attach to images built within the workflow
-        value: ${{ jobs.get-state.outputs.tag }}
+        value: ${{ jobs.get-repository-state.outputs.tag }}
       release-notes:
         description: (Pre-)release notes derived based on specified configuration
-        value: ${{ jobs.get-state.outputs.release-notes}}
+        value: ${{ jobs.get-repository-state.outputs.release-notes}}
 
 jobs:
-  # get-release-specs:
-  #   runs-on: ubuntu-20.04
-  #   environment: ${{ inputs.environment }}
-  #   outputs:
-  #     target-branch: ${{ steps.toggle-target-branch.outputs.value }}
-  #     release-flag: ${{ steps.toggle-release-flag.outputs.value }}
 
-  #   steps:
-  #     - name: Resolve generalized target branch
-  #       uses: haya14busa/action-cond@v1
-  #       id: toggle-target-branch
-  #       with:
-  #         cond: ${{ !inputs.pull-request }}
-  #         if_true: ${{ inputs.push-target-branch }}
-  #         if_false: ${{ inputs.pull-request-target-branch }}
+  check-github-state:
+    name: Check github refs
+    runs-on: ubuntu-latest
+    if: ${{ $inputs.verbose }}
 
-  #     - name: Show generalized target branch
-  #       run: |
-  #         echo Push target branch: ${{ inputs.push-target-branch }}
-  #         echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
-  #         echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
+    steps:
+      - name: Show all relevant github action context vars
+        run: |
+          echo github.ref_name: ${{ github.ref_name }}
+          echo github.event_name: ${{ github.event_name }}
+          echo "github.base_ref (PR only):" ${{ github.base_ref }}
+          echo "github.head_ref (PR only):" ${{ github.head_ref }}
+          echo github.ref: ${{ github.ref }}
+          echo github.type: ${{ github.type }}
 
-  #     - name: Resolve release flag based on target branch
-  #       uses: haya14busa/action-cond@v1
-  #       id: toggle-release-flag
-  #       with:
-  #         cond: ${{ steps.toggle-target-branch.outputs.value == 'main' }}
-  #         if_true: true
-  #         if_false: false
-
-  #     - name: Show release flag
-  #       run: |
-  #         echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
-  #         echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
-
-  get-state:
+  get-repository-state:
     runs-on: ubuntu-20.04
-    #needs: [get-release-specs]
     environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
@@ -162,7 +146,6 @@ jobs:
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          #publish: ${{ needs.get-release-specs.outputs.release == 'true' }}
           publish: ${{ !inputs.pull-request }}
           commitish: ${{ steps.toggle-release-target-branch.outputs.value }}
           prerelease: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
