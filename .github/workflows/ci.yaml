@@ -81,7 +81,7 @@ jobs       :
     strategy:
       max-parallel: 5
       #fail-fast: ${{ github.ref_name != 'main' }} # bugged. desired: TRUE for feature PR & PUSH events
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch != 'main' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ !needs.run-repository-state.outputs.release }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         python-version: [3.8.16]
         poetry-version: [1.3.2]
@@ -122,7 +122,7 @@ jobs       :
       poetry-version: ${{ matrix.poetry-version }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       #release: ${{ github.ref_name == 'main' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.release }}
 
   # ===============================================
   # DOCKER
@@ -135,7 +135,7 @@ jobs       :
     strategy:
       max-parallel: 1
       #fail-fast: ${{ github.ref_name != 'main' }} # bugged. desired: TRUE for feature PR & PUSH events
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch != 'main' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ !needs.run-repository-state.outputs.release }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
           - python-base
@@ -153,7 +153,7 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
       #release: ${{ github.ref_name == 'main' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.release }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -167,7 +167,7 @@ jobs       :
     strategy:
       max-parallel: 1
       #fail-fast: ${{ github.ref_name != 'main' }}
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch != 'main' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ !needs.run-repository-state.outputs.release }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
           - name: kubeflow-jupyter
@@ -188,7 +188,7 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
       #release: ${{ github.ref_name == 'main' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.release }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -208,7 +208,7 @@ jobs       :
     strategy:
       max-parallel: 10
       #fail-fast: ${{ github.ref_name != 'main' }}
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch != 'main' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ !needs.run-repository-state.outputs.release }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         projects:
           # NOTE: list of project components to run
@@ -325,7 +325,7 @@ jobs       :
       upload-test-results: ${{ matrix.projects.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       #release: ${{ github.ref_name == 'main' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.release }}
       runner-kind: ${{ matrix.projects.runner-kind }}
       self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
     secrets:
@@ -349,7 +349,7 @@ jobs       :
 
     strategy:
       #fail-fast: ${{ github.ref_name != 'main' }}
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch != 'main' }}
+      fail-fast: ${{ !needs.run-repository-state.outputs.release }}
       matrix:
         models:
           - runner-kind: custom
@@ -363,8 +363,8 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
-      upload-compiled-model: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      compile: ${{ needs.run-repository-state.outputs.release }}
+      upload-compiled-model: ${{ needs.run-repository-state.outputs.release }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -384,7 +384,7 @@ jobs       :
     strategy:
       max-parallel: 10
       #fail-fast: ${{ github.ref_name != 'main' }}
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch != 'main' }}
+      fail-fast: ${{ !needs.run-repository-state.outputs.release }}
       matrix:
         apps:
           # NOTE: list of apps components to run
@@ -413,7 +413,7 @@ jobs       :
       integration: ${{ matrix.apps.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       #release: ${{ github.ref_name == 'main' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.release }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

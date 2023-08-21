@@ -39,24 +39,30 @@ on  :
         required: true
         description: Github Token to interact with repo.
     outputs:
+      target-branch:
+        description: The generalized target branch for the pull request or push event.
+        value: ${{ jobs.get-release-specs.outputs.target-branch }}
+        type: string
+      release:
+        description: Whether this is a full release or not. Evaluates to `False` for pre-releases, too.
+        value: ${{ jobs.get-release-specs.outputs.release-flag }}
+        type: boolean
       tag:
         description: Final tag to attach to images built within the workflow
         value: ${{ jobs.get-stage.outputs.tag }}
         type: string
-      target-branch:
-        description: The generalized target branch for the pull request or push event.
-        value: ${{ jobs.get-target-branch.outputs.target-branch}}
-        type: string
       release-notes:
         description: (Pre-)release notes derived based on specified configuration
         value: ${{ jobs.get-stage.outputs.release-notes}}
+        type: string
 
 jobs:
-  get-target-branch:
+  get-release-specs:
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     outputs:
       target-branch: ${{ steps.toggle-target-branch.outputs.value }}
+      release-flag: ${{ steps.toggle-release-flag.outputs.value }}
 
     steps:
       - name: Resolve generalized target branch
@@ -71,11 +77,24 @@ jobs:
         run: |
           echo Push target branch: ${{ inputs.push-target-branch }}
           echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
-          echo ${{ steps.toggle-target-branch.outputs.value }}
+          echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
+
+      - name: Resolve release flag based on target branch
+        uses: haya14busa/action-cond@v1
+        id: toggle-release-flag
+        with:
+          cond: ${{ steps.toggle-target-branch == 'main' }}
+          if_true: true
+          if_false: false
+
+      - name: Show release flag
+        run: |
+          echo Target branch: ${{ steps.toggle-target-branch }}
+          echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
 
   get-stage:
     runs-on: ubuntu-20.04
-    needs: [get-target-branch]
+    needs: [get-release-specs]
     environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
@@ -115,7 +134,7 @@ jobs:
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
           #is_pre_release: ${{ inputs.prerelease }}
-          is_pre_release: ${{ needs.get-target-branch.outputs.target-branch != 'main' }}
+          is_pre_release: ${{ needs.get-release-specs.outputs.target-branch != 'main' }}
 
       - name: Get short commit SHA
         id: get-commit-sha
@@ -140,13 +159,13 @@ jobs:
         with:
           config-name: release-drafter.yaml
           #publish: ${{ inputs.publish }}
-          publish: ${{ needs.get-target-branch.outputs.target-branch == 'main' }}
+          publish: ${{ needs.get-release-specs.outputs.release == 'true' }}
           #commitish: ${{ inputs.target-branch }}
-          commitish: ${{ needs.get-target-branch.outputs.target-branch }}
+          commitish: ${{ needs.get-release-specs.outputs.target-branch }}
           #prerelease: ${{ inputs.prerelease }}
-          prerelease: ${{ needs.get-target-branch.outputs.target-branch != 'main' }}
+          prerelease: ${{ needs.get-release-specs.outputs.release == 'false' }}
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
           #include-pre-releases: ${{ inputs.include-pre-releases }}
-          include-pre-releases: ${{ needs.get-target-branch.outputs.target-branch != 'main' }}
+          include-pre-releases: ${{ needs.get-release-specs.outputs.release == 'false' }}
