@@ -53,7 +53,7 @@ jobs:
   get-target-branch:
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
-    ouputs:
+    outputs:
       target-branch: ${{ steps.toggle-target-branch.outputs.value }}
 
     steps:
