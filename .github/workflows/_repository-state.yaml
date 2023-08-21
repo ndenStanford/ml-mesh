@@ -55,7 +55,6 @@ jobs:
 
   get-repository-state:
     runs-on: ubuntu-20.04
-    environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
@@ -117,7 +116,7 @@ jobs:
 
       - name: Get next version
         id: version-increment
-        if: ${{ !inputs.pull-request }}
+        #if: ${{ !inputs.pull-request }}
         run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
         shell: bash
         env:
@@ -142,7 +141,7 @@ jobs:
 
       - name: Generate Release Notes
         uses: release-drafter/release-drafter@v5.24.0
-        if: ${{ !inputs.pull-request }}
+        #if: ${{ !inputs.pull-request }}
         id: release-drafter
         with:
           config-name: release-drafter.yaml
