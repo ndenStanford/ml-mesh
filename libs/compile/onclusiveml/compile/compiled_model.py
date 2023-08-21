@@ -222,8 +222,7 @@ def compile_model(
     if neuron:
         traced_model = torch.neuron.trace(model, tracing_inputs, **tracing_kwargs)
     else:
-        # traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
-        traced_model = torch.jit.trace(model, tracing_inputs, strict=False)
+        traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
 
     compilation_specs = dict(
         **{"tracing_kwargs": tracing_kwargs},
