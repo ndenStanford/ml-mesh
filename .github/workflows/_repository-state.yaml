@@ -54,6 +54,7 @@ jobs:
           echo github.type: ${{ github.type }}
 
   get-repository-state:
+    name: Get repository release state
     runs-on: ubuntu-20.04
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
@@ -123,12 +124,14 @@ jobs:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
           is_pre_release: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
 
-      - name: Get short commit SHA
-        id: get-commit-sha
-        if: ${{ inputs.pull-request }}
-        run: |
-          sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
-          echo "tag=ci-$sha" >> $GITHUB_OUTPUT
+      # # Deprecated/replaced by export-tag step below. To be discussed as commit shas might
+      # # be better to use here to check the content of the versioned docker containers
+      # - name: Get short commit SHA
+      #   id: get-commit-sha
+      #   if: ${{ inputs.pull-request }}
+      #   run: |
+      #     sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+      #     echo "tag=ci-$sha" >> $GITHUB_OUTPUT
 
       - name: Export tag
         id: export-tag
@@ -151,4 +154,3 @@ jobs:
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
-          include-pre-releases: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
