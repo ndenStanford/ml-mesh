@@ -74,26 +74,32 @@ services:
     networks: [onclusive-net]
 
   compile-download-model:
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
-    volumes:
-      - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-compile-model:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [pipeline]
@@ -102,16 +108,16 @@ services:
       IO_OUTPATH: /projects/keywords/compile/outputs
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
-    volumes:
-      - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-validate-model:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -120,14 +126,14 @@ services:
       IO_OUTPATH: /projects/keywords/compile/outputs
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
-    volumes:
-      - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-upload-model:
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -155,10 +161,6 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
-    volumes:
-      - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
     hostname: onclusive-ml
     networks: [onclusive-net]
 
