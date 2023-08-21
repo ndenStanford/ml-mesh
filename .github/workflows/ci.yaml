@@ -366,8 +366,8 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: false
-      upload-compiled-model: false
+      compile: true # temp for debugging
+      upload-compiled-model: true # temp for debugging
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
