@@ -66,6 +66,19 @@ jobs       :
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
+  check-repository-state:
+    name: Check repository metadata
+    needs: [run-repository-state]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Show all repository state returns
+        run: |
+          echo Release target branch: ${{ needs.run-repository-state.outputs.release-target-branch }}
+          echo Release flag: ${{ needs.run-repository-state.outputs.release-flag }}
+          echo (Release) tag: ${{ needs.run-repository-state.outputs.tag }}
+          echo Release notes: ${{ needs.run-repository-state.outputs.release-notes }}
+
   # ===============================================
   # TEST LIBS
   # ===============================================

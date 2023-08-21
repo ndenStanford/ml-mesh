@@ -19,18 +19,18 @@ on  :
         required: true
         description: Github Token to interact with repo.
     outputs:
-      target-branch:
+      release-target-branch:
         description: The generalized target branch for the pull request or push event.
-        value: ${{ jobs.get-release-specs.outputs.target-branch }}
-      release:
+        value: ${{ jobs.get-state.outputs.release-target-branch }}
+      release-flag:
         description: Whether this is a full release or not. Evaluates to `False` for pre-releases, too.
-        value: ${{ jobs.get-release-specs.outputs.release-flag }}
+        value: ${{ jobs.get-state.outputs.release-flag }}
       tag:
         description: Final tag to attach to images built within the workflow
-        value: ${{ jobs.get-stage.outputs.tag }}
+        value: ${{ jobs.get-state.outputs.tag }}
       release-notes:
         description: (Pre-)release notes derived based on specified configuration
-        value: ${{ jobs.get-stage.outputs.release-notes}}
+        value: ${{ jobs.get-state.outputs.release-notes}}
 
 jobs:
   # get-release-specs:
