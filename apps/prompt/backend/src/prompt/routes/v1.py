@@ -83,7 +83,7 @@ def create_prompt(template: str, alias: str, parameters: Optional[Dict] = None):
     Args:
         template (str): prompt template text.
         alias (str): alias for template.
-        parameters (str): model and parameters values to be used with prompt
+        parameters (Optional[dict]): model and parameters values to be used with prompt
     """
     alias = slugify(alias)
     prompt = PromptTemplateSchema.get(alias)
@@ -91,7 +91,7 @@ def create_prompt(template: str, alias: str, parameters: Optional[Dict] = None):
     # otherwise create a new prompt with version 0.
     if not prompt:
         try:
-            if parameters is None:
+            if parameters is None or parameters == {}:
                 return PromptTemplateSchema(template=template, alias=alias).save()
             else:
                 params_instance = Parameters.from_dict(parameters)
@@ -137,6 +137,7 @@ def update_prompt(alias: str, template: str, parameters: Optional[Dict] = None):
     Args:
         alias (str): alias
         template (str): prompt template text.
+        parameters (Optional[dict]): model and parameters values to be used with prompt
     """
     try:
         prompt = PromptTemplateSchema.get(alias, raises_if_not_found=True)
