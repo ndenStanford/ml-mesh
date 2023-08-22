@@ -71,121 +71,121 @@ jobs       :
   # TEST LIBS
   # ===============================================
 
-  # run-libs-tests:
-  #   name: Run libraries unit and integration tests.
-  #   uses: ./.github/workflows/_libs.yaml
-  #   needs: [run-repository-state]
+  run-libs-tests:
+    name: Run libraries unit and integration tests.
+    uses: ./.github/workflows/_libs.yaml
+    needs: [run-repository-state]
 
-  #   strategy:
-  #     max-parallel: 5
-  #     fail-fast: ${{ github.ref_name != 'main' }}
-  #     matrix:
-  #       python-version: [3.8.16]
-  #       poetry-version: [1.3.2]
-  #       libs:
-  #         - name: core
-  #           integration: false
-  #           functional: false
+    strategy:
+      max-parallel: 5
+      fail-fast: ${{ github.ref_name != 'main' }}
+      matrix:
+        python-version: [3.8.16]
+        poetry-version: [1.3.2]
+        libs:
+          - name: core
+            integration: false
+            functional: false
 
-  #         - name: compile
-  #           integration: false
-  #           functional: false
+          - name: compile
+            integration: false
+            functional: false
 
-  #         - name: models
-  #           integration: false
-  #           functional: false
+          # - name: models
+          #   integration: false
+          #   functional: false
 
-  #         - name: serving
-  #           integration: false
-  #           functional: false
+          - name: serving
+            integration: false
+            functional: false
 
-  #         - name: tracking
-  #           integration: false
-  #           functional: false # TODO: turn this to true when self hosted runners are available.
+          - name: tracking
+            integration: false
+            functional: false # TODO: turn this to true when self hosted runners are available.
 
-  #         - name: nlp
-  #           integration: false
-  #           functional: false
+          - name: nlp
+            integration: false
+            functional: false
 
-  #         - name: syndicate
-  #           integration: false
-  #           functional: false
+          - name: syndicate
+            integration: false
+            functional: false
 
-  #   with:
-  #     lib: ${{ matrix.libs.name }}
-  #     integration: ${{ matrix.libs.integration }}
-  #     functional: ${{ matrix.libs.functional }}
-  #     python-version: ${{ matrix.python-version }}
-  #     poetry-version: ${{ matrix.poetry-version }}
-  #     pull-request: ${{ github.event_name == 'pull_request' }}
-  #     release: ${{ github.ref_name == 'main' }}
+    with:
+      lib: ${{ matrix.libs.name }}
+      integration: ${{ matrix.libs.integration }}
+      functional: ${{ matrix.libs.functional }}
+      python-version: ${{ matrix.python-version }}
+      poetry-version: ${{ matrix.poetry-version }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ github.ref_name == 'main' }}
 
   # ===============================================
   # DOCKER
   # ===============================================
 
-  # run-us-east-1-docker:
-  #   name: Core Docker Images.
-  #   uses: ./.github/workflows/_docker.yaml
-  #   needs: [run-repository-state, run-libs-tests]
-  #   strategy:
-  #     max-parallel: 1
-  #     fail-fast: ${{ github.ref_name != 'main' }}
-  #     matrix:
-  #       image:
-  #         - python-base
-  #         - neuron-compile
-  #         - neuron-inference
-  #         - fastapi-serve
-  #       validate-build: [false]
-  #       region: [us-east-1]
+  run-us-east-1-docker:
+    name: Core Docker Images.
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests]
+    strategy:
+      max-parallel: 1
+      fail-fast: ${{ github.ref_name != 'main' }}
+      matrix:
+        image:
+          - python-base
+          - neuron-compile
+          - neuron-inference
+          - fastapi-serve
+        validate-build: [false]
+        region: [us-east-1]
 
-  #   with:
-  #     environment: prod
-  #     image: ${{ matrix.image }}
-  #     region: ${{ matrix.region }}
-  #     tag: ${{ needs.run-repository-state.outputs.tag }}
-  #     pull-request: ${{ github.event_name == 'pull_request' }}
-  #     validate-build: ${{ matrix.validate-build }}
-  #     release: ${{ github.ref_name == 'main' }}
-  #   secrets:
-  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    with:
+      environment: prod
+      image: ${{ matrix.image }}
+      region: ${{ matrix.region }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      validate-build: ${{ matrix.validate-build }}
+      release: ${{ github.ref_name == 'main' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-  # run-us-east-2-docker:
-  #   name: Core Kubeflow Docker Images.
-  #   uses: ./.github/workflows/_docker.yaml
-  #   needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
-  #   strategy:
-  #     max-parallel: 1
-  #     fail-fast: ${{ github.ref_name != 'main' }}
-  #     matrix:
-  #       image:
-  #         - name: kubeflow-jupyter
-  #           base-region: us-east-1
-  #         - name: kubeflow-torch-cpu
-  #           base-region: us-east-2
-  #         - name: kubeflow-data-science
-  #           base-region: us-east-2
-  #       validate-build: [false]
-  #       region: [us-east-2]
+  run-us-east-2-docker:
+    name: Core Kubeflow Docker Images.
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
+    strategy:
+      max-parallel: 1
+      fail-fast: ${{ github.ref_name != 'main' }}
+      matrix:
+        image:
+          - name: kubeflow-jupyter
+            base-region: us-east-1
+          - name: kubeflow-torch-cpu
+            base-region: us-east-2
+          - name: kubeflow-data-science
+            base-region: us-east-2
+        validate-build: [false]
+        region: [us-east-2]
 
-  #   with:
-  #     environment: prod
-  #     image: ${{ matrix.image.name }}
-  #     region: ${{ matrix.region }}
-  #     base-region: ${{ matrix.image.base-region }}
-  #     tag: ${{ needs.run-repository-state.outputs.tag }}
-  #     pull-request: ${{ github.event_name == 'pull_request' }}
-  #     validate-build: ${{ matrix.validate-build }}
-  #     release: ${{ github.ref_name == 'main' }}
-  #   secrets:
-  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    with:
+      environment: prod
+      image: ${{ matrix.image.name }}
+      region: ${{ matrix.region }}
+      base-region: ${{ matrix.image.base-region }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      validate-build: ${{ matrix.validate-build }}
+      release: ${{ github.ref_name == 'main' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   # ===============================================
   # PROJECTS
@@ -208,7 +208,7 @@ jobs       :
           # KEYWORDS
           # ========================
 
-          # train
+          # # train
           # - name: keywords
           #   component: train
           #   download-model: false
@@ -243,14 +243,14 @@ jobs       :
           # SUMMARIZATION
           # ========================
           # serve
-          # - name: summarization
-          #   component: serve
-          #   download-model: false
-          #   integration: false
-          #   functional: false
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: ubuntu-20.04
+          - name: summarization
+            component: serve
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # # ========================
           # # ENTITY LINKING
@@ -269,14 +269,14 @@ jobs       :
           # NER
           # ========================
           # train
-          # - name: ner
-          #   component: train
-          #   download-model: false
-          #   integration: false
-          #   functional: false
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: ubuntu-20.04
+          - name: ner
+            component: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # compile
           - name: ner
@@ -303,27 +303,27 @@ jobs       :
           # LSH
           # ========================
           # serve
-          # - name: lsh
-          #   component: serve
-          #   download-model: false
-          #   integration: true
-          #   functional: true
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: ubuntu-20.04
+          - name: lsh
+            component: serve
+            download-model: false
+            integration: true
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # ========================
           # Sentiment
           # ========================
           # train
-          # - name: sentiment
-          #   component: train
-          #   download-model: false
-          #   integration: false
-          #   functional: false
-          #   load: false
-          #   upload-test-results: false
-          #   runner-kind: ubuntu-20.04
+          - name: sentiment
+            component: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
     with:
       environment: prod
