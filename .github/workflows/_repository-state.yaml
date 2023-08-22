@@ -11,7 +11,7 @@ on  :
       push-target-branch:
         required: false
         type: string
-        default:
+        default: ''
         description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
       pull-request-target-branch:
         required: true
