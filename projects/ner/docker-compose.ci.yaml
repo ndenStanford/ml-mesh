@@ -77,8 +77,6 @@ services:
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-download-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
@@ -111,8 +109,6 @@ services:
       - compile-pipeline-vol:/projects/ner/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-validate-model:
     devices:
@@ -129,8 +125,6 @@ services:
       - compile-pipeline-vol:/projects/ner/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-upload-model:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
@@ -164,8 +158,6 @@ services:
       - compile-pipeline-vol:/projects/ner/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
 # =============================================
   # SERVE
