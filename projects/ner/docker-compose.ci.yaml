@@ -95,8 +95,6 @@ services:
       - compile-pipeline-vol:/projects/ner/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-compile-model:
     devices:
