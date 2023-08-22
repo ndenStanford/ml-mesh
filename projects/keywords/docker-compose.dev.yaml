@@ -31,16 +31,6 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     volumes:
       - type: bind
         source: train/src
