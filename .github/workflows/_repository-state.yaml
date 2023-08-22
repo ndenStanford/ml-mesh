@@ -11,13 +11,16 @@ on  :
       push-target-branch:
         required: true
         type: string
+        description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
       pull-request-target-branch:
         required: true
         type: string
+        description: The branch that is beinged pulled into in case of a `pull-request` github event, e.g same as `github.base_ref`.
       verbose:
         required: false
         default: true
         type: boolean
+        description: If true, this flow shows a relevant set of github action vars relevant to its logic. Useful for debugging.
     secrets:
       GITHUB_TOKEN_:
         required: true
