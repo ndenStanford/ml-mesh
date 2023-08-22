@@ -53,13 +53,3 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
             test_files[test_file_reference] = json.load(test_file)
 
     return test_files
-
-
-@pytest.fixture
-def test_atol() -> float:
-    return 2e-02
-
-
-@pytest.fixture
-def test_rtol() -> float:
-    return 1e-02
