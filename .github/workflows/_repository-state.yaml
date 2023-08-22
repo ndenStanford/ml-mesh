@@ -5,17 +5,17 @@ on  :
     inputs:
       pull-request:
         required: false
-        default: false
+        default: true
         type: boolean
         description: Indicates whether this workflow is running for a Pull Request.
       push-target-branch:
-        required: true
-        type: string
-        description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
-      pull-request-target-branch:
         required: false
         type: string
         default:
+        description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
+      pull-request-target-branch:
+        required: true
+        type: string
         description: The branch that is beinged pulled into in case of a `pull-request` github event, e.g same as `github.base_ref`.
       verbose:
         required: false
@@ -145,7 +145,7 @@ jobs:
             echo "tag=v${{ steps.version-increment.outputs.version }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Generate Release Notes
+      - name: Generate (Draft) Release
         uses: release-drafter/release-drafter@v5.24.0
         id: release-drafter
         with:
@@ -156,3 +156,10 @@ jobs:
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
+
+      - name: Remove Draft release
+        uses: liudonghua123/delete-release-action@v1
+        id: release-draft-remover
+        if: ${{ inputs.pull-request }}
+        with:
+          release_name: ${{ steps.release-drafter.outputs.name }}

@@ -16,8 +16,8 @@ jobs       :
     uses: ./.github/workflows/_repository-state.yaml
     if: startsWith(github.event.issue.title, '[RELEASE]:')
     with:
-      pull-request: false
-      push-target-branch: main
+      pull-request: true
+      pull-request-target-branch: main
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
