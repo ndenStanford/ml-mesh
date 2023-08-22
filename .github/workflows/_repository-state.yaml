@@ -8,48 +8,96 @@ on  :
         default: true
         type: boolean
         description: Indicates whether this workflow is running for a Pull Request.
-      target-branch:
-        required: false
+      push-target-branch:
+        required: true
         type: string
-        default: main
-        description: Release target branch.
-      prerelease:
+      pull-request-target-branch:
+        required: true
+        type: string
+      verbose:
         required: false
-        type: boolean
-        default: false
-        description: If true a pre-release is created.
-      publish:
-        required: false
-        type: boolean
         default: true
-        description: If true a pre-release is created.
-      include-pre-releases:
-        required: false
         type: boolean
-        default: false
-        description: Include pre releases as "full" releases when drafting release notes.
     secrets:
       GITHUB_TOKEN_:
         required: true
         description: Github Token to interact with repo.
     outputs:
+      release-target-branch:
+        description: The generalized target branch for the pull request or push event.
+        value: ${{ jobs.get-repository-state.outputs.release-target-branch }}
+      release-flag:
+        description: Whether this is a full release or not. Evaluates to `False` for pre-releases, too.
+        value: ${{ jobs.get-repository-state.outputs.release-flag }}
       tag:
         description: Final tag to attach to images built within the workflow
-        value: ${{ jobs.get-stage.outputs.tag }}
+        value: ${{ jobs.get-repository-state.outputs.tag }}
+      release-notes:
+        description: (Pre-)release notes derived based on specified configuration
+        value: ${{ jobs.get-repository-state.outputs.release-notes}}
 
 jobs:
-  get-stage:
+
+  check-github-state:
+    name: Check github refs
+    runs-on: ubuntu-latest
+    if: ${{ inputs.verbose }}
+
+    steps:
+      - name: Show all relevant github action context vars
+        run: |
+          echo github.ref_name: ${{ github.ref_name }}
+          echo github.event_name: ${{ github.event_name }}
+          echo "github.base_ref (PR only):" ${{ github.base_ref }}
+          echo "github.head_ref (PR only):" ${{ github.head_ref }}
+          echo github.ref: ${{ github.ref }}
+          echo github.type: ${{ github.type }}
+
+  get-repository-state:
+    name: Get repository release state
     runs-on: ubuntu-20.04
-    environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
+      release-target-branch: ${{ steps.toggle-release-target-branch.outputs.value }}
+      release-flag: ${{ steps.toggle-release-flag.outputs.value }}
       tag: ${{ steps.export-tag.outputs.tag }}
       release-notes: ${{ steps.release-drafter.outputs.body }}
 
     steps:
+      - name: Print out github event
+        run: |
+          echo ${{ github.event_name }}
+
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Resolve generalized target branch
+        uses: haya14busa/action-cond@v1
+        id: toggle-release-target-branch
+        with:
+          cond: ${{ !inputs.pull-request }}
+          if_true: ${{ inputs.push-target-branch }}
+          if_false: ${{ inputs.pull-request-target-branch }}
+
+      - name: Show release target branch
+        run: |
+          echo Push target branch: ${{ inputs.push-target-branch }}
+          echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
+          echo Release target branch: ${{ steps.toggle-release-target-branch.outputs.value }}
+
+      - name: Resolve release flag based on target branch
+        uses: haya14busa/action-cond@v1
+        id: toggle-release-flag
+        with:
+          cond: ${{ steps.toggle-release-target-branch.outputs.value == 'main' }}
+          if_true: true
+          if_false: false
+
+      - name: Show release flag
+        run: |
+          echo Release target branch: ${{ steps.toggle-release-target-branch.outputs.value }}
+          echo Release flag: ${{ steps.toggle-release-flag.outputs.value }}
 
       - name: Export current working directory
         id: export-working-dir
@@ -69,19 +117,21 @@ jobs:
 
       - name: Get next version
         id: version-increment
-        if: ${{ !inputs.pull-request }}
+        #if: ${{ !inputs.pull-request }}
         run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
         shell: bash
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
-          is_pre_release: ${{ inputs.prerelease }}
+          is_pre_release: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
 
-      - name: Get short commit SHA
-        id: get-commit-sha
-        if: ${{ inputs.pull-request }}
-        run: |
-          sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
-          echo "tag=ci-$sha" >> $GITHUB_OUTPUT
+      # # Deprecated/replaced by export-tag step below. To be discussed as commit shas might
+      # # be better to use here to check the content of the versioned docker containers
+      # - name: Get short commit SHA
+      #   id: get-commit-sha
+      #   if: ${{ inputs.pull-request }}
+      #   run: |
+      #     sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+      #     echo "tag=ci-$sha" >> $GITHUB_OUTPUT
 
       - name: Export tag
         id: export-tag
@@ -94,14 +144,13 @@ jobs:
 
       - name: Generate Release Notes
         uses: release-drafter/release-drafter@v5.24.0
-        if: ${{ !inputs.pull-request }}
+        #if: ${{ !inputs.pull-request }}
         id: release-drafter
         with:
           config-name: release-drafter.yaml
-          publish: ${{ inputs.publish }}
-          commitish: ${{ inputs.target-branch }}
-          prerelease: ${{ inputs.prerelease }}
-          tag: v${{ steps.version-increment.outputs.version }}
+          publish: ${{ !inputs.pull-request }}
+          commitish: ${{ steps.toggle-release-target-branch.outputs.value }}
+          prerelease: ${{ steps.toggle-release-flag.outputs.value == 'false' }}
+          tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
-          include-pre-releases: ${{ inputs.include-pre-releases }}
