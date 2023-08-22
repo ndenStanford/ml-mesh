@@ -43,9 +43,8 @@ def main(profile: str, no_export: bool):
     append_secrets_to_env_file("AWS_ACCOUNT_ID", boto3.client('sts').get_caller_identity().get('Account'))
     append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
     append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
-    append_secrets_to_env_file("PROMPT_BACKEND_REDIS_CONNECTIONSTRING", boto3.client('ssm').get_parameter(Name='/admin/dev/prompt-backend/redis/connectionstring')['Parameter']['Value'])
     append_secrets_to_env_file("API_KEY", boto3.client('ssm').get_parameter(Name='/mesh/dev/kong/ml-team/api-key')['Parameter']['Value'])
-    append_secrets_to_env_file("SUMMARIZATION_BETTERSTACK_KEY", boto3.client('ssm').get_parameter(Name='/admin/dev/summarization/betterstack/key')['Parameter']['Value'])
+    append_secrets_to_env_file("BETTERSTACK_KEY", boto3.client('ssm').get_parameter(Name='/admin/dev/summarization/betterstack/key')['Parameter']['Value'])
 
 
 if __name__ == "__main__":
