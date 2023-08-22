@@ -43,6 +43,15 @@ def main(profile: str, no_export: bool):
     append_secrets_to_env_file("AWS_ACCOUNT_ID", boto3.client('sts').get_caller_identity().get('Account'))
     append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
     append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
+    append_secrets_to_env_file("TF_VAR_kf_github_oauth_client_id", boto3.client('ssm').get_parameter(Name='/admin/dev/kubeflow/oauth/client-id')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_kf_github_oauth_client_secret", boto3.client('ssm').get_parameter(Name='/admin/dev/kubeflow/oauth/client-secret')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_prompt_backend_redis_connectionstring", boto3.client('ssm').get_parameter(Name='/admin/dev/prompt-backend/redis/connectionstring')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_openai_api_key", boto3.client('ssm').get_parameter(Name='/admin/dev/openai/api-key')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_prompt_backend_betterstack_key", boto3.client('ssm').get_parameter(Name='/admin/dev/prompt-backend/betterstack/key')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_api_key", boto3.client('ssm').get_parameter(Name='/mesh/dev/kong/ml-team/api-key')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_external_id", boto3.client('ssm').get_parameter(Name='/mesh/dev/iam/terraform-dev/external-id')['Parameter']['Value'])
+    append_secrets_to_env_file("TF_VAR_summarization_betterstack_key", boto3.client('ssm').get_parameter(Name='/admin/dev/summarization/betterstack/key')['Parameter']['Value'])
+
 
 if __name__ == "__main__":
     main()
