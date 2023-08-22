@@ -128,12 +128,8 @@ class CompiledModel(PreTrainedModel):
         attention_mask: torch.Tensor = None,
         **kwargs: Any
     ) -> ModelOutput:
-        self.return_dict = kwargs.pop("return_dict", None)
-
         # traced model requires positional arguments
         model_output = self.model(input_ids, attention_mask)
-        if not self.return_dict:
-            return model_output["logits"]
 
         # if original model graph returns a dict, convert to data type that can handle both
         # - integer and
