@@ -452,7 +452,6 @@ jobs       :
       max-parallel: 10
       fail-fast: ${{ needs.run-repository-state.outputs.release-flag  == 'false' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
-        project: entity-linking
         components:
           # NOTE: list of project components to run
 
