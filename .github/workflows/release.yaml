@@ -18,7 +18,6 @@ jobs       :
     with:
       pull-request: false
       push-target-branch: main
-      pull-request-target-branch: n/a
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 

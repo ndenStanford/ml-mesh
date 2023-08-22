@@ -4,8 +4,8 @@ on  :
   workflow_call:
     inputs:
       pull-request:
-        required: true
-        default: true
+        required: false
+        default: false
         type: boolean
         description: Indicates whether this workflow is running for a Pull Request.
       push-target-branch:
@@ -13,8 +13,9 @@ on  :
         type: string
         description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
       pull-request-target-branch:
-        required: true
+        required: false
         type: string
+        default:
         description: The branch that is beinged pulled into in case of a `pull-request` github event, e.g same as `github.base_ref`.
       verbose:
         required: false
@@ -79,9 +80,9 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: toggle-release-target-branch
         with:
-          cond: ${{ !inputs.pull-request }}
-          if_true: ${{ inputs.push-target-branch }}
-          if_false: ${{ inputs.pull-request-target-branch }}
+          cond: ${{ inputs.pull-request }}
+          if_true: ${{ inputs.pull-request-target-branch }}
+          if_false: ${{ inputs.push-target-branch }}
 
       - name: Show release target branch
         run: |
@@ -120,7 +121,6 @@ jobs:
 
       - name: Get next version
         id: version-increment
-        #if: ${{ !inputs.pull-request }}
         run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
         shell: bash
         env:
@@ -147,7 +147,6 @@ jobs:
 
       - name: Generate Release Notes
         uses: release-drafter/release-drafter@v5.24.0
-        #if: ${{ !inputs.pull-request }}
         id: release-drafter
         with:
           config-name: release-drafter.yaml
