@@ -38,8 +38,16 @@ class CompiledSent:
         self.compiled_sent_pipeline = compiled_sent_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
         self.NUM_LABELS = 3
-        self.MAX_SEQ_LENGTH = 128
-        self.MAX_BATCH_SIZE = 6
+        self.MAX_SEQ_LENGTH = (
+            compiled_sent_pipeline.compiled_pipeline.model.compilation_specs[
+                "tracing__max_length"
+            ]
+        )
+        self.MAX_BATCH_SIZE = (
+            compiled_sent_pipeline.compiled_pipeline.model.compilation_specs[
+                "tracing__batch_size"
+            ]
+        )
         self.device: str = "cpu"
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
