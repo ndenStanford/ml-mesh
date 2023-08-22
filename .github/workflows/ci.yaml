@@ -441,6 +441,9 @@ jobs       :
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # entity-linking
 
@@ -482,6 +485,9 @@ jobs       :
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
   # COMPILE MODELS
