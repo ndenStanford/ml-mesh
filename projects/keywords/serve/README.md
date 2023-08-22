@@ -105,11 +105,3 @@ To run the `load` tests for the `serve` component using the `docker-compose.dev.
 ```bash
 make projects.load/keywords COMPONENT=serve ENVIRONMENT=dev
 ```
-
-## 3 Uploading results
-
-To upload our results to Neptune/S3 run:
-
-```bash
-make projects.start/keywords COMPONENT=serve-upload-results ENVIRONMENT=dev
-```
