@@ -3,8 +3,8 @@ from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.params import ServedModelArtifacts
-from src.served_model import ServedSentModel
+from src.serve.params import ServedModelArtifacts
+from src.serve.served_model import ServedSentModel
 
 
 def get_model_server() -> ModelServer:
