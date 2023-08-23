@@ -6,53 +6,69 @@ import os
 
 from onclusiveml.tracking import TrackedGithubActionsSpecs
 
+SAGEMAKER_ROLE_TEMPLATE = "arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-{aws_environment}"
+SAGEMAKER_S3_OUTPUT = "s3://onclusive-model-store-{aws_environment}/sagemaker-outputs"
+
 @click.command()
 @click.option(
-    '--ecr-account',
-    default='063759612765.dkr.ecr.us-east-1.amazonaws.com',
-    help="Image name of contaienr to be run on sagemaker. Defaults to `063759612765.dkr.ecr.us-east-1.amazonaws.com`."
-)
-@click.option(
-    '--project-name',
-    default='keywords',
-    help="The name of the ml-mesh project the train component belongs to. Defaults to `keywords`."
-)
-@click.option(
-    '--project-component',
-    default='train',
-    type=click.Choice(['train']),
-    help="The name of the ml-mesh project the train component belongs to. Defaults to `train`(onyl component currently supported)."
-)
-@click.option(
-    '--image-tag',
-    default='seb-test',
-    help="Image tag of container to be run on sagemaker. Defaults to `latest`."
-)
-@click.option(
-    '--run-configuration-dotenv',
-    default=None,
-    help="Optional. The path to the dotenv file containing environment variables to configure the current run."
+    '--aws-environment',
+    default='dev',
+    type=click.Choice(['dev','stage']),
+    help="""The AWS environment for the execution. Used to determine sagemaker access and (log)
+        storage resources. Options are `dev` for development, and `stage` for CI."""
 )
 @click.option(
     '--instance-type',
     default='ml.m4.xlarge',
-    help="EC2 instance type to use to run container on Sagemaker. See `https://aws.amazon.com/sagemaker/pricing/` for more options. Select 'local'/'local_gpu' for testing. Defaults to `ml.m4.xlarge`."
+    help="""EC2 instance type to use to run container on Sagemaker. See
+        `https://aws.amazon.com/sagemaker/pricing/` for more options. Select 'local'/'local_gpu'
+        for testing. Defaults to `ml.m4.xlarge`."""
 )
 @click.option(
     '--instance-count',
     type=int,
     default=1,
-    help="Number of EC2 instances to use to run container on Sagemaker. Note onclusiveml images do not currently support distributed model training."
+    help="""Number of EC2 instances to use to run container on Sagemaker. Note onclusiveml images
+        do not currently support distributed model training."""
 )
 @click.option(
-    '--sagemaker-role',
-    default='arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-dev',
-    help="The role passed to the sagemaker service to execute the given job. Defaults to `arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-dev`."
+    '--ecr-account',
+    default='063759612765.dkr.ecr.us-east-1.amazonaws.com',
+    help="""Image name of contaienr to be run on sagemaker. Defaults to `dev` AWS account
+        `063759612765.dkr.ecr.us-east-1.amazonaws.com`."""
+)
+@click.option(
+    '--project-name',
+    default='keywords',
+    help="""The name of the ml-mesh project the train component belongs to. Defaults to
+        `keywords`."""
+)
+@click.option(
+    '--project-component',
+    default='train',
+    type=click.Choice(['train']),
+    help="""The name of the ml-mesh project the train component belongs to. Defaults to `train`
+        (only component currently supported)."""
+)
+@click.option(
+    '--image-tag',
+    default='latest',
+    help="Image tag of container to be run on sagemaker. Defaults to `latest`."
+)
+@click.option(
+    '--run-configuration-dotenv',
+    default=None,
+    help="""Optional. The path to the dotenv file containing environment variables to configure the
+        current run. If not provided, attempts to fall back on file located at
+        `/projects/{project_name}/{project_component}/config/prod.env`. If unable to locate the
+        fallback option, no additional environment variables other than the Neptune API token are
+        provided to the container at runtime"""
 )
 @click.option(
     '--neptune-api-token',
     default='dummy-token',
-    help="The neptune AI model registry authentication token. Defaults to `None`."
+    help="""The neptune AI model registry authentication token required for every model regsitry
+        interaction. Will be injected into the container at runtime. Defaults to `dummy-token`."""
 )
 def project_train(
     ecr_account: str,
@@ -62,21 +78,43 @@ def project_train(
     instance_type: str,
     instance_count: int,
     run_configuration_dotenv: str,
-    sagemaker_role: str,
+    aws_environment: str,
     neptune_api_token: str) -> None:
+
+    # get aws resources
+    sagemaker_role = SAGEMAKER_ROLE_TEMPLATE.format(aws_environment=aws_environment)
+    click.echo(f"Using sagemaker execution role {sagemaker_role}")
+
+    sagemaker_s3_output = SAGEMAKER_S3_OUTPUT.format(aws_environment=aws_environment)
+    click.echo(f"Using s3 output {sagemaker_s3_output}")
 
     # dotenv file based train spec
     if run_configuration_dotenv is not None:
         training_env_vars = dotenv_values(run_configuration_dotenv)
     else:
-        probable_project_component_dotenv = os.path.join('projects',project_name,project_component,'config','prod.env')
+        probable_project_component_dotenv = os.path.join(
+            'projects',
+            project_name,
+            project_component,
+            'config',
+            'prod.env'
+        )
 
-        try:
-            click.echo(f"No dotenv configuration provided. Falling back on likely candidate {probable_project_component_dotenv}")
+        if os.path.isfile(probable_project_component_dotenv):
+            click.echo(
+                "No dotenv configuration provided. Falling back on likely candidate "
+                f"{probable_project_component_dotenv}"
+            )
             training_env_vars = dotenv_values(probable_project_component_dotenv)
-        except FileNotFoundError as e:
-            click.echo(f"Could not fall back on likely candidate {probable_project_component_dotenv}: {e}. Defaulting to container configuration (if it exists).")
+
+        else:
+            click.echo(
+                f"Could not locate likely candidate {probable_project_component_dotenv}. Defaulting"
+                "to container configuration (if it exists)."
+            )
             training_env_vars = {}
+
+    click.echo(f"Using training environment variables {training_env_vars}")
 
     # env var based ci spec
     github_action_env_vars = TrackedGithubActionsSpecs().dict()
@@ -94,6 +132,7 @@ def project_train(
         role=sagemaker_role,
         instance_count=instance_count,
         instance_type=instance_type,
+        output_path=sagemaker_s3_output,
         # only sensitive env vars need to be passed here, the rest are defined in the container via
         # dot.env file
         environment = all_env_vars,
