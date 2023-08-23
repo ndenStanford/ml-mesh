@@ -1,4 +1,5 @@
 # Internal libraries
+from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
@@ -18,6 +19,7 @@ def get_model_server() -> ModelServer:
     model_server = ModelServer(
         configuration=serving_params, model=keywords_served_model
     )
+    Instrumentator.enable(model_server, app_name="keywords")
 
     return model_server
 

@@ -44,6 +44,9 @@ class MockTokenizer(object):
 
     def __init__(self):
         self.model_max_length = MODEL_MAX_LENGTH
+        self.is_fast = True
+        self._tokenizer = None
+        self.unk_token_id = "UNK"
 
     def encode_plus(self, text: str):
 
@@ -70,6 +73,12 @@ class MockTokenizer(object):
     def clean_up_tokenization(self, text: str):
 
         return text.replace(" .", "").replace(" ,", ",")
+
+    def convert_ids_to_tokens(self, ids: List[int]):
+
+        return [
+            "",
+        ] * len(ids)
 
     def __call__(self, text: str, padding: str = None, **kwargs):
 
@@ -126,17 +135,4 @@ def compiled_tokenizer(custom_tokenization_settings):
 
     return CompiledTokenizer.from_tokenizer(
         tokenizer=MockTokenizer(), **custom_tokenization_settings
-    )
-
-
-@pytest.fixture
-def all_delegated_method_references_with_sample_inputs():
-
-    return (
-        ("encode_plus", "some example text"),
-        ("encode", "some example text"),
-        ("decode", base64.b64encode("some example text".encode("utf-8"))),
-        ("create_token_type_ids_from_sequences", ["some", "example", "text"]),
-        ("convert_tokens_to_string", [0, 1, 2]),
-        ("clean_up_tokenization", "some ,example text ."),
     )

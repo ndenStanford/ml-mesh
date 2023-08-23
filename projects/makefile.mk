@@ -2,7 +2,7 @@
 
 projects.build/%: projects.set ## Build app
 	@echo "::group::Build $(notdir projects/$@)-$(COMPONENT) (system architecture)"
-	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) --no-cache
+	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) $(DOCKER_FLAGS)
 	@echo "::endgroup::"
 
 projects.install/%:
