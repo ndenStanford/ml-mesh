@@ -25,7 +25,7 @@ def print_train_summary(result):
     print(f"Samples/second: {result.metrics['train_samples_per_second']:.2f}")
 
 
-@pytest.mark.order(7)
+@pytest.mark.order(6)
 def test_training_gpu(
     test_train_dataset, test_model_reference, test_default_training_params
 ):
@@ -50,7 +50,7 @@ def test_training_gpu(
     assert gpu_memory > 2000
 
 
-@pytest.mark.order(8)
+@pytest.mark.order(7)
 def test_inference_gpu(test_model_reference):
     """Checks transformers library ability to use GPU device for tokenizing & inference"""
 
