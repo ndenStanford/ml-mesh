@@ -115,12 +115,11 @@ jobs:
       - name: Run project train component on sagemaker
         run: |
           python bin/project-train \
-            --aws-environment prod \
+            --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
+            --aws-environment stage \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
-            --ecr-account ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com \
             --project-name ${{ inputs.project }} \
-            --project-component train \
             --image-tag ${{ inputs.tag }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }}

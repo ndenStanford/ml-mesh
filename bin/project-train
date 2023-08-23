@@ -8,14 +8,21 @@ from onclusiveml.tracking import TrackedGithubActionsSpecs
 
 SAGEMAKER_ROLE_TEMPLATE = "arn:aws:iam::063759612765:role/mesh-sagemaker-execution-role-{aws_environment}"
 SAGEMAKER_S3_OUTPUT = "s3://onclusive-model-store-{aws_environment}/sagemaker-outputs"
+ECR_URI_TEMPLATE = "{aws_account_id}.dkr.ecr.us-east-1.amazonaws.com"
+IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-train:{image_tag}"
 
 @click.command()
 @click.option(
+    '--aws-account-id',
+    default='063759612765',
+    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `063759612765`."""
+)
+@click.option(
     '--aws-environment',
     default='dev',
-    type=click.Choice(['dev','prod']),
+    type=click.Choice(['dev','stage']),
     help="""The AWS environment for the execution. Used to determine sagemaker access and (log)
-        storage resources. Options are `dev` for development, and `prod` for CI."""
+        storage resources. Options are `dev` for development, and `stage` for CI."""
 )
 @click.option(
     '--instance-type',
@@ -32,23 +39,10 @@ SAGEMAKER_S3_OUTPUT = "s3://onclusive-model-store-{aws_environment}/sagemaker-ou
         do not currently support distributed model training."""
 )
 @click.option(
-    '--ecr-account',
-    default='063759612765.dkr.ecr.us-east-1.amazonaws.com',
-    help="""Image name of contaienr to be run on sagemaker. Defaults to `dev` AWS account
-        `063759612765.dkr.ecr.us-east-1.amazonaws.com`."""
-)
-@click.option(
     '--project-name',
     default='keywords',
     help="""The name of the ml-mesh project the train component belongs to. Defaults to
         `keywords`."""
-)
-@click.option(
-    '--project-component',
-    default='train',
-    type=click.Choice(['train']),
-    help="""The name of the ml-mesh project the train component belongs to. Defaults to `train`
-        (only component currently supported)."""
 )
 @click.option(
     '--image-tag',
@@ -71,45 +65,50 @@ SAGEMAKER_S3_OUTPUT = "s3://onclusive-model-store-{aws_environment}/sagemaker-ou
         interaction. Will be injected into the container at runtime. Defaults to `dummy-token`."""
 )
 def project_train(
-    ecr_account: str,
-    project_name: str,
-    project_component: str,
-    image_tag: str,
+    aws_environment: str,
+    aws_account_id: str,
     instance_type: str,
     instance_count: int,
+    project_name: str,
+    image_tag: str,
     run_configuration_dotenv: str,
-    aws_environment: str,
     neptune_api_token: str) -> None:
 
-    # get aws resources
+    # get (aws) resources
     sagemaker_role = SAGEMAKER_ROLE_TEMPLATE.format(aws_environment=aws_environment)
     click.echo(f"Using sagemaker execution role {sagemaker_role}")
 
     sagemaker_s3_output = SAGEMAKER_S3_OUTPUT.format(aws_environment=aws_environment)
     click.echo(f"Using s3 output {sagemaker_s3_output}")
 
+    ecr_uri = ECR_URI_TEMPLATE.format(aws_account_id=aws_account_id)
+    click.echo(f"Using ECR URI {ecr_uri}")
+
+    image_uri = IMAGE_URI_TEMPLATE.format(ecr_uri=ecr_uri,project_name=project_name,image_tag=image_tag)
+    click.echo(f"Using image URI {image_uri}")
+
     # dotenv file based train spec
     if run_configuration_dotenv is not None:
         training_env_vars = dotenv_values(run_configuration_dotenv)
     else:
-        probable_project_component_dotenv = os.path.join(
+        probable_dotenv = os.path.join(
             'projects',
             project_name,
-            project_component,
+            'train',
             'config',
             'prod.env'
         )
 
-        if os.path.isfile(probable_project_component_dotenv):
+        if os.path.isfile(probable_dotenv):
             click.echo(
                 "No dotenv configuration provided. Falling back on likely candidate "
-                f"{probable_project_component_dotenv}"
+                f"{probable_dotenv}"
             )
-            training_env_vars = dotenv_values(probable_project_component_dotenv)
+            training_env_vars = dotenv_values(probable_dotenv)
 
         else:
             click.echo(
-                f"Could not locate likely candidate {probable_project_component_dotenv}. Defaulting"
+                f"Could not locate likely candidate {probable_dotenv}. Defaulting"
                 "to container configuration (if it exists)."
             )
             training_env_vars = {}
@@ -124,10 +123,10 @@ def project_train(
                     **github_action_env_vars,
                     **{'NEPTUNE_API_TOKEN':neptune_api_token}}
 
-    training_base_job_name = f"{project_name}-{project_component}"
+    training_base_job_name = f"{project_name}-train"
 
     estimator = Estimator(
-        image_uri=f'{ecr_account}/{project_name}-{project_component}:{image_tag}',
+        image_uri=image_uri,
         base_job_name=training_base_job_name,
         role=sagemaker_role,
         instance_count=instance_count,
