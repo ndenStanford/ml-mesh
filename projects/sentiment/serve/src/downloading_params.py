@@ -6,7 +6,7 @@ from pydantic import Field
 from onclusiveml.tracking import TrackedModelSpecs
 
 # Source
-from src.serving_params import ServedModelParams  # noqa: F401
+from src.params import ServedModelParams  # noqa: F401
 
 
 class TrackedCompiledModelSpecs(TrackedModelSpecs):

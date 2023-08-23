@@ -9,13 +9,13 @@ from onclusiveml.models.sentiment import CompiledSent
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
+from src.params import ServedModelArtifacts
 from src.server_models import (
     BioResponseModel,
     PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
 )
-from src.serving_params import ServedModelArtifacts
 
 
 class ServedSentModel(ServedModel):
@@ -51,7 +51,6 @@ class ServedSentModel(ServedModel):
         self.model = CompiledSent.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
-
         # load model card json file into dict
         self.model_card = self.served_model_artifacts.model_card
 
@@ -70,7 +69,6 @@ class ServedSentModel(ServedModel):
         # content and configuration from payload
         configuration = payload.configuration
         inputs = payload.inputs
-
         # score the model
         sentiment = self.model.extract_sentiment(
             sentences=inputs.content, **configuration.dict()
