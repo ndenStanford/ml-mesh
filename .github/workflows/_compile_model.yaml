@@ -19,12 +19,12 @@ on  :
         required: false
         type: boolean
         default: true
-        description: Whether to upload the compiled model to the Neptune AI model registry. Only relevant when
+        description: Whether to upload the compiled model to the Neptune AI model registry. Only relevant when compilation pipeline is being run.
       release:
         required: true
         default: true
         type: boolean
-        description: If false, only the project components that have been changed are ran, otherwise every project component is ran.
+        description: If false, the compilation pipeline is only being run if the project's `compile` component's directory has been altered.
       runner-kind:
         required: true
         default: custom
