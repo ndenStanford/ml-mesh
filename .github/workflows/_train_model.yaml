@@ -80,7 +80,7 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+              - added | modified: 'projects/${{ inputs.project }}/train/**'
   train-model:
     name: (Train and) register an uncompiled model
     needs: check-run-criteria
