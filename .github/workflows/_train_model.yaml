@@ -116,6 +116,7 @@ jobs:
         run: |
           python bin/project-train \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
+            --aws-region ${{ secrets.AWS_ACCOUNT_ID }} \
             --aws-environment stage \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
