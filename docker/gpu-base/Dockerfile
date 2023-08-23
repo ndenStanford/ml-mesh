@@ -41,8 +41,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         libsqlite3-dev \
         libbz2-dev \
         liblzma-dev \
-        vim \
-        nano \
         unzip \
         ca-certificates \
         groff \
