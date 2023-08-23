@@ -115,9 +115,9 @@ class CompiledNER:
 
         Returns:
             InferenceOutput: List of lists of NER predictions which has the attributes:
-                - entity (str): entity type
+                - entity_type (str): entity type
                 - score (float): probability of given entity
-                - word (str): targeted word for given entity
+                - entity_text (str): targeted word for given entity
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
@@ -125,6 +125,8 @@ class CompiledNER:
         for sublist in entities:
             for dictionary in sublist:
                 dictionary.pop("index", None)
+                dictionary["entity_type"] = dictionary.pop("entity")
+                dictionary["entity_text"] = dictionary.pop("word")
 
         return InferenceOutput(ner_labels=entities)
 
@@ -148,9 +150,9 @@ class CompiledNER:
 
         Args:
             InferenceOutput: List of lists of NER predictions which has the attributes:
-                - entity (str): entity type
+                - entity_type (str): entity type
                 - score (float): probability of given entity
-                - word (str): targeted word for given entity
+                - entity_text (str): targeted word for given entity
                 - start (int): starting position of word
                 - end (int): ending position of word
             return_pos (bool): Flag indicating whether to return positional information
@@ -159,17 +161,17 @@ class CompiledNER:
             Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
                 entities in dictionary format.
                 PostprocessOutput has attributes:
-                    - entity (str): entity type
+                    - entity_type (str): entity type
                     - score (float): probability of given entity
-                    - word (str): targeted word for given entity
+                    - entity_text (str): targeted word for given entity
                     - start (int): starting position of word
                     - end (int): ending position of word
                     - sentence index (int): sentence location of word
 
                 PostprocessOutputNoPos has attributes:
-                    - entity (str): entity type
+                    - entity_type (str): entity type
                     - score (float): probability of given entity
-                    - word (str): targeted word for given entity
+                    - entity_text (str): targeted word for given entity
                     - start (int): starting position of word
         """
         output_list: List[
@@ -194,9 +196,9 @@ class CompiledNER:
             )
             # loop through each dictionary (NER label) in the sublist
             for dictionary in sublist:
-                entity = dictionary.entity
+                entity = dictionary.entity_type
                 score = dictionary.score
-                word = dictionary.word
+                word = dictionary.entity_text
                 start = dictionary.start
                 end = dictionary.end
                 # Check if the 'end' value of the current entity matches the 'start' value
@@ -221,14 +223,14 @@ class CompiledNER:
                         # Append the merged entity with computed score to the merged_sublist
                         merged_sublist.append(  # type: ignore[unreachable]
                             PostprocessOutput(
-                                entity=current_entity[2:],
+                                entity_type=current_entity[2:],
                                 score=float(
                                     self.compute_moving_average(current_score_list)
                                     if len(current_score_list) > 1
                                     else current_score_list[0]
                                 ),
                                 sentence_index=sentence_index,
-                                word=current_word,
+                                entity_text=current_word,
                                 start=current_start,
                                 end=current_end,
                             )
@@ -244,14 +246,14 @@ class CompiledNER:
                 # Append the merged entity with computed score to the merged_sublist
                 merged_sublist.append(
                     PostprocessOutput(
-                        entity=current_entity[2:],
+                        entity_type=current_entity[2:],
                         score=float(
                             self.compute_moving_average(current_score_list)
                             if len(current_score_list) > 1
                             else current_score_list[0]
                         ),
                         sentence_index=sentence_index,
-                        word=current_word,
+                        entity_text=current_word,
                         start=current_start,
                         end=current_end,
                     )
