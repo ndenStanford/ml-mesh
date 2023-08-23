@@ -54,7 +54,7 @@ RUN chmod u+x train
 
 # update PATH with ABSOLUTE path to /docker/gpu-train, so sagemaker invocation
 # can find entrypoint bash script as per https://sagemaker-workshop.com/custom/containers.html
-ENV PATH="${PWD}:${PATH}"
+ENV PATH="/${PROJECT_DIR}:${PATH}"
 RUN echo "${PATH}"
 
 # --- production stage

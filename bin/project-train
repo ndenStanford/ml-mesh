@@ -13,9 +13,9 @@ SAGEMAKER_S3_OUTPUT = "s3://onclusive-model-store-{aws_environment}/sagemaker-ou
 @click.option(
     '--aws-environment',
     default='dev',
-    type=click.Choice(['dev','stage']),
+    type=click.Choice(['dev','prod']),
     help="""The AWS environment for the execution. Used to determine sagemaker access and (log)
-        storage resources. Options are `dev` for development, and `stage` for CI."""
+        storage resources. Options are `dev` for development, and `prod` for CI."""
 )
 @click.option(
     '--instance-type',
