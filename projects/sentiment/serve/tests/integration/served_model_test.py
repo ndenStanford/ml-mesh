@@ -5,8 +5,8 @@ import torch
 import pytest
 
 # Source
-from src.served_model import ServedSentModel
-from src.server_models import (
+from src.serve.served_model import ServedSentModel
+from src.serve.server_models import (
     BioResponseModel,
     PredictConfiguration,
     PredictInputContentModel,
