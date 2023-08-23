@@ -1,5 +1,5 @@
 [flake8]
-ignore = E111, E114, F821, E4023
+ignore = E111, E114, F821, E402
 max-complexity = 15
 max-line-length = 100
 max-doc-length = 100
