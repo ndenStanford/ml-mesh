@@ -15,16 +15,11 @@ on  :
         required: true
         type: string
         description: Version tag of image providing the compilation runtime context.
-      compile:
-        required: false
-        default: true
-        type: boolean
-        description: Whether to run the compilation pipeline. Useful for testing runner provisioning.
       upload-compiled-model:
         required: false
         type: boolean
         default: true
-        description: Whether to upload the compiled model to the Neptune AI model registry
+        description: Whether to upload the compiled model to the Neptune AI model registry. Only relevant when
       release:
         required: true
         default: true
@@ -107,7 +102,7 @@ jobs:
     name: Set runner specs conditional on hosting requirements
     needs: provision-customized-runner
     runs-on: ubuntu-latest
-    if: ${{ inputs.compile && always() }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
