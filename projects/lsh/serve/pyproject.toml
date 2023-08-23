@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "lsh-serve"
+version = "0.1.0"
+description = "Implementation LSH API"
+authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+regex = "2022.10.31"
+
+core = {path = "../../../libs/core"}
+syndicate = {path = "../../../libs/syndicate"}
+serving = {path = "../../../libs/serving"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+pytest-order = "1.1.0"
+pytest-mock = "3.10.0"
+httpx = "0.23.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
