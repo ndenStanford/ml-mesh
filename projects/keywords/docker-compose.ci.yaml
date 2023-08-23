@@ -16,7 +16,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.8.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
     volumes:
       - type: bind
         source: train/src
