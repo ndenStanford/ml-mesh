@@ -9,8 +9,8 @@ from onclusiveml.models.sentiment import CompiledSent
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.params import ServedModelArtifacts
-from src.server_models import (
+from src.serve.params import ServedModelArtifacts
+from src.serve.server_models import (
     BioResponseModel,
     PredictionOutputContent,
     PredictRequestModel,
