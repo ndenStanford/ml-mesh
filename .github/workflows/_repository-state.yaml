@@ -4,20 +4,24 @@ on  :
   workflow_call:
     inputs:
       pull-request:
-        required: true
+        required: false
         default: true
         type: boolean
         description: Indicates whether this workflow is running for a Pull Request.
       push-target-branch:
-        required: true
+        required: false
         type: string
+        default: ''
+        description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
       pull-request-target-branch:
         required: true
         type: string
+        description: The branch that is beinged pulled into in case of a `pull-request` github event, e.g same as `github.base_ref`.
       verbose:
         required: false
         default: true
         type: boolean
+        description: If true, this flow shows a relevant set of github action vars relevant to its logic. Useful for debugging.
     secrets:
       GITHUB_TOKEN_:
         required: true
@@ -76,9 +80,9 @@ jobs:
         uses: haya14busa/action-cond@v1
         id: toggle-release-target-branch
         with:
-          cond: ${{ !inputs.pull-request }}
-          if_true: ${{ inputs.push-target-branch }}
-          if_false: ${{ inputs.pull-request-target-branch }}
+          cond: ${{ inputs.pull-request }}
+          if_true: ${{ inputs.pull-request-target-branch }}
+          if_false: ${{ inputs.push-target-branch }}
 
       - name: Show release target branch
         run: |
@@ -117,7 +121,6 @@ jobs:
 
       - name: Get next version
         id: version-increment
-        #if: ${{ !inputs.pull-request }}
         run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
         shell: bash
         env:
@@ -142,9 +145,8 @@ jobs:
             echo "tag=v${{ steps.version-increment.outputs.version }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Generate Release Notes
+      - name: Generate (Draft) Release
         uses: release-drafter/release-drafter@v5.24.0
-        #if: ${{ !inputs.pull-request }}
         id: release-drafter
         with:
           config-name: release-drafter.yaml
@@ -154,3 +156,10 @@ jobs:
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
+
+      - name: Remove Draft release
+        uses: liudonghua123/delete-release-action@v1
+        id: release-draft-remover
+        if: ${{ inputs.pull-request }}
+        with:
+          release_name: ${{ steps.release-drafter.outputs.name }}

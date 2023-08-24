@@ -130,6 +130,8 @@ jobs       :
       matrix:
         image:
           - python-base
+          - gpu-base
+          - gpu-train
           - neuron-compile
           - neuron-inference
           - fastapi-serve
@@ -274,6 +276,27 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # compile
+          - name: ner
+            component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # serve
+          - name: ner
+            component: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+
           # ========================
           # LSH
           # ========================
@@ -341,6 +364,11 @@ jobs       :
             self-hosted-runner-type: inf1.2xlarge
             project: keywords
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.2xlarge
+            project: ner
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
 
     with:
       environment: prod

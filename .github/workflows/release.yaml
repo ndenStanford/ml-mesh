@@ -17,8 +17,7 @@ jobs       :
     if: startsWith(github.event.issue.title, '[RELEASE]:')
     with:
       pull-request: false
-      push-target-branch: main
-      pull-request-target-branch: n/a
+      pull-request-target-branch: main
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
