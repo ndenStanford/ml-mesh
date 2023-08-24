@@ -92,19 +92,20 @@ class CompiledSent:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def preprocess(self, sentences: str) -> List[str]:
+    def preprocess(self, sentences: str, language: str) -> List[str]:
         """
         Preprocess the input sentences by removing unwanted content inside text and tokenizing
 
         Args:
             sentences (str): Input sentences
+            language (str): Language of input sentences
         Return:
             List[str]: Tokenized sentences
         """
         sentences = self.remove_html(sentences)
         sentences = self.remove_whitespace(sentences)
         tokenizer = SentenceTokenizer()
-        list_sentences = tokenizer.tokenize(content=sentences)[
+        list_sentences = tokenizer.tokenize(content=sentences, language=language)[
             "sentences"
         ]  # default is english
         # very short sentences are likely somehow wrong
@@ -314,6 +315,7 @@ class CompiledSent:
         self,
         sentences: str,
         entities: Optional[List[Dict[str, Union[str, List]]]] = None,
+        language: str = 'en'
     ) -> Dict[str, Union[float, str, List]]:
         """
         Sentiment detection of each entity input sentence
@@ -321,11 +323,12 @@ class CompiledSent:
             sentences (str): The input sentences to extract entities from
             entities (Optional[List[Dict[str, Union[str, List]]]]):
                 List of detected entities from the NER model
+            language (str): Language of input sentences
         Returns:
             sentiment_output (Dict[str, Union[float, str, List]]):
                 Extracted named entities in dictionary format
         """
-        list_sentences = self.preprocess(sentences)
+        list_sentences = self.preprocess(sentences, language)
         sentiment_prob_list = self.inference(list_sentences)
         sentiment_output = self.postprocess(
             sentiment_prob_list, list_sentences, entities
