@@ -6,7 +6,7 @@ on  :
       event-name:
         required: true
         type: string
-        description: Can take the three values 'pull-request', 'push', or 'release-issue'.
+        description: Can take the three values 'pull_request', 'push', or 'release_issue'.
       push-target-branch:
         required: false
         type: string
@@ -90,7 +90,7 @@ jobs:
 
       - name: Tag Pull Request
         uses: TimonVS/pr-labeler-action@v4
-        if: ${{ inputs.event-name == 'pull-request' }}
+        if: ${{ inputs.event-name == 'pull_request' }}
         with:
           configuration-path: .github/pr-labeler.yaml
 
@@ -111,7 +111,7 @@ jobs:
       # # be better to use here to check the content of the versioned docker containers
       # - name: Get short commit SHA
       #   id: get-commit-sha
-      #   if: ${{ inputs.event-name == 'pull-request' }}
+      #   if: ${{ inputs.event-name == 'pull_request' }}
       #   run: |
       #     sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
       #     echo "tag=ci-$sha" >> $GITHUB_OUTPUT
@@ -120,7 +120,7 @@ jobs:
         id: export-tag
         uses: haya14busa/action-cond@v1
         with:
-          cond: ${{ inputs.event-name == 'pull-request' }}
+          cond: ${{ inputs.event-name == 'pull_request' }}
           if_true: ci-${{ github.run_id }}
           if_false: ${{ steps.version-increment.outputs.version }}
 
