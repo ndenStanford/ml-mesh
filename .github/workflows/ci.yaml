@@ -43,7 +43,7 @@ jobs       :
     uses: ./.github/workflows/_repository-state.yaml
     needs: [run-code-quality-checks]
     with:
-      event_name: ${{ github.event_name }}
+      event-name: ${{ github.event_name }}
       push-target-branch: ${{ github.ref_name }}
       pull-request-target-branch: ${{ github.base_ref }}
       verbose: true
