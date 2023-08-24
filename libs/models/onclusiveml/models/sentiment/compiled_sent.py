@@ -5,9 +5,6 @@ import string
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-# ML libs
-import torch
-
 # 3rd party libraries
 import numpy as np
 import regex
@@ -100,19 +97,20 @@ class CompiledSent:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def preprocess(self, sentences: str) -> List[str]:
+    def preprocess(self, sentences: str, language: str) -> List[str]:
         """
         Preprocess the input sentences by removing unwanted content inside text and tokenizing
 
         Args:
             sentences (str): Input sentences
+            language (str): Language of input sentences
         Return:
             List[str]: Tokenized sentences
         """
         sentences = self.remove_html(sentences)
         sentences = self.remove_whitespace(sentences)
         tokenizer = SentenceTokenizer()
-        list_sentences = tokenizer.tokenize(content=sentences)[
+        list_sentences = tokenizer.tokenize(content=sentences, language=language)[
             "sentences"
         ]  # default is english
         # very short sentences are likely somehow wrong
@@ -136,6 +134,7 @@ class CompiledSent:
         Returns:
             sentiment_probs (NDArray): List of sentiment probability
         """
+
         self.inputs = self.compiled_sent_pipeline.tokenizer(
             list_sentences,
             padding="max_length",
@@ -144,51 +143,13 @@ class CompiledSent:
             return_tensors="pt",
         )
 
-        input_ids = self.inputs["input_ids"].to(self.device)
-        attention_masks = self.inputs["attention_mask"].to(self.device)
+        res = self.compiled_sent_pipeline.model(**self.inputs)
+        sentiment_probs_arr: NDArray = (
+            res["logits"].clone().detach().numpy().astype(float)
+        )
 
-        sentiment_probs = []
-        n_sentence = len(input_ids)
-
-        while len(input_ids) > 0:
-            it_input_ids = input_ids[: self.MAX_BATCH_SIZE].clone().detach()
-            it_attention_masks = attention_masks[: self.MAX_BATCH_SIZE].clone().detach()
-
-            diff_size = self.MAX_BATCH_SIZE - it_input_ids.size()[0]
-
-            if diff_size > 0:
-                it_input_ids = torch.cat(
-                    (
-                        it_input_ids,
-                        torch.tensor(np.zeros([diff_size, 128]), dtype=torch.int64),
-                    ),
-                    0,
-                )
-                it_attention_masks = torch.cat(
-                    (
-                        it_attention_masks,
-                        torch.tensor(np.zeros([diff_size, 128]), dtype=torch.int64),
-                    ),
-                    0,
-                )
-            res = self.compiled_sent_pipeline.model(
-                *(it_input_ids, it_attention_masks), return_dict=False
-            )  # [0]
-
-            if diff_size > 0:
-                res = res[: (self.MAX_BATCH_SIZE - diff_size)]
-
-            try:
-                sentiment_probs += res.tolist()
-            except Exception as e:
-                raise e
-
-            input_ids = input_ids[self.MAX_BATCH_SIZE :]
-            attention_masks = attention_masks[self.MAX_BATCH_SIZE :]
-
-        sentiment_probs_arr: NDArray = np.array(sentiment_probs)
-
-        assert sentiment_probs_arr.shape[0] == n_sentence
+        # assert sentiment_probs_arr.shape[0] == n_sentence
+        assert sentiment_probs_arr.shape[0] == len(list_sentences)
         return sentiment_probs_arr
 
     def postprocess(
@@ -322,6 +283,7 @@ class CompiledSent:
         self,
         sentences: str,
         entities: Optional[List[Dict[str, Union[str, List]]]] = None,
+        language: str = "en",
     ) -> Dict[str, Union[float, str, List]]:
         """
         Sentiment detection of each entity input sentence
@@ -329,11 +291,12 @@ class CompiledSent:
             sentences (str): The input sentences to extract entities from
             entities (Optional[List[Dict[str, Union[str, List]]]]):
                 List of detected entities from the NER model
+            language (str): Language of input sentences
         Returns:
             sentiment_output (Dict[str, Union[float, str, List]]):
                 Extracted named entities in dictionary format
         """
-        list_sentences = self.preprocess(sentences)
+        list_sentences = self.preprocess(sentences, language)
         sentiment_prob_list = self.inference(list_sentences)
         sentiment_output = self.postprocess(
             sentiment_prob_list, list_sentences, entities

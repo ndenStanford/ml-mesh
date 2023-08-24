@@ -125,10 +125,17 @@ class TokenizerSettings(TrackedParams):
 
 
 class ModelTracingSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
+    """
+    See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
-    https://onclusive.atlassian.net/browse/DS-596"""
+    https://onclusive.atlassian.net/browse/DS-596
+
+    Attributes:
+        dynamic_batch_size (bool): Flag for using dynamic batch size
+        strict (bool): Flag for strict compilation
+        compiler_args (List[str]): List of compiler arguments
+    """
 
     dynamic_batch_size: bool = True
     strict: bool = False

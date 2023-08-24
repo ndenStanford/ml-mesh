@@ -106,12 +106,8 @@ class CompiledModel(PreTrainedModel):
                 "attention_mask": tracing_inputs[1],
             }
 
-            model_output = model(**tracing_inputs_dict)
-            # When return_dict = True
-            if not isinstance(model_output, torch.Tensor):
-                model_output = model_output[0]
-
-            traced_model_output = compiled_model(**tracing_inputs_dict)
+            model_output = model(**tracing_inputs_dict)[0]
+            traced_model_output = compiled_model(**tracing_inputs_dict)[0]
 
             torch.testing.assert_close(
                 model_output,
@@ -218,7 +214,8 @@ def compile_model(
     if neuron:
         traced_model = torch.neuron.trace(model, tracing_inputs, **tracing_kwargs)
     else:
-        traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
+        # traced_model = torch.jit.trace(model, tracing_inputs, **tracing_kwargs)
+        traced_model = torch.jit.trace(model, tracing_inputs, strict=False)
 
     compilation_specs = dict(
         **{"tracing_kwargs": tracing_kwargs},
