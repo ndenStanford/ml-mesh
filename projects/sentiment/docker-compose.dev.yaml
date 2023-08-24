@@ -174,10 +174,8 @@ services:
   # SERVE
   # =============================================
 
-  # serving image
-  serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
+  # build serving image
+  serve-build:
     build:
       context: ../../
       dockerfile: projects/sentiment/serve/Dockerfile
@@ -188,6 +186,16 @@ services:
         PROJECT: sentiment
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    profiles: [serve, functional, load]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # start serving server
+  serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
