@@ -11,6 +11,11 @@ Set PROJECT_NAME to "keywords", "ner", or "sentiment"
 
 ## 1 Running the model server
 
+To build the serving image using the `docker-compose.dev.yaml` file (recommended):
+
+- run `make projects.start/${PROJECT_NAME} COMPONENT=serve-build ENVIRONMENT=dev`
+
+
 To download the model using the `docker-compose.dev.yaml` file (recommended):
 
 - run `make projects.start/${PROJECT_NAME} COMPONENT=serve-download-model ENVIRONMENT=dev`

@@ -17,7 +17,7 @@ class PredictConfiguration(BaseModel):
     """
 
     entities: Optional[List[Dict[str, Union[str, List]]]]
-    # language: Optional[str] = "en"
+    language: Optional[str] = "en"
 
 
 class PredictInputContentModel(BaseModel):
