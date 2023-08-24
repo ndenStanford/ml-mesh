@@ -79,8 +79,6 @@ services:
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    # depends_on:
-    #   - compile
 
   compile-download-model:
     volumes:
