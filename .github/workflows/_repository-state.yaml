@@ -141,4 +141,5 @@ jobs:
         id: release-draft-remover
         if: ${{ inputs.event-name != 'push' }}
         with:
-          release_name: ${{ steps.release-drafter.outputs.name }}
+          release_id: ${{ steps.release-drafter.outputs.id }}
+          suppress_errors: false
