@@ -124,22 +124,15 @@ jobs:
           if_true: ci-${{ github.run_id }}
           if_false: ${{ steps.version-increment.outputs.version }}
 
-      - name: Generate (Draft) Release
+      - name: Generate Release
         uses: release-drafter/release-drafter@v5.24.0
         id: release-drafter
+        if: ${{ inputs.event-name == 'push' }}
         with:
           config-name: release-drafter.yaml
-          publish: ${{ inputs.event-name == 'push' }}
+          publish: true
           commitish: ${{ steps.toggle-target-branch.outputs.value }}
           prerelease: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
           tag: ${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
-
-      - name: Remove Draft release
-        uses: liudonghua123/delete-release-action@v1
-        id: release-draft-remover
-        if: ${{ inputs.event-name != 'push' }}
-        with:
-          release_id: ${{ steps.release-drafter.outputs.id }}
-          suppress_errors: false
