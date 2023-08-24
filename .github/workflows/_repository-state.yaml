@@ -76,7 +76,7 @@ jobs:
           if_true: ${{ inputs.pull-request-target-branch }}
           if_false: ${{ inputs.push-target-branch }}
 
-      - name: Show release target branch
+      - name: Show target branch
         run: |
           echo Input event name: ${{ inputs.event-name }}
           echo Push target branch: ${{ inputs.push-target-branch }}
