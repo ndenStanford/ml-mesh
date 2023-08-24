@@ -3,6 +3,7 @@ from dotenv import dotenv_values
 from datetime import datetime as dt
 import click
 import os
+from typing import List
 
 from onclusiveml.tracking import TrackedGithubActionsSpecs
 
@@ -11,15 +12,17 @@ SAGEMAKER_S3_OUTPUT = "s3://onclusive-model-store-{aws_environment}/sagemaker-ou
 ECR_URI_TEMPLATE = "{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com"
 IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-train:{image_tag}"
 
-@click.command()
+@click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
     '--aws-account-id',
     default='063759612765',
+    show_default=True,
     help="""The ID of the context AWS account. Defaults to `dev` AWS account id `063759612765`."""
 )
 @click.option(
     '--aws-region',
     default='us-east-1',
+    show_default=True,
     type=click.Choice(['us-east-1','us-east-2']),
     help="""The AWS region of the docker image. Options are `us-east-1` (default) , and
         `us-east-2`."""
@@ -27,6 +30,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-train:{image_tag}"
 @click.option(
     '--aws-environment',
     default='dev',
+    show_default=True,
     type=click.Choice(['dev','stage']),
     help="""The AWS environment for the execution. Used to determine sagemaker access and (log)
         storage resources. Options are `dev` for development, and `stage` for CI."""
@@ -34,32 +38,37 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-train:{image_tag}"
 @click.option(
     '--instance-type',
     default='ml.m4.xlarge',
+    show_default=True,
     help="""EC2 instance type to use to run container on Sagemaker. See
         `https://aws.amazon.com/sagemaker/pricing/` for more options. Select 'local'/'local_gpu'
-        for testing. Defaults to `ml.m4.xlarge`."""
+        for testing."""
 )
 @click.option(
     '--instance-count',
     type=int,
     default=1,
+    show_default=True,
     help="""Number of EC2 instances to use to run container on Sagemaker. Note onclusiveml images
         do not currently support distributed model training."""
 )
 @click.option(
     '--project-name',
     default='keywords',
-    help="""The name of the ml-mesh project the train component belongs to. Defaults to
-        `keywords`."""
+    show_default=True,
+    help="""The name of the ml-mesh project the train component belongs to."""
 )
 @click.option(
     '--image-tag',
     default='latest',
-    help="Image tag of container to be run on sagemaker. Defaults to `latest`."
+    show_default=True,
+    help="Image tag of container to be run on sagemaker."
 )
 @click.option(
     '--run-configuration-dotenv',
-    default=None,
-    help="""Optional. The path to the dotenv file containing environment variables to configure the
+    required=False,
+    show_default=True,
+    type=click.Path(exists=True),
+    help="""[Optional]: The path to the dotenv file containing environment variables to configure the
         current run. If not provided, attempts to fall back on file located at
         `/projects/{project_name}/{project_component}/config/prod.env`. If unable to locate the
         fallback option, no additional environment variables other than the Neptune API token are
@@ -67,9 +76,23 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-train:{image_tag}"
 )
 @click.option(
     '--neptune-api-token',
-    default='dummy-token',
-    help="""The neptune AI model registry authentication token required for every model regsitry
-        interaction. Will be injected into the container at runtime. Defaults to `dummy-token`."""
+    type=str,
+    default='',
+    show_default=True,
+    help="""[Optional]: The neptune AI model registry authentication token required for every model registry
+        interaction. Will be injected into the container at runtime."""
+)
+@click.option(
+    '--container-entry-point',
+    default="python",
+    type=str,
+    show_default=True,
+    help="De facto docker entrypoint. Required by to override default sagemaker `train` .exe entrypoint"
+)
+@click.argument(
+    'container-arguments',
+    nargs=-1,
+    required=False,
 )
 def project_train(
     aws_environment: str,
@@ -79,8 +102,10 @@ def project_train(
     instance_count: int,
     project_name: str,
     image_tag: str,
-    run_configuration_dotenv: str,
-    neptune_api_token: str) -> None:
+    run_configuration_dotenv: List[str],
+    neptune_api_token: str,
+    container_entry_point: str,
+    container_arguments: List[str]) -> None:
 
     # get (aws) resources
     sagemaker_role = SAGEMAKER_ROLE_TEMPLATE.format(aws_account_id=aws_account_id,aws_environment=aws_environment)
@@ -116,7 +141,7 @@ def project_train(
 
         else:
             click.echo(
-                f"Could not locate likely candidate {probable_dotenv}. Defaulting"
+                f"Could not locate likely candidate {probable_dotenv}. Defaulting "
                 "to container configuration (if it exists)."
             )
             training_env_vars = {}
@@ -131,6 +156,9 @@ def project_train(
                     **github_action_env_vars,
                     **{'NEPTUNE_API_TOKEN':neptune_api_token}}
 
+    click.echo(f"Using container entry point: {[container_entry_point]}")
+    click.echo(f"Using container arguments: {container_arguments}")
+
     training_base_job_name = f"{project_name}-train"
 
     estimator = Estimator(
@@ -143,7 +171,9 @@ def project_train(
         # only sensitive env vars need to be passed here, the rest are defined in the container via
         # dot.env file
         environment = all_env_vars,
-        container_log_level=10
+        container_log_level=10,
+        container_entry_point=[container_entry_point],
+        container_arguments=container_arguments
     )
 
     estimator.fit(job_name=f"{training_base_job_name}-{dt.now().strftime('%Y-%m-%d--%H-%M-%S')}")

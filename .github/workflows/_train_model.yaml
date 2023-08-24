@@ -118,4 +118,5 @@ jobs:
             --project-name ${{ inputs.project }} \
             --image-tag ${{ inputs.tag }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
-            --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }}
+            --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
+            --container-entry-point python -m src.train_model
