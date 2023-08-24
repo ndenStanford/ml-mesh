@@ -75,7 +75,7 @@ services:
 
   compile-download-model:
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
@@ -95,7 +95,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [pipeline]
@@ -111,7 +111,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -125,7 +125,7 @@ services:
 
   compile-upload-model:
     volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -332,5 +332,5 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-pipeline-vol:
+  compile-vol:
   serve-vol:
