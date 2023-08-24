@@ -32,11 +32,6 @@ on  :
         required: false
         type: string
         description: Python version.
-      pull-request:
-        required: true
-        default: true
-        type: boolean
-        description: Indicates whether this workflow is running for a Pull Request.
       release:
         required: true
         type: boolean
