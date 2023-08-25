@@ -20,7 +20,7 @@ services:
     volumes:
       - type: bind
         source: train
-        target: /home/projects/sentiment/train
+        target: /projects/sentiment/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
@@ -28,6 +28,8 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: no
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
     env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
