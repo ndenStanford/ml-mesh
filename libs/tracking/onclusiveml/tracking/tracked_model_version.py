@@ -91,22 +91,7 @@ class TrackedModelVersion(ModelVersion):
         )
 
     def get_s3_bucket_client(self, s3_backend_bucket: str) -> Any:
-        """Utility to retrieve S3 bucket client instance. Supports assumption of roles as following:
-        - if the environment variable AWS_ROLE_TO_ASSUME is not set, no role will be assumed, and
-            the only the standard authentication environment variables
-            - AWS_ACCESS_KEY_ID and
-            - AWS_SECRET_ACCESS_KEY
-            will be used implicitly by boto3 to authenticate the s3 client
-        - if the environment variable AWS_ROLE_TO_ASSUME is set, it is assumed to be the full role
-            reference string. An sts client will then attempt to assume that role using the values
-            frrom the standard authentication environment variables
-            - AWS_ACCESS_KEY_ID and
-            - AWS_SECRET_ACCESS_KEY
-            and pass the resulting temporary credentials downstream onto the S3 bucket client
-            generation step.
-
-        This should get refactored into tracking library settings or another internal lib at a later
-        point.
+        """Utility to retrieve S3 bucket client instance.
 
         Args:
             s3_backend_bucket (str): Name of the S3 bucket
@@ -115,49 +100,7 @@ class TrackedModelVersion(ModelVersion):
             boto3.resource.Bucket: An initialized S3 bucket client
         """
 
-        sts_client = boto3.client("sts")
-        id_pre = sts_client.get_caller_identity()
-        logger.debug(f"AWS sts client identity before generating role object: {id_pre}")
-
-        aws_role_arn_to_assume = os.environ.get("AWS_ROLE_TO_ASSUME", "")
-
-        if aws_role_arn_to_assume:
-
-            logger.debug(
-                f"AWS role set. Attempting to assume role {aws_role_arn_to_assume}."
-            )
-
-            # generate assumed role object. presumably the
-            # - AWS_ACCESS_KEY_ID and
-            # - AWS_SECRET_ACCESS_KEY
-            # are required for this step
-            assumed_role_object = sts_client.assume_role(
-                RoleArn=aws_role_arn_to_assume,
-                RoleSessionName=f"AssumeRoleSession_{self._sys_id}",
-            )
-
-            id_post = sts_client.get_caller_identity()
-            logger.debug(
-                "AWS sts client identity after generating role object for role "
-                f"{aws_role_arn_to_assume}: {id_post}"
-            )
-
-            # From the response that contains the assumed role, get the temporary
-            # credentials that can be used to make subsequent API calls
-            credentials = assumed_role_object["Credentials"]
-
-            # Use the temporary credentials that AssumeRole returns to make a
-            # connection to Amazon S3
-            s3_resource = boto3.resource(
-                "s3",
-                aws_access_key_id=credentials["AccessKeyId"],
-                aws_secret_access_key=credentials["SecretAccessKey"],
-                aws_session_token=credentials["SessionToken"],
-            )
-        else:
-            s3_resource = boto3.resource("s3")
-
-        return s3_resource.Bucket(s3_backend_bucket)
+        return boto3.resource("s3").Bucket(s3_backend_bucket)
 
     def derive_model_version_s3_prefix(self, s3_prefix: str = "") -> str:
         """

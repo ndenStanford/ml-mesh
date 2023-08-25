@@ -23,6 +23,8 @@ endif
 # all core docker images
 ALL_DOCKER_IMGS:= \
 	python-base \
+	gpu-base \
+	gpu-train \
 	neuron-compile \
 	neuron-inference \
 	fastapi-serve \
