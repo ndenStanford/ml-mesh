@@ -90,14 +90,14 @@ class TrackedModelVersion(ModelVersion):
             f"{self.s3_storage_backend_config}"
         )
 
-    def get_s3_bucket(self, s3_backend_bucket: str) -> Any:
-        """Utility to retrieve S3 bucket
+    def get_s3_bucket_client(self, s3_backend_bucket: str) -> Any:
+        """Utility to retrieve S3 bucket client instance.
 
         Args:
             s3_backend_bucket (str): Name of the S3 bucket
 
         Returns:
-            boto3.resource.Bucket: An initialized S3 bucket
+            boto3.resource.Bucket: An initialized S3 bucket client
         """
 
         return boto3.resource("s3").Bucket(s3_backend_bucket)
@@ -239,7 +239,7 @@ class TrackedModelVersion(ModelVersion):
         s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
         s3_prefix = self.s3_storage_backend_config.s3_backend_prefix
 
-        s3_client = self.get_s3_bucket(s3_bucket)
+        s3_client = self.get_s3_bucket_client(s3_bucket)
         # assemble full s3 uri for file
         s3_model_version_prefix = self.derive_model_version_s3_prefix(s3_prefix)
         s3_file_prefix = f"{s3_model_version_prefix}/{neptune_attribute_path}"
@@ -540,7 +540,7 @@ class TrackedModelVersion(ModelVersion):
         tracked_file_s3_uri = neptune_artifact.metadata["location"]
         tracked_file_s3_prefix = tracked_file_s3_uri.replace(f"s3://{s3_bucket}/", "")
 
-        s3_client = self.get_s3_bucket(s3_bucket)
+        s3_client = self.get_s3_bucket_client(s3_bucket)
 
         logger.debug(
             f"Downloading file {tracked_file_s3_prefix} to local path {local_file_path}"
