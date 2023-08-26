@@ -137,9 +137,6 @@ class CompiledSent:
 
         self.inputs = self.compiled_sent_pipeline.tokenizer(
             list_sentences,
-            padding="max_length",
-            max_length=self.MAX_SEQ_LENGTH,
-            truncation=True,
             return_tensors="pt",
         )
 
