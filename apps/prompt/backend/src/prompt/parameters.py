@@ -39,8 +39,7 @@ class Parameters(BaseModel):
 
     @classmethod
     def from_dict(cls, params_dict):
-        """
-        Creates a Parameters instance from a dictionary
+        """Creates a Parameters instance from a dictionary.
 
         Args:
             value (str): The model name to be validated
@@ -52,8 +51,7 @@ class Parameters(BaseModel):
 
     @validator("model_name")
     def validate_model_name(cls, value):
-        """
-        Validates the model name
+        """Validates the model name.
 
         Args:
             value (str): The model name to be validated
@@ -65,7 +63,6 @@ class Parameters(BaseModel):
         Returns:
             str: The validated model name
         """
-
         # Reject None
         if value is None or value in [""]:
             raise PromptInvalidParameters(param_name="model_name", param=value)
@@ -76,8 +73,7 @@ class Parameters(BaseModel):
 
     @validator("max_tokens")
     def validate_max_tokens(cls, value, values):
-        """
-        Validates the maximum tokens parameter.
+        """Validates the maximum tokens parameter.
 
         Args:
             value (int): The max_tokens value to be validated
@@ -90,7 +86,6 @@ class Parameters(BaseModel):
         Returns:
             int: The validated max tokens value
         """
-
         # If max tokens is None then raise exception
         if value is None or value in [""]:
             raise PromptInvalidParameters(param_name="max_tokens", param=value)
@@ -114,8 +109,7 @@ class Parameters(BaseModel):
 
     @validator("temperature")
     def validate_temperature(cls, value):
-        """
-        Validates the temperature parameter.
+        """Validates the temperature parameter.
 
         Args:
             value (float): The temperature value to be validated.

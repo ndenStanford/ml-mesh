@@ -1,3 +1,5 @@
+"""Serving data models."""
+
 # Standard Library
 from typing import Dict, List, Tuple, Union
 

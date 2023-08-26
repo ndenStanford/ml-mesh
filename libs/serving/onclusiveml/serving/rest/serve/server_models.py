@@ -8,14 +8,18 @@ from pydantic import BaseModel, root_validator
 
 
 class ServedModelMethods(BaseModel):
-    """Utility to track the methods that a ServedModel subclass must implement to integrate with the
-    `create_model_enpoint` utility method (see below)."""
+    """Served model methods.
+
+    Utility to track the methods that a ServedModel subclass must implement
+    to integrate with the `create_model_enpoint` utility method (see below).
+    """
 
     predict: str = "predict"
     bio: str = "bio"
 
 
 class ModelServerURLs(BaseModel):
+    """Model server URLs."""
 
     root: str
     liveness: Optional[str] = ""
@@ -25,8 +29,7 @@ class ModelServerURLs(BaseModel):
 
     @root_validator
     def check_non_root_urls(cls, values: Dict) -> Dict:
-        """Checks that each url indeed starts with the root url"""
-
+        """Checks that each url indeed starts with the root url."""
         root_url = values["root"]
 
         assert root_url.startswith("/")
@@ -48,24 +51,30 @@ class ModelServerURLs(BaseModel):
 
 
 class ReadinessProbeResponse(BaseModel):
+    """Readiness probe."""
 
     ready: bool = True
 
 
 class LivenessProbeResponse(BaseModel):
+    """Liveness probe."""
+
     live: bool = True
 
 
 class ProtocolV1RequestModel(BaseModel):
+    """Request model."""
 
     instances: List[Any]
 
 
 class ProtocolV1ResponseModel(BaseModel):
+    """Response model."""
 
     predictions: List[Any]
 
 
 class ServedModelBioModel(BaseModel):
+    """Served model bio schema."""
 
     name: str

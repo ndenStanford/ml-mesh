@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import json
 import os
