@@ -239,3 +239,23 @@ services:
       - 8888:8888
     depends_on:
       - kubeflow-torch-cpu
+
+  # ===========================================================
+  # KUBEFLOW TORCH GPU
+  # ===========================================================
+
+  kubeflow-torch-gpu:
+    build:
+      context: ..
+      dockerfile: ./docker/kubeflow-torch-gpu/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: kubeflow-torch-gpu
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
+    ports:
+      - 8888:8888
+    depends_on:
+      - gpu-base
