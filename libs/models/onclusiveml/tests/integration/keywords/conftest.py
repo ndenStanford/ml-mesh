@@ -12,7 +12,7 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.fixture(scope="session")
 def test_hf_pipeline():
-
+    """Huggingface pipeline fixture."""
     return pipeline(
         task="feature-extraction",
         model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -21,7 +21,7 @@ def test_hf_pipeline():
 
 @pytest.fixture(scope="session")
 def test_compiled_word_pipeline(test_hf_pipeline):
-
+    """Compiled word pipeline fixture."""
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=15,
@@ -34,7 +34,7 @@ def test_compiled_word_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_compiled_document_pipeline(test_hf_pipeline):
-
+    """Compiled document pipeline fixture."""
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=150,  # test docs are 100 words, so should be <= 150 tokens
@@ -47,7 +47,7 @@ def test_compiled_document_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_word_pipeline(test_hf_pipeline):
-
+    """Compiled word pipeline fixture."""
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=10,
@@ -60,7 +60,7 @@ def test_neuron_compiled_word_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_document_pipeline(test_hf_pipeline):
-
+    """Compile document pipeline fixture."""
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=15,
@@ -73,7 +73,7 @@ def test_neuron_compiled_document_pipeline(test_hf_pipeline):
 
 @pytest.fixture
 def test_documents():
-
+    """Test Document fixture."""
     return [
         """Machine learning is a subfield of artificial intelligence that involves training
         algorithms to make predictions or decisions based on data. It is a powerful tool for

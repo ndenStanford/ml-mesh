@@ -104,6 +104,8 @@ def test_model_predict_user(
     test_inputs, test_inference_params, test_model_predict_endpoint_url
 ):
     class ModelPredictUser(HttpUser):
+        """Model prediction user."""
+
         # assemble & attach list of sample payloads for model predict endpoint requests
         sample_payloads: List[PredictRequestModel] = []
 
@@ -131,7 +133,7 @@ def test_model_predict_user(
 
 @pytest.fixture
 def test_load_test_settings(test_model_bio_user, test_model_predict_user):
-
+    """Load test settings fixture."""
     return LoadTestingParams(
         user_classes=[test_model_bio_user, test_model_predict_user],
         locustfile="",
@@ -140,7 +142,7 @@ def test_load_test_settings(test_model_bio_user, test_model_predict_user):
 
 @pytest.fixture
 def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint_url):
-
+    """Load test criteria features."""
     model_bio_latency_crit = Criterion(
         name=ValidMeasurements.avg_response_time.value,
         threshold=10,

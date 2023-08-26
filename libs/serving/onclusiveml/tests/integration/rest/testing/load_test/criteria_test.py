@@ -22,10 +22,12 @@ from onclusiveml.serving import ServingBaseParams
 
 
 def test_load_test_criteria():
-    """Tests the initialization of a LoadTestCriteria instance passing actual criteria in the
-    contructor, and checking for the resulting number of criteria being attached to the
-    LoadTestCriteria instace."""
+    """Test LoadTestCriteria instanciation.
 
+    Tests the initialization of a LoadTestCriteria instance passing actual
+    criteria in the contructor, and checking for the resulting number of criteria
+    being attached to the LoadTestCriteria instance.
+    """
     test_criteria = [
         Criterion(
             name=ValidMeasurements.avg_response_time.value,
