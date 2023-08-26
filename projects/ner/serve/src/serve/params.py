@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import json
 import os
@@ -7,6 +9,8 @@ from src.params import ServedModelParams
 
 
 class ServedModelArtifacts(object):
+    """Served model artifacts."""
+
     def __init__(self, remove_model_prefix: bool = True):
         """Utility class that reads in the model card and assembles model artifact local paths
         assuming that the neptune file attribute paths have been mapped to relative local paths

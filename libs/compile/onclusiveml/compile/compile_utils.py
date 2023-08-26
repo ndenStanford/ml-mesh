@@ -3,6 +3,7 @@ from onclusiveml.core.base import OnclusiveEnum
 
 
 class DelegatedTokenizerMethods(OnclusiveEnum):
+    """Delegated tokenizer methods."""
 
     encode_plus: str = "encode_plus"
     encode: str = "encode"
@@ -14,6 +15,7 @@ class DelegatedTokenizerMethods(OnclusiveEnum):
 
 
 class DelegatedTokenizerAttributes(OnclusiveEnum):
+    """Delegated tokenizer attributes."""
 
     is_fast: str = "is_fast"
     _tokenizer: str = "_tokenizer"
@@ -21,6 +23,7 @@ class DelegatedTokenizerAttributes(OnclusiveEnum):
 
 
 class DelegatedPipelineAttributes(OnclusiveEnum):
+    """Delegated pipeline attributes."""
 
     tokenizer: str = "tokenizer"
     model: str = "model"

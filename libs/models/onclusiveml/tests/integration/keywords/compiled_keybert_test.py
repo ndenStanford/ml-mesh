@@ -37,6 +37,7 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
 def test_compiled_keybert_extract_keywords(
     document_pipeline, compiled_word_pipeline, test_documents
 ):
+    """Test compiled keybert extract keywords."""
     # either fully compiled keybert or a hybrid with document embedding pipeline uncompiled
     compiled_keybert = CompiledKeyBERT(
         document_pipeline=document_pipeline,
@@ -70,7 +71,7 @@ def test_compiled_keybert_extract_keywords(
 def test_compiled_keybert_extract_embeddings(
     document_pipeline, compiled_word_pipeline, test_documents
 ):
-
+    """Test compiled keybert extract embeddings."""
     compiled_keybert = CompiledKeyBERT(
         document_pipeline=document_pipeline,
         compiled_word_pipeline=compiled_word_pipeline,
@@ -104,6 +105,7 @@ def test_compiled_keybert_extract_embeddings(
 def test_compiled_keybert_save_pretrained_from_pretrained(
     document_pipeline, compiled_word_pipeline, test_documents
 ):
+    """Test save pretrained compiled keybert model."""
     # initialize with constructor and score
     compiled_keybert = CompiledKeyBERT(
         document_pipeline=document_pipeline,

@@ -5,7 +5,7 @@ from pydantic import BaseSettings
 
 
 class ServingBaseParams(BaseSettings):
-    """Base class implementing the environment variable prefix"""
+    """Base class implementing the environment variable prefix."""
 
     class Config:
         env_prefix = "onclusiveml_serving_"

@@ -1,3 +1,5 @@
+"""Tracked model specs tests."""
+
 # Standard Library
 import os
 

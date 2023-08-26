@@ -1,3 +1,5 @@
+"""Compiled model tests."""
+
 # Standard Library
 import json
 from typing import List
@@ -8,8 +10,7 @@ import pytest
 
 
 def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
-    """
-    Convert a list of extracted entities into a dataframe
+    """Convert a list of extracted entities into a dataframe.
 
     Args:
         extract_entities (List[dict]): List of dictionaries representing entities
@@ -45,8 +46,8 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     test_sample_index,
     compilation_test_settings,
 ):
-    """
-    Perform regression testing for the compiled NER model
+    """Perform regression testing for the compiled NER model.
+
     Args:
         logger: Logger instance for logging
         io_settings: IO settigns for workflow component
