@@ -12,18 +12,17 @@ logger = get_default_logger(__name__)
 
 
 def timing_decorator(func: Callable) -> Callable:
-    """
-    A decorator function that measures execution time of a given function
+    """A decorator function that measures execution time of a given function.
 
-    args:
+    Args:
         func (Callable): The function to be timed
 
-    Example usage:
-        @timing_decorator
-        def my_function():
-            ...
+    Example:
+        >>> @timing_decorator
+        >>> def my_function():
+        >>>     ...
 
-        my_function() # execution time will be logged
+        >>> my_function() # execution time will be logged
     """
 
     def wrapper(*args: Any, **kwargs: Any) -> None:
