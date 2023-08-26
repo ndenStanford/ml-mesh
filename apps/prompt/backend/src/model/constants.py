@@ -1,4 +1,4 @@
-"""Constants"""
+"""Constants."""
 
 # Internal libraries
 from onclusiveml.core.base.utils import OnclusiveEnum

@@ -45,7 +45,8 @@ def _optimal_param(
     false_positive_weight: float,
     false_negative_weight: float,
 ) -> Tuple[int, int]:
-    """
+    """Optimal minhash parameter computation.
+
     Compute the optimal `MinHashLSH` parameter that minimizes the weighted sum
     of probabilities of false positive and false negative.
     """
@@ -64,8 +65,8 @@ def _optimal_param(
 
 
 class MinHashLSH(object):
-    """
-    The :ref:`minhash_lsh` index.
+    """The :ref:`minhash_lsh` index.
+
     It supports query with `Jaccard similarity`_ threshold.
     Reference: `Chapter 3, Mining of Massive Datasets
     <http://www.mmds.org/>`_.
@@ -103,7 +104,8 @@ class MinHashLSH(object):
         (false positive weight, false negative weight).
         For example, if minimizing false negative (or maintaining high recall) is more
         important, assign more weight toward false negative: weights=(0.4, 0.6).
-        Try to live with a small difference between weights (i.e. < 0.5)."""
+        Try to live with a small difference between weights (i.e. < 0.5).
+    """
 
     def __init__(
         self,
@@ -160,23 +162,23 @@ class MinHashLSH(object):
 
     @property
     def buffer_size(self) -> int:
+        """Stored property: buffer size."""
         return self._buffer_size
 
     @buffer_size.setter
     def buffer_size(self, value: int) -> None:
+        """Buffer size."""
         self.keys.buffer_size = value
         for t in self.hashtables:
             t.buffer_size = value
         self._buffer_size = value
 
     def insert(self, key: bytes, minhash: Any, check_duplication: bool = True) -> None:
-        """
-        Insert a key to the index, together with a MinHash of the set referenced by the key."""
+        """Insert a key to the index, together with a MinHash of the set referenced by the key."""
         self._insert(key, minhash, check_duplication=check_duplication, buffer=False)
 
     def insertion_session(self, buffer_size: int = 50000) -> Any:
-        """
-        Create a context manager for fast insertion into this index."""
+        """Create a context manager for fast insertion into this index."""
         return MinHashLSHInsertionSession(self, buffer_size=buffer_size)
 
     def _insert(
@@ -198,6 +200,11 @@ class MinHashLSH(object):
             hashtable.insert(H, key, buffer=buffer)
 
     def generate_signature(self, minhash: Any) -> List[str]:
+        """Generates signature.
+
+        Args:
+            minhash (datasketch.MinHash): The MinHash of the query set.
+        """
         signature = [
             base64.b64encode(self._H(minhash.hashvalues[start:end])).decode("ascii")
             for start, end in self.hashranges
@@ -205,10 +212,15 @@ class MinHashLSH(object):
         return signature
 
     def query(self, minhash: Any) -> List[str]:
-        """
+        """Minash retrieval function.
+
         Giving the MinHash of the query set, retrieve
         the keys that reference sets with Jaccard
-        similarities greater than the threshold."""
+        similarities greater than the threshold.
+
+        Args:
+            minhash (datasketch.MinHash): The MinHash of the query set.
+        """
         if len(minhash) != self.h:
             raise ValueError(
                 "Expecting minhash with length %d, got %d" % (self.h, len(minhash))
@@ -221,7 +233,8 @@ class MinHashLSH(object):
         return list(candidates)
 
     def add_to_query_buffer(self, minhash: Any) -> None:
-        """
+        """Add minash to query buffer.
+
         Giving the MinHash of the query set, buffer
         queries to retrieve the keys that reference
         sets with Jaccard similarities greater than
@@ -244,9 +257,7 @@ class MinHashLSH(object):
             hashtable.add_to_select_buffer([H])
 
     def collect_query_buffer(self) -> List[str]:
-        """
-        Execute and return buffered queries given
-        by `add_to_query_buffer`.
+        """Execute and return buffered queries given by `add_to_query_buffer`.
 
         If multiple query MinHash were added to the query buffer,
         the intersection of the results of all query MinHash will be returned.
@@ -264,7 +275,8 @@ class MinHashLSH(object):
         return list(set.intersection(*collected_result_sets))
 
     def __contains__(self, key: Any) -> bool:
-        """
+        """Checks if key is in index.
+
         Args:
             key (hashable): The unique identifier of a set.
 
@@ -274,8 +286,7 @@ class MinHashLSH(object):
         return key in self.keys
 
     def remove(self, key: Any) -> None:
-        """
-        Remove the key from the index.
+        """Remove the key from the index.
 
         Args:
             key (hashable): The unique identifier of a set.
@@ -290,9 +301,10 @@ class MinHashLSH(object):
         self.keys.remove(key)
 
     def is_empty(self) -> bool:
-        """
+        """Checks if index is empty.
+
         Returns:
-            bool: Check if the index is empty.
+            bool: True if the index is empty, False otherwise
         """
         return any(t.size() == 0 for t in self.hashtables)
 
@@ -300,8 +312,7 @@ class MinHashLSH(object):
         return bytes(hs.byteswap().data)
 
     def _hashed_byteswap(self, hs: np.ndarray) -> bytes:
-        """
-        Hashes a byteswapped 64-bit integer using the specified hash function.
+        """Hashes a byteswapped 64-bit integer using the specified hash function.
 
         Args:
             hs (np.uint64): A 64-bit integer (numpy.uint64) that will be byteswapped and hashed.
@@ -331,17 +342,15 @@ class MinHashLSH(object):
         return candidates
 
     def get_counts(self) -> List[List[int]]:
-        """
-        Returns a list of length ``self.b`` with elements representing the
-        number of keys stored under each bucket for the given permutation.
-        """
+        """Returns the number of keys stored under each bucket for the given permutation."""
         counts = [hashtable.itemcounts() for hashtable in self.hashtables]
         return counts
 
     def get_subset_counts(self, *keys: bytes) -> List[List[int]]:
-        """
-        Returns the bucket allocation counts (see :func:`~datasketch.MinHashLSH.get_counts` above)
-        restricted to the list of keys given.
+        """Returns the bucket allocation counts restricted to the list of keys given.
+
+        Note:
+            see :func:`~datasketch.MinHashLSH.get_counts` above
 
         Args:
             *keys (hashable): the keys for which to get the bucket allocation
@@ -375,25 +384,27 @@ class MinHashLSHInsertionSession:
         self.close()
 
     def close(self) -> None:
+        """Closes buffers."""
         self.lsh.keys.empty_buffer()
         for hashtable in self.lsh.hashtables:
             hashtable.empty_buffer()
 
     def insert(self, key: bytes, minhash: Any, check_duplication: bool = True) -> None:
+        """Insert a unique key to the index.
+
+        Together with a MinHash (or weighted MinHash) of the set referenced by the key.
         """
-        Insert a unique key to the index, together
-        with a MinHash (or weighted MinHash) of the set referenced by
-        the key."""
         self.lsh._insert(key, minhash, check_duplication=check_duplication, buffer=True)
 
 
 class LshHandler:
+    """LSH handler."""
+
     def __init__(self) -> None:
         self.tokenizer = WordTokenizer()
 
     def k_shingle(self, words: List[str], k: int = 5) -> List[str]:
-        """
-        Generates k-shingles from a list of words.
+        """Generates k-shingles from a list of words.
 
         Args:
             words (List[str]): List of words to generate k-shingles from.
@@ -411,8 +422,7 @@ class LshHandler:
     def generate_lsh_signature(
         self, shingle_list: List[str], num_perm: int = 128, threshold: float = 0.6
     ) -> List[str]:
-        """
-        Generates an LSH signature for a list of shingles.
+        """Generates an LSH signature for a list of shingles.
 
         Args:
             shingle_list (List[str]): List of shingles for which to generate the signature.
@@ -433,8 +443,7 @@ class LshHandler:
         return signature
 
     def pre_processing(self, text: str, lang: str = "en") -> List[str]:
-        """
-        Pre-processes the input text for further analysis.
+        """Pre-processes the input text for further analysis.
 
         Args:
             text (str): The input text to be pre-processed.

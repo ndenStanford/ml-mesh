@@ -1,3 +1,5 @@
+"""Compilation helper classes."""
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveEnum
 
