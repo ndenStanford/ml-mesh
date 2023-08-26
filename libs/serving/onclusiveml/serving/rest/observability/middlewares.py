@@ -1,3 +1,5 @@
+"""Middlewares."""
+
 # Standard Library
 import time
 

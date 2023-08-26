@@ -1,3 +1,5 @@
+"""Model server tests."""
+
 # Standard Library
 from typing import List
 

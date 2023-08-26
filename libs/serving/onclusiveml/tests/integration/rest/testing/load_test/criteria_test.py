@@ -1,3 +1,4 @@
+"""Criteria tests."""
 # Standard Library
 import os
 

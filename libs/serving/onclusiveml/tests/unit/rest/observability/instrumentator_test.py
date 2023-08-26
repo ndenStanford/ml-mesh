@@ -1,3 +1,5 @@
+"""Instrumentator tests."""
+
 # 3rd party libraries
 import pytest
 from prometheus_client import REGISTRY
@@ -83,9 +85,7 @@ def assert_metric_value(
 
 
 def test_metrics_endpoint(test_model_server):
-    """Tests initialization of the Instrumentator with ModelServer
-    - tests metrics endpoint is exposed
-    """
+    """Tests initialization of the Instrumentator with ModelServer."""
     metrics_endpoint = (
         Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
     )
@@ -110,8 +110,7 @@ def test_metrics_endpoint(test_model_server):
 def test_metrics_values(
     test_model_server, url, expected_app_info, expected_total, expected_rest
 ):
-    """Tests if the metrics endpoint returns the expected response"""
-
+    """Tests if the metrics endpoint returns the expected response."""
     metrics_endpoint = (
         Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
     )

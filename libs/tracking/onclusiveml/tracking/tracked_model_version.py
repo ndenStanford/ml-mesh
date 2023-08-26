@@ -1,3 +1,5 @@
+"""Model version."""
+
 # Standard Library
 import json
 import os

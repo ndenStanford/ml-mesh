@@ -1,3 +1,5 @@
+"""Prediction model tests."""
+
 # 3rd party libraries
 import pytest
 

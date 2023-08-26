@@ -1,3 +1,5 @@
+"""Load testing criteria."""
+
 # Standard Library
 from typing import List, Optional
 

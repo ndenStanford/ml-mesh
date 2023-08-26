@@ -1,3 +1,5 @@
+"""Storage."""
+
 # Standard Library
 import binascii
 import collections

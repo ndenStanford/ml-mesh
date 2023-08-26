@@ -1,3 +1,5 @@
+"""Minhash."""
+
 # Standard Library
 import copy
 import warnings

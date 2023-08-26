@@ -1,3 +1,5 @@
+"""Exceptions."""
+
 # Internal libraries
 from onclusiveml.core.base.exception import OnclusiveException
 

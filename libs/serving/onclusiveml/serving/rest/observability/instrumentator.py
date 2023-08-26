@@ -1,3 +1,5 @@
+"""Instrumentator."""
+
 # 3rd party libraries
 from fastapi import FastAPI
 

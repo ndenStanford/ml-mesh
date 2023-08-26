@@ -156,8 +156,7 @@ class IOSettings(object):
 
 
 class TokenizerSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_tokenizer for details
+    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details.
 
     Attributes:
         add_special_tokens (bool): Flag for adding special tokens
@@ -172,8 +171,7 @@ class TokenizerSettings(TrackedParams):
 
 
 class ModelTracingSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
+    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
     https://onclusive.atlassian.net/browse/DS-596
@@ -195,8 +193,7 @@ class ModelTracingSettings(TrackedParams):
 
 
 class PipelineCompilationSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details
+    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details.
 
     Attributes:
         pipeline_name (str): Name of pipeline

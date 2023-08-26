@@ -1,3 +1,5 @@
+"""Served model."""
+
 # Standard Library
 from typing import Dict, Union
 

@@ -1,3 +1,5 @@
+"""Word tokenizer."""
+
 # Standard Library
 import re
 from typing import Any, Dict, List

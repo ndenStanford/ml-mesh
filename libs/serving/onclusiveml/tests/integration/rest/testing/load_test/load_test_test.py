@@ -1,3 +1,5 @@
+"""Load test tests."""
+
 # 3rd party libraries
 import pytest
 from locust import HttpUser, between, task

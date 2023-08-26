@@ -1,3 +1,5 @@
+"""Model server."""
+
 # Standard Library
 from typing import Any, Optional
 

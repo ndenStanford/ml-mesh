@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+"""Settings."""
 
 # Standard Library
 from enum import Enum

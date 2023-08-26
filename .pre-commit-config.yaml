@@ -81,8 +81,6 @@ repos                   :
     hooks:
       - id: pydocstyle
         args:
-          - --source
-          - --explain
           - --convention=google
           - --count
           - --add-ignore=D105,D106,D107

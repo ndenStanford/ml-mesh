@@ -1,3 +1,5 @@
+"""Settings."""
+
 # 3rd party libraries
 from pydantic import BaseSettings
 

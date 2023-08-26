@@ -1,3 +1,5 @@
+"""Prediction model."""
+
 # Standard Library
 from typing import Type
 

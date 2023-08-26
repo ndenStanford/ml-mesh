@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+"""Load tests."""
+
 # Taken directly from https://github.com/FutureSharks/invokust with minimal changes under the MIT
 # licence: https://github.com/FutureSharks/invokust/blob/master/LICENSE
 

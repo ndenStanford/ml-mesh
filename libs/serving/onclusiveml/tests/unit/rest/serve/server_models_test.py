@@ -1,3 +1,5 @@
+"""Server models tests."""
+
 # 3rd party libraries
 from served_model_test import TestPrediction, TestRecord
 

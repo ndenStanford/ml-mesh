@@ -93,6 +93,7 @@ def test_detect_language_decorator(content, language, supported_languages, expec
 def test_detect_language_decorator_exceptions(
     content, language, supported_languages, exception, expected
 ):
+    """Test language detection decorator exceptions."""
     with pytest.raises(exception, match=expected):
 
         @filter_language(supported_languages, raise_if_none=True)
@@ -116,6 +117,8 @@ def test_detect_language_decorator_exceptions(
 def test_detect_language_decorator_return_None(
     content, language, supported_languages, expected
 ):
+    """Test detect language decorator returns None."""
+
     @filter_language(supported_languages, raise_if_none=False)
     def some_func(content: str, language: str = None) -> str:
         return "Processing content: " + content

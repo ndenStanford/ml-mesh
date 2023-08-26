@@ -38,7 +38,7 @@ def filter_language(
     supported_languages: List[LanguageIso], raise_if_none: Optional[bool] = True
 ) -> Callable:
     """
-    Decorator that filters supported language for a given function
+    Decorator that filters supported language for a given function.
 
     Args:
         supported_languages (List[LanguageIso]): List of supported languages
@@ -57,8 +57,7 @@ def filter_language(
     def decorator(func: Callable) -> Callable:
         def wrapper(content: str, language: Optional[str] = None) -> Any:
             """
-            Wrapper function that filters the supported languages before executing
-                decorated function
+            Wrapper function that filters the supported languages before executing decorated function.
 
             Args:
                 content (str): Content for which langugage needs to be detected

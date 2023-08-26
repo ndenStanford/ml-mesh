@@ -1,3 +1,5 @@
+"""Tracked settings."""
+
 # Standard Library
 from enum import Enum
 from typing import Dict
@@ -18,8 +20,9 @@ from onclusiveml.core.logging.constants import (  # noqa:F401
 
 
 class TrackingLibraryS3Backends(Enum):
-    """Valid range of S3 storage backends for the tracking library. Originates from `ml-platform`'s
-    S3 section of the `mesh` stack @
+    """Valid range of S3 storage backends for the tracking library.
+
+    Originates from `ml-platform`'s S3 section of the `mesh` stack @
     - https://github.com/AirPR/ml-platform/blob/prod/infrastructure/stacks/mesh/s3.tf (module)
     - https://github.com/AirPR/ml-platform/blob/prod/infrastructure/stacks/mesh/.environments/...
         dev/vars.tfvars (dev)
@@ -46,9 +49,9 @@ class TrackingLibraryLoggingSettings(Params):
 
 
 class TrackingLibraryBackendSettings(Params):
-    """
-    Entrypoint to configure the tracking library's S3 storage backend behaviour via environment
-    variables. The values derived by this class's attributes will be used as default values for the
+    """Entrypoint to configure the tracking library's S3 storage backend behaviour via environment variables.
+
+    The values derived by this class's attributes will be used as default values for the
     identically named TrackedModelVersion class' constructor arguments
     - use_s3_backend
     - s3_backend_bucket

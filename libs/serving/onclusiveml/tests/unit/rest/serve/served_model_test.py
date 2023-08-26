@@ -1,3 +1,5 @@
+"""Prediction schemas tests."""
+
 # Standard Library
 from typing import Any, List
 
