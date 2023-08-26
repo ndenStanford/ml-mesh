@@ -59,7 +59,8 @@ RUN poetry install \
     --only main \
     --no-root \
     --no-interaction \
-    --no-ansi && \
+    --no-ansi \
+    -v && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
@@ -77,7 +78,8 @@ RUN poetry install \
     --only dev \
     --no-root \
     --no-interaction \
-    --no-ansi && \
+    --no-ansi \
+    -v && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \

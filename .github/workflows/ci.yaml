@@ -23,23 +23,6 @@ concurrency:
 jobs       :
 
   # ===============================================
-  # DEBUGGING
-  # ===============================================
-  check-github-refs:
-    name: Check github refs
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Print all
-        run: |
-          echo github.ref_name: ${{ github.ref_name }}
-          echo github.event_name: ${{ github.event_name }}
-          echo "github.base_ref (PR only):" ${{ github.base_ref }}
-          echo "github.head_ref (PR only):" ${{ github.head_ref }}
-          echo github.ref: ${{ github.ref }}
-          echo github.type: ${{ github.type }}
-
-  # ===============================================
   # QUALITY CHECKS
   # ===============================================
 
@@ -60,12 +43,24 @@ jobs       :
     uses: ./.github/workflows/_repository-state.yaml
     needs: [run-code-quality-checks]
     with:
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      target-branch: ${{ github.ref_name }}
-      prerelease: ${{ github.ref_name == 'develop' }}
-      include-pre-releases: ${{ github.ref_name == 'develop' }}
+      event-name: ${{ github.event_name }}
+      push-target-branch: ${{ github.ref_name }}
+      pull-request-target-branch: ${{ github.base_ref }}
+      verbose: true
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
+
+  check-repository-state:
+    name: Check repository metadata
+    needs: [run-repository-state]
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Show captured repository state
+        run: |
+          echo Target branch: ${{ needs.run-repository-state.outputs.target-branch }}
+          echo "(Release) tag:" ${{ needs.run-repository-state.outputs.tag }}
+          echo ${{ toJSON(needs.run-repository-state.outputs.release-notes) }}
 
   # ===============================================
   # TEST LIBS
@@ -78,7 +73,7 @@ jobs       :
 
     strategy:
       max-parallel: 5
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         python-version: [3.8.16]
         poetry-version: [1.3.2]
@@ -118,7 +113,7 @@ jobs       :
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ github.ref_name == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
 
   # ===============================================
   # DOCKER
@@ -130,10 +125,12 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 1
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
           - python-base
+          - gpu-base
+          - gpu-train
           - neuron-compile
           - neuron-inference
           - fastapi-serve
@@ -147,7 +144,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ github.ref_name == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -160,7 +157,7 @@ jobs       :
     needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
     strategy:
       max-parallel: 1
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
           - name: kubeflow-jupyter
@@ -180,7 +177,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ github.ref_name == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -199,7 +196,7 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         projects:
           # NOTE: list of project components to run
@@ -278,6 +275,27 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # compile
+          - name: ner
+            component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # serve
+          - name: ner
+            component: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+
           # ========================
           # LSH
           # ========================
@@ -315,7 +333,7 @@ jobs       :
       load: ${{ matrix.projects.load }}
       upload-test-results: ${{ matrix.projects.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ github.ref_name == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
       runner-kind: ${{ matrix.projects.runner-kind }}
       self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
     secrets:
@@ -338,13 +356,18 @@ jobs       :
     needs: [run-repository-state, run-projects]
 
     strategy:
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
       matrix:
         models:
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: keywords
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.2xlarge
+            project: ner
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
 
     with:
       environment: prod
@@ -352,8 +375,8 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      compile: false
-      upload-compiled-model: false
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      upload-compiled-model: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -372,7 +395,7 @@ jobs       :
     needs: [run-repository-state, run-libs-tests]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ github.ref_name != 'main' }}
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
       matrix:
         apps:
           # NOTE: list of apps components to run
@@ -400,7 +423,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ github.ref_name == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

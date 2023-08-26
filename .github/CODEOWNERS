@@ -4,11 +4,14 @@
 
 * @airpr/mlops-engineers @RonsenbergVI @SebastianScherer88 @weshallsin @meganeinu7
 
-/libs @airpr/mlops-engineers
-/libs/compile @SebastianScherer88 @weshallsin @meganeinu7
-/libs/models @SebastianScherer88 @weshallsin @meganeinu7
-/libs/serving @SebastianScherer88 @weshallsin @meganeinu7
-/libs/tracking @SebastianScherer88 @weshallsin @meganeinu7
+# github actions
+
+/.github @RonsenbergVI @SebastianScherer88 @weshallsin @meganeinu7
+
+
+# libraries
+
+/libs @SebastianScherer88 @weshallsin @meganeinu7 @RonsenbergVI @ndenStanford
 
 ## MLE owns the project implementation
 
