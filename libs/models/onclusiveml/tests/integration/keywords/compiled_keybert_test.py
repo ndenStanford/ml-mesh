@@ -1,3 +1,5 @@
+"""Compiled keybert Tests."""
+
 # Standard Library
 import shutil
 

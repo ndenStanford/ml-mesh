@@ -1,3 +1,5 @@
+"""NER Settings."""
+
 # Standard Library
 from typing import List
 

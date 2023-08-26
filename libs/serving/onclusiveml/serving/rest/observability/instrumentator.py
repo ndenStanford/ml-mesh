@@ -11,6 +11,8 @@ from onclusiveml.serving.rest.observability.middlewares import (
 
 
 class Instrumentator:
+    """Metrics collection instrumentator."""
+
     def __init__(
         self,
         app: FastAPI,

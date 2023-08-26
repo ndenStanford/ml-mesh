@@ -1,3 +1,5 @@
+"""Conftests."""
+
 # Standard Library
 import json
 

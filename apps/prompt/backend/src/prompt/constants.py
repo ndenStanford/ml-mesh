@@ -1,4 +1,4 @@
-"""Constants"""
+"""Constants."""
 
 # Standard Library
 from enum import Enum

@@ -1,3 +1,5 @@
+"""Load test tests."""
+
 # 3rd party libraries
 from locust import HttpUser
 

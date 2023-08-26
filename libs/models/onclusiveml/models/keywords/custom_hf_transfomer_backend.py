@@ -1,3 +1,5 @@
+"""Backend transformer."""
+
 # ML libs
 from keybert.backend._hftransformers import HFTransformerBackend
 from transformers.pipelines import Pipeline

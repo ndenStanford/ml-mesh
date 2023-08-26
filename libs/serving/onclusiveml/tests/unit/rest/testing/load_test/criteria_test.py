@@ -1,3 +1,5 @@
+"""Criteria tests."""
+
 # 3rd party libraries
 import pytest
 
@@ -14,7 +16,6 @@ def test_load_test_criteria(test_criteria, test_n_criteria_expected):
     """Tests the initialization of a LoadTestCriteria instance passing dummy criteria in the
     contructor, and checking for the resulting number of criteria being attached to the
     LoadTestCriteria instace."""
-
     load_test_criteria = LoadTestCriteria(criteria=test_criteria)
 
     assert load_test_criteria.n_criteria == test_n_criteria_expected

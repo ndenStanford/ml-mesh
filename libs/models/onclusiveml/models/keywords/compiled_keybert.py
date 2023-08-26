@@ -1,3 +1,5 @@
+"""Compiled keybert."""
+
 # Standard Library
 import os
 from pathlib import Path
@@ -23,8 +25,9 @@ from onclusiveml.models.keywords import CustomHFTransformerBackend
 
 
 class CompiledKeyBERT(KeyBERT):
+    """Keybert compile model class.
 
-    """Compilation wrapper around the KeyBERT to provide support for two compiled backends that
+    Compilation wrapper around the KeyBERT to provide support for two compiled backends that
     are exclusively used for document and keywords/seed words embeddings, respectively.
 
     Uses custom CompiledHFTransformerBackend instances, which are in turn using ml_compile's

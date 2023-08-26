@@ -1,4 +1,4 @@
-"""Functional Tests"""
+"""Functional Tests."""
 
 # Standard Library
 import time

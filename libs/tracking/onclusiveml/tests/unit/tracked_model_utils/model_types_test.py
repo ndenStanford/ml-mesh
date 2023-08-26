@@ -1,3 +1,5 @@
+"""Model types tests."""
+
 # Internal libraries
 from onclusiveml.tracking.tracked_model_utils import ModelTypes
 

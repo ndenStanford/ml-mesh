@@ -1,4 +1,4 @@
-""" Parameters """
+"""Parameters."""
 
 
 # Standard Library
@@ -22,8 +22,7 @@ settings = get_settings()
 
 
 class Parameters(BaseModel):
-    """
-    Represents the parameters for the prompt generation.
+    """Represents the parameters for the prompt generation.
 
     Attributes:
         model_name (Optional[str]): The name of the model to be used. Defaults to

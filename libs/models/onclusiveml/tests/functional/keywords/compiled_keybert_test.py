@@ -1,3 +1,5 @@
+"""Keywords."""
+
 # Standard Library
 import time
 

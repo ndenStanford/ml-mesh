@@ -1,3 +1,5 @@
+"""Model card tests."""
+
 # 3rd party libraries
 import pytest
 

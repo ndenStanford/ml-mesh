@@ -1,3 +1,5 @@
+"""Custom HF transformer backend tests."""
+
 # 3rd party libraries
 import pytest
 from pytest_lazyfixture import lazy_fixture

@@ -12,32 +12,37 @@ from onclusiveml.serving.rest.serve import ServedModel
 
 
 class TestRecord(BaseModel):
+    """Test model."""
 
     number_of_legs: int
 
 
 class TestModelPredictRequestModel(BaseModel):
+    """Test model."""
 
     instances: List[TestRecord]
 
 
 class TestPrediction(BaseModel):
+    """Test model."""
 
     animal: str
 
 
 class TestModelPredictResponseModel(BaseModel):
+    """Test model."""
 
     predictions: List[TestPrediction]
 
 
 class TestBioResponseModel(ServedModel.bio_response_model):
+    """Bio response model."""
 
     type: str = "classifier"
 
 
 class TestServedModel(ServedModel):
-    """A minimal working example of a subclasses custom model for testing purposes"""
+    """A minimal working example of a subclasses custom model for testing purposes."""
 
     predict_request_model = TestModelPredictRequestModel
     predict_response_model = TestModelPredictResponseModel
@@ -46,11 +51,13 @@ class TestServedModel(ServedModel):
     def predict(
         self, payload: predict_request_model, *args: Any, **kwargs: Any
     ) -> predict_response_model:
-        """Inference method. Implements a very basic animal classifier using the
-        - TestModelPredictRequestModel and
-        - TestModelPredictResponseModel
-        test classes"""
+        """Inference method.
 
+        Implements a very basic animal classifier using the
+            - TestModelPredictRequestModel and
+            - TestModelPredictResponseModel
+        test classes.
+        """
         predictions = []
 
         for test_record in payload.instances:
@@ -66,16 +73,17 @@ class TestServedModel(ServedModel):
         return self.predict_response_model(predictions=predictions)
 
     def bio(self) -> bio_response_model:
-        """Model meta data method. Implements a basic model bio data model using the
-        TestBioResponseModel test class"""
+        """Model meta data method.
 
+        Implements a basic model bio data model using the TestBioResponseModel
+        test class.
+        """
         return self.bio_response_model(name=self.name)
 
 
 # --- test the ServedModel class
 def test_served_model_load(test_model_name):
-    """Tests the initialization and loading behaviour of the ServedModel base class"""
-
+    """Tests the initialization and loading behaviour of the ServedModel base class."""
     served_model = ServedModel(name=test_model_name)
     # base class `load` behaviour
     assert served_model.ready is not True
@@ -88,8 +96,7 @@ def test_served_model_load(test_model_name):
 
 
 def test_served_model_predict(test_model_name):
-    """Tests the predict method stump of the ServedModel base class"""
-
+    """Tests the predict method stump of the ServedModel base class."""
     # get loaded model
     served_model = ServedModel(name=test_model_name)
 
@@ -100,8 +107,7 @@ def test_served_model_predict(test_model_name):
 
 
 def test_served_model_bio(test_model_name):
-    """Tests the bio method stump of the ServedModel base class"""
-
+    """Tests the bio method stump of the ServedModel base class."""
     served_model = ServedModel(name=test_model_name)
     # call `bio` stump
     served_model_bio_actual = served_model.bio()
@@ -113,8 +119,7 @@ def test_served_model_bio(test_model_name):
 
 # --- test the TestServedModel class
 def test_test_served_model_load(test_model_name):
-    """Tests the initialization and loading behaviour of the subclassed TestServedModel class"""
-
+    """Tests the initialization and loading behaviour of the subclassed TestServedModel class."""
     test_served_model = TestServedModel(name=test_model_name)
 
     assert test_served_model.ready is not True
@@ -158,9 +163,7 @@ def test_test_served_model_load(test_model_name):
 def test_test_served_model_predict(
     test_model_name, test_inputs, test_predictions_expected
 ):
-    """Tests the predict method of the subclassed TestServedModel class against specified ground
-    truth outputs"""
-
+    """Tests the predict method of the subclassed TestServedModel class."""
     # get loaded model
     test_served_model = TestServedModel(name=test_model_name)
 
@@ -172,9 +175,7 @@ def test_test_served_model_predict(
 
 
 def test_test_served_model_bio(test_model_name):
-    """Tests the bio method of the subclassed TestServedModel class against specified ground truth
-    outputs (TestServedModel response model)"""
-
+    """Tests the bio method of the subclassed TestServedModel class."""
     # get loaded model
     test_served_model = TestServedModel(name=test_model_name)
 

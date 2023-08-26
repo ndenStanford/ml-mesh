@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # ML libs
 from transformers.pipelines import pipeline
 

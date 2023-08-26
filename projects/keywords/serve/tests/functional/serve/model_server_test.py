@@ -1,3 +1,5 @@
+"""Model server tests."""
+
 # 3rd party libraries
 import pytest
 
