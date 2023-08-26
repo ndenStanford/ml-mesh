@@ -119,7 +119,9 @@ class LoadTestCriteria(object):
         return self.criteria
 
     def evaluate(self, test_report: TestReport) -> EvaluatedCriteria:
-        """Utility method to verify whether
+        """Utility method.
+
+        Verifies whether
             - the individual `Criterion`/`EnvironmentCriterion` instances in the `criteria`
                 attribute where met in a load test by comparing the threshold(s) against the
                 observed value of the relevant measurement(s), picked out from a specified
