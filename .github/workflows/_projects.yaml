@@ -168,6 +168,10 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Find tag
+        run: |
+          echo ${{ inputs.tag }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
