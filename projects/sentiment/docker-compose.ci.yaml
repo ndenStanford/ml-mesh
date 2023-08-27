@@ -48,7 +48,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: sentiment
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.4}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4} #should have been v23.8.4?
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     profiles: [compile, unit, integration, pipeline]
     environment:
