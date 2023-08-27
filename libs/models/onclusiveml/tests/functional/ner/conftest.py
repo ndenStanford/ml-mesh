@@ -12,8 +12,7 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.fixture(scope="session")
 def test_hf_pipeline():
-    """
-    Fixture for providing huggingface pipeline for token classification
+    """Fixture for providing huggingface pipeline for token classification.
 
     Returns:
         Pipeline: A pipeline for token classification
@@ -26,8 +25,7 @@ def test_hf_pipeline():
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_ner_pipeline(test_hf_pipeline):
-    """
-    Fixture for providing a neuron compiled NER pipeline based on a huggignface pipeline
+    """Fixture for providing a neuron compiled NER pipeline based on a huggignface pipeline.
 
     Args:
         test_hf_pipeline (Pipeline): The huggingface pipeline for token classification
@@ -51,13 +49,11 @@ def test_neuron_compiled_ner_pipeline(test_hf_pipeline):
 
 @pytest.fixture
 def test_document():
-    """
-    Fixture providing a sample test document for NER
+    """Fixture providing a sample test document for NER.
 
     Returns:
         str: sample test document
     """
-
     return """Steven Paul Jobs (February 24, 1955 - October 5, 2011) was an American business magnate, inventor, and investor.
         He was the co-founder, chairman, and CEO of Apple; the chairman and majority shareholder of Pixar; a member of The Walt Disney Company's board of directors following its acquisition of Pixar; and the founder, chairman, and CEO of NeXT.
         He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.
