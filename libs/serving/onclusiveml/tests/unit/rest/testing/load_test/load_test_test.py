@@ -11,10 +11,8 @@ from libs.serving.onclusiveml.serving.rest.testing.load_test import (
 
 
 def test_load_test():
-    """Tests the initialization of a LoadTest instance"""
-
+    """Tests the initialization of a LoadTest instance."""
     test_settings = LoadTestingParams(user_classes=[HttpUser], locustfile="")
-
     test_load_test = LoadTest(settings=test_settings)
 
     assert test_load_test.settings == test_settings
