@@ -21,14 +21,14 @@ logger = get_default_logger(__name__, level=20)
 
 
 class CompiledSent:
-    """Class for performing sentiment analysis using neuron compiled Sent pipeline"""
+    """Class for performing sentiment analysis using neuron compiled Sent pipeline."""
 
     def __init__(
         self,
         compiled_sent_pipeline: CompiledPipeline,
     ):
-        """
-        Initalize the CompiledSent object.
+        """Initalize the CompiledSent object.
+
         Args:
             compiled_sent_pipeline (CompiledPipeline): The compiled Sent pipline used for inference
         """
@@ -48,8 +48,8 @@ class CompiledSent:
         self.device: str = "cpu"
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        """
-        Save compiled Sent pipeline to specified directory
+        """Save compiled Sent pipeline to specified directory.
+
         Args:
             Directory (Union[Path, str]): Directory to save the compiled Sent pipeline
         """
@@ -59,8 +59,8 @@ class CompiledSent:
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledSent":
-        """
-        Load compiledSent object from specfied directory
+        """Load compiledSent object from specfied directory.
+
         Args:
             directory (Union[Path, str]): The directory path contained the pretrained compiled
                 sent pipeline
@@ -76,8 +76,8 @@ class CompiledSent:
         )
 
     def remove_html(self, text: str) -> str:
-        """
-        Remove HTML tags from input text
+        """Remove HTML tags from input text.
+
         Args:
             text (str): Input text
         Returns:
@@ -98,8 +98,7 @@ class CompiledSent:
         return text
 
     def preprocess(self, sentences: str, language: str) -> List[str]:
-        """
-        Preprocess the input sentences by removing unwanted content inside text and tokenizing
+        """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
         Args:
             sentences (str): Input sentences
@@ -127,8 +126,8 @@ class CompiledSent:
         return list_sentences
 
     def inference(self, list_sentences: NDArray) -> NDArray:
-        """
-        Compute sentiment probability of each sentence
+        """Compute sentiment probability of each sentence.
+
         Args:
             list_sentences (NDArray): Input list of sentences
         Returns:
@@ -155,8 +154,8 @@ class CompiledSent:
         list_sentences: List[str],
         entities: Optional[List[Dict[str, Union[str, List]]]],
     ) -> Dict[str, Union[float, str, List]]:
-        """
-        Compute sentiment probability of each sentence
+        """Compute sentiment probability of each sentence.
+
         Args:
             sentiment_probs (NDArray): List of sentiment probability
             list_sentences (List[str]): Input list of sentences
@@ -189,8 +188,8 @@ class CompiledSent:
         return sentiment_result
 
     def _decide_label(self, pos: float, neu: float, neg: float) -> str:
-        """
-        Helper function to decide final sentiment.
+        """Helper function to decide final sentiment.
+
         The threshold has been calibrated to align with the customer expectation
         Args:
             pos (float): Probability of positive sentiment

@@ -14,8 +14,7 @@ from onclusiveml.serving.params import ServingBaseParams
 
 
 class LoadTestingParams(ServingBaseParams):
-    """A configuration class defining the data model for the `LoadTest` class' `settings`
-    constructor argument.
+    """A configuration class defining the data model for the `LoadTest` class' `settings`.
 
     Note: If a locustfile is being used to define client behaviour, that file must be available when
         instantiating a `LoadTestingParams` instance as it will be loaded during the validation
@@ -49,7 +48,7 @@ class LoadTestingParams(ServingBaseParams):
 
     @root_validator
     def validate_client_behaviour_configurations(cls, values: Dict) -> Dict:
-
+        """Validate client behaviour configurations."""
         if not values["locustfile"] and not values["user_classes"]:
 
             raise ValueError(
@@ -73,8 +72,7 @@ class LoadTestingParams(ServingBaseParams):
 
 
 class ValidEndpointTypes(Enum):
-    """A utility enum subclass to formally list all valid endpoint types that the load test module
-    supports. Useful when defining & validating Criterion instances"""
+    """A utility enum subclass to formally list all valid endpoint types."""
 
     get: str = "GET"
     post: str = "POST"
@@ -83,7 +81,7 @@ class ValidEndpointTypes(Enum):
 
     @classmethod
     def list(cls) -> List[str]:
-
+        """List enum values."""
         valid_endpoint_types = [
             valid_endpoint_type.value for valid_endpoint_type in cls
         ]
@@ -92,8 +90,11 @@ class ValidEndpointTypes(Enum):
 
 
 class ValidMeasurements(Enum):
-    """A utility enum subclass to formally list all valid load test metric names that the load test
-    module supports. Useful when defining & validating Criterion instances"""
+    """Measurements enums.
+
+    A utility enum subclass to formally list all valid load test metric names that the load test
+    module supports. Useful when defining & validating Criterion instances.
+    """
 
     # --- latency
     avg_response_time: str = "avg_response_time"
@@ -120,21 +121,24 @@ class ValidMeasurements(Enum):
 
     @classmethod
     def list(cls) -> List[str]:
-
+        """List values."""
         valid_measurements = [valid_measurement.value for valid_measurement in cls]
 
         return valid_measurements
 
 
 class BaseMeasurementValidator(BaseModel):
-    """A parent params class meant for subclassing that implements validating a measurement name
-    against the range of valid measurement names defined in ValidMeasurements."""
+    """Base measurement validator.
+
+    A parent params class meant for subclassing that implements validating a measurement name
+    against the range of valid measurement names defined in ValidMeasurements.
+    """
 
     name: str
 
     @validator("name")
     def check_valid_measurement(cls, value: str) -> str:
-
+        """Check name against valid measurements."""
         if value not in ValidMeasurements.list():
             raise ValueError(
                 f"Invalid measurement {value}. Must be one of "
@@ -145,8 +149,11 @@ class BaseMeasurementValidator(BaseModel):
 
 
 class BaseEndpointTypeValidator(BaseModel):
-    """A parent params class meant for subclassing that implements validating a endpoint type
-    against the range of valid endpoint types defined in ValidEndpointTypes."""
+    """Base endpoint type validator.
+
+    A parent params class meant for subclassing that implements validating a endpoint type
+    against the range of valid endpoint types defined in ValidEndpointTypes.
+    """
 
     endpoint_type: str = "GET"
     endpoint_url: str
@@ -154,7 +161,7 @@ class BaseEndpointTypeValidator(BaseModel):
 
     @validator("endpoint_type")
     def check_valid_endpoint_type(cls, value: str) -> str:
-
+        """Checks that endpoint type is valid."""
         if value not in ValidEndpointTypes.list():
             raise ValueError(
                 f"Invalid endpoint type {value}. Must be one of "
@@ -165,24 +172,25 @@ class BaseEndpointTypeValidator(BaseModel):
 
     @root_validator
     def set_request_id(cls, values: Dict) -> Dict:
-
+        """Sets the request id."""
         values["endpoint_id"] = f"{values['endpoint_type']}_{values['endpoint_url']}"
 
         return values
 
 
 class Measurement(BaseMeasurementValidator):
-    """Simple params class implementing a measurement. Has:
-    - a validated measurement name `name` field
-    - a measurement `value` field
+    """Simple params class implementing a measurement.
+
+    Has:
+        - a validated measurement name `name` field
+        - a measurement `value` field
     """
 
     value: float
 
 
 class Measurements(BaseModel):
-    """Utility class to define data model for the load test measurements of a given endpoint &
-    request type."""
+    """Utility class to define data model for the load test measurements."""
 
     # --- latency
     # average
@@ -215,9 +223,11 @@ class EndpointReport(BaseEndpointTypeValidator):
 
 
 class TestReport(BaseModel):
-    """A params class representing all data required for a fail/pass evaluation of a load test. An
-    instance of this is generated by calling a LoadTest instance's `report` method (after having
-    run a load test by calling its `run` method first)."""
+    """A params class representing all data required for a fail/pass evaluation of a load test.
+
+    An instance of this is generated by calling a LoadTest instance's `report` method (after having
+    run a load test by calling its `run` method first).
+    """
 
     completed: Dict[str, EndpointReport]
     failures: Dict
@@ -228,8 +238,7 @@ class TestReport(BaseModel):
 
 
 class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
-    """Utility class to define load testing success criteria based on quantitative latency
-    and response type metrics."""
+    """Utility class to define load testing success criteria."""
 
     threshold: float
     ensure_lower: bool = True
@@ -239,8 +248,7 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
     hard: bool = True
 
     def was_met_in_measurement(self, test_measurement: Measurement) -> bool:
-        """Utility method to verify whether the criterion was met in a load test measuremebt by
-        comparing the threshold against the observed value of the specified Measurement instance
+        """Utility method to verify whether the criterion was met in a load test measurement.
 
         Args:
             test_measurement (Measurement): The measurement (i.e. observation) that is being
@@ -253,7 +261,6 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
         Returns:
             bool: Whether the criterion was met in the specified Measurement
         """
-
         if self.name != test_measurement.name:
             raise ValueError(
                 f"The criterion's name {self.name} does not match the measurement's "
@@ -267,7 +274,9 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
         return criteria_was_met
 
     def was_met_in_report(self, test_report: TestReport) -> bool:
-        """Utility method to verify whether the criterion was met in a load test by comparing the
+        """Verifies whether the criterion was met in a load test.
+
+        Utility method to verify whether the criterion was met in a load test by comparing the
         threshold against the observed value of the relevant measurement, picked out from a
         specified TestReport instance
 
@@ -287,7 +296,6 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
         Returns:
             bool: Whether the criterion was met in the specified TestReport.
         """
-
         endpoint_report: Optional[EndpointReport] = test_report.completed.get(
             self.endpoint_id
         )
@@ -320,33 +328,42 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
 
 
 class EvaluatedCriterion(Criterion):
-    """A simple params subclass of the Criterion class with the additional boolean `passed`
+    """Evaluated criterion data model.
+
+    A simple params subclass of the Criterion class with the additional boolean `passed`
     attribute, representing the successful/failed evaluation outcome of this criterion against a
-    TestReport instances."""
+    TestReport instances.
+    """
 
     passed: bool
 
 
 class EvaluatedCriteria(BaseModel):
-    """A simple params class representing the outcome of calling a LoadTestCriteria instance's
+    """Evaluated creteria data model.
+
+    A simple params class representing the outcome of calling a LoadTestCriteria instance's
     evaluate method on a TestReport instance, i.e. the params class representing a fully evaluated
     load test criteria set.
 
     Contains individual Criterion instances as well as their individual evaluation outcomes, and the
     overal evaluation outcome which is successfull if and only if each individual criterion with
-    hard=True has been successfull."""
+    hard=True has been successfull.
+    """
 
     evaluated_criteria: List[EvaluatedCriterion]
     passed: bool
 
 
 class EnvironmentCriterion(ServingBaseParams, Criterion):
-    """Criterion subclass that can be configured via environment variables. Used to auto-generate
-    criteria objects with indexed environment prefixes to support the configuration of entire
-    test requirements containing multiple criteria completely via environment variables.
+    """Criterion subclass that can be configured via environment variables.
+
+    Used to auto-generate criteria objects with indexed environment prefixes to support
+    the configuration of entire test requirements containing multiple criteria completely
+    via environment variables.
 
     Useful for environment-only configuration of a LoadTestCriteria instance via its
-    generate_from_environment method."""
+    generate_from_environment method.
+    """
 
     # to ensure validation errors for missing environment variables, we unset the default values for
     # all fields
@@ -359,7 +376,6 @@ class EnvironmentCriterion(ServingBaseParams, Criterion):
 
 
 class EnvironmentCriteriaCount(ServingBaseParams):
-    """A simple params class to help set the number of EnvironmentCriterion instances that need to
-    be specified via environment variables. See EnvironmentCriterion"""
+    """A simple params class to help set the number of EnvironmentCriterion instances."""
 
     n_criteria: int

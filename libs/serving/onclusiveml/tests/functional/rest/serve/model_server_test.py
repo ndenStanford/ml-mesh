@@ -130,14 +130,16 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
 def test_model_server_client_no_model(
     test_api_version, test_port, test_url_reference, test_probe_response_model
 ):
-    """Tests the availability and response format of a live ModelServer's
-    - root,
-    - liveness,
-    -readiness
-    endpoints, as launched by the
-    test_model_server_serve_with_model test case.
+    """Tests the availability and response format of a live ModelServer endpoints.
 
-    Requires test_model_server_serve_with_model to have been called on the same machine"""
+    Endpoints:
+        - root,
+        - liveness,
+        -readiness
+    as launched by the test_model_server_serve_with_model test case.
+
+    Requires test_model_server_serve_with_model to have been called on the same machine
+    """
     test_model_server_urls = get_model_server_urls(api_version=test_api_version)
 
     url = f"http://localhost:{test_port}" + getattr(
@@ -197,11 +199,10 @@ def test_model_server_serve_predict(
     test_response_model,
     test_response_expected,
 ):
-    """Tests the availability and response format of a live ModelServer's model predict endpoint
-    endpoints, as launched by the test_model_server_serve_with_model test case.
+    """Tests the availability and response format of a live ModelServer's model predict endpoint.
 
-    Requires test_model_server_serve_with_model to have been called on the same machine"""
-
+    Requires test_model_server_serve_with_model to have been called on the same machine.
+    """
     test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
     )
@@ -230,11 +231,7 @@ def test_model_server_serve_bio(
     test_model_name,
     test_response_model,
 ):
-    """Tests the availability and response format of a live ModelServer's model bio endpoint
-    endpoints, as launched by the test_model_server_serve_with_model test case.
-
-    Requires test_model_server_serve_with_model to have been called on the same machine"""
-
+    """Tests the availability and response format of a live ModelServer's model bio endpoint."""
     test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
     )

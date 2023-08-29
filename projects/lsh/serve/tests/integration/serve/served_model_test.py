@@ -14,19 +14,14 @@ from src.serve.server_models import (
 
 @pytest.mark.order(1)
 def test_served_lsh_model__init__():
-    """Tests the constructor of the ServedLshModel, EXCLUDING the loading of genuine model
-    artifacts from local disk"""
-
+    """Tests the constructor of the ServedLshModel."""
     ServedLshModel()
 
 
 @pytest.mark.order(2)
 def test_served_lsh_model_load():
-    """Tests the constructor of the ServedLSHModel, INCLUDING the loading of genuine model
-    artifacts from local disk"""
-
+    """Tests the constructor of the ServedLSHModel."""
     served_lsh_model = ServedLshModel()
-
     assert not served_lsh_model.is_ready()
 
     served_lsh_model.load()
@@ -36,10 +31,7 @@ def test_served_lsh_model_load():
 
 @pytest.mark.order(3)
 def test_served_lsh_model_predict(test_predict_input, test_expected_predict_output):
-    """Tests the fully initialized and loaded ServedLshModel's predict method, using the
-    custom data models for validation and the test files from the model artifact as ground truth
-    for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedLshModel's predict method."""
     served_lsh_model = ServedLshModel()
     served_lsh_model.load()
 
@@ -57,10 +49,7 @@ def test_served_lsh_model_predict(test_predict_input, test_expected_predict_outp
 
 @pytest.mark.order(3)
 def test_served_lsh_model_bio(test_expected_bio_output):
-    """Tests the fully initialized and loaded ServedLshModel's bio method, using the
-    custom data models for validation and the model card from the model artifact as ground truth
-    for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedLshModel's bio method."""
     served_lsh_model = ServedLshModel()
 
     served_lsh_model.load()

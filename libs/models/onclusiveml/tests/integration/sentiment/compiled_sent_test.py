@@ -1,4 +1,4 @@
-"""Integration Tests"""
+"""Integration Tests."""
 
 # Standard Library
 import shutil
@@ -23,7 +23,7 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
     ],
 )
 def test_compiled_sent_extract_sent(compiled_sent_pipeline, test_documents):
-
+    """Test compiled sentiment extracted sentiment."""
     compiled_sent = CompiledSent(compiled_sent_pipeline=compiled_sent_pipeline)
 
     test_compiled_sent = compiled_sent.extract_sentiment(test_documents)
@@ -40,6 +40,7 @@ def test_compiled_sent_extract_sent(compiled_sent_pipeline, test_documents):
 def test_compiled_sent_save_pretrained_from_pretrained(
     compiled_sent_pipeline, test_documents
 ):
+    """Test compiled sentiment save pretrained from pretrained."""
     # initialize with constructor and score
     compiled_sent = CompiledSent(
         compiled_sent_pipeline=compiled_sent_pipeline,

@@ -1,4 +1,4 @@
-"""Conftest"""
+"""Conftest."""
 
 # ML libs
 from transformers.pipelines import pipeline
@@ -12,7 +12,7 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.fixture(scope="session")
 def test_hf_pipeline():
-
+    """HF pipeline fixture."""
     return pipeline(
         task="sentiment-analysis",
         model="cardiffnlp/twitter-xlm-roberta-base-sentiment",
@@ -21,7 +21,7 @@ def test_hf_pipeline():
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_sent_pipeline(test_hf_pipeline):
-
+    """Neuron compiled sentiment pipeline fixture."""
     neuron_compiled_sent_pipeline = CompiledPipeline.from_pipeline(
         pipeline=test_hf_pipeline,
         max_length=128,
@@ -38,7 +38,7 @@ def test_neuron_compiled_sent_pipeline(test_hf_pipeline):
 
 @pytest.fixture
 def test_document():
-
+    """Document fixture."""
     return """Steven Paul Jobs (February 24, 1955 - October 5, 2011) was an American business magnate, inventor, and investor.
         He was the co-founder, chairman, and CEO of Apple; the chairman and majority shareholder of Pixar; a member of The Walt Disney Company's board of directors following its acquisition of Pixar; and the founder, chairman, and CEO of NeXT.
         He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.

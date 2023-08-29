@@ -12,7 +12,7 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.fixture(scope="session")
 def test_hf_pipeline():
-
+    """Test HF pipeline."""
     return pipeline(
         task="feature-extraction",
         model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -21,7 +21,7 @@ def test_hf_pipeline():
 
 @pytest.fixture(scope="session")
 def test_compiled_word_pipeline(test_hf_pipeline):
-
+    """Test compiled word pipeline."""
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=15,
@@ -34,7 +34,7 @@ def test_compiled_word_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_compiled_document_pipeline(test_hf_pipeline):
-
+    """Test compiled document pipeline."""
     return CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=150,  # test docs are <=120 words
@@ -47,7 +47,7 @@ def test_compiled_document_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_word_pipeline(test_hf_pipeline):
-
+    """Test neuron compiled word pipeline."""
     neuron_compiled_word_pipeline = CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=15,
@@ -64,7 +64,7 @@ def test_neuron_compiled_word_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_document_pipeline(test_hf_pipeline):
-
+    """Test neuron compiled document pipeline."""
     neuron_compiled_document_pipeline = CompiledPipeline.from_pipeline(
         test_hf_pipeline,
         max_length=150,  # test docs are <=120 words
@@ -83,7 +83,7 @@ def test_neuron_compiled_document_pipeline(test_hf_pipeline):
 
 @pytest.fixture
 def test_documents():
-
+    """Documents fixture."""
     return [
         # ~ 117 tokens
         """Machine learning is a subfield of artificial intelligence that involves training
@@ -117,5 +117,5 @@ def test_documents():
 
 @pytest.fixture
 def test_document(test_documents, document_index: int = 0):
-
+    """Document fixture."""
     return test_documents[document_index]

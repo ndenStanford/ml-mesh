@@ -14,6 +14,8 @@ from onclusiveml.tracking import (
 
 # --- settings classes
 class TrackedSentModelSpecs(TrackedModelSpecs):
+    """Tracked sentiment model settings."""
+
     project: str = "onclusive/sentiment"
     model = "SEN-TRAINED"
 
