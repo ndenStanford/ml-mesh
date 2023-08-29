@@ -11,6 +11,7 @@ from starlette.routing import Match
 
 def get_path(request: Request) -> Tuple[str, bool]:
     """Retrieve the path of the matched route for the given request.
+
     If a full match is found among the application's routes, returns the path and True.
     If no full match is found, returns the URL path of the request and False.
 

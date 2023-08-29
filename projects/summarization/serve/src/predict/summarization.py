@@ -25,6 +25,8 @@ logger = get_default_logger(__name__)
 
 
 class SummarizationHandler:
+    """Summarization handler."""
+
     def inference(
         self,
         text: str,

@@ -29,12 +29,14 @@ from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
 def test_model_server___init__no_model(
     test_add_liveness, test_add_readiness, test_api_version, test_api_name
 ):
-    """Tests initialization of the ModelServer class without passing a model, validating
-    - toggling of liveness endpoint
-    - toggling of readiness endpoint
-    - capturing of api name and api version
-    - the configuration attribute capturing the serving params"""
+    """Tests initialization of the ModelServer class without passing a model.
 
+    Validating
+        - toggling of liveness endpoint
+        - toggling of readiness endpoint
+        - capturing of api name and api version
+        - the configuration attribute capturing the serving params
+    """
     test_serving_params = ServingParams(
         add_liveness=test_add_liveness,
         add_readiness=test_add_readiness,
@@ -84,12 +86,14 @@ def test_model_server___init__with_model(
     test_on_startup,
     test_model_name,
 ):
-    """Tests initialization of the ModelServer class without passing a model, validating
-    - toggling of liveness endpoint
-    - toggling of readiness endpoint
-    - capturing of api name and api version
-    - the configuration attribute capturing the serving params"""
+    """Tests initialization of the ModelServer class without passing a model.
 
+    Validating:
+        - toggling of liveness endpoint
+        - toggling of readiness endpoint
+        - capturing of api name and api version
+        - the configuration attribute capturing the serving params
+    """
     test_serving_params = ServingParams(
         add_liveness=False,
         add_readiness=False,

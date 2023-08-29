@@ -32,7 +32,6 @@ def test_compiled_ner_extract_ner(compiled_ner_pipeline, test_documents):
     Returns:
         None
     """
-
     compiled_ner = CompiledNER(compiled_ner_pipeline=compiled_ner_pipeline)
 
     test_compiled_ner = compiled_ner.extract_entities(

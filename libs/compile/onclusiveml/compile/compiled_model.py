@@ -1,3 +1,5 @@
+"""Compiled model."""
+
 # Standard Library
 import json
 import os
@@ -40,32 +42,35 @@ class CompiledModel(PreTrainedModel):
         validation_atol: float = 1e-02,
         **tracing_kwargs: Any
     ) -> "CompiledModel":
-        """Takes a huggingface transformer model, compiles it according to specified
-        configuration and returns a fully instantiated CompiledModel instance together with
-        the (neuron-)tracing configuration.
+        """Takes a huggingface transformer model.
 
-        model (PreTrainedModel): The huggingface pytorch model or pytorch nn.module to compile
-        batch_size (int, optional): The size of the batch used for tracing
-        max_length (_type_): The number of tokens per record used for tracing, e.g. input sequence
-            length
-        neuron (bool, optional): If True, uses torch.neuron.trace for compilation,
-            otherwise uses torch.jit.trace. Defaults to True.
-        validate_compilation (bool, optional): If True, runs a simple regression test comparing the
-            specified model's outputs with the newly compiled model's outputs, using the tracing
-            inputs as pseudo-tokens
-        validation_rtol (float, optional): The relative deviation threshold. Only relevant when
-            validate_compilation=True.
-        validation_atol (float, optional): The absolute deviation threshold. Only relevant when
-            validate_compilation=True.
-        **tracing_kwargs:
-            dynamic_batching (bool, optional): If True, traced model allows for
-                variable batch sizes during inference up to the batch_size used during compilation.
-                Defaults to True.
-            strict (bool, optional): If True, enforces deterministic inference behaviour during
-                tracing. In particular, requires the model arg to have return_dict=False.
-            compiler_args (List[str], optional): Note: Not setting these was
-                observed to lead to NaN during inference on huggingface==4.27.x & torch==1.12.1.
-                Defaults to ['--fast-math','none'].
+
+        Compiles it according to specified configuration and returns a fully instantiated
+        CompiledModel instance together with the (neuron-)tracing configuration.
+
+        Args:
+            model (PreTrainedModel): The huggingface pytorch model or pytorch nn.module to compile
+            batch_size (int, optional): The size of the batch used for tracing
+            max_length (_type_): The number of tokens per record used for tracing, e.g. input sequence
+                length
+            neuron (bool, optional): If True, uses torch.neuron.trace for compilation,
+                otherwise uses torch.jit.trace. Defaults to True.
+            validate_compilation (bool, optional): If True, runs a simple regression test comparing the
+                specified model's outputs with the newly compiled model's outputs, using the tracing
+                inputs as pseudo-tokens
+            validation_rtol (float, optional): The relative deviation threshold. Only relevant when
+                validate_compilation=True.
+            validation_atol (float, optional): The absolute deviation threshold. Only relevant when
+                validate_compilation=True.
+            **tracing_kwargs:
+                dynamic_batching (bool, optional): If True, traced model allows for
+                    variable batch sizes during inference up to the batch_size used during compilation.
+                    Defaults to True.
+                strict (bool, optional): If True, enforces deterministic inference behaviour during
+                    tracing. In particular, requires the model arg to have return_dict=False.
+                compiler_args (List[str], optional): Note: Not setting these was
+                    observed to lead to NaN during inference on huggingface==4.27.x & torch==1.12.1.
+                    Defaults to ['--fast-math','none'].
         """
         # ensure reasonable defaults and required specs for functional neuron tracing
         if max_length == -1:
@@ -123,6 +128,7 @@ class CompiledModel(PreTrainedModel):
         attention_mask: torch.Tensor = None,
         **kwargs: Any
     ) -> ModelOutput:
+        """Forward pass."""
         # traced model requires positional arguments
         model_output = self.model(input_ids, attention_mask)
         # if original model graph returns a dict, convert to data type that can handle both
@@ -136,8 +142,10 @@ class CompiledModel(PreTrainedModel):
         return model_output
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        """Canonic huggingface transformers export method. Only supports exporting to local file
-        system.
+        """Canonic huggingface transformers export method.
+
+        Note:
+            Only supports exporting to local file system.
 
         Args:
             directory (Path,str): Directory on local file system to export model artifact to. Will
@@ -155,11 +163,13 @@ class CompiledModel(PreTrainedModel):
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledModel":
-        """Canonic huggingface transformers import method. Only supports importing from local file
-        system.
+        """Canonic huggingface transformers import method.
+
+        Only supports importing from local file system.
 
         Args:
-            directory (Path,str): Directory on local file system to import model artifact from."""
+            directory (Path,str): Directory on local file system to import model artifact from.
+        """
         # import and instantiate huggingface transformer config
         config = AutoConfig.from_pretrained(directory)
         # use huggingface transformer PreTrainedModel constructor to re-initialize the original
@@ -187,8 +197,7 @@ def compile_model(
     Tuple[torch.Tensor, torch.Tensor],
     Dict[str, Any],
 ]:
-    """Utility function for (neuron-)tracing a torch hugginface model to either torchscript or
-    neuron torchscript.
+    """Utility function for (neuron-)tracing a torch hugginface model.
 
     Returns the traced model object, the inputs used for tracing and the tracing configuration.
 
