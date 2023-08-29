@@ -15,12 +15,15 @@ from onclusiveml.serving.rest.testing.load_test.params import (
 
 
 class LoadTestCriteria(object):
-    """A utility class to
-    - provide `Criteria` instances either through
+    """A utility class.
+
+    This class is responsible for
+
+    - providing `Criteria` instances either through
         - direct specification via the constructor argument, or
         - dynamic definition and creation, using exclusively indexed environment variables to set
             the fields' values - see `generate_from_environment`
-    - evaluate `Criteria` instances against a `TestReport` instance, and collecting the individual
+    - evaluating `Criteria` instances against a `TestReport` instance, and collecting the individual
         fail/pass results into one final fail/pass, taking into account the `hard` attribute of each
         `Criteria` instance
 
@@ -30,7 +33,7 @@ class LoadTestCriteria(object):
     """
 
     def __init__(self, criteria: List[Criterion] = []):
-        """Constructor of the class. A list of
+        """Constructor of the class.
 
         Args:
             criteria (List[Criterion], optional): The criteria that define the `LoadTest` level
@@ -53,9 +56,10 @@ class LoadTestCriteria(object):
     def generate_from_environment(
         self, n_criteria: Optional[int] = None
     ) -> List[EnvironmentCriterion]:
-        """A utility method to dynamically define and create a list of `EnvironmentCriteria`
-        instances sourced exclusively from the corresponding environment variables. The resulting
-        list of `Criteria` instances will populate the `criteria` attribute.
+        """A utility method to dynamically define and create a list of `EnvironmentCriteria` instances.
+
+        Instances are sourced exclusively from the corresponding environment variables.
+        The resulting list of `Criteria` instances will populate the `criteria` attribute.
 
         More specifically: For each index 1,...,n_criteria:
         - the following environment variables need to be exported with the correct values:
@@ -89,14 +93,16 @@ class LoadTestCriteria(object):
             # we dynamically subclass, changing only the environment prefix for the fields using
             # the current index as a suffix
             class IndexedEnvironmentCriterion(EnvironmentCriterion):
-                """This auto-generated class needs to be instantiated by exporting all of the
+                """Index environment criterion.
+
+                This auto-generated class needs to be instantiated by exporting all of the
                 `Criterion`'s class's fields as environment variables with the correct indexed
                 prefix. i.e. the following environment variables need to be exported:
-                - onclusiveml_serving_criteria_{index}_name
-                - onclusiveml_serving_criteria_{index}_threshold
-                - onclusiveml_serving_criteria_{index}_ensure_lower
-                - onclusiveml_serving_criteria_{index}_endpoint_type
-                - onclusiveml_serving_criteria_{index}_endpoint_url
+                    - onclusiveml_serving_criteria_{index}_name
+                    - onclusiveml_serving_criteria_{index}_threshold
+                    - onclusiveml_serving_criteria_{index}_ensure_lower
+                    - onclusiveml_serving_criteria_{index}_endpoint_type
+                    - onclusiveml_serving_criteria_{index}_endpoint_url
                 """
 
                 class Config:
@@ -152,7 +158,6 @@ class LoadTestCriteria(object):
             EvaluatedCriteria: The outcome of the evaluation of the load test performance
                 requirements against the load test report.
         """
-
         evaluated_criteria = []
         hard_criteria_passes = []
 

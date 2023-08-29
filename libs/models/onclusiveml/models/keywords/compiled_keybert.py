@@ -66,8 +66,8 @@ class CompiledKeyBERT(KeyBERT):
         Only supports exporting to local file system.
 
         Args:
-            directory (Union[Path, str]): Directory on local file system to export model artifact to.
-                Will be created if it doesn't exist.
+            directory (Union[Path, str]): Directory on local file system to export model
+                artifact to. Will be created if it doesn't exist.
         """
         # since document pipelines are supported in both compiled and uncompiled formats, we use
         # different subdirectories during export to be able to disambiguate at import time
@@ -92,7 +92,8 @@ class CompiledKeyBERT(KeyBERT):
         from local file system.
 
         Args:
-            directory (Union[Path, str]): Directory on local file system to import model artifact from.
+            directory (Union[Path, str]): Directory on local file system to import model
+                artifact from.
         """
         compiled_word_pipeline = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_word_pipeline")

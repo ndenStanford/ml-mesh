@@ -49,13 +49,14 @@ class TrackingLibraryLoggingSettings(Params):
 
 
 class TrackingLibraryBackendSettings(Params):
-    """Entrypoint to configure the tracking library's S3 storage backend behaviour via environment variables.
+    """Entrypoint to configure the tracking library's S3 storage backend behaviour \
+    via environment variables.
 
     The values derived by this class's attributes will be used as default values for the
-    identically named TrackedModelVersion class' constructor arguments
-    - use_s3_backend
-    - s3_backend_bucket
-    - s3_backend_prefix
+    identically named TrackedModelVersion class' constructor arguments:
+        - use_s3_backend
+        - s3_backend_bucket
+        - s3_backend_prefix
     """
 
     use_s3_backend: bool = True
@@ -91,7 +92,6 @@ class TrackingLibraryBackendSettings(Params):
         Returns:
             Dict: A dictionary containing a validated S3 storage backend configuration
         """
-
         use_s3_backend = values.get("use_s3_backend")
 
         if use_s3_backend:

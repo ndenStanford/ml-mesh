@@ -41,6 +41,7 @@ def test_compiled_feature_extraction_pipeline_from_pipeline(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled features extraction pipeline."""
     # create compiled pipeline
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,

@@ -21,14 +21,18 @@ logger = get_default_logger(__name__, level=20)
 
 
 class CompiledModel(PreTrainedModel):
-    """A fully functional subclass from the huggingface PreTrainedModel using a
-    (neuron-)torchscript model as backend. Includes
-    - the pseduo-constructor method `from_model`: Automatically (neuron-)traces
-        a specified pytorch model or huggingface transformer model and returns a
-        CompiledModel instance.
-    - Adapted postprocessing for torch.nn.Modules returning dictionaries
-    - canonical export and import methods `save_pretrained` & `from_pretrained`,
-        supporting the persistence of key (neuron-)tracing configuration parameters."""
+    """A fully functional subclass from the huggingface PreTrainedModel.
+
+    Uses a (neuron-)torchscript model as backend.
+
+    Includes:
+        - the pseduo-constructor method `from_model`: Automatically (neuron-)traces
+            a specified pytorch model or huggingface transformer model and returns a
+            CompiledModel instance.
+        - Adapted postprocessing for torch.nn.Modules returning dictionaries
+        - canonical export and import methods `save_pretrained` & `from_pretrained`,
+            supporting the persistence of key (neuron-)tracing configuration parameters.
+    """
 
     @classmethod
     def from_model(
@@ -44,28 +48,27 @@ class CompiledModel(PreTrainedModel):
     ) -> "CompiledModel":
         """Takes a huggingface transformer model.
 
-
         Compiles it according to specified configuration and returns a fully instantiated
         CompiledModel instance together with the (neuron-)tracing configuration.
 
         Args:
             model (PreTrainedModel): The huggingface pytorch model or pytorch nn.module to compile
             batch_size (int, optional): The size of the batch used for tracing
-            max_length (_type_): The number of tokens per record used for tracing, e.g. input sequence
-                length
+            max_length (_type_): The number of tokens per record used for tracing, e.g. input
+                sequence length
             neuron (bool, optional): If True, uses torch.neuron.trace for compilation,
                 otherwise uses torch.jit.trace. Defaults to True.
-            validate_compilation (bool, optional): If True, runs a simple regression test comparing the
-                specified model's outputs with the newly compiled model's outputs, using the tracing
-                inputs as pseudo-tokens
+            validate_compilation (bool, optional): If True, runs a simple regression test comparing
+                the specified model's outputs with the newly compiled model's outputs, using the
+                tracing inputs as pseudo-tokens
             validation_rtol (float, optional): The relative deviation threshold. Only relevant when
                 validate_compilation=True.
             validation_atol (float, optional): The absolute deviation threshold. Only relevant when
                 validate_compilation=True.
             **tracing_kwargs:
                 dynamic_batching (bool, optional): If True, traced model allows for
-                    variable batch sizes during inference up to the batch_size used during compilation.
-                    Defaults to True.
+                    variable batch sizes during inference up to the batch_size used during
+                    compilation. Defaults to True.
                 strict (bool, optional): If True, enforces deterministic inference behaviour during
                     tracing. In particular, requires the model arg to have return_dict=False.
                 compiler_args (List[str], optional): Note: Not setting these was

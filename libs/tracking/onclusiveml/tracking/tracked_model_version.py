@@ -223,8 +223,8 @@ class TrackedModelVersion(ModelVersion):
             - upload the designated file from local to the model version and neptune attribute path
                 specific S3 location
             - track the uploaded file via neptune's track_files method, thus adding it to the
-                TrackedModelVersion's meta data for the python object instance, and subsequently also
-                to the resulting model registry entry
+                TrackedModelVersion's meta data for the python object instance, and subsequently
+                also to the resulting model registry entry
 
         Args:
             neptune_attribute_path (str): _description_
@@ -480,8 +480,8 @@ class TrackedModelVersion(ModelVersion):
             - neptune.attributes.atoms.file.File
                 - will save attribute data in specified `destination` argument
             - neptune.attributes.atoms.artifact.Artifact
-                - will create a directory in the specified `destination` argument, then save the file
-                    using stored meta data to re-create the correct filename
+                - will create a directory in the specified `destination` argument, then save the
+                    file using stored meta data to re-create the correct filename
 
         It is necessary to disambiguate these to ensure consistent download behaviour at the
         `download_file_from_model_version` method level.
@@ -520,8 +520,8 @@ class TrackedModelVersion(ModelVersion):
 
         Executres the following:
             - generate an S3 bucket client for the configured storage backend 3 bucket
-            - download the designated file from s3 - by digging into the neptune Artifact object's meta
-                data to obtain the S3 uri - to local disk
+            - download the designated file from s3 - by digging into the neptune Artifact object's
+                metadata to obtain the S3 uri - to local disk
 
         Note that this assumes the underlying neptune artiact to only have one file, e.g. the result
         of calling `upload_tracked_file_to_s3`.
@@ -734,7 +734,8 @@ class TrackedModelVersion(ModelVersion):
     ) -> None:
         """Utility function to upload an entire directory to a specified model version on neptuneai.
 
-        For each file in the specified directory, the neptune_attribute_path value will derived according to
+        For each file in the specified directory, the neptune_attribute_path value will
+        be derived according to:
                 {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
 
         Might want to add the option to exclude files and subdirectories from uploading in the
@@ -782,8 +783,8 @@ class TrackedModelVersion(ModelVersion):
     def download_config_from_model_version(self, neptune_attribute_path: str) -> Dict:
         """Utility function that fetches .json type File attributes from a specified neptune model version.
 
-        Downloads the file into a temporary file on local disk and removes it once the object has been
-        loaded into the python session.
+        Downloads the file into a temporary file on local disk and removes it once the object has
+        been loaded into the python session.
 
         Download counterpart to the `upload.upload_config_to_model_version` method.
 

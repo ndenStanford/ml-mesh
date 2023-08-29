@@ -17,15 +17,17 @@ from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer
 
 
 class CompiledPipeline(object):
-    """A wrapper class around huggingface pipeline instances with custom CompiledTokenizer and CompiledModel backends.
+    """A wrapper class around huggingface pipeline instances with custom CompiledTokenizer and \
+        CompiledModel backends.
 
-    Includes
-        - canonical `save_pretrained` & `load_pretrained` methods to support export & re-import to/from
-            local disk
+    Includes:
+
+        - canonical `save_pretrained` & `load_pretrained` methods to support export & re-import
+            to/from local disk
         - utility `from_pipeline` method to wrap around the creation of CompiledTokenizer and
             CompiledModel instances, respectively, using provided generic huggingface tokenizer and
-            model instances, by applying a pipeline level utility compilaiton function to a specified
-            huggingface pipeline instance
+            model instances, by applying a pipeline level utility compilaiton function to a
+            specified huggingface pipeline instance
         - canonical __call__ method delegating to Pipeline type compiled_pipeline attribute for
             inference.
     """
@@ -68,8 +70,8 @@ class CompiledPipeline(object):
         Args:
             pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in
                 place if desired, but by default a copy will be made.
-            max_length (int): The max token sequence length used for compilation of both tokenizer and
-                model.
+            max_length (int): The max token sequence length used for compilation of both tokenizer
+                and model.
             batch_size (int): The batch size used for model compilation. Defaults to 1.
             neuron (int): If True, uses the AWS neuron library to convert the pipeline's model
                 component to neuron-torchscript for faster inference. If False, uses native torch to
@@ -84,8 +86,8 @@ class CompiledPipeline(object):
             validation_atol (float): See `validate_compilation`. Defaults to 1e-02.
             tokenizer_settings (dict): (optional) the dictionary equivalent of the
                 CompiledTokenzer.from_tokenizer's **tokenization_kwargs.
-            model_tracing_settings (dict): The dictionary equivalent of the CompiledModel.from_model`s
-                **tracing_kwargs.
+            model_tracing_settings (dict): The dictionary equivalent of the
+                CompiledModel.from_model`s **tracing_kwargs.
         """
         # replace the tokenizer and model components with compiled equivalents
         compiled_pipeline = compile_pipeline(
@@ -207,8 +209,8 @@ def compile_pipeline(
         - text-classification (aka sentiment-analysis)
 
     Args:
-        pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in place
-            if desired, but by default a copy will be made.
+        pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in
+            place if desired, but by default a copy will be made.
         max_length (int): The max token sequence length used for compilation of both tokenizer and
             model.
         batch_size (int): The batch size used for model compilation. Defaults to 1.

@@ -11,7 +11,6 @@ from pydantic import BaseModel
 class PredictConfiguration(BaseModel):
     """Model class around the kwargs of the `CompiledKeyBERT`'s `extract_keywords` method.
 
-
     Useful if clients want to run different inference calls configuring
         - how many keywords should be extracted,
         - n-gram length

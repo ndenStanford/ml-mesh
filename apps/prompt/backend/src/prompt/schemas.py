@@ -45,12 +45,14 @@ class PromptTemplateSchema(BaseModel):
 
     @validator("template")
     def validate_template(cls, value, values):
-        """
-        Validates the template
+        """Validates the template.
+
         Args:
             value (str): The template to be validated
+
         Raises:
             PromptInvalidTemplate: If the template is incorrectly formatted
+
         Returns:
             str: The validated template
         """
@@ -188,7 +190,7 @@ class PromptTemplateSchema(BaseModel):
 
 
 class PromptTemplateOutputSchema(BaseModel):
-    """Prompt Template output schema"""
+    """Prompt Template output schema."""
 
     id: Optional[str] = None
     template: str

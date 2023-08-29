@@ -18,8 +18,8 @@ class LogConfigSettings(ServingBaseParams):
 
     Reference:
         Taken from the uvicorn log configuration handling approach
-        shown here: https://github.com/encode/uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/...
-            ...uvicorn/config.py#L74
+        shown here: https://github.com/encode/uvicorn/blob/...
+        ffa5b1ac96b10976ed0e092a0bc1dd5526101356/uvicorn/config.py#L74
     """
 
     version: int = 1
@@ -62,7 +62,8 @@ class UvicornSettings(ServingBaseParams):
     Used to configure the `ModelServer`'s underlying uvicorn process.
 
     References:
-        - https://github.com/encode/uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/uvicorn/config.py#L187
+    https://github.com/encode/uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/...
+    uvicorn/config.py#L187
     """
 
     http_port: int = 8000
@@ -72,7 +73,11 @@ class UvicornSettings(ServingBaseParams):
 
 
 class ServingParams(ServingBaseParams):
-    """A functional base class for specifying a configuration for the `ModelServer` constructor method's `configuration` argument."""
+    """Base class for the `ModelServer` configuration for the constructor method's.
+
+    Note:
+        This configuration is passed via the  `configuration` argument of the method.
+    """
 
     add_liveness: bool = True
     add_readiness: bool = True

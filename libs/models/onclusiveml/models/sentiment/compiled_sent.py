@@ -1,3 +1,5 @@
+"""Compiled sentiment."""
+
 # Standard Library
 import os
 import re
@@ -51,7 +53,7 @@ class CompiledSent:
         """Save compiled Sent pipeline to specified directory.
 
         Args:
-            Directory (Union[Path, str]): Directory to save the compiled Sent pipeline
+            directory (Union[Path, str]): Directory to save the compiled Sent pipeline
         """
         self.compiled_sent_pipeline.save_pretrained(
             os.path.join(directory, "compiled_sent_pipeline")
@@ -87,8 +89,8 @@ class CompiledSent:
         return text
 
     def remove_whitespace(self, text: str) -> str:
-        """
-        Remove extra white spaces from input text."
+        """Remove extra white spaces from input text.
+
         Args:
             text (str): Input text
         Returns:
@@ -133,7 +135,6 @@ class CompiledSent:
         Returns:
             sentiment_probs (NDArray): List of sentiment probability
         """
-
         self.inputs = self.compiled_sent_pipeline.tokenizer(
             list_sentences,
             return_tensors="pt",
@@ -221,8 +222,8 @@ class CompiledSent:
         res: Dict,
         entities: List[Dict[str, Union[str, List]]],
     ) -> List[Dict[str, Union[str, List]]]:
-        """
-        Augment the entity with the corresponding sentiment
+        """Augment the entity with the corresponding sentiment.
+
         Args:
             sentences (List[Any]): List of sentences from the article
             res (Dict): List of sentiment probability corresponding to sentences
@@ -281,8 +282,8 @@ class CompiledSent:
         entities: Optional[List[Dict[str, Union[str, List]]]] = None,
         language: str = "en",
     ) -> Dict[str, Union[float, str, List]]:
-        """
-        Sentiment detection of each entity input sentence
+        """Sentiment detection of each entity input sentence.
+
         Args:
             sentences (str): The input sentences to extract entities from
             entities (Optional[List[Dict[str, Union[str, List]]]]):

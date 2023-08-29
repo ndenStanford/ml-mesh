@@ -21,7 +21,7 @@ from onclusiveml.serving.rest.testing.load_test import (
 
 
 class TestWebsiteUser(HttpUser):
-    """A minimal functional locust client to be used for initializing a LoadTestingParams instance."""
+    """A test website user."""
 
     wait_time = between(1, 2)
 

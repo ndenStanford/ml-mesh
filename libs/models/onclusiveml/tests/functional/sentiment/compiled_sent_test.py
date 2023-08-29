@@ -1,4 +1,4 @@
-"""Functional Tests"""
+"""Functional Tests."""
 
 # Standard Library
 import time
@@ -33,7 +33,7 @@ def test_compiled_sent_extract_sentiment_latency(
     n_runs,
     expected_speedup_factor,
 ):
-
+    """Test compiled sentiment extract latency."""
     # time compiled sent
     compiled_sent = CompiledSent(
         compiled_sent_pipeline=compiled_sent_pipeline,
