@@ -325,3 +325,4 @@ networks:
 
 volumes :
   compile-pipeline-vol:
+  serve-vol:
