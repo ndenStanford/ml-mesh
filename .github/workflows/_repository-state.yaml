@@ -133,6 +133,6 @@ jobs:
           publish: true
           commitish: ${{ steps.toggle-target-branch.outputs.value }}
           prerelease: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
-          tag: ${{ steps.version-increment.outputs.version }}
+          tag: v${{ steps.version-increment.outputs.version }}
           name: ${{ steps.version-increment.outputs.version }}
           version: ${{ steps.version-increment.outputs.version }}
