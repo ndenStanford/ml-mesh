@@ -20,8 +20,8 @@ class WordTokenizer:
     regex = re.compile(r"|".join(SPECIAL_CHARACTERS))
 
     def tokenize(self, content: str, language: str = "english") -> Dict[str, List[Any]]:
-        """
-        Tokenizes the input content into words.
+        """Tokenizes the input content into words.
+
         Uses both nltk word tokenize and regex using list of unique characters
 
         Args:
@@ -31,7 +31,6 @@ class WordTokenizer:
         Returns:
             dict: Dictionary containing tokenized words
         """
-
         words_first = nltk.word_tokenize(content, language)
         words = []
 

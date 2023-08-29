@@ -14,6 +14,7 @@ from pynvml import nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo, nvmlInit
 
 
 def gpu_utilization():
+    """GPU utilization statistics."""
     nvmlInit()
     handle = nvmlDeviceGetHandleByIndex(0)
     info = nvmlDeviceGetMemoryInfo(handle)
@@ -23,6 +24,7 @@ def gpu_utilization():
 
 
 def print_train_summary(result):
+    """Prints train summary."""
     print(f"Time: {result.metrics['train_runtime']:.2f}")
     print(f"Samples/second: {result.metrics['train_samples_per_second']:.2f}")
 
@@ -31,8 +33,7 @@ def print_train_summary(result):
 def test_training_gpu(
     test_train_dataset, test_model_reference, test_default_training_params
 ):
-    """Checks transformers library ability to use GPU device for training"""
-
+    """Checks transformers library ability to use GPU device for training."""
     print(f"GPU device reserved memory (before training): {gpu_utilization()}")
 
     model = AutoModelForSequenceClassification.from_pretrained(test_model_reference).to(
@@ -54,8 +55,7 @@ def test_training_gpu(
 
 @pytest.mark.order(7)
 def test_inference_gpu(test_model_reference):
-    """Checks transformers library ability to use GPU device for tokenizing & inference"""
-
+    """Checks transformers library ability to use GPU device for tokenizing & inference."""
     print(f"GPU device reserved memory (before inference): {gpu_utilization()}")
 
     tokenizer = AutoTokenizer.from_pretrained(test_model_reference)

@@ -1,3 +1,5 @@
+"""Compiled model tokenizer initialization test."""
+
 # Standard Library
 import base64
 

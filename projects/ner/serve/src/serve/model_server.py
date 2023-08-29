@@ -10,8 +10,7 @@ from src.serve.served_model import ServedNERModel
 
 
 def get_model_server() -> ModelServer:
-    """
-    Utility method for prepping a fully configured model server instance ready to serve.
+    """Utility method for prepping a fully configured model server instance ready to serve.
 
     Returns:
         ModelServer: Configured model server instance

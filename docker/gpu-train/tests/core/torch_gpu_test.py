@@ -9,6 +9,7 @@ from pynvml import nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo, nvmlInit
 
 
 def gpu_utilization():
+    """GPU utilization."""
     nvmlInit()
     handle = nvmlDeviceGetHandleByIndex(0)
     info = nvmlDeviceGetMemoryInfo(handle)
@@ -19,15 +20,13 @@ def gpu_utilization():
 
 @pytest.mark.order(1)
 def test_available_gpu():
-    """Checks if torch can see GPU device"""
-
+    """Checks if torch can see GPU device."""
     assert torch.cuda.is_available()
 
 
 @pytest.mark.order(2)
 def test_current_device():
-    """Checks if torch can index the GPU device"""
-
+    """Checks if torch can index the GPU device."""
     gpu_device = torch.cuda.current_device()  # 0
 
     print(f"GPU device: {gpu_device}")
@@ -35,8 +34,7 @@ def test_current_device():
 
 @pytest.mark.order(3)
 def test_current_device_name():
-    """Checks if torch can see the specs of GPU device"""
-
+    """Checks if torch can see the specs of GPU device."""
     gpu_device = torch.cuda.current_device()
 
     gpu_device_name = torch.cuda.get_device_name(
@@ -48,8 +46,7 @@ def test_current_device_name():
 
 @pytest.mark.order(4)
 def test_current_device_usage():
-    """Checks torch's in-built profiling methods"""
-
+    """Checks torch's in-built profiling methods."""
     gpu_idle_memory_mb = round(torch.cuda.memory_allocated(0) / 1024**2, 1)
     gpu_idle_reserved_mb = round(torch.cuda.memory_reserved(0) / 1024**2, 1)
 
@@ -59,9 +56,10 @@ def test_current_device_usage():
 
 @pytest.mark.order(5)
 def test_profiling_device_usage():
-    """Checks the profiling method of additional library nvidia-ml-py3 by checking for expected GPU
-    memory overhead as per
-    https://huggingface.co/docs/transformers/perf_train_gpu_one#efficient-training-on-a-single-gpu
+    """Checks the profiling method of additional library nvidia-ml-py3.
+
+    References:
+        https://huggingface.co/docs/transformers/perf_train_gpu_one#efficient-training-on-a-single-gpu
     """
     # no data/model pinned to GPU yet
     print(f"GPU device reserved memory (before kernel init): {gpu_utilization()}")
