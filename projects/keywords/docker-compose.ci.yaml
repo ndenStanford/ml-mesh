@@ -58,7 +58,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.6.14}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -72,30 +72,30 @@ services:
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-download-model:
+    volumes:
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       IO_OUTPATH: /projects/keywords/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
-    volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-compile-model:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [pipeline]
@@ -104,16 +104,14 @@ services:
       IO_OUTPATH: /projects/keywords/compile/outputs
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
-    volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-validate-model:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -122,14 +120,12 @@ services:
       IO_OUTPATH: /projects/keywords/compile/outputs
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
-    volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-upload-model:
+    volumes:
+      - compile-vol:/projects/keywords/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -157,12 +153,8 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
-    volumes:
-      - compile-pipeline-vol:/projects/keywords/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
 # =============================================
   # SERVE
@@ -172,6 +164,8 @@ services:
   serve:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - serve-vol:/projects/keywords/serve/models
     build:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
@@ -191,10 +185,6 @@ services:
     profiles: [serve, functional, load]
     ports:
       - 8000:8000
-    volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -208,9 +198,7 @@ services:
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
     volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
+      - serve-vol:/projects/keywords/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.util.download_compiled_model]
     profiles: [serve, integration, functional, load]
@@ -247,9 +235,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
+      - serve-vol:/projects/keywords/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
@@ -264,9 +250,7 @@ services:
   # - include REST model server process
   serve-functional:
     volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
+      - serve-vol:/projects/keywords/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
@@ -284,9 +268,7 @@ services:
   # - include REST model server process
   serve-load:
     volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
+      - serve-vol:/projects/keywords/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
@@ -309,9 +291,7 @@ services:
   # utility service: uploading the relevant test results to the model registry
   serve-upload-results:
     volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
+      - serve-vol:/projects/keywords/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.util.upload_test_results]
     profiles: [serve]
@@ -352,4 +332,5 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-pipeline-vol:
+  compile-vol:
+  serve-vol:

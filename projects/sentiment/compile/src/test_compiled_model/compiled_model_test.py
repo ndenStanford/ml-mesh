@@ -9,9 +9,16 @@ import pytest
 
 
 def compiled_model_regression_test(  # type: ignore[no-untyped-def]
-    io_settings, compiled_sent, test_files, test_atol, test_rtol
+    io_settings, compiled_sent, test_files, compilation_test_settings
 ):
-
+    """
+    Perform regression testing for the compiled sentiment model
+    Args:
+        io_settings: IO settigns for workflow component
+        compiled_sent: Compiled Sent model instance
+        test_files: Dictionary containing test input
+        compilation_test_settings: Compilation settings
+    """
     assert len(test_files["inputs"]) == len(test_files["predictions"])
     total_sample_size = len(test_files["inputs"])
 
@@ -37,8 +44,8 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
         torch.testing.assert_close(
             compiled_predictions_score,
             expected_predictions["score"],
-            atol=test_atol,
-            rtol=test_rtol,
+            atol=compilation_test_settings.regression_atol,
+            rtol=compilation_test_settings.regression_rtol,
         )
         # create new export file or append prediction to existing exported prediction file
         try:
@@ -78,7 +85,14 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
 def compiled_model_entity_sentiment_test(  # type: ignore[no-untyped-def]
     compiled_sent, test_sample_content, test_sample_entities, test_sample_response
 ):
-
+    """
+    Perform sentiment testing with entities input for the compiled sentiment model
+    Args:
+        compiled_sent: Compiled Sent model instance
+        test_sample_content (str): Sample content to be tested
+        test_sample_entities (str): Sample entities to be tested
+        test_sample_response (str): Sample response to be compared with
+    """
     compiled_predictions = compiled_sent.extract_sentiment(
         test_sample_content, test_sample_entities
     )

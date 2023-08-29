@@ -240,15 +240,10 @@ bazel-ml-mesh/
 .neptune
 
 # random compile artifact
-docker/neuron-compile/tests/output_compile
-outputs/compile
-projects/sentiment/compile/projects/sentiment/compile/nltk_data
-outputs/download/model_artifacts
-*.keras
-projects/sentiment/compile/outputs_old
-projects/sentiment/compile/outputs_old_2
-projects/ner/compile/projects/ner/compile/nltk_data
 outputs/
-model/
 models/
-projects/sentiment/serve/projects
+projects/ner/compile/projects/ner/compile/nltk_data
+projects/ner/serve/projects/ner/serve/nltk_data
+projects/sentiment/compile/projects/sentiment/compile/nltk_data
+projects/sentiment/serve/projects/sentiment/serve/nltk_data
+*.keras

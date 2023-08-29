@@ -28,7 +28,6 @@ def test_compiled_sent_pipeline(test_hf_pipeline):
         batch_size=6,
         neuron=False,
         validate_compilation=False,
-        # tokenizer_settings={"add_special_tokens": True},
     )
 
 
@@ -41,7 +40,6 @@ def test_neuron_compiled_sent_pipeline(test_hf_pipeline):
         batch_size=6,
         neuron=True,
         validate_compilation=False,
-        # tokenizer_settings={"add_special_tokens": True},
     )
 
 
