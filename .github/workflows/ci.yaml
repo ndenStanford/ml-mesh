@@ -322,6 +322,16 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # compile
+          - name: sentiment
+            component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
     with:
       environment: prod
       project: ${{ matrix.projects.name }}
@@ -366,6 +376,10 @@ jobs       :
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: ner
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.2xlarge
+            project: sentiment
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
 
