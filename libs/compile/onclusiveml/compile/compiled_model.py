@@ -110,6 +110,7 @@ class CompiledModel(PreTrainedModel):
                 "input_ids": tracing_inputs[0],
                 "attention_mask": tracing_inputs[1],
             }
+
             model_output = model(**tracing_inputs_dict)[0]
             traced_model_output = compiled_model(**tracing_inputs_dict)[0]
 
@@ -131,6 +132,7 @@ class CompiledModel(PreTrainedModel):
         """Forward pass."""
         # traced model requires positional arguments
         model_output = self.model(input_ids, attention_mask)
+
         # if original model graph returns a dict, convert to data type that can handle both
         # - integer and
         # - string-key based
