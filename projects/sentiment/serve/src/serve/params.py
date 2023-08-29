@@ -6,6 +6,7 @@ import os
 # Source
 from src.params import ServedModelParams
 
+
 class ServedModelArtifacts(object):
     def __init__(self, remove_model_prefix: bool = True):
         """Utility class that reads in the model card and assembles model artifact local paths

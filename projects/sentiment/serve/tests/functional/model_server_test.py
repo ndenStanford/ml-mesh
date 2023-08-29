@@ -11,7 +11,7 @@ from onclusiveml.serving.rest.serve import (
 )
 
 # Source
-from src.serve.server_models import ( 
+from src.serve.server_models import (
     BioResponseModel,
     PredictConfiguration,
     PredictInputContentModel,
