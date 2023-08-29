@@ -1,4 +1,4 @@
-"""Data models."""
+"""Schemas."""
 
 # Standard Library
 import datetime

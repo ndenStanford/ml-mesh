@@ -13,13 +13,13 @@ from libs.serving.onclusiveml.serving.rest.testing.load_test import (
 
 
 class TestWebsiteUser(HttpUser):
+    """Test website user."""
+
     wait_time = between(1, 2)
 
     @task()
     def get_home_page(self):
-        """
-        Gets /
-        """
+        """Gets /."""
         self.client.get("/")
 
 
@@ -31,9 +31,7 @@ class TestWebsiteUser(HttpUser):
     ],
 )
 def test_locus_load_test_run_and_report(test_user_classes, test_locustfile):
-    """Tests the running and reporting methods of the LoadTest class by running a genuine load test
-    against http://github.com and producing a report."""
-
+    """Tests the running and reporting methods of the LoadTest class."""
     if test_user_classes:
         test_locustfile = ""
 

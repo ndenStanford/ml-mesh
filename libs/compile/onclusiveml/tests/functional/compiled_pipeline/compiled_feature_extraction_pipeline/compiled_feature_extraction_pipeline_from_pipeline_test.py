@@ -1,3 +1,5 @@
+"""Compiled feature extraction from pipeline test."""
+
 # Standard Library
 from typing import List, Tuple
 

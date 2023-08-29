@@ -46,6 +46,7 @@ def test_compiled_keybert_extract_keywords_regression(
     test_document,
     document_index,
 ):
+    """Test compiled Keybert."""
     # compiled keybert
     compiled_keybert = CompiledKeyBERT(
         document_pipeline=document_pipeline,
