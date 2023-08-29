@@ -43,7 +43,7 @@ Which will output:
 ### Sentiment model
 
 ```
-curl -X 'POST' 'http://0.0.0.0:8000/v1/model/sentiment/predict' -H 'Content-Type: application/json' -d '{"inputs": {"content": "London is a nice city."}, "configuration": {"entities": [{"entity_type": "LOC", "text": "London", "score": "0.9997141", "sentence_index": 0}]}}'
+curl -X 'POST' 'http://0.0.0.0:8000/v1/model/sentiment/predict' -H 'Content-Type: application/json' -d '{"inputs": {"content": "London is a nice city."}, "configuration": {"language": "en", "entities": [{"entity_type": "LOC", "text": "London", "score": "0.9997141", "sentence_index": 0}]}}'
 ```
 
 Which will output:

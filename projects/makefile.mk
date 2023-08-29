@@ -41,9 +41,6 @@ projects.load/%: ## Run load tests for project component
 projects.compile/%: ## Run model compilation pipeline component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile pipeline up compile-$(PIPELINE_COMPONENT) --exit-code-from compile-$(PIPELINE_COMPONENT)
 
-projects.serve/%: ## Run model compilation pipeline component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile serve up serve-$(SERVE_COMPONENT) --exit-code-from serve-$(SERVE_COMPONENT)
-
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)
 
