@@ -52,14 +52,7 @@ class Settings(BaseSettings):
         "2": [ModelEnum.GPT4.value, OPENAI_PARAMETERS, 8192],
     }
 
-    LIST_OF_PROMPTS: Dict[str, List[Union[str, Dict]]] = {
-        "1": [PromptEnum.EN.value[0], PromptEnum.EN.value[1], PromptEnum.EN.value[2]],
-        "2": [
-            PromptEnum.ML_SEG.value[0],
-            PromptEnum.ML_SEG.value[1],
-            PromptEnum.ML_SEG.value[2],
-        ],
-    }
+    LIST_OF_PROMPTS: List[List[Union[str, Dict]]] = PromptEnum.list()
 
     AWS_REGION: str = "us-east-1"
 

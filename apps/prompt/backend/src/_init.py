@@ -60,7 +60,7 @@ def fill_prompt_table() -> None:
         list_of_aliases.append(x.alias)
     # Saving predifined prompts into database
     # If prompt doesn't exist, then add prompt to table
-    for _, prompt in list_of_prompts.items():
+    for prompt in list_of_prompts:
         if prompt[1] in list_of_aliases:
             continue
         logger.debug("Adding prompt: {}".format(prompt[0]))
