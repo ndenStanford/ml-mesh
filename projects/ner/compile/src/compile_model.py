@@ -38,7 +38,7 @@ def main() -> None:
         task=base_model_card["model_params"]["huggingface_pipeline_task"],
         model=io_settings.download.model_directory,
     )
-    # compile base model pipeline for ner
+    # compile base model pipeline for NER
     ner_pipeline_compilation_settings = NERPipelineCompilationSettings()
 
     logger.debug(

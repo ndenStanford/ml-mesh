@@ -107,64 +107,64 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
     return [
         [
             {
-                "entity": "ORG",
+                "entity_type": "ORG",
                 "score": 0.9981778860092163,
                 "sentence_index": 0,
-                "word": "Google",
+                "entity_text": "Google",
                 "start": 0,
                 "end": 6,
             },
             {
-                "entity": "LOC",
+                "entity_type": "LOC",
                 "score": 0.998550146818161,
                 "sentence_index": 0,
-                "word": "Mountain View",
+                "entity_text": "Mountain View",
                 "start": 16,
                 "end": 29,
             },
             {
-                "entity": "LOC",
+                "entity_type": "LOC",
                 "score": 0.9993670582771301,
                 "sentence_index": 0,
-                "word": "CA",
+                "entity_text": "CA",
                 "start": 31,
                 "end": 33,
             },
         ],
         [
             {
-                "entity": "LOC",
+                "entity_type": "LOC",
                 "score": 0.991286963224411,
                 "sentence_index": 0,
-                "word": "Gulf Stream",
+                "entity_text": "Gulf Stream",
                 "start": 21,
                 "end": 32,
             },
             {
-                "entity": "LOC",
+                "entity_type": "LOC",
                 "score": 0.9935731490453085,
                 "sentence_index": 0,
-                "word": "Cape Cod",
+                "entity_text": "Cape Cod",
                 "start": 81,
                 "end": 89,
             },
         ],
         [
             {
-                "entity": "LOC",
+                "entity_type": "LOC",
                 "score": 0.9925467371940613,
                 "sentence_index": 0,
-                "word": "Jupiter",
+                "entity_text": "Jupiter",
                 "start": 105,
                 "end": 112,
             }
         ],
         [
             {
-                "entity": "ORG",
+                "entity_type": "ORG",
                 "score": 0.7017723023891449,
                 "sentence_index": 0,
-                "word": "Loggerhead Marinelife Center",
+                "entity_text": "Loggerhead Marinelife Center",
                 "start": 10,
                 "end": 38,
             }
