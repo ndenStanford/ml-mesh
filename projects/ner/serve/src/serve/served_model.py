@@ -13,6 +13,7 @@ from src.serve.params import ServedModelArtifacts
 from src.serve.server_models import (
     BioResponseModel,
     PredictionExtractedEntity,
+    PredictionExtractedEntityNoPos,
     PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
@@ -79,7 +80,12 @@ class ServedNERModel(ServedModel):
         # if entities are found then extract them and store in PredictionExtractedEntity class
         if entities:
             for entity in entities:
-                entities_list.append(PredictionExtractedEntity(**entity.__dict__))
+                if configuration.return_pos:
+                    entities_list.append(PredictionExtractedEntity(**entity.__dict__))
+                else:
+                    entities_list.append(
+                        PredictionExtractedEntityNoPos(**entity.__dict__)
+                    )
                 entity_model = PredictionOutputContent(predicted_content=entities_list)
         # else return an empty list
         else:

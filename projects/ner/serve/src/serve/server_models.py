@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -43,25 +43,34 @@ class PredictRequestModel(BaseModel):
     inputs: PredictInputContentModel
 
 
-class PredictionExtractedEntity(BaseModel):
+class PredictionExtractedEntityNoPos(BaseModel):
     """
-    Extracted entity information from a prediction
+    Extracted entity information from a prediction without positional information
 
     Attributes:
         entity_type (str): The type of the extracted entity.
         entity_text (str): The text of the extracted entity
         score (float): Confidence score of extracted entity
         sentence_index (int): Index of the sentence containing the entity
-        start (Optiona[int]): Start position of entity in the sentence
-        end (Optiona[int]): End position of entity in the sentence
     """
 
     entity_type: str
     entity_text: str
     score: float
     sentence_index: int
-    start: Optional[int] = None
-    end: Optional[int] = None
+
+
+class PredictionExtractedEntity(PredictionExtractedEntityNoPos):
+    """
+    Extracted entity information from a prediction including positional information
+
+    Attributes:
+        start (Optiona[int]): Start position of entity in the sentence
+        end (Optiona[int]): End position of entity in the sentence
+    """
+
+    start: int
+    end: int
 
 
 class PredictionOutputContent(BaseModel):
@@ -72,7 +81,9 @@ class PredictionOutputContent(BaseModel):
         predicted_content (List[PredictionExtractedEntity]): List of extracted entities
     """
 
-    predicted_content: Optional[List[PredictionExtractedEntity]] = []
+    predicted_content: Optional[
+        Union[List[PredictionExtractedEntity], List[PredictionExtractedEntityNoPos]]
+    ] = []
 
 
 class PredictResponseModel(BaseModel):

@@ -120,8 +120,8 @@ def test_served_ner_model_predict_no_pos(
         expected_output.outputs.predicted_content[0].sentence_index
         == actual_output.outputs.predicted_content[0].sentence_index  # noqa: W503
     )
-    assert actual_output.outputs.predicted_content[0].start is None
-    assert actual_output.outputs.predicted_content[0].end is None
+    assert "start" not in actual_output.outputs.predicted_content[0]
+    assert "end" not in actual_output.outputs.predicted_content[0]
 
 
 @pytest.mark.order(3)
