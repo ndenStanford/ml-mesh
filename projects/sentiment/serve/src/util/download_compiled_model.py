@@ -22,6 +22,9 @@ if __name__ == "__main__":
     if not os.path.isdir(model_export_params.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to
         # local
+        print(
+            "model_export_params.model_directory: ", model_export_params.model_directory
+        )
         mv.download_directory_from_model_version(
             local_directory_path=model_export_params.model_directory,
             neptune_attribute_path="model",
