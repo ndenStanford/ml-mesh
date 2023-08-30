@@ -5,13 +5,12 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as
 
 ARG IMAGE_NAME
 
-ENV HOME="/home/jovyan"
-
 # common environemnt variables
 ENV NB_USER=jovyan
 ENV NB_UID=1000
 ENV NB_PREFIX=/
 ENV SHELL=/bin/bash
+ENV HOME="/home/${NB_USER}"
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
