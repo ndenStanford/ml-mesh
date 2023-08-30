@@ -72,7 +72,7 @@ class PredictionOutputContent(BaseModel):
         predicted_content (List[PredictionExtractedEntity]): List of extracted entities
     """
 
-    predicted_content: List[PredictionExtractedEntity]
+    predicted_content: Optional[List[PredictionExtractedEntity]] = []
 
 
 class PredictResponseModel(BaseModel):
