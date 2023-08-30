@@ -5,13 +5,12 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:$IMAGE_TAG as bu
 
 ARG IMAGE_NAME
 
-ENV HOME="docker/${IMAGE_NAME}"
-
 # common environemnt variables
 ENV NB_USER=jovyan
 ENV NB_UID=1000
 ENV NB_PREFIX=/
 ENV SHELL=/bin/bash
+ENV HOME="/home/${NB_USER}"
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
@@ -77,7 +76,6 @@ WORKDIR "/"
 # https://stackoverflow.com/questions/48671214/docker-image-size-for-different-user
 RUN useradd -l -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
    && mkdir -p ${HOME} \
-   && mkdir -p ${HOME}/notebooks \
    && chown -R ${NB_USER}:users ${HOME} \
    && chown -R ${NB_USER}:users /usr/local \
    && chown -R ${NB_USER}:users /etc/profile
@@ -93,12 +91,12 @@ ENV LC_ALL en_GB.UTF-8
 USER "${NB_UID}"
 
 # install - poetry requirements
-COPY --chown="${NB_USER}:users" ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
 
-COPY --chown="${NB_USER}:users" ${HOME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
 # s6 - copy scripts
-COPY --chown="${NB_USER}:users" ${HOME}/s6 /etc/
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/s6 /etc/
 
 # copy libraries - ensure relative difference '../..' between home app dir and lib as listed in poetry toml
 COPY --chown=${USER}:users libs/ libs/
