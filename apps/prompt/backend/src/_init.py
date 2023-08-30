@@ -10,6 +10,7 @@ from onclusiveml.core.logging import get_default_logger
 from src.db import BaseTable
 from src.model.schemas import ModelSchema
 from src.model.tables import ModelTable
+from src.prompt.parameters import Parameters
 from src.prompt.schemas import PromptTemplateSchema
 from src.prompt.tables import PromptTemplateTable
 from src.settings import get_settings
@@ -35,11 +36,9 @@ def fill_model_table() -> None:
     logger.info("Adding models to model table...")
     list_of_models = []
     models = ModelSchema.get()
-
     # make list of predefined model names from database
     for x in models:
         list_of_models.append(x.model_name)
-
     # Saving predifined models into database
     # If model id doesn't exist, then add model to table
     for _, model in settings.LIST_OF_MODELS.items():
@@ -56,18 +55,18 @@ def fill_prompt_table() -> None:
     list_of_prompts = settings.LIST_OF_PROMPTS
     prompts = PromptTemplateSchema.get()
     list_of_aliases = []
-
     # make list of predefined aliases from database
     for x in prompts:
         list_of_aliases.append(x.alias)
-
     # Saving predifined prompts into database
     # If prompt doesn't exist, then add prompt to table
     for _, prompt in list_of_prompts.items():
         if prompt[1] in list_of_aliases:
             continue
         logger.debug("Adding prompt: {}".format(prompt[0]))
-        prompt = PromptTemplateSchema(template=prompt[0], alias=prompt[1])
+        prompt = PromptTemplateSchema(
+            template=prompt[0], alias=prompt[1], parameters=Parameters(**prompt[2])
+        )
         prompt.save()
 
 
