@@ -10,7 +10,7 @@ import torch
 import pytest
 
 
-def compiled_model_regression_test(  # type: ignore[no-untyped-def]
+def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     io_settings, compiled_sent, test_files, compilation_test_settings
 ):
     """Perform regression testing for the compiled sentiment model.

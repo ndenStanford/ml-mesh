@@ -36,8 +36,9 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
     return df_sorted
 
 
+@pytest.mark.order(1)
 @pytest.mark.parametrize("test_sample_index", [0, 1, 2, 3])
-def compiled_model_regression_test(  # type: ignore[no-untyped-def]
+def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
     io_settings,
     compiled_ner,
