@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import os
 from typing import List
@@ -12,6 +14,8 @@ from onclusiveml.tracking import (
 
 # --- settings classes
 class TrackedSentModelSpecs(TrackedModelSpecs):
+    """Tracked sentiment model settings."""
+
     project: str = "onclusive/sentiment"
     model = "SEN-TRAINED"
 
@@ -21,6 +25,7 @@ class TrackedSentModelSpecs(TrackedModelSpecs):
 
 
 class Inputs(TrackedParams):
+    """Sentiment input parameters."""
 
     sample_documents: List[str] = [""]
 
@@ -30,12 +35,16 @@ class Inputs(TrackedParams):
 
 
 class SentSettings(TrackedParams):
+    """Sentiment settings."""
+
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
 class SentModelParams(TrackedParams):
+    """Sentiment Model parameters."""
+
     huggingface_pipeline_task: str = "sentiment-analysis"
     huggingface_model_reference: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
 

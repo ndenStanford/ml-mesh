@@ -2,7 +2,7 @@
 ignore = E111, E114, F821, E402, W503
 max-complexity = 15
 max-line-length = 100
-max-doc-length = 100
+max-doc-length = 120
 exclude =
     .git,
     __pycache__,

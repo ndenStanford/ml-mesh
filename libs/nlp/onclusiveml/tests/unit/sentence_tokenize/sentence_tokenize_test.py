@@ -11,8 +11,7 @@ from onclusiveml.nlp.sentence_tokenize import (
 
 
 def test_tokenize():
-    """
-    Test SentenceTokenizer class for tokenizing english text into a list of sentences
+    """Test SentenceTokenizer class for tokenizing english text into a list of sentences.
 
     Returns:
         None
@@ -28,8 +27,7 @@ def test_tokenize():
 
 
 def test_tokenize_fr():
-    """
-    Test SentenceTokenizer class for tokenizing French text into a list of sentences
+    """Test SentenceTokenizer class for tokenizing French text into a list of sentences.
 
     Returns:
         None
@@ -52,8 +50,7 @@ def test_tokenize_fr():
     SPECIAL_CHARACTERS,
 )
 def test_tokenize_unique_chars(char):
-    """
-    Test SentenceTokenizer class for tokenizing text with unique characters.
+    """Test SentenceTokenizer class for tokenizing text with unique characters.
 
     Args:
         char (str): A special character.

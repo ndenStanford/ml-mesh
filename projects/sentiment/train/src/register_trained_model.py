@@ -1,3 +1,5 @@
+"""Register trained model."""
+
 # Standard Library
 import os
 from typing import Dict, List, Union
@@ -24,6 +26,7 @@ from src.settings import (  # type: ignore[attr-defined]
 
 
 def main() -> None:
+    """Register main method."""
     model_specs = TrackedSentModelSpecs()
     model_card = TrackedSentBaseModelCard()
 

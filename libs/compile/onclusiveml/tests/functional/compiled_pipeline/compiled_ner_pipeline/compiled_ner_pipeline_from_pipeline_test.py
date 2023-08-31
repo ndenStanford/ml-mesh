@@ -1,3 +1,5 @@
+"""Copmpiled NER pipeline tests."""
+
 # Standard Library
 from typing import Dict, List
 
@@ -39,6 +41,7 @@ def test_compiled_token_classification_pipeline_from_pipeline(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled token classification pipeline."""
     # create compiled pipeline
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,

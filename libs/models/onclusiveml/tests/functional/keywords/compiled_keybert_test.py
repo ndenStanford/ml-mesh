@@ -1,3 +1,5 @@
+"""Keywords."""
+
 # Standard Library
 import time
 
@@ -44,6 +46,7 @@ def test_compiled_keybert_extract_keywords_regression(
     test_document,
     document_index,
 ):
+    """Test compiled Keybert."""
     # compiled keybert
     compiled_keybert = CompiledKeyBERT(
         document_pipeline=document_pipeline,
@@ -93,7 +96,7 @@ def test_compiled_keybert_extract_keywords_latency(
     n_runs,
     expected_speedup_factor,
 ):
-
+    """Test compile keybert extract keywords latency."""
     # time compiled/hybrid keybert
     compiled_keybert = CompiledKeyBERT(
         document_pipeline=document_pipeline,

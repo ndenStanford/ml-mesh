@@ -1,3 +1,5 @@
+"""Load test."""
+
 # Standard Library
 import json
 import os
@@ -13,6 +15,7 @@ from src.params import ServedModelParams
 
 
 def test_load_model(test_load_test_settings, test_model_criteria):
+    """Runs load test."""
     # --- run load test
     # run load test
     load_test = LoadTest(settings=test_load_test_settings)

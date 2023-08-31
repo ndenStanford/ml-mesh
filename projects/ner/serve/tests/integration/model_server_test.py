@@ -1,3 +1,5 @@
+"""Model server tests."""
+
 # 3rd party libraries
 import pytest
 
@@ -14,10 +16,7 @@ from src.serve.served_model import ServedNERModel
 
 @pytest.mark.order(4)
 def test_get_model_server():
-    """Tests the utility method get_model_server to provide an initialized (but not running)
-    ModelServer instance. Also checks that the expected ServedNERModel instance is attached
-    and not loaded."""
-
+    """Tests the utility method get_model_server."""
     model_server = get_model_server()
 
     assert isinstance(model_server.model, ServedNERModel)
@@ -26,9 +25,7 @@ def test_get_model_server():
 
 @pytest.mark.order(5)
 def test_model_server_root(test_client):
-    """Tests the root endpoint of a ModelServer (not running) instance using starlette's
-    TestClient"""
-
+    """Tests the root endpoint of a ModelServer (not running) instance."""
     root_response = test_client.get("/v1/")
 
     assert root_response.status_code == 200
@@ -36,9 +33,7 @@ def test_model_server_root(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
-    """Tests the liveness endpoint of a ModelServer (not running) instance using starlette's
-    TestClient"""
-
+    """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = test_client.get("/v1/live")
 
     assert liveness_response.status_code == 200
@@ -47,9 +42,7 @@ def test_model_server_liveness(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_readiness(test_client):
-    """Tests the readiness endpoint of a ModelServer (not running) instance using starlette's
-    TestClient"""
-
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
     readiness_response = test_client.get("/v1/ready")
 
     assert readiness_response.status_code == 200

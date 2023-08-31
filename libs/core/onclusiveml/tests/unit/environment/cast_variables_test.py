@@ -1,3 +1,5 @@
+"""Conversion tests."""
+
 # 3rd party libraries
 import pytest
 
@@ -32,12 +34,12 @@ from onclusiveml.core.environment.cast_variables import (
     ],
 )
 def as_boolean_test(env_var_value, expected_bool):
-
+    """Boolean conversion test."""
     assert as_boolean(env_var_value) == expected_bool
 
 
 def as_boolean_raise_value_error_test():
-
+    """Boolean conversion with error."""
     with pytest.raises(ValueError):
         as_boolean("not a boolean value")
 
@@ -52,7 +54,7 @@ def as_boolean_raise_value_error_test():
     ],
 )
 def as_float_test(env_var_value, expected_float):
-
+    """Float conversion."""
     assert as_float(env_var_value) == expected_float
 
 
@@ -60,7 +62,7 @@ def as_float_test(env_var_value, expected_float):
     "invalid_env_var_value,", ["invalid value", " True ", " -10-e1"]
 )
 def as_float_raise_value_error_test(invalid_env_var_value):
-
+    """Float conversion with error."""
     with pytest.raises(ValueError):
         as_float(invalid_env_var_value)
 
@@ -75,7 +77,7 @@ def as_float_raise_value_error_test(invalid_env_var_value):
     ],
 )
 def as_integer_test(env_var_value, expected_integer):
-
+    """Integer conversion test."""
     assert as_integer(env_var_value) == expected_integer
 
 
@@ -83,6 +85,6 @@ def as_integer_test(env_var_value, expected_integer):
     "invalid_env_var_value,", ["invalid value", "1.0", "0.4", "5e2", "5e-2"]
 )
 def as_integer_raise_value_error_test(invalid_env_var_value):
-
+    """Integer conversion with error."""
     with pytest.raises(ValueError):
         as_integer(invalid_env_var_value)

@@ -1,3 +1,5 @@
+"""Prediction model."""
+
 # Standard Library
 from typing import Type
 
@@ -17,23 +19,28 @@ from src.serve.server_models import (
 
 
 class ServedLshModel(ServedModel):
+    """Served LSH model."""
 
     predict_request_model: Type[BaseModel] = PredictRequestModel
     predict_response_model: Type[BaseModel] = PredictResponseModel
     bio_response_model: Type[BaseModel] = BioResponseModel
 
     def __init__(self) -> None:
-
         super().__init__(name="lsh")
 
     def load(self) -> None:
+        """Load model."""
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = LshHandler()
         self.ready = True
         self.model_card = BioResponseModel(model_name="lsh")
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
+        """LSH prediction.
 
+        Args:
+            payload (PredictRequestModel): prediction request payload.
+        """
         # extract inputs data and inference specs from incoming payload
         inputs = payload.inputs
         configuration = payload.configuration
@@ -55,5 +62,5 @@ class ServedLshModel(ServedModel):
         return PredictResponseModel(signature=signature)
 
     def bio(self) -> BioResponseModel:
-
+        """Model bio endpoint."""
         return self.model_card
