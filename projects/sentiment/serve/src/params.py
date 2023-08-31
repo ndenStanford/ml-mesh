@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 from pathlib import Path
 from typing import Union
@@ -7,6 +9,7 @@ from onclusiveml.serving import ServingBaseParams
 
 
 class ServedModelParams(ServingBaseParams):
+    """Prediction model settings."""
 
     model_name: str = "sentiment"
     model_directory: Union[str, Path] = "."

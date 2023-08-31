@@ -1,3 +1,5 @@
+"""Served model test."""
+
 # ML libs
 import torch
 
@@ -18,17 +20,13 @@ from src.serve.server_models import (
 
 @pytest.mark.order(1)
 def test_served_sent_model__init__(test_served_model_artifacts):
-    """Tests the constructor of the ServedSentModel, EXCLUDING the loading of genuine model
-    artifacts from local disk"""
-
+    """Tests the constructor of the ServedNERModel."""
     ServedSentModel(served_model_artifacts=test_served_model_artifacts)
 
 
 @pytest.mark.order(2)
 def test_served_sent_model_load(test_served_model_artifacts):
-    """Tests the constructor of the ServedSentModel, INCLUDING the loading of genuine model
-    artifacts from local disk"""
-
+    """Tests the constructor of the ServedNERModel."""
     served_sent_model = ServedSentModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -49,10 +47,7 @@ def test_served_sent_model_predict(
     test_atol,
     test_rtol,
 ):
-    """Tests the fully initialized and loaded ServedSentModel's predict method, using the
-    custom data models for validation and the test files from the model artifact as ground truth
-    for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedNERModel's predict method."""
     served_sent_model = ServedSentModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -112,10 +107,10 @@ def test_served_sent_model_with_entities_predict(
     test_sample_entities,
     test_sample_response,
 ):
-    """Tests the fully initialized and loaded ServedSentModel's predict method, using the
-    custom data models for validation and the test files from the model artifact as ground truth
-    for the regression test element."""
+    """Tests the fully initialized and loaded ServedNERModel's predict method.
 
+    With the entities input.
+    """
     served_sent_model = ServedSentModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -152,10 +147,7 @@ def test_served_sent_model_with_entities_predict(
 def test_served_sent_model_bio(
     test_model_name, test_served_model_artifacts, test_model_card
 ):
-    """Tests the fully initialized and loaded ServedSentModel's bio method, using the
-    custom data models for validation and the model card from the model artifact as ground truth
-    for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedNERModel's bio method."""
     served_sent_model = ServedSentModel(
         served_model_artifacts=test_served_model_artifacts
     )

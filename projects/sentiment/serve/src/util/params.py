@@ -1,3 +1,5 @@
+"""Settings."""
+
 # 3rd party libraries
 from neptune.types.mode import Mode
 from pydantic import Field
@@ -10,8 +12,11 @@ from src.params import ServedModelParams  # noqa: F401
 
 
 class TrackedCompiledModelSpecs(TrackedModelSpecs):
-    project: str = "onclusive/sentiment"
-    model: str = "SEN-TRAINED"
+    """Tracked compiled model settings."""
+
+    # project: str = "onclusive/sentiment"
+    # model: str = "SEN-TRAINED"
+
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
     with_id: str = Field("SEN-COMPILED-12", env="neptune_model_version_id")

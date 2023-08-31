@@ -1,3 +1,5 @@
+"""Model server."""
+
 # Internal libraries
 from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
@@ -8,8 +10,7 @@ from src.serve.served_model import ServedSentModel
 
 
 def get_model_server() -> ModelServer:
-    """
-    Utility method for prepping a fully configured model server instance ready to serve.
+    """Utility method for prepping a fully configured model server instance ready to serve.
 
     Returns:
         ModelServer: Configured model server instance

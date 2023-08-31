@@ -1,3 +1,5 @@
+"""Prediction model."""
+
 # Standard Library
 from typing import Type
 
@@ -19,8 +21,7 @@ from src.serve.server_models import (
 
 
 class ServedSentModel(ServedModel):
-    """
-    Served Sent model
+    """Served Sent model.
 
     Attributes:
         predict_request_model (Type[BaseModel]):  Request model for prediction
@@ -33,8 +34,7 @@ class ServedSentModel(ServedModel):
     bio_response_model: Type[BaseModel] = BioResponseModel
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
-        """
-        Initalize the served Sent model with its artifacts
+        """Initalize the served Sent model with its artifacts.
 
         Args:
             served_model_artifacts (ServedModelArtifacts): Served model artifact
@@ -44,9 +44,7 @@ class ServedSentModel(ServedModel):
         super().__init__(name=served_model_artifacts.model_name)
 
     def load(self) -> None:
-        """
-        Load the model artifacts and prepare the model for prediction
-        """
+        """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledSent instance
         self.model = CompiledSent.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
@@ -57,8 +55,7 @@ class ServedSentModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
-        """
-        Make predictions using the loaded Sent model
+        """Make predictions using the loaded Sent model.
 
         Args:
             payload (PredictRequestModel): The input data for making predictions
@@ -84,8 +81,7 @@ class ServedSentModel(ServedModel):
         return PredictResponseModel(outputs=sentiment_model)
 
     def bio(self) -> BioResponseModel:
-        """
-        Get bio information about the served Sent model
+        """Get bio information about the served Sent model.
 
         Returns:
             BioResponseModel: Bio information about the model
