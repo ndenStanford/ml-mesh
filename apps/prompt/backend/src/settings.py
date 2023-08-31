@@ -3,7 +3,7 @@
 # Standard Library
 import json
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -51,9 +51,8 @@ class Settings(BaseSettings):
         "1": [ModelEnum.GPT3_5.value, OPENAI_PARAMETERS, 4098],
         "2": [ModelEnum.GPT4.value, OPENAI_PARAMETERS, 8192],
     }
-    LIST_OF_PROMPTS: Dict[str, List[str]] = {
-        "1": [PromptEnum.EN.value[0], PromptEnum.EN.value[1]]
-    }
+
+    LIST_OF_PROMPTS: List[List[Union[str, Dict]]] = PromptEnum.list()
 
     AWS_REGION: str = "us-east-1"
 
