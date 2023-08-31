@@ -1,3 +1,5 @@
+"""Model server."""
+
 # 3rd party libraries
 import pytest
 
@@ -17,9 +19,7 @@ from src.serve.server_models import (
 
 @pytest.mark.order(5)
 def test_model_server_root(test_client):
-    """Tests the running ModelServer instance's root endpoint by making a genuine http
-    request"""
-
+    """Tests the running ModelServer instance's root endpoint."""
     root_response = test_client.get("/v1/")
 
     assert root_response.status_code == 200
@@ -27,9 +27,7 @@ def test_model_server_root(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
-    """Tests the running ModelServer instance's liveness endpoint by making a genuine http
-    request"""
-
+    """Tests the running ModelServer instance's liveness endpoint."""
     liveness_response = test_client.get("/v1/live")
 
     assert liveness_response.status_code == 200
@@ -38,9 +36,7 @@ def test_model_server_liveness(test_client):
 
 @pytest.mark.order(6)
 def test_model_server_readiness(test_client):
-    """Tests the running ModelServer instance's readiness endpoint by making a genuine http
-    request"""
-
+    """Tests the running ModelServer instance's readiness endpoint."""
     readiness_response = test_client.get("/v1/ready")
 
     assert readiness_response.status_code == 200
@@ -54,10 +50,11 @@ def test_model_server_predict(
     test_predict_input,
     test_expected_predict_output,
 ):
-    """Tests the running ModelServer's predict endpoint by making genuine http requests, using the
-    custom data models for validation and the test files from the model artifact as ground truth
-    for the regression test element."""
+    """Tests the running ModelServer's predict endpoint.
 
+    Uses the custom data models for validation and the test files from the model
+    artifact as ground truth for the regression test element.
+    """
     input = PredictRequestModel(
         configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
@@ -77,10 +74,11 @@ def test_model_server_predict(
 
 @pytest.mark.order(7)
 def test_model_server_bio(test_model_name, test_client, test_expected_bio_output):
-    """Tests the running ModelServer's bio endpoint by making genuine http requests, using the
-    custom data models for validation and the model card from the model artifact as ground truth
-    for the regression test element."""
+    """Tests the running ModelServer's bio endpoint.
 
+    Uses the custom data models for validation and the model card from the model
+    artifact as ground truth for the regression test element.
+    """
     test_response = test_client.get(f"/v1/model/{test_model_name}/bio")
 
     assert test_response.status_code == 200

@@ -1,3 +1,5 @@
+"""Prediction model."""
+
 # Standard Library
 from typing import Type
 
@@ -21,8 +23,7 @@ from src.serve.server_models import (
 
 
 class ServedNERModel(ServedModel):
-    """
-    Served NER model
+    """Served NER model.
 
     Attributes:
         predict_request_model (Type[BaseModel]):  Request model for prediction
@@ -35,8 +36,7 @@ class ServedNERModel(ServedModel):
     bio_response_model: Type[BaseModel] = BioResponseModel
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
-        """
-        Initalize the served NER model with its artifacts
+        """Initalize the served NER model with its artifacts.
 
         Args:
             served_model_artifacts (ServedModelArtifacts): Served model artifact
@@ -46,9 +46,7 @@ class ServedNERModel(ServedModel):
         super().__init__(name=served_model_artifacts.model_name)
 
     def load(self) -> None:
-        """
-        Load the model artifacts and prepare the model for prediction
-        """
+        """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledNER instance
         self.model = CompiledNER.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
@@ -59,8 +57,7 @@ class ServedNERModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
-        """
-        Make predictions using the loaded NER model
+        """Make predictions using the loaded NER model.
 
         Args:
             payload (PredictRequestModel): The input data for making predictions
@@ -94,8 +91,7 @@ class ServedNERModel(ServedModel):
         return PredictResponseModel(outputs=entity_model)
 
     def bio(self) -> BioResponseModel:
-        """
-        Get bio information about the served NER model
+        """Get bio information about the served NER model.
 
         Returns:
             BioResponseModel: Bio information about the model

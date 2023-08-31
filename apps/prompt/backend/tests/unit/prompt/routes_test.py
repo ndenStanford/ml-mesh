@@ -1,4 +1,4 @@
-"""Test routes"""
+"""Test routes."""
 
 # Standard Library
 import datetime

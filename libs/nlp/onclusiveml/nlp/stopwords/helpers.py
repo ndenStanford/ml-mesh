@@ -1,3 +1,5 @@
+"""Helpers."""
+
 # Standard Library
 import json
 import os
@@ -10,8 +12,7 @@ from onclusiveml.nlp.stopwords.exception import StopwordsFileException
 
 
 def _get_stopword_filepath(lang: str) -> str:
-    """
-    Returns file path for the stopword file of a given language.
+    """Returns file path for the stopword file of a given language.
 
     Args:
         lang (str): The language for which the stopword file path is required
@@ -26,8 +27,7 @@ def _get_stopword_filepath(lang: str) -> str:
 
 @lru_cache()
 def load_stop_words_file(lang: str) -> List[str]:
-    """
-    Loads stopwords from the corresponding file for a given language.
+    """Loads stopwords from the corresponding file for a given language.
 
     Args:
         lang (str): The language for which the stopwords are to be loaded

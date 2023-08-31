@@ -1,4 +1,4 @@
-"""Conftest"""
+"""Conftest."""
 
 # ML libs
 from transformers.pipelines import pipeline
@@ -12,8 +12,7 @@ from onclusiveml.compile import CompiledPipeline
 
 @pytest.fixture(scope="session")
 def test_hf_pipeline():
-    """
-    Fixture for providing huggingface pipeline for token classification
+    """Fixture for providing huggingface pipeline for token classification.
 
     Returns:
         Pipeline: A pipeline for token classification
@@ -26,7 +25,7 @@ def test_hf_pipeline():
 
 @pytest.fixture(scope="session")
 def test_compiled_ner_pipeline(test_hf_pipeline):
-
+    """Test compiled NER pipeline."""
     return CompiledPipeline.from_pipeline(
         pipeline=test_hf_pipeline,
         max_length=128,
@@ -39,8 +38,7 @@ def test_compiled_ner_pipeline(test_hf_pipeline):
 
 @pytest.fixture(scope="session")
 def test_neuron_compiled_ner_pipeline(test_hf_pipeline):
-    """
-    Fixture for providing a neuron compiled NER pipeline based on a huggignface pipeline
+    """Fixture for providing a neuron compiled NER pipeline based on a huggignface pipeline.
 
     Args:
         test_hf_pipeline (Pipeline): The huggingface pipeline for token classification
@@ -60,13 +58,11 @@ def test_neuron_compiled_ner_pipeline(test_hf_pipeline):
 
 @pytest.fixture
 def test_documents():
-    """
-    Fixture providing a sample test document for NER
+    """Fixture providing a sample test document for NER.
 
     Returns:
         str: sample test document
     """
-
     return """Elon Reeve Musk (born June 28, 1971) is a business magnate and investor.
     He is the founder, CEO, and chief engineer of SpaceX; angel investor, CEO and product architect of Tesla, Inc.; owner and CTO of Twitter; founder of the Boring Company; co-founder of Neuralink and OpenAI; and president of the philanthropic Musk Foundation.
     Musk is the wealthiest person in the world with an estimated net worth, as of July 12, 2023, of around US$239 billion according to the Bloomberg Billionaires Index and $248.

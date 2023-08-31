@@ -267,10 +267,10 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
 @router.post("/generate", status_code=status.HTTP_200_OK)
 def generate_text_from_chat(values: PromptChat):
     """Retrieves prompt via id.
-    Args:
-        values Dict[str, Any]: input from chat
-    """
 
+    Args:
+        values (Dict[str, Any]): input from chat
+    """
     return {
         "generated": generate_text(
             values.prompt,
@@ -284,8 +284,9 @@ def generate_text_from_chat(values: PromptChat):
 @router.post("/generate/model/{model_name}", status_code=status.HTTP_200_OK)
 def generate_text_from_chat_diff_model(model_name: str, values: PromptChat):
     """Retrieves prompt via id.
+
     Args:
-        values Dict[str, Any]: input from chat
+        values (Dict[str, Any]): input from chat
         model_name (str): model name
     """
     try:

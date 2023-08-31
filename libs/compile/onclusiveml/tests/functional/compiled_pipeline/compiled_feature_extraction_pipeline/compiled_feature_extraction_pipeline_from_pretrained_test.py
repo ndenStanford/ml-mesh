@@ -1,3 +1,5 @@
+"""Compiled feature extraction from pretrained pipeline test."""
+
 # Standard Library
 import shutil
 from typing import List, Tuple
@@ -45,6 +47,7 @@ def test_compiled_feature_extraction_pipeline_from_pretrained(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled feature extraction pipeline from pretrained."""
     # create new pipeline using compiled versions of tokenizer and model
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,

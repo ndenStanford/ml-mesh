@@ -30,7 +30,6 @@ def init() -> None:
 
 
 def fill_model_table() -> None:
-
     """Model filling."""
     logger.info("Adding models to model table...")
     list_of_models = []
