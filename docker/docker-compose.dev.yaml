@@ -257,5 +257,3 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     ports:
       - 8888:8888
-    depends_on:
-      - gpu-base
