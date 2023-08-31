@@ -17,7 +17,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: lsh
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-ci-5811595132}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
     profiles: [serve, functional]

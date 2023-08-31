@@ -1,3 +1,5 @@
+"""Prediction model."""
+
 # Standard Library
 from typing import Type
 
@@ -20,6 +22,7 @@ from src.serve.server_models import (
 
 
 class ServedKeywordsModel(ServedModel):
+    """Served keywords model."""
 
     predict_request_model: Type[BaseModel] = PredictRequestModel
     predict_response_model: Type[BaseModel] = PredictResponseModel
@@ -32,6 +35,7 @@ class ServedKeywordsModel(ServedModel):
         super().__init__(name=served_model_artifacts.model_name)
 
     def load(self) -> None:
+        """Load model in memory."""
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = CompiledKeyBERT.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
@@ -42,6 +46,11 @@ class ServedKeywordsModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
+        """Model prediction.
+
+        Args:
+            payload (PredictRequestModel): prediction request data.
+        """
         # extract documents and inference call configuration from validated payload
         configuration = payload.configuration
         inputs = payload.inputs
@@ -76,5 +85,5 @@ class ServedKeywordsModel(ServedModel):
         return PredictResponseModel(outputs=predicted_payload_list)
 
     def bio(self) -> BioResponseModel:
-
+        """Model bio."""
         return BioResponseModel(model_name=self.name, model_card=self.model_card)

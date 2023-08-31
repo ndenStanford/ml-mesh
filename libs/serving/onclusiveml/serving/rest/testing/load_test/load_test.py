@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+"""Load tests."""
+
 # Taken directly from https://github.com/FutureSharks/invokust with minimal changes under the MIT
 # licence: https://github.com/FutureSharks/invokust/blob/master/LICENSE
 
@@ -30,22 +31,27 @@ logger = logging.getLogger(__name__)
 
 
 def sig_term_handler() -> None:
+    """Handle termination signal."""
     logger.info("Got SIGTERM signal")
     sys.exit(0)
 
 
 class LoadTest(object):
-    """
-    Runs a Locust load test and generates a qantitative report that integrates with the
-    `Criteria` class from the `load_testing_params` module.
+    """Runs a Locust load test.
+
+    Generates a qantitative report that integrates with the `Criteria` class from the
+    `load_testing_params` module.
     """
 
     def __init__(self, settings: LoadTestingParams):
-        """The constructor for the `LoadTest` class. Accepts a `LoadTestingParams` configuration
-        class instance that configures the load test.
+        """The constructor for the `LoadTest` class.
 
-        Note that this does not include criteria of any kind - the evaluation of a load test's
-        report is implemented in the `LoadTestCriteria` class' `evaluate` method.
+        Accepts a `LoadTestingParams` configuration class instance that configures the
+        load test.
+
+        Note:
+            This does not include criteria of any kind - the evaluation of a load test's
+            report is implemented in the `LoadTestCriteria` class' `evaluate` method.
 
         Args:
             settings (LoadTestingParams): Load test configuration. Includes client behaviour,
@@ -67,7 +73,7 @@ class LoadTest(object):
         )
 
     def report(self) -> TestReport:
-        """Returns the statistics from the load test in JSON
+        """Returns the statistics from the load test in JSON.
 
         Returns:
             TestReport: The result of the load test
@@ -174,6 +180,7 @@ class LoadTest(object):
         return test_report_validated
 
     def set_run_time_in_sec(self, run_time_str: str) -> None:
+        """Set test runtime."""
         try:
             self.run_time_in_sec = parse_timespan(run_time_str)
         except ValueError:
@@ -190,10 +197,7 @@ class LoadTest(object):
             sys.exit(1)
 
     def run(self) -> None:
-        """
-        Run the load test.
-        """
-
+        """Run the load test."""
         if self.settings.run_time:
             self.set_run_time_in_sec(run_time_str=self.settings.run_time)
 

@@ -17,8 +17,7 @@ from onclusiveml.core.retry import retry
 )
 @patch.object(time, "sleep")
 def test_retry(mock_sleep, tries, delay, backoff):
-    """Test retry with delay and backoff"""
-
+    """Test retry with delay and backoff."""
     hit = [0]
 
     @retry(tries=tries, delay=delay, backoff=backoff)
@@ -58,6 +57,7 @@ def test_tries_inf(return_value):
 )
 @patch.object(time, "sleep")
 def test_max_delay(mock_sleep, tries, delay, backoff):
+    """Test max delay."""
     hit = [0]
 
     @retry(tries=tries, delay=delay, max_delay=delay, backoff=backoff)
@@ -78,7 +78,6 @@ def test_max_delay(mock_sleep, tries, delay, backoff):
 @patch.object(time, "sleep")
 def test_fixed_jitter(mock_sleep, tries, jitter):
     """Test retry with jitter."""
-
     hit = [0]
 
     @retry(tries=tries, jitter=jitter)

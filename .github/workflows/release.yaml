@@ -16,7 +16,7 @@ jobs       :
     uses: ./.github/workflows/_repository-state.yaml
     if: startsWith(github.event.issue.title, '[RELEASE]:')
     with:
-      pull-request: true
+      event-name: release_issue
       pull-request-target-branch: main
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
@@ -41,7 +41,7 @@ jobs       :
       - name: Check release version is correct
         id: check-release-version
         run: |
-          if [[ "${{ needs.run-repository-state.outputs.tag }}" != "v${{ steps.regex-match-version.outputs.match }}" ]]; then
+          if [[ "${{ needs.run-repository-state.outputs.tag }}" != "${{ steps.regex-match-version.outputs.match }}" ]]; then
               echo "Version is not valid, expected ${{ needs.run-repository-state.outputs.tag }} but got ${{ steps.regex-match-version.outputs.match }}"
               exit 1
           fi
@@ -73,5 +73,3 @@ jobs       :
           head: refs/heads/release/${{ steps.release-branch.outputs.version }}
           base: main
           title: ML-MESH RELEASE [${{ steps.release-branch.outputs.version }}]
-          body: |
-            "${{ needs.run-repository-state.outputs.release-notes }}"

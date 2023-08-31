@@ -1,4 +1,4 @@
-"""DynamoDB Tables"""
+"""DynamoDB Tables."""
 
 # 3rd party libraries
 from pynamodb.attributes import UnicodeAttribute

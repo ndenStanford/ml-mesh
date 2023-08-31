@@ -1,3 +1,5 @@
+"""Metrics."""
+
 # 3rd party libraries
 from prometheus_client import Counter, Gauge, Histogram
 

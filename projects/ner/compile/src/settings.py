@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import os
 from typing import List
@@ -24,8 +26,7 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
-    """
-    Tracked specifications for an uncompiled model
+    """Tracked specifications for an uncompiled model.
 
     Attributes:
         project (str): The project name for the model.
@@ -49,8 +50,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
-    """
-    Tracked specifications for a compiled model
+    """Tracked specifications for a compiled model.
 
     Attributes:
         project (str): The project name for the model
@@ -67,8 +67,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class WorkflowOutputDir(TrackedParams):
-    """
-    Parameters for the output directory
+    """Parameters for the output directory.
 
     Attributes:
         outpath (str): The output directory path
@@ -83,8 +82,7 @@ class WorkflowOutputDir(TrackedParams):
 
 
 class WorkflowComponentIOSettings(object):
-    """
-    I/O settings for a workflow component
+    """I/O settings for a workflow component.
 
     Attributes:
         workflow_ouput_dir (str): Base output directory
@@ -126,7 +124,7 @@ class WorkflowComponentIOSettings(object):
 
     @staticmethod
     def check_component_reference(workflow_component: str):
-
+        """Check component reference."""
         if workflow_component not in WORKFLOW_COMPONENTS:
             raise ValueError(
                 f"Component reference {workflow_component} must be one of the following options: "
@@ -135,8 +133,7 @@ class WorkflowComponentIOSettings(object):
 
 
 class IOSettings(object):
-    """
-    Configuring container file system output locations for all 4 components
+    """Configuring container file system output locations for all 4 components.
 
     Attributes:
         download (WorkflowComponentIOSettings): I/O settings for download component
@@ -156,8 +153,7 @@ class IOSettings(object):
 
 
 class TokenizerSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_tokenizer for details
+    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details.
 
     Attributes:
         add_special_tokens (bool): Flag for adding special tokens
@@ -172,8 +168,7 @@ class TokenizerSettings(TrackedParams):
 
 
 class ModelTracingSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
+    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
     https://onclusive.atlassian.net/browse/DS-596
@@ -195,8 +190,7 @@ class ModelTracingSettings(TrackedParams):
 
 
 class PipelineCompilationSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details
+    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details.
 
     Attributes:
         pipeline_name (str): Name of pipeline
@@ -223,8 +217,7 @@ class PipelineCompilationSettings(TrackedParams):
 
 
 class NERPipelineCompilationSettings(PipelineCompilationSettings):
-    """
-    Tracked model card for a compiled NER model
+    """Tracked model card for a compiled NER model.
 
     Attributes:
         pipeline_name (str): Name of the NER pipeline
@@ -241,8 +234,7 @@ class NERPipelineCompilationSettings(PipelineCompilationSettings):
 
 
 class CompilationTestSettings(TrackedParams):
-    """
-    Settings for compilation tests
+    """Settings for compilation tests.
 
     Attributes:
         regression_atol (float): Relative tolerance for validation
@@ -259,8 +251,7 @@ class CompilationTestSettings(TrackedParams):
 
 
 class CompiledNERTrackedModelCard(TrackedModelCard):
-    """
-    Tracked model card for a compiled NER model
+    """Tracked model card for a compiled NER model.
 
     Attributes:
         model_type(str): Type of the model card
