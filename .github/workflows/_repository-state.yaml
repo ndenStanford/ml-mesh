@@ -113,7 +113,7 @@ jobs:
         with:
           cond: ${{ inputs.event-name == 'pull_request' }}
           if_true: ci-${{ github.run_id }}
-          if_false: ${{ steps.version-increment.outputs.v-version }}
+          if_false: ${{ steps.version-increment.outputs.V_VERSION }}
 
       - name: Generate Release
         uses: release-drafter/release-drafter@v5.24.0
@@ -124,6 +124,6 @@ jobs:
           publish: true
           commitish: ${{ steps.toggle-target-branch.outputs.value }}
           prerelease: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
-          tag: ${{ steps.version-increment.outputs.v-version }}
-          name: ${{ steps.version-increment.outputs.version }}
-          version: ${{ steps.version-increment.outputs.version }}
+          tag: ${{ steps.version-increment.outputs.V_VERSION }}
+          name: ${{ steps.version-increment.outputs.VERSION }}
+          version: ${{ steps.version-increment.outputs.VERSION }}
