@@ -11,7 +11,7 @@ class PredictConfiguration(BaseModel):
     Configuration for prediction request
 
     Attributes:
-        return_pos (Optional[bool]): Flag used to return position info or not. Defaults to True
+        return_pos (Optional[bool]): Flag used to return positional info or not. Defaults to True
         language (Optional[str]): Language used for prediction. Defaults to "en"
     """
 
