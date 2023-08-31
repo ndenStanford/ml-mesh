@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # Standard Library
 import os
 from typing import Any, List
@@ -10,7 +12,8 @@ from neptune.attributes.atoms.file import File
 
 @pytest.fixture
 def test_directory(local_directory_path: str):
-    """
+    """Test directory fixture.
+
     {local_directory}
     |___'dir_1'
         |___dir_1_1
@@ -41,7 +44,7 @@ def test_directory(local_directory_path: str):
 def test_captured_directories_for_upload_expected(
     local_directory_path: str, neptune_attribute_path: str
 ):
-
+    """Test captured directories."""
     neptune_attribute_path_ext = (
         "" if not neptune_attribute_path else f"{neptune_attribute_path}/"
     )
@@ -75,17 +78,18 @@ def test_captured_directories_for_upload_expected(
 
 
 def test_file(path: List[Any]):
+    """Test file."""
     return File(container=[], path=path)
 
 
 def test_artifact(path: List[Any]):
-
+    """Test artifact."""
     return Artifact(container=[], path=path)
 
 
 @pytest.fixture
 def test_uploaded_attributes():
-
+    """Test uploaded attributes."""
     return {
         "a": 1,
         "b": test_file(["b"]),
@@ -98,13 +102,13 @@ def test_uploaded_attributes():
 
 @pytest.fixture
 def test_extracted_data_attributes_expected():
-
+    """Extracted data attributes fixture."""
     return [test_file(["b"]), test_artifact(["c", "d", "e"]), test_file(["c", "g"])]
 
 
 @pytest.fixture
 def test_derive_and_filter_neptune_attribute_paths_expected(neptune_attribute_prefix):
-
+    """Derive and filter neptune attribute paths."""
     result = ["c/d/e", "c/g"]
 
     if neptune_attribute_prefix == "c":

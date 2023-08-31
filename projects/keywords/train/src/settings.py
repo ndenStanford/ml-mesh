@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import os
 from typing import List, Tuple, Union
@@ -12,6 +14,8 @@ from onclusiveml.tracking import (
 
 # --- settings classes
 class TrackedKeywordModelSpecs(TrackedModelSpecs):
+    """Keyword tracked model settings."""
+
     project: str = "onclusive/keywords"
     model = "KEYWORDS-TRAINED"
 
@@ -21,6 +25,7 @@ class TrackedKeywordModelSpecs(TrackedModelSpecs):
 
 
 class Inputs(TrackedParams):
+    """Keyword inputs."""
 
     sample_documents: List[str]
 
@@ -30,6 +35,8 @@ class Inputs(TrackedParams):
 
 
 class KeywordExtractionSettings(TrackedParams):
+    """Keyword extraction settings."""
+
     keyphrase_ngram_range: Tuple[int, int] = (1, 1)
     stop_words: Union[str, List[str]] = "english"
     top_n: int = 3
@@ -40,6 +47,8 @@ class KeywordExtractionSettings(TrackedParams):
 
 
 class KeywordModelParams(TrackedParams):
+    """Keyword model params."""
+
     huggingface_pipeline_task: str = "feature-extraction"
     huggingface_model_reference: str = (
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"

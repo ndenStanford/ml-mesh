@@ -1,3 +1,5 @@
+"""Cast variables."""
+
 # Internal libraries
 from onclusiveml.core.logging import INFO, LogFormat, get_default_logger
 
@@ -17,7 +19,6 @@ def as_boolean(var_value: str) -> bool:
     Returns:
         bool: The inferred bool type
     """
-
     assert isinstance(var_value, str)
 
     range_true = ("true", "t", "yes", "y")
@@ -51,7 +52,6 @@ def as_float(var_value: str) -> float:
     Returns:
         float_var_value: The cast float value
     """
-
     assert isinstance(var_value, str)
 
     try:
@@ -79,7 +79,6 @@ def as_integer(var_value: str) -> int:
     Returns:
         int_var_value (int): The cast integer value
     """
-
     assert isinstance(var_value, str)
 
     try:

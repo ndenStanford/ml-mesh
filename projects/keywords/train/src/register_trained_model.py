@@ -1,3 +1,5 @@
+"""Register trained model."""
+
 # Standard Library
 import os
 from typing import List, Tuple
@@ -17,6 +19,7 @@ from src.settings import (  # type: ignore[attr-defined]
 
 
 def main() -> None:
+    """Register trained model."""
     model_specs = TrackedKeywordModelSpecs()
     model_card = TrackedKeywordsBaseModelCard()
 

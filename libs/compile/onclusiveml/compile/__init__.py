@@ -1,3 +1,5 @@
+"""Init."""
+
 from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer  # noqa: F401
 from onclusiveml.compile.compiled_model import (  # noqa: F401
     compile_model,

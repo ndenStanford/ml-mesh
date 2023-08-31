@@ -1,3 +1,5 @@
+"""Served model test."""
+
 # 3rd party libraries
 import pytest
 
@@ -16,17 +18,13 @@ from src.serve.server_models import (
 
 @pytest.mark.order(1)
 def test_served_ner_model__init__(test_served_model_artifacts):
-    """Tests the constructor of the ServedNERModel, EXCLUDING the loading of genuine model
-    artifacts from local disk"""
-
+    """Tests the constructor of the ServedNERModel."""
     ServedNERModel(served_model_artifacts=test_served_model_artifacts)
 
 
 @pytest.mark.order(2)
 def test_served_ner_model_load(test_served_model_artifacts):
-    """Tests the constructor of the ServedNERModel, INCLUDING the loading of genuine model
-    artifacts from local disk"""
-
+    """Tests the constructor of the ServedNERModel."""
     served_ner_model = ServedNERModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -46,10 +44,7 @@ def test_served_ner_model_predict(
     test_predictions,
     test_record_index,
 ):
-    """Tests the fully initialized and loaded ServedNERModel's predict method, using the
-    custom data models for validation and the test files from the model artifact as ground truth
-    for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedNERModel's predict method."""
     served_ner_model = ServedNERModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -81,10 +76,7 @@ def test_served_ner_model_predict_no_pos(
     test_predictions,
     test_record_index,
 ):
-    """Tests the fully initialized and loaded ServedNERModel's predict method that doesn't return
-    start and end position, using the custom data models for validation and the test files from the
-     model artifact as ground truth for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedNERModel's predict method."""
     served_ner_model = ServedNERModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -128,10 +120,7 @@ def test_served_ner_model_predict_no_pos(
 def test_served_ner_model_bio(
     test_model_name, test_served_model_artifacts, test_model_card
 ):
-    """Tests the fully initialized and loaded ServedNERModel's bio method, using the
-    custom data models for validation and the model card from the model artifact as ground truth
-    for the regression test element."""
-
+    """Tests the fully initialized and loaded ServedNERModel's bio method."""
     served_ner_model = ServedNERModel(
         served_model_artifacts=test_served_model_artifacts
     )

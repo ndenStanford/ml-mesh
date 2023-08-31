@@ -1,11 +1,11 @@
-"""Constants"""
+"""Constants."""
 
 # Internal libraries
 from onclusiveml.core.base.utils import OnclusiveEnum
 
 
 class PromptEnum(OnclusiveEnum):
-    """Enum values for Prompt"""
+    """Enum values for prompts."""
 
     EN = [
         "Give an abstractive summary while retaining important quotes of speech in less than "
