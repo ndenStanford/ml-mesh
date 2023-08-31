@@ -167,7 +167,7 @@ jobs       :
           - name: kubeflow-data-science
             base-region: us-east-2
           - name: kubeflow-torch-gpu
-            base-region: us-east-2
+            base-region: us-east-1
         validate-build: [false]
         region: [us-east-2]
 
