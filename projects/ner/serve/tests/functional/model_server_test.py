@@ -83,9 +83,7 @@ def test_model_server_predict(
 
 @pytest.mark.parametrize("test_input", [("Onclusive is great")])
 def test_model_server_predict_no_entities(test_model_name, test_client, test_input):
-    """Tests the running ModelServer's predict endpoint such that it returns an empty list
-    if the no entities are extracted"""
-
+    """Tests ModelServer's predict response when no entities are returned."""
     input = PredictRequestModel(
         configuration=PredictConfiguration(return_pos=True, language="en"),
         inputs=PredictInputContentModel(content=test_input),
