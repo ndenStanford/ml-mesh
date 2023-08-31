@@ -3,7 +3,7 @@ from dotenv import dotenv_values
 from datetime import datetime as dt
 import click
 import os
-from typing import List
+from typing import List, Optional
 
 from onclusiveml.tracking import TrackedGithubActionsSpecs
 
@@ -66,15 +66,14 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 )
 @click.option(
     '--image-tag',
-    default='latest',
-    show_default=True,
+    required=True,
+    type=str,
     help="Image tag of container to be run on sagemaker."
 )
 @click.option(
     '--run-configuration-dotenv',
-    required=False,
-    show_default=True,
     type=click.Path(exists=True),
+    default=None,
     help="""[Optional]: The path to the dotenv file containing environment variables to configure the
         current run. If not provided, attempts to fall back on file located at
         `/projects/{project_name}/{project_component}/config/prod.env`. If unable to locate the
@@ -86,8 +85,8 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     type=str,
     default='',
     show_default=True,
-    help="""[Optional]: The neptune AI model registry authentication token required for every model registry
-        interaction. Will be injected into the container at runtime."""
+    help="""[Optional]: The neptune AI model registry authentication token required for every model
+        registry interaction. Will be injected into the container at runtime."""
 )
 @click.argument(
     'container-entry-point',
@@ -103,7 +102,7 @@ def project_train(
     project_name: str,
     project_component: str,
     image_tag: str,
-    run_configuration_dotenv: List[str],
+    run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
