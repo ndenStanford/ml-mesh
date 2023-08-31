@@ -21,7 +21,6 @@ logger = get_default_logger(__name__)
 
 def create_app(initialize: bool = True) -> FastAPI:
     """Creates FastAPI app."""
-
     logger.debug("Initializing application...")
 
     on_startup = []

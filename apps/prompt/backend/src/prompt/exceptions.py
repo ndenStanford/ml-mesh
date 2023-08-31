@@ -25,7 +25,7 @@ class PromptVersionNotFound(BasePromptException):
 
 
 class DeletionProtectedPrompt(BasePromptException):
-    """Attempt to delete deletion Protected Prompt"""
+    """Attempt to delete deletion Protected Prompt."""
 
     message_format = "Prompt '{alias}' cannot be deleted."
 
@@ -37,18 +37,18 @@ class PromptInvalidParameters(BasePromptException):
 
 
 class PromptTokenExceedModel(BasePromptException):
-    """Max token limit exceeded for moddel"""
+    """Max token limit exceeded for model."""
 
     message_format = "Parameter max_tokens must be between 1 and {max_token_length} for model {model}"  # noqa: E501
 
 
 class PromptOutsideTempLimit(BasePromptException):
-    """Temperature is beyond limit"""
+    """Temperature is beyond limit."""
 
     message_format = "Temperature must be between 0.0 and 1.0"
 
 
 class PromptModelUnsupported(BasePromptException):
-    """Model is not supported"""
+    """Model is not supported."""
 
     message_format = "{model} is not supported"

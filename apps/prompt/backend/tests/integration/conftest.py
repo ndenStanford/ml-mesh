@@ -68,7 +68,7 @@ def init_model_tables() -> Generator[None, None, None]:  # noqa: F811
 def test_client(
     app: FastAPI, init_prompt_tables: Any, init_model_tables: Any
 ) -> Generator[TestClient, None, None]:
-    """instanciates test client."""
+    """Instanciates test client."""
     yield TestClient(app=app)
 
 

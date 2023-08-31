@@ -1,3 +1,5 @@
+"""Prediction data schemas."""
+
 # Standard Library
 from typing import Dict, List, Optional, Union
 
@@ -7,8 +9,7 @@ from pydantic import BaseModel
 
 # --- prediction request models
 class PredictConfiguration(BaseModel):
-    """
-    Configuration for prediction request
+    """Configuration for prediction request.
 
     Attributes:
         return_pos (Optional[bool]): Flag used to return position info or not. Defaults to True
@@ -20,8 +21,7 @@ class PredictConfiguration(BaseModel):
 
 
 class PredictInputContentModel(BaseModel):
-    """
-    Input ocntent for a prediction rerquest
+    """Input ocntent for a prediction rerquest.
 
     Attributes:
         content (str): The input content for prediction
@@ -31,8 +31,7 @@ class PredictInputContentModel(BaseModel):
 
 
 class PredictRequestModel(BaseModel):
-    """
-    Request model for making a prediction
+    """Request model for making a prediction.
 
     Attributes:
         configuration (PredictConfiguration): The prediction configuration
@@ -46,7 +45,7 @@ class PredictRequestModel(BaseModel):
 class PredictionExtractedEntityNoPos(BaseModel):
     """
     Extracted entity information from a prediction without positional information
-
+    
     Attributes:
         entity_type (str): The type of the extracted entity.
         entity_text (str): The text of the extracted entity
@@ -74,8 +73,7 @@ class PredictionExtractedEntity(PredictionExtractedEntityNoPos):
 
 
 class PredictionOutputContent(BaseModel):
-    """
-    Output content containing extracted entities from a prediction
+    """Output content containing extracted entities from a prediction.
 
     Attributes:
         predicted_content (List[PredictionExtractedEntity]): List of extracted entities
@@ -87,8 +85,7 @@ class PredictionOutputContent(BaseModel):
 
 
 class PredictResponseModel(BaseModel):
-    """
-    Response model for a prediction request
+    """Response model for a prediction request.
 
     Attributes:
         output (PredictionOutputContent): The output content containing extracted entities
@@ -99,8 +96,7 @@ class PredictResponseModel(BaseModel):
 
 # --- bio response models
 class BioResponseModel(BaseModel):
-    """
-    Response model for a bio response
+    """Response model for a bio response.
 
     Attributes:
         model_name (str): The name of the model used for prediction

@@ -1,11 +1,11 @@
-"""Constants"""
+"""Constants."""
 
 # Standard Library
 from enum import Enum
 
 
 class PromptEnum(Enum):
-    """Enum values for models"""
+    """Enum values for models."""
 
     EN = [
         "Give an abstractive summary while retaining important quotes of speech in less than "

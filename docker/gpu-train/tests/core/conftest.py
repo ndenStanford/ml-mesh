@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # 3rd party libraries
 import numpy as np
 import pytest
@@ -6,6 +8,7 @@ from datasets import Dataset
 
 @pytest.fixture(scope="session")
 def test_train_dataset():
+    """Train dataset fixture."""
     seq_len, dataset_size = 512, 512
     dummy_data = {
         "input_ids": np.random.randint(100, 30000, (dataset_size, seq_len)),
@@ -19,13 +22,13 @@ def test_train_dataset():
 
 @pytest.fixture
 def test_model_reference():
-
+    """Model reference fixture."""
     return "distilbert-base-uncased"
 
 
 @pytest.fixture
 def test_default_training_params():
-
+    """Default training parameters fixture."""
     return {
         "output_dir": "tmp",
         "evaluation_strategy": "steps",

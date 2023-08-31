@@ -40,7 +40,6 @@ def get_model(model_name: str):
     Args:
         model_name (str): model name
     """
-
     try:
         return ModelSchema.get(model_name, raises_if_not_found=True)
     except ModelNotFound as e:

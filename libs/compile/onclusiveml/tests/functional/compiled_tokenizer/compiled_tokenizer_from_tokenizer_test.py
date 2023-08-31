@@ -1,3 +1,5 @@
+"""Compiled tokenizer from tokenizer test."""
+
 # 3rd party libraries
 import pytest
 from pytest_lazyfixture import lazy_fixture
@@ -45,8 +47,7 @@ def test_compiled_tokenizer_from_tokenizer(
     expected_tokenization_settings,
     huggingface_model_max_length,
 ):
-    """Checks __init__ call and tokenizer settings value fallback logic"""
-
+    """Checks __init__ call and tokenizer settings value fallback logic."""
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )

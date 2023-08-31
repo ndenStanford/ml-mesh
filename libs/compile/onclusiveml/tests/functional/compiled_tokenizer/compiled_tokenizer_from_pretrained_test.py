@@ -1,3 +1,5 @@
+"""Compiled tokenizer tests."""
+
 # Standard Library
 import shutil
 
@@ -29,8 +31,7 @@ def test_compiled_tokenizer_from_pretrained(
     huggingface_tokenizer,
     tokenization_kwargs,
 ):
-    """Checks __init__ call and tokenizer settings value fallback logic"""
-
+    """Checks __init__ call and tokenizer settings value fallback logic."""
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )

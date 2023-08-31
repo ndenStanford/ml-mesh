@@ -1,3 +1,5 @@
+"""Compiled model test."""
+
 # Standard Library
 import json
 
@@ -8,11 +10,11 @@ import torch
 import pytest
 
 
-def compiled_model_regression_test(  # type: ignore[no-untyped-def]
+def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     io_settings, compiled_sent, test_files, compilation_test_settings
 ):
-    """
-    Perform regression testing for the compiled sentiment model
+    """Perform regression testing for the compiled sentiment model.
+
     Args:
         io_settings: IO settigns for workflow component
         compiled_sent: Compiled Sent model instance
@@ -85,8 +87,8 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
 def compiled_model_entity_sentiment_test(  # type: ignore[no-untyped-def]
     compiled_sent, test_sample_content, test_sample_entities, test_sample_response
 ):
-    """
-    Perform sentiment testing with entities input for the compiled sentiment model
+    """Perform sentiment testing with entities input for the compiled sentiment model.
+
     Args:
         compiled_sent: Compiled Sent model instance
         test_sample_content (str): Sample content to be tested
