@@ -73,11 +73,8 @@ def test_model_server_predict(
 
     assert test_response.status_code == 200
     actual_output = test_response.json()["outputs"]
-
     expected_output = test_predictions[test_record_index]
 
-    print("actual_output", actual_output)
-    print("expected_output", expected_output)
     assert actual_output.get("label") == expected_output.get("label")
     torch.testing.assert_close(
         actual_output.get("positive_prob"),
