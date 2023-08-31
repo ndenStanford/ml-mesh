@@ -1,3 +1,5 @@
+"""Serving data models."""
+
 # Standard Library
 from typing import List, Optional
 
@@ -12,15 +14,10 @@ class PredictConfiguration(BaseModel):
     Holds the required information to be provided in the payload and their type
 
     Attributes:
-
         lang (Optional[str]): Text to indicate the language
-
         shingle_list (Optional[int])
-
         threshold (Optional[float])
-
         num_perm (Optional[int]))
-
     """
 
     language: Optional[str] = "en"
@@ -30,9 +27,9 @@ class PredictConfiguration(BaseModel):
 
 
 class PredictInputDocumentModel(BaseModel):
-    """
-    Attributes:
+    """Predict input document model.
 
+    Attributes:
         content (str): Text to generate signature for. An empty string is needed (at least)
     """
 
@@ -40,6 +37,7 @@ class PredictInputDocumentModel(BaseModel):
 
 
 class PredictRequestModel(BaseModel):
+    """Predict Request Model."""
 
     configuration: PredictConfiguration
     inputs: PredictInputDocumentModel
@@ -59,5 +57,6 @@ class PredictResponseModel(BaseModel):
 
 # --- bio response models
 class BioResponseModel(BaseModel):
+    """Bio Response model."""
 
     model_name: str = "lsh-model"

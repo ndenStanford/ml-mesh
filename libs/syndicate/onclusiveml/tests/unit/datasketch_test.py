@@ -5,6 +5,7 @@ from onclusiveml.syndicate.datasketch import MinHash, MinHashLSH
 
 
 def test_syndicate():
+    """Test syndicates."""
     shingle_set = {"functions generate hash signatures article"}
     num_perm = 128
     threshold = 0.6

@@ -1,10 +1,12 @@
-"""Sentence tokenizer test"""
+"""Timing decorator tests."""
 
 # Internal libraries
 from onclusiveml.core.timing import timing_decorator
 
 
 def test_timing_decorator(caplog):
+    """Test timing decorator."""
+
     @timing_decorator
     def some_func(content: str) -> str:
         return "Processing content: " + content
@@ -15,6 +17,8 @@ def test_timing_decorator(caplog):
 
 
 def test_timing_decorator_no_return(caplog):
+    """Test timing decorator with no return."""
+
     @timing_decorator
     def some_func_no_return(content: str) -> str:
         print("Processing content: " + content)

@@ -13,6 +13,7 @@ from onclusiveml.nlp.language.lang_exception import (
 
 
 def test_detect_language():
+    """Test detect language."""
     text = "I am an engineer from London"
     lang = "en"
     res = detect_language(content=text, language=lang)
@@ -20,6 +21,7 @@ def test_detect_language():
 
 
 def test_detect_language_unknown():
+    """Test language detection for unknown language."""
     text = "I am an engineer from London"
     lang = "UNKNOWN"
     res = detect_language(content=text, language=lang)
@@ -27,12 +29,14 @@ def test_detect_language_unknown():
 
 
 def test_detect_language_content():
+    """Test language detection for English."""
     text = "I am an engineer from London"
     res = detect_language(content=text)
     assert res == LanguageIso.EN
 
 
 def test_detect_language_content_fr():
+    """Test language detection for French."""
     text = "Je suis un ingénieur de Londres"
     res = detect_language(content=text)
     assert res == LanguageIso.FR
@@ -56,6 +60,8 @@ def test_detect_language_content_fr():
     ],
 )
 def test_detect_language_decorator(content, language, supported_languages, expected):
+    """Test language detection decorator."""
+
     @filter_language(supported_languages)
     def some_func(content: str, language: str = None) -> str:
         return "Processing content: " + content
@@ -93,6 +99,7 @@ def test_detect_language_decorator(content, language, supported_languages, expec
 def test_detect_language_decorator_exceptions(
     content, language, supported_languages, exception, expected
 ):
+    """Test language detection decorator exceptions."""
     with pytest.raises(exception, match=expected):
 
         @filter_language(supported_languages, raise_if_none=True)
@@ -116,6 +123,8 @@ def test_detect_language_decorator_exceptions(
 def test_detect_language_decorator_return_None(
     content, language, supported_languages, expected
 ):
+    """Test detect language decorator returns None."""
+
     @filter_language(supported_languages, raise_if_none=False)
     def some_func(content: str, language: str = None) -> str:
         return "Processing content: " + content

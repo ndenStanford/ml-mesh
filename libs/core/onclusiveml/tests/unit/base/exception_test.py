@@ -5,6 +5,8 @@ from onclusiveml.core.base.exception import OnclusiveException
 
 
 class DummyException(OnclusiveException):
+    """Dummy exception."""
+
     message_format = "Raise {code} with {description}."
 
 

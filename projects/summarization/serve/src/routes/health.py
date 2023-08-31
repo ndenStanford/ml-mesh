@@ -1,5 +1,4 @@
-"""Health endpoint"""
-# Standard library
+"""Health endpoint."""
 
 # 3rd party libraries
 import requests
@@ -16,7 +15,7 @@ router = APIRouter()
 
 @router.get("/health", status_code=status.HTTP_200_OK)
 async def health() -> str:
-    """health endpoint"""
+    """Health endpoint."""
     if settings.ENVIRONMENT in ("stage", "prod"):
         requests.post(
             "https://uptime.betterstack.com/api/v1/heartbeat/{}".format(
