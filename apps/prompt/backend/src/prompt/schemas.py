@@ -106,7 +106,7 @@ class PromptTemplateSchema(BaseModel):
             raise PromptNotFound(alias=self.alias)
 
         for prompt in prompts:
-            for _, x in settings.LIST_OF_PROMPTS.items():
+            for x in settings.LIST_OF_PROMPTS:
                 if prompt.alias in x[1]:
                     raise DeletionProtectedPrompt(alias=self.alias)
             prompt.delete()

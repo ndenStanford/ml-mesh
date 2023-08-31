@@ -21,14 +21,12 @@ from src.serve.server_models import (
 )
 
 
-@pytest.mark.order(5)
 def test_model_server_root(test_client):
     """Tests the running ModelServer instance's root endpoint."""
     root_response = test_client.get("/v1/")
     assert root_response.status_code == 200
 
 
-@pytest.mark.order(6)
 def test_model_server_liveness(test_client):
     """Tests the running ModelServer instance's liveness endpoint."""
     liveness_response = test_client.get("/v1/live")
@@ -37,7 +35,6 @@ def test_model_server_liveness(test_client):
     assert liveness_response.json() == LivenessProbeResponse().dict()
 
 
-@pytest.mark.order(6)
 def test_model_server_readiness(test_client):
     """Tests the running ModelServer instance's readiness endpoint."""
     readiness_response = test_client.get("/v1/ready")
@@ -46,7 +43,6 @@ def test_model_server_readiness(test_client):
     assert readiness_response.json() == ReadinessProbeResponse().dict()
 
 
-@pytest.mark.order(7)
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
 def test_model_server_predict(
     test_model_name,
@@ -85,7 +81,23 @@ def test_model_server_predict(
     assert actual_output == expected_output
 
 
-@pytest.mark.order(7)
+@pytest.mark.parametrize("test_input", [("Onclusive is great")])
+def test_model_server_predict_no_entities(test_model_name, test_client, test_input):
+    """Tests ModelServer's predict response when no entities are returned."""
+    input = PredictRequestModel(
+        configuration=PredictConfiguration(return_pos=True, language="en"),
+        inputs=PredictInputContentModel(content=test_input),
+    )
+
+    test_response = test_client.post(
+        f"/v1/model/{test_model_name}/predict", json=input.dict()
+    )
+
+    assert test_response.status_code == 200
+    actual_output = test_response.json()
+    assert actual_output == PredictResponseModel(outputs=PredictionOutputContent())
+
+
 def test_model_server_bio(test_model_name, test_client, test_model_card):
     """Tests the running ModelServer's bio endpoint by making genuine http requests.
 
