@@ -1,3 +1,5 @@
+"""Compile NER model."""
+
 # Standard Library
 import os
 import re
@@ -18,14 +20,14 @@ from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
 class CompiledNER:
-    """Class for performing Named Entity Recognition (NER) using neuron compiled NER pipeline"""
+    """Class for performing Named Entity Recognition (NER) using neuron compiled NER pipeline."""
 
     def __init__(
         self,
         compiled_ner_pipeline: CompiledPipeline,
     ):
-        """
-        Initalize the CompiledNER object.
+        """Initalize the CompiledNER object.
+
         Args:
             compiled_ner_pipeline (CompiledPipeline): The compiled NER pipline used for inference
         """
@@ -34,10 +36,10 @@ class CompiledNER:
         self.sentence_tokenizer = SentenceTokenizer()
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        """
-        Save compiled NER pipeline to specified directory
+        """Save compiled NER pipeline to specified directory.
+
         Args:
-            Directory (Union[Path, str]): Directory to save the compiled NER pipeline
+            directory (Union[Path, str]): Directory to save the compiled NER pipeline
         """
         self.compiled_ner_pipeline.save_pretrained(
             os.path.join(directory, "compiled_ner_pipeline")
@@ -45,8 +47,8 @@ class CompiledNER:
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledNER":
-        """
-        Load compiledNER object from specfied directory
+        """Load compiledNER object from specfied directory.
+
         Args:
             directory (Union[Path, str]): The directory path contained the pretrained compiled
                 ner pipeline
@@ -62,8 +64,8 @@ class CompiledNER:
         )
 
     def remove_html(self, text: str) -> str:
-        """
-        Remove HTML tags from input text
+        """Remove HTML tags from input text.
+
         Args:
             text (str): Input text
         Returns:
@@ -73,18 +75,25 @@ class CompiledNER:
         return text
 
     def remove_whitespace(self, text: str) -> str:
-        """
-        Remove extra white spaces from input text."
+        """Remove extra white spaces from input text.
+
         Args:
             text (str): Input text
         Returns:
             str: Text with extra whitespaces removed
         """
-
         text = re.sub(r"\s+", " ", text)
         return text
 
     def sentence_tokenize(self, sentences: str, language: str) -> List[str]:
+        """Sentence tokenization.
+
+        Args:
+            sentences (str): Input sentences
+            language (str): Input sentences language
+        Return:
+            List[str]: Tokenized sentences
+        """
         list_sentences = self.sentence_tokenizer.tokenize(
             content=sentences, language=language
         )["sentences"]
@@ -93,11 +102,11 @@ class CompiledNER:
         return list_sentences
 
     def preprocess(self, sentences: str, language: str) -> List[str]:
-        """
-        Preprocess the input sentences by removing unwanted content inside text and tokenizing
+        """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
         Args:
             sentences (str): Input sentences
+            language (str): Input sentences language
         Return:
             List[str]: Tokenized sentences
         """
@@ -107,8 +116,7 @@ class CompiledNER:
         return list_sentences
 
     def inference(self, sentences: List[str]) -> InferenceOutput:
-        """
-        Perform NER inference on a list of sentences.
+        """Perform NER inference on a list of sentences.
 
         Args:
             sentences (List[str]): list of sentences
@@ -131,8 +139,7 @@ class CompiledNER:
         return InferenceOutput(ner_labels=entities)
 
     def compute_moving_average(self, scores: List[float]) -> float:
-        """
-        Compute the moving average of a list of scores.
+        """Compute the moving average of a list of scores.
 
         Args:
             scores (List[float]): List of scores for which to compute the moving average
@@ -145,8 +152,7 @@ class CompiledNER:
     def postprocess(
         self, ner_labels: InferenceOutput, return_pos: bool
     ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
-        """
-        Postprocess NER labels to merge contiguous entities and compute scores
+        """Postprocess NER labels to merge contiguous entities and compute scores.
 
         Args:
             InferenceOutput: List of lists of NER predictions which has the attributes:
@@ -278,10 +284,11 @@ class CompiledNER:
     def extract_entities(
         self, sentences: str, language: str, return_pos: bool
     ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
-        """
-        Extract named entities from input sentence using NER
+        """Extract named entities from input sentence using NER.
+
         Args:
             sentences (str): The input sentences to extract entities from
+            language (str): input sentences language
             return_pos (bool): Flag indiciating whether to return positional information in the
                 output
         Returns:

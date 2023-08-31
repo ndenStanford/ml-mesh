@@ -1,3 +1,5 @@
+"""Serving parameters."""
+
 # Standard Library
 from typing import Dict, Optional, Union
 
@@ -6,13 +8,19 @@ from onclusiveml.serving.params import ServingBaseParams
 
 
 class FastAPISettings(ServingBaseParams):
+    """Fastapi test settings."""
+
     name: str = "fastapi-app-name"
 
 
 class LogConfigSettings(ServingBaseParams):
-    """Log config default settings. Taken from the uvicorn log configuration handling approach
-    shown here: https://github.com/encode/uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/...
-        ...uvicorn/config.py#L74"""
+    """Log config default settings.
+
+    Reference:
+        Taken from the uvicorn log configuration handling approach
+        shown here: https://github.com/encode/uvicorn/blob/...
+        ffa5b1ac96b10976ed0e092a0bc1dd5526101356/uvicorn/config.py#L74
+    """
 
     version: int = 1
     disable_existing_loggers: bool = False
@@ -49,9 +57,13 @@ class LogConfigSettings(ServingBaseParams):
 
 
 class UvicornSettings(ServingBaseParams):
-    """A settings wrapper around the uvicorn library's `Config` class's constructor arguments. Used
-    to configure the `ModelServer`'s underlying uvicorn process. See https://github.com/encode/...
-    uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/uvicorn/config.py#L187 for details.
+    """A settings wrapper around the uvicorn library's `Config` class's constructor arguments.
+
+    Used to configure the `ModelServer`'s underlying uvicorn process.
+
+    References:
+    https://github.com/encode/uvicorn/blob/ffa5b1ac96b10976ed0e092a0bc1dd5526101356/...
+    uvicorn/config.py#L187
     """
 
     http_port: int = 8000
@@ -61,8 +73,11 @@ class UvicornSettings(ServingBaseParams):
 
 
 class ServingParams(ServingBaseParams):
-    """A functional base class for specifying a configuration for the `ModelServer` constructor
-    method's `configuration` argument"""
+    """Base class for the `ModelServer` configuration for the constructor method's.
+
+    Note:
+        This configuration is passed via the  `configuration` argument of the method.
+    """
 
     add_liveness: bool = True
     add_readiness: bool = True

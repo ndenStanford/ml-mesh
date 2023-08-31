@@ -1,3 +1,5 @@
+"""Tracked model specs tests."""
+
 # Standard Library
 import os
 
@@ -6,12 +8,14 @@ from onclusiveml.tracking.tracked_model_utils import TrackedModelSpecs
 
 
 def test_from_env():
-    """This test relies on the following environment variables being set:
-    - NEPTUNE_PROJECT
-    - NEPTUNE_MODEL_ID
-    - NEPTUNE_API_TOKEN
-    """
+    """Tests getting data from environment variables.
 
+    Note:
+        This test relies on the following environment variables being set.
+            - NEPTUNE_PROJECT
+            - NEPTUNE_MODEL_ID
+            - NEPTUNE_API_TOKEN
+    """
     tracked_model_specs = TrackedModelSpecs()
 
     assert tracked_model_specs.project == os.environ["NEPTUNE_PROJECT"]

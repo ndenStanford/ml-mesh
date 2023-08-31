@@ -26,7 +26,7 @@ settings = get_settings()
 )
 @patch("src.db.Model.save")
 def test_init_model_name_schema(mock_save, model_name, max_tokens, temperature):
-    """Assert model initialization"""
+    """Assert model initialization."""
     parameters = json.dumps({"max_tokens": max_tokens, "temperature": temperature})
 
     model = ModelSchema(model_name=model_name, parameters=parameters)
@@ -48,7 +48,7 @@ def test_init_model_name_schema(mock_save, model_name, max_tokens, temperature):
 )
 @patch("src.db.Model.save")
 def test_save_model_schema(mock_save, model_name, max_tokens, temperature):
-    """Assert model initialization"""
+    """Assert model initialization."""
     parameters = json.dumps({"max_tokens": max_tokens, "temperature": temperature})
     model_name = ModelSchema(model_name=model_name, parameters=parameters)
     saved_model_name = model_name.save()

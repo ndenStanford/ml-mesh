@@ -1,3 +1,5 @@
+"""Model server."""
+
 # Internal libraries
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 

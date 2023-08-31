@@ -12,6 +12,7 @@ from onclusiveml.core.logging import LogFormat, get_default_logger
 
 
 def test_default_logger_init():
+    """Test default logger init."""
     logger = get_default_logger(
         "pytest", fmt=LogFormat.SIMPLE.value, level=logging.INFO
     )
@@ -37,5 +38,6 @@ def test_default_logger():
     "level", [logging.DEBUG, logging.INFO, logging.WARNING, logging.CRITICAL]
 )
 def test_logging_level(level):
+    """Test logging level."""
     logger = get_default_logger("pytest", fmt=LogFormat.SIMPLE.value, level=level)
     assert logger.isEnabledFor(level)

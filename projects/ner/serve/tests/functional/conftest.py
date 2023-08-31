@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # Standard Library
 import json
 
@@ -14,9 +16,11 @@ from src.serve.params import ServedModelArtifacts
 
 @pytest.fixture
 def test_client():
-    """Client-like session with base url to avoid duplication, as per
-    https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession"""
+    """Test client fixture.
 
+    Client-like session with base url to avoid duplication, as per
+    https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession
+    """
     serving_params = ServingParams()
     model_server_port = serving_params.uvicorn_settings.http_port
     test_model_server_url = f"http://serve:{model_server_port}"
@@ -26,19 +30,19 @@ def test_client():
 
 @pytest.fixture
 def test_served_model_artifacts():
-
+    """Served model artifacts."""
     return ServedModelArtifacts()
 
 
 @pytest.fixture
 def test_model_name(test_served_model_artifacts):
-
+    """Model name fixture."""
     return test_served_model_artifacts.model_name
 
 
 @pytest.fixture
 def test_inputs(test_served_model_artifacts):
-
+    """Inputs fixture."""
     with open(test_served_model_artifacts.inputs_test_file, "r") as json_file:
         test_inputs = json.load(json_file)
 
@@ -47,7 +51,7 @@ def test_inputs(test_served_model_artifacts):
 
 @pytest.fixture
 def test_inference_params(test_served_model_artifacts):
-
+    """Inference parameters fixture."""
     with open(test_served_model_artifacts.inference_params_test_file, "r") as json_file:
         test_inference_params = json.load(json_file)
 
@@ -56,7 +60,7 @@ def test_inference_params(test_served_model_artifacts):
 
 @pytest.fixture
 def test_predictions(test_served_model_artifacts):
-
+    """Prediction tests fixture."""
     with open(test_served_model_artifacts.predictions_test_file, "r") as json_file:
         test_predictions = json.load(json_file)
 
@@ -65,7 +69,7 @@ def test_predictions(test_served_model_artifacts):
 
 @pytest.fixture
 def test_model_card(test_served_model_artifacts):
-
+    """Model card fixture."""
     with open(test_served_model_artifacts.model_card_file, "r") as json_file:
         test_model_card = json.load(json_file)
 
