@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Bash options for strict error checking
+set -o pipefail
+
+
+# Utils
+
+error() {
+    JOB="$0"              # job name
+    LASTLINE="$1"         # line of error occurrence
+    LASTERR="$2"          # error code
+    echo "ERROR in ${JOB} : line ${LASTLINE} with exit code ${LASTERR}"
+    _setup
+}
+trap 'error ${LINENO} ${?}' ERR
+
+reset='\e[0m'
+red='\e[0;31m'
+green='\e[0;32m'
+yellow='\e[0;33m'
+cyan='\e[0;36m'
+
+success() {
+    echo -e "${green}✓ $1${reset}"
+}
+
+info() {
+    echo -e "\n${cyan}INFO: $1${reset}"
+}
+
+separator() {
+    echo -e "\n${cyan}===================================================================================================================${reset}"
+}
+
+warn() {
+    echo -e "\n${yellow}WARN: $1${reset}" >&2
+}
+
+err() {
+    echo -e "\n${red}ERROR: $1${reset}" >&2
+}
+
+fatal() {
+    echo -e "\n${red}FATAL: $1${reset}" >&2
+    exit 1
+}
+
+
+info "Downloading wikimedia knowledge bases to $HOME/dev ..."
+info "Enter the list of languages you want to download data for (choices: en de fr it es ar zh ja ru pt fa uk sv hi bn)"
+read -r languages
+
+
+info "Downloading main KB..."
+if [ ! -d "$HOME/dev/db-kb.zip" ]; then
+    curl -SL https://science-miner.s3.amazonaws.com/entity-fishing/0.0.6/db-kb.zip -o "$HOME/dev/db-kb.zip"
+fi
+unzip "$HOME/dev/db-kb.zip"  -d "$HOME/dev/db-kb"
+
+info "Downloading wikimedia language specific KBs ..."
+
+language_list=("${languages}")
+
+for i in "${language_list[@]}"; do
+    info "Downloading ${i}..."
+    if [ ! -d "$HOME/dev/db-${i}.zip" ]; then
+        curl -SL "https://science-miner.s3.amazonaws.com/entity-fishing/0.0.6/db-${i}.zip" -o "$HOME/dev/db-${i}.zip"
+    fi
+    unzip "$HOME/dev/db-${i}.zip" -d "$HOME/dev/db-${i}"
+    rm -r "$HOME/dev/db-${i}.zip"
+done
