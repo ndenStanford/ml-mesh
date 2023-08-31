@@ -107,8 +107,7 @@ services:
       - type: bind
         source: gpu-train/tests
         target: /docker/gpu-train/tests
-    #command: [pytest, tests/core, -ra, -vv, --capture=no]
-    command: [train]
+    command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
 
   # ===========================================================
