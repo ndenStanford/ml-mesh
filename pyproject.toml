@@ -9,10 +9,10 @@ python = "3.8.16"
 click = "8.1.0"
 core = {path = "libs/core"}
 pytest = "7.2.0"
+boto3 = "^1.28.29"
 
 
 [tool.poetry.group.ci.dependencies]
-boto3 = "^1.28.29"
 sagemaker = "^2.178.0"
 python-dotenv = "^1.0.0"
 tracking = {path = "libs/tracking"}
