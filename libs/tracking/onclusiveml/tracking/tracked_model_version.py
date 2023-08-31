@@ -1,3 +1,5 @@
+"""Model version."""
+
 # Standard Library
 import json
 import os
@@ -23,6 +25,8 @@ from onclusiveml.tracking.tracking_settings import (
 
 
 class TrackedModelVersion(ModelVersion):
+    """Tracked model version."""
+
     def __init__(
         self,
         *args: Any,
@@ -33,7 +37,6 @@ class TrackedModelVersion(ModelVersion):
         Args:
             s3_backend (str, optional): Bucket name. Defaults to ''.
         """
-
         super().__init__(*args, **kwargs)
         # configure s3 storage backend
         self.s3_storage_backend_config = TrackingLibraryBackendSettings()
@@ -41,11 +44,11 @@ class TrackedModelVersion(ModelVersion):
 
     # --- S3 specific utilities
     def configure_s3_storage_backend(self, **kwargs: Any) -> None:
+        """Validates and sets the s3 storage backend configuration for this TrackedModelVersion instance.
 
-        """Validates and sets the s3 storage backend configuration for this TrackedModelVersion
-        instance. If not arguments are provided, falls back on the configuration derived at the time
-        of instance initialization. If no such configuration exists (e.g. if this is called by the
-        constructor) environment variables and default values as per the
+        If not arguments are provided, falls back on the configuration derived at the time
+        of instance initialization. If no such configuration exists (e.g. if this is called
+        by the constructor) environment variables and default values as per the
         TrackedLibraryBackendSetting class will be used.
 
         Args:
@@ -67,11 +70,7 @@ class TrackedModelVersion(ModelVersion):
             ValueError: If `use_s3_backend` is set to True but an invalid bucket `s3_backend_bucket`
                 is specified (see tracking_settings for valid range)
             ValueError: If the `s3_backend_prefix` is not empty but starts/ends with a '/'
-
-        Returns:
-            None:
         """
-
         logger.debug(
             "(Re-)configuring backend settings using the following parameters (using"
             f"defaults for others): {kwargs}"
@@ -99,13 +98,12 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             boto3.resource.Bucket: An initialized S3 bucket client
         """
-
         return boto3.resource("s3").Bucket(s3_backend_bucket)
 
     def derive_model_version_s3_prefix(self, s3_prefix: str = "") -> str:
-        """
-        Helper function that assembles the S3 storage prefix for the current model version. Uses
-        the pattern
+        """Helper function that assembles the S3 storage prefix for the current model version.
+
+        Uses the pattern:
 
         ({s3_prefix}/){workspace}/{project}/{model}-{model_version}, e.g.
 
@@ -119,7 +117,6 @@ class TrackedModelVersion(ModelVersion):
             str: The model version level S3 prefix. Will be used to prepend any and all file
                 attribute S3 prefixes associated to this model version.
         """
-
         model_version_s3_prefix = (
             f"{self._workspace}/{self._project_name}/{self._model}/{self._sys_id}"
         )
@@ -156,7 +153,6 @@ class TrackedModelVersion(ModelVersion):
             FileExistsError: If the specified `local_file_path` does not point to a valid file, this
                 exception will be raised.
         """
-
         # if the use of s3 storage is not specified at the file upload level, fall back on
         # `s3_storage_backend_config` parameter
         use_s3 = kwargs.get("use_s3", self.s3_storage_backend_config.use_s3_backend)
@@ -220,13 +216,15 @@ class TrackedModelVersion(ModelVersion):
         neptune_attribute_path: str,
         local_file_path: Union[str, Path] = "",
     ) -> str:
-        """Utility to
-        - generate an S3 bucket client for the configured storage backend 3 bucket
-        - upload the designated file from local to the model version and neptune attribute path
-            specific S3 location
-        - track the uploaded file via neptune's track_files method, thus adding it to the
-            TrackedModelVersion's meta data for the python object instance, and subsequently also
-            to the resulting model registry entry
+        """Uploads files to S3.
+
+        Utility to
+            - generate an S3 bucket client for the configured storage backend 3 bucket
+            - upload the designated file from local to the model version and neptune attribute path
+                specific S3 location
+            - track the uploaded file via neptune's track_files method, thus adding it to the
+                TrackedModelVersion's meta data for the python object instance, and subsequently
+                also to the resulting model registry entry
 
         Args:
             neptune_attribute_path (str): _description_
@@ -235,7 +233,6 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             str: The full S3 uri of the uploaded file
         """
-
         s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
         s3_prefix = self.s3_storage_backend_config.s3_backend_prefix
 
@@ -272,7 +269,8 @@ class TrackedModelVersion(ModelVersion):
         neptune_attribute_path: str,
         exclude: List[str] = ["__", "."],
     ) -> List[Tuple[str, str]]:
-        """
+        """Registers directory files to be uploaded.
+
         Utility function that scans a specified directory on local disk, captures all files and
         transforms their respective relative file paths into neptune attribute references.
 
@@ -291,7 +289,6 @@ class TrackedModelVersion(ModelVersion):
             - the attribute references, prepended with the specified directory path after it has
                 been converted into a forward slash separated attribute reference prefix.
         """
-
         local_paths_and_attribute_references: List[Tuple[str, str]] = []
         # nested subdirectories and files of any recursion depth should be supported
         for file_directory_path, subdirs, file_names in os.walk(
@@ -339,7 +336,9 @@ class TrackedModelVersion(ModelVersion):
         exclude: List[str] = ["__", "."],
         **kwargs: Any,
     ) -> None:
-        """Utility function to upload an entire directory to a specified model version on neptune
+        """Uploads entire directory to model registry.
+
+        Utility function to upload an entire directory to a specified model version on neptune
         ai. For each file in the specified directory, the neptune_attribute_path value will derived
         according to
             {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
@@ -401,7 +400,9 @@ class TrackedModelVersion(ModelVersion):
     def upload_config_to_model_version(
         self, config: Dict, neptune_attribute_path: str, **kwargs: Any
     ) -> None:
-        """Utility function that uploads Dict types as .json objects directly to neptune's model
+        """Uploads configuration to model registry.
+
+        Utility function that uploads Dict types as .json objects directly to neptune's model
         version registry without having to go via local files or caches.
 
         Upload counterpart to the `download.download_config_from_model_version` method.
@@ -413,7 +414,6 @@ class TrackedModelVersion(ModelVersion):
             **kwargs (Any): The upload_file_to_model_version kwargs. Specify `use_s3=True` here to
                 make use of the configured S3 storage backend when uploading the config dictionary
         """
-
         config_json = json.dumps(config, indent=4)
 
         logger.debug(f"JSON of config file: {config_json}")
@@ -443,11 +443,11 @@ class TrackedModelVersion(ModelVersion):
                 to. Only supports local file systems.
             neptune_attribute_path (str): The pseudo relative file path of the meta data object that
                 should be downloaded.
+
         Raises:
             FileExistsError: If the specified `local_file_path` points to an existing file, this
                 exception will be raised.
         """
-
         if os.path.exists(local_file_path):
             raise FileExistsError(f"Specified file {local_file_path} already exists.")
 
@@ -474,17 +474,17 @@ class TrackedModelVersion(ModelVersion):
     def is_likely_s3_backed_file(
         neptune_attribute: Union[ArtifactAttributeType, FileAttributeType, Any]
     ) -> bool:
-        """Utility to identiy neptune attributes that are most likely backed by S3 storage. Because
-        slightly different download behaviour of the two different attribute file types
-        - neptune.attributes.atoms.file.File
-            - will save attribute data in specified `destination` argument
-        - neptune.attributes.atoms.artifact.Artifact
-            - will create a directory in the specified `destination` argument, then save the file
-                using stored meta data to re-create the correct filename
+        """Utility to identiy neptune attributes that are most likely backed by S3 storage.
 
-        it is necessary to disambiguate these to ensure consistent download behaviour at the
+        Because slightly different download behaviour of the two different attribute file types
+            - neptune.attributes.atoms.file.File
+                - will save attribute data in specified `destination` argument
+            - neptune.attributes.atoms.artifact.Artifact
+                - will create a directory in the specified `destination` argument, then save the
+                    file using stored meta data to re-create the correct filename
+
+        It is necessary to disambiguate these to ensure consistent download behaviour at the
         `download_file_from_model_version` method level.
-
 
         Args:
             neptune_attribute (_type_): The neptune attribute object whose backend storage type
@@ -493,7 +493,6 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             bool: Whether we are most likely dealing with an attribute whose data is store on S3.
         """
-
         if not hasattr(neptune_attribute, "fetch_files_list"):
             return False
         else:
@@ -517,10 +516,12 @@ class TrackedModelVersion(ModelVersion):
         neptune_attribute_path: str,
         local_file_path: Union[str, Path] = "",
     ) -> None:
-        """Utility to
-        - generate an S3 bucket client for the configured storage backend 3 bucket
-        - download the designated file from s3 - by digging into the neptune Artifact object's meta
-            data to obtain the S3 uri - to local disk
+        """Download utilities.
+
+        Executres the following:
+            - generate an S3 bucket client for the configured storage backend 3 bucket
+            - download the designated file from s3 - by digging into the neptune Artifact object's
+                metadata to obtain the S3 uri - to local disk
 
         Note that this assumes the underlying neptune artiact to only have one file, e.g. the result
         of calling `upload_tracked_file_to_s3`.
@@ -532,7 +533,6 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             None
         """
-
         s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
         # extract the underlying s3 file's prefix as required by boto3's download_file method
         neptune_attribute = self[neptune_attribute_path]
@@ -556,8 +556,7 @@ class TrackedModelVersion(ModelVersion):
     def _extract_data_attributes(
         cls, value: Any
     ) -> Union[FileAttributeType, ArtifactAttributeType, Dict]:
-        """Utility function to unravel a ModelVersion structure attribute dict and extract all the
-        File type elements no matter how deeply nested.
+        """Utility function to unravel a ModelVersion structure attribute dict.
 
         Args:
             value (Any): Since this is a recursive function, this can be one of the following:
@@ -565,13 +564,9 @@ class TrackedModelVersion(ModelVersion):
                 - a File type attribute
                 - some other non-File attribute supported by neptune
 
-        Returns:
-            Any: N/A
-
         Yields:
             Iterator[Any]: Either a File instance or a dictionary
-        """ """"""
-
+        """
         for k, v in value.items():
 
             if isinstance(v, dict):
@@ -590,9 +585,7 @@ class TrackedModelVersion(ModelVersion):
     def _derive_and_filter_neptune_attribute_paths(
         file_attributes: List[File], neptune_attribute_prefix: str
     ) -> List[str]:
-        """Utility function that derives the full neptune model registry path for all File instances
-        specified and deselected all those that don't start with the specified
-        `neptune_attribute_prefix`.
+        """Utility function that derives the full neptune model registry path.
 
         Args:
             file_attributes (List[File]): A list of File instances, roughly in depth first order as
@@ -603,8 +596,7 @@ class TrackedModelVersion(ModelVersion):
 
         Returns:
             List[str]: A list of neptune attribute paths.
-        """ """"""
-
+        """
         filtered_neptune_attribute_paths = []
 
         for file_attribute in file_attributes:
@@ -638,8 +630,7 @@ class TrackedModelVersion(ModelVersion):
         local_directory_path: Union[str, Path],
         create_local_subdirs: bool = True,
     ) -> Union[str, Path]:
-        """Utility function that converts a neptune file data reference to a valid, sensible local
-            path, prefixed with the specified `local_directory_path` path.
+        """Utility function that converts a neptune file data reference to a local path.
 
         Args:
             neptune_attribute_path (str): A neptune attribute path to be converted to
@@ -690,13 +681,13 @@ class TrackedModelVersion(ModelVersion):
         local_directory_path: Union[str, Path],
         neptune_attribute_path: str,
     ) -> List[Tuple[str, Union[Path, str]]]:
-        """Utility function that gathers all File objects located under the specified
+        """Intenvories directory to be downloaded.
+
+        Utility function that gathers all File objects located under the specified
         `neptune_attribute_path` of the specified model version instance, and assumes them to be the
         result of a previous upload_directory_to_model_version call. Reconstructs their respective
         attribute references and uses them to build a local file system file path prepended by the
         specified `local_directory` path.
-
-        Returns a
 
         Args:
             local_directory_path (Union[str, Path]): _description_
@@ -741,9 +732,10 @@ class TrackedModelVersion(ModelVersion):
         local_directory_path: Union[str, Path],
         neptune_attribute_path: str,
     ) -> None:
-        """Utility function to upload an entire directory to a specified model version on neptune
-            ai. For each file in the specified directory, the neptune_attribute_path value will
-            derived according to
+        """Utility function to upload an entire directory to a specified model version on neptuneai.
+
+        For each file in the specified directory, the neptune_attribute_path value will
+        be derived according to:
                 {neptune_attribute_path}/{arbitrary}/{levels}/{of}/{subdirectories}/{file_name}.
 
         Might want to add the option to exclude files and subdirectories from uploading in the
@@ -789,9 +781,10 @@ class TrackedModelVersion(ModelVersion):
             )
 
     def download_config_from_model_version(self, neptune_attribute_path: str) -> Dict:
-        """Utility function that fetches .json type File attributes from a specified neptune model
-        version. Downloads the file into a temporary file on local disk and removes it once the
-        object has been loaded into the python session.
+        """Utility function that fetches .json type File attributes from a specified neptune model version.
+
+        Downloads the file into a temporary file on local disk and removes it once the object has
+        been loaded into the python session.
 
         Download counterpart to the `upload.upload_config_to_model_version` method.
 
@@ -800,7 +793,6 @@ class TrackedModelVersion(ModelVersion):
             neptune_attribute_path (str): The pseudo relative file path of the meta data object that
                 will be created. Relative w.r.t to the model version as pseudo root dir.
         """
-
         temp_file_name = f"{dt.now().strftime('%Y-%m-%d_%H-%M-%S.%f')}.json"
 
         self.download_file_from_model_version(

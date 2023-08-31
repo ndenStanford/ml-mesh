@@ -1,10 +1,12 @@
+"""Conftest."""
+
 # 3rd party libraries
 import pytest
 
 
 @pytest.fixture
 def test_model_card():
-
+    """Test model card."""
     return {
         "model_artifact_attribute_path": "model/some/other/dir",
         "model_test_files": {

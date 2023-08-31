@@ -1,3 +1,5 @@
+"""Test compile text classification pipeline."""
+
 # Standard Library
 from typing import List, Tuple
 
@@ -38,6 +40,7 @@ def test_compiled_text_classification_pipeline_from_pipeline(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled text classification pipeline."""
     # create compiled pipeline
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,
