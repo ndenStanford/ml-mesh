@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import os
 from typing import List, Tuple, Union
@@ -12,7 +14,7 @@ from onclusiveml.tracking import (
 
 # --- settings classes
 class TrackedKeywordModelSpecs(TrackedModelSpecs):
-    """Params class for specifying the neptune project and model suite for the component's output"""
+    """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/keywords"
     model = "KEYWORDS-TRAINED"
@@ -23,8 +25,11 @@ class TrackedKeywordModelSpecs(TrackedModelSpecs):
 
 
 class Inputs(TrackedParams):
-    """Ground truth inputs for model inference. Will be used as ground truth inputs for components
-    downstream of `train` (e.g. `compile` and `serve`) during testing"""
+    """Ground truth inputs for model inference.
+
+    Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
+    `serve`) during testing
+    """
 
     sample_documents: List[str] = [
         """Supervised learning is the machine learning task of learning a function that maps an
@@ -66,8 +71,11 @@ class Inputs(TrackedParams):
 
 
 class KeywordExtractionSettings(TrackedParams):
-    """Ground truth specification for model inference mode. Will be used as ground truth inputs for
-    components downstream of `train` (e.g. `compile` and `serve`) during testing"""
+    """Ground truth specification for model inference mode.
+
+    Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
+    `serve`) during testing
+    """
 
     keyphrase_ngram_range: Tuple[int, int] = (1, 1)
     stop_words: Union[str, List[str]] = "english"
@@ -81,7 +89,8 @@ class KeywordExtractionSettings(TrackedParams):
 class KeywordModelParams(TrackedParams):
     """Params class specifying the huggingface model being used for the keywords model backend.
 
-    Includes `KeywordExtractionSettings`"""
+    Includes `KeywordExtractionSettings`
+    """
 
     huggingface_pipeline_task: str = "feature-extraction"
     huggingface_model_reference: str = (

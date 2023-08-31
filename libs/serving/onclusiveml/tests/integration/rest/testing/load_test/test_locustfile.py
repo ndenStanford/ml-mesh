@@ -1,3 +1,5 @@
+"""Locust file tests."""
+
 # 3rd party libraries
 from locust import HttpUser, between, task
 

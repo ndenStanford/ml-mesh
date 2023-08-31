@@ -1,4 +1,4 @@
-"""Test routes"""
+"""Test routes."""
 
 # Standard Library
 import datetime
@@ -371,7 +371,11 @@ def test_delete_prompt(
 
 
 @pytest.mark.parametrize(
-    "alias, template", [("english-summarization", PromptEnum.EN.value[0])]
+    "alias, template",
+    [
+        ("english-summarization", PromptEnum.EN.value[0]),
+        ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
+    ],
 )
 @patch("src.db.Model.delete")
 @patch.object(PromptTemplateTable, "query")

@@ -1,3 +1,5 @@
+"""Upload file tests."""
+
 # 3rd party libraries
 import pytest
 
@@ -19,7 +21,7 @@ def test_upload_file_to_model_version(
     file_name,
     file_extension,
 ):
-
+    """Test upload file to model version."""
     test_model_version.upload_file_to_model_version(
         local_file_path=f"{test_file_directory_upload}/{file_name}.{file_extension}",
         neptune_attribute_path=f"model/s3_{test_use_s3_backend}/{file_name}",
@@ -42,7 +44,7 @@ def test_capture_directory_for_upload(
     neptune_attribute_path,
     test_captured_directories_for_upload_expected,
 ):
-
+    """Test capture directory for upload."""
     test_captured_directories_for_upload_actual = (
         test_model_version.capture_directory_for_upload(
             local_directory_path=test_file_directory_upload,
@@ -62,7 +64,7 @@ def test_capture_directory_for_upload(
 def test_upload_directory_to_model_version(
     test_model_version, test_use_s3_backend, test_file_directory_upload
 ):
-
+    """Test upload directory to model version."""
     test_model_version.upload_directory_to_model_version(
         local_directory_path=test_file_directory_upload,
         neptune_attribute_path=f"model/s3_{test_use_s3_backend}/test_file_directory",
@@ -75,7 +77,7 @@ def test_upload_directory_to_model_version(
 @pytest.mark.order(1)
 @pytest.mark.upload
 def test_upload_config_to_model_version(test_model_version, test_config_expected):
-
+    """Test upload config to model version."""
     test_model_version.upload_config_to_model_version(
         config=test_config_expected,
         neptune_attribute_path=f"s3_{False}/test_config",
@@ -90,7 +92,7 @@ def test_upload_config_to_model_version(test_model_version, test_config_expected
 def test_upload_model_card_to_model_version(
     test_model_version, test_model_card_expected
 ):
-
+    """Tests upload model card to model version."""
     test_model_version.upload_config_to_model_version(
         config=test_model_card_expected,
         neptune_attribute_path=f"s3_{False}/test_model_card",

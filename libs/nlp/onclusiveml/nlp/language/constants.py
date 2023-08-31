@@ -94,7 +94,7 @@ class LanguageIso(Enum):
 
     @classmethod
     def from_language_iso(cls, lang: str) -> Optional["LanguageIso"]:
-        """Returns LanguageIso from string input"""
+        """Returns LanguageIso from string input."""
         reverse: Dict[str, "LanguageIso"] = {iso.value: iso for iso in LanguageIso}
         return reverse.get(lang.lower())
 

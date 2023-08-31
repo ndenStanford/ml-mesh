@@ -1,3 +1,4 @@
+"""Upload compiled model."""
 # Standard Library
 from datetime import datetime as dt
 
@@ -18,7 +19,7 @@ from src.settings import (  # type: ignore[attr-defined]
 
 
 def main() -> None:
-
+    """Upload compiled model."""
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level

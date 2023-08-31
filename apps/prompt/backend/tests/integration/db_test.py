@@ -8,6 +8,7 @@ from src.db import BaseTable
 
 
 def test_base_table_save():
+    """Test save table."""
     element = BaseTable()
     # cannot save with a base table class
     with pytest.raises(AttributeError):

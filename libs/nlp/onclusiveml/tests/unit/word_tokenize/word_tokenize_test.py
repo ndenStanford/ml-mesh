@@ -8,7 +8,11 @@ from onclusiveml.nlp.word_tokenize import SPECIAL_CHARACTERS, WordTokenizer
 
 
 def test_word_tokenize():
-    text = """Elon Musk was the second person ever to amass a personal fortune of more than $200 billion, breaching that threshold in January 2021, months after Jeff Bezos."""  # noqa: E501
+    """Test word tokenizer."""
+    text = """
+    Elon Musk was the second person ever to amass a personal fortune of more than $200 billion,
+    breaching that threshold in January 2021, months after Jeff Bezos.
+    """
     tokenizer = WordTokenizer()
     res = tokenizer.tokenize(content=text)
     assert res["words"] == [
@@ -47,6 +51,7 @@ def test_word_tokenize():
 
 
 def test_word_tokenize_fr():
+    """Test word tokenizer French."""
     text = """Elon Reeve Musk naît le 28 juin 1971 à Pretoria, en Afrique du Sud."""  # noqa: E501
     tokenizer = WordTokenizer()
     res = tokenizer.tokenize(content=text, language="french")
@@ -75,6 +80,7 @@ def test_word_tokenize_fr():
     SPECIAL_CHARACTERS,
 )
 def test_word_tokenize_unique_chars(char):
+    """Test word tokenizer on unique characters."""
     word1 = "one"
     word2 = "two"
     test_word = word1 + char + word2

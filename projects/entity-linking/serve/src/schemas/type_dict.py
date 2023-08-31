@@ -1,3 +1,5 @@
+"""Entity linking type dict."""
+
 # 3rd party libraries
 from typing_extensions import NotRequired, TypedDict
 
