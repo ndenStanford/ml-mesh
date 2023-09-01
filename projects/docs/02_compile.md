@@ -2,9 +2,9 @@
 
 This document outlines how to run and test your project's `compile` component.
 
-## 1 Scope of the `compile` component
+## 1 Scope of the `compile` component :mag_right:
 
-### 1.1 Overview
+### 1.1 Overview :mount_fuji:
 
 A project's `compile` container image provides the code and runtime environment for
 - retrieving a specified, uncompiled model / pipeline from the neptune AI model registry,
@@ -33,14 +33,14 @@ Specs defined in the `config/prod.env` are used only during CI processes.
 Orchestration & execution of these components as a model compile *pipeline* is done by the Github
 Actions CI process of this same `ml-mesh` repository.
 
-## 2 Setup & references
+## 2 Setup & references :wrench:
 
 Projects implementing a `compile` component are
 - **`keywords`**
 - `ner`
 - `sentiment`
 
-### 2.1 Environment variables
+### 2.1 Environment variables :deciduous_tree:
 
 To follow the instructions in this guide, run
 
@@ -55,7 +55,7 @@ export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 
 or update your `.envrc` file accordingly.
 
-### 2.2 Docker compose
+### 2.2 Docker compose :whale:
 
 The following `docker compose` services are typically associated with a project's `compile`
 component:
@@ -77,7 +77,7 @@ component:
    - used to run `functional` test suite (if applicable)
 
 
-### 2.3 Building the `compile` component
+### 2.3 Building the `compile` component :construction:
 
 To locally build the image
 - using the `${BASE_IMAGE_TAG}` version of the base image, and
@@ -95,7 +95,7 @@ make projects.build/${PROJECT_NAME} \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 2.3 Example implementation
+### 2.3 Example implementation :nut_and_bolt: :eyes:
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -108,7 +108,7 @@ see the
 - [**`keywords` project's `compile` component directory**](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and
 - [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L63).**
 
-## 3 Testing the `compile` component
+## 3 Testing the `compile` component :warning:
 
 To validate every change on the component, test suites should be run using the
 `docker-compose.dev.yaml` file. The following test suites are implemented:
@@ -117,7 +117,7 @@ To validate every change on the component, test suites should be run using the
 - `integration` (optional)
 - `functional` (optional)
 
-### 3.1 Run `unit` tests
+### 3.1 Run `unit` tests :warning: :nut_and_bolt:
 
 To run the `unit` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
 
@@ -125,7 +125,7 @@ To run the `unit` tests for the `compile` component using the `docker-compose.de
 make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.2 Run `integration` tests
+### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
 
 To run the `integration` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
 
@@ -133,7 +133,7 @@ To run the `integration` tests for the `compile` component using the `docker-com
 make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.3 Run `functional` tests
+### 3.3 Run `functional` tests :warning: :nut_and_bolt: :nut_and_bolt: :nut_and_bolt:
 
 To run the `functional` tests for the `compile` component using the `docker-compose.dev.yaml` file,  run:
 
@@ -141,7 +141,7 @@ To run the `functional` tests for the `compile` component using the `docker-comp
 make projects.functional/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-## 4 Running the `compile` component
+## 4 Running the `compile` component :rocket:
 
 ### 4.1 Without containers (initial development and debugging only)
 
@@ -167,7 +167,7 @@ As described in the previous section the `settings.py` script will fall back ont
 `config/dev.env` file for any environment variables that it cant obtain from the environment.
 Editing that file allows for configuring development pipeline runs.
 
-### 4.2 With containers (recommended approach)
+### 4.2 With containers (recommended approach) :rocket: :whale:
 
 Running the below steps will create an additional `outputs` directory in the
 `projects/${PROJECT_NAME}/compile` directory, holding all the below 4 steps' outputs in 4 separate

@@ -73,7 +73,7 @@ component:
 - `serve-load` (optional)
    - used to run `load` test suite (if applicable)
 
-### 2.3 Building the `serve` component :factory:
+### 2.3 Building the `serve` component :construction:
 
 To locally build the image
 - using the `${BASE_IMAGE_TAG}` version of the base image, and
@@ -125,7 +125,7 @@ make projects.start/${PROJECT_NAME}-download-model \
 ```
 3. Check the model artifacts are located in the right location
 
-### 2.5 Example implementation :nut_and_bolt
+### 2.5 Example implementation :nut_and_bolt: :eyes:
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -222,7 +222,7 @@ To run the `load` tests for the `serve` component using the `docker-compose.dev.
 make projects.load/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.5 Run manual tests
+### 3.5 Run manual tests :warning: :hand:
 
 Before pinging the model service, make sure it is up and running by following the instructions in [the section on starting the model server](#42-with-containers-recommended-approach)
 
@@ -256,7 +256,7 @@ the functionality of your code via make command once the development is finished
 2. Run the model retrieval + registering step
    - `python -m src.smodel_server`
 
-### 4.2 With containers (recommended approach)
+### 4.2 With containers (recommended approach) :rocket: :whale:
 
 To run the `serve` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and

@@ -2,9 +2,9 @@
 
 This document outlines how to run and test your project's `train` component.
 
-## 1 Scope of the `train` component
+## 1 Scope of the `train` component :mag_right:
 
-### 1.1 Overview
+### 1.1 Overview :mount_fuji:
 
 A project's `train` container image provides the code and runtime environment for
 - retrieving a specified model / pipeline from huggingface,
@@ -21,14 +21,14 @@ environment variable either
 
 Specs defined in the `config/prod.env` are used only during CI processes.
 
-## 2 Setup & references
+## 2 Setup & references :wrench:
 
 Projects implementing a `train` component are
 - **`keywords`**
 - `ner`
 - `sentiment`
 
-### 2.1 Environment variables
+### 2.1 Environment variables :deciduous_tree:
 
 To follow the instructions in this guide, run
 
@@ -43,7 +43,7 @@ export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 
 or update your `.envrc` file accordingly.
 
-### 2.2 Docker compose
+### 2.2 Docker compose :whale:
 
 The following `docker compose` services are typically associated with a project's `train` component:
 - `train`
@@ -56,7 +56,7 @@ The following `docker compose` services are typically associated with a project'
 - `train-functional` (optional)
    - used to run `functional` test suite (if applicable)
 
-### 2.3 Building the `train` copmonent
+### 2.3 Building the `train` copmonent :construction:
 
 To locally build the image
 - using the `${BASE_IMAGE_TAG}` version of the base image, and
@@ -75,7 +75,7 @@ make projects.build/${PROJECT_NAME} \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 2.4 Example implementation
+### 2.4 Example implementation :nut_and_bolt: :eyes:
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -88,7 +88,7 @@ see the
 - [**`keywords` project's `train` component**](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and
 - [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L9).
 
-## 3 Testing the `train` component
+## 3 Testing the `train` component :warning:
 
 To validate every change on the component, test suites should be run using the `docker-compose.dev.yaml` file.
 The following test suites are implemented:
@@ -97,7 +97,7 @@ The following test suites are implemented:
 - `integration` (optional)
 - `functional` (optional)
 
-### 3.1 Run `unit` tests
+### 3.1 Run `unit` tests :warning: :nut_and_bolt:
 
 To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
 
@@ -105,7 +105,7 @@ To run the `unit` tests for the `train` component using the `docker-compose.dev.
 make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.2 Run `integration` tests
+### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
 
 To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
 
@@ -113,7 +113,7 @@ To run the `integration` tests for the `train` component using the `docker-compo
 make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.3 Run `functional` tests
+### 3.3 Run `functional` tests :warning: :nut_and_bolt: :nut_and_bolt: :nut_and_bolt:
 
 To run the `functional` tests for the `train` component using the `docker-compose.dev.yaml` file,  run:
 
@@ -122,7 +122,7 @@ make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_T
 ```
 
 
-## 4 Running the `train` component
+## 4 Running the `train` component :rocket:
 
 ### 4.1 Without containers (initial development and debugging only)
 
