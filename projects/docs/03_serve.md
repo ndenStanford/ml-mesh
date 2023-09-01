@@ -19,16 +19,16 @@ Each of the 3 tasks corresponds to a python module:
 3. `src/util/upload_test_results.py`
 
 The model in question can be a
-- (trained &) compiled ML model *with artifact* files that are stored in the AI model registry, as
+- :factory: (trained &) compiled ML model *with artifact* files that are stored in the AI model registry, as
  is the case for
-  - `keywords`
-  - `sentiment`
-  - `ner`,
+  - `keywords` :key:-:memo:
+  - `sentiment` :smile: vs. :frowning:
+  - `ner`, :books: -> :european_castle: :church: :hotel:
   or
-- "code-only" model *without artifact* files and no AI model registry entry, as is the case for
-  - `lsh`
-  - `entity-fishing`
-  - `summarization`
+- :speedboat: "code-only" model *without artifact* files and no AI model registry entry, as is the case for
+  - `lsh` :books: -> :hash: :hash:
+  - `entity-fishing` :fishing_pole_and_fish:
+  - `summarization` :books: -> :memo:
 
 It draws its configurations from the `src/serve/params.py` module, which parses all required
 environment variable from the environment.
@@ -36,10 +36,10 @@ environment variable from the environment.
 ## 2 Setup & references
 
 Projects implementing a `serve` component are
-- **`keywords`**
-- `lsh`
-- `entity-fishing`
-- `summarization`
+- **`keywords`** :factory:
+- `lsh` :speedboat:
+- `entity-fishing` :speedboat:
+- `summarization` :speedboat:
 
 ### 2.1 Environment variables
 
