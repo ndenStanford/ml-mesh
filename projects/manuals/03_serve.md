@@ -31,7 +31,7 @@ The model in question can be a
 It draws its configurations from the `src/serve/params.py` module, which parses all required
 environment variable from the environment.
 
-## Setup & references
+## 2 Setup & references
 
 Projects implementing a `serve` component are
 - **`keywords`**
@@ -69,7 +69,25 @@ component:
 - `serve-load` (optional)
    - used to run `load` test suite (if applicable)
 
-### 2.3 Download model
+### 2.3 Building the `serve` component
+
+To locally build the image
+- using the ${BASE_IMAGE_TAG} version of the base image, and
+- using the `docker-compose.dev.yaml`,
+- using the `development` build stage,
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-serve:${IMAGE_TAG}`, run
+the `make` target:
+
+```bash
+make projects.build/${PROJECT_NAME} \
+  COMPONENT=serve \
+  ENVIRONMENT=dev \
+  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  TARGET_BUILD_STAGE=development \
+  IMAGE_TAG=${IMAGE_TAG}
+```
+
+### 2.4 Download model
 
 If the project has model artifacts associated with its `serve` component, you will
 first need to retrieve it from the neptune AI model registry. This will create an
@@ -103,7 +121,7 @@ make projects.start/${PROJECT_NAME}-download-model \
 ```
 3. Check the model artifacts are located in the right location
 
-### 2.4 Example implementation
+### 2.5 Example implementation
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -112,8 +130,9 @@ For reference implementations of all below concepts, i.e.,
 - `test` suite implementations
 - `docker compose` files and services for `dev` and `ci`
 
-**see the [`keywords` project's `serve` component directory](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/serve) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L198).**
-
+see the
+- [**`keywords` project's `serve` component directory**](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/serve) and
+- [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L198).**
 
 ## 3 Testing the `serve` component
 
@@ -124,8 +143,6 @@ To validate every change on the component, test suites should be run using the
 - `integration` (optional)
 - `functional` (optional)
 - `load` (optional)
-
-If you haven't pulled the component image yet, [see here for (re-)building it locally](####4.2.1-building-the-docker-container)
 
 ### 3.1 Run `unit` tests
 
@@ -199,7 +216,6 @@ To run the `load` tests for the `serve` component using the `docker-compose.dev.
 make projects.load/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-
 ## 4 Running the `serve` component
 
 ### 4.1 Without containers (initial development and debugging only)
@@ -220,33 +236,18 @@ the functionality of your code via make command once the development is finished
 
 ### 4.2 With containers (recommended approach)
 
-#### 4.2.1 Building the docker container
-
-To locally build the image
-- using the ${BASE_IMAGE_TAG} version of the base image, and
-- using the `docker-compose.dev.yaml`,
-- using the `development` build stage,
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-serve:${IMAGE_TAG}`, run
-the `make` target:
-
-```bash
-make projects.build/${PROJECT_NAME} \
-  COMPONENT=serve \
-  ENVIRONMENT=dev \
-  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-  TARGET_BUILD_STAGE=development \
-  IMAGE_TAG=${IMAGE_TAG}
-```
-
-#### 4.2.2 Running the components inside docker
-
 To run the `serve` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
 - internal `projects` level `make` & `docker compose` utilities, follow the below steps.
 - a locally stored model artifact obtained by completing step
-[### 2.3 Download model](2.3-download-model),
+[2.4 Download model](#2.4-download-model),
 
-run
+#### 4.2.1 Update configuration
+
+Update the `docker-compose.dev.yaml`'s `serve` service as needed. `docker compose` will inject the
+environment variable values directly into the running container (see below) to allow for serving configuration updates without requiring a rebuild of the docker container.
+
+#### 4.2.2 Serve the model
 
 ```bash
 make projects.start/${PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}

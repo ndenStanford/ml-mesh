@@ -56,8 +56,26 @@ The following `docker compose` services are typically associated with a project'
 - `train-functional` (optional)
    - used to run `functional` test suite (if applicable)
 
+### 2.3 Building the `train` copmonent
 
-### 2.3 Example implementation
+To locally build the image
+- using the ${BASE_IMAGE_TAG} version of the base image, and
+- using the `docker-compose.dev.yaml`,
+- using the `development` build stage,
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`,
+
+run:
+
+```bash
+make projects.build/${PROJECT_NAME} \
+  COMPONENT=train \
+  ENVIRONMENT=dev \
+  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  TARGET_BUILD_STAGE=development \
+  IMAGE_TAG=${IMAGE_TAG}
+```
+
+### 2.4 Example implementation
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -78,8 +96,6 @@ The following test suites are implemented:
 - `unit` (mandatory)
 - `integration` (optional)
 - `functional` (optional)
-
-If you haven't pulled the component image yet, [see here for (re-)building it locally](####4.2.1-building-the-docker-container)
 
 ### 3.1 Run `unit` tests
 
@@ -129,37 +145,20 @@ Editing that file allows for configuring development pipeline runs.
 
 ### 4.2 With containers (recommended approach)
 
-#### 4.2.1 Building the docker container
-
-To locally build the image
-- using the ${BASE_IMAGE_TAG} version of the base image, and
-- using the `docker-compose.dev.yaml`,
-- using the `development` build stage,
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`,
-
-run:
-
-```bash
-make projects.build/${PROJECT_NAME} \
-  COMPONENT=train \
-  ENVIRONMENT=dev \
-  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-  TARGET_BUILD_STAGE=development \
-  IMAGE_TAG=${IMAGE_TAG}
-```
-
-#### 4.2.2 Running the docker container using docker compose
-
-To run the `train` container locally using
+To run the `train` container locally as a one-step pipeline using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
 - internal `projects` level `make` & `docker compose` utilities, follow the below steps.
 
-1. Update the `dev.env` file in the `config` directory as needed. `docker compose` will inject
-   the file's environment variable values directly from the file into the running container (see
-   below) to allow for pipeline runtime configurations without requiring a rebuild of the docker
-   container.
-2. Update the `train` service in your `docker compose` file accordingly
-3. Run the container:
+#### 4.2.1 Update configuration
+
+Update
+- the `dev.env` file in the `config` directory and
+- the `docker-compose.dev.yaml`'s `train` service
+ as needed. `docker compose` will inject the file's environment variable values directly into the
+ running container (see below) to allow for pipeline runtime configurations without requiring a
+ rebuild of the docker container.
+
+#### 4.2.2 (Train, evaluate &) register the model
 
 ```bash
 make projects.start/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
