@@ -235,6 +235,9 @@ Once the model server is running visit `http://0.0.0.0:8000/docs` for the FastAP
 
 For expected results, refer to the project's `serve` component's `README.md`
 
+Note: You might to change the port `8000` depending on what port your `docker-compose.dev.yaml`
+uses.
+
 ## 4 Running the `serve` component
 
 ### 4.1 Without containers (initial development and debugging only)
