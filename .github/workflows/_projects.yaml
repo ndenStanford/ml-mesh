@@ -115,7 +115,7 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'projects/**'
+              - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
 
   provision-customized-runner:
     name: Provision self-hosted & customized runner
