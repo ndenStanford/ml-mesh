@@ -72,7 +72,7 @@ component:
 ### 2.3 Building the `serve` component
 
 To locally build the image
-- using the ${BASE_IMAGE_TAG} version of the base image, and
+- using the `${BASE_IMAGE_TAG}` version of the base image, and
 - using the `docker-compose.dev.yaml`,
 - using the `development` build stage,
 - tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-serve:${IMAGE_TAG}`, run
@@ -140,8 +140,8 @@ To validate every change on the component, test suites should be run using the
 `docker-compose.dev.yaml` file. The following test suites are implemented:
 
 - `unit` (mandatory)
-- `integration` (optional)
-- `functional` (optional)
+- `integration` (mandatory)
+- `functional` (mandatory)
 - `load` (optional)
 
 ### 3.1 Run `unit` tests

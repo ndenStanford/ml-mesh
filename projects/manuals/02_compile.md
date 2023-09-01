@@ -80,7 +80,7 @@ component:
 ### 2.3 Building the `compile` component
 
 To locally build the image
-- using the ${BASE_IMAGE_TAG} version of the base image, and
+- using the `${BASE_IMAGE_TAG}` version of the base image, and
 - using the `docker-compose.dev.yaml`,
 - using the `development` build stage,
 - tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-compile:${IMAGE_TAG}`, run
