@@ -148,7 +148,7 @@ To validate every change on the component, test suites should be run using the
 - [`functional` (mandatory)](#33-run-functional-tests)
 - [`load` (optional)](#34-run-load-tests)
 
-You can also test your model service manually - see [###3.5-run-manual-tests]
+You can also [test your model service manually](#35-run-manual-tests)
 
 ### 3.1 Run `unit` tests
 
