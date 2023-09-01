@@ -38,6 +38,8 @@ environment variable from the environment.
 Projects implementing a `serve` component are
 - **`keywords`**
 - `lsh`
+- `entity-fishing`
+- `summarization`
 
 ### 2.1 Environment variables
 
