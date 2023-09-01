@@ -119,7 +119,6 @@ def test_update_prompt(test_client, create_prompts):
 )
 def test_delete_prompt(test_client, alias):
     """Test delete prompt endpoint."""
-
     response = test_client.delete(
         f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )

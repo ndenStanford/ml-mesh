@@ -11,6 +11,7 @@ from starlette.testclient import TestClient
 
 @pytest.fixture
 def app() -> FastAPI:
+    """Test app."""
     # Source
     from src.app import app
 
@@ -19,4 +20,5 @@ def app() -> FastAPI:
 
 @pytest.fixture()
 def test_client(app: FastAPI) -> Generator[TestClient, None, None]:
+    """Test client."""
     yield TestClient(app=app)

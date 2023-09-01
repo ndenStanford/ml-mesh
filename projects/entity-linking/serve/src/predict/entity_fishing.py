@@ -10,7 +10,6 @@ from typing import Any, Dict, List, Optional
 import requests
 
 # Internal libraries
-# Internal library
 from onclusiveml.core.logging import get_default_logger
 
 # Source
@@ -76,7 +75,7 @@ def query_wiki(query: Dict[str, Any]) -> Dict[str, Any]:
 def get_entity_linking(
     text: str, lang: str = "en", entities: Optional[List[EntityDictInput]] = None
 ) -> List[Dict[str, Any]]:
-    """Link all entities in text to Wiki data id
+    """Link all entities in text to Wiki data id.
 
     Args:
         text (str): text to be wiki linked
@@ -109,7 +108,7 @@ def get_entity_linking(
 
 
 def get_entity_text(entity: Dict[str, Any]) -> str:
-    """Fetch entity text from entities dictionary"""
+    """Fetch entity text from entities dictionary."""
     entity_text = entity.get("text")
     if entity_text is None:
         entity_text = entity.get("entity_text")
@@ -119,7 +118,7 @@ def get_entity_text(entity: Dict[str, Any]) -> str:
 def get_wiki_id(
     entity_text: str, entity_fish_entities: List[Dict[str, Any]]
 ) -> Optional[str]:
-    """Get most likely Wiki id of a single entity from wiki fish API return
+    """Get most likely Wiki id of a single entity from wiki fish API return.
 
     Args:
         entity_text (str): entity to find corresponding wiki data id
@@ -140,7 +139,7 @@ def get_wiki_id(
 
 
 def entity_text_match(text_1: str, text_2: str) -> bool:
-    """Match entity in the tntities dictionary with one from the entity fish API response"""
+    """Match entity in the tntities dictionary with one from the entity fish API response."""
     if (text_1 in text_2) or (text_2 in text_1):
         return True
     else:

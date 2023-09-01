@@ -1,4 +1,4 @@
-"Sentence Tokenize"
+"""Sentence Tokenize."""
 
 # Standard Library
 import re
@@ -21,8 +21,8 @@ class SentenceTokenizer:
     regex = re.compile(r"|".join(SPECIAL_CHARACTERS))
 
     def tokenize(self, content: str, language: str = "en") -> Dict[str, List[Any]]:
-        """
-        Tokenizes the input content into sentences.
+        """Tokenizes the input content into sentences.
+
         Uses both nltk sentence tokenize and regex using list of unique characters
 
         Args:
