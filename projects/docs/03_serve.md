@@ -4,7 +4,7 @@ This document outlines how to run and test your project's `serve` component.
 
 ## 1 Scope of the `serve` component
 
-### 1.1 Overview
+### 1.1 Overview :mount_fuji:
 
 A project's `serve` container image provides the code and runtime environment for
 - retrieving a compiled model / pipeline from our neptune AI model registry
@@ -33,7 +33,7 @@ The model in question can be a
 It draws its configurations from the `src/serve/params.py` module, which parses all required
 environment variable from the environment.
 
-## 2 Setup & references
+## 2 Setup & references :wrench:
 
 Projects implementing a `serve` component are
 - **`keywords`** :factory:
@@ -138,7 +138,7 @@ see the
 - [**`keywords` project's `serve` component directory**](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/serve) and
 - [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L198).**
 
-## 3 Testing the `serve` component
+## 3 Testing the `serve` component :warning:
 
 To validate every change on the component, test suites should be run using the
 `docker-compose.dev.yaml` file. The following test suites are implemented:
@@ -238,7 +238,7 @@ For expected results, refer to the project's `serve` component's `README.md`
 Note: You might need to change the port `8000` depending on what port your `docker-compose.dev.yaml`
 uses.
 
-## 4 Running the `serve` component
+## 4 Running the `serve` component :rocket:
 
 ### 4.1 Without containers (initial development and debugging only)
 
