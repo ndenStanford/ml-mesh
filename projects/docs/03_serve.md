@@ -2,7 +2,7 @@
 
 This document outlines how to run and test your project's `serve` component.
 
-## 1 Scope of the `serve` component
+## 1 Scope of the `serve` component :mag_right:
 
 ### 1.1 Overview :mount_fuji:
 
@@ -41,7 +41,7 @@ Projects implementing a `serve` component are
 - `entity-fishing` :speedboat:
 - `summarization` :speedboat:
 
-### 2.1 Environment variables
+### 2.1 Environment variables :deciduous_tree:
 
 To follow the instructions in this guide, run
 
@@ -56,7 +56,7 @@ export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 
 or update your `.envrc` file accordingly.
 
-### 2.2 Docker compose
+### 2.2 Docker compose :whale:
 
 The following `docker compose` services are typically associated with a project's `serve`
 component:
@@ -73,7 +73,7 @@ component:
 - `serve-load` (optional)
    - used to run `load` test suite (if applicable)
 
-### 2.3 Building the `serve` component
+### 2.3 Building the `serve` component :factory:
 
 To locally build the image
 - using the `${BASE_IMAGE_TAG}` version of the base image, and
@@ -91,7 +91,7 @@ make projects.build/${PROJECT_NAME} \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 2.4 Download model
+### 2.4 Download model :arrow_double_down:
 
 If the project has model artifacts associated with its `serve` component, you will
 first need to retrieve it from the neptune AI model registry. This will create an
@@ -125,7 +125,7 @@ make projects.start/${PROJECT_NAME}-download-model \
 ```
 3. Check the model artifacts are located in the right location
 
-### 2.5 Example implementation
+### 2.5 Example implementation :nut_and_bolt
 
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
@@ -150,7 +150,7 @@ To validate every change on the component, test suites should be run using the
 
 You can also [test your model service manually](#35-run-manual-tests)
 
-### 3.1 Run `unit` tests
+### 3.1 Run `unit` tests :warning: :nut_and_bolt:
 
 `unit` test scope:
   - Code only
@@ -164,7 +164,7 @@ To run the `unit` tests for the `serve` component using the `docker-compose.dev.
 make projects.unit/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.2 Run `integration` tests
+### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
 
 `integration` test scope:
   - Code + ML model dependency
@@ -180,7 +180,7 @@ To run the `integration` tests for the `serve` component using the `docker-compo
 make projects.integration/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.3 Run `functional` tests
+### 3.3 Run `functional` tests :warning: :rocket: :dart:
 
 `functional` test scope:
   - Code + Ml model dependency
@@ -198,7 +198,7 @@ To run the `functional` tests for the `serve` component using the `docker-compos
 make projects.functional/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 3.4 Run `load` tests
+### 3.4 Run `load` tests :warning: :rocket: :watch:
 
 `load` test scope:
   - Code + Ml model dependency
