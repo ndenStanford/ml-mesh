@@ -30,7 +30,7 @@ environment variable either
 
 Specs defined in the `config/prod.env` are used only during CI processes.
 
-Orchestration & execution of these components as a model compile *pipeline* is done by the Github 
+Orchestration & execution of these components as a model compile *pipeline* is done by the Github
 Actions CI process of this same `ml-mesh` repository.
 
 ## 2 Setup & references
@@ -57,7 +57,7 @@ or update your `.envrc` file accordingly.
 
 ### 2.2 Docker compose
 
-The following `docker compose` services are typically associated with a project's `compile` 
+The following `docker compose` services are typically associated with a project's `compile`
 component:
 - `compile`
   - contains build section of compilation image

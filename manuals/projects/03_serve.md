@@ -54,7 +54,7 @@ or update your `.envrc` file accordingly.
 
 ### 2.2 Docker compose
 
-The following `docker compose` services are typically associated with a project's `serve` 
+The following `docker compose` services are typically associated with a project's `serve`
 component:
 - `serve`
   - contains build section of compilation image
@@ -238,7 +238,7 @@ make projects.build/${PROJECT_NAME} \
 To run the `serve` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
 - internal `projects` level `make` & `docker compose` utilities, follow the below steps.
-- a locally stored model artifact obtained by completing step 
+- a locally stored model artifact obtained by completing step
 [### 2.3 Download model](2.3-download-model),
 
 run

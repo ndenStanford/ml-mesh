@@ -10,18 +10,18 @@ This repository contains the modular implementation of the logic powering Onclus
 3. [applications serving **internally** maintained models](./projects)
 4. [applications serving **externally** maintained models](./apps)
 
-### Libraries 
+### Libraries
 
 A top-level manual on can be found [here](./manuals/libs/overview)
 
-All internal libraries can be found [here](./libs). See individual library for detailed 
+All internal libraries can be found [here](./libs). See individual library for detailed
 documentation.
 
 ### Core images
 
 A top-level manual on can be found [here](./manuals/docker/overview)
 
-All internal core images can be found [here](./docker). See individual core image for detailed 
+All internal core images can be found [here](./docker). See individual core image for detailed
 documentation.
 
 ### Projects
@@ -29,7 +29,7 @@ documentation.
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
-- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to 
+- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to
 bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
 - **train**: model training and registering to internal model registry.
@@ -39,7 +39,7 @@ bring data into our internal storage.
 - **serve**: model served as a REST API.
   - [see here](./manuals/projects/03_serve.md) for this component's manual
 
-Strict abstraction boundaries help express the invariant and logical consistency of each component 
+Strict abstraction boundaries help express the invariant and logical consistency of each component
 behaviour (input, processing and output). This allows us to create well defined patterns that can
  be applied specifically to implement each of these steps on new projects. Not all of these steps
  are mandatory: for instance, pre-trained model used for zero-shot learning will not have a prepare
@@ -47,7 +47,7 @@ behaviour (input, processing and output). This allows us to create well defined 
 
 ### Apps
 
-All internal core images can be found [here](./apps/). See individual app for detailed 
+All internal core images can be found [here](./apps/). See individual app for detailed
 documentation.
 
 ## Developing
