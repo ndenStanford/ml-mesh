@@ -141,10 +141,12 @@ see the
 To validate every change on the component, test suites should be run using the
 `docker-compose.dev.yaml` file. The following test suites are implemented:
 
-- `unit` (mandatory)
-- `integration` (mandatory)
-- `functional` (mandatory)
-- `load` (optional)
+- [`unit` (mandatory)](###3.1-run-`unit`-tests)
+- [`integration` (mandatory)](###3.2-run-`integration`-tests)
+- [`functional` (mandatory)](###3.3-run-`functional`-tests)
+- [`load` (optional)](###3.4-run-`load`-tests)
+
+You can also test your model service manually - see [###3.5-run-manual-tests]
 
 ### 3.1 Run `unit` tests
 
@@ -218,6 +220,19 @@ To run the `load` tests for the `serve` component using the `docker-compose.dev.
 make projects.load/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
+### 3.5 Run manual tests
+
+Before pinging the model service, make sure it is up and running by following the instructions in [the section on starting the model server](###4.2-with-containers)
+
+Once the model server is running visit `http://0.0.0.0:8000/docs` for the FastAPI's interactive Swagger docs. Here you can interact with the following endpoints:
+
+- liveness: `http://0.0.0.0:8000/v1/live`
+- readiness: `http://0.0.0.0:8000/v1/ready`
+- model meta data: `http://0.0.0.0:8000/v1/model/${PROJECT_NAME}/bio`
+- model inference: `http://0.0.0.0:8000/v1/model/${PROJECT_NAME}/predict`
+
+For expected results, refer to the project's `serve` component's `README.md`
+
 ## 4 Running the `serve` component
 
 ### 4.1 Without containers (initial development and debugging only)
@@ -236,7 +251,7 @@ the functionality of your code via make command once the development is finished
 2. Run the model retrieval + registering step
    - `python -m src.smodel_server`
 
-### 4.2 With containers (recommended approach)
+### 4.2 With containers
 
 To run the `serve` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
