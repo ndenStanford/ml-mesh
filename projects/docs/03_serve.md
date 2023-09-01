@@ -22,7 +22,7 @@ The model in question can be a
 - :factory: (trained &) compiled ML model *with artifact* files that are stored in the AI model registry, as
  is the case for
   - `keywords` :key:-:memo:
-  - `sentiment` :smile: vs. :frowning:
+  - `sentiment` :smile:/:frowning:
   - `ner`, :books: -> :european_castle: :church: :hotel:
   or
 - :speedboat: "code-only" model *without artifact* files and no AI model registry entry, as is the case for
@@ -36,10 +36,10 @@ environment variable from the environment.
 ## 2 Setup & references :wrench:
 
 Projects implementing a `serve` component are
-- **`keywords`** :factory:
-- `lsh` :speedboat:
-- `entity-fishing` :speedboat:
-- `summarization` :speedboat:
+- **`keywords`** :key:-:memo: | :factory:
+- `lsh` :books: -> :hash: :hash: | :speedboat:
+- `entity-fishing` :fishing_pole_and_fish: | :speedboat:
+- `summarization` :books: -> :memo:| :speedboat:
 
 ### 2.1 Environment variables :deciduous_tree:
 

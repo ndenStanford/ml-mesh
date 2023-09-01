@@ -24,9 +24,9 @@ Specs defined in the `config/prod.env` are used only during CI processes.
 ## 2 Setup & references :wrench:
 
 Projects implementing a `train` component are
-- **`keywords`**
-- `ner`
-- `sentiment`
+- **`keywords`** :key:-:memo:
+- `ner` :books: -> :european_castle: :church: :hotel:
+- `sentiment` :smile:/:frowning:
 
 ### 2.1 Environment variables :deciduous_tree:
 
@@ -143,7 +143,7 @@ As described in the previous section the `settings.py` script will fall back ont
 `config/dev.env` file for any environment variables that it cant obtain from the environment.
 Editing that file allows for configuring development pipeline runs.
 
-### 4.2 With containers (recommended approach)
+### 4.2 With containers (recommended approach) :rocket: :whale:
 
 To run the `train` container locally as a one-step pipeline using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
