@@ -27,6 +27,8 @@ The model in question can be a
   or
 - "code-only" model *without artifact* files and no AI model registry entry, as is the case for
   - `lsh`
+  - `entity-fishing`
+  - `summarization`
 
 It draws its configurations from the `src/serve/params.py` module, which parses all required
 environment variable from the environment.
