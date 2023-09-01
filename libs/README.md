@@ -54,9 +54,13 @@ Available targets:
 ## Useful commands
 
 To (re-)write your library's lock file, run: `make libs.lock/${LIBRARY_NAME}`
+
 To (re-)install your library locally, run: `make libs.install/${LIBRARY_NAME}`
+
 To run your library's unit tests, run: `make libs.unit/${LIBRARY_NAME}`
+
 To run your library's integration tests, run: `make libs.integration/${LIBRARY_NAME}`
+
 To run your library's functional tests, run: `make libs.functional/${LIBRARY_NAME}`
 
-For more documentation on a given library, see the library's dedicated `README.md`.
+For more documentation on a given library, see the individual library's dedicated `README.md`.
