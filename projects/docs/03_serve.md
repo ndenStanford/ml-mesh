@@ -46,7 +46,7 @@ To follow the instructions in this guide, run
 ```bash
 export PROJECT_NAME=your_project_name_here
 export BASE_IMAGE_TAG=the_base_image_docker_tag_here
-export IMAGE_TAG=your_desired_train_container_docker_tag_here
+export IMAGE_TAG=your_desired_serve_container_docker_tag_here
 export NEPTUNE_API_TOKEN=your_personal_neptune_api_token_here
 export AWS_ACCESS_KEY_ID=your_aws_access_key_id_here
 export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
