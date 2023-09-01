@@ -33,7 +33,6 @@ files, respectively.
 Available targets are:
 
 ```text
-Available targets:
 
     projects.build/<project>                    Builds the component docker image. Variable(s): COMPONENT, ENVIRONMENT.
     projects.install/<project>                  Install component dependencies locally. Variable(s): COMPONENT
