@@ -147,7 +147,9 @@ Editing that file allows for configuring development pipeline runs.
 
 To run the `train` container locally as a one-step pipeline using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
-- internal `projects` level `make` & `docker compose` utilities, follow the below steps.
+- internal `projects` level `make` & `docker compose` utilities,
+
+follow the below steps.
 
 #### 4.2.1 Update configuration
 
