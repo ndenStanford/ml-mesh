@@ -1,6 +1,6 @@
 # ML projects
 
-This folder contains the implmentation of all our machine learning projects. Each project is split into a maximum of 5 components:
+This folder contains the implementation of all our machine learning projects. Each project is split into a maximum of 5 components:
 
 - ingest
 - prepare
@@ -10,15 +10,14 @@ This folder contains the implmentation of all our machine learning projects. Eac
 
 ## Projects
 
-| Project       | Description                       | Data Type | Prepare | Train | Compile | Serve |     |
-| ------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- | --- |
-| IPTC          | Document topic classification     | Text      |         |       |         |       |     |
-| Sentiment     | Document Sentiment classification | Text      |         |       |         |       |     |
-| Keywords      | Keyword extractions from text     | Text      |         |       |         |       | x   |
-| Summarization | Text summarization                | Text      |         |       |         |       | x   |
-| NER           | Named Entity Recognition          | Text      |         |       |         |       | x   |
+| Project       | Reference       | Description                       | Data Type | Prepare | Train | Compile | Serve |     |
+| ------------- | --------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- | --- |
+| IPTC          | n/a             | Document topic classification     | Text      |         |       |         |       |     |
+| Sentiment     | `sentiment`     | Document Sentiment classification | Text      |         |       |    x    |       |     |
+| Keywords      | `keywords`      | Keyword extractions from text     | Text      |         |   x   |    x    |   x   | x   |
+| Summarization | `summarization` | Text summarization                | Text      |         |       |         |       | x   |
+| NER           | `ner`           | Named Entity Recognition          | Text      |         |  n/a  |   n/a   |   x   | x   |
 
-- **keybert**: keyword extraction
 
 ## Makefile Targets
 
@@ -33,6 +32,16 @@ Available targets:
     projects.test/<project>                     Runs component full test suite. Variable(s): COMPONENT, ENVIRONMENT.
     projects.unit/<project>                     Runs component unit test. Variable(s): COMPONENT, ENVIRONMENT.
     projects.integration/<project>              Runs component integration test. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.functional/<project>               Runs component functional test. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.load/<project>                     Runs component load test. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.compile/<project>                  Runs compile component pipeline step.Variable(s): PIPELINE_COMPONENT, ENVIRONMENT.
     projects.lock/<project>                     Updates the poetry lock file. Variable(s): COMPONENT.
 
 ```
+
+## Manuals
+
+The following component-specific manuals are available:
+- [train](https://github.com/AirPR/ml-mesh/tree/develop/manuals/projects/01_train.md)
+- [compile](https://github.com/AirPR/ml-mesh/tree/develop/manuals/projects/02_compile.md)
+- [serve](https://github.com/AirPR/ml-mesh/tree/develop/manuals/projects/03_server.md)
