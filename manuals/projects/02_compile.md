@@ -28,17 +28,19 @@ environment variable either
 - from the environment, or, if not specified,
 - from the `config/dev.env` dotenv file (locally or in the container when running inside docker)
 
-Specs defined in the `config/prod.env` is used only during CI processes.
+Specs defined in the `config/prod.env` are used only during CI processes.
 
-Orchestration of these components into the model compile pipeline is done by Github Actions of this
-same `ml-mesh` repository (as opposed to all other orchestration happening in `ml-platform`)
+Orchestration & execution of these components as a model compile *pipeline* is done by the Github 
+Actions CI process of this same `ml-mesh` repository.
 
-### 1.2 Setup & references
+## 2 Setup & references
 
 Projects implementing a `train` component are
-- `keywords`
+- **`keywords`**
 - `ner`
 - `sentiment`
+
+### 2.1 Environment variables
 
 To follow the instructions in this guide, run
 
@@ -53,6 +55,30 @@ export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 
 or update your `.envrc` file accordingly.
 
+### 2.2 Docker compose
+
+The following `docker compose` services are typically associated with a project's `compile` 
+component:
+- `compile`
+  - contains build section of compilation image
+- `compile-download-model`
+  - step 1 of the compile pipeline - used to download uncompiled model artifact
+- `compile-compile-model`
+  - step 2 of the compile pipeline - used to compile model artifact
+- `compile-validate-model`
+  - step 3 of the compile pipeline - used to validate compiled model artifact
+- `compile-upload-model`
+  - step 4 of the compile pipeline - used to upload compiled & validated model artifact
+- `compile-unit`
+   - used to run `unit` test suite
+- `compile-integration` (optional)
+   - used to run `integration` test suite (if applicable)
+- `compile-functional` (optional)
+   - used to run `functional` test suite (if applicable)
+
+
+### 2.3 Example implementation
+
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
 - `config` directory and `dotenv` configuration files
@@ -62,10 +88,43 @@ For reference implementations of all below concepts, i.e.,
 
 **see the [`keywords` project's `compile` component directory](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L63).**
 
+## 3 Testing the `compile` component
 
-## 2 Running the `compile` component
+To validate every change on the component, test suites should be run using the
+`docker-compose.dev.yaml` file. The following test suites are implemented:
 
-### 2.1 Without containers (initial development and debugging only)
+- `unit` (mandatory)
+- `integration` (optional)
+- `functional` (optional)
+
+### 3.1 Run `unit` tests
+
+To run the `unit` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+### 3.2 Run `integration` tests
+
+To run the `integration` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+### 3.3 Run `functional` tests
+
+To run the `functional` tests for the `compile` component using the `docker-compose.dev.yaml` file,  run:
+
+```bash
+make projects.functional/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+
+## 4 Running the `compile` component
+
+### 4.1 Without containers (initial development and debugging only)
 
 For development purposes, the pipeline can be run locally without containers. Note that while this
 could ease the development process, it has some downsides since you are now outside of your bespoke
@@ -89,9 +148,10 @@ As described in the previous section the `settings.py` script will fall back ont
 `config/dev.env` file for any environment variables that it cant obtain from the environment.
 Editing that file allows for configuring development pipeline runs.
 
-### 2.2 With containers (recommended approach)
+### 4.2 With containers (recommended approach)
 
-#### 2.2.1 Building the docker container
+
+#### 4.2.1 Building the docker container
 
 To locally build the image
 - using the ${BASE_IMAGE_TAG} version of the base image, and
@@ -106,7 +166,8 @@ make projects.build/${PROJECT_NAME} \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 
-#### 2.2.2 Running the docker container using docker compose
+
+#### 4.2.2 Running the docker container using docker compose
 
 Running the below steps will create an additional `outputs` directory in the
 `projects/${PROJECT_NAME}/compile` directory, holding all the below 4 steps' outputs in 4 separate
@@ -125,9 +186,9 @@ To run the `compile` container locally as a pipeline using
    file's environment variable values directly into the running container (see below) to allow for
    pipeline runtime configurations without requiring a rebuild of the docker container.
 
-3. Run the pipeline
+2. Run the pipeline
 
-- Download the uncompiled model:
+  2.1 Download the uncompiled model:
 
   ```bash
   make projects.compile/${PROJECT_NAME} \
@@ -136,7 +197,7 @@ To run the `compile` container locally as a pipeline using
    IMAGE_TAG=${IMAGE_TAG}
   ```
 
-- Compile the model:
+  2.2 Compile the model:
 
   ```bash
   make projects.compile/${PROJECT_NAME} \
@@ -145,7 +206,7 @@ To run the `compile` container locally as a pipeline using
    IMAGE_TAG=${IMAGE_TAG}
   ```
 
-- Test compiled model:
+  2.3 Test compiled model:
 
   ```bash
   make projects.compile/${PROJECT_NAME} \
@@ -154,7 +215,7 @@ To run the `compile` container locally as a pipeline using
    IMAGE_TAG=${IMAGE_TAG}
   ```
 
-- Upload compiled model:
+  2.4 Upload compiled model:
 
   ```bash
   make projects.compile/${PROJECT_NAME} \
@@ -162,36 +223,3 @@ To run the `compile` container locally as a pipeline using
    PIPELINE_COMPONENT=upload-model \
    IMAGE_TAG=${IMAGE_TAG}
   ```
-
-## 3 Testing the `compile` component
-
-To validate every change on the component, test suites should be run using the
-`docker-compose.dev.yaml` file. The following test suites are implemented:
-
-- `unit` (mandatory)
-- `integration` (optional)
-- `functional` (optional)
-
-### 2.1 Run `unit` tests
-
-To run the `unit` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
-
-```bash
-make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```
-
-### 2.2 Run `integration` tests
-
-To run the `integration` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
-
-```bash
-make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```
-
-### 2.3 Run `functional` tests
-
-To run the `functional` tests for the `compile` component using the `docker-compose.dev.yaml` file,  run:
-
-```bash
-make projects.functional/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```

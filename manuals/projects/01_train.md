@@ -19,14 +19,16 @@ environment variable either
 - from the environment, or, if not specified,
 - from the `config/dev.env` dotenv file (locally or in the container when running inside docker)
 
-Specs defined in the `config/prod.env` is used only during CI processes.
+Specs defined in the `config/prod.env` are used only during CI processes.
 
-### 1.2 Setup & references
+## 2 Setup & references
 
 Projects implementing a `train` component are
-- `keywords`
+- **`keywords`**
 - `ner`
 - `sentiment`
+
+### 2.1 Environment variables
 
 To follow the instructions in this guide, run
 
@@ -41,6 +43,22 @@ export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 
 or update your `.envrc` file accordingly.
 
+### 2.2 Docker compose
+
+The following `docker compose` services are typically associated with a project's `train` component:
+- `train`
+   - contains build section of training image
+   - contains the container run command to execute training
+- `train-unit`
+   - used to run `unit` test suite
+- `train-integration` (optional)
+   - used to run `integration` test suite (if applicable)
+- `train-functional` (optional)
+   - used to run `functional` test suite (if applicable)
+
+
+### 2.3 Example implementation
+
 For reference implementations of all below concepts, i.e.,
 - `Dockerfile` structure
 - `config` directory and `dotenv` configuration files
@@ -50,10 +68,43 @@ For reference implementations of all below concepts, i.e.,
 
 **see the [`keywords` project's `train` component](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L9).**
 
+## 3 Testing the `train` component
 
-## 2 Running the `train` component
+To validate every change on the component, test suites should be run using the `docker-compose.dev.yaml` file.
+The following test suites are implemented:
 
-### 2.1 Without containers (initial development and debugging only)
+- `unit` (mandatory)
+- `integration` (optional)
+- `functional` (optional)
+
+### 3.1 Run `unit` tests
+
+To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+### 3.2 Run `integration` tests
+
+To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
+
+```bash
+make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+### 3.3 Run `functional` tests
+
+To run the `functional` tests for the `train` component using the `docker-compose.dev.yaml` file,  run:
+
+```bash
+make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+
+## 4 Running the `train` component
+
+### 4.1 Without containers (initial development and debugging only)
 
 For development purposes, the pipeline can be run locally without containers. Note that while this
 could ease the development process, it has some downsides since you are now outside of your bespoke
@@ -72,9 +123,9 @@ As described in the previous section the `settings.py` script will fall back ont
 `config/dev.env` file for any environment variables that it cant obtain from the environment.
 Editing that file allows for configuring development pipeline runs.
 
-### 2.2 With containers (recommended approach)
+### 4.2 With containers (recommended approach)
 
-#### 2.2.1 Building the docker container
+#### 4.2.1 Building the docker container
 
 To locally build the image
 - using the ${BASE_IMAGE_TAG} version of the base image, and
@@ -90,7 +141,7 @@ make projects.build/${PROJECT_NAME} \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 
-#### 2.2.2 Running the docker container using docker compose
+#### 4.2.2 Running the docker container using docker compose
 
 To run the `train` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
@@ -105,37 +156,4 @@ To run the `train` container locally using
 
 ```bash
 make projects.start/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```
-
-## 3 Testing the `train` component
-
-To validate every change on the component, test suites should be run using the `docker-compose.dev.yaml` file.
-The following test suites are implemented:
-
-- `unit` (mandatory)
-- `integration` (optional)
-- `functional` (optional)
-
-### 2.1 Run `unit` tests
-
-To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
-
-```bash
-make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```
-
-### 2.2 Run `integration` tests
-
-To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
-
-```bash
-make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```
-
-### 2.3 Run `functional` tests
-
-To run the `functional` tests for the `train` component using the `docker-compose.dev.yaml` file,  run:
-
-```bash
-make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```

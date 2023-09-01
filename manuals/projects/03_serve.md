@@ -13,26 +13,31 @@ The `${PROJECT_NAME}-serve` container image provides the code and runtime enviro
 - uploading test results to the neptune AI model registry
   - if applicable - see above
 
+Each of the 3 tasks corresponds to a python module:
+1. `src/util/download_compiled_model.py`
+2. `src/serve/model_server.py`.
+3. `src/util/upload_test_results.py`
+
 The model in question can be a
-- (trained &) compiled ML model with artifact files that are stored in the AI model registry, as is
-   the case for
+- (trained &) compiled ML model *with artifact* files that are stored in the AI model registry, as
+ is the case for
   - `keywords`
   - `sentiment`
   - `ner`,
   or
-- "code-only" model without artifact files and no AI model registry entry, as is the case for
+- "code-only" model *without artifact* files and no AI model registry entry, as is the case for
   - `lsh`
-
-The python module implementing the serving process is `src/serve/model_server.py`.
 
 It draws its configurations from the `src/serve/params.py` module, which parses all required
 environment variable from the environment.
 
-### 1.2 References
+## Setup & references
 
 Projects implementing a `serve` component are
-- `keywords`
+- **`keywords`**
 - `lsh`
+
+### 2.1 Environment variables
 
 To follow the instructions in this guide, run
 
@@ -47,56 +52,27 @@ export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 
 or update your `.envrc` file accordingly.
 
-For reference implementations of all below concepts, i.e.,
-- `Dockerfile` structure
-- `config` directory and `dotenv` configuration files
-- `src` directory and source code layout
-- `test` suite implementations
-- `docker compose` files and services for `dev` and `ci`
+### 2.2 Docker compose
 
-**see the [`keywords` project's `serve` component directory](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/serve) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L198).**
+The following `docker compose` services are typically associated with a project's `serve` 
+component:
+- `serve`
+  - contains build section of compilation image
+- `serve-download-model` (optional)
+  - used to download model artifact (if applicable)
+- `serve-unit`
+  - used to run `unit` test suite
+- `serve-integration`
+   - used to run `integration` test suite
+- `serve-functional`
+   - used to run `functional` test suite
+- `serve-load` (optional)
+   - used to run `load` test suite (if applicable)
 
+### 2.3 Download model
 
-
-## 2 Running the `serve` component
-
-### 2.1 Without containers (initial development and debugging only)
-
-For development purposes, the pipeline can be run locally without containers. Note that while this
-could ease the development process, it has some downsides since you are now outside of your bespoke
-container runtime environment. The following risks should be considered. It's important to test
-the functionality of your code via make command once the development is finished.
-
-- Some python & OS-level dependencies might be missing
-- Some env vars might be missing
-- The model artifact might be missing
-
-1. Change into the `projects/${PROJECT_NAME}/serve/src` directory
-   - `cd projects/${PROJECT_NAME}/serve`
-2. Run the model retrieval + registering step
-   - `python -m src.smodel_server`
-
-### 2.2 With containers (recommended approach)
-
-#### 2.2.1 Building the docker container
-
-To locally build the image
-- using the ${BASE_IMAGE_TAG} version of the base image, and
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-serve:${IMAGE_TAG}`, run
-the `make` target:
-
-```bash
-make projects.build/${PROJECT_NAME} \
-  COMPONENT=serve \
-  ENVIRONMENT=dev \
-  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-  IMAGE_TAG=${IMAGE_TAG}
-```
-
-#### 2.2.2 Running the components inside docker
-
-Before running the `serve` container for a model that has artifacts associated with it, you will
-first need to retrieve the model artifact from the neptune AI model registry. This will create an
+If the project has model artifacts associated with its `serve` component, you will
+first need to retrieve it from the neptune AI model registry. This will create an
 additional `models` directory in the `projects/${PROJECT_NAME}/serve` directory, including a
 subdirectory named after the model version which includes all artifacts:
 
@@ -115,7 +91,8 @@ To retrieve model artifacts and run the `serve` container locally using
 - the services implemented in the `projects` `docker-compose.dev.yaml` file and
 - internal `projects` level `make` & `docker compose` utilities, follow the below steps.
 
-1. Update the `serve-download` and `serve` services in your `docker compose` file accordingly
+1. Update the `serve-download-model` (if applicable) and `serve` services in your `docker compose`
+ file accordingly
 2. Run the `serve` container's model download function:
 
 ```bash
@@ -125,11 +102,18 @@ make projects.start/${PROJECT_NAME}-download-model \
    IMAGE_TAG=${IMAGE_TAG}
 ```
 3. Check the model artifacts are located in the right location
-4. Run the `serve` container:
 
-```bash
-make projects.start/${PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
-```
+### 2.4 Example implementation
+
+For reference implementations of all below concepts, i.e.,
+- `Dockerfile` structure
+- `config` directory and `dotenv` configuration files
+- `src` directory and source code layout
+- `test` suite implementations
+- `docker compose` files and services for `dev` and `ci`
+
+**see the [`keywords` project's `serve` component directory](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/serve) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L198).**
+
 
 ## 3 Testing the `serve` component
 
@@ -141,7 +125,7 @@ To validate every change on the component, test suites should be run using the
 - `functional` (optional)
 - `load` (optional)
 
-### 2.1 Run `unit` tests
+### 3.1 Run `unit` tests
 
 `unit` test scope:
   - Code only
@@ -155,7 +139,7 @@ To run the `unit` tests for the `serve` component using the `docker-compose.dev.
 make projects.unit/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 2.2 Run `integration` tests
+### 3.2 Run `integration` tests
 
 `integration` test scope:
   - Code + ML model dependency
@@ -171,7 +155,7 @@ To run the `integration` tests for the `serve` component using the `docker-compo
 make projects.integration/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 2.3 Run `functional` tests
+### 3.3 Run `functional` tests
 
 `functional` test scope:
   - Code + Ml model dependency
@@ -189,7 +173,7 @@ To run the `functional` tests for the `serve` component using the `docker-compos
 make projects.functional/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
 
-### 2.4 Run `load` tests
+### 3.4 Run `load` tests
 
 `load` test scope:
   - Code + Ml model dependency
@@ -211,4 +195,54 @@ To run the `load` tests for the `serve` component using the `docker-compose.dev.
 
 ```bash
 make projects.load/{$PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+```
+
+
+## 4 Running the `serve` component
+
+### 4.1 Without containers (initial development and debugging only)
+
+For development purposes, the pipeline can be run locally without containers. Note that while this
+could ease the development process, it has some downsides since you are now outside of your bespoke
+container runtime environment. The following risks should be considered. It's important to test
+the functionality of your code via make command once the development is finished.
+
+- Some python & OS-level dependencies might be missing
+- Some env vars might be missing
+- The model artifact might be missing
+
+1. Change into the `projects/${PROJECT_NAME}/serve/src` directory
+   - `cd projects/${PROJECT_NAME}/serve`
+2. Run the model retrieval + registering step
+   - `python -m src.smodel_server`
+
+### 4.2 With containers (recommended approach)
+
+#### 4.2.1 Building the docker container
+
+To locally build the image
+- using the ${BASE_IMAGE_TAG} version of the base image, and
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-serve:${IMAGE_TAG}`, run
+the `make` target:
+
+```bash
+make projects.build/${PROJECT_NAME} \
+  COMPONENT=serve \
+  ENVIRONMENT=dev \
+  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  IMAGE_TAG=${IMAGE_TAG}
+```
+
+#### 4.2.2 Running the components inside docker
+
+To run the `serve` container locally using
+- the services implemented in the `projects` `docker-compose.dev.yaml` file and
+- internal `projects` level `make` & `docker compose` utilities, follow the below steps.
+- a locally stored model artifact obtained by completing step 
+[### 2.3 Download model](2.3-download-model),
+
+run
+
+```bash
+make projects.start/${PROJECT_NAME} COMPONENT=serve ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
 ```
