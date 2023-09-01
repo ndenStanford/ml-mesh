@@ -174,8 +174,10 @@ services:
   # SERVE
   # =============================================
 
-  # build serving image
-  serve-build:
+  # serving image
+  serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
     build:
       context: ../../
       dockerfile: projects/sentiment/serve/Dockerfile
@@ -186,16 +188,6 @@ services:
         PROJECT: sentiment
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    profiles: [serve, functional, load]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-
-  # start serving server
-  serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
@@ -234,7 +226,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
       NEPTUNE_PROJECT: onclusive/sentiment
-      NEPTUNE_MODEL_ID: NER-COMPILED
+      NEPTUNE_MODEL_ID: SEN-COMPILED
       NEPTUNE_MODEL_VERSION_ID: SEN-COMPILED-31
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
     hostname: onclusiveml
@@ -336,7 +328,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: async
       NEPTUNE_PROJECT: onclusive/sentiment
-      NEPTUNE_MODEL_ID: NER-COMPILED
+      NEPTUNE_MODEL_ID: SEN-COMPILED
       NEPTUNE_MODEL_VERSION_ID: SEN-COMPILED-31
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
