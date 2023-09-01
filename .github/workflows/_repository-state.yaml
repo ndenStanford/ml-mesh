@@ -31,7 +31,7 @@ on  :
         value: ${{ jobs.get-repository-state.outputs.target-branch }}
       tag:
         description: Final tag to attach to images built within the workflow
-        value: v${{ jobs.get-repository-state.outputs.tag }}
+        value: ${{ jobs.get-repository-state.outputs.tag }}
       release-notes:
         description: (Pre-)release notes derived based on specified configuration
         value: ${{ jobs.get-repository-state.outputs.release-notes}}
@@ -107,22 +107,13 @@ jobs:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
           is_pre_release: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
 
-      # # Deprecated/replaced by export-tag step below. To be discussed as commit shas might
-      # # be better to use here to check the content of the versioned docker containers
-      # - name: Get short commit SHA
-      #   id: get-commit-sha
-      #   if: ${{ inputs.event-name == 'pull_request' }}
-      #   run: |
-      #     sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
-      #     echo "tag=ci-$sha" >> $GITHUB_OUTPUT
-
       - name: Export tag
         id: export-tag
         uses: haya14busa/action-cond@v1
         with:
           cond: ${{ inputs.event-name == 'pull_request' }}
           if_true: ci-${{ github.run_id }}
-          if_false: ${{ steps.version-increment.outputs.version }}
+          if_false: ${{ steps.version-increment.outputs.V_VERSION }}
 
       - name: Generate Release
         uses: release-drafter/release-drafter@v5.24.0
@@ -133,6 +124,6 @@ jobs:
           publish: true
           commitish: ${{ steps.toggle-target-branch.outputs.value }}
           prerelease: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
-          tag: v${{ steps.version-increment.outputs.version }}
-          name: ${{ steps.version-increment.outputs.version }}
-          version: ${{ steps.version-increment.outputs.version }}
+          tag: ${{ steps.version-increment.outputs.V_VERSION }}
+          name: ${{ steps.version-increment.outputs.VERSION }}
+          version: ${{ steps.version-increment.outputs.VERSION }}
