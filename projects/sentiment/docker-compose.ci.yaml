@@ -39,5 +39,113 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  compile:
+    build:
+      context: ../../
+      dockerfile: projects/sentiment/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: sentiment
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4} #should have been v23.8.4?
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    profiles: [compile, unit, integration, pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-unit:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-download-model:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    command: [python, -m, src.download_uncompiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/sentiment/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/prod.env
+    volumes:
+      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-compile-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    command: [python, -m, src.compile_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/sentiment/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+    env_file: compile/config/prod.env
+    volumes:
+      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-validate-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/sentiment/compile/outputs
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+    env_file: compile/config/prod.env
+    volumes:
+      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-upload-model:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+    command: [python, -m, src.upload_compiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      IO_OUTPATH: /projects/sentiment/compile/outputs
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      GITHUB_ACTOR: ${GITHUB_ACTOR}
+      GITHUB_ENV: ${GITHUB_ENV}
+      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
+      GITHUB_JOB: ${GITHUB_JOB}
+      GITHUB_REF: ${GITHUB_REF}
+      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
+      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
+      GITHUB_SHA: ${GITHUB_SHA}
+      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
+      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
+      RUNNER_ARCH: ${RUNNER_ARCH}
+      RUNNER_NAME: ${RUNNER_NAME}
+      RUNNER_OS: ${RUNNER_OS}
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: no
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/prod.env
+    volumes:
+      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
 networks:
   onclusive-net:
+
+volumes :
+  compile-pipeline-vol:

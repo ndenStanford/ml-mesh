@@ -1,3 +1,5 @@
+"""Serving data models."""
+
 # Standard Library
 from typing import Dict, List, Tuple, Union
 
@@ -7,11 +9,13 @@ from pydantic import BaseModel
 
 # --- prediction request models
 class PredictConfiguration(BaseModel):
-    """Model class around the kwargs of the `CompiledKeyBERT`'s `extract_keywords` method. Useful if
-    clients want to run different inference calls configuring
-    - how many keywords should be extracted,
-    - n-gram length
-    - etc"""
+    """Model class around the kwargs of the `CompiledKeyBERT`'s `extract_keywords` method.
+
+    Useful if clients want to run different inference calls configuring
+        - how many keywords should be extracted,
+        - n-gram length
+        - etc
+    """
 
     candidates: Union[List[str], None] = None
     keyphrase_ngram_range: Tuple[int, int] = (1, 1)
@@ -26,11 +30,13 @@ class PredictConfiguration(BaseModel):
 
 
 class PredictInputDocumentModel(BaseModel):
+    """Prediction input document."""
 
     document: str
 
 
 class PredictRequestModel(BaseModel):
+    """Prediction request model."""
 
     configuration: PredictConfiguration = PredictConfiguration()
     inputs: List[PredictInputDocumentModel]
@@ -38,23 +44,27 @@ class PredictRequestModel(BaseModel):
 
 # --- prediction response models
 class PredictionExtractedKeyword(BaseModel):
+    """Prediction extracted keyword."""
 
     keyword_token: str
     keyword_score: float
 
 
 class PredictionOutputDocument(BaseModel):
+    """Prediction output document."""
 
     predicted_document: List[PredictionExtractedKeyword]
 
 
 class PredictResponseModel(BaseModel):
+    """Predict response model."""
 
     outputs: List[PredictionOutputDocument]
 
 
 # --- bio response models
 class BioResponseModel(BaseModel):
+    """Bio response model."""
 
     model_name: str = "keywords-model"
     # difficult to link up all the way back to the `CompiledKeywordsTrackedModelCard` here, so for

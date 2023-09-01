@@ -92,6 +92,7 @@ As all images used in projects and apps are based on our core docker images. It 
 ```shell
 make docker.build/python-base
 make docker.build/fastapi-serve
+make docker.build/neuron-compile
 ```
 
 It takes about 10 minutes to run, go stretch your legs, get a coffee, or consult our [Contribution Guide](https://onclusive.atlassian.net/l/cp/u1Mz7m6M).

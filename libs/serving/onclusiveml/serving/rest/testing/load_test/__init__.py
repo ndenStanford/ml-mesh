@@ -1,3 +1,5 @@
+"""Init."""
+
 from onclusiveml.serving.rest.testing.load_test.params import (  # noqa: F401
     ValidMeasurements,
     ValidEndpointTypes,

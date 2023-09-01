@@ -1,4 +1,4 @@
-"""Constants test"""
+"""Constants tests."""
 
 # 3rd party libraries
 import pytest
@@ -71,14 +71,17 @@ list_of_langIso = list_of_langIso_non_empty_stopwords + list_of_langIso_empty_st
 
 @pytest.mark.parametrize("language", list_of_langIso_non_empty_stopwords)
 def test_languageIso_get_stopwords_list(language):
+    """Test stop words list getter."""
     assert len(language.get_stop_words()) > 0
 
 
 @pytest.mark.parametrize("language", list_of_langIso_empty_stopwords)
 def test_languageIso_get_empty_stopwords_list(language):
+    """Test empty stop words list getter."""
     assert len(language.get_stop_words()) == 0
 
 
 @pytest.mark.parametrize("language", list_of_langIso)
 def test_languageIso_locales(language):
+    """Test locales."""
     assert language.locales == _LOCALES[language]

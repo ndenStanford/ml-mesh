@@ -42,23 +42,25 @@ def test_get_prompt(test_client, create_prompts):
 
 
 @pytest.mark.parametrize(
-    "template, alias",
+    "template, alias, parameters",
     [
-        (
-            "I want you to act like {character} from {series}.",
-            "aliasone",
-        ),
+        ("I want you to act like {character} from {series}.", "aliasone", ""),
         (
             "What personalities are mentionned in this text {text}",
             "aliastwo",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 100,
+                "temperature": 0.2,
+            },
         ),
     ],
 )
 @freeze_time("2012-01-14 03:21:34")
-def test_create_prompt(template, test_client, alias):
+def test_create_prompt(template, test_client, alias, parameters):
     """Test create prompt endpoint."""
     response = test_client.post(
-        f"/api/v1/prompts?template={template}&alias={alias}",
+        f"/api/v1/prompts?template={template}&alias={alias}&parameters={parameters}",
         headers={"x-api-key": "1234"},
     )
 
@@ -70,10 +72,12 @@ def test_create_prompt(template, test_client, alias):
     assert isinstance(data["created_at"], str)
     assert isinstance(data["template"], str)
     assert isinstance(data["alias"], str)
+    assert isinstance(data["parameters"], dict)
     assert prompt.id == data["id"]
     assert prompt.created_at == datetime.datetime.fromisoformat(data["created_at"])
     assert prompt.template == data["template"]
     assert prompt.alias == data["alias"]
+    assert prompt.parameters == data["parameters"]
 
 
 @pytest.mark.parametrize(
@@ -115,7 +119,6 @@ def test_update_prompt(test_client, create_prompts):
 )
 def test_delete_prompt(test_client, alias):
     """Test delete prompt endpoint."""
-
     response = test_client.delete(
         f"/api/v1/prompts/{alias}", headers={"x-api-key": "1234"}
     )

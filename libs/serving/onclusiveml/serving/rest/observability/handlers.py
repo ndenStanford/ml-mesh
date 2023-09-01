@@ -1,3 +1,5 @@
+"""Handlers."""
+
 # 3rd party libraries
 from prometheus_client import REGISTRY
 from prometheus_client.openmetrics.exposition import (

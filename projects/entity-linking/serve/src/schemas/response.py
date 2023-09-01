@@ -11,4 +11,6 @@ from src.schemas.type_dict import EntityDictOutput
 
 
 class Response(BaseModel):
+    """Response model."""
+
     entities: Optional[List[EntityDictOutput]]
