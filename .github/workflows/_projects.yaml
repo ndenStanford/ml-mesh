@@ -108,14 +108,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      # - uses: dorny/paths-filter@v2
-      #   id: files-changed
-      #   name: Get a list of modified files.
-      #   with:
-      #     list-files: shell
-      #     filters: |
-      #       this:
-      #         - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'projects/**'
 
   provision-customized-runner:
     name: Provision self-hosted & customized runner
