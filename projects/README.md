@@ -20,8 +20,6 @@ This folder contains the implementation of all our machine learning projects. Ea
 | NER           | `ner`           | Named Entity Recognition          | Text      |         |  n/a  |   n/a   |   x   | x   |
 
 
-## Makefile Targets
-
 ## Makefile Targets & Docker-Compose Services
 
 We use `make` to consistently call `docker compose` services declared in
