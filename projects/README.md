@@ -1,6 +1,7 @@
 # ML projects
 
-This folder contains the implementation of all our machine learning projects. Each project is split into a maximum of 5 components:
+This folder contains the implementation of all our machine learning projects. Each project is split
+ into a maximum of 5 components:
 
 - ingest
 - prepare

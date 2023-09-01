@@ -2,25 +2,53 @@
 
 This repo contains the codebase for the machine learning APIs service mesh.
 
-## Project organisation
+## Repository organisation
 
-This project contains the modular implementation of the logic powering Onclusive's ML stack:
+This repository contains the modular implementation of the logic powering Onclusive's ML stack:
+1. [internal libraries](./libs)
+2. [internally maintained core images](./docker)
+3. [applications serving **internally** maintained models](./projects)
+4. [applications serving **externally** maintained models](./apps)
 
-### Repository philosophy
+### Libraries 
+
+A top-level manual on can be found [here](./manuals/libs/overview)
+
+All internal libraries can be found [here](./libs). See individual library for detailed 
+documentation.
+
+### Core images
+
+A top-level manual on can be found [here](./manuals/docker/overview)
+
+All internal core images can be found [here](./docker). See individual core image for detailed 
+documentation.
+
+### Projects
 
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
-- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to bring data into our internal storage.
+- **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to 
+bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
-- **train**: model training.
-- **compile**: model compilation (it can be so that the model runs on a specific architecture of a model quantization);
+- **train**: model training and registering to internal model registry.
+  - [see here](./manuals/projects/01_train.md) for this component's manual
+- **compile**: model compilation (optimized for serving) and registering to internal model registry
+  - [see here](./manuals/projects/02_compile.md) for this component's manual
 - **serve**: model served as a REST API.
-- **display**: UI component with streamlit.
+  - [see here](./manuals/projects/03_serve.md) for this component's manual
 
-Strict abstraction boundaries help express the invariant and logical consistency of each component behaviour (input, processing and output).
-This allows us to create well defined patterns that can be applied specifically to implement each of these steps on new projects.
-Not all of these steps are mandatory: for instance, pre-trained model used for zero-shot learning will not have a prepare and train step.
+Strict abstraction boundaries help express the invariant and logical consistency of each component 
+behaviour (input, processing and output). This allows us to create well defined patterns that can
+ be applied specifically to implement each of these steps on new projects. Not all of these steps
+ are mandatory: for instance, pre-trained model used for zero-shot learning will not have a prepare
+ and train step.
+
+### Apps
+
+All internal core images can be found [here](./apps/). See individual app for detailed 
+documentation.
 
 ## Developing
 
@@ -66,21 +94,7 @@ It takes about 10 minutes to run, go stretch your legs, get a coffee, or consult
 
 ### Contributing to the codebase
 
-#### Creating a new core docker image
-
-In order to add a new core docker image, open a new [issue](./.github/ISSUE_TEMPLATE/06_NEW_CORE_DOCKER_IMAGE.md) and follow the steps outlined in the checklist.
-
-#### Creating a new library
-
-In order to add a new library, open a new [issue](./.github/ISSUE_TEMPLATE/05_NEW_LIB.md) and follow the steps outlined in the checklist.
-
-#### Creating a new project
-
-In order to add a new project, open a new [issue](./.github/ISSUE_TEMPLATE/03_NEW_PROJECT.md) and follow the steps outlined in the checklist.
-
-#### Updating an existing project
-
-In order to add a new component to an existing project, open a new [issue](./.github/ISSUE_TEMPLATE/04_NEW_PROJECT_COMPONENT.md) and follow the steps outlined in the checklist.
+[See here for a detailed step-by-step guide on how to contribute to the mesh](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3241050137/ml-mesh).
 
 ## Dependency management
 
