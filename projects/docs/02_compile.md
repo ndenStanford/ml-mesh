@@ -35,7 +35,7 @@ Actions CI process of this same `ml-mesh` repository.
 
 ## 2 Setup & references
 
-Projects implementing a `train` component are
+Projects implementing a `compile` component are
 - **`keywords`**
 - `ner`
 - `sentiment`
