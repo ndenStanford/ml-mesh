@@ -66,7 +66,9 @@ For reference implementations of all below concepts, i.e.,
 - `test` suite implementations
 - `docker compose` files and services for `dev` and `ci`
 
-**see the [`keywords` project's `train` component](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and [corresponding docker compose service entries](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L9).**
+see the
+- [**`keywords` project's `train` component**](https://github.com/AirPR/ml-mesh/tree/develop/projects/keywords/train) and
+- [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L9).
 
 ## 3 Testing the `train` component
 
@@ -76,6 +78,8 @@ The following test suites are implemented:
 - `unit` (mandatory)
 - `integration` (optional)
 - `functional` (optional)
+
+If you haven't pulled the component image yet, [see here for (re-)building it locally](####4.2.1-building-the-docker-container)
 
 ### 3.1 Run `unit` tests
 
@@ -129,6 +133,8 @@ Editing that file allows for configuring development pipeline runs.
 
 To locally build the image
 - using the ${BASE_IMAGE_TAG} version of the base image, and
+- using the `docker-compose.dev.yaml`,
+- using the `development` build stage,
 - tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`,
 
 run:
@@ -138,6 +144,7 @@ make projects.build/${PROJECT_NAME} \
   COMPONENT=train \
   ENVIRONMENT=dev \
   BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  TARGET_BUILD_STAGE=development \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 

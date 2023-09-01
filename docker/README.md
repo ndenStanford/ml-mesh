@@ -31,10 +31,17 @@ All images that require a `pip-install` have dependencies manged via dependabot 
 month.
 
 
-## Makefile Targets
+## Makefile Targets & Docker-Compose Services
+
+We use `make` to consistently call `docker compose` services declared in
+- the development [`docker-compose.dev.yaml`](./docker-compose.dev.yaml) and
+- the CI [`docker-compose.ci.yaml`](./docker-compose.ci.yaml)
+
+files, respectively.
+
+Available targets are:
 
 ```text
-Available targets:
 
     docker.lock/<image>                     (Re-)writes poetry lock file of a core image (if exists). Variable(s): ENVIRONMENT.
     docker.build/<image>                    Builds the docker image. Variable(s): ENVIRONMENT.
@@ -45,3 +52,30 @@ Available targets:
     docker.validate/<image>                 Runs image test suite (if exists). Variable(s): ENVIRONMENT.
 
 ```
+
+## Useful commands
+
+To (re-)build your core image locally
+
+- using the [`docker-compose.dev.yaml`](./docker-compose.dev.yaml)
+- using the ${BASE_IMAGE_TAG} version of its base image,
+- using the `development` build stage,
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}`,
+
+```bash
+make docker.build/${IMAGE_NAME} \
+  ENVIRONMENT=dev \
+  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  TARGET_BUILD_STAGE=development \
+  IMAGE_TAG=${IMAGE_TAG}
+```
+
+To validate your local core image, run
+
+```bash
+make docker.validate/${IMAGE_NAME} \
+  ENVIRONMENT=dev \
+  IMAGE_TAG=${IMAGE_TAG}
+```
+
+For more documentation on a given core image, see the image's dedicated `README.md`.

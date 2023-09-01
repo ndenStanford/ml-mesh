@@ -125,6 +125,8 @@ To validate every change on the component, test suites should be run using the
 - `functional` (optional)
 - `load` (optional)
 
+If you haven't pulled the component image yet, [see here for (re-)building it locally](####4.2.1-building-the-docker-container)
+
 ### 3.1 Run `unit` tests
 
 `unit` test scope:
@@ -222,6 +224,8 @@ the functionality of your code via make command once the development is finished
 
 To locally build the image
 - using the ${BASE_IMAGE_TAG} version of the base image, and
+- using the `docker-compose.dev.yaml`,
+- using the `development` build stage,
 - tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-serve:${IMAGE_TAG}`, run
 the `make` target:
 
@@ -230,6 +234,7 @@ make projects.build/${PROJECT_NAME} \
   COMPONENT=serve \
   ENVIRONMENT=dev \
   BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
+  TARGET_BUILD_STAGE=development \
   IMAGE_TAG=${IMAGE_TAG}
 ```
 

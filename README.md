@@ -12,14 +12,14 @@ This repository contains the modular implementation of the logic powering Onclus
 
 ### Libraries
 
-A top-level manual on can be found [here](./manuals/libs/overview)
+A top-level manual on can be found [here](./libs/README.md)
 
 All internal libraries can be found [here](./libs). See individual library for detailed
 documentation.
 
 ### Core images
 
-A top-level manual on can be found [here](./manuals/docker/overview)
+An overview of developer utilitites and existing images on can be found [here](./docker/README.md)
 
 All internal core images can be found [here](./docker). See individual core image for detailed
 documentation.
@@ -29,15 +29,17 @@ documentation.
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
+An overview of developer utilitites and existing images on can be found [here](./projects/README.md)
+
 - **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to
 bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
 - **train**: model training and registering to internal model registry.
-  - [see here](./manuals/projects/01_train.md) for this component's manual
+  - [see here](./projects/manuals/01_train.md) for this component's manual
 - **compile**: model compilation (optimized for serving) and registering to internal model registry
-  - [see here](./manuals/projects/02_compile.md) for this component's manual
+  - [see here](./projects/manuals/02_compile.md) for this component's manual
 - **serve**: model served as a REST API.
-  - [see here](./manuals/projects/03_serve.md) for this component's manual
+  - [see here](./projects/manuals/03_serve.md) for this component's manual
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component
 behaviour (input, processing and output). This allows us to create well defined patterns that can
@@ -46,6 +48,8 @@ behaviour (input, processing and output). This allows us to create well defined 
  and train step.
 
 ### Apps
+
+An overview of developer utilitites and existing images on can be found [here](./apps/README.md)
 
 All internal core images can be found [here](./apps/). See individual app for detailed
 documentation.

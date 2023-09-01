@@ -27,6 +27,10 @@ The CI flow implementing automated building and testing of all internal librarie
 
 ## Makefile Targets
 
+We use `make` to consistently execute the main library development tasks.
+
+Available targets are:
+
 ```text
 Available targets:
 

@@ -22,6 +22,16 @@ This folder contains the implementation of all our machine learning projects. Ea
 
 ## Makefile Targets
 
+## Makefile Targets & Docker-Compose Services
+
+We use `make` to consistently call `docker compose` services declared in
+- the given project's development `docker-compose.dev.yaml` and
+- the given project's CI `docker-compose.ci.yaml`
+
+files, respectively.
+
+Available targets are:
+
 ```text
 Available targets:
 
@@ -40,9 +50,9 @@ Available targets:
 
 ```
 
-## Manuals
+## Useful commands
 
-The following component-specific manuals are available:
-- [train](https://github.com/AirPR/ml-mesh/tree/develop/manuals/projects/01_train.md)
-- [compile](https://github.com/AirPR/ml-mesh/tree/develop/manuals/projects/02_compile.md)
-- [serve](https://github.com/AirPR/ml-mesh/tree/develop/manuals/projects/03_server.md)
+The following component-specific in-depth manuals are available:
+- [train](./manuals/01_train.md)
+- [compile](./manuals/02_compile.md)
+- [serve](./manuals/03_serve.md)
