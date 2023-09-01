@@ -36,9 +36,9 @@ Actions CI process of this same `ml-mesh` repository.
 ## 2 Setup & references :wrench:
 
 Projects implementing a `compile` component are
-- **`keywords`** :key:-:memo:
+- **`keywords`** :key::memo:
 - `ner` :smile:/:frowning:
-- `sentiment` :books: -> :european_castle: :church: :hotel:
+- `sentiment` :books::arrow_forward::european_castle::church::hotel:
 
 ### 2.1 Environment variables :deciduous_tree:
 

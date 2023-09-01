@@ -24,8 +24,8 @@ Specs defined in the `config/prod.env` are used only during CI processes.
 ## 2 Setup & references :wrench:
 
 Projects implementing a `train` component are
-- **`keywords`** :key:-:memo:
-- `ner` :books: -> :european_castle: :church: :hotel:
+- **`keywords`** :key::memo:
+- `ner` :books::arrow_forward::european_castle::church::hotel:
 - `sentiment` :smile:/:frowning:
 
 ### 2.1 Environment variables :deciduous_tree:

@@ -21,14 +21,14 @@ Each of the 3 tasks corresponds to a python module:
 The model in question can be a
 - :factory: (trained &) compiled ML model *with artifact* files that are stored in the AI model registry, as
  is the case for
-  - `keywords` :key:-:memo:
+  - `keywords` :key::memo:
   - `sentiment` :smile:/:frowning:
-  - `ner`, :books: -> :european_castle: :church: :hotel:
+  - `ner`, :books::arrow_forward::european_castle::church::hotel:
   or
 - :speedboat: "code-only" model *without artifact* files and no AI model registry entry, as is the case for
-  - `lsh` :books: -> :hash: :hash:
+  - `lsh` :books::arrow_forward::hash::hash:
   - `entity-fishing` :fishing_pole_and_fish:
-  - `summarization` :books: -> :memo:
+  - `summarization` :books::arrow_forward::memo:
 
 It draws its configurations from the `src/serve/params.py` module, which parses all required
 environment variable from the environment.
