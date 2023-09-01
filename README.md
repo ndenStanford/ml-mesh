@@ -12,7 +12,7 @@ This repository contains the modular implementation of the logic powering Onclus
 
 ### Libraries
 
-A top-level manual on can be found [here](./libs/README.md)
+A top-level doc on can be found [here](./libs/README.md)
 
 All internal libraries can be found [here](./libs). See individual library for detailed
 documentation.
@@ -35,11 +35,11 @@ An overview of developer utilitites and existing images on can be found [here](.
 bring data into our internal storage.
 - **prepare**: dataset pre-processing and feature engineering (if any).
 - **train**: model training and registering to internal model registry.
-  - [see here](./projects/manuals/01_train.md) for this component's manual
+  - [see here](./projects/docs/01_train.md) for this component's doc
 - **compile**: model compilation (optimized for serving) and registering to internal model registry
-  - [see here](./projects/manuals/02_compile.md) for this component's manual
+  - [see here](./projects/docs/02_compile.md) for this component's doc
 - **serve**: model served as a REST API.
-  - [see here](./projects/manuals/03_serve.md) for this component's manual
+  - [see here](./projects/docs/03_serve.md) for this component's doc
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component
 behaviour (input, processing and output). This allows us to create well defined patterns that can

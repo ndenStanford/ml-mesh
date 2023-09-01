@@ -49,7 +49,7 @@ Available targets are:
 
 ## Useful commands
 
-The following component-specific in-depth manuals are available:
-- [train](./manuals/01_train.md)
-- [compile](./manuals/02_compile.md)
-- [serve](./manuals/03_serve.md)
+The following component-specific in-depth docs are available:
+- [train](./docs/01_train.md)
+- [compile](./docs/02_compile.md)
+- [serve](./docs/03_serve.md)
