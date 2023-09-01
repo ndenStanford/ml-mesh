@@ -36,10 +36,10 @@ environment variable from the environment.
 ## 2 Setup & references :wrench:
 
 Projects implementing a `serve` component are
-- **`keywords`** :key:-:memo: | :factory:
-- `lsh` :books: -> :hash: :hash: | :speedboat:
+- **`keywords`** :key::memo: | :factory:
+- `lsh` :books::arrow_forward::hash::hash: | :speedboat:
 - `entity-fishing` :fishing_pole_and_fish: | :speedboat:
-- `summarization` :books: -> :memo:| :speedboat:
+- `summarization` :books::arrow_forward::memo:| :speedboat:
 
 ### 2.1 Environment variables :deciduous_tree:
 
