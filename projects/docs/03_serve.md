@@ -6,7 +6,7 @@ This document outlines how to run and test your project's `serve` component.
 
 ### 1.1 Overview
 
-The `${PROJECT_NAME}-serve` container image provides the code and runtime environment for
+A project's `serve` container image provides the code and runtime environment for
 - retrieving a compiled model / pipeline from our neptune AI model registry
   - if applicable - see below
 - serving a model **owned & maintained internally** by the ML team

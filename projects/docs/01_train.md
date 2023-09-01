@@ -6,7 +6,7 @@ This document outlines how to run and test your project's `train` component.
 
 ### 1.1 Overview
 
-The `${PROJECT_NAME}-train` container image provides the code and runtime environment for
+A project's `train` container image provides the code and runtime environment for
 - retrieving a specified model / pipeline from huggingface,
 - training it (optional) and
 - registering it on our internal neptune AI model registry.

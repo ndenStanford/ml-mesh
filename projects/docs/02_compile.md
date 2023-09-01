@@ -6,7 +6,7 @@ This document outlines how to run and test your project's `compile` component.
 
 ### 1.1 Overview
 
-The `${PROJECT_NAME}-compile` container image provides the code and runtime environment for
+A project's `compile` container image provides the code and runtime environment for
 - retrieving a specified, uncompiled model / pipeline from the neptune AI model registry,
 - compiling it to a format optimized for serving (e.g. neuron)
 - validating the compiled model / pipeline via regression tests
