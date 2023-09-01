@@ -1,31 +1,58 @@
 # Internal libraries
 
-Internal libraries implement abstractions that allow us to build our ML applications from a consistent echosystem.
+Internal libraries implement abstractions that allow us to build our ML applications from a
+consistent and maintainable ecosystem.
 
 ## Libraries
 
-- **core**: base classes and global utilities used in all libraries and projects.
-- **data**: dataset lifecycle management.
-- **tracking**: Support for interacting with the Neptune AI platform.
-- **compile**: Support for optimizing models for serving purposes.
-- **models**: Custom model wrappers.
-- **nlp**: internal NLP utilities.
-- **serving**: model wrappers for serving and observability instrumentation.
-- **training**: object suite to enable training models at scale.
+| Reference        | Upstream dependencies     | Description                                           | Custom Hardware | Unit | Integration | Functional |
+| ---------------- | --------------------------| ----------------------------------------------------- | --------------- | ---- | ----------- | ---------- |
+| `core`           | n/a                       | Python base for core and project components           | no              |   x  |             |            |
+| `tracking`       | `core`                    | Internal wrapper around `neptune` library             | no              |   x  |      x      |            |
+| `serving`        |                           | Internal FastAPI-based serving library                | no              |   x  |      x      |      x     |
+| `compile`        | `core`                    | Compilation utilities for `transformers` type models  | inf1            |   x  |             |      x     |
+| `models`         | `compile`                 | Model classes to be used in project `serve` component | (inf1)          |   x  |      x      |      x     |
+| `nlp`            | `core`                    | Cross project NLP utilities                           | no              |   x  |             |            |
+| `syndicate`      | `nlp      `               | Cross project hashing utilities                       | no              |   x  |             |            |
+
+## Dependency management
+
+We use poetry to declare and pin python package and upstream library version dependencies. Each
+library must ship with
+- a `pyproject.toml` file declaring the dependencies
+- an automatically created (`libs.lock` below)`poetry.lock` file showing resolved dependencies
+- a `poetry.toml` file disabling the virtual environment creation in the Github Action CI
+
+The CI flow implementing automated building and testing of all internal libraries is [`_libs.yaml`](../.github/workflows/_libs.yaml)
 
 ## Makefile Targets
 
 ```text
 Available targets:
 
-    libs.install                            Installs a library and dependencies locally
+    libs.lock/<library>                     (Re-)writes a library's poetry lock file.
+    libs.install/<library>                  Installs a library and dependencies locally
     libs.install-all                        Installs all libraries and dependencies locally
-    libs.unit                               Runs unit tests for a library
+    libs.unit/<image>                       Runs unit tests for a library
     libs.unit-all                           Runs unit tests for all registered libraries
-    libs.integration                        Runs integration tests for a library
+    libs.integration/<image>                Runs integration tests for a library
     libs.integration-all                    Runs integration tests for all registered libraries
-    libs.test                               Runs the full test suite
-    libs.test-all                           Runs the full test suite for all registered libraries
+    libs.functional/<image>                 Runs integration tests for a library*
+    libs.functional-all                     Runs integration tests for all registered libraries*
+    libs.test/<image>                       Runs the full test suite for a library*
+    libs.test-all                           Runs the full test suite for all registered libraries*
 
 
 ```
+
+* assumes *no* server <-> client test structure
+
+## Useful commands
+
+To (re-)write your library's lock file, run: `make libs.lock/${LIBRARY_NAME}`
+To (re-)install your library locally, run: `make libs.install/${LIBRARY_NAME}`
+To run your library's unit tests, run: `make libs.unit/${LIBRARY_NAME}`
+To run your library's integration tests, run: `make libs.integration/${LIBRARY_NAME}`
+To run your library's functional tests, run: `make libs.functional/${LIBRARY_NAME}`
+
+For more documentation on a given library, see the library's dedicated `README.md`.
