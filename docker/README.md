@@ -10,18 +10,18 @@ manage from one version to another. Moreover, any breaking changes in any of our
 should be caught early on.
 
 
-| Reference                | Base Image Reference        | Description                                            | Custom Hardware | Validate |
+| Reference                | Base Image Reference        | Description                                            | Target Hardware | Validate |
 | ------------------------ | ----------------------------| ------------------------------------------------------ | --------------- | -------- |
-| `python-base`            | n/a                         | Python base for core and project components            | no              |          |
+| `python-base`            | n/a                         | Python base for core and project components            | cpu             |          |
 | `gpu-base`               | `nvidia/cuda` (external)    | Flexible GPU base (w/o torch)                          | gpu             |     x    |
 | `gpu-train`              | `python-base`               | GPU base for project train components (w/ torch & hf)  | gpu             |     x    |
 | `neuron-compile`         | `python-base`               | Neuron base for project compile components             | inf1            |     x    |
 | `neuron-inference`       | `python-base`               | Neuron base for neuron inference-only components       | inf1            |     x    |
-| `fastapi-serve`          | `python-base`               | Serving base for project serve components              | no              |          |
-| `kubeflow-jupyter`       | `python-base`               | Kubeflow base for jupyter                              | no              |          |
-| `kubeflow-torch-cpu`     | `kubeflow-jupyter`          | Kubeflow flavour of flexible pytorch (CPU) image       | no              |          |
+| `fastapi-serve`          | `python-base`               | Serving base for project serve components              | cpu             |          |
+| `kubeflow-jupyter`       | `python-base`               | Kubeflow base for jupyter                              | cpu             |          |
+| `kubeflow-torch-cpu`     | `kubeflow-jupyter`          | Kubeflow flavour of flexible pytorch (CPU) image       | cpu             |          |
 | `kubeflow-torch-gpu`     | `gpu-base`                  | Kubeflow image for torch (GPU available)               | gpu             |          |
-| `kubeflow-data-science`  | `kubeflow-torch-cpu`        | DS image for kubeflow                                  | no              |          |
+| `kubeflow-data-science`  | `kubeflow-torch-cpu`        | DS image for kubeflow                                  | cpu             |          |
 
 ## Dependency management
 
