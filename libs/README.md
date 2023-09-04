@@ -5,15 +5,15 @@ consistent and maintainable ecosystem.
 
 ## Libraries
 
-| Reference        | Upstream dependencies     | Description                                           | Custom Hardware | Unit | Integration | Functional |
+| Reference        | Upstream dependencies     | Description                                           | Target Hardware | Unit | Integration | Functional |
 | ---------------- | --------------------------| ----------------------------------------------------- | --------------- | ---- | ----------- | ---------- |
-| `core`           | n/a                       | Python base for core and project components           | no              |   x  |             |            |
-| `tracking`       | `core`                    | Internal wrapper around `neptune` library             | no              |   x  |      x      |            |
-| `serving`        |                           | Internal FastAPI-based serving library                | no              |   x  |      x      |      x     |
+| `core`           | n/a                       | Python base for core and project components           | cpu             |   x  |             |            |
+| `tracking`       | `core`                    | Internal wrapper around `neptune` library             | cpu             |   x  |      x      |            |
+| `serving`        |                           | Internal FastAPI-based serving library                | cpu             |   x  |      x      |      x     |
 | `compile`        | `core`                    | Compilation utilities for `transformers` type models  | inf1            |   x  |             |      x     |
-| `models`         | `compile`                 | Model classes to be used in project `serve` component | (inf1)          |   x  |      x      |      x     |
-| `nlp`            | `core`                    | Cross project NLP utilities                           | no              |   x  |             |            |
-| `syndicate`      | `nlp      `               | Cross project hashing utilities                       | no              |   x  |             |            |
+| `models`         | `compile`                 | Model classes to be used in project `serve` component | inf1, cpu       |   x  |      x      |      x     |
+| `nlp`            | `core`                    | Cross project NLP utilities                           | cpu             |   x  |             |            |
+| `syndicate`      | `nlp      `               | Cross project hashing utilities                       | cpu             |   x  |             |            |
 
 ## Dependency management
 
