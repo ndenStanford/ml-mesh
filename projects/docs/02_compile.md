@@ -37,8 +37,8 @@ Actions CI process of this same `ml-mesh` repository.
 
 Projects implementing a `compile` component are
 - **`keywords`** :key::memo:
-- `ner` :smile:/:frowning:
-- `sentiment` :books::arrow_forward::european_castle::church::hotel:
+- `ner` :books::arrow_forward::european_castle::church::hotel:
+- `sentiment` :smile:/:frowning:
 
 ### 2.1 Environment variables :deciduous_tree:
 
