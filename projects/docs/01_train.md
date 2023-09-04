@@ -85,7 +85,7 @@ For reference implementations of all below concepts, i.e.,
 - `docker compose` files and services for `dev` and `ci`
 
 see the
-- [**`keywords` project's `train` component**](../projects/keywords/train) and
+- [**`keywords` project's `train` component**](../keywords/train) and
 - [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L9).
 
 ## 3 Testing the `train` component :warning:

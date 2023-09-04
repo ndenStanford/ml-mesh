@@ -105,7 +105,7 @@ For reference implementations of all below concepts, i.e.,
 - `docker compose` files and services for `dev` and `ci`
 
 see the
-- [**`keywords` project's `compile` component directory**](../projects/keywords/compile) and
+- [**`keywords` project's `compile` component directory**](../keywords/compile) and
 - [**corresponding docker compose service entries**](https://github.com/AirPR/ml-mesh/blob/35d007edb24e90797a2b0bf357ca67a49bbf301d/projects/keywords/docker-compose.dev.yaml#L63).**
 
 ## 3 Testing the `compile` component :warning:
