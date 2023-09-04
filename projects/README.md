@@ -47,7 +47,7 @@ Available targets are:
 
 ```
 
-For more details,  see the [project level `makefile`](./makefile.mk).
+For more details, see the [project level `makefile`](./makefile.mk).
 
 Note that some of the default values for `make` variables are defined in the
 [repository level `makefile`](../Makefile)

@@ -27,7 +27,7 @@ The CI flow implementing automated building and testing of all internal librarie
 
 ## Makefile Targets
 
-We use `make` to consistently execute the main library development tasks.
+We use a set of `make` targets to consistently execute the main library development tasks.
 
 Available targets are:
 
@@ -50,6 +50,11 @@ Available targets:
 ```
 
 * assumes *no* server <-> client test structure
+
+For more details, see the [libs level `makefile`](./makefile.mk).
+
+Note that some of the default values for `make` variables are defined in the
+[repository level `makefile`](../Makefile)
 
 ## Useful commands
 
