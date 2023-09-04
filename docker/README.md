@@ -34,9 +34,9 @@ month.
 
 ## Makefile Targets & Docker-Compose Services
 
-We use `make` to consistently call `docker compose` services declared in
-- the development [`docker-compose.dev.yaml`](./docker-compose.dev.yaml) and
-- the CI [`docker-compose.ci.yaml`](./docker-compose.ci.yaml)
+We use a set of `make` targets to consistently call `docker compose` services declared in
+- the [docker level development `docker-compose.dev.yaml`](./docker-compose.dev.yaml) and
+- the [docker level CI `docker-compose.ci.yaml`](./docker-compose.ci.yaml)
 
 files, respectively.
 
@@ -54,6 +54,11 @@ Available targets are:
 
 ```
 
+For more details,  see the [docker level `makefile`](./makefile.mk).
+
+Note that some of the default values for `make` variables are defined in the
+[repository level `makefile`](../Makefile)
+
 ## Useful commands
 
 To (re-)build your core image locally
@@ -64,19 +69,13 @@ To (re-)build your core image locally
 - tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}`,
 
 ```bash
-make docker.build/${IMAGE_NAME} \
-  ENVIRONMENT=dev \
-  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-  TARGET_BUILD_STAGE=development \
-  IMAGE_TAG=${IMAGE_TAG}
+make docker.build/${IMAGE_NAME}
 ```
 
 To validate your local core image, run
 
 ```bash
-make docker.validate/${IMAGE_NAME} \
-  ENVIRONMENT=dev \
-  IMAGE_TAG=${IMAGE_TAG}
+make docker.validate/${IMAGE_NAME}
 ```
 
 For more documentation on a given core image, see the image's dedicated `README.md`.

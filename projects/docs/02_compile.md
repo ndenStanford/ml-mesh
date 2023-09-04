@@ -87,12 +87,7 @@ To locally build the image
 the `make` target:
 
 ```bash
-make projects.build/${PROJECT_NAME} \
-  COMPONENT=compile \
-  ENVIRONMENT=dev \
-  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-  TARGET_BUILD_STAGE=development \
-  IMAGE_TAG=${IMAGE_TAG}
+make projects.build/${PROJECT_NAME} COMPONENT=compile
 ```
 
 ### 2.3 Example implementation :nut_and_bolt: :eyes:
@@ -122,7 +117,7 @@ To validate every change on the component, test suites should be run using the
 To run the `unit` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.unit/${PROJECT_NAME} COMPONENT=compile
 ```
 
 ### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
@@ -130,7 +125,7 @@ make projects.unit/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=$
 To run the `integration` tests for the `compile` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.integration/${PROJECT_NAME} COMPONENT=compile
 ```
 
 ### 3.3 Run `functional` tests :warning: :nut_and_bolt: :nut_and_bolt: :nut_and_bolt:
@@ -138,7 +133,7 @@ make projects.integration/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAG
 To run the `functional` tests for the `compile` component using the `docker-compose.dev.yaml` file,  run:
 
 ```bash
-make projects.functional/${PROJECT_NAME} COMPONENT=compile ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.functional/${PROJECT_NAME} COMPONENT=compile
 ```
 
 ## 4 Running the `compile` component :rocket:
@@ -196,35 +191,23 @@ Update
 #### 4.2.2 Download the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} \
-ENVIRONMENT=dev \
-PIPELINE_COMPONENT=download-model \
-IMAGE_TAG=${IMAGE_TAG}
+make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=download-model
 ```
 
 #### 4.2.3 Compile the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} \
-ENVIRONMENT=dev \
-PIPELINE_COMPONENT=compile-model \
-IMAGE_TAG=${IMAGE_TAG}
+make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=compile-model
 ```
 
 #### 4.2.4 Validate compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} \
-ENVIRONMENT=dev \
-PIPELINE_COMPONENT=validate-model \
-IMAGE_TAG=${IMAGE_TAG}
+make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=validate-model
 ```
 
 #### 4.2.5 Upload compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} \
-ENVIRONMENT=dev \
-PIPELINE_COMPONENT=upload-model \
-IMAGE_TAG=${IMAGE_TAG}
+make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=upload-model
 ```

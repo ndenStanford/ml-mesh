@@ -67,12 +67,7 @@ To locally build the image
 run:
 
 ```bash
-make projects.build/${PROJECT_NAME} \
-  COMPONENT=train \
-  ENVIRONMENT=dev \
-  BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-  TARGET_BUILD_STAGE=development \
-  IMAGE_TAG=${IMAGE_TAG}
+make projects.build/${PROJECT_NAME} COMPONENT=train
 ```
 
 ### 2.4 Example implementation :nut_and_bolt: :eyes:
@@ -102,7 +97,7 @@ The following test suites are implemented:
 To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.unit/${PROJECT_NAME} COMPONENT=train
 ```
 
 ### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
@@ -110,7 +105,7 @@ make projects.unit/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${I
 To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.integration/${PROJECT_NAME} COMPONENT=train
 ```
 
 ### 3.3 Run `functional` tests :warning: :nut_and_bolt: :nut_and_bolt: :nut_and_bolt:
@@ -118,7 +113,7 @@ make projects.integration/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_
 To run the `functional` tests for the `train` component using the `docker-compose.dev.yaml` file,  run:
 
 ```bash
-make projects.functional/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.functional/${PROJECT_NAME} COMPONENT=train
 ```
 
 
@@ -163,5 +158,5 @@ Update
 #### 4.2.2 (Train, evaluate &) register the model
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=train ENVIRONMENT=dev IMAGE_TAG=${IMAGE_TAG}
+make projects.start/${PROJECT_NAME} COMPONENT=train
 ```

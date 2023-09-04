@@ -22,7 +22,7 @@ This folder contains the implementation of all our machine learning projects. Ea
 
 ## Makefile Targets & Docker-Compose Services
 
-We use `make` to consistently call `docker compose` services declared in
+We use a set of `make` targets to consistently call `docker compose` services declared in
 - the given project's development `docker-compose.dev.yaml` and
 - the given project's CI `docker-compose.ci.yaml`
 
@@ -46,6 +46,11 @@ Available targets are:
     projects.lock/<project>                     Updates the poetry lock file. Variable(s): COMPONENT.
 
 ```
+
+For more details,  see the [project level `makefile`](./makefile.mk).
+
+Note that some of the default values for `make` variables are defined in the
+[repository level `makefile`](../Makefile)
 
 ## Useful commands
 
