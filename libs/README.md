@@ -39,11 +39,11 @@ Available targets:
     libs.install-all                        Installs all libraries and dependencies locally
     libs.unit/<image>                       Runs unit tests for a library
     libs.unit-all                           Runs unit tests for all registered libraries
-    libs.integration/<image>                Runs integration tests for a library
+    libs.integration/<library>                Runs integration tests for a library
     libs.integration-all                    Runs integration tests for all registered libraries
-    libs.functional/<image>                 Runs integration tests for a library*
+    libs.functional/<library>                 Runs integration tests for a library*
     libs.functional-all                     Runs integration tests for all registered libraries*
-    libs.test/<image>                       Runs the full test suite for a library*
+    libs.test/<library>                       Runs the full test suite for a library*
     libs.test-all                           Runs the full test suite for all registered libraries*
 
 
