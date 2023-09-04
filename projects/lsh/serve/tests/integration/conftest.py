@@ -14,7 +14,7 @@ from src.serve.server_models import BioResponseModel, PredictResponseModel
 
 @pytest.fixture
 def test_client():
-
+    """Client fixture."""
     model_server = get_model_server()
 
     return TestClient(model_server)
@@ -22,11 +22,13 @@ def test_client():
 
 @pytest.fixture
 def test_predict_input() -> str:
+    """Predict input fixture."""
     return "Call functions to generate hash signatures for each article"
 
 
 @pytest.fixture
 def test_expected_predict_output() -> List[str]:
+    """Expected predict output fixture."""
     return PredictResponseModel(
         signature=[
             "AAAAAD7VrJYAAAAAUtj2YwAAAABnUo5LAAAAAKEQ6osAAAAAGN7zAQAAAACvI05uAAAAAP5T14M=",
@@ -53,5 +55,5 @@ def test_expected_predict_output() -> List[str]:
 
 @pytest.fixture
 def test_expected_bio_output():
-
+    """Test expected bio output."""
     return BioResponseModel(model_name="lsh")

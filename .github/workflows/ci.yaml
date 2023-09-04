@@ -166,6 +166,8 @@ jobs       :
             base-region: us-east-2
           - name: kubeflow-data-science
             base-region: us-east-2
+          - name: kubeflow-torch-gpu
+            base-region: us-east-1
         validate-build: [false]
         region: [us-east-2]
 
@@ -195,7 +197,7 @@ jobs       :
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests]
     strategy:
-      max-parallel: 10
+      max-parallel: 5
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
@@ -422,6 +424,16 @@ jobs       :
             load: false
             upload-test-results: false
 
+          # compile
+          - name: sentiment
+            component: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
     with:
       project: lsh
       environment: prod
@@ -491,27 +503,65 @@ jobs       :
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
-  # COMPILE MODELS
+  # TRAIN MODELS
   # ===============================================
 
-  run-ml-compilation-pipelines:
-    name: Compile ML models
-    uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-repository-state, run-keywords-project, run-entity-linking-project, run-ner-project, run-lsh-project, run-sentiment-project, run-summarization-project]
+  run-train-pipelines:
+    name: Train ML models
+    uses: ./.github/workflows/_train_model.yaml
+    needs: [run-repository-state, run-projects]
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      matrix:
+        models:
+          - project: keywords
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+    with:
+      environment: prod
+      project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+      tag: ${{ matrix.models.tag }}
+      python-version: 3.8.16
+      poetry-version: 1.3.2
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
+  # COMPILE MODELS
+  # ===============================================
+
+  run-compilation-pipelines:
+    name: Compile ML models
+    uses: ./.github/workflows/_compile_model.yaml
+    needs: [run-repository-state, run-keywords-project, run-entity-linking-project, run-ner-project, run-lsh-project, run-sentiment-project, run-summarization-project, run-train-pipelines]
+
+    strategy:
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      max-parallel: 2
       matrix:
         models:
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: keywords
             tag: ${{ needs.run-repository-state.outputs.tag }}
+
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: ner
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.2xlarge
+            project: sentiment
+            tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
       environment: prod

@@ -1,3 +1,5 @@
+"""Storage."""
+
 # Standard Library
 import binascii
 import collections
@@ -88,65 +90,68 @@ class Storage(ABC):
 
     @abstractmethod
     def keys(self) -> Any:
-        """Return an iterator on keys in storage"""
+        """Return an iterator on keys in storage."""
         return []
 
     @abstractmethod
     def get(self, key: Any) -> Any:
-        """Get list of values associated with a key
+        """Get list of values associated with a key.
 
         Returns empty list ([]) if `key` is not found
         """
         pass
 
     def getmany(self, *keys: Any) -> Any:
+        """Retrieves many keys."""
         return [self.get(key) for key in keys]
 
     @abstractmethod
     def insert(self, key: Any, *vals: Any, **kwargs: Any) -> Any:
-        """Add `val` to storage against `key`"""
+        """Add `val` to storage against `key`."""
         pass
 
     @abstractmethod
     def remove(self, *keys: Any) -> Any:
-        """Remove `keys` from storage"""
+        """Remove `keys` from storage."""
         pass
 
     @abstractmethod
     def remove_val(self, key: Any, val: Any) -> Any:
-        """Remove `val` from list of values under `key`"""
+        """Remove `val` from list of values under `key`."""
         pass
 
     @abstractmethod
     def size(self) -> Any:
-        """Return size of storage with respect to number of keys"""
+        """Return size of storage with respect to number of keys."""
         pass
 
     @abstractmethod
     def itemcounts(self, **kwargs: Any) -> Any:
-        """Returns the number of items stored under each key"""
+        """Returns the number of items stored under each key."""
         pass
 
     @abstractmethod
     def has_key(self, key: Any) -> Any:
-        """Determines whether the key is in the storage or not"""
+        """Determines whether the key is in the storage or not."""
         pass
 
     def status(self) -> Any:
+        """Storage status."""
         return {"keyspace_size": len(self)}
 
     def empty_buffer(self) -> None:
+        """Empty buffer."""
         pass
 
     def add_to_select_buffer(self, keys: List[Any]) -> None:
-        """Query keys and add them to internal buffer"""
+        """Query keys and add them to internal buffer."""
         if not hasattr(self, "_select_buffer"):
             self._select_buffer = self.getmany(*keys)
         else:
             self._select_buffer.extend(self.getmany(*keys))
 
     def collect_select_buffer(self) -> Any:
-        """Return buffered query results"""
+        """Return buffered query results."""
         if not hasattr(self, "_select_buffer"):
             return []
         buffer = list(self._select_buffer)
@@ -155,55 +160,65 @@ class Storage(ABC):
 
 
 class OrderedStorage(Storage):
+    """Ordered storage class."""
 
     pass
 
 
 class UnorderedStorage(Storage):
+    """Unordered storage class."""
 
     pass
 
 
 class DictListStorage(OrderedStorage):
-    """This is a wrapper class around ``defaultdict(list)`` enabling
-    it to support an API consistent with `Storage`
-    """
+    """This is a wrapper class around ``defaultdict(list)``."""
 
     def __init__(self, config: Any) -> None:
         self._dict: Any = defaultdict(list)
 
     def keys(self) -> List[Any]:
+        """Return all stored keys."""
         return self._dict.keys()
 
     def get(self, key: Any) -> List[Any]:
+        """Retrieve key from storage."""
         return self._dict.get(key, [])
 
     def remove(self, *keys: Any) -> None:
+        """Remove key from storage."""
         for key in keys:
             del self._dict[key]
 
     def remove_val(self, key: Any, val: Any) -> None:
+        """Remove by value match."""
         self._dict[key].remove(val)
 
     def insert(self, key: Any, *vals: Any, **kwargs: Any) -> None:
+        """Insert multiple values."""
         self._dict[key].extend(vals)
 
     def size(self) -> int:
+        """Dictionary length."""
         return len(self._dict)
 
     def itemcounts(self, **kwargs: Any) -> Dict[Any, int]:
         """Returns a dict where the keys are the keys of the container.
+
         The values are the *lengths* of the value sequences stored
         in this container.
         """
         return {k: len(v) for k, v in self._dict.items()}
 
     def has_key(self, key: Any) -> bool:
+        """Checks that key exists in storage."""
         return key in self._dict
 
 
 class DictSetStorage(UnorderedStorage, DictListStorage):
-    """This is a wrapper class around ``defaultdict(set)`` enabling
+    """Storage class with python backend.
+
+    This is a wrapper class around ``defaultdict(set)`` enabling
     it to support an API consistent with `Storage`
     """
 
@@ -211,9 +226,11 @@ class DictSetStorage(UnorderedStorage, DictListStorage):
         self._dict = defaultdict(set)
 
     def get(self, key: Any) -> List[Any]:
+        """Retrieve key value."""
         return self._dict.get(key, set())
 
     def insert(self, key: Any, *vals: Any, **kwargs: Any) -> None:
+        """Insert key values pair in storage."""
         self._dict[key].update(vals)
 
 
@@ -233,6 +250,7 @@ class CassandraSharedSession(object):
 
     @classmethod
     def get_session(cls, seeds: List[str], **kwargs: Any) -> Any:
+        """Get Cassendra session."""
         _ = kwargs
         if cls.__session is None:
             # Allow dependency injection
@@ -256,12 +274,14 @@ class CassandraSharedSession(object):
 
     @classmethod
     def get_buffer(cls) -> List[Any]:
+        """Get buffer."""
         if cls.__session_buffer is None:
             cls.__session_buffer = []
         return cls.__session_buffer
 
     @classmethod
     def get_select_buffer(cls) -> List[Any]:
+        """Get select buffer."""
         if cls.__session_select_buffer is None:
             cls.__session_select_buffer = []
         return cls.__session_select_buffer
@@ -335,13 +355,7 @@ class CassandraClient(object):
         name: Any,
         buffer_size: Any,
     ) -> None:
-        """
-        Constructor.
-
-        :param dict[str, any] cassandra_params: Cassandra parameters
-        :param bytes name: the suffix to be used for the table name
-        :param int buffer_size: the buffer size
-        """
+        """Constructor."""
         self._buffer_size = buffer_size
         self._session = CassandraSharedSession.get_session(**cassandra_params)
         # This timestamp generator allows us to sort different values for the same key
@@ -401,24 +415,19 @@ class CassandraClient(object):
 
     @property
     def buffer_size(self) -> None:
+        """Buffer size."""
         return self._buffer_size
 
     @buffer_size.setter
     def buffer_size(self, value: int) -> None:
+        """Buffer size."""
         self._buffer_size = value
 
     @staticmethod
     def split_sequence(
         iterable: Iterable, size: int
     ) -> Generator[Iterable, None, None]:
-        """
-        Generator to split an iterable in chunks of given size.
-
-        :param iterable iterable: the iterable to split
-        :param int size: the size of a chunk
-        :rtype: generator[iterable]
-        :return: a generator
-        """
+        """Generator to split an iterable in chunks of given size."""
         iterator = iter(iterable)
         item = list(itertools.islice(iterator, size))
         while item:
@@ -429,13 +438,7 @@ class CassandraClient(object):
         self,
         statements_and_parameters: Iterable[Tuple[Tuple[Any, ...], Tuple[Any, ...]]],
     ) -> List[Any]:
-        """
-        Execute a list of statements and parameters returning data.
-
-        :param iterable[tuple] statements_and_parameters: list of statements and parameters
-        :rtype: list[Row]
-        :return: the rows matching the queries
-        """
+        """Execute a list of statements and parameters returning data."""
         ret = []
         size = self.CONCURRENCY
         for sub_sequence in CassandraClient.split_sequence(
@@ -455,11 +458,7 @@ class CassandraClient(object):
         return ret
 
     def _execute(self, statements_and_parameters: Any) -> None:
-        """
-        Execute a list of statements and parameters NOT returning data.
-
-        :param iterable[tuple] statements_and_parameters: list of statements and parameters
-        """
+        """Execute a list of statements and parameters NOT returning data."""
         size = self.CONCURRENCY
         for sub_sequence in CassandraClient.split_sequence(
             statements_and_parameters, size
@@ -471,19 +470,13 @@ class CassandraClient(object):
             )
 
     def _buffer(self, statements_and_parameters: Any) -> None:
-        """
-        Buffer (and execute) statements and parameters NOT returning data.
-
-        :param iterable[tuple] statements_and_parameters: list of statements and parameters
-        """
+        """Buffer (and execute) statements and parameters NOT returning data."""
         self._statements_and_parameters.extend(statements_and_parameters)
         if len(self._statements_and_parameters) >= self._buffer_size:
             self.empty_buffer()
 
     def empty_buffer(self) -> None:
-        """
-        Empty the buffer of statements and parameters.
-        """
+        """Empty the buffer of statements and parameters."""
         # copy the underlying list in a python2/3 compatible way
         buffer = list(self._statements_and_parameters)
         # delete the actual elements in a python2/3 compatible way
@@ -496,13 +489,7 @@ class CassandraClient(object):
         vals: Iterable[Union[bytes, str]],
         buffer: bool = False,
     ) -> None:
-        """
-        Insert an iterable of values with the same key.
-
-        :param byte|str key: the key
-        :param iterable[byte|str] vals: the iterable of values
-        :param boolean buffer: whether the insert statements should be buffered
-        """
+        """Insert an iterable of values with the same key."""
         statements_and_parameters = [
             (
                 self._stmt_insert,
@@ -521,17 +508,13 @@ class CassandraClient(object):
         vals: Iterable[Union[bytes, str]],
         buffer: bool = False,
     ) -> None:
-        """
-        Upsert an iterable of values with the same key.
+        """Upsert an iterable of values with the same key.
 
-        Note: this is used when treating a Cassandra partition as a set. Since we upsert data
+        Note:
+            This is used when treating a Cassandra partition as a set. Since we upsert data
             we never store duplicates. In this case the timestamp loses its meaning as we
             are not interested in sorting records anymore (it is a set after all) and we can
             safely overwrite every time we are storing a duplicate.
-
-        :param byte|str key: the key
-        :param iterable[byte|str] vals: the iterable of values
-        :param boolean buffer: whether the upsert statements should be buffered
         """
         statements_and_parameters = [
             (
@@ -548,12 +531,7 @@ class CassandraClient(object):
     def delete_keys(
         self, keys: Iterable[Union[bytes, str]], buffer: bool = False
     ) -> None:
-        """
-        Delete a key (and all its values).
-
-        :param iterable[byte|str] keys: the key
-        :param boolean buffer: whether the delete statements should be buffered
-        """
+        """Delete a key (and all its values)."""
         statements_and_parameters = [
             (self._stmt_delete_key, (self._key_encoder(key),)) for key in keys
         ]
@@ -565,13 +543,7 @@ class CassandraClient(object):
     def delete(
         self, key: Union[bytes, str], val: Union[bytes, str], buffer: bool = False
     ) -> None:
-        """
-        Delete a value from a key.
-
-        :param byte|str key: the key
-        :param byte|str val: the value
-        :param boolean buffer: whether the delete statement should be buffered
-        """
+        """Delete a value from a key."""
         statements_and_parameters = [
             (
                 self._stmt_delete_val,
@@ -584,16 +556,12 @@ class CassandraClient(object):
             self._execute(statements_and_parameters)
 
     def get_keys(self) -> Set[Union[bytes, str]]:
-        """
-        Get all the keys.
+        """Get all the keys.
 
         Note: selecting all keys in Cassandra via "SELECT DISTINCT key FROM table" is bound to
             time out since all nodes need to be contacted. To avoid this, we paginate through
             all keys using the TOKEN function. In this way we issue several different queries
             which alone can not time out.
-
-        :rtype: set[byte|str]
-        :return: the set of all keys
         """
         min_token = self.MIN_TOKEN
         keys = set([])
@@ -609,11 +577,7 @@ class CassandraClient(object):
         return keys
 
     def add_to_select_buffer(self, keys: Iterable[Union[bytes, str]]) -> None:
-        """
-        Buffer query statements and parameters with decoders to be used on returned data.
-
-        :param iterable[byte|str] keys: the keys
-        """
+        """Buffer query statements and parameters with decoders to be used on returned data."""
         statements_and_parameters_with_decoders = [
             (
                 (self._stmt_get, (self._key_encoder(key),)),
@@ -626,11 +590,7 @@ class CassandraClient(object):
         )
 
     def collect_select_buffer(self) -> Any:
-        """
-        Perform buffered select queries
-
-        :return: list of list of query results
-        """
+        """Perform buffered select queries."""
         if not self._select_statements_and_parameters_with_decoders:
             return []
         # copy the underlying list in a python2/3 compatible way
@@ -651,13 +611,7 @@ class CassandraClient(object):
     def select(
         self, keys: Iterable[Union[bytes, str]]
     ) -> Dict[Union[bytes, str], List[Union[bytes, str]]]:
-        """
-        Select all values for the given keys.
-
-        :param iterable[byte|str] keys: the keys
-        :rtype: dict[byte|str,list[byte|str]
-        :return: a dictionary of lists
-        """
+        """Select all values for the given keys."""
         statements_and_parameters = [
             (self._stmt_get, (self._key_encoder(key),)) for key in keys
         ]
@@ -675,13 +629,7 @@ class CassandraClient(object):
     def select_count(
         self, keys: Iterable[Union[bytes, str]]
     ) -> Dict[Union[bytes, str], int]:
-        """
-        Count the values for each of the provided keys.
-
-        :param iterable[byte|str] keys: list of keys
-        :rtype: dict[byte|str,int]
-        :return: the number of values per key
-        """
+        """Count the values for each of the provided keys."""
         statements_and_parameters = [
             (self._stmt_get_count, (self._key_encoder(key),)) for key in keys
         ]
@@ -692,13 +640,7 @@ class CassandraClient(object):
         }
 
     def one(self, key: Union[bytes, str]) -> Optional[Union[bytes, str]]:
-        """
-        Select one single value of the given key.
-
-        :param byte|str key: the key
-        :rtype: byte|str|None
-        :return: a single value for that key or None if the key does not exist
-        """
+        """Select one single value of the given key."""
         rows = self._session.execute(self._stmt_get_one, (self._key_encoder(key),))
         if rows:
             row = next(iter(rows))
@@ -707,10 +649,10 @@ class CassandraClient(object):
 
 
 class CassandraStorage(object):
-    """
-    Storage implementation using Cassandra.
+    """Storage implementation using Cassandra.
 
-    Note: like other implementations, each storage has its own client. Unlike other
+    Note:
+        Like other implementations, each storage has its own client. Unlike other
         implementations, all storage instances share one session and can potentially share the
         same buffer.
     """
@@ -723,8 +665,7 @@ class CassandraStorage(object):
         name: Any = None,
         buffer_size: Optional[int] = None,
     ) -> None:
-        """
-        Constructor.
+        """Constructor.
 
         :param dict[str, any] config: configuration following the following format:
             {
@@ -755,13 +696,7 @@ class CassandraStorage(object):
 
     @staticmethod
     def _parse_config(config: Dict[str, Any]) -> Dict[str, str]:
-        """
-        Parse a configuration dictionary, optionally fetching data from env variables.
-
-        :param dict[str, any] config: the configuration
-        :rtype: dict[str, str]
-        :return: the parse configuration
-        """
+        """Parse a configuration dictionary, optionally fetching data from env variables."""
         cfg = {}
         for key, value in config.items():
             if isinstance(value, dict):
@@ -772,41 +707,23 @@ class CassandraStorage(object):
 
     @property
     def buffer_size(self) -> int:
-        """
-        Get the buffer size.
-
-        :rtype: int
-        :return: the buffer size
-        """
+        """Get the buffer size."""
         return self._buffer_size
 
     @buffer_size.setter
     def buffer_size(self, value: Any) -> None:
-        """
-        Set the buffer size and propagate it to the underlying client.
-
-        :param int value: buffer size
-        """
+        """Set the buffer size and propagate it to the underlying client."""
         self._buffer_size = value
         self._client.buffer_size = value
 
     def __getstate__(self) -> Dict[str, Any]:
-        """
-        Get a pickable state by removing unpickable objects.
-
-        :rtype: dict[str, any]
-        :return: the state
-        """
+        """Get a pickable state by removing unpickable objects."""
         state = self.__dict__.copy()
         state.pop("_client")
         return state
 
     def __setstate__(self, state: Dict[str, Any]) -> None:
-        """
-        Set the state by reconnecting ephemeral objects.
-
-        :param dict[str, any] state: the state to restore
-        """
+        """Set the state by reconnecting ephemeral objects."""
         self.__dict__ = state
         CassandraStorage.__init__(
             self, self._config, name=self._name, buffer_size=self._buffer_size
@@ -814,10 +731,10 @@ class CassandraStorage(object):
 
 
 class CassandraListStorage(OrderedStorage, CassandraStorage):
-    """
-    OrderedStorage storage implementation using Cassandra as backend.
+    """OrderedStorage storage implementation using Cassandra as backend.
 
-    Note: Since we need to (i) select and delete values by both 'key' and by 'key and value',
+    Note:
+        Since we need to (i) select and delete values by both 'key' and by 'key and value',
         and (ii) allow duplicate values, we store a monotonically increasing timestamp as
         additional value.
     """
@@ -879,8 +796,7 @@ class CassandraListStorage(OrderedStorage, CassandraStorage):
 
 
 class CassandraSetStorage(UnorderedStorage, CassandraListStorage):
-    """
-    OrderedStorage storage implementation using Cassandra as backend.
+    """OrderedStorage storage implementation using Cassandra as backend.
 
     Note: since we are interested in keeping duplicates or ordered data, we upsert the data
         ignoring what the timestamp actually means.

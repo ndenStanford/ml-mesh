@@ -1,3 +1,5 @@
+"""NER Settings."""
+
 # Standard Library
 from typing import List
 
@@ -6,8 +8,7 @@ from pydantic import BaseModel
 
 
 class EntityOutputNoPos(BaseModel):
-    """
-    Output info of an entity without position
+    """Output info of an entity without position.
 
     Attributes:
         entity_type (str): The recognized entity's name
@@ -21,8 +22,7 @@ class EntityOutputNoPos(BaseModel):
 
 
 class EntityOutput(EntityOutputNoPos):
-    """
-    Output info of an entity with position
+    """Output info of an entity with position.
 
     Attributes:
         start (int): The starting position of the text in the input text
@@ -34,8 +34,7 @@ class EntityOutput(EntityOutputNoPos):
 
 
 class InferenceOutput(BaseModel):
-    """
-    Output of the NER inference process
+    """Output of the NER inference process.
 
     Attributes:
         ner_labels (List[List[EntityOutput]]): List of list containing entity ouputs.
@@ -46,8 +45,7 @@ class InferenceOutput(BaseModel):
 
 
 class PostprocessOutput(EntityOutput):
-    """
-    Post processed output info  of an entity with position info
+    """Post processed output info  of an entity with position info.
 
     Attributes:
         sentence_index (int): The index of the sentence containing the entity
@@ -57,8 +55,7 @@ class PostprocessOutput(EntityOutput):
 
 
 class PostprocessOutputNoPos(EntityOutputNoPos):
-    """
-    Post processed output info of an entity without position info
+    """Post processed output info of an entity without position info.
 
     Attributes:
         sentence_index (int): The index of the sentence containing the entity

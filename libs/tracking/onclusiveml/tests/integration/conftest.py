@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # Standard Library
 import os
 
@@ -19,15 +21,14 @@ TEST_MODEL_VERSION_ID = TrackedModelVersion(
 
 @pytest.fixture()
 def test_file_directory_upload():
-
+    """Upload directory fixture."""
     return "./libs/tracking/onclusiveml/tests/integration/test_file_directory"
 
 
 @pytest.fixture()
 def test_file_directory_download(test_file_directory_upload):
-
+    """File directory download fixture."""
     path = f"{test_file_directory_upload}_downloaded"
-
     if not os.path.isdir(path):
         os.makedirs(path)
 
@@ -36,7 +37,7 @@ def test_file_directory_download(test_file_directory_upload):
 
 @pytest.fixture
 def test_model_version(test_model_version_mode: str = "async"):
-
+    """Test model version."""
     test_model_version = TrackedModelVersion(
         model="TES-TEST",
         with_id=TEST_MODEL_VERSION_ID,
@@ -52,7 +53,7 @@ def test_model_version(test_model_version_mode: str = "async"):
 def test_captured_directories_for_upload_expected(
     test_file_directory_upload, exclude, neptune_attribute_path
 ):
-
+    """Test captured directories for upload."""
     neptune_attribute_prefix = (
         "" if not neptune_attribute_path else f"{neptune_attribute_path}/"
     )
@@ -138,7 +139,7 @@ def test_captured_directories_for_upload_expected(
 
 @pytest.fixture
 def test_config_expected():
-
+    """Expected config fixture."""
     return {
         "letter": "a",
         "float": 0.1,
@@ -155,5 +156,5 @@ def test_config_expected():
 
 @pytest.fixture
 def test_model_card_expected():
-
+    """Model card fixture."""
     return TrackedModelCard(model_type="base").dict()

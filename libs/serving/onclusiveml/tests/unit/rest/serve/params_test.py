@@ -1,3 +1,5 @@
+"""Parameter tests."""
+
 # Standard Library
 import os
 
@@ -13,13 +15,12 @@ from onclusiveml.serving.rest.serve import (
 
 
 def test_serving_params():
-    """Tests the initialization of a ServingParams instance with default values"""
-
+    """Tests the initialization of a ServingParams instance with default values."""
     ServingParams()
 
 
 def test_serving_params_env_prefix():
-    """Tests the inherited environment prefix of the ServingParams class"""
+    """Tests the inherited environment prefix of the ServingParams class."""
     assert ServingParams.__config__.env_prefix == "onclusiveml_serving_"
 
 
@@ -27,8 +28,7 @@ def test_serving_params_env_prefix():
     "test_subsettings_field", ["uvicorn_settings", "fastapi_settings"]
 )
 def test_serving_params_env_prefix_nested_settings(test_subsettings_field):
-    """Tests that the nested fields (subclasses from ServingParams) retain their respective
-    environment prefixes"""
+    """Tests that the nested fields (subclasses from ServingParams)."""
     keyword_serving_params = ServingParams()
 
     subsettings = getattr(keyword_serving_params, test_subsettings_field)
@@ -69,9 +69,7 @@ def test_serving_params_env_prefix_nested_settings(test_subsettings_field):
 def test_serving_params_set_fields_via_env_vars(
     test_field_name, test_field_value_raw_expected, test_field_value_expected
 ):
-    """Tests the initialization of a ServingParams instance using environment variables exported in
-    the local test scope."""
-
+    """Tests the initialization of a ServingParams instance."""
     prefixed_field_env_var_ref = f"onclusiveml_serving_{test_field_name}"
     os.environ[prefixed_field_env_var_ref] = test_field_value_raw_expected
 

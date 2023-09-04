@@ -38,7 +38,6 @@ def get_summary(
     Returns:
         Response: summary, model used and reason response finished.
     """
-
     if item.lang not in settings.PROMPT_DICT.keys():
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -81,7 +80,6 @@ def get_summary_cross_lingual(
     Returns:
         Response: summary, model used and reason response finished.
     """
-
     target_lang_dict = settings.PROMPT_DICT.get(item.lang)
     if target_lang_dict is None:
         raise HTTPException(

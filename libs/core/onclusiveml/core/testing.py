@@ -11,6 +11,12 @@ from pydantic import BaseSettings
 def get_override_settings_context_manager(
     get_settings: Callable[[], BaseSettings]
 ) -> Callable:
+    """Override settings context manager.
+
+    Args:
+        get_settings (Callable[[], BaseSettings]): function that returns settings.
+    """
+
     @contextlib.contextmanager
     def override_settings(**overrides: dict) -> Generator:
         """Overrides pydantic settings values.

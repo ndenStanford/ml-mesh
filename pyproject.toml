@@ -7,11 +7,15 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 [tool.poetry.dependencies]
 python = "3.8.16"
 click = "8.1.0"
-boto3 = "1.26.58"
 core = {path = "libs/core"}
 pytest = "7.2.0"
+boto3 = "^1.28.29"
 
-[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.ci.dependencies]
+sagemaker = "^2.178.0"
+python-dotenv = "^1.0.0"
+tracking = {path = "libs/tracking"}
 
 [build-system]
 requires = ["poetry>=0.12"]

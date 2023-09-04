@@ -1,3 +1,5 @@
+"""Compilation settings."""
+
 # Standard Library
 import os
 from typing import List
@@ -24,6 +26,7 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+    """Uncompiled tracked model specs."""
 
     project: str = "onclusive/keywords"
     model: str = "KEYWORDS-TRAINED"
@@ -40,6 +43,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
+    """Compiled tracked model specs."""
 
     project: str = "onclusive/keywords"
     model: str = "KEYWORDS-COMPILED"
@@ -51,6 +55,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class WorkflowOutputDir(TrackedParams):
+    """Workflow output directory."""
 
     outpath: str = "./outputs"
 
@@ -61,6 +66,7 @@ class WorkflowOutputDir(TrackedParams):
 
 
 class WorkflowComponentIOSettings(object):
+    """Workflow component IO settings."""
 
     workflow_ouput_dir: str = WorkflowOutputDir().outpath
 
@@ -93,7 +99,7 @@ class WorkflowComponentIOSettings(object):
 
     @staticmethod
     def check_component_reference(workflow_component: str):
-
+        """Checks component reference."""
         if workflow_component not in WORKFLOW_COMPONENTS:
             raise ValueError(
                 f"Component reference {workflow_component} must be one of the following options: "
@@ -102,7 +108,7 @@ class WorkflowComponentIOSettings(object):
 
 
 class IOSettings(object):
-    """Configuring container file system output locations for all 4 components"""
+    """Configuring container file system output locations for all 4 components."""
 
     # admin
     download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
@@ -114,7 +120,7 @@ class IOSettings(object):
 
 
 class TokenizerSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details"""
+    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details."""
 
     add_special_tokens: bool = True
 
@@ -125,10 +131,11 @@ class TokenizerSettings(TrackedParams):
 
 
 class ModelTracingSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
+    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
-    https://onclusive.atlassian.net/browse/DS-596"""
+    https://onclusive.atlassian.net/browse/DS-596
+    """
 
     dynamic_batch_size: bool = True
     strict: bool = True
@@ -141,7 +148,7 @@ class ModelTracingSettings(TrackedParams):
 
 
 class PipelineCompilationSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details"""
+    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details."""
 
     pipeline_name: str
     max_length: int
@@ -155,6 +162,7 @@ class PipelineCompilationSettings(TrackedParams):
 
 
 class WordPipelineCompilationSettings(PipelineCompilationSettings):
+    """Word pipeline compilation settings."""
 
     pipeline_name: str = "word_model"
     max_length = 20
@@ -166,6 +174,7 @@ class WordPipelineCompilationSettings(PipelineCompilationSettings):
 
 
 class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
+    """Document pipeline compilation settings."""
 
     pipeline_name = "document_model"
     max_length = 512
@@ -177,6 +186,7 @@ class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
 
 
 class CompilationTestSettings(TrackedParams):
+    """Compilation settings."""
 
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
@@ -188,6 +198,7 @@ class CompilationTestSettings(TrackedParams):
 
 
 class CompiledKeywordsTrackedModelCard(TrackedModelCard):
+    """Compiled keywords tracked model card."""
 
     model_type: str = "compiled"
     # --- custom fields
