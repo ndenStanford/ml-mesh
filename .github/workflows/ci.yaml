@@ -509,7 +509,14 @@ jobs       :
   run-train-pipelines:
     name: Train ML models
     uses: ./.github/workflows/_train_model.yaml
-    needs: [run-repository-state, run-projects]
+    needs:
+      - run-repository-state
+      - run-keywords-project
+      - run-entity-linking-project
+      - run-ner-project
+      - run-lsh-project
+      - run-sentiment-project
+      - run-summarization-project
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
