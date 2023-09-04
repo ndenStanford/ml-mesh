@@ -20,6 +20,7 @@ should be caught early on.
 | `fastapi-serve`          | `python-base`               | Serving base for project serve components              | no              |          |
 | `kubeflow-jupyter`       | `python-base`               | Kubeflow base for jupyter                              | no              |          |
 | `kubeflow-torch-cpu`     | `kubeflow-jupyter`          | Kubeflow flavour of flexible pytorch (CPU) image       | no              |          |
+| `kubeflow-torch-gpu`     | `gpu-base`                  | Kubeflow image for torch (GPU available)               | gpu             |          |
 | `kubeflow-data-science`  | `kubeflow-torch-cpu`        | DS image for kubeflow                                  | no              |          |
 
 ## Dependency management
