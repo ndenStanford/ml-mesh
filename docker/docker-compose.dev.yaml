@@ -257,3 +257,21 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     ports:
       - 8888:8888
+
+  # ===========================================================
+  # KUBEFLOW TORCH INF
+  # ===========================================================
+
+  kubeflow-torch-inf:
+    build:
+      context: ..
+      dockerfile: ./docker/kubeflow-torch-inf/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: kubeflow-torch-inf
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
+    ports:
+      - 8888:8888
