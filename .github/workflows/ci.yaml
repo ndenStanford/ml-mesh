@@ -541,7 +541,15 @@ jobs       :
   run-compilation-pipelines:
     name: Compile ML models
     uses: ./.github/workflows/_compile_model.yaml
-    needs: [run-repository-state, run-keywords-project, run-entity-linking-project, run-ner-project, run-lsh-project, run-sentiment-project, run-summarization-project, run-train-pipelines]
+    needs:
+      - run-repository-state
+      - run-keywords-project
+      - run-entity-linking-project
+      - run-ner-project
+      - run-lsh-project
+      - run-sentiment-project
+      - run-summarization-project
+      - run-train-pipelines
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
