@@ -68,6 +68,7 @@ _mount_ebs_volume() {
         sudo mkfs -t xfs /dev/nvme1n1
         sudo mkdir "$HOME/data"
         sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
+        sudo chown ec2-user: "$HOME/data"
     else
         warn "Mount target exists. This step will be skipped"
     fi
