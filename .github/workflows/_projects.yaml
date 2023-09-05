@@ -89,13 +89,6 @@ on  :
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: Github PAT to allow EC2 instance to connect to Github repository content.
-      onclusiveml_serving_betterstack_enable:
-        required: false
-        description: switch to be used by projects using serving library for betterstack liveness check
-      onclusiveml_serving_betterstack_api_token:
-        required: false
-        description: Key to be used by projects using serving library for betterstack liveness check
-
 
 jobs:
   check-run-criteria:
