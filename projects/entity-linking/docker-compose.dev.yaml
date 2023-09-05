@@ -19,7 +19,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '9000', --reload, --log-level, debug]
+    command: [python, -m, src.__main__]
     profiles: [serve]
     ports:
       - 9000:9000
