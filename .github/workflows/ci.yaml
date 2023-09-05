@@ -537,7 +537,7 @@ jobs       :
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-      - run-entity-linking-project
+      #- run-entity-linking-project
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -572,11 +572,11 @@ jobs       :
     needs:
       - run-repository-state
       - run-keywords-project
-      - run-entity-linking-project
+      - run-summarization-project
+      - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-      - run-sentiment-project
-      - run-summarization-project
+      #- run-entity-linking-project
       - run-train-pipelines
 
     strategy:
