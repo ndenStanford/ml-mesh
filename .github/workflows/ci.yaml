@@ -270,11 +270,12 @@ jobs       :
 
           # serve
           - name: serve
-            download-model: true
-            integration: true
+            download-model: false
+            integration: false
             functional: false
             load: false
             upload-test-results: false
+            runner-kind: ubuntu-20.04
 
     with:
       project: summarization
@@ -510,8 +511,8 @@ jobs       :
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
-      runner-kind: ${{ matrix.projects.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.projects.self-hosted-runner-type }}
+      runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
