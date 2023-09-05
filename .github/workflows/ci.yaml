@@ -434,6 +434,17 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # serve
+          - name: sentiment
+            component: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+
     with:
       project: lsh
       environment: prod
