@@ -4,10 +4,10 @@
 from typing import Any, Dict, Type
 
 # 3rd party libraries
-from pydantic import BaseModel, validate_call
+from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.nlp.language import LanguageIso
+from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -50,7 +50,6 @@ class EntityLinkingServedModel(ServedModel):
             settings.API_KEY_NAME: settings.INTERNAL_ML_ENDPOINT_API_KEY.get_secret_value()
         }
 
-    @validate_call
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
         """Prediction."""
         text = payload.content

@@ -4,14 +4,14 @@
 from typing import Optional
 
 # Internal libraries
-from onclusiveml.core.serialization import JsonApiSchema
+from onclusiveml.core.serialization.schema import JsonApiSchema
 
 
-class BioResponseModel(BaseModel):
+class BioResponseModel(JsonApiSchema):
     """Test."""
 
 
-class PredictRequestModelAttributes(BaseModel):
+class PredictRequestModelAttributes(JsonApiSchema):
     """Prediction request data."""
 
     entity_type: Optional[str] = None
@@ -21,13 +21,13 @@ class PredictRequestModelAttributes(BaseModel):
     sentence_index: Optional[str] = None
 
 
-class PredictRequestModel(BaseModel):
+class PredictRequestModel(JsonApiSchema):
     id: Optional[str] = None
     namespace: str
     data: PredictRequestModelAttributes
 
 
-class PredictResponsetModelAttributes(BaseModel):
+class PredictResponsetModelAttributes(JsonApiSchema):
     """Prediction request data."""
 
     entity_type: Optional[str] = None
@@ -38,5 +38,5 @@ class PredictResponsetModelAttributes(BaseModel):
     wiki_link: Optional[str] = None
 
 
-class PredictResponseModel(BaseModel):
+class PredictResponseModel(JsonApiSchema):
     ...

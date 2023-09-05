@@ -1,5 +1,8 @@
 """Settings."""
 
+# Standard Library
+from functools import lru_cache
+
 # 3rd party libraries
 from pydantic import BaseSettings, SecretStr
 
