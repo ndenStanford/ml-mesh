@@ -65,7 +65,7 @@ breaks down into several other sub-settings classes.
   - Sub-configuration attributes:
     - `FastAPISettings`
       - Purpose: `FastAPI` configuration
-      - Environment prefix: `onclusiveml_serving_uvicorn_`
+      - Environment prefix: `onclusiveml_serving_fastapi_`
     - `UvicornSettings`
       - Purpose: [uvicorn server configuration](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py)
       - Environment prefix: `onclusiveml_serving_uvicorn_`
