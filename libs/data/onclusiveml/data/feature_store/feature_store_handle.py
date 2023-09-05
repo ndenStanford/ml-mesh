@@ -94,7 +94,7 @@ class FeatureStoreHandle:
         """
         self.fs.apply(objects_to_delete=components, partial=False)
 
-    def list_entites(self) -> List[FeastObject]:
+    def list_entities(self) -> List[FeastObject]:
         """Lists feast entites.
 
         Returns: List of entities registered with feast.

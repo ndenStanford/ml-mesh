@@ -46,6 +46,10 @@ def feature_store_handle_instance(mocker):
         "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.list_data_sources",
         return_value=None,
     )
+    mocker.patch(
+        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.get_historical_features",
+        return_value=None,
+    )
 
     s3_handle = boto3.resource("s3")
     s3_handle.create_bucket(Bucket="test-bucket")
@@ -124,7 +128,7 @@ def test_list_entities(feature_store_handle_instance):
 
     """
     # Call the list_entities method
-    feature_store_handle_instance.fs.list_entities()
+    feature_store_handle_instance.list_entities()
 
     feature_store_handle_instance.fs.list_entities.assert_called_with()
 
@@ -139,7 +143,7 @@ def test_list_feature_views(feature_store_handle_instance):
 
     """
     # Call the list_feature_views method
-    feature_store_handle_instance.fs.list_feature_views()
+    feature_store_handle_instance.list_feature_views()
 
     feature_store_handle_instance.fs.list_feature_views.assert_called_with()
 
@@ -154,6 +158,28 @@ def test_list_data_sources(feature_store_handle_instance):
 
     """
     # Call the list_data_sources method
-    feature_store_handle_instance.fs.list_data_sources()
+    feature_store_handle_instance.list_data_sources()
 
     feature_store_handle_instance.fs.list_data_sources.assert_called_with()
+
+
+def test_fetch_historical_features(feature_store_handle_instance):
+    """Test list_data_sources method.
+
+    Args:
+        feature_store_handle_instance: Patched instance of FeatureStoreHandle class.
+
+    Returns: None
+
+    """
+    # Call the fetch_historical_features method
+    feature_store_handle_instance.fetch_historical_features(
+        features=["test_feature_view:feature_1"],
+        data_source="test_data_source",
+        version_key="dataset_version",
+        dataset_versions="v1",
+    )
+    feature_store_handle_instance.fs.get_historical_features.assert_called_with(
+        entity_df=feature_store_handle_instance.entity_sql,
+        features=["test_feature_view:feature_1"],
+    )
