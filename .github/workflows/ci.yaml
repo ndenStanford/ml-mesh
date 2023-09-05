@@ -300,7 +300,6 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
-
   # sentiment
 
   run-sentiment-project:
@@ -314,13 +313,33 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # serve
+          # train
           - name: train
             download-model: false
             integration: false
             functional: false
             load: false
             upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # compile
+          - name: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
 
     with:
       project: sentiment
@@ -359,26 +378,33 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # train
           - name: train
             download-model: false
             integration: false
             functional: false
             load: false
             upload-test-results: false
+            runner-kind: ubuntu-20.04
 
+          # compile
           - name: compile
             download-model: false
             integration: false
             functional: false
             load: false
             upload-test-results: false
+            runner-kind: ubuntu-20.04
 
+          # serve
           - name: serve
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
 
     with:
       project: ner
@@ -417,33 +443,14 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # serve
           - name: serve
             download-model: false
             integration: false
             functional: false
             load: false
             upload-test-results: false
-
-          # compile
-          - name: sentiment
-            component: compile
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
             runner-kind: ubuntu-20.04
-
-          # serve
-          - name: sentiment
-            component: serve
-            download-model: true
-            integration: true
-            functional: true
-            load: true
-            upload-test-results: true
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
 
     with:
       project: lsh
@@ -482,12 +489,14 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # serve
           - name: serve
             download-model: false
             integration: true
             functional: false
             load: false
             upload-test-results: false
+            runner-kind: ubuntu-20.04
 
     with:
       project: entity-linking
@@ -523,11 +532,11 @@ jobs       :
     needs:
       - run-repository-state
       - run-keywords-project
-      - run-entity-linking-project
+      - run-summarization-project
+      - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-      - run-sentiment-project
-      - run-summarization-project
+      - run-entity-linking-project
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
