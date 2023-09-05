@@ -37,7 +37,7 @@ We don't have a written script to download the models. This app is not officiall
 and read the instructions carefully:
 
 ```
-./bin/download-entity-fishing-kb
+bin/entity-fishing-download-kb
 ```
 
 ## Generating new knowledge bases
