@@ -4,8 +4,8 @@
 from typing import Callable, Dict, Optional
 
 # 3rd party libraries
-from feature_store_handle import RedshiftSource, type_map
-from feature_store_handle.value_type import ValueType
+from feast import RedshiftSource
+from feast.value_type import ValueType
 
 
 class RedshiftSourceCustom(RedshiftSource):
@@ -41,8 +41,33 @@ class RedshiftSourceCustom(RedshiftSource):
         )
 
     @staticmethod
-    def source_datatype_to_feast_value_type() -> Callable[[str], ValueType]:
+    def redshift_to_feast_value_type(redshift_type_as_str: str) -> ValueType:
+        """Type names from https://docs.aws.amazon.com/redshift/latest/dg/c_Supported_data_types.html.
+
+        Args:
+            redshift_type_as_str: Input redshift type to be mapped to feast datatype
+
+        Returns: Feast datatype to be mapped to redshift datatype
+
+        """
+        type_map = {
+            "int2": ValueType.INT32,
+            "int4": ValueType.INT32,
+            "int8": ValueType.INT64,
+            "numeric": ValueType.DOUBLE,
+            "float4": ValueType.FLOAT,
+            "float8": ValueType.DOUBLE,
+            "bool": ValueType.BOOL,
+            "character": ValueType.STRING,
+            "string": ValueType.STRING,
+            "varchar": ValueType.STRING,
+            "timestamp": ValueType.UNIX_TIMESTAMP,
+            "timestamptz": ValueType.UNIX_TIMESTAMP,
+            # skip date, geometry, hllsketch, time, timetz
+        }
+
+        return type_map[redshift_type_as_str.lower()]
+
+    def source_datatype_to_feast_value_type(self) -> Callable[[str], ValueType]:
         """Returns: Callable[[str], ValueType] : A map of redshift to feast value types."""
-        redshift_to_feast_value_type_custom = type_map.redshift_to_feast_value_type
-        redshift_to_feast_value_type_custom["string"] = ValueType.STRING
-        return redshift_to_feast_value_type_custom
+        return self.redshift_to_feast_value_type
