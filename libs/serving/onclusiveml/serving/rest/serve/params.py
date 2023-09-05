@@ -11,6 +11,10 @@ from onclusiveml.serving.params import ServingBaseParams
 class FastAPISettings(ServingBaseParams):
     name: str = "fastapi-app-name"
 
+    class Config:
+        env_prefix = f"{ServingBaseParams.Config.env_prefix}fastapi_"
+        env_file_encoding = "utf-8"
+
 
 class LogConfigSettings(ServingBaseParams):
     """Log config default settings. Taken from the uvicorn log configuration handling approach
@@ -50,6 +54,10 @@ class LogConfigSettings(ServingBaseParams):
         "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
     }
 
+    class Config:
+        env_prefix = f"{ServingBaseParams.Config.env_prefix}logconfig_"
+        env_file_encoding = "utf-8"
+
 
 class UvicornSettings(ServingBaseParams):
     """A settings wrapper around the uvicorn library's `Config` class's constructor arguments. Used
@@ -62,8 +70,12 @@ class UvicornSettings(ServingBaseParams):
     log_config: Optional[Union[str, Dict]] = LogConfigSettings().dict()
     workers: int = 1
 
+    class Config:
+        env_prefix = f"{ServingBaseParams.Config.env_prefix}uvicorn_"
+        env_file_encoding = "utf-8"
 
-class BetterStackParams(ServingBaseParams):
+
+class BetterStackSettings(ServingBaseParams):
     """settings class for betterstack integration
     Attributes:
         enable (bool): A switch for enabling/disabling betetrstack heartbeat check.
@@ -122,3 +134,5 @@ class ServingParams(ServingBaseParams):
     fastapi_settings: FastAPISettings = FastAPISettings()
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
+    # betterstack settings
+    betterstack_settings = BetterStackSettings()

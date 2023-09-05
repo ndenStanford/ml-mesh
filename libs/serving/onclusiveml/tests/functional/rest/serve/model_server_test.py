@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 # Internal libraries
 from libs.serving.onclusiveml.serving.rest.serve.params import (
+    BetterStackSettings,
     FastAPISettings,
     ServingParams,
     UvicornSettings,
@@ -91,11 +92,12 @@ class TestServedModel(ServedModel):
 @pytest.mark.order(1)
 @pytest.mark.server
 def test_model_server_serve_with_model(test_api_version, test_port, test_model_name):
-    """Launches a fully fledged ModelServer hosting all utility endpoints as well as a loaded
-    instance of the TestServedModel model class, and keeps it running until stopped manually.
+    """Launches a ModelServer serving a TestServedModel class.
 
-    Designed for manual testing during development, not for CI due to library test suite setup
-    limitations."""
+    Includes hosting of all utility endpoints, and runs until stopped manually.
+
+    Designed for manual testing during development, not for CI due to limitations of container-less
+    library test suite setup."""
 
     test_serving_params = ServingParams(
         add_liveness=True,
@@ -105,6 +107,7 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
         api_version=test_api_version,
         fastapi_settings=FastAPISettings(name="test-api"),
         uvicorn_settings=UvicornSettings(http_port=test_port),
+        betterstack_settings=BetterStackSettings(enable=True),
     )
 
     test_model_server = ModelServer(

@@ -8,7 +8,7 @@ from fastapi import APIRouter, status
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.serving.rest.serve.params import (
-    BetterStackParams,
+    BetterStackSettings,
     FastAPISettings,
 )
 from onclusiveml.serving.rest.serve.server_models import (
@@ -78,16 +78,29 @@ def get_root_router(
     return root_router
 
 
-def get_liveness_router(api_version: str = "v1") -> Callable:
-    """Utility for a consistent liveness probe endpoint. For more information on how K8s uses these,
-    see https://kubernetes.io/docs/tasks/configure-pod-container/...
-    ...configure-liveness-readiness-startup-probes/"""
+def get_liveness_router(
+    betterstack_settings: BetterStackSettings,
+    api_version: str = "v1",
+) -> Callable:
+    """Utility for a consistent liveness probe endpoint.
+
+    For more information on how K8s uses these, see https://kubernetes.io/docs/tasks/...
+    configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Args:
+        api_version (str, optional): The api version string that will be used in the url.
+            Defaults to "v1".
+        betterstack_settings (BetterStackParams): The betterstack api settings.
+            If enabled and configured correctly, every request to the liveness endpoint of the
+            model server will trigger a ping to the betterstack project associated with the server.
+
+    Returns:
+        Callable: The FastAPI router object implementing the liveness endpoint
+    """
 
     liveness_router = APIRouter()
 
     model_server_urls = get_model_server_urls(api_version=api_version)
-
-    betterstack_settings = BetterStackParams()
 
     @liveness_router.get(
         model_server_urls.liveness,
