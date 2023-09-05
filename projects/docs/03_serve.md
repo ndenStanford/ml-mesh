@@ -37,6 +37,8 @@ environment variable from the environment.
 
 Projects implementing a `serve` component are
 - **`keywords`** :key::memo: | :factory:
+- `ner`: :books::arrow_forward::european_castle::church::hotel: | :factory:
+- `sentiment`: :smile:/:frowning: | :factory:
 - `lsh` :books::arrow_forward::hash::hash: | :speedboat:
 - `entity-fishing` :fishing_pole_and_fish: | :speedboat:
 - `summarization` :books::arrow_forward::memo:| :speedboat:

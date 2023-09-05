@@ -11,14 +11,17 @@ This folder contains the implementation of all our machine learning projects. Ea
 
 ## Projects
 
-| Project       | Reference       | Description                       | Data Type | Prepare | Train | Compile | Serve |     |
-| ------------- | --------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- | --- |
-| IPTC          | n/a             | Document topic classification     | Text      |         |       |         |       |     |
-| Sentiment     | `sentiment`     | Document Sentiment classification | Text      |         |       |    x    |       |     |
-| Keywords      | `keywords`      | Keyword extractions from text     | Text      |         |   x   |    x    |   x   | x   |
-| Summarization | `summarization` | Text summarization                | Text      |         |       |         |       | x   |
-| NER           | `ner`           | Named Entity Recognition          | Text      |         |  n/a  |   n/a   |   x   | x   |
+| Project       | Reference       | Description                       | Data Type | Prepare | Train | Compile | Serve |
+| ------------- | --------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- |
+| IPTC          | n/a             | Document topic classification     | Text      |         |       |         |       |
+| Sentiment     | `sentiment`     | Document Sentiment classification | Text      |         |   x   |    x    |   x   |
+| Keywords      | `keywords`      | Keyword extractions from text     | Text      |         |   x   |    x    |   x   |
+| NER           | `ner`           | Named Entity Recognition          | Text      |         |   x   |    x    |   x   |
+| LSH           | `lsh`           | LSH                               | Text      |         |  n/a  |   n/a   |   x   |
+| Summarization | `summarization` | Text summarization                | Text      |         |       |         |   x*  |
+| Entity linking| `entity-linking`| Entity linking                    | Text      |         |       |         |   x*  |
 
+Note: x* - denotes a serving component that hasnt been migrated to the `serving` library yet
 
 ## Makefile Targets & Docker-Compose Services
 
