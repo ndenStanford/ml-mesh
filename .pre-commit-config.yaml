@@ -68,7 +68,7 @@ repos                   :
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
-          - "--ignore-missing-imports" # as per https://github.com/python/mypy/issues/10632#issuecomment-1086711803
+        additional_dependencies: ['types-requests']
 
   # isort
   - repo: https://github.com/pycqa/isort
