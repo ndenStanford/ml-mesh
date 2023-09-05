@@ -1,3 +1,5 @@
+"""Model server tests."""
+
 # Standard Library
 from typing import List
 
@@ -23,36 +25,43 @@ from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
 
 
 class RootResponse(BaseModel):
+    """Root response."""
+
     name: str
 
 
 class TestRecord(BaseModel):
+    """Test record."""
 
     number_of_legs: int
 
 
 class TestModelPredictRequestModel(BaseModel):
+    """Test model predict request model."""
 
     instances: List[TestRecord]
 
 
 class TestPrediction(BaseModel):
+    """Test prediction."""
 
     animal: str
 
 
 class TestModelPredictResponseModel(BaseModel):
+    """Test model predict response model."""
 
     predictions: List[TestPrediction]
 
 
 class TestBioResponseModel(ServedModel.bio_response_model):
+    """Test bio response model."""
 
     type: str = "classifier"
 
 
 class TestServedModel(ServedModel):
-    """A minimal working example of a subclasses custom model for testing purposes"""
+    """A minimal working example of a subclasses custom model for testing purposes."""
 
     predict_request_model = TestModelPredictRequestModel
     predict_response_model = TestModelPredictResponseModel
@@ -62,11 +71,13 @@ class TestServedModel(ServedModel):
         self,
         payload: predict_request_model,
     ) -> predict_response_model:
-        """Inference method. Implements a very basic animal classifier using the
-        - TestModelPredictRequestModel and
-        - TestModelPredictResponseModel
-        test classes"""
+        """Inference method.
 
+        Implements a very basic animal classifier using the
+            - TestModelPredictRequestModel and
+            - TestModelPredictResponseModel
+        test classes.
+        """
         predictions = []
 
         for test_record in payload.instances:
@@ -82,9 +93,7 @@ class TestServedModel(ServedModel):
         return self.predict_response_model(predictions=predictions)
 
     def bio(self) -> bio_response_model:
-        """Model meta data method. Implements a basic model bio data model using the
-        TestBioResponseModel test class"""
-
+        """Model meta data method. Implements a basic model bio data model."""
         return self.bio_response_model(name=self.name)
 
 
@@ -92,13 +101,14 @@ class TestServedModel(ServedModel):
 @pytest.mark.order(1)
 @pytest.mark.server
 def test_model_server_serve_with_model(test_api_version, test_port, test_model_name):
-    """Launches a ModelServer serving a TestServedModel class.
+    """Test model server serve method with model.
 
-    Includes hosting of all utility endpoints, and runs until stopped manually.
+    Launches a fully fledged ModelServer hosting all utility endpoints as well as a loaded
+    instance of the TestServedModel model class, and keeps it running until stopped manually.
 
-    Designed for manual testing during development, not for CI due to limitations of container-less
-    library test suite setup."""
-
+    Designed for manual testing during development, not for CI due to library test suite setup
+    limitations.
+    """
     test_serving_params = ServingParams(
         add_liveness=True,
         add_readiness=True,
@@ -131,14 +141,16 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
 def test_model_server_client_no_model(
     test_api_version, test_port, test_url_reference, test_probe_response_model
 ):
-    """Tests the availability and response format of a live ModelServer's
-    - root,
-    - liveness,
-    -readiness
-    endpoints, as launched by the
-    test_model_server_serve_with_model test case.
+    """Tests the availability and response format of a live ModelServer endpoints.
 
-    Requires test_model_server_serve_with_model to have been called on the same machine"""
+    Endpoints:
+        - root,
+        - liveness,
+        -readiness
+    as launched by the test_model_server_serve_with_model test case.
+
+    Requires test_model_server_serve_with_model to have been called on the same machine
+    """
     test_model_server_urls = get_model_server_urls(api_version=test_api_version)
 
     url = f"http://localhost:{test_port}" + getattr(
@@ -198,11 +210,10 @@ def test_model_server_serve_predict(
     test_response_model,
     test_response_expected,
 ):
-    """Tests the availability and response format of a live ModelServer's model predict endpoint
-    endpoints, as launched by the test_model_server_serve_with_model test case.
+    """Tests the availability and response format of a live ModelServer's model predict endpoint.
 
-    Requires test_model_server_serve_with_model to have been called on the same machine"""
-
+    Requires test_model_server_serve_with_model to have been called on the same machine.
+    """
     test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
     )
@@ -231,11 +242,7 @@ def test_model_server_serve_bio(
     test_model_name,
     test_response_model,
 ):
-    """Tests the availability and response format of a live ModelServer's model bio endpoint
-    endpoints, as launched by the test_model_server_serve_with_model test case.
-
-    Requires test_model_server_serve_with_model to have been called on the same machine"""
-
+    """Tests the availability and response format of a live ModelServer's model bio endpoint."""
     test_model_server_urls = get_model_server_urls(
         api_version=test_api_version, model_name=test_model_name
     )

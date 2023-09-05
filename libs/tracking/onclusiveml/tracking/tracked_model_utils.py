@@ -1,3 +1,5 @@
+"""Helper functions."""
+
 # Standard Library
 from enum import Enum
 from typing import Tuple
@@ -7,19 +9,23 @@ from pydantic import BaseSettings, Field, SecretStr, validator
 
 
 class TrackedParams(BaseSettings):
-    """Base class for all parameter classes in the tracking library. Subclassing from BaseSettings
-    allows for configuring parameters via environment variables."""
+    """Base class for all parameter classes in the tracking library.
+
+    Subclassing from BaseSettings allows for configuring parameters via environment variables.
+    """
 
     pass
 
 
 class TrackedGithubActionsSpecs(TrackedParams):
-    """A class used for capturing the most relevent Github Actions build environment variables to
-    generate a CI lineage for any process being executed by Github Actions workflows, e.g. model
+    """A class used for capturing the most relevent Github Actions build environment variables.
+
+    Generate a CI lineage for any process being executed by Github Actions workflows, e.g. model
     compilation.
 
     For details on the definitions of these and all other variables available, see
-    https://docs.github.com/en/actions/learn-github-actions/variables"""
+    https://docs.github.com/en/actions/learn-github-actions/variables
+    """
 
     github_repository: str = "github_repository"
     github_actor: str = "github_actor"
@@ -47,8 +53,10 @@ class TrackedImageSpecs(TrackedParams):
 
 class TrackedModelSpecs(TrackedParams):
     """A utility to specify the neptune ai project and model level resources.
+
     Also includes the parsing of the api token to help instantiate ModelVersion's..
-    The `api_token` field will be excluded from the model's standard export methods."""
+    The `api_token` field will be excluded from the model's standard export methods.
+    """
 
     # neptune ai model registry specs
     project: str = Field(..., env="neptune_project")
@@ -59,8 +67,7 @@ class TrackedModelSpecs(TrackedParams):
 
 
 class TrackedModelTestFiles(TrackedParams):
-    """A utility to specifiy the attribute paths of test files supporting regression tests, e.g
-    for validating runtime environments or model compilations"""
+    """A utility to specifiy the attribute paths of test files supporting regression tests."""
 
     # neptune ai locations of test files
     inputs: str = "model/test_files/inputs"
@@ -69,6 +76,7 @@ class TrackedModelTestFiles(TrackedParams):
 
 
 class ModelTypes(Enum):
+    """Model types."""
 
     base: str = "base"
     trained: str = "trained"
@@ -76,8 +84,7 @@ class ModelTypes(Enum):
 
     @classmethod
     def get_valid_range(cls) -> Tuple[str, str, str]:
-        """Simple model type validation utility"""
-
+        """Simple model type validation utility."""
         return (cls.base.value, cls.trained.value, cls.compiled.value)
 
 
@@ -106,7 +113,7 @@ class TrackedModelCard(TrackedParams):
 
     @validator("model_type")
     def check_model_type(v: str) -> str:
-
+        """Check model type."""
         if v not in ModelTypes.get_valid_range():
             raise ValueError(
                 f"Model type {v} must be one of the following valid options: "

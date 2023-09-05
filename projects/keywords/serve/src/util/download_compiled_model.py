@@ -1,3 +1,5 @@
+"""Download compiled model."""
+
 # Standard Library
 import os
 
@@ -11,7 +13,7 @@ from src.util.params import TrackedCompiledModelSpecs
 
 
 def main() -> None:
-
+    """Model Download function."""
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
     model_version_specs = TrackedCompiledModelSpecs()
@@ -45,5 +47,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-
     main()

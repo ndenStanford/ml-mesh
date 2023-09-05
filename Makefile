@@ -23,6 +23,8 @@ endif
 # all core docker images
 ALL_DOCKER_IMGS:= \
 	python-base \
+	gpu-base \
+	gpu-train \
 	neuron-compile \
 	neuron-inference \
 	fastapi-serve \
@@ -37,14 +39,16 @@ ALL_LIBS:= \
 	models \
 	nlp \
 	serving \
-	tracking
+	tracking \
+	syndicate
 
 # all projects
 ALL_PROJECTS:= \
 	keywords \
 	summarization \
 	entity-linking \
-	ner
+	ner \
+	lsh
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk

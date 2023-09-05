@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "nlp"
 version = "0.1.0"
-description = "NLP library"
+description = "NLP library with various utilities"
 authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 

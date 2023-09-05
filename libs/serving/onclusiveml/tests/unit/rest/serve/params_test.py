@@ -1,3 +1,5 @@
+"""Parameter tests."""
+
 # 3rd party libraries
 import pytest
 
@@ -22,8 +24,7 @@ from onclusiveml.serving.rest.serve import (
     ],
 )
 def test_settings_env_prefix(settings_class, expected_env_prefix):
-    """Tests the environment prefixes for all serving.rest settings/params classes"""
-
+    """Tests the environment prefixes for all serving.rest settings/params classes."""
     assert settings_class.Config.env_prefix == expected_env_prefix
 
 
@@ -38,14 +39,12 @@ def test_settings_env_prefix(settings_class, expected_env_prefix):
     ],
 )
 def test_settings___init__(settings_class):
-    """Tests the initialization of all serving.rest settings/params classes with default values"""
-
+    """Tests the initialization of all serving.rest settings/params classes with default values."""
     settings_class()
 
 
 def test_better_stack_settings_full_url():
-    """Tests the BetterStackSettings class' construction of the full_url attribute"""
-
+    """Tests the BetterStackSettings class' construction of the full_url attribute."""
     better_stack_settings = BetterStackSettings(
         enable=True, api_token="test_token", base_url="test_url/"
     )

@@ -1,3 +1,5 @@
+"""Init."""
+
 from onclusiveml.serving.rest.observability.utils import get_path  # noqa: F401
 from onclusiveml.serving.rest.observability.metrics import (  # noqa: F401
     INFO,

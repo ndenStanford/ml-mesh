@@ -1,3 +1,5 @@
+"""Compiled tokenizer."""
+
 # Standard Library
 import json
 import os
@@ -20,11 +22,13 @@ from onclusiveml.compile.compile_utils import (
 
 
 class CompiledTokenizer(object):
-    """A wrapper class around huggingface Tokenizer instances that supports reproducible
-    tokenization. Includes extension of save_pretrained & load_pretrained methods to specified
+    """A wrapper class around huggingface Tokenizer.
+
+    Includes extension of save_pretrained & load_pretrained methods to specified
     tokenization parameters and a __call__ method that will override kwargs in favour of those
     tokenization parameters. Useful in combination with (neuron-)compiled models, and the
-    CompiledModel class with or without the use of transformer Pipelines."""
+    CompiledModel class with or without the use of transformer Pipelines.
+    """
 
     def __init__(
         self,
@@ -45,7 +49,6 @@ class CompiledTokenizer(object):
 
     def __getattr__(self, name: str) -> Any:
         """Surfaces selected tokenizer attributes/methods to the CompiledTokenizer instance."""
-
         if (
             name
             in DelegatedTokenizerMethods.list() + DelegatedTokenizerAttributes.list()
@@ -62,8 +65,11 @@ class CompiledTokenizer(object):
         tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast],
         **tokenization_kwargs: Any
     ) -> Dict[str, Any]:
-        """Sets some reasonable defaults for the params that define tokenization behaviour, in
-        particular the padding and sequence length of the resulting tokenized sequences."""
+        """Returns tokenizer parameter values.
+
+        Sets some reasonable defaults for the params that define tokenization behaviour, in
+        particular the padding and sequence length of the resulting tokenized sequences.
+        """
         # ensure constant sequence length of outputs as per
         # https://awsdocs-neuron.readthedocs-hosted.com/en/latest/src/examples/tensorflow/...
         # ...huggingface_bert/...
@@ -87,29 +93,31 @@ class CompiledTokenizer(object):
         tokenizer: Union[PreTrainedTokenizer, PreTrainedTokenizerFast],
         **tokenization_kwargs: Any
     ) -> "CompiledTokenizer":
-        """Utility method wrapper around the constructor for consistency with the CompiledModel
-        equivalent method.
+        """Utility method wrapper around the constructor for consistency.
 
-        tokenizer: (PreTrainedTokenizer,PreTrainedTokenizerFast): The huggingface tokenizer
-            instance to compile.
-        **tokenization_kwargs (Any): (optional) Additional keyword arguments that can be handled by
-            the `tokenizer` instance's __call__ method. Will automatically be specified when
-            calling the resulting CompiledTokenizer's __call__ method. Note that the following
-            tokenizer keyword arguments will always be set in a CompiledTokenizer instance to
-            ensure tokenization behaviour that is compatible with the constant token length
-            requirements of a (neuron-)compiled model:
-                - `padding` = 'max_length'
-                - `truncation` = True
+        Args:
+            tokenizer: (PreTrainedTokenizer,PreTrainedTokenizerFast): The huggingface tokenizer
+                instance to compile.
+            **tokenization_kwargs (Any): (optional) Additional keyword arguments that can be handled
+                by the `tokenizer` instance's __call__ method. Will automatically be specified when
+                calling the resulting CompiledTokenizer's __call__ method. Note that the following
+                tokenizer keyword arguments will always be set in a CompiledTokenizer instance to
+                ensure tokenization behaviour that is compatible with the constant token length
+                requirements of a (neuron-)compiled model:
+                    - `padding` = 'max_length'
+                    - `truncation` = True
         """
-
         return CompiledTokenizer(tokenizer=tokenizer, **tokenization_kwargs)
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        """Canonic huggingface transformers export method. Only supports exporting to local file
-        system.
+        """Canonic huggingface transformers export method.
+
+        Note:
+            Only supports exporting to local file system.
 
         directory (Path,str): Directory on local file system to export tokenizer artifact to. Will
-            be created if it doesnt exist."""
+            be created if it doesnt exist.
+        """
         # invoke parent class' instance method
         self.tokenizer.save_pretrained(directory)
 
@@ -120,10 +128,13 @@ class CompiledTokenizer(object):
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledTokenizer":
-        """Canonic huggingface transformers import method. Only supports importing from local file
-        system.
+        """Canonic huggingface transformers import method.
 
-        directory (Path,str): Directory on local file system to import tokenizer artifact from."""
+        Note:
+            Only supports importing from local file system.
+
+        directory (Path,str): Directory on local file system to import tokenizer artifact from.
+        """
         # use huggingface utility to read generic tokenizer instance from disk
         tokenizer = AutoTokenizer.from_pretrained(directory)
         # load tokenization settings
@@ -135,17 +146,15 @@ class CompiledTokenizer(object):
         return CompiledTokenizer(tokenizer=tokenizer, **tokenization_settings)
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        """Overwrite the tokenizer's __call__ kwargs with the settings contained in the
-        tokenization_settings attribute. Makes configured tokenization as per compilation arguments
+        """Overwrite the tokenizer's __call__ kwargs.
+
+        Makes configured tokenization as per compilation arguments
         the default, i.e. no need to remember the exact padding and length configurations at the
         tokenization state. Also useful when this class is being used inside a CompiledPipeline
         instance. Note that the settings specified in the `tokenization_settings` attribute will
         always be given priority, and will override any arguments that may be re-specified when
         calling this method.
-
-        *args (Any): positional arguments for the `tokenizer` attribute's __call__ method.
-        **kwargs (Any): keyword arguments for `tokenizer` attribute's __call__ method."""
-
+        """
         for tokenization_setting in self.tokenization_settings:
             _ = kwargs.pop(tokenization_setting, None)
 

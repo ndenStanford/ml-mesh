@@ -1,3 +1,5 @@
+"""Compile model."""
+
 # Standard Library
 from typing import Dict
 
@@ -20,7 +22,7 @@ from src.settings import (  # type: ignore[attr-defined]
 
 
 def main() -> None:
-
+    """Compile model."""
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level

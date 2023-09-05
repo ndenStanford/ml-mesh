@@ -1,3 +1,5 @@
+"""Compiled pipeline."""
+
 # Standard Library
 import json
 import os
@@ -15,23 +17,29 @@ from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer
 
 
 class CompiledPipeline(object):
-    """A wrapper class around huggingface pipeline instances with custom CompiledTokenizer and
-    CompiledModel backends. Includes
-    - canonical `save_pretrained` & `load_pretrained` methods to support export & re-import to/from
-        local disk
-    - utility `from_pipeline` method to wrap around the creation of CompiledTokenizer and
-        CompiledModel instances, respectively, using provided generic huggingface tokenizer and
-        model instances, by applying a pipeline level utility compilaiton function to a specified
-        huggingface pipeline instance
-    - canonical __call__ method delegating to Pipeline type compiled_pipeline attribute for
-        inference."""
+    """A wrapper class around huggingface pipeline instances with custom CompiledTokenizer and \
+        CompiledModel backends.
+
+    Includes:
+
+        - canonical `save_pretrained` & `load_pretrained` methods to support export & re-import
+            to/from local disk
+        - utility `from_pipeline` method to wrap around the creation of CompiledTokenizer and
+            CompiledModel instances, respectively, using provided generic huggingface tokenizer and
+            model instances, by applying a pipeline level utility compilaiton function to a
+            specified huggingface pipeline instance
+        - canonical __call__ method delegating to Pipeline type compiled_pipeline attribute for
+            inference.
+    """
 
     def __init__(self, original_pipeline: Pipeline, compiled_pipeline: Pipeline):
-        """Constructor requires
-        - `original_pipeline`, the original reference huggingface pipeline
-        - `compiled_pipeline`, the manipulated pipeline with compiled tokenizer and model
-            backends"""
+        """Constructor.
 
+        Requires
+            - `original_pipeline`, the original reference huggingface pipeline
+            - `compiled_pipeline`, the manipulated pipeline with compiled tokenizer and model
+                backends
+        """
         self.original_pipeline = original_pipeline
         self.original_pipeline_task = original_pipeline.task
         self.compiled_pipeline = compiled_pipeline
@@ -49,33 +57,38 @@ class CompiledPipeline(object):
         tokenizer_settings: Dict = {},
         model_tracing_settings: Dict = {},
     ) -> "CompiledPipeline":
-        """Takes a huggingface transformer pipeline, compiles
-        - the `tokenizer` attribute to a CompiledTokenizer instance
-        - the `model` attribute to a CompiledModel instance
+        """Compiled pipeline from huggingface pipeline.
+
+        Takes a huggingface transformer pipeline, compiles:
+            - the `tokenizer` attribute to a CompiledTokenizer instance
+            - the `model` attribute to a CompiledModel instance
+
         according to specified configuration and returns a fully instantiated CompiledPipeline
         instance together with the (neuron-)tracing configurations used during the compilation for
         both components.
 
-        pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in
-            place if desired, but by default a copy will be made.
-        max_length (int): The max token sequence length used for compilation of both tokenizer and
-            model.
-        batch_size (int): The batch size used for model compilation. Defaults to 1.
-        neuron (int): If True, uses the AWS neuron library to convert the pipeline's model
-            component to neuron-torchscript for faster inference. If False, uses native torch to
-            produce a torchscript model. Defaults to True.
-        validate_compilation (bool): If True, a quick regression test of the compiled model is
-            made using the inputs used for compilation. Acceptance thresholds of that regression
-            test are set by the optional arguments
-                - `validation_rtol`, and
-                - `validation_atol`.
-            Defaults to True
-        validation_rtol (float): See `validate_compilation`. Defaults to 1e-02.
-        validation_atol (float): See `validate_compilation`. Defaults to 1e-02.
-        tokenizer_settings (dict): (optional) the dictionary equivalent of the
-            CompiledTokenzer.from_tokenizer's **tokenization_kwargs.
-        model_tracing_settings (dict): The dictionary equivalent of the CompiledModel.from_model`s
-            **tracing_kwargs."""
+        Args:
+            pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in
+                place if desired, but by default a copy will be made.
+            max_length (int): The max token sequence length used for compilation of both tokenizer
+                and model.
+            batch_size (int): The batch size used for model compilation. Defaults to 1.
+            neuron (int): If True, uses the AWS neuron library to convert the pipeline's model
+                component to neuron-torchscript for faster inference. If False, uses native torch to
+                produce a torchscript model. Defaults to True.
+            validate_compilation (bool): If True, a quick regression test of the compiled model is
+                made using the inputs used for compilation. Acceptance thresholds of that regression
+                test are set by the optional arguments
+                    - `validation_rtol`, and
+                    - `validation_atol`.
+                Defaults to True
+            validation_rtol (float): See `validate_compilation`. Defaults to 1e-02.
+            validation_atol (float): See `validate_compilation`. Defaults to 1e-02.
+            tokenizer_settings (dict): (optional) the dictionary equivalent of the
+                CompiledTokenzer.from_tokenizer's **tokenization_kwargs.
+            model_tracing_settings (dict): The dictionary equivalent of the
+                CompiledModel.from_model`s **tracing_kwargs.
+        """
         # replace the tokenizer and model components with compiled equivalents
         compiled_pipeline = compile_pipeline(
             pipeline=pipeline,
@@ -92,8 +105,10 @@ class CompiledPipeline(object):
         return cls(original_pipeline=pipeline, compiled_pipeline=compiled_pipeline)
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        """Canonic huggingface transformers export method. Only supports exporting to local file
-        system.
+        """Canonic huggingface transformers export method.
+
+        Note:
+            Only supports exporting to local file system.
 
         Args:
             directory (Path,str): Directory on local file system to export model artifact to. Will
@@ -117,11 +132,14 @@ class CompiledPipeline(object):
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledPipeline":
-        """Canonic huggingface transformers import method. Only supports importing from local file
-        system.
+        """Canonic huggingface transformers import method.
+
+        Note:
+            Only supports importing from local filesystem.
 
         Args:
-            directory (Path,str): Directory on local file system to import model artifact from."""
+            directory (Path,str): Directory on local file system to import model artifact from.
+        """
         # import pipeline task
         with open(
             os.path.join(directory, "pipeline_task.json"), "r"
@@ -148,13 +166,13 @@ class CompiledPipeline(object):
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """Provides entrypoint to the `compiled_pipeline` attribute's __call__ method.
-        Useage is identical to canonical huggingface pipeline __call__ method."""
 
+        Usage is identical to canonical huggingface pipeline __call__ method.
+        """
         return self.compiled_pipeline(*args, **kwargs)
 
     def __getattr__(self, name: str) -> Any:
         """Surfaces selected pipeline attributes to the CompiledPipeline instance."""
-
         if name in DelegatedPipelineAttributes.list():
             attribute = self.compiled_pipeline.__getattribute__(name)
         else:
@@ -176,39 +194,43 @@ def compile_pipeline(
     in_place_compilation: bool = False,
     **kwargs: Any
 ) -> Pipeline:
-    """Utility function to take a conventional huggingface transformers pipeline and replace
+    """Compilation pipeline.
+
+    Utility function to take a conventional huggingface transformers pipeline and replace
     - its tokenizer with a CompiledTokenizer instance version of the same object
     - its model component with a CompiledModel instance version of the same oject
     to produce a manipulated pipeline instance of the same class as the specified pipeline
     object, without changing it in place (unless desired). The manipulated pipeline instance will
     have fully functional import and export functionality, as well as a __call__ behaviour that
-    'just works' with its (neuron-)torchscript model backend. Currently supported pipeline tasks
-    include:
-    - feature-extraction
-    - text-classification (aka sentiment-analysis)
+    'just works' with its (neuron-)torchscript model backend.
 
-    pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in place
-        if desired, but by default a copy will be made.
-    max_length (int): The max token sequence length used for compilation of both tokenizer and
-        model.
-    batch_size (int): The batch size used for model compilation. Defaults to 1.
-    neuron (int): If True, uses the AWS neuron library to convert the pipeline's model component
-        to neuron-torchscript for faster inference. If False, uses native torch to produce a
-        torchscript model. Defaults to True.
-    validate_compilation (bool): If True, a quick regression test of the compiled model is made
-        using the inputs used for compilation. Acceptance thresholds of that regression test are
-        set by the optional arguments
-            - `validation_rtol`, and
-            - `validation_atol`.
-        Defaults to True
-    validation_rtol (float): See `validate_compilation`. Defaults to 1e-02.
-    validation_atol (float): See `validate_compilation`. Defaults to 1e-02.
-    tokenizer_settings (dict): (optional) the dictionary equivalent of the
-        CompiledTokenzer.from_tokenizer's **tokenization_kwargs.
-    model_tracing_settings (dict): The dictionary equivalent of the CompiledModel.from_model`s
-        **tracing_kwargs.
-    in_place_compilation (bool): If True, will edit the passed `pipeline` object in place. If
-        False, will use local cache to create a duplicate. Defaults to False.
+    Currently supported pipeline tasks include:
+        - feature-extraction
+        - text-classification (aka sentiment-analysis)
+
+    Args:
+        pipeline (Pipeline): Pipeline instance that needs to be compiled. Can be manipulated in
+            place if desired, but by default a copy will be made.
+        max_length (int): The max token sequence length used for compilation of both tokenizer and
+            model.
+        batch_size (int): The batch size used for model compilation. Defaults to 1.
+        neuron (int): If True, uses the AWS neuron library to convert the pipeline's model component
+            to neuron-torchscript for faster inference. If False, uses native torch to produce a
+            torchscript model. Defaults to True.
+        validate_compilation (bool): If True, a quick regression test of the compiled model is made
+            using the inputs used for compilation. Acceptance thresholds of that regression test are
+            set by the optional arguments
+                - `validation_rtol`, and
+                - `validation_atol`.
+            Defaults to True
+        validation_rtol (float): See `validate_compilation`. Defaults to 1e-02.
+        validation_atol (float): See `validate_compilation`. Defaults to 1e-02.
+        tokenizer_settings (dict): (optional) the dictionary equivalent of the
+            CompiledTokenzer.from_tokenizer's **tokenization_kwargs.
+        model_tracing_settings (dict): The dictionary equivalent of the CompiledModel.from_model`s
+            **tracing_kwargs.
+        in_place_compilation (bool): If True, will edit the passed `pipeline` object in place. If
+            False, will use local cache to create a duplicate. Defaults to False.
     """
     # get copy of passed pipeline instance if needed
     if not in_place_compilation:

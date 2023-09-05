@@ -1,3 +1,5 @@
+"""Conftests."""
+
 # 3rd party libraries
 import pytest
 
@@ -7,6 +9,7 @@ from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 @pytest.fixture
 def test_model_server():
+    """Test model server."""
     test_serving_params = ServingParams(
         add_liveness=True,
         add_readiness=True,

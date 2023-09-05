@@ -16,38 +16,27 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    ports:
-      - 8888:8888
-    volumes:
-      - type: bind
-        source: train/src
-        target: /home/projects/keywords/train/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
-    profiles: [train]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  train-unit:
-    build:
-      context: ../../
-      dockerfile: projects/keywords/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: keywords
-        COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
     volumes:
       - type: bind
         source: train/src
         target: /projects/keywords/train/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
       - type: bind
-        source: train/tests
-        target: /projects/keywords/train/tests
+        source: train/
+        target: /projects/keywords/train/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
@@ -70,7 +59,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: keywords
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -81,18 +70,13 @@ services:
   compile-unit:
     volumes:
       - type: bind
-        source: compile/src
-        target: /projects/keywords/compile/src
-      - type: bind
-        source: compile/tests
-        target: /projects/keywords/compile/tests
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-download-model:
     volumes:
@@ -111,16 +95,14 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-compile-model:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/keywords/compile
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [pipeline]
@@ -131,16 +113,14 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-validate-model:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/keywords/compile
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -151,14 +131,12 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   compile-upload-model:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/keywords/compile
+        source: compile/
+        target: /projects/keywords/compile/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -187,8 +165,6 @@ services:
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
-    depends_on:
-      - compile
 
   # =============================================
   # SERVE
@@ -376,6 +352,3 @@ services:
 
 networks:
   onclusive-net:
-
-volumes :
-  compile-pipeline-vol:

@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 def decorator(caller: Callable) -> Callable:
     """Turns caller into a decorator.
+
     Unlike decorator module, function signature is not preserved.
 
     Args:
