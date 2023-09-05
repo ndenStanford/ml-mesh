@@ -29,3 +29,4 @@ Available targets:
 
 
 ```
+Note : For the serving library's functional tests please check libs/serving/README.md
