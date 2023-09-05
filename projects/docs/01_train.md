@@ -56,7 +56,7 @@ The following `docker compose` services are typically associated with a project'
 - `train-functional` (optional)
    - used to run `functional` test suite (if applicable)
 
-### 2.3 Building the `train` copmonent :construction:
+### 2.3 Building the `train` component :construction:
 
 To locally build the image
 - using the `${BASE_IMAGE_TAG}` version of the base image, and
