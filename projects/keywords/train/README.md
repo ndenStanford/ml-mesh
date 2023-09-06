@@ -1,3 +1,11 @@
-# `Train Manual`
+# Overview
 
-Set PROJECT_NAME to "keywords" and follow the instruction in the [train manual](https://github.com/AirPR/ml-mesh/tree/develop/projects/manual/train/README.md)
+For details on how to run and maintain the `keywords` project `train` component, please refer
+to the
+- [the project README](../README.md) and
+- [the project train doc.](../../doc/01_train.md)
+
+using
+
+- `PROJECT_NAME=keywords`, and
+- `COMPONENT=train`
