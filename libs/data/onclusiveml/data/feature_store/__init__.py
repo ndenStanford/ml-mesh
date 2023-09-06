@@ -1,8 +1,8 @@
 """Init."""
 
-from onclusiveml.data.feature_store.feature_store_handle import (
+from onclusiveml.data.feature_store.feature_store_handle import (  # noqa: F401
     FeatureStoreHandle,
-)  # noqa: F401
-from onclusiveml.data.feature_store.redshift_source import (
+)
+from onclusiveml.data.feature_store.redshift_source import (  # noqa: F401
     RedshiftSourceCustom,
-)  # noqa: F401
+)
