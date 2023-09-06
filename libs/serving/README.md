@@ -54,12 +54,29 @@ main modules:
     fastapi_requests_total{app_name="keywords",method="GET",path="/v1/live"} 3.0
     ```
 
-## 2 Configuration
+## 2 Configuration classes
 
-TBC - see `ServingParams` and its attribute classes in the `rest.params`module for now
+The `ServingParams` class is used to configure instances of the [`ModelServer`](#-modelserver). It
+breaks down into several other sub-settings classes.
 
-- `UvicornSettings`
-  - a [uvicorn configuration](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py) specification; serving process configuration - see the `serving` library documentation for details
+- `ServingParams`
+  - Purpose: `ModelServer` configuration class
+  - Environment prefix: `oncusiveml_serving_`
+  - Sub-configuration attributes:
+    - `FastAPISettings`
+      - Purpose: `FastAPI` configuration
+      - Environment prefix: `onclusiveml_serving_fastapi_`
+    - `UvicornSettings`
+      - Purpose: [uvicorn server configuration](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py)
+      - Environment prefix: `onclusiveml_serving_uvicorn_`
+      - Sub-configuration attributes:
+        - `LogConfigSettings`
+          - Purpose: uvicorn server logging configuration
+          - Environment prefix: `onclusiveml_serving_logconfig_`
+    - `BetterStackSettings`
+      - Purpose: [betterstack liveness configuration](https://uptime.betterstack.com/team/95927/heartbeats/122022)
+      - Environment prefix: `onclusiveml_serving_betterstack_`
+
 
 ## 3 ModelServer
 
@@ -194,15 +211,21 @@ with open("evaluation.json","w") as evaluation_file:
 
 Coverage: `serve` and `testing` modules
 
-- Install the library
-- Run `make libs.unit/serving`
+Run
+
+```bash
+make libs.unit/serving
+```
 
 ### Integration
 
 Coverage: `serve` and `testing` modules
 
-- Install the library
-- Run `make libs.integration/serving`
+Run
+
+```bash
+make libs.integration/serving
+```
 
 ### Functional
 
@@ -215,11 +238,22 @@ the functional test requires a `server <-> client` setup, implying 2 parallel pr
 `functional` test suite will be disabled in the CI for `serving`. The below shows how to run it
 manually on local.
 
-- Install the library
-  - `make libs.install/serving`
-- Start the model server by running the `server` side test suite
+Retrieve the api token from the betterstack `serving-lib-dev` heartbeat and export the betterstack
+ api token environment variable:
+
+```bash
+export onclusiveml_serving_betterstack_api_token=better_stack_api_token_value_here
+```
+
+Start the model server by running the `server` side test suite
   - `python -m pytest libs/serving/onclusiveml/tests/functional -ra -vv --capture=no -m server`
   - This will run on port 8000 by default, so make sure the port is free
-- Run the `client` side regression test suite
+
+Run the `client` side regression test suite
   - `python -m pytest libs/serving/onclusiveml/tests/functional -ra -vv --capture=no -m client`
-- Make sure to stop (`ctrl+c`) the `server` side test process once you are done testing
+
+Verify the `client` side test suite passes.
+
+Verify the [`serving-lib-dev` heartbeat registers a new ping](https://uptime.betterstack.com/team/95927/heartbeats/122022).
+
+Finally, make sure to stop (`ctrl+c`) the `server` side test process once you are done testing.

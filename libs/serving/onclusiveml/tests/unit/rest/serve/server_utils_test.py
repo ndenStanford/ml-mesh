@@ -6,6 +6,7 @@ from served_model_test import TestServedModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
+    BetterStackSettings,
     ServedModel,
     get_liveness_router,
     get_model_bio_router,
@@ -97,7 +98,13 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
         - get_readiness_router
         and validates the url paths against the (previously tested) get_model_server_urls outputs
     """
-    test_router = get_router_method(api_version=test_api_version)
+    if get_router_method == get_liveness_router:
+        test_router = get_router_method(
+            api_version=test_api_version, betterstack_settings=BetterStackSettings()
+        )
+    else:
+        test_router = get_router_method(api_version=test_api_version)
+
     test_route_url_actual = test_router.routes[0].path
 
     assert test_route_url_actual == test_route_url_expected

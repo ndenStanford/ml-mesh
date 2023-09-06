@@ -62,7 +62,10 @@ class ModelServer(FastAPI):
         # add default K8s liveness probe endpoint if desired
         if configuration.add_liveness:
             self.include_router(
-                get_liveness_router(api_version=configuration.api_version)
+                get_liveness_router(
+                    api_version=configuration.api_version,
+                    betterstack_settings=configuration.betterstack_settings,
+                )
             )
         # add default K8s readiness probe endpoint if desired
         if configuration.add_readiness:

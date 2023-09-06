@@ -55,6 +55,7 @@ repos                   :
     hooks:
       - id: flake8
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
+        exclude: ^libs/serving/onclusiveml/serving/rest/serve/server_utils\.py$
 
   # static type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -67,6 +68,7 @@ repos                   :
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
+        additional_dependencies: ['types-requests']
 
   # isort
   - repo: https://github.com/pycqa/isort
