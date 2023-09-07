@@ -10,7 +10,6 @@ click = "8.1.0"
 boto3 = "1.26.58"
 core = {path = "libs/core"}
 pytest = "7.2.0"
-httpx = "^0.24.1"
 
 [tool.poetry.dev-dependencies]
 
