@@ -32,15 +32,14 @@ router = APIRouter(
 def get_gpt_analysis(
     item: Request,
 ) -> Dict[str, Dict]:
-    """
-    Return the topic deep analysis of item content.
+    """Return the topic deep analysis of item content.
+
     Args:
         item (Request): parse request arguments.
 
     Returns:
         Response: category & analysis, model used and reason response finished.
     """
-
     topic = handle(
         data=[
             {

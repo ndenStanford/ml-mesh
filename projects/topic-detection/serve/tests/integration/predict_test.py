@@ -1,4 +1,4 @@
-# """Test predict."""
+"""Test predict."""
 
 # 3rd party libraries
 import pytest
@@ -59,9 +59,11 @@ indus = "Science and technology"
     ],
 )
 class TestParametrized:
+    """Test paramterized."""
+
     def test_model(self, test_client, input, indus):
-        print("$" * 10)
         """Test prediction endpoint."""
+        print("$" * 10)
         response = test_client.post(
             "/v1/topic/gpt4/predict",
             json={

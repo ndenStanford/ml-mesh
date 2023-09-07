@@ -11,6 +11,7 @@ from src.app import create_app
 
 @pytest.fixture(scope="session")
 def app():
+    """Test App."""
     # A bit of a hack to get the promt to initialize in the test pipeline
     _setup_prompts()
     return create_app()
@@ -18,5 +19,6 @@ def app():
 
 @pytest.fixture
 def test_client(app):
+    """Test client."""
     client = TestClient(app)
     yield client
