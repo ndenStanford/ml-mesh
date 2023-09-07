@@ -25,7 +25,7 @@ router = APIRouter(
 @router.get("", status_code=status.HTTP_200_OK)
 @router.get("/", status_code=status.HTTP_200_OK)
 async def readycheck() -> Optional[str]:
-    """Check if the API is ready to accept traffic"""
+    """Check if the API is ready to accept traffic."""
     text = "I love living in England."
     lang = "en"
     entities: List[EntityDictInput] = [{"text": "England"}]

@@ -1,3 +1,4 @@
+"""Settings tests."""
 # 3rd party libraries
 import pytest
 from locust import HttpUser, between, task
@@ -20,51 +21,41 @@ from onclusiveml.serving.rest.testing.load_test import (
 
 
 class TestWebsiteUser(HttpUser):
-    """A minimal functional locust client to be used for initializing a LoadTestingParams
-    instance"""
+    """A test website user."""
 
     wait_time = between(1, 2)
 
     @task()
     def get_home_page(self):
-        """
-        Gets /
-        """
+        """Gets /."""
         self.client.get("/")
 
 
 def test_load_testing_params_no_locust_file():
-    """Tests the initialization of a LoadTestingParams using locust clients (and not a
-    locustfile)"""
+    """Tests the initialization of a LoadTestingParams using locust clients."""
     LoadTestingParams(locustfile="", user_classes=[TestWebsiteUser])
 
 
 def test_load_testing_params_raise_no_locust_file():
-    """Tests the raising of an error when falling back on default values and looking for the
-    locustfile, but cannot find it"""
-
+    """Tests the raising of an error when falling back on default values."""
     with pytest.raises(FileNotFoundError):
         LoadTestingParams()
 
 
 @pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
 def test_measurement(test_measurement):
-    """Tests initialization of a Measurement instance, parametrized to try out all valid
-    measurements as defined in the ValidMeasurements class"""
-
+    """Tests initialization of a Measurement instance."""
     Measurement(name=test_measurement, value=0.5)
 
 
 def test_measurement_raise_invalid_name():
-    """Tests the raising of an error when attempting an invalid measurement reference"""
-
+    """Tests the raising of an error when attempting an invalid measurement reference."""
     with pytest.raises(ValidationError):
         Measurement(name="invalid_metric_reference", value=0.1)
 
 
 def test_measurements():
     """Tests the initialization of a Measurements instance."""
-
     Measurements(
         avg_response_time=Measurement(name="avg_response_time", value=0.5),
         # percentiles
@@ -90,9 +81,10 @@ def test_measurements():
 
 
 def test_endpoint_report():
-    """Tests the initialization of an EndpointReport instance. Also checks for the setting of the
-    endpoint_id field via the root_validator"""
+    """Tests the initialization of an EndpointReport instance.
 
+    Also checks for the setting of the endpoint_id field via the root_validator.
+    """
     test_endpoint_report = EndpointReport(
         endpoint_type="GET",
         endpoint_url="http://dummy_url",
@@ -124,8 +116,7 @@ def test_endpoint_report():
 
 
 def test_test_report():
-    """Tests the initialization of a TestReport instance"""
-
+    """Tests the initialization of a TestReport instance."""
     TestReport(
         completed={
             "GET_http://dummy_url": EndpointReport(
@@ -168,12 +159,14 @@ def test_test_report():
 @pytest.mark.parametrize("test_ensure_lower", [True, False])
 @pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.list())
 def test_criterion(test_measurement, test_endpoint_type, test_ensure_lower, test_hard):
-    """Tests the initialization of a Critertion instance, parametrized to try out
-    - all valid measurements as defined in the ValidMeasurements class
-    - all valid endpoint types as defined in the ValidEndpointTypes class
-    - hard & soft type criterions
-    - the-smaller-the-better & the-larger-the-better type criterions"""
+    """Tests the initialization of a Critertion instance.
 
+    Parametrized to try out
+        - all valid measurements as defined in the ValidMeasurements class
+        - all valid endpoint types as defined in the ValidEndpointTypes class
+        - hard & soft type criterions
+        - the-smaller-the-better & the-larger-the-better type criterions
+    """
     Criterion(
         name=test_measurement,
         threshold=10,
@@ -202,9 +195,11 @@ def test_criterion_was_met_in_measurement(
     test_ensure_lower,
     test_criteria_met_expected,
 ):
-    """Tests the Criterion instance's was_met_in_measurement method by evaluating it against a
-    selected set of Measurement instances using defined, boolean ground truth outcomes."""
+    """Tests the Criterion instance's was_met_in_measurement method.
 
+    The criterion is evaluated against a selected set of Measurement instances using defined,
+    boolean ground truth outcomes.
+    """
     measurement = Measurement(
         name=test_measurement,
         value=test_value,
@@ -239,9 +234,11 @@ def test_criterion_was_met_in_report(
     test_ensure_lower,
     test_criteria_met_expected,
 ):
-    """Tests the Criterion instance's was_met_in_report method by evaluating it against a
-    TestReport instance using defined, boolean ground truth outcomes."""
+    """Tests the Criterion instance's was_met_in_report method.
 
+    Evaluates it against a TestReport instance using defined,
+    boolean ground truth outcomes.
+    """
     test_report = TestReport(
         completed={
             "GET_http://dummy_url": EndpointReport(
@@ -295,8 +292,7 @@ def test_criterion_was_met_in_report(
 
 
 def test_evaluated_criterion():
-    """Tests the initialization of an EvaluatedCriterion instance"""
-
+    """Tests the initialization of an EvaluatedCriterion instance."""
     EvaluatedCriterion(
         name=ValidMeasurements.failures_total.value,
         threshold=0.5,
@@ -307,8 +303,7 @@ def test_evaluated_criterion():
 
 
 def test_evaluated_criteria():
-    """Tests the initialization of an EvaluatedCriteria instance"""
-
+    """Tests the initialization of an EvaluatedCriteria instance."""
     EvaluatedCriteria(
         evaluated_criteria=[
             EvaluatedCriterion(
@@ -339,12 +334,14 @@ def test_evaluated_criteria():
 def test_environment_criterion(
     test_measurement, test_hard, test_endpoint_type, test_ensure_lower
 ):
-    """Tests the initialization of a EnvironmentCriterion instance, parametrized to try out
-    - all valid measurements as defined in the ValidMeasurements class
-    - all valid endpoint types as defined in the ValidEndpointTypes class
-    - hard & soft type criterions
-    - the-smaller-the-better & the-larger-the-better type criterions"""
+    """Tests the initialization of a EnvironmentCriterion instance.
 
+    Parametrization tests the following cases:
+        - all valid measurements as defined in the ValidMeasurements class
+        - all valid endpoint types as defined in the ValidEndpointTypes class
+        - hard & soft type criterions
+        - the-smaller-the-better & the-larger-the-better type criterions
+    """
     EnvironmentCriterion(
         name=test_measurement,
         threshold=10,

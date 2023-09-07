@@ -1,3 +1,5 @@
+"""Test compiled tokenizer."""
+
 # Standard Library
 import base64
 
@@ -31,8 +33,7 @@ def test_compiled_tokenizer_from_tokenizer(
     tokenization_kwargs,
     expected_tokenization_settings,
 ):
-    """Checks __init__ call and tokenizer settings value fallback logic"""
-
+    """Checks __init__ call and tokenizer settings value fallback logic."""
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=mock_tokenizer, **tokenization_kwargs
     )
@@ -48,8 +49,7 @@ def test_compiled_tokenizer_from_tokenizer(
     ],
 )
 def test_compiled_tokenizer___call__(mock_tokenizer, tokenization_kwargs):
-    """Checks tokenizer __call__ method"""
-
+    """Checks tokenizer __call__ method."""
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=mock_tokenizer, **tokenization_kwargs
     )
@@ -91,7 +91,7 @@ def test_compiled_tokenizer___call__(mock_tokenizer, tokenization_kwargs):
 def test_compiled_tokenizer_delegated_methods(
     mock_tokenizer, tokenization_kwargs, delegated_tokenizer_method, method_input
 ):
-    """Checks all delegated tokenizer methods"""
+    """Checks all delegated tokenizer methods."""
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=mock_tokenizer, **tokenization_kwargs
     )
@@ -119,7 +119,7 @@ def test_compiled_tokenizer_delegated_methods(
 def test_compiled_tokenizer_delegated_attributes(
     mock_tokenizer, tokenization_kwargs, delegated_tokenizer_attribute
 ):
-    """Checks all delegated tokenizer attributes"""
+    """Checks all delegated tokenizer attributes."""
     compiled_tokenizer = CompiledTokenizer.from_tokenizer(
         tokenizer=mock_tokenizer, **tokenization_kwargs
     )

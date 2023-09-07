@@ -1,3 +1,5 @@
+"""Torch neuron test."""
+
 # Standard Library
 import os
 from typing import Tuple
@@ -14,6 +16,8 @@ import pytest
 @pytest.mark.core
 @pytest.mark.compilation
 def test_neuron_compile_torch_function(torch_function_input, test_output_dir) -> None:
+    """Test neuron compile torch function."""
+
     def foo(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         return 2 * x + y
 
@@ -28,7 +32,7 @@ def test_neuron_compile_torch_function(torch_function_input, test_output_dir) ->
 
 @pytest.mark.inference
 def test_neuron_inference_torch_function(test_output_dir, torch_function_input):
-
+    """Test neuron inference torch function."""
     traced_foo = torch.jit.load(
         os.path.join(test_output_dir, "compiled_torch_function.pt")
     )
@@ -38,6 +42,8 @@ def test_neuron_inference_torch_function(test_output_dir, torch_function_input):
 @pytest.mark.core
 @pytest.mark.compilation
 def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
+    """Test neuron compile torch graph."""
+
     class Net(torch.nn.Module):
         def __init__(self) -> None:
             super().__init__()
@@ -62,7 +68,7 @@ def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
 
 @pytest.mark.inference
 def test_neuron_inference_torch_graph(test_output_dir, torch_graph_input):
-
+    """Test neuron inference torch graph."""
     neuron_forward = torch.jit.load(
         os.path.join(test_output_dir, "compiled_torch_forward_pass.pt")
     )
@@ -79,7 +85,7 @@ def test_neuron_compile_transformer_nlp_model(
     torch_model_input: Tuple[torch.Tensor, torch.Tensor],
     test_output_dir,
 ) -> None:
-
+    """Test neuron compile transformer NLP model."""
     model = AutoModelForSequenceClassification.from_pretrained(
         torch_model_name, torchscript=True
     )
@@ -98,7 +104,7 @@ def test_neuron_compile_transformer_nlp_model(
 
 @pytest.mark.inference
 def test_neuron_inference_transformer_nlp_model(test_output_dir, torch_model_input):
-
+    """Test neuron inference transformer NLP model."""
     neuron_model_scripted = torch.jit.load(
         os.path.join(
             test_output_dir,

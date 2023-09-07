@@ -1,3 +1,5 @@
+"""Compiled model from model."""
+
 # ML libs
 import torch
 import torch.neuron
@@ -39,6 +41,7 @@ def test_compiled_model_from_model(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled model from model."""
     # compile model including built-in validation on tracing inputs
     kwargs = {
         "batch_size": batch_size,

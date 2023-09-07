@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # 3rd party libraries
 import pytest
 
@@ -7,7 +9,5 @@ from onclusiveml.serving import ServingBaseParams
 
 @pytest.fixture
 def test_serving_base_params_env_prefix():
-    """Importing the ServingBaseParams environment prefix to be used a ground truth for subclasses'
-    environment prefix tests"""
-
+    """Returns the environment prefix of the ServingBaseParams class."""
     return ServingBaseParams.__config__.env_prefix

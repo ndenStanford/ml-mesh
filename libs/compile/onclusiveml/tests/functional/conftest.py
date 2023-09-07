@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # Standard Library
 from typing import List
 
@@ -18,7 +20,7 @@ from onclusiveml.compile.compile_utils import (
 
 @pytest.fixture
 def test_inputs() -> List[str]:
-
+    """Inputs fixture."""
     return [
         "This is an extremely bad and short sample input.",
         "This is a pretty neutral sentence."
@@ -29,7 +31,7 @@ def test_inputs() -> List[str]:
 
 @pytest.fixture
 def test_ner_inputs() -> List[str]:
-
+    """NER inputs fixture."""
     return [
         "My name is Sebastian, I live in London, which is a city in the United Kingdom.",
         "Yesterday I went to Kew Gardens, a public garden in the county of Surrey.",
@@ -39,30 +41,32 @@ def test_ner_inputs() -> List[str]:
 
 @pytest.fixture
 def huggingface_tokenizer(huggingface_model_reference: str):
-
+    """Hugginface tokenizer fixture."""
     return AutoTokenizer.from_pretrained(huggingface_model_reference)
 
 
 @pytest.fixture
 def huggingface_model_max_length(huggingface_tokenizer):
-
+    """Huggingface model max length test."""
     return huggingface_tokenizer.model_max_length
 
 
 @pytest.fixture
 def regression_test_atol():
+    """Regression test atol fixture."""
     return 2.5e-02
 
 
 @pytest.fixture
 def regression_test_rtol():
+    """Regression test rtol fixture."""
     return 1e-02
 
 
 # ---------- compiled tokenizer
 @pytest.fixture
 def custom_tokenization_settings_1():
-
+    """Custom tokenization settings fixture."""
     return {
         "padding": "longest",
         "truncation": False,
@@ -73,7 +77,7 @@ def custom_tokenization_settings_1():
 
 @pytest.fixture
 def custom_tokenization_settings_2():
-
+    """Custom tokenization settings fixture."""
     return {
         "padding": "max_length",
         "truncation": True,
@@ -84,7 +88,7 @@ def custom_tokenization_settings_2():
 
 @pytest.fixture
 def custom_tokenization_settings_3():
-
+    """Custom tokenization settings fixture."""
     return {
         "padding": "do_not_pad",
         "truncation": False,
@@ -95,7 +99,7 @@ def custom_tokenization_settings_3():
 
 @pytest.fixture
 def delegated_tokenizer_methods_w_input():
-
+    """Delegated tokenizer method with input."""
     return (
         (
             DelegatedTokenizerMethods.encode_plus.value,
@@ -118,7 +122,7 @@ def delegated_tokenizer_methods_w_input():
 
 @pytest.fixture
 def delegated_tokenizer_attributes():
-
+    """Delegated tokenizer attributes fixture."""
     return (
         DelegatedTokenizerAttributes.is_fast.value,
         DelegatedTokenizerAttributes._tokenizer.value,
@@ -129,7 +133,7 @@ def delegated_tokenizer_attributes():
 # ---------- compiled model
 @pytest.fixture
 def huggingface_model(huggingface_model_reference: str):
-
+    """Huggingface model fixture."""
     return AutoModel.from_pretrained(huggingface_model_reference)
 
 
@@ -138,13 +142,13 @@ def huggingface_model(huggingface_model_reference: str):
 def huggingface_pipeline(
     huggingface_pipeline_task: str, huggingface_model_reference: str
 ):
-
+    """Pipeline fixture."""
     return pipeline(task=huggingface_pipeline_task, model=huggingface_model_reference)
 
 
 @pytest.fixture
 def delegated_pipeline_attributes():
-
+    """Delegated pipeline fixture."""
     return (
         DelegatedPipelineAttributes.tokenizer.value,
         DelegatedPipelineAttributes.model.value,

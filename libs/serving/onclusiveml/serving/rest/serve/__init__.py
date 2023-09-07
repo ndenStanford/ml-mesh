@@ -1,3 +1,5 @@
+"""Init."""
+
 from onclusiveml.serving.rest.serve.served_model import ServedModel  # noqa: F401
 from onclusiveml.serving.rest.serve.model_server import ModelServer  # noqa: F401
 from onclusiveml.serving.rest.serve.server_models import (  # noqa: F401
@@ -20,4 +22,5 @@ from onclusiveml.serving.rest.serve.params import (  # noqa: F401
     UvicornSettings,
     LogConfigSettings,
     ServingParams,
+    BetterStackSettings,
 )

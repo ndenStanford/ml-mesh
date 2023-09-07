@@ -1,3 +1,5 @@
+"""Download tests."""
+
 # Standard Library
 import os
 import shutil
@@ -31,7 +33,7 @@ def test_download_file_from_model_version(
     file_name,
     file_extension,
 ):
-
+    """Test download file from model version."""
     local_file_path = os.path.join(
         test_file_directory_download,
         f"{file_name}_downloaded.{file_extension}",
@@ -66,7 +68,7 @@ def test_download_directory_from_model_version(
     test_file_directory_download,
     test_file_directory_upload,
 ):
-
+    """Test download model directory from model version."""
     test_model_version.download_directory_from_model_version(
         local_directory_path=test_file_directory_download,
         neptune_attribute_path=f"model/s3_{test_use_s3_backend}/test_file_directory",
@@ -113,7 +115,7 @@ def test_download_config_from_model_version(
     test_model_version_mode,
     test_config_expected,
 ):
-
+    """Tests download model config from model version."""
     test_config_actual = test_model_version.download_config_from_model_version(
         neptune_attribute_path=f"s3_{False}/test_config",
     )
@@ -128,7 +130,7 @@ def test_download_config_from_model_version(
 def test_download_model_card_from_model_version(
     test_model_version, test_model_card_expected
 ):
-
+    """Test download model card from model version."""
     test_model_card_actual = test_model_version.download_config_from_model_version(
         neptune_attribute_path=f"s3_{False}/test_model_card",
     )

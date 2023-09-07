@@ -1,3 +1,5 @@
+"""Compiled tokenizer initialisation test."""
+
 # Standard Library
 import base64
 
@@ -54,8 +56,7 @@ def test_compiled_tokenizer__init(
     expected_tokenization_settings,
     huggingface_model_max_length,
 ):
-    """Checks __init__ call and tokenizer settings value fallback logic"""
-
+    """Checks __init__ call and tokenizer settings value fallback logic."""
     compiled_tokenizer = CompiledTokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )
@@ -92,8 +93,7 @@ def test_compiled_tokenizer__init(
 def test_compiled_tokenizer___call__(
     huggingface_tokenizer, tokenization_kwargs, return_tensors
 ):
-    """Checks tokenizer __call__ method"""
-
+    """Checks tokenizer __call__ method."""
     compiled_tokenizer = CompiledTokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )
@@ -157,7 +157,7 @@ def test_compiled_tokenizer___call__(
 def test_compiled_tokenizer_delegated_methods(
     huggingface_tokenizer, tokenization_kwargs, delegated_tokenizer_method, method_input
 ):
-    """Checks all delegated tokenizer methods"""
+    """Checks all delegated tokenizer methods."""
     compiled_tokenizer = CompiledTokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )
@@ -194,7 +194,7 @@ def test_compiled_tokenizer_delegated_methods(
 def test_compiled_tokenizer_delegated_attributes(
     huggingface_tokenizer, tokenization_kwargs, delegated_tokenizer_attribute
 ):
-    """Checks all delegated tokenizer attributes"""
+    """Checks all delegated tokenizer attributes."""
     compiled_tokenizer = CompiledTokenizer(
         tokenizer=huggingface_tokenizer, **tokenization_kwargs
     )

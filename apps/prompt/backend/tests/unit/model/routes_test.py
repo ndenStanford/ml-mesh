@@ -1,4 +1,4 @@
-"""Test routes"""
+"""Test routes."""
 
 # Standard Library
 import json
@@ -36,6 +36,7 @@ def test_get_models(mock_model_get, test_client):
 @pytest.mark.parametrize("model_name", ["model-1", "model-2", "model-3"])
 @patch.object(ModelSchema, "get")
 def test_get_model(mock_model_get, model_name, test_client):
+    """Test get model."""
     parameters = json.dumps(
         {
             "max_tokens": settings.OPENAI_MAX_TOKENS,

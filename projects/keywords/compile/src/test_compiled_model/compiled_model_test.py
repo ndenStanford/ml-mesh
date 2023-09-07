@@ -1,3 +1,5 @@
+"""Compile model test."""
+
 # Standard Library
 import json
 from typing import List, Tuple
@@ -8,7 +10,7 @@ import pytest
 
 
 def to_dataframe(extracted_keywords: List[Tuple[str, float]]) -> pd.DataFrame:
-
+    """Keywords to dataframe."""
     df = pd.DataFrame(extracted_keywords, columns=["keyword", "score"])
     df_sorted = df.sort_values(by="keyword", ascending=True).reset_index(drop=True)
 
@@ -17,7 +19,7 @@ def to_dataframe(extracted_keywords: List[Tuple[str, float]]) -> pd.DataFrame:
 
 @pytest.mark.order(1)
 @pytest.mark.parametrize("test_sample_index", [0, 1, 2])
-def compiled_model_regression_test(  # type: ignore[no-untyped-def]
+def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
     io_settings,
     compiled_keybert,
@@ -25,7 +27,7 @@ def compiled_model_regression_test(  # type: ignore[no-untyped-def]
     test_sample_index,
     compilation_test_settings,
 ):
-
+    """Compiled model regression test."""
     compiled_predictions = compiled_keybert.extract_keywords(
         test_files["inputs"][test_sample_index], **test_files["inference_params"]
     )[0]

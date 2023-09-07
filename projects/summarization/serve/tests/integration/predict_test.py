@@ -1,4 +1,4 @@
-# """Test predict."""
+"""Test predict."""
 
 # 3rd party libraries
 import pytest
@@ -16,8 +16,9 @@ input = (
 
 @pytest.mark.parametrize("input", input)
 class TestParametrized:
+    """Test paramterized."""
+
     def test_turbo(self, test_client, input):
-        print("$" * 10)
         """Test prediction endpoint."""
         response = test_client.post(
             "/v1/summarization/gpt3/predict",
@@ -56,8 +57,9 @@ class TestParametrized:
 
 @pytest.mark.parametrize("input", input)
 class TestParametrizedCrossLingual:
+    """Test parametrized cross lingual prediction."""
+
     def test_turbo(self, test_client, input):
-        print("$" * 10)
         """Test prediction endpoint."""
         response = test_client.post(
             "/v1/summarization/gpt3/predict/fr",

@@ -1,3 +1,5 @@
+"""Tracked model specs test."""
+
 # Standard Library
 import os
 
@@ -14,7 +16,7 @@ from onclusiveml.tracking.tracked_model_utils import TrackedModelSpecs
     [("a", "b", "c"), ("some project", "some model", "some token")],
 )
 def test_from_env(project, model, api_token):
-
+    """Test getting parameters from environment variable."""
     for env_name, env_val in (
         ("neptune_project", project),
         ("neptune_model_id", model),
@@ -38,13 +40,13 @@ def test_from_env(project, model, api_token):
 
 
 def test_from_empty_env_raise_error():
-
+    """Test from empty env raises error."""
     with pytest.raises(ValidationError):
         TrackedModelSpecs()
 
 
 def test_to_dict_raise():
-
+    """Test to_dict method with error raised."""
     test_specs = TrackedModelSpecs(project="a", model="b", api_token="secret_token")
     test_specs_dict = test_specs.dict()
 
