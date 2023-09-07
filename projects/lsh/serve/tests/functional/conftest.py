@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # Standard Library
 import json
 from typing import List
@@ -15,9 +17,11 @@ from src.serve.server_models import BioResponseModel, PredictResponseModel
 
 @pytest.fixture
 def test_client():
-    """Client-like session with base url to avoid duplication, as per
-    https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession"""
+    """Client-like session with base url to avoid duplication.
 
+    References:
+        https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession
+    """
     serving_params = ServingParams()
     model_server_port = serving_params.uvicorn_settings.http_port
     test_model_server_url = f"http://serve:{model_server_port}"
@@ -27,13 +31,13 @@ def test_client():
 
 @pytest.fixture
 def test_model_name() -> str:
-
+    """Model name fixture."""
     return "lsh"
 
 
 @pytest.fixture
 def test_inference_params(test_served_model_artifacts):
-
+    """Test loading inference parameters."""
     with open(test_served_model_artifacts.inference_params_test_file, "r") as json_file:
         test_inference_params = json.load(json_file)
 
@@ -42,11 +46,13 @@ def test_inference_params(test_served_model_artifacts):
 
 @pytest.fixture
 def test_predict_input() -> str:
+    """Test predict input."""
     return "Call functions to generate hash signatures for each article"
 
 
 @pytest.fixture
 def test_expected_predict_output() -> List[str]:
+    """Predicted response model fixture."""
     return PredictResponseModel(
         signature=[
             "AAAAAD7VrJYAAAAAUtj2YwAAAABnUo5LAAAAAKEQ6osAAAAAGN7zAQAAAACvI05uAAAAAP5T14M=",
@@ -73,5 +79,5 @@ def test_expected_predict_output() -> List[str]:
 
 @pytest.fixture
 def test_expected_bio_output(test_model_name):
-
+    """Test bio output."""
     return BioResponseModel(model_name=test_model_name)

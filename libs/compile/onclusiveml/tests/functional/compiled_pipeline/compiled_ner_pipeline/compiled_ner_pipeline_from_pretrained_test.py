@@ -1,3 +1,5 @@
+"""Compiled NER pipeline from pretrained test."""
+
 # Standard Library
 import shutil
 from typing import Dict, List
@@ -45,6 +47,7 @@ def test_compiled_token_classification_pipeline_from_pretrained(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled token classification pipeline from pretrained."""
     # create new pipeline using compiled versions of tokenizer and model
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,

@@ -1,3 +1,5 @@
+"""Upload utils tests."""
+
 # Standard Library
 import os
 
@@ -29,6 +31,8 @@ def test_capture_directory_for_upload(
     neptune_attribute_path,
     test_captured_directories_for_upload_expected,
 ):
+    """Text capture directory for upload."""
+
     def mock_walk(local_directory_path, topdown):
         return test_directory
 

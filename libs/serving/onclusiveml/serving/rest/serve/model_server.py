@@ -1,3 +1,5 @@
+"""Model server."""
+
 # Standard Library
 from typing import Any, Optional
 
@@ -18,10 +20,12 @@ from onclusiveml.serving.rest.serve.server_utils import (
 
 
 class ModelServer(FastAPI):
-    """An enhanced FastAPI class with the ability to serve itself using a specified uvicorn
-    configuration.
+    """Model serving class.
 
-    Also includes readiness and liveness probe utilities and ServedModel integration."""
+    An enhanced FastAPI class with the ability to serve itself using a specified uvicorn
+    configuration.
+    Also includes readiness and liveness probe utilities and ServedModel integration.
+    """
 
     def __init__(
         self,
@@ -30,7 +34,6 @@ class ModelServer(FastAPI):
         *args: Any,
         **kwargs: Any,
     ):
-
         self.configuration = configuration
         self.model = model
         # if model is specified, ensure model loads are done in individual worker processes by
@@ -59,7 +62,10 @@ class ModelServer(FastAPI):
         # add default K8s liveness probe endpoint if desired
         if configuration.add_liveness:
             self.include_router(
-                get_liveness_router(api_version=configuration.api_version)
+                get_liveness_router(
+                    api_version=configuration.api_version,
+                    betterstack_settings=configuration.betterstack_settings,
+                )
             )
         # add default K8s readiness probe endpoint if desired
         if configuration.add_readiness:
@@ -91,9 +97,10 @@ class ModelServer(FastAPI):
 
     def generate_uvicorn_config(self) -> uvicorn.Config:
         """Utility for generating and attaching a uvicorn configuration.
-        Sources its parameters from the `configuration` arugment specified during initialization
-        of the RESTApp instance."""
 
+        Sources its parameters from the `configuration` arugment specified during initialization
+        of the RESTApp instance.
+        """
         self.uvicorn_configuration = uvicorn.Config(
             app=self,
             host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",

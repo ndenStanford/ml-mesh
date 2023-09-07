@@ -5,7 +5,7 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:$IMAGE
 
 ARG IMAGE_NAME
 
-ENV HOME="docker/${IMAGE_NAME}"
+ENV HOME="/home/${NB_USER}"
 
 
 # set shell to bash
@@ -18,7 +18,7 @@ USER ${NB_UID}
 WORKDIR "/"
 
 # install - poetry requirements
-COPY --chown=${NB_USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+COPY --chown=${NB_USER}:users docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
 
 WORKDIR "${HOME}"
 

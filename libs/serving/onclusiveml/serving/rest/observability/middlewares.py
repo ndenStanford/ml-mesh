@@ -1,3 +1,5 @@
+"""Middlewares."""
+
 # Standard Library
 import time
 
@@ -25,8 +27,7 @@ from onclusiveml.serving.rest.observability.utils import get_path
 
 
 class PrometheusMiddleware(BaseHTTPMiddleware):
-    """A middleware class for monitoring HTTP requests and responses
-       using Prometheus.
+    """A middleware class for monitoring HTTP requests and responses using Prometheus.
 
     Args:
         app (ASGIApp): The ASGI application instance.
@@ -38,8 +39,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp, app_name: str = "fastapi-app") -> None:
-        """Initialize the PrometheusMiddleware with the ASGI application
-           instance andan optional app name.
+        """Initialize the PrometheusMiddleware with the ASGI application.
 
         Args:
             app (ASGIApp): The ASGI application instance.

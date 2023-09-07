@@ -55,6 +55,7 @@ repos                   :
     hooks:
       - id: flake8
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
+        exclude: ^libs/serving/onclusiveml/serving/rest/serve/server_utils\.py$
 
   # static type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -63,10 +64,11 @@ repos                   :
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude:
-          ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py|projects/summarization/serve/src/_init.py|projects/summarization/serve/src/routes/health.py|projects/summarization/serve/src/predict/summarization.py|projects/keywords/compile/src/test_compiled_model/conftest.py)
+          ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py|projects/summarization/serve/src/_init.py|projects/summarization/serve/src/routes/health.py|projects/summarization/serve/src/predict/summarization.py|projects/keywords/compile/src/test_compiled_model/conftest.py|projects/ner/compile/src/test_compiled_model/conftest.py|projects/sentiment/compile/src/test_compiled_model/conftest.py)
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
+        additional_dependencies: ['types-requests']
 
   # isort
   - repo: https://github.com/pycqa/isort
@@ -74,6 +76,18 @@ repos                   :
     hooks:
       - id: isort
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
+
+  # docstring
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args:
+          - --convention=google
+          - --count
+          - --add-ignore=D105,D106,D107,D203
+        additional_dependencies: [toml, tomli]
+        exclude: ^(bin/)
 
   # =================================
   # DOCKER

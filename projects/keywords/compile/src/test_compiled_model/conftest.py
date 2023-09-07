@@ -1,3 +1,5 @@
+"""Conftest."""
+
 # Standard Library
 import json
 from typing import Dict
@@ -15,19 +17,19 @@ from src.settings import CompilationTestSettings, IOSettings
 
 @pytest.fixture
 def io_settings():
-
+    """IO settings fixture."""
     return IOSettings()
 
 
 @pytest.fixture
 def compilation_test_settings():
-
+    """Compilation test settings fixture."""
     return CompilationTestSettings()
 
 
 @pytest.fixture()
 def logger(io_settings):
-
+    """Logger settings fixture."""
     return get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
@@ -35,6 +37,7 @@ def logger(io_settings):
 
 @pytest.fixture
 def compiled_keybert(io_settings):
+    """Compiled keybert fixture."""
     # load compiled keybert from previous workflow component
     compiled_keybert = CompiledKeyBERT.from_pretrained(
         io_settings.compile.model_directory
@@ -45,6 +48,7 @@ def compiled_keybert(io_settings):
 
 @pytest.fixture
 def test_files(io_settings) -> Dict:
+    """Test files fixtures."""
     # get test files & load directly into dict
     test_files = io_settings.download.test_files.copy()
     # 'inputs', 'inference_params' & 'predictions'
@@ -59,11 +63,11 @@ def test_files(io_settings) -> Dict:
 
 @pytest.fixture
 def indexed_test_input(test_files, test_sample_index: int):
-
+    """Indexed test inputs fixture."""
     return test_files["inputs"][test_sample_index]
 
 
 @pytest.fixture
 def indexed_test_expected_prediction(test_files, test_sample_index: int):
-
+    """Indexed test expected prediction fixture."""
     return test_files["prediction"][test_sample_index]

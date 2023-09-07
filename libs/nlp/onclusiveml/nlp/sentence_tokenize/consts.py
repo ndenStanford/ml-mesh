@@ -1,12 +1,11 @@
-""" Constants """
+"""Constants."""
 
 # 3rd party libraries
 from pydantic import BaseModel
 
 
 class SpecialCharacter(BaseModel):
-    """
-    Class to represent special characters
+    """Class to represent special characters.
 
     Args:
         char (str): character

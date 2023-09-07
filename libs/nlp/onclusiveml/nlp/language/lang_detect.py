@@ -16,8 +16,7 @@ from onclusiveml.nlp.language.lang_exception import (
 
 
 def detect_language(content: str, language: Optional[str] = None) -> LanguageIso:
-    """
-    Detects language of given content
+    """Detects language of given content.
 
     Args:
         content (str): Content for which langugage needs to be detected
@@ -37,11 +36,11 @@ def detect_language(content: str, language: Optional[str] = None) -> LanguageIso
 def filter_language(
     supported_languages: List[LanguageIso], raise_if_none: Optional[bool] = True
 ) -> Callable:
-    """
-    Decorator that filters supported language for a given function
+    """Decorator that filters supported language for a given function.
 
     Args:
         supported_languages (List[LanguageIso]): List of supported languages
+        raise_if_none (bool): raises error if language is not supported
     Returns:
         Callable: callable
 
@@ -51,14 +50,11 @@ def filter_language(
             ...
         The decorated function "some_function" will only be executed if the detected
             language is supported
-
     """
 
     def decorator(func: Callable) -> Callable:
         def wrapper(content: str, language: Optional[str] = None) -> Any:
-            """
-            Wrapper function that filters the supported languages before executing
-                decorated function
+            """Wrapper function that filters the supported languages before executing decorated function.
 
             Args:
                 content (str): Content for which langugage needs to be detected

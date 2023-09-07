@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import os
 from typing import List
@@ -12,6 +14,8 @@ from onclusiveml.tracking import (
 
 # --- settings classes
 class TrackedNERModelSpecs(TrackedModelSpecs):
+    """Tracked NER model specs."""
+
     project: str = "onclusive/ner"
     model = "NER-TRAINED"
 
@@ -21,6 +25,7 @@ class TrackedNERModelSpecs(TrackedModelSpecs):
 
 
 class Inputs(TrackedParams):
+    """Inputs."""
 
     sample_documents: List[str] = [""]
 
@@ -30,12 +35,16 @@ class Inputs(TrackedParams):
 
 
 class NERSettings(TrackedParams):
+    """NER settings."""
+
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
 class NERModelParams(TrackedParams):
+    """Ner model settings."""
+
     huggingface_pipeline_task: str = "token-classification"
     huggingface_model_reference: str = "dslim/bert-base-NER"
 

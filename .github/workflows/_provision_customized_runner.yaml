@@ -142,6 +142,7 @@ jobs:
           echo "Installing docker compose"
           sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
+          sudo yum list docker-ce --showduplicates
           sudo yum install -y docker-compose-plugin jq
           echo "Configuring docker dir to mounted EBS volume"
           sudo touch /etc/docker/daemon.json
