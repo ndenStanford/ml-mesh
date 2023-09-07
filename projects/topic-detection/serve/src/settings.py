@@ -9,6 +9,7 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
+    """API configuration."""
 
     API_NAME: str = "Topic detection"
     # API description
