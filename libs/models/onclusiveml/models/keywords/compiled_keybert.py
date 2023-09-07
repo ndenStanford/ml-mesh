@@ -1,3 +1,5 @@
+"""Compiled keybert."""
+
 # Standard Library
 import os
 from pathlib import Path
@@ -23,8 +25,9 @@ from onclusiveml.models.keywords import CustomHFTransformerBackend
 
 
 class CompiledKeyBERT(KeyBERT):
+    """Keybert compile model class.
 
-    """Compilation wrapper around the KeyBERT to provide support for two compiled backends that
+    Compilation wrapper around the KeyBERT to provide support for two compiled backends that
     are exclusively used for document and keywords/seed words embeddings, respectively.
 
     Uses custom CompiledHFTransformerBackend instances, which are in turn using ml_compile's
@@ -36,8 +39,11 @@ class CompiledKeyBERT(KeyBERT):
         document_pipeline: CompiledPipeline,
         compiled_word_pipeline: Union[CompiledPipeline, Pipeline],
     ):
-        """Updated constructor to support initialization and attaching of two, not one, backend of
-            type CustomHFTransformerBackend:
+        """Constructor.
+
+        Updated constructor to support initialization and attaching of two, not one,
+        backend of type CustomHFTransformerBackend:
+
             - `document_backend`; to be used do embed documents, and
             - `compiled_word_backend`; to be used to embed keywords and seeded keywords (if
                 applicable)
@@ -50,24 +56,18 @@ class CompiledKeyBERT(KeyBERT):
             compiled_word_pipeline (CompiledPipeline): A pipeline that has been compiled to embed
                 keywords of token sequence lengths no more than 25. Only (neuron) compiled
                 pipelines are supported here as they provide a speed up of 3x - 4x.
-
-        Args:
-            copmiled_document_pipeline (CompiledPipeline): A pipeline that has been compiled to
-                embed entire documents.
-            compiled_word_pipeline (CompiledPipeline): A pipeline that has been compiled
-                to embed keywords of lengths no more than 10.
         """
-
         self.document_backend = CustomHFTransformerBackend(document_pipeline)
         self.compiled_word_backend = CustomHFTransformerBackend(compiled_word_pipeline)
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
-        """Canonic huggingface transformers export method. Only supports exporting to local file
-        system.
+        """Canonic huggingface transformers export method.
+
+        Only supports exporting to local file system.
 
         Args:
-            directory (Path,str): Directory on local file system to export model artifact to. Will
-                be created if it doesnt exist.
+            directory (Union[Path, str]): Directory on local file system to export model
+                artifact to. Will be created if it doesn't exist.
         """
         # since document pipelines are supported in both compiled and uncompiled formats, we use
         # different subdirectories during export to be able to disambiguate at import time
@@ -88,12 +88,13 @@ class CompiledKeyBERT(KeyBERT):
 
     @classmethod
     def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledKeyBERT":
-        """Canonic huggingface transformers import method. Only supports importing from local file
-        system.
+        """Canonic huggingface transformers import method. Only supports importing \
+        from local file system.
 
         Args:
-            directory (Path,str): Directory on local file system to import model artifact from."""
-
+            directory (Union[Path, str]): Directory on local file system to import model
+                artifact from.
+        """
         compiled_word_pipeline = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_word_pipeline")
         )
@@ -131,10 +132,13 @@ class CompiledKeyBERT(KeyBERT):
         doc_embeddings: np.array = None,
         word_embeddings: np.array = None,
     ) -> Union[List[Tuple[str, float]], List[List[Tuple[str, float]]]]:
-        """Extract keywords and/or keyphrases
+        """Extract keywords and/or keyphrases.
+
         To get the biggest speed-up, make sure to pass multiple documents
         at once instead of iterating over a single document.
+
         Arguments:
+
             docs: The document(s) for which to extract keywords/keyphrases
             candidates: Candidate keywords/keyphrases to use instead of extracting them from the
                 document(s)
@@ -173,22 +177,23 @@ class CompiledKeyBERT(KeyBERT):
                              NOTE: The `word_embeddings` should be generated through
                              `.extract_embeddings` as the order of these embeddings depend
                              on the vectorizer that was used to generate its vocabulary.
+
         Returns:
             keywords: The top n keywords for a document with their respective distances
                       to the input document.
         Usage:
-        To extract keywords from a single document:
-        ```python
-        from keybert import KeyBERT
-        kw_model = KeyBERT()
-        keywords = kw_model.extract_keywords(doc)
-        ```
-        To extract keywords from multiple documents, which is typically quite a bit faster:
-        ```python
-        from keybert import KeyBERT
-        kw_model = KeyBERT()
-        keywords = kw_model.extract_keywords(docs)
-        ```
+
+            To extract keywords from a single document:
+
+            >>> from keybert import KeyBERT
+            >>> kw_model = KeyBERT()
+            >>> keywords = kw_model.extract_keywords(doc)
+
+            To extract keywords from multiple documents, which is typically quite a bit faster:
+
+            >>> from keybert import KeyBERT
+            >>> kw_model = KeyBERT()
+            >>> keywords = kw_model.extract_keywords(docs)
         """
         # Check for a single, empty document
         if isinstance(docs, str):
@@ -308,12 +313,14 @@ class CompiledKeyBERT(KeyBERT):
         min_df: int = 1,
         vectorizer: CountVectorizer = None,
     ) -> Tuple[Any, Any]:
-        """Extract document and word embeddings for the input documents and the
+        """Extract document and word embeddings for the input documents and the \
         generated candidate keywords/keyphrases respectively.
+
         Note that all potential keywords/keyphrases are not returned but only their
         word embeddings. This means that the values of `candidates`, `keyphrase_ngram_range`,
         `stop_words`, and `min_df` need to be the same between using `.extract_embeddings` and
         `.extract_keywords`.
+
         Arguments:
             docs: The document(s) for which to extract keywords/keyphrases
             candidates: Candidate keywords/keyphrases to use instead of extracting them from the
@@ -336,18 +343,18 @@ class CompiledKeyBERT(KeyBERT):
                 the order of these embeddings depend on the vectorizer that was used to generate
                 its vocabulary.
         Usage:
-        To generate the word and document embeddings from a set of documents:
-        ```python
-        from keybert import KeyBERT
-        kw_model = KeyBERT()
-        doc_embeddings, word_embeddings = kw_model.extract_embeddings(docs)
-        ```
-        You can then use these embeddings and pass them to `.extract_keywords` to speed up the
-            tuning the model:
-        ```python
-        keywords = kw_model.extract_keywords(docs, doc_embeddings=doc_embeddings,
-        word_embeddings=word_embeddings)
-        ```
+
+            To generate the word and document embeddings from a set of documents:
+
+            >>> from keybert import KeyBERT
+            >>> kw_model = KeyBERT()
+            >>> doc_embeddings, word_embeddings = kw_model.extract_embeddings(docs)
+
+            You can then use these embeddings and pass them to `.extract_keywords` to speed up the
+                tuning the model:
+
+            >>> keywords = kw_model.extract_keywords(docs, doc_embeddings=doc_embeddings,
+            >>> word_embeddings=word_embeddings)
         """
         # Check for a single, empty document
         if isinstance(docs, str):

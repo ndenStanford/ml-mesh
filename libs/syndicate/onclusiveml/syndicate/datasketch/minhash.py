@@ -1,3 +1,5 @@
+"""Minhash."""
+
 # Standard Library
 import copy
 import warnings
@@ -19,8 +21,9 @@ _hash_range = 1 << 32
 
 
 class MinHash(object):
-    """MinHash is a probabilistic data structure for computing
-    `Jaccard similarity`_ between sets.
+    """This class implements the Minhash algorithm.
+
+    MinHash is a probabilistic data structure for computing`Jaccard similarity`_ between sets.
 
     Args:
         num_perm (int, optional): Number of random permutation functions.
@@ -106,13 +109,11 @@ class MinHash(object):
             raise ValueError("Numbers of hash values and permutations mismatch")
 
     def _init_hashvalues(self, num_perm: int) -> np.ndarray:
-        """
-        Initialize hash values for the MinHash."""
+        """Initialize hash values for the MinHash class."""
         return np.ones(num_perm, dtype=np.uint64) * _max_hash
 
     def _init_permutations(self, num_perm: int) -> np.ndarray:
-        """
-        Initialize permutation function parameters for the MinHash."""
+        """Initialize permutation function parameters for the MinHash."""
         gen = np.random.RandomState(self.seed)
         return np.array(
             [
@@ -126,12 +127,11 @@ class MinHash(object):
         ).T
 
     def _parse_hashvalues(self, hashvalues: Union[List[int], np.ndarray]) -> np.ndarray:
-        """
-        Parse the given hash values and convert them into a numpy array of uint64 data type."""
+        """Parse the given hash values and convert them into a numpy array of uint64 data type."""
         return np.array(hashvalues, dtype=np.uint64)
 
     def update(self, b: bytes) -> None:
-
+        """Updates minash values."""
         hv = self.hashfunc(b)
         a, b = self.permutations
         phv = np.bitwise_and((a * hv + b) % _mersenne_prime, _max_hash)
@@ -139,8 +139,10 @@ class MinHash(object):
 
     def update_batch(self, b: List[bytes]) -> None:
         """Update this MinHash with new values.
+
         The values will be hashed using the hash function specified by
-        the `hashfunc` argument in the constructor."""
+        the `hashfunc` argument in the constructor.
+        """
         hv = np.array([self.hashfunc(_b) for _b in b], dtype=np.uint64)
         a, b = self.permutations
         phv = np.bitwise_and(
@@ -149,8 +151,11 @@ class MinHash(object):
         self.hashvalues = np.vstack([phv, self.hashvalues]).min(axis=0)
 
     def jaccard(self, other: Any) -> float:
-        """Estimate the `Jaccard similarity`_ (resemblance) between the sets
-        represented by this MinHash and the other."""
+        """Jaccard similarity.
+
+        Estimate the `Jaccard similarity`_ (resemblance) between the sets
+        represented by this MinHash and the other.
+        """
         if other.seed != self.seed:
             raise ValueError(
                 "Cannot compute Jaccard given MinHash with different seeds"
@@ -179,8 +184,7 @@ class MinHash(object):
         self.hashvalues = np.minimum(other.hashvalues, self.hashvalues)
 
     def digest(self) -> np.ndarray:
-        """
-        Export the hash values, which is the internal state of the MinHash.
+        """Export the hash values, which is the internal state of the MinHash.
 
         Returns:
             numpy.ndarray: The hash values represented as a Numpy array.
@@ -188,8 +192,7 @@ class MinHash(object):
         return copy.copy(self.hashvalues)
 
     def is_empty(self) -> bool:
-        """
-        Check if the current MinHash is empty, at the state of just initialized.
+        """Check if the current MinHash is empty, at the state of just initialized.
 
         Returns:
             bool: True if the current MinHash is empty, False otherwise.
@@ -199,14 +202,15 @@ class MinHash(object):
         return True
 
     def clear(self) -> None:
-        """
-        Clear the current state of the MinHash.
+        """Clear the current state of the MinHash.
+
         All hash values are reset to their initial state.
         """
         self.hashvalues = self._init_hashvalues(len(self))
 
     def copy(self) -> Any:
-        """
+        """Deepcopy.
+
         Returns:
             datasketch.MinHash: A copy of this MinHash by exporting its state.
         """
@@ -218,14 +222,9 @@ class MinHash(object):
         )
 
     def __len__(self) -> int:
-        """
-        Returns:
-            int: The number of hash values.
-        """
         return len(self.hashvalues)
 
     def __eq__(self, other: Any) -> bool:
-        """Returns: bool: If their seeds and hash values are both equal: two are equivalent."""
         return (
             type(self) is type(other)  # noqa
             and self.seed == other.seed  # noqa

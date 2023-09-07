@@ -1,3 +1,5 @@
+"""Compiled neuron test."""
+
 # Standard Library
 import os
 
@@ -30,7 +32,7 @@ from onclusiveml.compile import CompiledModel, CompiledPipeline
 def test_create_and_save_neuron_compiled_model(
     huggingface_model_reference, huggingface_model_type, test_output_dir, export_handle
 ) -> None:
-
+    """Test create and save compiled model."""
     huggingface_model = huggingface_model_type.from_pretrained(
         huggingface_model_reference
     )
@@ -56,7 +58,7 @@ def test_create_and_save_neuron_compiled_model(
     ],
 )
 def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir):
-
+    """Test load and score neuron compiled model."""
     neuron_compiled_model = CompiledModel.from_pretrained(
         os.path.join(test_output_dir, export_handle)
     )
@@ -90,7 +92,7 @@ def test_load_and_score_neuron_compiled_model(export_handle, test_output_dir):
 def test_create_and_save_neuron_compiled_pipeline(
     huggingface_model_reference, huggingface_pipeline_task, test_output_dir
 ):
-
+    """Test create and save compiled pipeline."""
     huggingface_pipeline = pipeline(
         task=huggingface_pipeline_task, model=huggingface_model_reference
     )
@@ -115,7 +117,7 @@ def test_create_and_save_neuron_compiled_pipeline(
 def test_load_and_score_neuron_compiled_pipeline(
     huggingface_pipeline_task, test_output_dir, torch_model_text_input
 ):
-
+    """Test load and score neuron compiled pipeline."""
     neuron_compiled_pipeline = CompiledPipeline.from_pretrained(
         os.path.join(test_output_dir, huggingface_pipeline_task)
     )

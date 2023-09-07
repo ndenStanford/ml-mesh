@@ -11,6 +11,8 @@ from src.schemas.type_dict import EntityDictInput
 
 
 class Request(BaseModel):
+    """Request schema."""
+
     content: str
     entities: Optional[List[EntityDictInput]] = None
     lang: str = "en"

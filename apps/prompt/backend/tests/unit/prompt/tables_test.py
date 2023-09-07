@@ -14,6 +14,7 @@ def test_base_table():
         "alias",
         "created_at",
         "id",
+        "parameters",
         "template",
         "version",
     ]

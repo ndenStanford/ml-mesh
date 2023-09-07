@@ -20,7 +20,7 @@ def init() -> None:
 
 
 def _setup_prompts() -> None:
-    """Setup prompts"""
+    """Setup prompts."""
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
     for input_lang, target_lang_dict in settings.PROMPT_DICT.items():

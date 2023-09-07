@@ -25,8 +25,7 @@ def _retry(
     jitter: Union[float, Tuple[float]] = 0,
     logger: logging.Logger = logger,
 ) -> Any:
-    """
-    Calls a method and retries if the call raises an exception.
+    """Calls a method and retries if the call raises an exception.
 
     Args:
 

@@ -9,6 +9,7 @@ from onclusiveml.core.decorator import decorator
 
 @decorator
 def print_decorator(f: Callable, *fargs: Any) -> Callable:
+    """Decorator test."""
     args = fargs if fargs else list()
 
     def g(*args):
