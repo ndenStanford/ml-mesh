@@ -1,3 +1,5 @@
+"""Hashing functions."""
+
 # Standard Library
 import hashlib
 import struct

@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "sentiment-train"
+version = "0.1.0"
+description = "Docker image for registering model for named entity recognition"
+authors = ["Nutch <nutch.den@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+tracking = {path = "../../../libs/tracking"}
+models = {path = "../../../libs/models"}
+sentencepiece = "^0.1.99"
+protobuf = "^3.20"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

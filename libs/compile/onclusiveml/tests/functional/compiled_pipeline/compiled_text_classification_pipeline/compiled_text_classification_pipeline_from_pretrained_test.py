@@ -1,3 +1,5 @@
+"""Compiled text classification from pretrained test."""
+
 # Standard Library
 import shutil
 from typing import List, Tuple
@@ -44,7 +46,7 @@ def test_compiled_text_classification_pipeline_from_pretrained(
     regression_test_atol,
     regression_test_rtol,
 ):
-
+    """Test compiled text classification pipeline."""
     compiled_pipeline = CompiledPipeline.from_pipeline(
         huggingface_pipeline,
         max_length=max_length,

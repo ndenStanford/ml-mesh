@@ -1,3 +1,5 @@
+"""Logging."""
+
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.logging.constants import DEFAULT_LOGGING_HANDLER

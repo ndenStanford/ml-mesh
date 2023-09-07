@@ -2,13 +2,16 @@
 
 ## MLOPs Own all the things
 
-* @airpr/mlops-engineers @RonsenbergVI @SebastianScherer88
+* @airpr/mlops-engineers @RonsenbergVI @SebastianScherer88 @weshallsin @meganeinu7
 
-/libs @airpr/mlops-engineers
-/libs/compile @SebastianScherer88
-/libs/models @SebastianScherer88
-/libs/serving @SebastianScherer88
-/libs/tracking @SebastianScherer88
+# github actions
+
+/.github @RonsenbergVI @SebastianScherer88 @weshallsin @meganeinu7
+
+
+# libraries
+
+/libs @SebastianScherer88 @weshallsin @meganeinu7 @RonsenbergVI @ndenStanford
 
 ## MLE owns the project implementation
 

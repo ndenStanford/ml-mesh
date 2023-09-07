@@ -1,4 +1,4 @@
-"""Test routes"""
+"""Test routes."""
 
 # Standard Library
 import datetime
@@ -60,6 +60,11 @@ def test_get_prompt(mock_prompt_get, alias, test_client):
         "created_at": "2022-11-02T08:34:01",
         "template": "test template",
         "id": None,
+        "parameters": {
+            "max_tokens": 512,
+            "model_name": "gpt-3.5-turbo",
+            "temperature": 0.7,
+        },
         "variables": [],
         "version": 0,
     }
@@ -99,6 +104,110 @@ def test_create_prompt(mock_prompt_get, mock_table_save, template, alias, test_c
 
 
 @pytest.mark.parametrize(
+    "template, alias, parameters",
+    [
+        (
+            "Tell me a joke in {language}",
+            "joke-in-different-language",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 123,
+                "temperature": 0.3,
+            },
+        ),
+    ],
+)
+@patch("src.db.Model.save")
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt_with_parameters(
+    mock_prompt_get, mock_table_save, template, alias, parameters, test_client
+):
+    """Test get prompt endpoint."""
+    mock_prompt_get.return_value = None
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        json=parameters,
+        headers={"x-api-key": "1234"},
+    )
+
+    mock_table_save.assert_called_once()
+
+    assert response.status_code == status.HTTP_201_CREATED
+    data = response.json()
+
+    assert isinstance(data["id"], str)
+    assert isinstance(data["created_at"], str)
+    assert isinstance(data["template"], str)
+    assert isinstance(data["alias"], str)
+    assert isinstance(data["version"], int)
+    assert isinstance(data["parameters"], dict)
+    assert data["parameters"] == parameters
+    assert data["version"] == 0
+
+
+@pytest.mark.parametrize(
+    "expected, parameters",
+    [
+        (
+            "gpt-5 is not supported",
+            {
+                "model_name": "gpt-5",
+                "max_tokens": 123,
+                "temperature": 0.3,
+            },
+        ),
+        (
+            "Parameter max_tokens must be between 1 and 8192 for model gpt-4",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 999999,
+                "temperature": 0.3,
+            },
+        ),
+        (
+            "Parameter max_tokens must be between 1 and 8192 for model gpt-4",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": -1,
+                "temperature": 0.3,
+            },
+        ),
+        (
+            "Temperature must be between 0.0 and 1.0",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": "",
+                "temperature": 3,
+            },
+        ),
+        (  # This is a test to see if default values are used for missing attributes
+            "Parameter max_tokens must be between 1 and 4098 for model gpt-3.5-turbo",
+            {
+                "max_tokens": 4099,
+                "temperature": 3,
+            },
+        ),
+    ],
+)
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt_with_parameters_fail(
+    mock_prompt_get, expected, parameters, test_client
+):
+    """Test get prompt endpoint."""
+    mock_prompt_get.return_value = None
+    template = "test template"
+    alias = "test-alias"
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias={alias}",
+        json=parameters,
+        headers={"x-api-key": "1234"},
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    data = response.json()
+    assert data["detail"] == expected
+
+
+@pytest.mark.parametrize(
     "template, alias, slugified_alias",
     [
         ("I want you to act like {character} from {series}.", "alias 1", "alias-1"),
@@ -132,26 +241,38 @@ def test_create_prompt_same_alias(
 
 
 @pytest.mark.parametrize(
-    "id, template, alias, update",
+    "id, template, alias, parameters, update, expected_params",
     [
         (
             53463,
             "Quiero un breve resumen de dos líneas de este texto: {text}",
             "alias1",
+            {},
             "I would like a brief two-line summary of this text: {text}",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
         ),
         (
             "874285",
             "Quel est le framework {type} le plus populaire?",
             "alias2",
+            {},
             "What's the most popular {type} framework?",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
         ),
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
 @patch("src.prompt.schemas.PromptTemplateSchema.update")
 def test_update_prompt(
-    mock_prompt_update, mock_prompt_get, id, template, alias, update, test_client
+    mock_prompt_update,
+    mock_prompt_get,
+    id,
+    template,
+    alias,
+    parameters,
+    update,
+    expected_params,
+    test_client,
 ):
     """Test update prompt endpoint."""
     mock_prompt_get.return_value = [
@@ -167,6 +288,60 @@ def test_update_prompt(
         "alias": alias,
         "created_at": None,
         "id": f"{id}",
+        "parameters": expected_params,
+        "template": template,
+        "version": 0,
+    }
+
+
+@pytest.mark.parametrize(
+    "id, template, alias, update, update_parameters",
+    [
+        (
+            53463,
+            "Quiero un breve resumen de dos líneas de este texto: {text}",
+            "alias1",
+            "I would like a brief two-line summary of this text: {text}",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+        ),
+        (
+            "874285",
+            "Quel est le framework {type} le plus populaire?",
+            "alias2",
+            "What's the most popular {type} framework?",
+            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+        ),
+    ],
+)
+@patch.object(PromptTemplateSchema, "get")
+@patch("src.prompt.schemas.PromptTemplateSchema.update")
+def test_update_prompt_parameters(
+    mock_prompt_update,
+    mock_prompt_get,
+    id,
+    template,
+    alias,
+    update,
+    update_parameters,
+    test_client,
+):
+    """Test update prompt endpoint."""
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(id=id, template=template, alias=alias)
+    ]
+    response = test_client.put(
+        f"/api/v1/prompts/{alias}?template={update}",
+        json=update_parameters,
+        headers={"x-api-key": "1234"},
+    )
+    assert mock_prompt_get.call_count == 2
+    assert mock_prompt_update.call_count == 1
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "alias": alias,
+        "created_at": None,
+        "id": f"{id}",
+        "parameters": update_parameters,
         "template": template,
         "version": 0,
     }
@@ -196,7 +371,11 @@ def test_delete_prompt(
 
 
 @pytest.mark.parametrize(
-    "alias, template", [("english-summarization", PromptEnum.EN.value[0])]
+    "alias, template",
+    [
+        ("english-summarization", PromptEnum.EN.value[0]),
+        ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
+    ],
 )
 @patch("src.db.Model.delete")
 @patch.object(PromptTemplateTable, "query")
@@ -244,13 +423,14 @@ patch(
 
 
 @pytest.mark.parametrize(
-    "id, template, values, alias, generated",
+    "id, template, values, alias, parameters, generated",
     [
         (
             53463,
             "Write me a {count}-verse poem about {topic}",
             {"count": 3, "topic": "machine learning"},
             "alias1",
+            None,
             "Verse 1:\nIn the world of tech, there's a buzzword we hear,\nIt's called \"machine learning,\" and it's quite clear,\nIt's a way for computers to learn and adapt,\nTo make predictions and improve how they act.\n\nVerse 2:\nFrom speech recognition to self-driving cars,\nMachine learning is taking us far,\nIt can analyze data and find patterns we miss,\nAnd help us solve problems with greater success.\n\nVerse 3:\nIt's not just for tech, it's used in many fields,\nFrom medicine to finance, it yields great yields,\nWith algorithms that can sort through the noise,\nAnd make sense of data that's vast and diverse.\n\nVerse 4:\nAs we move forward, machine learning will grow,\nAnd change how we work, live, and know,\nIt's a tool that will help us achieve,\nAnd make the impossible, possible, we believe.",  # noqa: E501
         ),
         (
@@ -258,6 +438,7 @@ patch(
             "What's the most popular {type} framework?",
             {"type": "web"},
             "alias2",
+            "",
             "As an AI language model, I don't have access to current statistics or current trends. However, some of the most popular web frameworks currently include Angular, React, Vue.js, Django, Ruby on Rails, and Flask.",  # noqa: E501
         ),
     ],
@@ -271,6 +452,7 @@ def test_generate_text(
     template,
     values,
     alias,
+    parameters,
     generated,
     test_client,
 ):
@@ -278,7 +460,9 @@ def test_generate_text(
     # set mock return values
     mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     mock_prompt_get.return_value = [
-        PromptTemplateSchema(id=id, template=template, alias=alias)
+        PromptTemplateSchema(
+            id=id, template=template, alias=alias, parameters=parameters
+        )
     ]
     # send request to test client
     response = test_client.post(
@@ -303,6 +487,66 @@ def test_generate_text(
 
 
 @pytest.mark.parametrize(
+    "id, template, values, alias, parameters, generated",
+    [
+        (
+            53463,
+            "Write me a {count}-verse poem about {topic}",
+            {"count": 3, "topic": "machine learning"},
+            "alias1",
+            {
+                "model_name": "gpt-4",
+                "max_tokens": 100,
+                "temperature": 0.2,
+            },
+            "Verse 1:\nIn the world of tech, there's a buzzword we hear,\nIt's called \"machine learning,\" and it's quite clear,\nIt's a way for computers to learn and adapt,\nTo make predictions and improve how they act.\n\nVerse 2:\nFrom speech recognition to self-driving cars,\nMachine learning is taking us far,\nIt can analyze data and find patterns we miss,\nAnd help us solve problems with greater success.\n\nVerse 3:\nIt's not just for tech, it's used in many fields,\nFrom medicine to finance, it yields great yields,\nWith algorithms that can sort through the noise,\nAnd make sense of data that's vast and diverse.\n\nVerse 4:\nAs we move forward, machine learning will grow,\nAnd change how we work, live, and know,\nIt's a tool that will help us achieve,\nAnd make the impossible, possible, we believe.",  # noqa: E501
+        )
+    ],
+)
+@patch.object(PromptTemplateSchema, "get")
+@patch("openai.ChatCompletion.create")
+def test_generate_text_override_parameters(
+    mock_openai_chat,
+    mock_prompt_get,
+    id,
+    template,
+    values,
+    alias,
+    parameters,
+    generated,
+    test_client,
+):
+    """Test text generation endpoint."""
+    # set mock return values
+    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    mock_prompt_get.return_value = [
+        PromptTemplateSchema(
+            id=id, template=template, alias=alias, parameters=parameters
+        )
+    ]
+    # send request to test client
+    response = test_client.post(
+        f"/api/v1/prompts/{alias}/generate", headers={"x-api-key": "1234"}, json=values
+    )
+    # check openai method is called
+    mock_openai_chat.assert_called_with(
+        model="gpt-4",
+        messages=[{"role": "user", "content": template.format(**values)}],
+        max_tokens=100,
+        temperature=0.2,
+    )
+
+    assert mock_prompt_get.call_count == 1
+    assert mock_openai_chat.call_count == 1
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "prompt": template.format(**values),
+        "generated": generated,
+    }
+
+
+@pytest.mark.parametrize(
     "id, template, alias, model_id, model_name, values, generated",
     [
         (
@@ -310,7 +554,7 @@ def test_generate_text(
             "Write me a {count}-verse poem about {topic}",
             "poem",
             2,
-            "text-davinci-003",
+            "gpt-4",
             {"count": 3, "topic": "machine learning"},
             "Verse 1:\nIn the world of tech, there's a buzzword we hear,\nIt's called \"machine learning,\" and it's quite clear,\nIt's a way for computers to learn and adapt,\nTo make predictions and improve how they act.\n\nVerse 2:\nFrom speech recognition to self-driving cars,\nMachine learning is taking us far,\nIt can analyze data and find patterns we miss,\nAnd help us solve problems with greater success.\n\nVerse 3:\nIt's not just for tech, it's used in many fields,\nFrom medicine to finance, it yields great yields,\nWith algorithms that can sort through the noise,\nAnd make sense of data that's vast and diverse.\n\nVerse 4:\nAs we move forward, machine learning will grow,\nAnd change how we work, live, and know,\nIt's a tool that will help us achieve,\nAnd make the impossible, possible, we believe.",  # noqa: E501
         ),
@@ -319,7 +563,7 @@ def test_generate_text(
             "What's the most popular {type} framework?",
             "framework",
             "4",
-            "text-curie-001",
+            "gpt-4",
             {"type": "web"},
             "As an AI language model, I don't have access to current statistics or current trends. However, some of the most popular web frameworks currently include Angular, React, Vue.js, Django, Ruby on Rails, and Flask.",  # noqa: E501
         ),
@@ -327,7 +571,7 @@ def test_generate_text(
 )
 @patch.object(ModelSchema, "get")
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.Completion.create")
+@patch("openai.ChatCompletion.create")
 def test_generate_text_with_diff_model(
     mock_openai_chat,
     mock_prompt_get,
@@ -343,7 +587,7 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"text": generated}]}
+    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     mock_prompt_get.return_value = [
         PromptTemplateSchema(id=id, template=template, alias=alias)
     ]
@@ -366,7 +610,7 @@ def test_generate_text_with_diff_model(
     # check openai method is called
     mock_openai_chat.assert_called_with(
         model=model_name,
-        prompt=template.format(**values),
+        messages=[{"role": "user", "content": template.format(**values)}],
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
     )
@@ -436,3 +680,26 @@ def test_generate_text_with_diff_model_model_not_found(
         "prompt": template.format(**values),
         "generated": "Model is unknown or not supported",
     }
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "",
+        "{}",
+        "Give an abstractive summary of this text: \n{text\n",
+        "List out all the names of this given article: {content]",
+    ],
+)
+@patch.object(PromptTemplateSchema, "get")
+def test_create_prompt_bad_template(mock_prompt_get, template, test_client):
+    """Test get prompt endpoint."""
+    mock_prompt_get.return_value = None
+    response = test_client.post(
+        f"/api/v1/prompts?template={template}&alias=test-alias",
+        headers={"x-api-key": "1234"},
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    data = response.json()
+    assert data == {"detail": "Prompt template: '" + template + "' is invalid"}
