@@ -1,4 +1,4 @@
-"""Summarization prediction."""
+"""Topic detection prediction."""
 
 # Standard lib
 
