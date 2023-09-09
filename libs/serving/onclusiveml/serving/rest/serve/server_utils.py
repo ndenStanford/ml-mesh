@@ -1,12 +1,18 @@
+"""Serving helper methods."""
+
 # Standard Library
 from typing import Callable, Dict
 
 # 3rd party libraries
+import requests
 from fastapi import APIRouter, status
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
-from onclusiveml.serving.rest.serve.params import FastAPISettings
+from onclusiveml.serving.rest.serve.params import (
+    BetterStackSettings,
+    FastAPISettings,
+)
 from onclusiveml.serving.rest.serve.server_models import (
     LivenessProbeResponse,
     ModelServerURLs,
@@ -18,7 +24,9 @@ from onclusiveml.serving.rest.serve.server_models import (
 def get_model_server_urls(
     api_version: str = "", model_name: str = "no_model"
 ) -> ModelServerURLs:
-    """Utility for assembling the five currently supported Model server URLs:
+    """Utility for assembling the five currently supported Model server URLs.
+
+    Supported URLS:
         - root
         - liveness
         - readiness
@@ -62,7 +70,6 @@ def get_root_router(
     api_version: str = "v1", api_config: Dict = FastAPISettings().dict()
 ) -> Callable:
     """Utility for a consistent api root endpoint."""
-
     root_router = APIRouter()
 
     model_server_urls = get_model_server_urls(api_version=api_version)
@@ -74,11 +81,29 @@ def get_root_router(
     return root_router
 
 
-def get_liveness_router(api_version: str = "v1") -> Callable:
-    """Utility for a consistent liveness probe endpoint. For more information on how K8s uses these,
-    see https://kubernetes.io/docs/tasks/configure-pod-container/...
-    ...configure-liveness-readiness-startup-probes/"""
+def get_liveness_router(
+    betterstack_settings: BetterStackSettings,
+    api_version: str = "v1",
+) -> Callable:
+    """Utility for a consistent liveness probe endpoint.
 
+    For more information on how K8s uses these, see https://kubernetes.io/docs/tasks/...
+    configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Resources:
+    For more information on how K8s uses these, see:
+    https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Args:
+        api_version (str, optional): The api version string that will be used in the url.
+            Defaults to "v1".
+        betterstack_settings (BetterStackParams): The betterstack api settings.
+            If enabled and configured correctly, every request to the liveness endpoint of the
+            model server will trigger a ping to the betterstack project associated with the server.
+
+    Returns:
+        Callable: The FastAPI router object implementing the liveness endpoint
+    """
     liveness_router = APIRouter()
 
     model_server_urls = get_model_server_urls(api_version=api_version)
@@ -89,16 +114,21 @@ def get_liveness_router(api_version: str = "v1") -> Callable:
         status_code=status.HTTP_200_OK,
     )
     async def live() -> LivenessProbeResponse:
+        if betterstack_settings.enable:
+
+            requests.post(betterstack_settings.full_url)
+
         return LivenessProbeResponse()
 
     return liveness_router
 
 
 def get_readiness_router(api_version: str = "v1") -> Callable:
-    """Utility for a consistent readiness probe endpoint. For more information on how K8s uses
-    these, see https://kubernetes.io/docs/tasks/configure-pod-container/...
-    ...configure-liveness-readiness-startup-probes/"""
+    """Utility for a consistent readiness probe endpoint.
 
+    For more information on how K8s uses these, see:
+    https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+    """
     readiness_router = APIRouter()
 
     model_server_urls = get_model_server_urls(api_version=api_version)
@@ -115,8 +145,7 @@ def get_readiness_router(api_version: str = "v1") -> Callable:
 
 
 def get_model_predict_router(model: ServedModel, api_version: str = "v1") -> APIRouter:
-    """Utility to wrap a ServedModel's (subclass') instance's `predict` method into FastAPI router
-    compatible with the ModelServer class
+    """Utility to wrap a ServedModel's (subclass') instance's `predict` method into FastAPI router.
 
     Args:
         model (ServedModel): The ServedModel instance implementing the endpoint logic and holding
@@ -128,12 +157,12 @@ def get_model_predict_router(model: ServedModel, api_version: str = "v1") -> API
                 - SERVING_ML_MODEL_PREDICT_URL
                 - SERVING_ML_MODEL_BIO_URL
             for details
+
     Returns:
         model_predict_router (APIRouter): An APIRouter object that implements the model's `predict`
             method's logic as a functional FastAPI endpoint. Can be added directly as a route to a
             FastAPI and ModelServer instance.
     """
-
     model_predict_router = APIRouter()
     # resolve url template
     model_server_urls = get_model_server_urls(
@@ -150,8 +179,7 @@ def get_model_predict_router(model: ServedModel, api_version: str = "v1") -> API
 
 
 def get_model_bio_router(model: ServedModel, api_version: str = "v1") -> APIRouter:
-    """Utility to wrap a ServedModel's (subclass') instance's `predict` method into FastAPI routers
-    compatible with the ModelServer class
+    """Utility to wrap a ServedModel's (subclass') instance's `predict` method into FastAPI routers.
 
     Args:
         model (ServedModel): The ServedModel instance implementing the endpoint logic and holding
@@ -163,12 +191,12 @@ def get_model_bio_router(model: ServedModel, api_version: str = "v1") -> APIRout
                 - SERVING_ML_MODEL_PREDICT_URL
                 - SERVING_ML_MODEL_BIO_URL
             for details
+
     Returns:
         model_bio_router (APIRouter): An APIRouter object that implements the model's `bio` method's
             logic as a functional FastAPI endpoint. Can be added directly as a route to a FastAPI
             and ModelServer instance.
     """
-
     model_bio_router = APIRouter()
     # resolve url template
     # resolve url template

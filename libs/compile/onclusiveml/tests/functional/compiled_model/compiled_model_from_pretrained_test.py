@@ -1,3 +1,5 @@
+"""Compiled model from pretrained test."""
+
 # Standard Library
 import shutil
 
@@ -42,6 +44,7 @@ def test_compiled_model_from_pretrained(
     regression_test_atol,
     regression_test_rtol,
 ):
+    """Test compiled model from pretrained."""
     # compile model including built-in validation on tracing inputs
     kwargs = {
         "batch_size": batch_size,

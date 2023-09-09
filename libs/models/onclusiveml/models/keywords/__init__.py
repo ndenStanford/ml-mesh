@@ -1,3 +1,5 @@
+"""Init."""
+
 from onclusiveml.models.keywords.custom_hf_transfomer_backend import (  # noqa: F401
     CustomHFTransformerBackend,
 )

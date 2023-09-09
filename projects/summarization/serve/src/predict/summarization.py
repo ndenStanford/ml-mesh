@@ -25,6 +25,8 @@ logger = get_default_logger(__name__)
 
 
 class SummarizationHandler:
+    """Summarization handler."""
+
     def inference(
         self,
         text: str,
@@ -33,10 +35,12 @@ class SummarizationHandler:
         target_lang: str,
     ) -> str:
         """Summarization prediction handler method.
+
         Args:
-            text (str):
-            desired_length (int):
-            lang (str):
+            text (str): Text to summarize
+            desired_length (int): desired length of the summary
+            lang (str): input language of the summary
+            target_lang (str): target language
         """
         try:
             alias = settings.PROMPT_DICT[lang][target_lang]["alias"]
@@ -54,10 +58,12 @@ class SummarizationHandler:
         return eval(q.content)["generated"]
 
     def postprocess(self, text: str) -> str:
+        """Post process text."""
         text = re.sub("\n+", " ", text)
         return text
 
     def pre_process(self, text: str) -> str:
+        """Pre process text."""
         text = re.sub("\n+", " ", text)
         return text
 
@@ -66,7 +72,7 @@ _service = SummarizationHandler()
 
 
 def handle(data: Any) -> Optional[Dict[str, str]]:
-
+    """Handles prediction."""
     try:
         if data is None:
             return None
