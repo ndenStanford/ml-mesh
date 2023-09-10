@@ -4,19 +4,25 @@
 import os
 import re
 from pathlib import Path
-from typing import List, Union
+from typing import List, NamedTuple, Optional, Union
 
 # 3rd party libraries
 from bs4 import BeautifulSoup
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
-from onclusiveml.models.ner.settings import (
-    InferenceOutput,
-    PostprocessOutput,
-    PostprocessOutputNoPos,
-)
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+
+
+class InferenceOutput(NamedTuple):
+    """Inference output data structure."""
+
+    entity_type: int
+    score: float
+    entity_text: str
+    start: Optional[int]
+    end: Optional[int]
+    sentence_index: Optional[int] = None
 
 
 class CompiledNER:
@@ -85,7 +91,7 @@ class CompiledNER:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def sentence_tokenize(self, sentences: str, language: str) -> List[str]:
+    def sentence_tokenize(self, sentences: List[str], language: str) -> List[List[str]]:
         """Sentence tokenization.
 
         Args:
@@ -101,7 +107,7 @@ class CompiledNER:
         list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
         return list_sentences
 
-    def preprocess(self, sentences: str, language: str) -> List[str]:
+    def preprocess(self, sentences: List[str], language: str) -> List[List[str]]:
         """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
         Args:
@@ -110,12 +116,14 @@ class CompiledNER:
         Return:
             List[str]: Tokenized sentences
         """
-        sentences = self.remove_html(sentences)
-        sentences = self.remove_whitespace(sentences)
-        list_sentences = self.sentence_tokenize(sentences, language)
+        sentences = [self.remove_html(sentence) for sentence in sentences]
+        sentences = [self.remove_whitespace(sentence) for sentence in sentences]
+        list_sentences = [
+            self.sentence_tokenize(sentence, language) for sentence in sentences
+        ]
         return list_sentences
 
-    def inference(self, sentences: List[str]) -> InferenceOutput:
+    def inference(self, sentences: List[str]) -> List[List[InferenceOutput]]:
         """Perform NER inference on a list of sentences.
 
         Args:
@@ -130,13 +138,17 @@ class CompiledNER:
                 - end (int): ending position of word
         """
         entities = self.compiled_ner_pipeline(sentences)
+
         for sublist in entities:
             for dictionary in sublist:
                 dictionary.pop("index", None)
                 dictionary["entity_type"] = dictionary.pop("entity")
                 dictionary["entity_text"] = dictionary.pop("word")
 
-        return InferenceOutput(ner_labels=entities)
+        return [
+            [InferenceOutput(**dictionary) for dictionary in sublist]
+            for sublist in entities
+        ]
 
     def compute_moving_average(self, scores: List[float]) -> float:
         """Compute the moving average of a list of scores.
@@ -150,8 +162,8 @@ class CompiledNER:
         return sum(scores) / len(scores)
 
     def postprocess(
-        self, ner_labels: InferenceOutput, return_pos: bool
-    ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
+        self, output: InferenceOutput, return_pos: bool
+    ) -> List[List[InferenceOutput]]:
         """Postprocess NER labels to merge contiguous entities and compute scores.
 
         Args:
@@ -164,28 +176,16 @@ class CompiledNER:
             return_pos (bool): Flag indicating whether to return positional information
 
         Returns:
-            Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
+            List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
-                PostprocessOutput has attributes:
-                    - entity_type (str): entity type
-                    - score (float): probability of given entity
-                    - entity_text (str): targeted word for given entity
-                    - start (int): starting position of word
-                    - end (int): ending position of word
-                    - sentence index (int): sentence location of word
-
-                PostprocessOutputNoPos has attributes:
-                    - entity_type (str): entity type
-                    - score (float): probability of given entity
-                    - entity_text (str): targeted word for given entity
-                    - start (int): starting position of word
         """
         output_list: List[
-            PostprocessOutput
+            List[InferenceOutput]
         ] = []  # List to store the postprocessed NER labels
+
         sentence_index = 0  # Initialize sentence index for tracking
         # Loop through each sublist of NER labels (one sublist per sentence)
-        for sublist in ner_labels.ner_labels:
+        for sublist in output:
             merged_sublist = (
                 []
             )  # List to store merged contiguous entities for the current sentence
@@ -228,7 +228,7 @@ class CompiledNER:
                     if current_entity is not None:
                         # Append the merged entity with computed score to the merged_sublist
                         merged_sublist.append(  # type: ignore[unreachable]
-                            PostprocessOutput(
+                            InferenceOutput(
                                 entity_type=current_entity[2:],
                                 score=float(
                                     self.compute_moving_average(current_score_list)
@@ -251,7 +251,7 @@ class CompiledNER:
             if current_entity is not None:
                 # Append the merged entity with computed score to the merged_sublist
                 merged_sublist.append(
-                    PostprocessOutput(
+                    InferenceOutput(
                         entity_type=current_entity[2:],
                         score=float(
                             self.compute_moving_average(current_score_list)
@@ -269,21 +269,21 @@ class CompiledNER:
             # Increment the sentence index for the next iteration
             sentence_index += 1
         # Flatten the output list
-        output_list = [item for sublist in output_list for item in sublist]
-
+        # output_list = [item for sublist in output_list for item in sublist]
         # Remove start and end key from output if we do not want to have the word positions
         if not return_pos:
-            output_list_no_pos = []
+            output_list_no_pos = [[]]
             for ent in output_list:
                 output_list_no_pos.append(
-                    PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
+                    InferenceOutput(**ent.dict(exclude={"start", "end"}))
                 )
             return output_list_no_pos
+
         return output_list
 
-    def extract_entities(
+    def __call__(
         self, sentences: str, language: str, return_pos: bool
-    ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
+    ) -> List[List[InferenceOutput]]:
         """Extract named entities from input sentence using NER.
 
         Args:
@@ -292,21 +292,8 @@ class CompiledNER:
             return_pos (bool): Flag indiciating whether to return positional information in the
                 output
         Returns:
-            Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
+            List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
-                PostprocessOutput has attributes:
-                    - entity (str): entity type
-                    - score (float): probability of given entity
-                    - word (str): targeted word for given entity
-                    - start (int): starting position of word
-                    - end (int): ending position of word
-                    - sentence index (int): sentence location of word
-
-                PostprocessOutputNoPos has attributes:
-                    - entity (str): entity type
-                    - score (float): probability of given entity
-                    - word (str): targeted word for given entity
-                    - start (int): starting position of word
         """
         list_sentences = self.preprocess(sentences, language)
         ner_labels = self.inference(list_sentences)
