@@ -5,7 +5,10 @@ import json
 import os
 
 # Source
-from src.params import ServedModelParams
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 class ServedModelArtifacts(object):
@@ -18,17 +21,16 @@ class ServedModelArtifacts(object):
             Assumes that the neptune file attribute paths have been mapped to relative local paths
             (e.g. as the `TrackedModelVersion.download_directory_from_model_version` method does)
         """
-        # initialize parameters
-        params = ServedModelParams()
 
-        self.model_name = params.model_name
-        self.model_directory = params.model_directory
+        self.model_name = settings.model_name
+        self.model_directory = settings.model_directory
+
         # load model card
         if remove_model_prefix:
             self.model_card_file = os.path.join(self.model_directory, "model_card")
         else:
             self.model_card_file = os.path.join(
-                self.model_directory, "model", "model_card"
+                self.model_directory, "models", "model_card"
             )
 
         json_file = open(self.model_card_file)

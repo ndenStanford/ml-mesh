@@ -1,0 +1,28 @@
+"""Model server."""
+
+# Internal libraries
+from onclusiveml.serving.rest.observability import Instrumentator
+from onclusiveml.serving.rest.serve import ModelServer, ServingParams
+
+# Source
+from src.serve.artifacts import ServedModelArtifacts
+from src.serve.model import ServedNERModel
+from src.settings import get_settings
+
+
+settings = get_settings()
+
+
+def get_model_server(artifacts: ServedModelArtifacts) -> ModelServer:
+    """Utility method for prepping a fully configured model server instance ready to serve.
+
+    Returns:
+        ModelServer: Configured model server instance
+    """
+    # initialize model
+    ner_served_model = ServedNERModel(served_model_artifacts=artifacts)
+    # initialize model server
+    model_server = ModelServer(configuration=settings, model=ner_served_model)
+    Instrumentator.enable(model_server, app_name=settings.model_name)
+
+    return model_server
