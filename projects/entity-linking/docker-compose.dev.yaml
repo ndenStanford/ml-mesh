@@ -26,10 +26,20 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /home/projects/entity-linking/serve/src
+        target: /projects/entity-linking/serve/src
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
+      ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
+    depends_on:
+      - entity-fishing-backend
+      - ner-serve
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -49,17 +59,19 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /home/projects/entity-linking/serve/src
+        target: /projects/entity-linking/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/entity-linking/serve/train
+        target: /projects/entity-linking/serve/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -79,10 +91,10 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /home/projects/entity-linking/serve/src
+        target: /projects/entity-linking/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/entity-linking/serve/train
+        target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
@@ -90,6 +102,78 @@ services:
       ENVIRONMENT: dev
       DOCS_URL: /docs
     hostname: onclusiveml
+    depends_on:
+      - entity-fishing-backend
+      - ner-serve
+    networks:
+      - onclusive-net
+
+  # serving image
+  ner-serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../../projects/ner/serve
+      dockerfile: projects/ner/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: ner
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
+      ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
+    profiles: [serve, functional, load]
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  entity-fishing-backend:
+    build:
+      context: ../../../apps/entity-fishing/backend
+      dockerfile: apps/entity-fishing/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: entity-fishing
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
+    command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes, -d]
+    profiles: [serve, functional, load]
+    volumes:
+      - type: bind
+        source: ${HOME}/data/db-en
+        target: /opt/entity-fishing/data/db/db-en
+      - type: bind
+        source: ${HOME}/data/db-kb
+        target: /opt/entity-fishing/data/db/db-kb
+    ports:
+      - 8090:8090
+      - 8091:8091
+    environment:
+      ENVIRONMENT: dev
     networks:
       - onclusive-net
 
