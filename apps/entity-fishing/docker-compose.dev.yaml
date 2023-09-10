@@ -18,10 +18,10 @@ services:
     profiles: [backend]
     volumes:
       - type: bind
-        source: /home/ec2-user/dev/db-en
+        source: /home/ec2-user/data/db-en
         target: /opt/entity-fishing/data/db/db-en
       - type: bind
-        source: /home/ec2-user/dev/db-kb
+        source: /home/ec2-user/data/db-kb
         target: /opt/entity-fishing/data/db/db-kb
     ports:
       - 8090:8090
