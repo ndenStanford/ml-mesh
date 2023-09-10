@@ -19,7 +19,7 @@ ParametersT = TypeVar("ParametersT")
 class RequestDataModel(GenericModel, Generic[NamespaceT, AttributesT, ParametersT]):
     """Request Data Model."""
 
-    id: Optional[str]
+    identifier: Optional[str] = None
     namespace: NamespaceT
     attributes: AttributesT
     parameters: ParametersT
@@ -43,20 +43,38 @@ class RequestSchema(GenericModel, Generic[DataT]):
         """Parameters attributes."""
         return self.data.parameters
 
+    @classmethod
+    def from_data(
+        cls,
+        namespace: str,
+        attributes: AttributesT,
+        parameters: ParametersT,
+        identifier: Optional[str] = None,
+    ) -> "RequestSchema":
+        """Instanciates schema from data (identifier, namespace, attributes and parameters)."""
+        return cls(
+            data={
+                "identifier": identifier,
+                "namespace": namespace,
+                "attributes": attributes,
+                "parameters": parameters,
+            }
+        )
+
 
 def JsonApiRequestSchema(
-    namespace: str, attributes_model: JsonApiSchema, parameters_model: JsonApiSchema
+    namespace: str, attributes_schema: JsonApiSchema, parameters_schema: JsonApiSchema
 ) -> Type[RequestSchema]:
     """JSON API Request.
     Args:
         namespace (str):
-        attributes_model (JsonApiSchema):
-        parameters_model (JsonApiSchema):
+        attributes_schema (JsonApiSchema):
+        parameters_schema (JsonApiSchema):
     """
     request_data_model = RequestDataModel[
-        Literal[namespace], attributes_model, parameters_model
+        Literal[namespace], attributes_schema, parameters_schema
     ]
-    request_data_model.__name__ = f"RequestSchema[{namespace}]"
+    # request_data_model.__name__ = f"RequestSchema[{namespace}]"
     request_model = RequestSchema[request_data_model]
-    request_model.__name__ = f"Request[{namespace}]"
+    # request_model.__name__ = f"Request[{namespace}]"
     return request_model

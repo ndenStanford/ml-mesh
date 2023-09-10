@@ -18,7 +18,7 @@ AttributesT = TypeVar("AttributesT")
 class ResponseDataModel(GenericModel, Generic[NamespaceT, AttributesT]):
     """Response Data Model."""
 
-    id: Optional[str]
+    identifier: Optional[str] = None
     namespace: NamespaceT
     attributes: AttributesT
 
@@ -29,6 +29,7 @@ DataT = TypeVar("DataT", bound=ResponseDataModel)
 class ResponseSchema(GenericModel, Generic[DataT]):
     """Response Schema."""
 
+    version: int
     data: DataT
 
     @property
@@ -36,17 +37,35 @@ class ResponseSchema(GenericModel, Generic[DataT]):
         """Response attributes."""
         return self.data.attributes
 
+    @classmethod
+    def from_data(
+        cls,
+        namespace: str,
+        version: int,
+        attributes: AttributesT,
+        identifier: Optional[str] = None,
+    ) -> "RequestSchema":
+        """Instanciates schema from data (identifier, namespace and attributes)."""
+        return cls(
+            version=version,
+            data={
+                "identifier": identifier,
+                "namespace": namespace,
+                "attributes": attributes,
+            },
+        )
+
 
 def JsonApiResponseSchema(
-    type_string: str,
-    attributes_model: JsonApiSchema,
+    namespace: str,
+    attributes_schema: JsonApiSchema,
 ) -> Type[ResponseSchema]:
     """Json API Response schema."""
     response_data_model = ResponseDataModel[
-        Literal[type_string],
-        attributes_model,
+        Literal[namespace],
+        attributes_schema,
     ]
-    response_data_model.__name__ = f"ResponseSchema[{type_string}]"
+    # response_data_model.__name__ = f"ResponseSchema[{namespace}]"
     response_model = ResponseSchema[response_data_model]
-    response_model.__name__ = f"Response[{type_string}]"
+    # response_model.__name__ = f"Response[{namespace}]"
     return response_model
