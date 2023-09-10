@@ -11,10 +11,6 @@ class OnclusiveBaseSettings(BaseSettings):
         extra = "forbid"
         strict = True
         arbitrary_types_allowed = False
-        validate_default = True
-        # Validate attributes when assigning them. We need to set this in order
-        # to have a mix of mutable and immutable attributes
-        validate_assignment = True
 
 
 class OnclusiveFrozenSettings(OnclusiveBaseSettings):
@@ -27,6 +23,7 @@ class OnclusiveFrozenSettings(OnclusiveBaseSettings):
         allow_mutation = False
         # make the service type immutable and hashable
         frozen = True
+        validate_default = True
 
 
 class OnclusiveBaseSchema(BaseModel):
