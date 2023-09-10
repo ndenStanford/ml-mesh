@@ -11,7 +11,6 @@ error() {
     LASTLINE="$1"         # line of error occurrence
     LASTERR="$2"          # error code
     echo "ERROR in ${JOB} : line ${LASTLINE} with exit code ${LASTERR}"
-    _setup
 }
 trap 'error ${LINENO} ${?}' ERR
 
@@ -47,16 +46,17 @@ fatal() {
 }
 
 
-info "Downloading wikimedia knowledge bases to $HOME/dev ..."
+info "Downloading wikimedia knowledge bases to $HOME/data ..."
 info "Enter the list of languages you want to download data for (choices: en de fr it es ar zh ja ru pt fa uk sv hi bn)"
 read -r languages
 
 
 info "Downloading main KB..."
-if [ ! -d "$HOME/dev/db-kb.zip" ]; then
-    curl -SL https://science-miner.s3.amazonaws.com/entity-fishing/0.0.6/db-kb.zip -o "$HOME/dev/db-kb.zip"
+if [ ! -d "$HOME/data/db-kb.zip" ]; then
+    curl -SL https://science-miner.s3.amazonaws.com/entity-fishing/0.0.6/db-kb.zip -o "$HOME/data/db-kb.zip"
 fi
-unzip "$HOME/dev/db-kb.zip"  -d "$HOME/dev/db-kb"
+unzip "$HOME/data/db-kb.zip"  -d "$HOME/data/db-kb"
+rm -r "$HOME/data/db-kb.zip"
 
 info "Downloading wikimedia language specific KBs ..."
 
@@ -64,9 +64,9 @@ language_list=("${languages}")
 
 for i in "${language_list[@]}"; do
     info "Downloading ${i}..."
-    if [ ! -d "$HOME/dev/db-${i}.zip" ]; then
-        curl -SL "https://science-miner.s3.amazonaws.com/entity-fishing/0.0.6/db-${i}.zip" -o "$HOME/dev/db-${i}.zip"
+    if [ ! -d "$HOME/data/db-${i}.zip" ]; then
+        curl -SL "https://science-miner.s3.amazonaws.com/entity-fishing/0.0.6/db-${i}.zip" -o "$HOME/data/db-${i}.zip"
     fi
-    unzip "$HOME/dev/db-${i}.zip" -d "$HOME/dev/db-${i}"
-    rm -r "$HOME/dev/db-${i}.zip"
+    unzip "$HOME/data/db-${i}.zip" -d "$HOME/data/db-${i}"
+    rm -r "$HOME/data/db-${i}.zip"
 done
