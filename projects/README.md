@@ -62,6 +62,6 @@ The following component-specific in-depth docs are available:
 - [compile](./docs/02_compile.md)
 - [serve](./docs/03_serve.md)
 
-## Dependabot 
+## Dependabot
 
 Add the updated component on the [dependabot config file](./../.github/dependabot.yaml)

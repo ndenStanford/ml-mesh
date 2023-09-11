@@ -69,6 +69,6 @@ To run your library's functional tests, run: `make libs.functional/${LIBRARY_NAM
 
 For more documentation on a given library, see the individual library's dedicated `README.md`.
 
-## Dependabot 
+## Dependabot
 
 Add the updated component on the [dependabot config file](./../.github/dependabot.yaml)
