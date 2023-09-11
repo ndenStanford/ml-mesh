@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "kubeflow-jupyter"
-version = "0.2.0"
-description = "Base for all kubeflow images."
-authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
+name = "dask-base"
+version = "0.1.0"
+description = "Dask image for workers and schedulers"
+authors = ["Vincent Park <vincent.park@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
@@ -28,6 +28,7 @@ ipympl = "~0.9.3"
 dask-labextension = "~6.2.0"
 pyarrow = "^13.0.0"
 s3fs = "^2023.9.0"
+bokeh = "^2.4.3"
 
 [build-system]
 requires = ["poetry-core"]
