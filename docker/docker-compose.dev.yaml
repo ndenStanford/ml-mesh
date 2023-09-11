@@ -259,7 +259,7 @@ services:
       - 8888:8888
 
   # ===========================================================
-  # Dask
+  # DASK BASE
   # ===========================================================
 
   dask-base:
@@ -273,6 +273,7 @@ services:
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: dask-base
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
+
   dask-scheduler:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
     ports:

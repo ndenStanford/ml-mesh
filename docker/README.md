@@ -22,6 +22,7 @@ should be caught early on.
 | `kubeflow-torch-cpu`     | `kubeflow-jupyter`          | Kubeflow flavour of flexible pytorch (CPU) image       | cpu             |          |
 | `kubeflow-torch-gpu`     | `gpu-base`                  | Kubeflow image for torch (GPU available)               | gpu             |          |
 | `kubeflow-data-science`  | `kubeflow-torch-cpu`        | DS image for kubeflow                                  | cpu             |          |
+| `dask-base`              | `dask` (external)           | Kubeflow base for Dask Schedulers and Workers          | cpu             |          |
 
 ## Dependency management
 

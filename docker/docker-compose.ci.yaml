@@ -239,5 +239,22 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     entrypoint: [pwd]
 
+  # ===========================================================
+  # DASK BASE
+  # ===========================================================
+
+  dask-base:
+    build:
+      context: ..
+      dockerfile: ./docker/dask-base/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: dask-base
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
+    entrypoint: [pwd]
+
 volumes :
   neuron-vol:
