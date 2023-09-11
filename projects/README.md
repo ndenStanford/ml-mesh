@@ -64,4 +64,4 @@ The following component-specific in-depth docs are available:
 
 ## Dependabot 
 
-Add the updated component on the [dependabot config file](https://github.com/AirPR/ml-mesh/.github/dependabot.yaml)
+Add the updated component on the [dependabot config file](./../.github/dependabot.yaml)
