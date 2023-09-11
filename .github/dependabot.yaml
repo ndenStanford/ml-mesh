@@ -263,48 +263,6 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # nlp lib
-
-  - package-ecosystem: pip
-    directory: /libs/nlp
-    target-branch: develop
-    schedule:
-      interval: monthly
-      time: "09:00"
-      timezone: Europe/London
-      day: monday
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-  # syndicate lib
-
-  - package-ecosystem: pip
-    directory: /libs/syndicate
-    target-branch: develop
-    schedule:
-      interval: monthly
-      time: "09:00"
-      timezone: Europe/London
-      day: monday
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-  # compile lib
-
-  - package-ecosystem: pip
-    directory: /libs/compile
-    target-branch: develop
-    schedule:
-      interval: monthly
-      time: "09:00"
-      timezone: Europe/London
-      day: monday
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
   # ====================================
   # PROJECTS
   # ====================================
