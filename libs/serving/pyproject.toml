@@ -9,7 +9,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 uvicorn = "0.22.0"
 fastapi = "0.96.0"
-locust = "2.15.1"
+locust = "2.16.1"
 urllib3 = "1.26.15"
 requests = "2.31.0"
 httpx = "^0.24.0"
