@@ -42,6 +42,25 @@ Dask enables you to carry out distributed computations, effectively handling lar
 - Integration with Python Scientific Stack: Leverages existing Python APIs for a smoother learning curve.
 - Fault Tolerance: Ensures computational reliability even in the presence of failures.
 
+## Benefits of using Dask in NLP
+
+The Python Global Interpreter Lock (GIL) is what typically prevents "pure Python" code (as opposed to Python code that calls into native extensions like NumPy or Cython functions) from running in parallel across multiple threads. In a single Python process, only one thread can execute Python bytecode at a time because of the GIL. This is why it's generally recommended to use multiple processes for CPU-bound "pure Python" code: each process runs in its own interpreter with its own GIL, allowing for true parallelism.
+
+### Dask has a few different scheduling options to tackle parallel execution:
+
+- Threaded Scheduler: Useful for I/O-bound or GIL-released tasks like those involving NumPy, pandas, or similar libraries that release the GIL when they do heavy computations.
+
+- Multiprocessing Scheduler: Useful for CPU-bound tasks that are written in pure Python and don't release the GIL. This scheduler runs each task in a separate process, thus bypassing the GIL.
+
+- Distributed Scheduler: A more general-purpose scheduler that can run tasks on distributed systems. It's more flexible and can use both threads and processes, but it involves more setup. This is what we are using via Dask Kubernetes Operator.
+
+### Can Dask use threads in processes?
+
+The short answer is that within a single Dask worker, you can choose either threads or processes but not both at the same time for parallel execution. Each Dask worker is a separate Python process and can use multiple threads for executing tasks, but this is still subject to the limitations of the GIL for pure Python code.
+
+However, in a Dask distributed setup, you can have multiple workers, each running in its own process. Each of these workers can, in turn, use multiple threads (4 by default in our setup) to execute tasks that are not limited by the GIL (like NumPy operations). This way, you effectively have both multiprocessing and multithreading, but at different levels of the computation (inter-worker vs. intra-worker).
+
+This setup allows you to combine the advantages of both worlds: multiprocessing for tasks that are GIL-bound and multithreading for tasks that can release the GIL.
 
 ## Documentation on Dask
 
