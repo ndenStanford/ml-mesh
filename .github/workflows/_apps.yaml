@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - uses: dorny/paths-filter@v2
         id: files-changed
@@ -71,7 +71,7 @@ jobs:
               - added | modified: 'apps/${{ inputs.app }}/${{ inputs.component }}/**'
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

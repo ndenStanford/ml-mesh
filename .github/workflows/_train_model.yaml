@@ -1,0 +1,123 @@
+---
+name: Model Training
+on  :
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: Environment where code is deployed [prod, stage]
+      project:
+        required: true
+        type: string
+        description: Project.
+      tag:
+        required: true
+        type: string
+        description: Version tag of image providing the compilation runtime context.
+      sagemaker-runner-type:
+        required: true
+        default: ml.m4.xlarge # non-gpu
+        type: string
+        description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
+      sagemaker-runner-count:
+        required: false
+        type: string
+        default: 1
+      python-version:
+        required: false
+        type: string
+        description: Python version.
+      poetry-version:
+        required: false
+        type: string
+        description: Python version.
+      release:
+        required: true
+        type: boolean
+        default: true
+        description: Release flag
+    secrets:
+      AWS_ACCOUNT_ID:
+        required: true
+        description: AWS account ID.
+      AWS_DEFAULT_REGION:
+        required: true
+        description: AWS account region
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: AWS access key ID.
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: AWS secret access key
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: Github PAT to allow EC2 instance to connect to Github repository content.
+      NEPTUNE_API_TOKEN:
+        required: true
+        description: The API token for the neptune service account managing the model registry.
+
+jobs:
+  check-run-criteria:
+    name: Check if the project's component flow needs to be run
+    runs-on: ubuntu-20.04
+    environment: ${{ inputs.environment }}
+    outputs:
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v2
+        id: files-changed
+        name: Get a list of modified files.
+        with:
+          list-files: shell
+          filters: |
+            this:
+              - added | modified: 'projects/${{ inputs.project }}/train/**'
+  train-model:
+    name: (Train and) register an uncompiled model
+    needs: check-run-criteria
+    runs-on: ubuntu-20.04
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: ${{ inputs.poetry-version }}
+
+      - name: Install mesh dependencies
+        run: poetry install --with ci
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Run project train component on sagemaker
+        run: |
+          python bin/sagemaker-run \
+            --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
+            --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
+            --aws-environment stage \
+            --instance-type ${{ inputs.sagemaker-runner-type}} \
+            --instance-count ${{ inputs.sagemaker-runner-count }} \
+            --project-name ${{ inputs.project }} \
+            --project-component train \
+            --image-tag ${{ inputs.tag }} \
+            --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
+            --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
+            python -m src.train_model

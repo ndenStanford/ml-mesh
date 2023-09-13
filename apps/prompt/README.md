@@ -22,7 +22,7 @@ To locally build the prompt-frontend image tagged as
 `063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:$IMAGE_TAG`, run the following command:
 
 ```
-make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
+make apps.build/prompt COMPONENT=frontend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
 ```
 
 Note, if you haven't exported a value for `IMAGE_TAG`, the image will be tagged as `latest`. To avoid this, initalise your `.envrc` by running `. .envrc` (have to be in same directory) or run `direnv allow`
