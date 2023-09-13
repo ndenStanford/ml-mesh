@@ -62,6 +62,44 @@ However, in a Dask distributed setup, you can have multiple workers, each runnin
 
 This setup allows you to combine the advantages of both worlds: multiprocessing for tasks that are GIL-bound and multithreading for tasks that can release the GIL.
 
+## Full Task Scheduling with Dask
+
+### Case 1: Running Everything in Parallel
+#### Pros:
+- Simple to implement for independent tasks.
+- Can lead to a considerable speedup if tasks are genuinely independent.
+#### Cons:
+- Can lead to resource contention if there are more tasks than available computational resources.
+- Not suitable for tasks with dependencies.
+
+### Case 2: Map-Reduce
+Map-Reduce is a two-step process.
+
+Map: In the "map" step, a function is applied to each element in the input dataset, creating a new dataset.
+
+Reduce: In the "reduce" step, the new dataset created in the map step is reduced to a single value (or a smaller dataset) by repeatedly applying a function that takes two elements and combines them into one.
+#### Pros:
+- It allows for easy parallelization since the map and reduce functions can operate independently on subsets of the data.
+- Suits a wide range of problems that can be expressed with map and reduce operations.
+#### Cons:
+- Limited expressiveness; not all algorithms can be naturally or efficiently expressed using just map and reduce operations.
+- Often leads to IO bottleneck issues, especially if the reduce phase requires shuffling data across the network.
+
+### Case 3: Full Task Scheduling (Dask)
+Full task scheduling, as Dask implements it, goes beyond the relatively simple map-reduce paradigm to allow for more complex, arbitrary task graphs that can express a wider variety of algorithms, including those with intricate dependencies between tasks.
+
+Dask encodes computations with a directed acyclic graph (DAG) where:
+Nodes represent computations or tasks.
+Edges represent dependencies between tasks, i.e., the fact that one task needs to complete before another can start.
+
+#### Pros:
+- Can represent more complex workflows compared to the map-reduce paradigm, thus providing more flexibility and efficiency in many cases.
+- Optimizes task execution by understanding the task dependencies and only recomputing necessary parts of the computation graph, saving time and resources.
+- Task fusion optimization can reduce overhead by merging multiple tasks into a single task.
+#### Cons:
+- Potentially higher complexity for setting up and managing compared to simpler parallel or map-reduce systems, especially for very complex workflows.
+- Debugging complex task graphs can be challenging.
+
 ## Documentation on Dask
 
 - [`dask.org`](https://www.dask.org/)
