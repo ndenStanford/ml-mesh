@@ -170,6 +170,8 @@ jobs       :
             base-region: us-east-1
           - name: dask-base
             base-region: us-east-1
+          - name: kubeflow-torch-inf
+            base-region: us-east-1
         validate-build: [false]
         region: [us-east-2]
 
