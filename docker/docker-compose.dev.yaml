@@ -289,7 +289,7 @@ services:
     command: [dask-worker, tcp://scheduler:8786]
     depends_on:
       - dask-base
-      
+
   # ===========================================================
   # KUBEFLOW TORCH INF
   # ===========================================================
@@ -307,4 +307,3 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     ports:
       - 8888:8888
-

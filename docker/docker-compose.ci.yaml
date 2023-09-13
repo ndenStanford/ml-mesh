@@ -272,6 +272,6 @@ services:
         IMAGE_NAME: kubeflow-torch-inf
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     entrypoint: [pwd]
-    
+
 volumes :
   neuron-vol:
