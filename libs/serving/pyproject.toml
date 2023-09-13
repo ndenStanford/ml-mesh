@@ -8,12 +8,12 @@ packages = [{include = "onclusiveml"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 uvicorn = "0.22.0"
-fastapi = "0.96.0"
-locust = "2.15.1"
+fastapi = "0.103.1"
+locust = "2.16.1"
 urllib3 = "1.26.15"
 requests = "2.31.0"
 httpx = "^0.24.0"
-prometheus-client = "^0.16.0"
+prometheus-client = "^0.17.1"
 opentelemetry-instrumentation-fastapi = "^0.38b0"
 opentelemetry-instrumentation-logging = "^0.38b0"
 opentelemetry-exporter-otlp = "^1.17.0"
@@ -22,7 +22,7 @@ opentelemetry-sdk = "^1.17.0"
 types-requests = "^2.31.0.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "7.3.2"
+pytest = "7.4.2"
 pytest-order = "1.1.0"
 
 [build-system]
