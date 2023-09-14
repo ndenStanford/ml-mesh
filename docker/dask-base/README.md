@@ -6,11 +6,11 @@ Utilize the Dask Kubernetes Operator to manage your Dask clusters efficiently in
 
 ## Setting Up Your Dask Client in a Kubeflow Notebook
 
-Before diving into Dask computations, initialize your Dask client with your unique AIM ID. Here is how you set it up:
+Before diving into Dask computations, initialize your Dask client with your AWS IAM ID. Here is how you set it up:
 
 ```
 import os
-os.environ['JUPYTERHUB_USER'] = "vincent.park" <-- your AIM id
+os.environ['JUPYTERHUB_USER'] = "vincent.park" <-- your AWS IAM id
 
 from dask.distributed import Client
 from dask_kubernetes.operator import KubeCluster
@@ -58,7 +58,7 @@ The Python Global Interpreter Lock (GIL) is what typically prevents "pure Python
 
 The short answer is that within a single Dask worker, you can choose either threads or processes but not both at the same time for parallel execution. Each Dask worker is a separate Python process and can use multiple threads for executing tasks, but this is still subject to the limitations of the GIL for pure Python code.
 
-However, in a Dask distributed setup, you can have multiple workers, each running in its own process. Each of these workers can, in turn, use multiple threads (4 by default in our setup) to execute tasks that are not limited by the GIL (like NumPy operations). This way, you effectively have both multiprocessing and multithreading, but at different levels of the computation (inter-worker vs. intra-worker).
+However, in a Dask distributed setup, you can have multiple workers, each running in its own process. Each of these workers can, in turn, use multiple threads (1 thread per core in our setup) to execute tasks that are not limited by the GIL (like NumPy operations). This way, you effectively have both multiprocessing and multithreading, but at different levels of the computation (inter-worker vs. intra-worker).
 
 This setup allows you to combine the advantages of both worlds: multiprocessing for tasks that are GIL-bound and multithreading for tasks that can release the GIL.
 
