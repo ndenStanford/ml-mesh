@@ -23,6 +23,7 @@ should be caught early on.
 | `kubeflow-torch-gpu`     | `gpu-base`                  | Kubeflow image for torch (GPU available)               | gpu             |          |
 | `kubeflow-torch-inf`     | `python-base`               | Kubeflow image for torch (Inferentia available)        | inf1            |          |
 | `kubeflow-data-science`  | `kubeflow-torch-cpu`        | DS image for kubeflow                                  | cpu             |          |
+| `dask-base`              | `dask` (external)           | Kubeflow base for Dask Schedulers and Workers          | cpu             |          |
 
 ## Dependency management
 

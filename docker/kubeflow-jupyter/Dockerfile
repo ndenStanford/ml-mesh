@@ -38,6 +38,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     git \
     gnupg \
     gnupg2 \
+    graphviz \
     htop \
     libffi-dev  \
     libssl-dev  \
@@ -109,6 +110,8 @@ COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/s6 /etc/
 COPY --chown=${USER}:users libs/ libs/
 
 WORKDIR "${HOME}"
+
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.config .config
 
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/{cache,artifacts}

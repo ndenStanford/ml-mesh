@@ -105,6 +105,20 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
+  # dask base
+
+  - package-ecosystem: pip
+    directory: /docker/dask-base
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
   # ====================================
   # LIBS
   # ====================================
