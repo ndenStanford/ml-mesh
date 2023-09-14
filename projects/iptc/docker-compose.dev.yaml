@@ -27,8 +27,8 @@ services:
     environment:
       AWS_REGION: ${AWS_REGION:-us-east-2}
       AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_-AKIAQ5WC6PNO4CWBT3ML}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-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}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       COMPILED_PIPELINES: kubeflow-compiled-pipelines-dev
       SOURCE_BUCKET: kubeflow-opoint-data-dev
       TARGET_BUCKET: kubeflow-data-lake-dev
