@@ -16,12 +16,12 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: ingest
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.9.2}
     volumes:
       - type: bind
         source: ingest/src
         target: /home/projects/iptc/ingest/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
     command: [python, -m, src.ingest]
     profiles: [ingest]
     environment:
@@ -29,20 +29,35 @@ services:
       AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      COMPILED_PIPELINES: kubeflow-compiled-pipelines-dev
       SOURCE_BUCKET: kubeflow-opoint-data-dev
       TARGET_BUCKET: kubeflow-data-lake-dev
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   ingest-unit:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.9.2}
     volumes:
       - type: bind
-        source: ingest/
-        target: /projects/iptc/ingest/
+        source: ingest/src
+        target: /home/projects/iptc/ingest/src
+      - type: bind
+        source: ingest/tests/
+        target: /home/projects/iptc/ingest/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [register, unit]
+    profiles: [unit]
+    environment:
+      SOURCE_BUCKET: kubeflow-opoint-data-dev
+      TARGET_BUCKET: kubeflow-data-lake-dev
     hostname: onclusive-ml
     networks: [onclusive-net]
 
