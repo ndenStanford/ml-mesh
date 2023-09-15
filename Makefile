@@ -32,7 +32,8 @@ ALL_DOCKER_IMGS:= \
 	kubeflow-torch-cpu \
 	kubeflow-torch-gpu \
 	kubeflow-torch-inf \
-	kubeflow-data-science
+	kubeflow-data-science \
+	dask-base
 
 # all python libraries
 ALL_LIBS:= \
