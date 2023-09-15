@@ -20,14 +20,14 @@ def ingest(source_bucket_name: str, target_bucket_name: str) -> None:
 
     for obj in s3.Bucket(source_bucket_name).objects.all():
         current_object = obj.get()
-        root_dir, sub_dir, filename = obj.key.split("/")
+        _, sub_dir, filename = obj.key.split("/")
         df_pa = csv.read_csv(
             current_object["Body"],
             parse_options=csv.ParseOptions(invalid_row_handler=lambda x: "skip"),
         )
         pq.write_table(
             df_pa,
-            f"s3://{target_bucket_name}/{root_dir}/{sub_dir}/{filename.replace('csv', 'parquet')}",
+            f"s3://{target_bucket_name}/iptc/{sub_dir}/{filename.replace('csv', 'parquet')}",
         )
 
 
