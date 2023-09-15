@@ -438,6 +438,21 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
+  # IPTC
+
+  ## ingest
+  - package-ecosystem: pip
+    directory: /projects/iptc/ingest
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
   # ====================================
   # APPS
   # ====================================
