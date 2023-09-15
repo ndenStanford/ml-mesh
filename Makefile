@@ -30,6 +30,8 @@ ALL_DOCKER_IMGS:= \
 	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \
+	kubeflow-torch-gpu \
+	kubeflow-torch-inf \
 	kubeflow-data-science \
 	dask-base
 
