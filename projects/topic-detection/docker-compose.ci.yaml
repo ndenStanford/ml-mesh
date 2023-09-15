@@ -5,6 +5,8 @@ services:
   # =============================================
   # SERVE
   # =============================================
+
+  # serving image
   serve:
     build:
       context: ../../
@@ -15,156 +17,65 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: topic-detection
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8888', --reload, --log-level, debug]
-    profiles: [serve]
+    command: [python, -m, src.serve.model_server]
+    profiles: [serve, functional]
     ports:
-      - 8888:8888
+      - 8000:8000
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
-    depends_on:
-      prompt-backend:
-        condition: service_healthy
+      DOCS_URL: /topic-detection/docs
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
+  # unit tests
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/topic-detection/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: topic-detection
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      DOCS_URL: /topic-detection/docs
     hostname: onclusiveml
     networks:
       - onclusive-net
 
+  # integration tests
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/topic-detection/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: topic-detection
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
-    depends_on:
-      prompt-backend:
-        condition: service_healthy
+      DOCS_URL: /topic-detection/docs
     hostname: onclusiveml
     networks:
       - onclusive-net
 
-  prompt-backend:
-    build:
-      context: ../../
-      dockerfile: apps/prompt/backend/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        APP_NAME: prompt
-        APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [serve, integration]
-    ports:
-      - 4000:4000
-    environment:
-      ENVIRONMENT: dev
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      DOCS_URL: /docs
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
-      REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
-      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+  # functional tests
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/topic-detection/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
     depends_on:
-      dynamodb:
+      serve:
         condition: service_healthy
-      redisdb:
-        condition: service_healthy
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 3s || exit 1]
-      interval: 5s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
-    networks:
-      - onclusive-net
-
-  dynamodb:
-    command: -jar DynamoDBLocal.jar -sharedDb
-    image: amazon/dynamodb-local:latest
-    restart: always
-    expose:
-      - 8000
-    ports:
-      - 8000:8000
-    profiles: [serve, integration]
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 3s || exit 1]
-      interval: 5s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
-    networks:
-      - onclusive-net
-
-  redisdb:
-    image: redis:7.0
-    restart: always
-    expose:
-      - 6379
-    ports:
-      - 6379:6379
-    profiles: [serve, integration]
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 3s || exit 1]
-      interval: 5s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
-    networks:
-      - onclusive-net
 
 networks:
   onclusive-net:
