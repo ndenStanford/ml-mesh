@@ -11,7 +11,7 @@ from src.ingest import ingest
 
 
 def test_ingest(capsys) -> None:
-    """Ingest a single file from the source bucket to the target bucket.
+    """Ingest and then delete a single file from the source bucket to the target bucket.
 
     Args:
         capsys : Capture stdout/stderr output
@@ -25,7 +25,7 @@ def test_ingest(capsys) -> None:
     assert err == ""
     s3 = boto3.resource("s3")
     target_bucket = s3.Bucket(os.environ["TARGET_BUCKET"])
-    target_bucket.objects.filter(Prefix="test").delete()
-    out, err = capsys.readouterr()
+    response = target_bucket.objects.filter(Prefix="test").delete()
+    _, err = capsys.readouterr()
     assert err == ""
-    assert out[0]["ResponseMetadata"]["HTTPStatusCode"] == 200
+    assert response[0]["ResponseMetadata"]["HTTPStatusCode"] == 200
