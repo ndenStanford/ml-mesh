@@ -6,8 +6,13 @@ import os
 # 3rd party libraries
 import apache_beam as beam
 import boto3
-import pyarrow
-from apache_beam.io import ReadFromText, WriteToParquet
+
+
+# import pyarrow
+
+
+# def str_to_dict(string: str) -> dict:
+#     return {n: i for i, n in enumerate(string.split(","))}
 
 
 def ingest(
@@ -24,30 +29,61 @@ def ingest(
 
     with beam.Pipeline() as p:
         for obj in s3.Bucket(source_bucket_name).objects.all():
+            target_key = obj.key.replace(".csv", "", 1)
             target_key = (
-                obj.key.replace("csv", "parquet").replace("raw", "test")
+                target_key.replace("raw", "test", 1)
                 if test
-                else obj.key.replace("csv", "parquet").replace("raw", "iptc")
+                else target_key.replace("raw", "iptc", 1)
             )
-            _ = (
-                p
-                | ReadFromText(f"s3://{source_bucket_name}/{obj.key}")
-                | WriteToParquet(
-                    f"s3://{target_bucket_name}/{target_key}",
-                    schema=pyarrow.schema(
-                        [
-                            ("topic_1", pyarrow.string()),
-                            ("topic_2", pyarrow.string()),
-                            ("title", pyarrow.string()),
-                            ("language", pyarrow.string()),
-                            ("content", pyarrow.string()),
-                        ]
-                    ),
-                )
+            csv_file = p | beam.dataframe.io.read_csv(
+                f"s3://{source_bucket_name}/{obj.key}",
+                usecols=["title", "score", "topic", "content", "summary"],
+                index_col=False,
             )
+            csv_file.to_parquet(f"s3://{target_bucket_name}/{target_key}", index=False)
             if test:
                 break
+            #     | beam.io.parquetio.WriteToParquet(
+            #         file_path_prefix=f"s3://{target_bucket_name}/{target_key}",
+            #         file_name_suffix=".parquet",
+            #         schema=pyarrow.schema(
+            #             [
+            #                 pyarrow.field("title", pyarrow.string()),
+            #                 pyarrow.field("score", pyarrow.float64()),
+            #                 pyarrow.field("topic", pyarrow.string()),
+            #                 pyarrow.field("content", pyarrow.string()),
+            #                 pyarrow.field("summary", pyarrow.string()),
+            #             ]
+            #         ),
+            #     )
+            # )
+            # | beam.io.ReadFromText(
+            #     f"s3://{source_bucket_name}/{obj.key}",
+            # )
+            # | beam.Map(lambda item: item.split(','))
+            # | beam.Map(lambda item: print(item))
+            # | beam.Map(lambda item: print(len(item)))
+            # | beam.io.WriteToParquet(
+            #     f"s3://{target_bucket_name}/{target_key}",
+            #     schema=pyarrow.schema(
+            #         [
+            #             ("Unnamed: 0", pyarrow.int64()),
+            #             ("title", pyarrow.string()),
+            #             ("score", pyarrow.float64()),
+            #             ("topic", pyarrow.string()),
+            #             ("content", pyarrow.string()),
+            #             ("summary", pyarrow.string()),
+            #         ]
+            #     ),
+            # )
+    # Brute force:
+    #
     # for obj in s3.Bucket(source_bucket_name).objects.all():
+    #     target_key = (
+    #         obj.key.replace("csv", "parquet", 1).replace("raw", "test", 1)
+    #         if test
+    #         else obj.key.replace("csv", "parquet", 1).replace("raw", "iptc", 1)
+    #     )
     #     current_object = obj.get()
     #     _, sub_dir, filename = obj.key.split("/")
     #     df_pa = csv.read_csv(
@@ -56,9 +92,7 @@ def ingest(
     #     )
     #     pq.write_table(
     #         table=df_pa,
-    #         where=f"s3://{target_bucket_name}/iptc/{sub_dir}/{filename.replace('csv', 'parquet')}"
-    #         if not test
-    #         else f"s3://{target_bucket_name}/test/{sub_dir}/{filename.replace('csv', 'parquet')}",
+    #         where=f"s3://{target_key}"
     #     )
 
 
