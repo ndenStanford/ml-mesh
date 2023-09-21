@@ -29,7 +29,7 @@ def ingest(source_bucket_name: str, target_bucket_name: str, level: str) -> None
             index_col=False,
         )
         csv_file.to_parquet(
-            f"s3://{target_bucket_name}/iptc/{schema.dir_name}", index=False
+            f"s3://{target_bucket_name}/iptc/{schema.dir_name}/", index=False
         )
 
 
