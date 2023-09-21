@@ -106,6 +106,10 @@ jobs       :
             integration: false
             functional: false
 
+          - name: data
+            integration: false
+            functional: false
+
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
@@ -167,6 +171,8 @@ jobs       :
           - name: kubeflow-data-science
             base-region: us-east-2
           - name: kubeflow-torch-gpu
+            base-region: us-east-1
+          - name: dask-base
             base-region: us-east-1
           - name: kubeflow-torch-inf
             base-region: us-east-1
