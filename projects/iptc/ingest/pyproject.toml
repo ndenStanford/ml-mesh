@@ -7,7 +7,7 @@ authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
 [tool.poetry.dependencies]
 python = "3.8.16"
 boto3 = "^1.28.45"
-apache-beam = {extras = ["dataframe"], version = "^2.50.0"}
+apache-beam = {extras = ["dataframe"], version = "2.48.0"}
 pyarrow = "^11.0.0"
 core = {path = "../../../libs/core"}
 

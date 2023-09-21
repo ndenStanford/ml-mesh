@@ -1,4 +1,6 @@
 """Settings."""
+# 3rd party libraries
+import pyarrow as pa
 
 # Internal libraries
 from onclusiveml.core.base.params import Params
@@ -9,11 +11,11 @@ class FirstLevelSchema(Params):
 
     dir_name: str = "first_level"
     schema_dict: dict = {
-        "title": str,
-        "score": float,
-        "topic": str,
-        "content": str,
-        "summary": str,
+        "title": pa.string(),
+        "score": pa.float64(),
+        "topic": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
     }
 
 
@@ -22,12 +24,12 @@ class FirstLevelMultiLingualSchema(Params):
 
     dir_name: str = "first_level_multi_lingual"
     schema_dict: dict = {
-        "title": str,
-        "score": float,
-        "topic": str,
-        "content": str,
-        "summary": str,
-        "language": str,
+        "title": pa.string(),
+        "score": pa.float64(),
+        "topic": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 
@@ -36,12 +38,12 @@ class SecondLevelSchema(Params):
 
     dir_name: str = "second_level"
     schema_dict: dict = {
-        "title": str,
-        "score": float,
-        "topic_1": str,
-        "topic_2": str,
-        "content": str,
-        "summary": str,
+        "title": pa.string(),
+        "score": pa.float64(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
     }
 
 
@@ -50,13 +52,13 @@ class SecondLevelMultiLingualSchema(Params):
 
     dir_name: str = "second_level_multi_lingual"
     schema_dict: dict = {
-        "title": str,
-        "score": float,
-        "topic_1": str,
-        "topic_2": str,
-        "content": str,
-        "summary": str,
-        "language": str,
+        "title": pa.string(),
+        "score": pa.float64(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 
@@ -65,13 +67,13 @@ class ThirdLevelSchema(Params):
 
     dir_name: str = "third_level"
     schema_dict: dict = {
-        "title": str,
-        "score": float,
-        "topic_1": str,
-        "topic_2": str,
-        "topic_3": str,
-        "content": str,
-        "summary": str,
+        "title": pa.string(),
+        "score": pa.float64(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "topic_3": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
     }
 
 
@@ -80,14 +82,14 @@ class ThirdLevelMultiLingualSchema(Params):
 
     dir_name: str = "third_level_multi_lingual"
     schema_dict: dict = {
-        "title": str,
-        "score": float,
-        "topic_1": str,
-        "topic_2": str,
-        "topic_3": str,
-        "content": str,
-        "summary": str,
-        "language": str,
+        "title": pa.string(),
+        "score": pa.float64(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "topic_3": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 
