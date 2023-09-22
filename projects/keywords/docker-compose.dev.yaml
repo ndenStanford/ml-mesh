@@ -70,12 +70,12 @@ services:
     command: [python, -m, src.run_compile_pipeline]
     profiles: [compile, unit, integration, pipeline]
     environment:
-      DOWNLOAD_UNCOMPILED_MODEL: yes
-      COMPILE_MODEL: yes
-      VALIDATE_COMPILED_MODEL: yes
-      UPLOAD_COMPILED_MODEL: yes
-      IO_OUTPATH: /projects/keywords/compile/outputs
-      LOG_LEVEL: 10
+      COMPILE_PIPELINE_EXECUTION_DOWNLOAD: yes
+      COMPILE_PIPELINE_EXECUTION_COMPILE: yes
+      COMPILE_PIPELINE_EXECUTION_TEST: yes
+      COMPILE_PIPELINE_EXECUTION_UPLOAD: yes
+      COMPILE_PIPELINE_IO_OUTPATH: /projects/keywords/compile/outputs
+      COMPILE_PIPELINE_IO_LOGGER_LEVEL: 10
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       GITHUB_REPOSITORY: development-repository
       GITHUB_ACTOR: development-actor

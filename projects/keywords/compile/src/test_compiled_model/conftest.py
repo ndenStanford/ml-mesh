@@ -12,13 +12,13 @@ from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.models.keywords import CompiledKeyBERT
 
 # Source
-from src.settings import CompilationTestSettings, IOSettings
+from src.settings import CompilationTestSettings, CompilePipelineIOSettings
 
 
 @pytest.fixture
 def io_settings():
     """IO settings fixture."""
-    return IOSettings()
+    return CompilePipelineIOSettings()
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def compilation_test_settings():
 def logger(io_settings):
     """Logger settings fixture."""
     return get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
 
 

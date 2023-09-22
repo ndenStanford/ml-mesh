@@ -14,22 +14,22 @@ from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
+    CompilePipelineIOSettings,
     DocumentPipelineCompilationSettings,
-    IOSettings,
     UncompiledTrackedModelSpecs,
     WordPipelineCompilationSettings,
 )
 
 
 def compile_model(
-    io_settings: IOSettings,
+    io_settings: CompilePipelineIOSettings,
     base_model_specs: UncompiledTrackedModelSpecs,
     word_pipeline_compilation_settings: WordPipelineCompilationSettings,
     document_pipeline_compilation_settings: DocumentPipelineCompilationSettings,
 ) -> None:
     """Compile model."""
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
     # get read-only base model version
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
