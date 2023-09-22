@@ -92,7 +92,7 @@ class FeatureStoreHandle:
         Returns: None
 
         """
-        self.fs.apply(objects_to_delete=components, partial=False)
+        self.fs.apply([], objects_to_delete=components, partial=False)
 
     def list_entities(self) -> List[FeastObject]:
         """Lists feast entites.
