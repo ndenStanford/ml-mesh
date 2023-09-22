@@ -1,16 +1,17 @@
 """Register features for IPTC project."""
 
 # 3rd party libraries
-import feast
 from feast import Entity, FeatureView, Field
 from feast.types import String
-from src.settings import FeatureRegistrationParams
 
 # Internal libraries
 from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     RedshiftSourceCustom,
 )
+
+# Source
+from src.settings import FeatureRegistrationParams  # noqa: F401
 
 
 def register() -> None:
