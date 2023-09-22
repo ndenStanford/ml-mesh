@@ -11,7 +11,7 @@ from onclusiveml.data.feature_store import (
 )
 
 # Source
-from src.settings import FeatureRegistrationParams  # noqa: F401
+from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]
 
 
 def register() -> None:
