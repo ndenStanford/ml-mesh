@@ -6,40 +6,37 @@ import pyarrow as pa
 from onclusiveml.core.base.params import Params
 
 
-class FirstLevelSchema(Params):
+class FirstLevelParquetSchema(Params):
     """Defines schema for the first level IPTC dataset."""
 
-    dir_name: str = "first_level"
     schema_dict: dict = {
         "title": pa.string(),
-        "score": pa.float64(),
+        "score": pa.string(),
         "topic": pa.string(),
         "content": pa.string(),
         "summary": pa.string(),
     }
 
 
-class FirstLevelMultiLingualSchema(Params):
+class FirstLevelMultiLingualParquetSchema(Params):
     """Defines schema for the first level multi lingual IPTC dataset."""
 
-    dir_name: str = "first_level_multi_lingual"
     schema_dict: dict = {
         "title": pa.string(),
-        "score": pa.float64(),
-        "topic": pa.string(),
+        "score": pa.string(),
+        "topic_1": pa.string(),
         "content": pa.string(),
         "summary": pa.string(),
         "language": pa.string(),
     }
 
 
-class SecondLevelSchema(Params):
+class SecondLevelParquetSchema(Params):
     """Defines schema for the second level IPTC dataset."""
 
-    dir_name: str = "second_level"
     schema_dict: dict = {
         "title": pa.string(),
-        "score": pa.float64(),
+        "score": pa.string(),
         "topic_1": pa.string(),
         "topic_2": pa.string(),
         "content": pa.string(),
@@ -47,10 +44,9 @@ class SecondLevelSchema(Params):
     }
 
 
-class SecondLevelMultiLingualSchema(Params):
+class SecondLevelMultiLingualParquetSchema(Params):
     """Defines schema for the second level multi lingual IPTC dataset."""
 
-    dir_name: str = "second_level_multi_lingual"
     schema_dict: dict = {
         "title": pa.string(),
         "score": pa.float64(),
@@ -62,10 +58,9 @@ class SecondLevelMultiLingualSchema(Params):
     }
 
 
-class ThirdLevelSchema(Params):
+class ThirdLevelParquetSchema(Params):
     """Defines schema for the third level IPTC dataset."""
 
-    dir_name: str = "third_level"
     schema_dict: dict = {
         "title": pa.string(),
         "score": pa.float64(),
@@ -77,10 +72,9 @@ class ThirdLevelSchema(Params):
     }
 
 
-class ThirdLevelMultiLingualSchema(Params):
+class ThirdLevelMultiLingualParquetSchema(Params):
     """Defines schema for the third level multi lingual IPTC dataset."""
 
-    dir_name: str = "third_level_multi_lingual"
     schema_dict: dict = {
         "title": pa.string(),
         "score": pa.float64(),
@@ -94,10 +88,10 @@ class ThirdLevelMultiLingualSchema(Params):
 
 
 SCHEMA_MAP = {
-    "first_level": FirstLevelSchema(),
-    "first_level_multi_lingual": FirstLevelMultiLingualSchema(),
-    "second_level": SecondLevelSchema(),
-    "second_level_multi_lingual": SecondLevelMultiLingualSchema(),
-    "third_level": ThirdLevelSchema(),
-    "third_level_multi_lingual": ThirdLevelMultiLingualSchema(),
+    "first_level": FirstLevelParquetSchema(),
+    "first_level_multi_lingual": FirstLevelMultiLingualParquetSchema(),
+    "second_level": SecondLevelParquetSchema(),
+    "second_level_multi_lingual": SecondLevelMultiLingualParquetSchema(),
+    "third_level": ThirdLevelParquetSchema(),
+    "third_level_multi_lingual": ThirdLevelMultiLingualParquetSchema(),
 }
