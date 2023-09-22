@@ -2,9 +2,6 @@
 # Standard Library
 from datetime import datetime as dt
 
-# 3rd party libraries
-from neptune.types.mode import Mode
-
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
@@ -18,18 +15,20 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
+def upload_compiled_model(
+    io_settings: IOSettings,
+    base_model_specs: UncompiledTrackedModelSpecs,
+    compiled_model_specs: CompiledTrackedModelSpecs,
+    compiled_model_card: CompiledKeywordsTrackedModelCard,
+) -> None:
     """Upload compiled model."""
-    io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
 
     # --- upload compiled model
-    compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
 
-    compiled_model_card = CompiledKeywordsTrackedModelCard()
     # upload model card - holds all settings
     compiled_model_version.upload_config_to_model_version(
         config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
@@ -59,7 +58,6 @@ def main() -> None:
     )
     # --- update uncompiled model
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs(mode=Mode.ASYNC)
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
 
     if base_model_version.exists("model/compiled_model_versions"):
@@ -88,7 +86,3 @@ def main() -> None:
         f"list of compiled model versions of the uncompiled model "
         f"{base_model_specs.with_id}"
     )
-
-
-if __name__ == "__main__":
-    main()

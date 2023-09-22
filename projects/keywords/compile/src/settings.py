@@ -5,7 +5,7 @@ import os
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import Field
+from pydantic import BaseSettings, Field
 
 # Internal libraries
 from onclusiveml.core.logging import INFO
@@ -118,7 +118,16 @@ class IOSettings(object):
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
 
-    log_level: int = INFO
+
+class CompilePipelineSettings(BaseSettings):
+    """Compile pipeline step configuration class. Used to enable/disable individual steps."""
+
+    download_uncompiled_model: bool = True
+    compile_model: bool = True
+    validate_compiled_model: bool = True
+    upload_compiled_model: bool = True
+
+    compile_pipeline_logger_level: int = INFO
 
 
 class TokenizerSettings(TrackedParams):
