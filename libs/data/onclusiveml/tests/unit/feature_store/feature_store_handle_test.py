@@ -114,7 +114,7 @@ def test_delete(feature_store_handle_instance, mocker):
     feature_store_handle_instance.delete([mock_feast_object])
     # Assert that the apply method of the Feast Feature Store
     feature_store_handle_instance.fs.apply.assert_called_with(
-        objects_to_delete=[mock_feast_object], partial=False
+        [], objects_to_delete=[mock_feast_object], partial=False
     )
 
 
