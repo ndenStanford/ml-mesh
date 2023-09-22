@@ -67,7 +67,7 @@ def test_register(
 
     mock_entity.assert_called_once_with(
         name="iptc",
-        join_keys=["dataset_version"],
+        join_keys=["iptc_id"],
     )
     # Additional assertions
     assert mock_feature_store_handle.register.call_count == 2

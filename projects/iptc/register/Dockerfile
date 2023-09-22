@@ -20,7 +20,8 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share
 
-USER app
+# hadolint ignore=DL3002
+USER root
 
 # setup workspace
 WORKDIR "/"
@@ -42,22 +43,23 @@ RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
+
 # --- production stage
 FROM builder as production
+
+USER app
+
+ENV PYTHONPATH=${HOME}
 
 # --- test build stage
 FROM builder as development
 
-# install development dependencies
-RUN poetry install \
-    --only dev \
-    --no-root \
-    --no-interaction \
-    --no-ansi \
-    -v && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+WORKDIR "/"
 
-COPY --chown=${USER}:users "${HOME}/tests" ./tests
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
+
+WORKDIR "${HOME}"
+
+RUN poetry install --no-interaction
+
+USER app
