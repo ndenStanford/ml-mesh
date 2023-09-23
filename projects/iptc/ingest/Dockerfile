@@ -20,7 +20,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share
 
-USER app
+USER root
 
 # setup workspace
 WORKDIR "/"
@@ -42,8 +42,12 @@ RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
+USER app
+
 # --- production stage
 FROM builder as production
+
+USER app
 
 # --- test build stage
 FROM builder as development
@@ -63,3 +67,5 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
+
+USER app

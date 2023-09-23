@@ -83,10 +83,6 @@ class _CsvSource(beam.io.filebasedsource.FileBasedSource):
         s3fs = S3FileSystem(pipeline_options={})
         for item in items:
             with s3fs.open(item) as f:
-                reader = csv.DictReader(
-                    codecs.iterdecode(f, "utf-8"),
-                    escapechar='"',
-                    quoting=csv.QUOTE_ALL,
-                )
+                reader = csv.DictReader(codecs.iterdecode(f, "utf-8"), dialect="unix")
                 for rec in reader:
                     yield rec
