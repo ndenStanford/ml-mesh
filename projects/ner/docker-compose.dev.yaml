@@ -218,8 +218,11 @@ services:
       - 8000:8000
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/ner/serve/
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -234,8 +237,11 @@ services:
   serve-download-model:
     volumes:
       - type: bind
-        source: /home/ec2-user/data
+        source: ${HOME}/data
         target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, /projects/ner/serve/src/download/compiled_model.py]
     profiles: [serve, integration, functional, load]
@@ -259,8 +265,11 @@ services:
   serve-unit:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/ner/serve/
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -276,8 +285,11 @@ services:
       - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/ner/serve/
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
@@ -293,8 +305,11 @@ services:
   serve-functional:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/ner/serve/
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
@@ -313,8 +328,11 @@ services:
   serve-load:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/ner/serve/
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
@@ -338,8 +356,11 @@ services:
   serve-upload-results:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/ner/serve/
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.upload.test_results]
     profiles: [serve]

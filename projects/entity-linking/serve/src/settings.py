@@ -27,6 +27,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     entity_fishing_endpoint: str
     internal_ml_api_key: SecretStr
     entity_recognition_endpoint: str
+    enable_metrics: bool = False
 
 
 class GlobalSettings(ServedModelSettings, ApplicationSettings):

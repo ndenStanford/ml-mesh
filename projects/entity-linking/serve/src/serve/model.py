@@ -3,6 +3,7 @@
 # Standard Library
 import json
 import re
+from collections import Counter
 from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
@@ -93,6 +94,8 @@ class EntityLinkingServedModel(ServedModel):
             "language": {"lang": lang},
             "mentions": [],
             "entities": entities_query,
+            "nbest": False,
+            "sentence": False,
         }
         return query
 
@@ -145,18 +148,17 @@ class EntityLinkingServedModel(ServedModel):
             entity.pop("end")
         return entities
 
-    def _get_wiki_id(
-        self, entity_text: str, entities: List[Dict[str, Any]]
-    ) -> Optional[str]:
+    def _get_wiki_id(self, text: str, entities: List[Dict[str, Any]]) -> Optional[str]:
         """Get most likely Wiki id of a single entity from entity fishing backend response.
+
         Args:
-            entity (str): entity to find corresponding wiki data id
+            text (str): text to be wiki linked
             entities (List[Dict[str, Any]]): Response from entity fishing backend
         """
         wiki_list = []
         for entity in entities:
-            if entity.get("offsetStart"):
-                if entity_text_match(entity["rawName"], entity_text):
+            if entity.get("offsetStart") is not None:
+                if entity_text_match(entity["rawName"], text):
                     wiki_list += [entity.get("wikidataId")]
 
         if len(wiki_list) > 0:
@@ -170,6 +172,7 @@ class EntityLinkingServedModel(ServedModel):
         self, text: str, entities: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """Generate a component of query to be consumed by the entity fish endpoint.
+
         Args:
             text (str): text to be wiki linked
             entities (List[Dict[str, Any]]):

@@ -7,35 +7,35 @@ from typing import Dict, List, Optional
 from onclusiveml.core.serialization import JsonApiSchema
 
 
-class PredictRequestAttributeSchema(JsonApiSchema):
+class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     content: str
 
 
-class PredictRequestParametersSchema(JsonApiSchema):
+class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
     lang: str = "en"
 
 
-class PredictResponseEntity(JsonApiSchema):
+class PredictResponseEntityV1(JsonApiSchema):
     """Prediction entity."""
 
     entity_type: Optional[str] = None
     entity_text: Optional[str] = None
     score: Optional[str] = None
-    sentence_index: Optional[str] = None
+    sentence_index: Optional[int] = None
     wiki_link: Optional[str] = None
 
 
-class PredictResponseAttributeSchema(JsonApiSchema):
+class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     entities: List[PredictResponseEntity] = []
 
 
-class BioRequestAttributeSchema(JsonApiSchema):
+class BioRequestAttributeSchemaV1(JsonApiSchema):
     """Response model for a bio response.
 
     Attributes:
