@@ -4,7 +4,7 @@
 from functools import lru_cache
 
 # 3rd party libraries
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.core.testing import get_override_settings_context_manager

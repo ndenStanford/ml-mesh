@@ -5,7 +5,7 @@ from functools import lru_cache
 from typing import Optional
 
 # 3rd party libraries
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):

@@ -5,7 +5,7 @@ import contextlib
 from typing import Callable, Generator
 
 # 3rd party libraries
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings
 
 
 def get_override_settings_context_manager(
