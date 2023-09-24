@@ -6,7 +6,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 # Source
 from src.model.constants import ModelEnum

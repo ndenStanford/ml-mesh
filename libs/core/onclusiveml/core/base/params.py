@@ -1,7 +1,7 @@
 """Settings."""
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Params(BaseSettings):

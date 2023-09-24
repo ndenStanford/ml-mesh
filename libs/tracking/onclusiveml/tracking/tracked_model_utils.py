@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Tuple
 
 # 3rd party libraries
-from pydantic import BaseSettings, Field, SecretStr, validator
+from pydantic_settings import BaseSettings, Field, SecretStr, validator
 
 
 class TrackedParams(BaseSettings):
