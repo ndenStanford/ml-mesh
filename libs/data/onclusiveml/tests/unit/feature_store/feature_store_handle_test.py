@@ -61,6 +61,10 @@ def feature_store_handle_instance(mocker):
         config_file="test-config.yaml",
         local_config_dir="test-config-dir",
         s3_handle=s3_handle,
+        features=["test_feature_view:feature_1"],
+        data_source="test_data_source",
+        data_id_key="entity_key",
+        data_ids=["1", "2"],
     )
 
 
@@ -77,6 +81,10 @@ def test_feature_store_handle_initialization(feature_store_handle_instance):
     assert feature_store_handle_instance.config_file == "test-config.yaml"
     assert feature_store_handle_instance.local_config_dir == "test-config-dir"
     assert os.path.exists(feature_store_handle_instance.config_file_path)
+    assert feature_store_handle_instance.features == ["test_feature_view:feature_1"]
+    assert feature_store_handle_instance.data_source == "test_data_source"
+    assert feature_store_handle_instance.data_id_key == "entity_key"
+    assert feature_store_handle_instance.data_ids == ["1", "2"]
     feature_store_handle_instance.fs.apply.assert_called_once_with([])
 
 
@@ -173,12 +181,7 @@ def test_fetch_historical_features(feature_store_handle_instance):
 
     """
     # Call the fetch_historical_features method
-    feature_store_handle_instance.fetch_historical_features(
-        features=["test_feature_view:feature_1"],
-        data_source="test_data_source",
-        version_key="dataset_version",
-        dataset_versions="v1",
-    )
+    feature_store_handle_instance.fetch_historical_features()
     feature_store_handle_instance.fs.get_historical_features.assert_called_with(
         entity_df=feature_store_handle_instance.entity_sql,
         features=["test_feature_view:feature_1"],
