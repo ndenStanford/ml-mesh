@@ -8,25 +8,23 @@ from typing import Iterator
 
 # 3rd party libraries
 import apache_beam as beam
-from apache_beam.io.aws.s3filesystem import S3FileSystem
 from apache_beam.io.aws.s3io import S3IO
 
 
 csv.field_size_limit(sys.maxsize)
 
 
-def iterate_s3io_bucket_items(path: str) -> Iterator[str]:
+def iterate_s3io_bucket_items(path: str, client: S3IO) -> Iterator[str]:
     """Generator of filenames in the provided s3 `path`.
 
     Args:
         path (str): S3 path
+        client (S3IO): S3 IO client
 
     Yields:
         atr: file name
     """
-    s3io_client = S3IO(options={})
-    files = s3io_client.list_files(path)
-    for file_name, _ in files:
+    for file_name, _ in client.list_files(path):
         yield file_name
 
 
@@ -79,10 +77,10 @@ class _CsvSource(beam.io.filebasedsource.FileBasedSource):
     def read_records(
         self, csvs_path: str, range_tracker: beam.io.OffsetRangeTracker
     ) -> Iterator[dict]:
-        items = iterate_s3io_bucket_items(csvs_path)
-        s3fs = S3FileSystem(pipeline_options={})
+        s3io_client = S3IO(options={})
+        items = iterate_s3io_bucket_items(csvs_path, s3io_client)
         for item in items:
-            with s3fs.open(item) as f:
-                reader = csv.DictReader(codecs.iterdecode(f, "utf-8"), dialect="unix")
+            with s3io_client.open(item) as f:
+                reader = csv.DictReader(codecs.iterdecode(f, "utf-8"))
                 for rec in reader:
-                    yield rec
+                    yield {k: v.replace("\n", "") for k, v in rec.items()}

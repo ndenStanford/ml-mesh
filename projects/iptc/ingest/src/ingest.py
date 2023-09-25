@@ -14,9 +14,6 @@ from onclusiveml.data.ingestion.csvio import ReadCsvsFromS3
 from src.settings import SCHEMA_MAP
 
 
-# from src.csvio import ReadCsvsFromS3
-
-
 def ingest(
     source_bucket_name: str,
     target_bucket_name: str,
