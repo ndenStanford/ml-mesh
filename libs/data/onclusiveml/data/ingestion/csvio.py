@@ -81,6 +81,8 @@ class _CsvSource(beam.io.filebasedsource.FileBasedSource):
         items = iterate_s3io_bucket_items(csvs_path, s3io_client)
         for item in items:
             with s3io_client.open(item) as f:
-                reader = csv.DictReader(codecs.iterdecode(f, "utf-8"))
+                reader = csv.DictReader(
+                    codecs.iterdecode(f, "utf-8"), quoting=csv.QUOTE_ALL
+                )
                 for rec in reader:
                     yield {k: v.replace("\n", "") for k, v in rec.items()}
