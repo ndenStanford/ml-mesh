@@ -34,7 +34,7 @@ An overview of developer utilitites and existing images on can be found [here](.
 - **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to
 bring data into our internal storage.
 - **register**: register features to be used in training component.
-  - [see here](./projects/docs/01_train.md) for this component's doc
+  - [see here](./projects/docs/00_register.md) for this component's doc
 - **train**: model training and registering to internal model registry.
   - [see here](./projects/docs/01_train.md) for this component's doc
 - **compile**: model compilation (optimized for serving) and registering to internal model registry
