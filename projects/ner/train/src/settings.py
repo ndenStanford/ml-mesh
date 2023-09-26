@@ -27,8 +27,7 @@ class TrackedNERModelSpecs(TrackedModelSpecs):
 class Inputs(TrackedParams):
     """Inputs."""
 
-    sample_documents_en: List[str] = [""]
-    sample_documents_kj: List[str] = [""]
+    sample_documents: List[List[str]] = [[""]]
 
     class Config:
         env_file = "config/dev.env"
@@ -53,7 +52,7 @@ class NERModelParams(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class NERModelParamsEN(NERModelParams):
+class NERModelParamsBase(NERModelParams):
     """Dslim NER model."""
 
     huggingface_pipeline_task: str = "token-classification"
@@ -75,15 +74,12 @@ class TrackedNERBaseModelCard(TrackedModelCard):
     model_type: str = "trained"
     # --- custom fields
     # model params
-    ner_model_params: NERModelParamsEN = NERModelParamsEN()
+    ner_model_params_base: NERModelParamsBase = NERModelParamsBase()
     ner_model_params_kj: NERModelParamsKJ = NERModelParamsKJ()
     model_inputs: Inputs = Inputs()
     # admin
     local_output_dir: str = os.path.join(".", "ner_model_artifacts")
     logging_level: str = "INFO"
-
-    base_suffix: str = "_en"
-    kj_suffix: str = "_kj"
 
     kj_model_subdirectory: str = "/korean_japanese_ner"
     base_model_subdirectory: str = "/base_ner"

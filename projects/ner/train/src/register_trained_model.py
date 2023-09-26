@@ -36,9 +36,9 @@ def main() -> None:
     # Create pipeline using ner model and tokenizer
     logger.info("Creating base NER pipeline")
     hf_pipeline = pipeline(
-        task=model_card.ner_model_params.huggingface_pipeline_task,
-        model=model_card.ner_model_params.huggingface_model_reference,
-        tokenizer=model_card.ner_model_params.huggingface_model_reference,
+        task=model_card.ner_model_params_base.huggingface_pipeline_task,
+        model=model_card.ner_model_params_base.huggingface_model_reference,
+        tokenizer=model_card.ner_model_params_base.huggingface_model_reference,
     )
 
     # Create pipeline using ner model and tokenizer
@@ -50,22 +50,24 @@ def main() -> None:
     )
 
     # ner settings
-    ner_settings = model_card.ner_model_params.ner_settings.dict()
+    ner_settings_base = model_card.ner_model_params_base.ner_settings.dict()
     ner_settings_kj = model_card.ner_model_params_kj.ner_settings.dict()
+
+    ner_settings = [ner_settings_base, ner_settings_kj]
 
     # --- create prediction files
     logger.info("Making predictions from example inputs")
-    ner_predictions: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline(
-        model_card.model_inputs.sample_documents_en
+    ner_predictions_base: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline(
+        model_card.model_inputs.sample_documents[0]
     )
 
     ner_predictions_kj: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline_kj(
-        model_card.model_inputs.sample_documents_kj
+        model_card.model_inputs.sample_documents[1]
     )
 
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
-    for sublist in ner_predictions:
+    for sublist in ner_predictions_base:
         for dictionary in sublist:
             dictionary["score"] = float(dictionary["score"])
 
@@ -73,33 +75,23 @@ def main() -> None:
         for dictionary in sublist:
             dictionary["score"] = float(dictionary["score"])
 
+    ner_predictions = [ner_predictions_base, ner_predictions_kj]
+
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
         (
-            model_card.model_inputs.sample_documents_en,
-            model_card.model_test_files.inputs + model_card.base_suffix,
+            model_card.model_inputs.sample_documents,
+            model_card.model_test_files.inputs,
         ),
         (
             ner_settings,
-            model_card.model_test_files.inference_params + model_card.base_suffix,
+            model_card.model_test_files.inference_params,
         ),
         (
             ner_predictions,
-            model_card.model_test_files.predictions + model_card.base_suffix,
-        ),
-        (
-            model_card.model_inputs.sample_documents_kj,
-            model_card.model_test_files.inputs + model_card.kj_suffix,
-        ),
-        (
-            ner_settings_kj,
-            model_card.model_test_files.inference_params + model_card.kj_suffix,
-        ),
-        (
-            ner_predictions_kj,
-            model_card.model_test_files.predictions + model_card.kj_suffix,
+            model_card.model_test_files.predictions,
         ),
     ]:
         model_version.upload_config_to_model_version(
