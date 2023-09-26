@@ -20,7 +20,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     language: str = "en"
 
 
-class PredictResponseEntityV1(JsonApiSchema):
+class PredictResponseEntity(JsonApiSchema):
     """Prediction entity."""
 
     entity_type: Optional[str] = None

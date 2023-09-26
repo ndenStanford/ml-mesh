@@ -2,7 +2,6 @@
 
 # 3rd party libraries
 import pytest
-from served_model_test import TestServedModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
@@ -127,22 +126,22 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
             "test",
         ),
         (
-            TestServedModel,
+            pytest.lazy_fixture("get_test_served_model"),
             ServedModelMethods().predict,
             "v2",
         ),
         (
-            TestServedModel,
+            pytest.lazy_fixture("get_test_served_model"),
             ServedModelMethods().predict,
             "test",
         ),
         (
-            TestServedModel,
+            pytest.lazy_fixture("get_test_served_model"),
             ServedModelMethods().bio,
             "v2",
         ),
         (
-            TestServedModel,
+            pytest.lazy_fixture("get_test_served_model"),
             ServedModelMethods().bio,
             "test",
         ),
