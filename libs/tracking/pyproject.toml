@@ -11,7 +11,8 @@ neptune = "1.1.1"
 boto3 = "1.20.23" # not specifying this causes the lock command to run forever
 numpy = "1.22.0" # not specifying this causes 1.24.3 to be installed, clashing with the `compile` lib reqs
 core = {path = "../core"}
-pydantic = {version = "1.10.4", extras = ["dotenv"]}
+pydantic = {version = "<2.0.0", extras = ["dotenv"]}
+typing-extensions = "^4.5.0"
 
 
 [tool.poetry.group.dev.dependencies]
