@@ -503,7 +503,7 @@ protobuf = "3.20.1"
 torch = "1.12.1"
 torch-neuron = "1.12.1.2.5.8.0"
 transformers = "^4.27.2"
-urllib3 = "<2.0.5"
+urllib3 = "<2.0.0"
 
 [package.source]
 type = "directory"
@@ -3348,7 +3348,7 @@ prometheus-client = "^0.17.1"
 pydantic = "1.10.4"
 requests = "2.31.0"
 types-requests = "^2.31.0.2"
-urllib3 = "<2.0.5"
+urllib3 = "<2.0.0"
 uvicorn = "0.23.2"
 
 [package.source]
