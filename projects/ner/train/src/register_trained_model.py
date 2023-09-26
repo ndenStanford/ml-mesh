@@ -5,7 +5,11 @@ import os
 from typing import Dict, List, Union
 
 # ML libs
-from transformers import pipeline
+from transformers import (
+    AutoModelForTokenClassification,
+    BertForTokenClassification,
+    pipeline,
+)
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -35,17 +39,27 @@ def main() -> None:
 
     # Create pipeline using ner model and tokenizer
     logger.info("Creating base NER pipeline")
+
+    model_base = BertForTokenClassification.from_pretrained(
+        model_card.ner_model_params_base.huggingface_model_reference, return_dict=False
+    )
+
     hf_pipeline = pipeline(
         task=model_card.ner_model_params_base.huggingface_pipeline_task,
-        model=model_card.ner_model_params_base.huggingface_model_reference,
+        model=model_base,
         tokenizer=model_card.ner_model_params_base.huggingface_model_reference,
     )
 
     # Create pipeline using ner model and tokenizer
     logger.info("Creating Korean & Japanese NER pipeline")
+
+    model_kj = AutoModelForTokenClassification.from_pretrained(
+        model_card.ner_model_params_kj.huggingface_model_reference_kj, return_dict=False
+    )
+
     hf_pipeline_kj = pipeline(
         task=model_card.ner_model_params_kj.huggingface_pipeline_task_kj,
-        model=model_card.ner_model_params_kj.huggingface_model_reference_kj,
+        model=model_kj,
         tokenizer=model_card.ner_model_params_kj.huggingface_model_reference_kj,
     )
 
