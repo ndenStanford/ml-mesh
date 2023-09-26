@@ -53,7 +53,7 @@ class NERModelParams(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class NERModelParams(NERModelParams):
+class NERModelParamsEN(NERModelParams):
     """Dslim NER model."""
 
     huggingface_pipeline_task: str = "token-classification"
@@ -75,7 +75,7 @@ class TrackedNERBaseModelCard(TrackedModelCard):
     model_type: str = "trained"
     # --- custom fields
     # model params
-    ner_model_params: NERModelParams = NERModelParams()
+    ner_model_params: NERModelParamsEN = NERModelParamsEN()
     ner_model_params_kj: NERModelParamsKJ = NERModelParamsKJ()
     model_inputs: Inputs = Inputs()
     # admin
