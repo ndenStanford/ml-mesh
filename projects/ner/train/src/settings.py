@@ -63,8 +63,8 @@ class NERModelParamsEN(NERModelParams):
 class NERModelParamsKJ(NERModelParams):
     """Korean/Japanese NER model."""
 
-    huggingface_pipeline_task: str = "token-classification"
-    huggingface_model_reference: str = (
+    huggingface_pipeline_task_kj: str = "token-classification"
+    huggingface_model_reference_kj: str = (
         "Davlan/distilbert-base-multilingual-cased-ner-hrl"
     )
 

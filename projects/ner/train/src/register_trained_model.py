@@ -32,7 +32,6 @@ def main() -> None:
     model_version = TrackedModelVersion(**model_specs.dict())
     # --- initialize models
     # get pretrained model and tokenizer
-    logger.info("Initializing model and tokenizer")
 
     # Create pipeline using ner model and tokenizer
     logger.info("Creating English NER pipeline")
@@ -45,9 +44,9 @@ def main() -> None:
     # Create pipeline using ner model and tokenizer
     logger.info("Creating Korean & Japanese NER pipeline")
     hf_pipeline_kj = pipeline(
-        task=model_card.ner_model_params_kj.huggingface_pipeline_task,
-        model=model_card.ner_model_params_kj.huggingface_model_reference,
-        tokenizer=model_card.ner_model_params_kj.huggingface_model_reference,
+        task=model_card.ner_model_params_kj.huggingface_pipeline_task_kj,
+        model=model_card.ner_model_params_kj.huggingface_model_reference_kj,
+        tokenizer=model_card.ner_model_params_kj.huggingface_model_reference_kj,
     )
 
     # ner settings
