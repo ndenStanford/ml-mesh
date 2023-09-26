@@ -30,7 +30,7 @@ To follow the instructions in this guide, run
 ```bash
 export PROJECT_NAME=your_project_name_here
 export BASE_IMAGE_TAG=the_base_image_docker_tag_here
-export IMAGE_TAG=your_desired_train_container_docker_tag_here
+export IMAGE_TAG=your_desired_register_container_docker_tag_here
 export AWS_ACCESS_KEY_ID=your_aws_access_key_id_here
 export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
 ```
@@ -46,13 +46,13 @@ The following `docker compose` services are typically associated with a project'
 - `register-unit`
    - used to run `unit` test suite
 
-### 2.3 Building the `train` component :construction:
+### 2.3 Building the `register` component :construction:
 
 To locally build the image
 - using the `${BASE_IMAGE_TAG}` version of the base image, and
 - using the `docker-compose.dev.yaml`,
 - using the `development` build stage,
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-train:${IMAGE_TAG}`,
+- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${PROJECT_NAME}-register:${IMAGE_TAG}`,
 
 run:
 
@@ -84,7 +84,7 @@ The following test suites are implemented:
 
 ### 3.1 Run `unit` tests :warning: :nut_and_bolt:
 
-To run the `unit` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
+To run the `unit` tests for the `register` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
 make projects.unit/${PROJECT_NAME} COMPONENT=register
@@ -92,7 +92,7 @@ make projects.unit/${PROJECT_NAME} COMPONENT=register
 
 ### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
 
-To run the `integration` tests for the `train` component using the `docker-compose.dev.yaml` file, run:
+To run the `integration` tests for the `register` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
 make projects.integration/${PROJECT_NAME} COMPONENT=register
