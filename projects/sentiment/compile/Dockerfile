@@ -26,13 +26,8 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-RUN mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R "${USER}:users" "${HOME}" \
- && chown -R "${USER}:users" /usr/local/bin \
- && chown -R "${USER}:users" /usr/local/lib \
- && chown -R "${USER}:users" /usr/local/include \
- && chown -R "${USER}:users" "${POETRY_HOME}"
+# hadolint ignore=DL3002
+USER root
 
 RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
@@ -40,6 +35,7 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+USER app
 
 # --- production stage
 FROM builder as production
