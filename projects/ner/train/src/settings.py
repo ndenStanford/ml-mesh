@@ -82,6 +82,12 @@ class TrackedNERBaseModelCard(TrackedModelCard):
     local_output_dir: str = os.path.join(".", "ner_model_artifacts")
     logging_level: str = "INFO"
 
+    base_suffix: str = "_en"
+    kj_suffix: str = "_kj"
+
+    kj_model_subdirectory: str = "/korean_japanese_ner"
+    base_model_subdirectory: str = "/base_ner"
+
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"

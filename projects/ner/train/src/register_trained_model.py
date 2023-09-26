@@ -34,7 +34,7 @@ def main() -> None:
     # get pretrained model and tokenizer
 
     # Create pipeline using ner model and tokenizer
-    logger.info("Creating English NER pipeline")
+    logger.info("Creating base NER pipeline")
     hf_pipeline = pipeline(
         task=model_card.ner_model_params.huggingface_pipeline_task,
         model=model_card.ner_model_params.huggingface_model_reference,
@@ -79,24 +79,38 @@ def main() -> None:
     for (test_file, test_file_attribute_path) in [
         (
             model_card.model_inputs.sample_documents_en,
-            model_card.model_test_files.inputs + "/en",
+            model_card.model_test_files.inputs + model_card.base_suffix,
         ),
-        (ner_settings, model_card.model_test_files.inference_params + "/en"),
-        (ner_predictions, model_card.model_test_files.predictions + "/en"),
+        (
+            ner_settings,
+            model_card.model_test_files.inference_params + model_card.base_suffix,
+        ),
+        (
+            ner_predictions,
+            model_card.model_test_files.predictions + model_card.base_suffix,
+        ),
         (
             model_card.model_inputs.sample_documents_kj,
-            model_card.model_test_files.inputs + "/kj",
+            model_card.model_test_files.inputs + model_card.kj_suffix,
         ),
-        (ner_settings_kj, model_card.model_test_files.inference_params + "/kj"),
-        (ner_predictions_kj, model_card.model_test_files.predictions + "/kj"),
+        (
+            ner_settings_kj,
+            model_card.model_test_files.inference_params + model_card.kj_suffix,
+        ),
+        (
+            ner_predictions_kj,
+            model_card.model_test_files.predictions + model_card.kj_suffix,
+        ),
     ]:
         model_version.upload_config_to_model_version(
             config=test_file, neptune_attribute_path=test_file_attribute_path
         )
 
     logger.info("Pushing model artifact and assets to s3")
-    # model artifact
-    hf_pipeline_local_dir = os.path.join(model_card.local_output_dir, "hf_pipeline_en")
+    # model artifact for original
+    hf_pipeline_local_dir = os.path.join(
+        model_card.local_output_dir, "hf_pipeline_base"
+    )
     hf_pipeline.save_pretrained(hf_pipeline_local_dir)
 
     hf_pipeline_local_dir_kj = os.path.join(
@@ -106,12 +120,14 @@ def main() -> None:
 
     model_version.upload_directory_to_model_version(
         local_directory_path=hf_pipeline_local_dir,
-        neptune_attribute_path=model_card.model_artifact_attribute_path + "/en",
+        neptune_attribute_path=model_card.model_artifact_attribute_path
+        + model_card.base_model_subdirectory,
     )
 
     model_version.upload_directory_to_model_version(
         local_directory_path=hf_pipeline_local_dir_kj,
-        neptune_attribute_path=model_card.model_artifact_attribute_path + "/kj",
+        neptune_attribute_path=model_card.model_artifact_attribute_path
+        + model_card.kj_model_subdirectory,
     )
     # model card
     model_version.upload_config_to_model_version(
