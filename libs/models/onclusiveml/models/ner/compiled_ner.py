@@ -293,12 +293,10 @@ class CompiledNER:
                 x.entity_text = x.entity_text[2:]
         # Remove start and end key from output if we do not want to have the word positions
         if not return_pos:
-            output_list_no_pos = []
-            for ent in output_list:
-                output_list_no_pos.append(
-                    PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
-                )
-            return output_list_no_pos
+            output_list = [
+                PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
+                for ent in output_list
+            ]
         return output_list
 
     def extract_entities(
