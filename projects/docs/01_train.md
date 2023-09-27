@@ -160,3 +160,16 @@ Update
 ```bash
 make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
+## 5 Running the `train` component in CI:
+
+To run the training component on CI, you will need to update the [**`ci.yaml's**](../keywords/train)
+`run-train-pipelines` component. Below is an example of what to add:
+
+```
+- runner-kind: custom
+self-hosted-runner-type: inf1.2xlarge
+project: keywords
+tag: ${{ needs.run-repository-state.outputs.tag }}
+```
+
+This will allow for the training component to be run on CI and push the model into our `onclusive-model-store-stage` bucket
