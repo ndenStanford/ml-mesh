@@ -103,7 +103,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         [
             {
                 "entity_type": "ORG",
-                "score": 0.9981778860092163,
+                "score": 0.9981784820556641,
                 "sentence_index": 0,
                 "entity_text": "Google",
                 "start": 0,
@@ -111,7 +111,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             },
             {
                 "entity_type": "LOC",
-                "score": 0.998550146818161,
+                "score": 0.9985500276088715,
                 "sentence_index": 0,
                 "entity_text": "Mountain View",
                 "start": 16,
@@ -129,7 +129,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         [
             {
                 "entity_type": "LOC",
-                "score": 0.991286963224411,
+                "score": 0.9915184080600739,
                 "sentence_index": 0,
                 "entity_text": "Gulf Stream",
                 "start": 21,
@@ -137,7 +137,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             },
             {
                 "entity_type": "LOC",
-                "score": 0.9935731490453085,
+                "score": 0.9936122298240662,
                 "sentence_index": 0,
                 "entity_text": "Cape Cod",
                 "start": 81,
@@ -147,7 +147,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         [
             {
                 "entity_type": "LOC",
-                "score": 0.9925467371940613,
+                "score": 0.9923036098480225,
                 "sentence_index": 0,
                 "entity_text": "Jupiter",
                 "start": 105,
@@ -157,7 +157,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
         [
             {
                 "entity_type": "ORG",
-                "score": 0.7017723023891449,
+                "score": 0.7026115457216898,
                 "sentence_index": 0,
                 "entity_text": "Loggerhead Marinelife Center",
                 "start": 10,
