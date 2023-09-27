@@ -37,7 +37,7 @@ class CompiledNER:
         """
         self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
         self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
-        self.supported_altaic_langs = ["ko", "jp"]
+        self.supported_altaic_langs = ["ko", "ja"]
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
