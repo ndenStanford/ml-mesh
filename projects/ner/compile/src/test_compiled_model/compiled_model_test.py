@@ -62,7 +62,9 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         test_files["inputs"][test_sample_index], language="en", return_pos=True
     )
 
-    assert [i.dict() for i in compiled_predictions] == test_files_predictions[test_sample_index]
+    assert [i.dict() for i in compiled_predictions] == test_files_predictions[
+        test_sample_index
+    ]
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler
     compiled_predictions_dict = [obj.__dict__ for obj in compiled_predictions]
