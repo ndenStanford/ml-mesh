@@ -111,7 +111,7 @@ make projects.functional/${PROJECT_NAME} COMPONENT=register
 
 ### 4.1 Without containers (initial development and debugging only)
 
-For development purposes, the pipeline can be run locally without containers. While this
+For development purposes, the pipeline can be run locally without containers. Note that while this
 could ease the development process, it has some downsides since you are now outside of your bespoke
 container runtime environment. The following risks should be considered. It's important to test
 the functionality of your code via make command once the development is finished.
