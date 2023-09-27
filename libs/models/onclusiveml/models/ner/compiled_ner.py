@@ -37,6 +37,7 @@ class CompiledNER:
         """
         self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
         self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
+        self.supported_altaic_langs = ["ko", "jp"]
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
@@ -127,11 +128,12 @@ class CompiledNER:
         list_sentences = self.sentence_tokenize(sentences, language)
         return list_sentences
 
-    def inference(self, sentences: List[str]) -> InferenceOutput:
+    def inference(self, sentences: List[str], language: str) -> InferenceOutput:
         """Perform NER inference on a list of sentences.
 
         Args:
             sentences (List[str]): list of sentences
+            language: (str) language of given sentences
 
         Returns:
             InferenceOutput: List of lists of NER predictions which has the attributes:
@@ -141,7 +143,10 @@ class CompiledNER:
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
-        entities = self.compiled_ner_pipeline_base(sentences)
+        if language in self.supported_altaic_langs:
+            entities = self.compiled_ner_pipeline_kj
+        else:
+            entities = self.compiled_ner_pipeline_base(sentences)
         for sublist in entities:
             for dictionary in sublist:
                 dictionary.pop("index", None)
@@ -321,6 +326,6 @@ class CompiledNER:
                     - start (int): starting position of word
         """
         list_sentences = self.preprocess(sentences, language)
-        ner_labels = self.inference(list_sentences)
+        ner_labels = self.inference(list_sentences, language)
         entities = self.postprocess(ner_labels, return_pos)
         return entities
