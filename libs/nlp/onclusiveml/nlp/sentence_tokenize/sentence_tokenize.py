@@ -7,8 +7,12 @@ from typing import Any, Dict, List
 # 3rd party libraries
 import nltk
 
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
 
 nltk.download("punkt")
+logger = get_default_logger(__name__)
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
@@ -36,8 +40,15 @@ class SentenceTokenizer:
         langIso = LanguageIso.from_language_iso(language)
         # return english equivalent of LanguageIso e.g. LanguageIso.FR is french
         lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
-
-        sentences_first = nltk.sent_tokenize(content, lang_simplified)
+        try:
+            sentences_first = nltk.sent_tokenize(content, lang_simplified)
+        except LookupError:
+            sentences_first = nltk.sent_tokenize(content, "english")
+            logger.info(
+                "The language {} is not supported, defaulting to English".format(
+                    lang_simplified
+                )
+            )
         sentences = []
 
         for sentence in sentences_first:

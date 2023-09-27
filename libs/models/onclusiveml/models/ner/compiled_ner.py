@@ -144,7 +144,7 @@ class CompiledNER:
                 - end (int): ending position of word
         """
         if language in self.supported_altaic_langs:
-            entities = self.compiled_ner_pipeline_kj
+            entities = self.compiled_ner_pipeline_kj(sentences)
         else:
             entities = self.compiled_ner_pipeline_base(sentences)
         for sublist in entities:
