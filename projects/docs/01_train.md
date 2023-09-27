@@ -162,8 +162,8 @@ make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
 ## 5 Running the `train` component in CI:
 
-To run the training component on CI, you will need to update the [**`ci.yaml's**](../keywords/train)
-`run-train-pipelines` component. Below is an example of what to add:
+To run the training component on CI, you will need to update the [**ci.yaml's**](../../.github/workflow/ci.yaml)
+ `run-train-pipelines` component. Below is an example of what to add:
 
 ```
 - runner-kind: custom
