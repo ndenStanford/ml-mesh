@@ -507,6 +507,9 @@ jobs       :
           - project: keywords
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: ner
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
     with:
       environment: prod
       project: ${{ matrix.models.project }}
