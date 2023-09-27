@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.models.ner.settings import (
+    DISTILBERT_SUPPORTED_LANGS,
     InferenceOutput,
     PostprocessOutput,
     PostprocessOutputNoPos,
@@ -37,7 +38,6 @@ class CompiledNER:
         """
         self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
         self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
-        self.supported_altaic_langs = ["ko", "ja"]
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
@@ -143,7 +143,7 @@ class CompiledNER:
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
-        if language in self.supported_altaic_langs:
+        if language in DISTILBERT_SUPPORTED_LANGS:
             entities = self.compiled_ner_pipeline_kj(sentences)
         else:
             entities = self.compiled_ner_pipeline_base(sentences)
@@ -287,7 +287,10 @@ class CompiledNER:
             sentence_index += 1
         # Flatten the output list
         output_list = [item for sublist in output_list for item in sublist]
-
+        # Remove leftover double hashes in beginning from text that dont use Roman characters
+        for x in output_list:
+            if x.entity_text[:2] == "##":
+                x.entity_text = x.entity_text[2:]
         # Remove start and end key from output if we do not want to have the word positions
         if not return_pos:
             output_list_no_pos = []

@@ -179,7 +179,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 {
                     "entity_type": "LOC",
                     "score": 0.9976749370495478,
-                    "entity_text": "##カリフォルニアウンテンビュー",
+                    "entity_text": "カリフォルニアウンテンビュー",
                     "start": 10,
                     "end": 26,
                     "sentence_index": 0,
@@ -197,7 +197,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 {
                     "entity_type": "PER",
                     "score": 0.9701058566570282,
-                    "entity_text": "##ウミガメ",
+                    "entity_text": "ウミガメ",
                     "start": 19,
                     "end": 23,
                     "sentence_index": 0,
@@ -206,30 +206,30 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "LOC",
-                    "score": 0.9913632869720459,
-                    "entity_text": "木",
-                    "start": 45,
-                    "end": 47,
+                    "score": 0.998335987329483,
+                    "entity_text": "런던",
+                    "start": 0,
+                    "end": 2,
                     "sentence_index": 0,
-                }
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.999501903851827,
+                    "entity_text": "샌프란시스코",
+                    "start": 4,
+                    "end": 10,
+                    "sentence_index": 0,
+                },
             ],
             [
                 {
-                    "entity_type": "LOC",
-                    "score": 0.8191455205281576,
-                    "entity_text": "アカウミガメ",
-                    "start": 0,
-                    "end": 6,
-                    "sentence_index": 0,
-                },
-                {
-                    "entity_type": "LOC",
-                    "score": 0.8780778169631958,
-                    "entity_text": "ロッガーヘッド マリンライフ センター",
+                    "entity_type": "ORG",
+                    "score": 0.9580032527446747,
+                    "entity_text": "Loggerhead Marinelife Center",
                     "start": 17,
-                    "end": 36,
+                    "end": 45,
                     "sentence_index": 0,
-                },
+                }
             ],
         ],
     ]
