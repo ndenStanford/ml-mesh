@@ -27,7 +27,22 @@ class TrackedNERModelSpecs(TrackedModelSpecs):
 class Inputs(TrackedParams):
     """Inputs."""
 
-    sample_documents: List[List[str]] = [[""]]
+    sample_documents: List[List[str]] = [
+        [
+            "Google HQ is in Mountain View, CA",
+            "Hitchhiking onto the Gulf Stream, adult sea turtles often end up as far north as "
+            + "Cape Cod in their migratory travels.",
+            "Nesting season started March 1, so female loggerhead, green and leatherback sea "
+            + "turtles will be visiting Jupiter beaches to lay their eggs.",
+            "Check out Loggerhead Marinelife Center for a close look at sea turtles.",
+        ],
+        [
+            "Google 本社はカリフォルニア州マウンテンビューにあります",
+            "メキシコ湾流でヒッチハイクをする大人のウミガメは、回遊の旅の途中で北のケープコッドまで到達することがよくあります。",
+            "3月1日から営巣シーズンが始まり、メスのアカウミガメ、アオウミガメ、オサガメが産卵のために木星の海岸を訪れることになる。",
+            "アカウミガメを間近で観察するには、ロッガーヘッド マリンライフ センターを訪れてください。",
+        ],
+    ]
 
     class Config:
         env_file = "config/dev.env"
