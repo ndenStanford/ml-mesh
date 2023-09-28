@@ -102,9 +102,9 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         ) as compiled_predictions_file:
             all_compiled_predictions = json.load(compiled_predictions_file)
     except (FileExistsError, FileNotFoundError):
-        all_compiled_predictions = []
+        all_compiled_predictions = [[], []]
 
-    all_compiled_predictions.append(compiled_predictions_dict)
+    all_compiled_predictions[lang_index].append(compiled_predictions_dict)
 
     with open(
         io_settings.test.test_files["predictions"], "w"
