@@ -6,6 +6,8 @@ import os
 # 3rd party libraries
 import apache_beam as beam
 import pyarrow as pa
+from apache_beam.dataframe.convert import to_pcollection
+from apache_beam.dataframe.io import read_csv
 
 # Internal libraries
 from onclusiveml.data.ingestion.csvio import ReadCsvsFromS3
@@ -33,18 +35,44 @@ def ingest(
         test (bool): Test flag
     """
     schema = SCHEMA_MAP[level]
+    target_path = (
+        f"s3://{target_bucket_name}/iptc/{level}/ingested"
+        if not test
+        else f"s3://{target_bucket_name}/test/{level}/ingested"
+    )
     with beam.Pipeline() as p:
         _ = (
             p
             | "Read CSV" >> ReadCsvsFromS3(f"s3://{source_bucket_name}/raw/{level}/")
             | "Write parquet"
             >> beam.io.WriteToParquet(
-                file_path_prefix=f"s3://{target_bucket_name}/iptc/{level}/ingested"
-                if not test
-                else f"s3://{target_bucket_name}/test/{level}/ingested",
+                file_path_prefix=target_path,
                 file_name_suffix=".parquet",
                 schema=pa.schema(schema.schema_dict),
                 num_shards=num_shards,
+            )
+        )
+
+    with beam.Pipeline() as p:
+        df = p | "Read CSV" >> read_csv(
+            f"s3://{source_bucket_name}/raw/{level}/*.csv",
+            usecols=list(schema.schema_dict),
+            dtype={k: str for k in schema.schema_dict},
+        )
+        pcoll = to_pcollection(df, include_indexes=False, yield_elements="pandas")
+        _ = (
+            pcoll
+            | "To table"
+            >> beam.Map(
+                lambda x: pa.Table.from_pandas(
+                    x, schema=pa.schema(schema.schema_dict), preserve_index=False
+                )
+            )
+            | "Write to Parquet Batched"
+            >> beam.io.WriteToParquetBatched(
+                file_path_prefix=target_path,
+                file_name_suffix=".parquet",
+                schema=pa.schema(schema.schema_dict),
             )
         )
 

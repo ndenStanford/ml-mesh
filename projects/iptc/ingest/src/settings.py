@@ -10,11 +10,11 @@ class FirstLevelParquetSchema(Params):
     """Defines schema for the first level IPTC dataset."""
 
     schema_dict: dict = {
-        "title": pa.large_string(),
-        "score": pa.large_string(),
-        "topic": pa.large_string(),
-        "content": pa.large_string(),
-        "summary": pa.large_string(),
+        "title": pa.string(),
+        "score": pa.string(),
+        "topic": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
     }
 
 
@@ -22,16 +22,16 @@ class FirstLevelMultiLingualTopNParquetSchema(Params):
     """Defines schema for the first level top N IPTC dataset."""
 
     schema_dict: dict = {
-        "topic_1_0": pa.large_string(),
-        "topic_1_1": pa.large_string(),
-        "topic_1_2": pa.large_string(),
-        "score_0": pa.large_string(),
-        "score_1": pa.large_string(),
-        "score_2": pa.large_string(),
-        "title": pa.large_string(),
-        "content": pa.large_string(),
-        "summary": pa.large_string(),
-        "language": pa.large_string(),
+        "topic_1_0": pa.string(),
+        "topic_1_1": pa.string(),
+        "topic_1_2": pa.string(),
+        "score_0": pa.string(),
+        "score_1": pa.string(),
+        "score_2": pa.string(),
+        "title": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 
@@ -39,12 +39,12 @@ class FirstLevelMultiLingualParquetSchema(Params):
     """Defines schema for the first level multi lingual IPTC dataset."""
 
     schema_dict: dict = {
-        "title": pa.large_string(),
-        "score": pa.large_string(),
-        "topic_1": pa.large_string(),
-        "content": pa.large_string(),
-        "summary": pa.large_string(),
-        "language": pa.large_string(),
+        "title": pa.string(),
+        "score": pa.string(),
+        "topic_1": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 
@@ -52,12 +52,12 @@ class SecondLevelParquetSchema(Params):
     """Defines schema for the second level IPTC dataset."""
 
     schema_dict: dict = {
-        "topic_1": pa.large_string(),
-        "topic_2": pa.large_string(),
-        "score": pa.large_string(),
-        "title": pa.large_string(),
-        "content": pa.large_string(),
-        "summary": pa.large_string(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "score": pa.string(),
+        "title": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
     }
 
 
@@ -65,13 +65,13 @@ class SecondLevelMultiLingualParquetSchema(Params):
     """Defines schema for the second level multi lingual IPTC dataset."""
 
     schema_dict: dict = {
-        "topic_1": pa.large_string(),
-        "topic_2": pa.large_string(),
-        "score": pa.large_string(),
-        "title": pa.large_string(),
-        "content": pa.large_string(),
-        "summary": pa.large_string(),
-        "language": pa.large_string(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "score": pa.string(),
+        "title": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 
@@ -79,14 +79,14 @@ class ThirdLevelMultiLingualParquetSchema(Params):
     """Defines schema for the third level multi lingual IPTC dataset."""
 
     schema_dict: dict = {
-        "topic_1": pa.large_string(),
-        "topic_2": pa.large_string(),
-        "topic_3": pa.large_string(),
-        "score": pa.large_string(),
-        "title": pa.large_string(),
-        "content": pa.large_string(),
-        "summary": pa.large_string(),
-        "language": pa.large_string(),
+        "topic_1": pa.string(),
+        "topic_2": pa.string(),
+        "topic_3": pa.string(),
+        "score": pa.string(),
+        "title": pa.string(),
+        "content": pa.string(),
+        "summary": pa.string(),
+        "language": pa.string(),
     }
 
 

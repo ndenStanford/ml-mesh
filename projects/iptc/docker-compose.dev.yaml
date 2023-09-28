@@ -31,7 +31,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       SOURCE_BUCKET: kubeflow-opoint-data-dev
       TARGET_BUCKET: kubeflow-data-lake-dev
-      IPTC_LEVEL: second_level
+      IPTC_LEVEL: first_level
       SHARDS: 0
     hostname: onclusive-ml
     networks: [onclusive-net]

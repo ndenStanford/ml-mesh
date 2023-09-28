@@ -86,7 +86,8 @@ class _CsvSource(beam.io.filebasedsource.FileBasedSource):
             )
             try:
                 yield from csv_reader
-            except csv.Error:
+            except (csv.Error, KeyError) as e:
+                print(e)
                 yield {k: "" for k in csv_reader.fieldnames}
             except StopIteration:
                 break
