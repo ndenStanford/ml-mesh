@@ -1626,14 +1626,14 @@ tests = ["pytest"]
 
 [[package]]
 name = "partd"
-version = "1.4.0"
+version = "1.4.1"
 description = "Appendable key-value storage"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "partd-1.4.0-py3-none-any.whl", hash = "sha256:7a63529348cf0dff14b986db641cd1b83c16b5cb9fc647c2851779db03282ef8"},
-    {file = "partd-1.4.0.tar.gz", hash = "sha256:aa0ff35dbbcc807ae374db56332f4c1b39b46f67bf2975f5151e0b4186aed0d5"},
+    {file = "partd-1.4.1-py3-none-any.whl", hash = "sha256:27e766663d36c161e2827aa3e28541c992f0b9527d3cca047e13fb3acdb989e6"},
+    {file = "partd-1.4.1.tar.gz", hash = "sha256:56c25dd49e6fea5727e731203c466c6e092f308d8f0024e199d02f6aa2167f67"},
 ]
 
 [package.dependencies]

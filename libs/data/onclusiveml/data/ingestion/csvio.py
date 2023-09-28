@@ -14,15 +14,15 @@ from apache_beam.io.aws.s3io import S3IO
 csv.field_size_limit(sys.maxsize)
 
 
-def iterate_s3io_bucket_items(path: str, client: S3IO) -> Iterator[str]:
-    """Generator of filenames in the provided s3 `path`.
+def iterate_path_objects(path: str, client: S3IO) -> Iterator[str]:
+    """Iterates through objects names in the provided s3 `path`.
 
     Args:
         path (str): S3 path
-        client (S3IO): S3 IO client
+        client (S3IO): S3IO client
 
     Yields:
-        atr: file name
+        str: file name
     """
     for file_name, _ in client.list_files(path):
         yield file_name
@@ -75,14 +75,18 @@ class ReadCsvsFromS3(beam.PTransform):
 
 class _CsvSource(beam.io.filebasedsource.FileBasedSource):
     def read_records(
-        self, csvs_path: str, range_tracker: beam.io.OffsetRangeTracker
+        self, path: str, range_tracker: beam.io.OffsetRangeTracker
     ) -> Iterator[dict]:
         s3io_client = S3IO(options={})
-        items = iterate_s3io_bucket_items(csvs_path, s3io_client)
+        items = iterate_path_objects(path, s3io_client)
         for item in items:
-            with s3io_client.open(item) as f:
-                reader = csv.DictReader(
-                    codecs.iterdecode(f, "utf-8"), quoting=csv.QUOTE_ALL
-                )
-                for rec in reader:
-                    yield {k: v.replace("\n", "") for k, v in rec.items()}
+            file = s3io_client.open(item).readlines()
+            csv_reader = csv.DictReader(
+                codecs.iterdecode(file, "utf-8"), dialect="unix"
+            )
+            try:
+                yield from csv_reader
+            except csv.Error:
+                yield {k: "" for k in csv_reader.fieldnames}
+            except StopIteration:
+                break

@@ -18,6 +18,8 @@ def ingest(
     source_bucket_name: str,
     target_bucket_name: str,
     level: str,
+    num_shards: int,
+    test: bool,
 ) -> None:
     """Read the opoint data, write to the data lake bucket in .parquet.
 
@@ -27,17 +29,22 @@ def ingest(
         level (str): IPTC dataset level, can be one of:
             {'first_level', 'first_level_multi_lingual','second_level',
             'second_level_multi_lingual', 'third_level', 'third_level_multi_lingual'}
+        num_shards (int): The number of files (shards) used for output, default 3000.
+        test (bool): Test flag
     """
     schema = SCHEMA_MAP[level]
     with beam.Pipeline() as p:
         _ = (
             p
-            | "Read CSVs" >> ReadCsvsFromS3(f"s3://{source_bucket_name}/raw/{level}/")
-            | "Write to parquet"
+            | "Read CSV" >> ReadCsvsFromS3(f"s3://{source_bucket_name}/raw/{level}/")
+            | "Write parquet"
             >> beam.io.WriteToParquet(
-                file_path_prefix=f"s3://{target_bucket_name}/iptc/{level}/parquet",
+                file_path_prefix=f"s3://{target_bucket_name}/iptc/{level}/ingested"
+                if not test
+                else f"s3://{target_bucket_name}/test/{level}/ingested",
                 file_name_suffix=".parquet",
                 schema=pa.schema(schema.schema_dict),
+                num_shards=num_shards,
             )
         )
 
@@ -47,4 +54,6 @@ if __name__ == "__main__":
         source_bucket_name=os.environ["SOURCE_BUCKET"],
         target_bucket_name=os.environ["TARGET_BUCKET"],
         level=os.environ["IPTC_LEVEL"],
+        num_shards=int(os.environ["SHARDS"]),
+        test=False,
     )

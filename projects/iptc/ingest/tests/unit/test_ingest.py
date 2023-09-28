@@ -19,13 +19,15 @@ def test_ingest(capsys) -> None:
     ingest(
         source_bucket_name=os.environ["SOURCE_BUCKET"],
         target_bucket_name=os.environ["TARGET_BUCKET"],
+        level=os.environ["IPTC_LEVEL"],
+        num_shards=int(os.environ["SHARDS"]),
         test=True,
     )
     _, err = capsys.readouterr()
     assert err == ""
     s3 = boto3.resource("s3")
     target_bucket = s3.Bucket(os.environ["TARGET_BUCKET"])
-    response = target_bucket.objects.filter(Prefix="test").delete()
+    response = target_bucket.objects.filter(Prefix=os.environ["IPTC_LEVEL"]).delete()
     _, err = capsys.readouterr()
     assert err == ""
     assert response[0]["ResponseMetadata"]["HTTPStatusCode"] == 200
