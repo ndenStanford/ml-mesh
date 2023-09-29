@@ -44,7 +44,7 @@ class SentenceTokenizer:
             sentences_first = nltk.sent_tokenize(content, lang_simplified)
         except LookupError:
             sentences_first = nltk.sent_tokenize(content, "english")
-            logger.info(
+            logger.debug(
                 "The language {} is not supported, defaulting to English".format(
                     lang_simplified
                 )
