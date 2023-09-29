@@ -16,7 +16,10 @@ logger = get_default_logger(__name__)
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
-from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.sentence_tokenize.consts import (
+    NLTK_SUPPORTED_LANGS,
+    SPECIAL_CHARACTERS,
+)
 
 
 class SentenceTokenizer:
@@ -40,17 +43,13 @@ class SentenceTokenizer:
         langIso = LanguageIso.from_language_iso(language)
         # return english equivalent of LanguageIso e.g. LanguageIso.FR is french
         lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
-        try:
-            sentences_first = nltk.sent_tokenize(content, lang_simplified)
-        except LookupError:
-            sentences_first = nltk.sent_tokenize(content, "english")
-            logger.debug(
-                "The language {} is not supported, defaulting to English".format(
-                    lang_simplified
-                )
-            )
-        sentences = []
 
+        if lang_simplified in NLTK_SUPPORTED_LANGS:
+            sentences_first = nltk.sent_tokenize(content, lang_simplified)
+        else:
+            sentences_first = nltk.sent_tokenize(content, "english")
+
+        sentences = []
         for sentence in sentences_first:
             s = self.regex.split(sentence)
             sentences += s

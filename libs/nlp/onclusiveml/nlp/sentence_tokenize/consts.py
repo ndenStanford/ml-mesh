@@ -4,6 +4,29 @@
 from pydantic import BaseModel
 
 
+# List of supported languages for NLTK
+NLTK_SUPPORTED_LANGS = [
+    "czech",
+    "danish",
+    "dutch",
+    "english",
+    "estonian",
+    "finnish",
+    "french",
+    "german",
+    "greek",
+    "italian",
+    "norwegian",
+    "polish",
+    "portuguese",
+    "russian",
+    "slovene",
+    "spanish",
+    "swedish",
+    "turkish",
+]
+
+
 class SpecialCharacter(BaseModel):
     """Class to represent special characters.
 
