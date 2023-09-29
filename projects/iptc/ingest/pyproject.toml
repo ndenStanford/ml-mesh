@@ -6,11 +6,8 @@ authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-apache-beam = {extras = ["aws", "dataframe"], version = "2.48.0"}
-pyarrow = "^11.0.0"
 core = {path = "../../../libs/core"}
-data = {path = "../../../libs/data"}
-ipykernel = "^6.25.2"
+apache-beam = {extras = ["aws", "dataframe"], version = "2.48.0"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

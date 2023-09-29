@@ -72,7 +72,6 @@ def ingest(
             >> beam.io.WriteToParquetBatched(
                 file_path_prefix=target_path,
                 file_name_suffix=".parquet",
-                schema=pa.schema(schema.schema_dict),
                 num_shards=num_shards,
             )
         )

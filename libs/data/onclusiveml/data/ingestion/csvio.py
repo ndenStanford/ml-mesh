@@ -81,13 +81,17 @@ class _CsvSource(beam.io.filebasedsource.FileBasedSource):
         items = iterate_path_objects(path, s3io_client)
         for item in items:
             file = s3io_client.open(item).readlines()
-            csv_reader = csv.DictReader(
-                codecs.iterdecode(file, "utf-8"), dialect="unix"
-            )
             try:
-                yield from csv_reader
-            except (csv.Error, KeyError) as e:
+                csv_reader = csv.DictReader(
+                    codecs.iterdecode(file, "utf-8"), dialect="unix"
+                )
+                try:
+                    yield from csv_reader
+                except csv.Error as e:
+                    print(e)
+                    yield {k: "" for k in csv_reader.fieldnames}
+                except StopIteration:
+                    break
+            except KeyError as e:
                 print(e)
-                yield {k: "" for k in csv_reader.fieldnames}
-            except StopIteration:
-                break
+                continue
