@@ -54,20 +54,12 @@ def ingest(
         )
 
     with beam.Pipeline() as p:
-        df = p | "Read CSV" >> read_csv(
-            f"s3://{source_bucket_name}/raw/{level}/*.csv",
-            usecols=list(schema.schema_dict),
-            dtype={k: str for k in schema.schema_dict},
-        )
+        df = p | "Read CSV" >> read_csv(f"s3://{source_bucket_name}/raw/{level}/*.csv")
         pcoll = to_pcollection(df, include_indexes=False, yield_elements="pandas")
         _ = (
             pcoll
             | "To table"
-            >> beam.Map(
-                lambda x: pa.Table.from_pandas(
-                    x, schema=pa.schema(schema.schema_dict), preserve_index=False
-                )
-            )
+            >> beam.Map(lambda x: pa.Table.from_pandas(x, preserve_index=False))
             | "Write to Parquet Batched"
             >> beam.io.WriteToParquetBatched(
                 file_path_prefix=target_path,
