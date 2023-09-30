@@ -7,6 +7,9 @@ from typing import List
 from pydantic import BaseModel
 
 
+DISTILBERT_SUPPORTED_LANGS = ["ko", "ja"]
+
+
 class EntityOutputNoPos(BaseModel):
     """Output info of an entity without position.
 
