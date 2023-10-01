@@ -30,8 +30,6 @@ services:
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
-      ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
       INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
@@ -62,16 +60,17 @@ services:
         target: /projects/entity-linking/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/entity-linking/serve/train
+        target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
-      ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
     networks:
       - onclusive-net
