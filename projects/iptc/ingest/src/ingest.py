@@ -9,11 +9,11 @@ import pyarrow as pa
 from apache_beam.dataframe.convert import to_pcollection
 from apache_beam.dataframe.io import read_csv
 
-# Internal libraries
-from onclusiveml.data.ingestion.csvio import ReadCsvsFromS3
 
-# Source
-from src.settings import SCHEMA_MAP
+# from src.settings import SCHEMA_MAP
+
+
+# from onclusiveml.data.ingestion.csvio import ReadCsvsFromS3
 
 
 def ingest(
@@ -34,25 +34,24 @@ def ingest(
         num_shards (int): The number of files (shards) used for output, default 3000.
         test (bool): Test flag
     """
-    schema = SCHEMA_MAP[level]
+    # schema = SCHEMA_MAP[level]
     target_path = (
         f"s3://{target_bucket_name}/iptc/{level}/ingested"
         if not test
         else f"s3://{target_bucket_name}/test/{level}/ingested"
     )
-    with beam.Pipeline() as p:
-        _ = (
-            p
-            | "Read CSV" >> ReadCsvsFromS3(f"s3://{source_bucket_name}/raw/{level}/")
-            | "Write parquet"
-            >> beam.io.WriteToParquet(
-                file_path_prefix=target_path,
-                file_name_suffix=".parquet",
-                schema=pa.schema(schema.schema_dict),
-                num_shards=num_shards,
-            )
-        )
-
+    # with beam.Pipeline() as p:
+    #     _ = (
+    #         p
+    #         | "Read CSV" >> ReadCsvsFromS3(f"s3://{source_bucket_name}/raw/{level}/")
+    #         | "Write parquet"
+    #         >> beam.io.WriteToParquet(
+    #             file_path_prefix=target_path,
+    #             file_name_suffix=".parquet",
+    #             schema=pa.schema(schema.schema_dict),
+    #             num_shards=num_shards,
+    #         )
+    #     )
     with beam.Pipeline() as p:
         df = p | "Read CSV" >> read_csv(f"s3://{source_bucket_name}/raw/{level}/*.csv")
         pcoll = to_pcollection(df, include_indexes=False, yield_elements="pandas")
