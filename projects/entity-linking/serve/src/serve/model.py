@@ -1,7 +1,6 @@
 """Model."""
 
 # Standard Library
-import json
 import re
 from collections import Counter
 from typing import Any, Dict, List, Optional, Type
@@ -74,7 +73,7 @@ class EntityLinkingServedModel(ServedModel):
             attributes={"entities": output},
         )
 
-    def _predict(self, content: str, lang: str) -> Dict[str, Any]:
+    def _predict(self, content: str, lang: str) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
         return self._get_entity_linking(content, lang)
 
@@ -82,6 +81,7 @@ class EntityLinkingServedModel(ServedModel):
         self, content: str, lang: str, entities: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Generate the entire query to be consumed by the entity fish endpoint.
+
         Args:
             content (str): text to be wiki linked
             lang (str): language of the text
@@ -89,6 +89,7 @@ class EntityLinkingServedModel(ServedModel):
                 entities within text recognized by an external NER model
         """
         entities_query = self._generate_entity_query(content, entities)
+
         query = {
             "text": content,
             "language": {"lang": lang},
@@ -97,6 +98,7 @@ class EntityLinkingServedModel(ServedModel):
             "nbest": False,
             "sentence": False,
         }
+
         return query
 
     def _query_wiki(self, query: Dict[str, Any]) -> Dict[str, Any]:
@@ -109,12 +111,11 @@ class EntityLinkingServedModel(ServedModel):
     def _get_entity_linking(
         self, content: str, lang: str = "en"
     ) -> List[Dict[str, Any]]:
-        """Link all entities in text to Wiki data id
+        """Link all entities in text to Wiki data id.
+
         Args:
-            text (str): text to be wiki linked
+            content (str): text to be wiki linked
             lang (str): language of the text
-            entities (List[Dict[str, Any]]):
-                entities within text recognized by an external NER model
         """
         response = requests.post(
             settings.entity_recognition_endpoint,
@@ -140,12 +141,14 @@ class EntityLinkingServedModel(ServedModel):
 
         for entity in entities:
             entity_text = self._get_entity_text(entity)
-            wiki = self._get_wiki_id(entity_text, entity_fish_entities)  # noqa
+            wiki = self._get_wiki_id(entity_text, entity_fish_entities)
+
             if wiki:
                 wiki_link = "https://www.wikidata.org/wiki/{}".format(wiki)
                 entity["wiki_link"] = wiki_link
             entity.pop("start")
             entity.pop("end")
+
         return entities
 
     def _get_wiki_id(self, text: str, entities: List[Dict[str, Any]]) -> Optional[str]:
@@ -179,7 +182,7 @@ class EntityLinkingServedModel(ServedModel):
                 entities within text recognized by an external NER model
         """
         entity_query = []
-        unique_entity_text = set([entity.get("entity_text") for entity in entities])
+        unique_entity_text = set([entity["entity_text"] for entity in entities])
         for entity_text in unique_entity_text:
             matched_entities = list(re.finditer(entity_text, text))
             spans = [m.span() for m in matched_entities]
@@ -196,7 +199,4 @@ class EntityLinkingServedModel(ServedModel):
 
     def _get_entity_text(self, entity: Dict[str, Any]) -> str:
         """Fetch entity text from entities dictionary."""
-        entity_text = entity.get("text")
-        if entity_text is None:
-            entity_text = entity.get("entity_text")
-        return entity_text  # noqa
+        return entity.get("text", entity["entity_text"])
