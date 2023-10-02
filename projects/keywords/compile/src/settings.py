@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
@@ -14,9 +15,6 @@ from onclusiveml.tracking import (
     TrackedModelSpecs,
     TrackedParams,
 )
-
-
-# from typing import List
 
 
 # --- atomic settings and models
@@ -117,7 +115,6 @@ class CompilePipelineIOSettings(BaseSettings):
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
-
     # log level
     logger_level: int = INFO
 
@@ -159,9 +156,9 @@ class ModelTracingSettings(TrackedParams):
     https://onclusive.atlassian.net/browse/DS-596
     """
 
-    # dynamic_batch_size: bool = True
+    dynamic_batch_size: bool = True
     strict: bool = True
-    # compiler_args: List[str] = ["--fast-math", "none"]
+    compiler_args: List[str] = ["--fast-math", "none"]
 
     class Config:
         env_prefix = "model_tracing_settings_"
