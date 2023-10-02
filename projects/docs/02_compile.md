@@ -30,8 +30,8 @@ environment variable either
 
 Specs defined in the `config/prod.env` are used only during CI processes.
 
-Orchestration & execution of these components as a model compile *pipeline* is done by the Github
-Actions CI process of this same `ml-mesh` repository.
+Orchestration & execution of these components as a model compile *pipeline* is implemented by the
+`run_compile_pipeline.py` script.
 
 ## 2 Setup & references :wrench:
 
@@ -60,15 +60,6 @@ or update your `.envrc` file accordingly.
 The following `docker compose` services are typically associated with a project's `compile`
 component:
 - `compile`
-  - contains build section of compilation image
-- `compile-download-model`
-  - step 1 of the compile pipeline - used to download uncompiled model artifact
-- `compile-compile-model`
-  - step 2 of the compile pipeline - used to compile model artifact
-- `compile-validate-model`
-  - step 3 of the compile pipeline - used to validate compiled model artifact
-- `compile-upload-model`
-  - step 4 of the compile pipeline - used to upload compiled & validated model artifact
 - `compile-unit`
    - used to run `unit` test suite
 - `compile-integration` (optional)
@@ -187,7 +178,8 @@ Update
 file's environment variable values directly into the running container(s) (see below) to allow for
  pipeline runtime configurations without requiring a rebuild of the docker container.
 
-The following environment variables in the `dev.env` file are responsible for enabling/disabling the execution of the associated pipeline step; all of them default to `false`. They are:
+The following environment variables in the `dev.env` file are responsible for enabling/disabling the
+ execution of the associated pipeline step; all of them default to `false`. They are:
 
 - `COMPILE_PIPELINE_EXECUTION_DOWNLOAD`
   - If `true`, pipeline will execute model download step
