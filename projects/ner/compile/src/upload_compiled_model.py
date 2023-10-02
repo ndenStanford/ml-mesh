@@ -14,16 +14,20 @@ from onclusiveml.tracking import TrackedModelVersion
 from src.settings import (  # type: ignore[attr-defined]
     CompiledNERTrackedModelCard,
     CompiledTrackedModelSpecs,
-    IOSettings,
+    CompilePipelineIOSettings,
     UncompiledTrackedModelSpecs,
 )
 
 
-def main() -> None:
+def upload_compiled_model(
+    io_settings: CompilePipelineIOSettings,
+    base_model_specs: UncompiledTrackedModelSpecs,
+    compiled_model_specs: CompiledTrackedModelSpecs,
+    compiled_model_card: CompiledNERTrackedModelCard,
+) -> None:
     """Upload compiled model."""
-    io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
 
     # --- upload compiled model
@@ -89,7 +93,3 @@ def main() -> None:
         f"list of compiled model versions of the uncompiled model "
         f"{base_model_specs.with_id}"
     )
-
-
-if __name__ == "__main__":
-    main()

@@ -67,6 +67,12 @@ services:
   # =============================================
 
   compile:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/ner/compile/
     build:
       context: ../../
       dockerfile: projects/ner/compile/Dockerfile
@@ -78,91 +84,14 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
+    command: [python, -m, src.run_compile_pipeline]
     profiles: [compile, unit, integration, pipeline]
     environment:
+      COMPILE_PIPELINE_EXECUTION_DOWNLOAD: ${DOWNLOAD:-no}
+      COMPILE_PIPELINE_EXECUTION_COMPILE: ${COMPILE:-no}
+      COMPILE_PIPELINE_EXECUTION_TEST: ${TEST:-no}
+      COMPILE_PIPELINE_EXECUTION_UPLOAD: ${UPLOAD:-no}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-unit:
-    volumes:
-      - type: bind
-        source: compile/src
-        target: /projects/ner/compile/src
-      - type: bind
-        source: compile/tests
-        target: /projects/ner/compile/tests
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
-    profiles: [unit]
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-download-model:
-    volumes:
-      - type: bind
-        source: compile/
-        target: /projects/ner/compile/
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.download_uncompiled_model]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-compile-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile
-        target: /projects/ner/compile
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile_model]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
-    env_file: compile/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-validate-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile
-        target: /projects/ner/compile
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
-    env_file: compile/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-upload-model:
-    volumes:
-      - type: bind
-        source: compile
-        target: /projects/ner/compile
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.upload_compiled_model]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
       GITHUB_REPOSITORY: development-repository
       GITHUB_ACTOR: development-actor
       GITHUB_ENV: development-env
@@ -178,11 +107,22 @@ services:
       RUNNER_ARCH: development-arch
       RUNNER_NAME: development-name
       RUNNER_OS: development-os
-      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-unit:
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/ner/compile/src
+      - type: bind
+        source: compile/tests
+        target: /projects/ner/compile/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
 

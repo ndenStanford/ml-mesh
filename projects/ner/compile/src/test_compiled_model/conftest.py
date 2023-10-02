@@ -13,18 +13,18 @@ from onclusiveml.models.ner import CompiledNER
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompilationTestSettings,
-    IOSettings,
+    CompilePipelineIOSettings,
 )
 
 
 @pytest.fixture
-def io_settings() -> IOSettings:
-    """Fixture to provide IOSettings instance.
+def io_settings() -> CompilePipelineIOSettings:
+    """Fixture to provide CompilePipelineIOSettings instance.
 
     Returns:
-        IOSettings: Instance of IOSettings
+        CompilePipelineIOSettings: Instance of CompilePipelineIOSettings
     """
-    return IOSettings()
+    return CompilePipelineIOSettings()
 
 
 @pytest.fixture
@@ -38,26 +38,26 @@ def compilation_test_settings() -> CompilationTestSettings:
 
 
 @pytest.fixture()
-def logger(io_settings: IOSettings) -> Any:
+def logger(io_settings: CompilePipelineIOSettings) -> Any:
     """Fixture to provide a logger instance.
 
     Args:
-        io_settings (IOSettings): IOSettings
+        io_settings (CompilePipelineIOSettings): CompilePipelineIOSettings
 
     Returns:
         Any: Logger instance
     """
     return get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
 
 
 @pytest.fixture
-def compiled_ner(io_settings: IOSettings) -> CompiledNER:
+def compiled_ner(io_settings: CompilePipelineIOSettings) -> CompiledNER:
     """Fixture to provide a compiled NER model instance.
 
     Args:
-        io_settings (IOSettings): IOSettings instance
+        io_settings (CompilePipelineIOSettings): CompilePipelineIOSettings instance
 
     Returns:
         CompiledNER: Compiled NER model instance
@@ -69,11 +69,11 @@ def compiled_ner(io_settings: IOSettings) -> CompiledNER:
 
 
 @pytest.fixture
-def test_files(io_settings: IOSettings) -> Dict[str, Any]:
+def test_files(io_settings: CompilePipelineIOSettings) -> Dict[str, Any]:
     """Fixture to provide test input files loaded into a dictionary.
 
     Args:
-        io_settings (IOSettings): IOSettings instance
+        io_settings (CompilePipelineIOSettings): CompilePipelineIOSettings instance
 
     Returns:
         Dict[str, Any]: Dictionary containing test files data

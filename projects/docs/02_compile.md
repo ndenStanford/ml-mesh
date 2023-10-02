@@ -183,31 +183,48 @@ follow the below steps.
 
 Update
 - the `dev.env` file in the `config` directory and
-- the `docker-compose.dev.yaml`'s `compile...` services
- as needed. `docker compose` will inject the file's environment variable values directly into the
- running container(s) (see below) to allow for pipeline runtime configurations without requiring a
- rebuild of the docker container.
+- the `docker-compose.dev.yaml`'s `compile` service as needed. `docker compose` will inject the
+file's environment variable values directly into the running container(s) (see below) to allow for
+ pipeline runtime configurations without requiring a rebuild of the docker container.
+
+The following environment variables in the `dev.env` file are responsible for enabling/disabling the execution of the associated pipeline step; all of them default to `false`. They are:
+
+- `COMPILE_PIPELINE_EXECUTION_DOWNLOAD`
+  - If `true`, pipeline will execute model download step
+  - corresponding `make` target argument: `DOWNLOAD`
+- `COMPILE_PIPELINE_EXECUTION_COMPILE`
+  - If `true`, pipeline will execute model compilation step
+  - corresponding `make` target argument: `COMPILE`
+- `COMPILE_PIPELINE_EXECUTION_TEST`
+  - If `true`, pipeline will execute compiled model test step
+  - corresponding `make` target argument: `TEST`
+- `COMPILE_PIPELINE_EXECUTION_UPLOAD`
+  - If `true`, pipeline will execute compiled model upload step
+  - corresponding `make` target argument: `UPLOAD`
+
+Since they all default to `false`, we can run any one individual pipeline step by enabling the
+step's associated `make` target argument as shown below.
 
 #### 4.2.2 Download the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=download-model
+make projects.start/${PROJECT_NAME} COMPONENT=compile DOWNLOAD=true
 ```
 
 #### 4.2.3 Compile the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=compile-model
+make projects.start/${PROJECT_NAME} COMPONENT=compile COMPILE=true
 ```
 
 #### 4.2.4 Validate compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=validate-model
+make projects.start/${PROJECT_NAME} COMPONENT=compile TEST=true
 ```
 
 #### 4.2.5 Upload compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=upload-model
+make projects.start/${PROJECT_NAME} COMPONENT=compile UPLOAD=true
 ```

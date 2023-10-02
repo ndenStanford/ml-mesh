@@ -9,16 +9,18 @@ from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    IOSettings,
+    CompilePipelineIOSettings,
     UncompiledTrackedModelSpecs,
 )
 
 
-def main() -> None:
+def download_uncompiled_model(
+    io_settings: CompilePipelineIOSettings,
+    base_model_specs: UncompiledTrackedModelSpecs,
+) -> None:
     """Downlad trained model."""
-    io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
 
     # get read-only base model version
@@ -55,7 +57,3 @@ def main() -> None:
         )
 
     base_model_version.stop()
-
-
-if __name__ == "__main__":
-    main()
