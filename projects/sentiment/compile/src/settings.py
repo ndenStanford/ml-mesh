@@ -6,7 +6,7 @@ from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import Field
+from pydantic import BaseSettings, Field
 
 # Internal libraries
 from onclusiveml.core.logging import INFO
@@ -60,7 +60,7 @@ class WorkflowOutputDir(TrackedParams):
     outpath: str = "./outputs"
 
     class Config:
-        env_prefix = "io_"
+        env_prefix = "compiled_pipeline_io_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
@@ -106,16 +106,35 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(object):
+class CompilePipelineIOSettings(BaseSettings):
     """Configuring container file system output locations for all 4 components."""
 
-    # admin
+    # storage
     download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
+    # log level
+    logger_level: int = INFO
 
-    log_level: int = INFO
+    class Config:
+        env_prefix = "compile_pipeline_io_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class CompilePipelineExecutionSettings(BaseSettings):
+    """Compile pipeline step configuration class. Used to enable/disable individual steps."""
+
+    download: bool = True
+    compile: bool = True
+    test: bool = True
+    upload: bool = True
+
+    class Config:
+        env_prefix = "compile_pipeline_execution_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class TokenizerSettings(TrackedParams):
