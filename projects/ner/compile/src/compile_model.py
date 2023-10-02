@@ -30,7 +30,6 @@ def compile_model(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(

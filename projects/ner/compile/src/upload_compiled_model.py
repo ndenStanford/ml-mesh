@@ -3,9 +3,6 @@
 # Standard Library
 from datetime import datetime as dt
 
-# 3rd party libraries
-from neptune.types.mode import Mode
-
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
@@ -31,10 +28,8 @@ def upload_compiled_model(
     )
 
     # --- upload compiled model
-    compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
 
-    compiled_model_card = CompiledNERTrackedModelCard()
     # upload model card - holds all settings
     compiled_model_version.upload_config_to_model_version(
         config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
@@ -64,7 +59,6 @@ def upload_compiled_model(
     )
     # --- update uncompiled model
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs(mode=Mode.ASYNC)
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
 
     if base_model_version.exists("model/compiled_model_versions"):
