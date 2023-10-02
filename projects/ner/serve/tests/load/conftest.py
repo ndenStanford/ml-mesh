@@ -113,13 +113,6 @@ def test_model_predict_user(
 
         # assemble & attach list of sample payloads for model predict endpoint requests
         sample_payloads: List[PredictRequestModel] = []
-        print("------------")
-        print("------------")
-        print("------------")
-        print(test_inference_params)
-        print("------------")
-        print("------------")
-        print("------------")
         for lang_index in range(len(test_inputs)):
             for test_record_index in range(len(test_inputs[lang_index])):
                 sample_payload = input = PredictRequestModel(
