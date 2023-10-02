@@ -13,13 +13,11 @@ notebook = "6.4.12"
 ipykernel = "6.25.0"
 core = {path = "../../libs/core"}
 nlp = {path = "../../libs/nlp"}
+compile = {path = "../../libs/compile"}
 tracking = {path = "../../libs/tracking"}
 neptune-notebooks = "^0.9.3"
 matplotlib = "^3.7.2"
 seaborn = "^0.12.2"
-torch = "1.12.1"
-torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
-neuron-cc = {version = "1.13.5.0", source = "aws-neuron"}
 
 [[tool.poetry.source]]
 name = "aws-neuron"
