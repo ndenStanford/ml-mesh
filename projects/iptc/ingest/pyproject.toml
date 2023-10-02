@@ -6,7 +6,8 @@ authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-apache-beam = {extras = ["aws", "dataframe"], version = "2.48.0"}
+urllib3 = "1.26"
+apache-beam = {extras = ["aws", "dataframe"], version = "2.49.0"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
