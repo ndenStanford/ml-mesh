@@ -39,9 +39,13 @@ def compile_model(
 
     logger.debug(f"Base model model_card: {base_model_card}")
     # re-load base model pipeline
-    base_model_pipeline = pipeline(
-        task=base_model_card["model_params"]["huggingface_pipeline_task"],
-        model=io_settings.download.model_directory,
+    ner_model_pipeline_base = pipeline(
+        task=base_model_card["ner_model_params_base"]["huggingface_pipeline_task"],
+        model=io_settings.download.model_directory_base,
+    )
+    ner_model_pipeline_kj = pipeline(
+        task=base_model_card["ner_model_params_kj"]["huggingface_pipeline_task_kj"],
+        model=io_settings.download.model_directory_kj,
     )
     # compile base model pipeline for NER
 
@@ -50,12 +54,20 @@ def compile_model(
         f"{ner_pipeline_compilation_settings.dict()}. Compiling ..."
     )
 
-    compiled_ner_pipeline = CompiledPipeline.from_pipeline(
-        pipeline=base_model_pipeline,
+    compiled_ner_pipeline_base = CompiledPipeline.from_pipeline(
+        pipeline=ner_model_pipeline_base,
         **ner_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
     )
 
-    compiled_ner = CompiledNER(compiled_ner_pipeline)
+    compiled_ner_pipeline_kj = CompiledPipeline.from_pipeline(
+        pipeline=ner_model_pipeline_kj,
+        **ner_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
+    )
+
+    compiled_ner = CompiledNER(
+        compiled_ner_pipeline_base=compiled_ner_pipeline_base,
+        compiled_ner_pipeline_kj=compiled_ner_pipeline_kj,
+    )
     # export compiled ner model for next workflow component: test
     compiled_ner.save_pretrained(io_settings.compile.model_directory)
 

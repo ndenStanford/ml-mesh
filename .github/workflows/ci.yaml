@@ -348,7 +348,7 @@ jobs       :
             load: true
             upload-test-results: true
             runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-type: inf1.2xlarge
 
     with:
       project: sentiment
@@ -505,6 +505,9 @@ jobs       :
       matrix:
         models:
           - project: keywords
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: ner
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
     with:
