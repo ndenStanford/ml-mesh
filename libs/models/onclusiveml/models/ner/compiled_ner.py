@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.models.ner.settings import (
+    DISTILBERT_SUPPORTED_LANGS,
     InferenceOutput,
     PostprocessOutput,
     PostprocessOutputNoPos,
@@ -24,14 +25,19 @@ class CompiledNER:
 
     def __init__(
         self,
-        compiled_ner_pipeline: CompiledPipeline,
+        compiled_ner_pipeline_base: CompiledPipeline,
+        compiled_ner_pipeline_kj: CompiledPipeline,
     ):
         """Initalize the CompiledNER object.
 
         Args:
-            compiled_ner_pipeline (CompiledPipeline): The compiled NER pipline used for inference
+            compiled_ner_pipeline_base (CompiledPipeline): The compiled NER pipline used for
+                inference
+            compiled_ner_pipeline_kj (CompiledPipeline): The compiled NER pipline used for
+                inference for korean and japanese
         """
-        self.compiled_ner_pipeline = compiled_ner_pipeline
+        self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
+        self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
@@ -41,8 +47,11 @@ class CompiledNER:
         Args:
             directory (Union[Path, str]): Directory to save the compiled NER pipeline
         """
-        self.compiled_ner_pipeline.save_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline")
+        self.compiled_ner_pipeline_base.save_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_base")
+        )
+        self.compiled_ner_pipeline_kj.save_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
     @classmethod
@@ -55,12 +64,16 @@ class CompiledNER:
         Returns:
             CompiledNER: The loaded pre-trained CompiledNER object
         """
-        compiled_ner_pipeline = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline")
+        compiled_ner_pipeline_base = CompiledPipeline.from_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_base")
+        )
+        compiled_ner_pipeline_kj = CompiledPipeline.from_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
         return cls(
-            compiled_ner_pipeline=compiled_ner_pipeline,
+            compiled_ner_pipeline_base=compiled_ner_pipeline_base,
+            compiled_ner_pipeline_kj=compiled_ner_pipeline_kj,
         )
 
     def remove_html(self, text: str) -> str:
@@ -115,11 +128,12 @@ class CompiledNER:
         list_sentences = self.sentence_tokenize(sentences, language)
         return list_sentences
 
-    def inference(self, sentences: List[str]) -> InferenceOutput:
+    def inference(self, sentences: List[str], language: str) -> InferenceOutput:
         """Perform NER inference on a list of sentences.
 
         Args:
             sentences (List[str]): list of sentences
+            language: (str) language of given sentences
 
         Returns:
             InferenceOutput: List of lists of NER predictions which has the attributes:
@@ -129,7 +143,10 @@ class CompiledNER:
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
-        entities = self.compiled_ner_pipeline(sentences)
+        if language in DISTILBERT_SUPPORTED_LANGS:
+            entities = self.compiled_ner_pipeline_kj(sentences)
+        else:
+            entities = self.compiled_ner_pipeline_base(sentences)
         for sublist in entities:
             for dictionary in sublist:
                 dictionary.pop("index", None)
@@ -270,15 +287,16 @@ class CompiledNER:
             sentence_index += 1
         # Flatten the output list
         output_list = [item for sublist in output_list for item in sublist]
-
+        # Remove leftover double hashes in beginning from text that dont use Roman characters
+        for x in output_list:
+            if x.entity_text[:2] == "##":
+                x.entity_text = x.entity_text[2:]
         # Remove start and end key from output if we do not want to have the word positions
         if not return_pos:
-            output_list_no_pos = []
-            for ent in output_list:
-                output_list_no_pos.append(
-                    PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
-                )
-            return output_list_no_pos
+            output_list = [
+                PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
+                for ent in output_list
+            ]
         return output_list
 
     def extract_entities(
@@ -309,6 +327,6 @@ class CompiledNER:
                     - start (int): starting position of word
         """
         list_sentences = self.preprocess(sentences, language)
-        ner_labels = self.inference(list_sentences)
+        ner_labels = self.inference(list_sentences, language)
         entities = self.postprocess(ner_labels, return_pos)
         return entities
