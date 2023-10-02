@@ -9,6 +9,7 @@ from pytest_unordered import unordered
 
 # Source
 from src.serve.model import EntityLinkingServedModel
+from src.serve.schemas import PredictRequestSchema
 
 
 def test_model_bio(entity_linking_model):
@@ -30,8 +31,85 @@ def test_model_headers(entity_linking_model):
     assert entity_linking_model.headers == {"x-api-key": ""}
 
 
-# def test_model_predict(mock_predict, entity_linking_model, payload, expected):
-#     """Test model predict."""
+@pytest.mark.parametrize(
+    "payload, predict_return, expected_response",
+    [
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "House prices were unchanged last month, defying predictions of another drop, but they are unlikely to have troughed just yet."  # noqa
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            [],
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {"entities": []},
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium."  # noqa
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            [
+                {
+                    "entity_type": "ORG",
+                    "entity_text": "Tottenham Hotspur Football Club",
+                    "score": 0.9259419441223145,
+                    "sentence_index": 0,
+                    "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                }
+            ],
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Tottenham Hotspur Football Club",
+                                "score": 0.9259419441223145,
+                                "sentence_index": 0,
+                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                            }
+                        ]
+                    },
+                },
+            },
+        ),
+    ],
+)
+@patch.object(EntityLinkingServedModel, "_predict")
+def test_model_predict(
+    mock_predict, entity_linking_model, payload, predict_return, expected_response
+):
+    """Test model predict."""
+    mock_predict.return_value = predict_return
+
+    response = entity_linking_model.predict(PredictRequestSchema(**payload))
+
+    mock_predict.assert_called_with(
+        payload["data"]["attributes"]["content"], payload["data"]["parameters"]["lang"]
+    )
+
+    assert response == expected_response
 
 
 @pytest.mark.parametrize(
