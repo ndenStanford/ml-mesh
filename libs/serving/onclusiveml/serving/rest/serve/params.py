@@ -4,6 +4,7 @@
 from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
+from fastapi import FastAPI
 from pydantic import Field, SecretStr, root_validator
 
 # Internal libraries
@@ -77,7 +78,7 @@ class UvicornSettings(ServingBaseParams):
     uvicorn/config.py#L187
     """
 
-    app: str
+    app: Optional[Union[str, FastAPI]] = None
     port: int = 8000
     host: str = "0.0.0.0"
     log_config: Optional[Union[str, Dict]] = LogConfigSettings().dict()
@@ -155,6 +156,6 @@ class ServingParams(ServingBaseParams):
     # fastapi settings
     fastapi_settings: FastAPISettings = FastAPISettings()
     # uvicorn settings
-    uvicorn_settings: UvicornSettings
+    uvicorn_settings: UvicornSettings = UvicornSettings()
     # betterstack settings
     betterstack_settings = BetterStackSettings()

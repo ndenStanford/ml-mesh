@@ -187,8 +187,12 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-88
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-147
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [serve, functional, load]
     ports:
@@ -223,8 +227,8 @@ services:
       NEPTUNE_CLIENT_MODE: read-only
       NEPTUNE_PROJECT: onclusive/keywords
       NEPTUNE_MODEL_ID: KEYWORDS-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: KEYWORDS-COMPILED-88
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-88
+      NEPTUNE_MODEL_VERSION_ID: KEYWORDS-COMPILED-147
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-147
     hostname: onclusiveml
     networks: [onclusive-net]
 

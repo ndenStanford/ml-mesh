@@ -116,7 +116,7 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
         add_model_bio=True,
         api_version=test_api_version,
         fastapi_settings=FastAPISettings(name="test-api"),
-        uvicorn_settings=UvicornSettings(port=test_port, reload=True),
+        uvicorn_settings=UvicornSettings(port=test_port),
         betterstack_settings=BetterStackSettings(enable=True),
     )
 

@@ -95,4 +95,7 @@ class ModelServer(FastAPI):
 
     def serve(self) -> None:
         """Utility for running the fully configured app programmatically."""
+        if self.configuration.uvicorn_settings.app is None:
+            self.configuration.uvicorn_settings.app = self
+
         uvicorn.run(**self.configuration.uvicorn_settings.dict())
