@@ -3,10 +3,23 @@
 import pyarrow as pa
 
 # Internal libraries
-from onclusiveml.core.base.params import Params
+from onclusiveml.tracking import TrackedParams
 
 
-class FirstLevelParquetSchema(Params):
+class IngestionParams(TrackedParams):
+    """Ingestion inputs."""
+
+    source_bucket: str
+    target_bucket: str
+    iptc_level: str
+    files: str
+
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class FirstLevelParquetSchema(TrackedParams):
     """Defines schema for the first level IPTC dataset."""
 
     schema_dict: dict = {
@@ -18,7 +31,7 @@ class FirstLevelParquetSchema(Params):
     }
 
 
-class FirstLevelMultiLingualTopNParquetSchema(Params):
+class FirstLevelMultiLingualTopNParquetSchema(TrackedParams):
     """Defines schema for the first level top N IPTC dataset."""
 
     schema_dict: dict = {
@@ -35,7 +48,7 @@ class FirstLevelMultiLingualTopNParquetSchema(Params):
     }
 
 
-class FirstLevelMultiLingualParquetSchema(Params):
+class FirstLevelMultiLingualParquetSchema(TrackedParams):
     """Defines schema for the first level multi lingual IPTC dataset."""
 
     schema_dict: dict = {
@@ -48,7 +61,7 @@ class FirstLevelMultiLingualParquetSchema(Params):
     }
 
 
-class SecondLevelParquetSchema(Params):
+class SecondLevelParquetSchema(TrackedParams):
     """Defines schema for the second level IPTC dataset."""
 
     schema_dict: dict = {
@@ -61,7 +74,7 @@ class SecondLevelParquetSchema(Params):
     }
 
 
-class SecondLevelMultiLingualParquetSchema(Params):
+class SecondLevelMultiLingualParquetSchema(TrackedParams):
     """Defines schema for the second level multi lingual IPTC dataset."""
 
     schema_dict: dict = {
@@ -75,7 +88,7 @@ class SecondLevelMultiLingualParquetSchema(Params):
     }
 
 
-class ThirdLevelMultiLingualParquetSchema(Params):
+class ThirdLevelMultiLingualParquetSchema(TrackedParams):
     """Defines schema for the third level multi lingual IPTC dataset."""
 
     schema_dict: dict = {

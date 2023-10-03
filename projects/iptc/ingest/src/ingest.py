@@ -2,7 +2,6 @@
 
 # Standard Library
 import csv
-import os
 
 # 3rd party libraries
 import apache_beam as beam
@@ -12,32 +11,18 @@ from apache_beam.dataframe.io import read_csv
 from pyarrow import fs
 from pyarrow import parquet as pq
 
+# Source
+from src.settings import IngestionParams
 
-def ingest(
-    source_bucket_name: str,
-    target_bucket_name: str,
-    level: str,
-    test: bool,
-) -> None:
-    """Read the opoint data, write to the data lake bucket in .parquet.
 
-    Args:
-        source_bucket_name (str): S3 bucket name with source, raw data
-        target_bucket_name (str): S3 bucket name with target, ingested data
-        level (str): IPTC dataset level, can be one of:
-            {'first_level', 'first_level_multi_lingual','second_level',
-            'second_level_multi_lingual', 'third_level', 'third_level_multi_lingual'}
-        test (bool): Test flag
-    """
-    target_path = (
-        f"s3://{target_bucket_name}/iptc/{level}/ingested"
-        if not test
-        else f"s3://{target_bucket_name}/test/{level}/ingested"
-    )
-    s3 = fs.S3FileSystem()
+def ingest() -> None:
+    """Read the opoint data, write to the data lake bucket in .parquet."""
+    params = IngestionParams()
+    target_path = f"{params.target_bucket}/iptc/{params.iptc_level}/ingested"
+    s3 = fs.S3FileSystem(region=fs.resolve_s3_region(params.source_bucket))
     with beam.Pipeline() as p:
-        dfs = p | "Read CSV" >> read_csv(
-            f"s3://{source_bucket_name}/raw/{level}/*.csv",
+        dfs = p | "Read CSVs" >> read_csv(
+            f"s3://{params.source_bucket}/raw/{params.iptc_level}/{params.files}.csv",
             engine="c",
             lineterminator="\n",
             quoting=csv.QUOTE_NONNUMERIC,
@@ -45,10 +30,10 @@ def ingest(
         pcoll_df = to_pcollection(dfs, include_indexes=False, yield_elements="pandas")
         _ = (
             pcoll_df
-            | "To table"
+            | "Transform to tables"
             >> beam.Map(lambda x: pa.Table.from_pandas(x, preserve_index=False))
             | "Combine" >> beam.combiners.ToList()
-            | "To parquet"
+            | "Write to parquet files"
             >> beam.Map(
                 lambda seq: [
                     pq.write_table(table, f"{target_path}-{idx}.parquet", filesystem=s3)
@@ -59,13 +44,4 @@ def ingest(
 
 
 if __name__ == "__main__":
-    # Standard Library
-    import faulthandler
-
-    faulthandler.enable()
-    ingest(
-        source_bucket_name=os.environ["SOURCE_BUCKET"],
-        target_bucket_name=os.environ["TARGET_BUCKET"],
-        level=os.environ["IPTC_LEVEL"],
-        test=False,
-    )
+    ingest()
