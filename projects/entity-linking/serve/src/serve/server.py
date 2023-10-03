@@ -1,6 +1,7 @@
 """Model server getter."""
 
 # 3rd party libraries
+from fastapi import FastAPI
 from pydantic import BaseSettings
 
 # Internal libraries
@@ -11,7 +12,7 @@ from onclusiveml.serving.rest.serve import ModelServer
 from src.serve.model import EntityLinkingServedModel
 
 
-def get_model_server(settings: BaseSettings):
+def get_model_server(settings: BaseSettings) -> FastAPI:
     """Instanciates model server.
 
     Args:
