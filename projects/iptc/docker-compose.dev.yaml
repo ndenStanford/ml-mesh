@@ -50,10 +50,8 @@ services:
       AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      SOURCE_BUCKET: kubeflow-opoint-data-dev
-      TARGET_BUCKET: kubeflow-data-lake-dev
-      IPTC_LEVEL: first_level_multi_lingual_top_n
-      SHARDS: 0
+    env_file:
+      - ingest/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 

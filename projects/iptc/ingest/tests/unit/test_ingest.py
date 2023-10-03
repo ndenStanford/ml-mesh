@@ -16,13 +16,8 @@ def test_ingest(capsys) -> None:
     Args:
         capsys : Capture stdout/stderr output
     """
-    ingest(
-        source_bucket_name=os.environ["SOURCE_BUCKET"],
-        target_bucket_name=os.environ["TARGET_BUCKET"],
-        level=os.environ["IPTC_LEVEL"],
-        num_shards=int(os.environ["SHARDS"]),
-        test=True,
-    )
+    os.environ["IPTC_LEVEL"] = "first_level_multi_lingual_top_n"
+    ingest()
     _, err = capsys.readouterr()
     assert err == ""
     s3 = boto3.resource("s3")

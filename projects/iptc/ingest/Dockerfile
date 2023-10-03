@@ -11,14 +11,14 @@ ENV USER=app
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${PROJECT_DIR}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${PROJECT_DIR}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/bin \
- && chown -R ${USER}:users /usr/local/lib \
- && chown -R ${USER}:users /usr/local/share
+    && mkdir -p "${PROJECT_DIR}" \
+    && mkdir -p "${POETRY_HOME}" \
+    && chown -R ${USER}:users "${HOME}" \
+    && chown -R ${USER}:users "${PROJECT_DIR}" \
+    && chown -R ${USER}:users "${POETRY_HOME}" \
+    && chown -R ${USER}:users /usr/local/bin \
+    && chown -R ${USER}:users /usr/local/lib \
+    && chown -R ${USER}:users /usr/local/share
 
 USER root
 
@@ -30,8 +30,7 @@ WORKDIR "/"
 COPY --chown=${USER}:users "${PROJECT_DIR}/poetry.lock" "${PROJECT_DIR}/pyproject.toml" ./${PROJECT_DIR}/
 
 # copy libraries
-# COPY --chown=${USER}:users libs/core libs/core
-# COPY --chown=${USER}:users libs/data libs/data
+COPY --chown=${USER}:users libs/tracking libs/tracking
 
 # source
 COPY --chown=${USER}:users "${PROJECT_DIR}/src" "${PROJECT_DIR}/src"
