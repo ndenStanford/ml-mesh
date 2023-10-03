@@ -183,7 +183,9 @@ services:
     command: [python, -m, src.serve.model_server]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-137
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [serve, functional, load]
     ports:
