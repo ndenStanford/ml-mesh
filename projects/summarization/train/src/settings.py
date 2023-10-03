@@ -53,31 +53,31 @@ class SumModelParams(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class SumModelParamsEn(TrackedParams):
+class SumModelParamsEn(SumModelParams):
     """English Summarization model settings."""
 
     huggingface_model_reference: str = "Yale-LILY/brio-cnndm-uncased"
         
         
-class SumModelParamsFrDe(TrackedParams):
+class SumModelParamsFrDe(SumModelParams):
     """French/German Summarization model settings."""
 
     huggingface_model_reference: str = "ctu-aic/mbart25-multilingual-summarization-multilarge-cs"
 
         
-class SumModelParamsEs(TrackedParams):
+class SumModelParamsEs(SumModelParams):
     """Spanish Summarization model settings."""
 
     huggingface_model_reference: str = "knkarthick/MEETING_SUMMARY"
 
 
-class SumModelParamsCa(TrackedParams):
+class SumModelParamsCa(SumModelParams):
     """Catalan Summarization model settings."""
 
     huggingface_model_reference: str = "ELiRF/NASCA"
 
 
-class SumModelParamsIt(TrackedParams):
+class SumModelParamsIt(SumModelParams):
     """Italian Summarization model settings."""
 
     huggingface_model_reference: str = "morenolq/bart-it-fanpage"

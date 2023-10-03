@@ -36,42 +36,42 @@ def main() -> None:
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer for English")
     tokenizer_en = AutoTokenizer.from_pretrained(
-        model_card.SumModelParamsEn.huggingface_model_reference
+        model_card.model_params_en.huggingface_model_reference
     )
     model_en = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.SumModelParamsEn.huggingface_model_reference, return_dict=False
+        model_card.model_params_en.huggingface_model_reference, return_dict=False
     )
     
     logger.info("Initializing model and tokenizer for French and German")
     tokenizer_frde = AutoTokenizer.from_pretrained(
-        model_card.SumModelParamsFrDe.huggingface_model_reference
+        model_card.model_params_frde.huggingface_model_reference
     )
     model_frde = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.SumModelParamsFrDe.huggingface_model_reference, return_dict=False
+        model_card.model_params_frde.huggingface_model_reference, return_dict=False
     )
     
     logger.info("Initializing model and tokenizer for Spanish")
     tokenizer_es = AutoTokenizer.from_pretrained(
-        model_card.SumModelParamsEs.huggingface_model_reference
+        model_card.model_params_es.huggingface_model_reference
     )
     model_es = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.SumModelParamsEs.huggingface_model_reference, return_dict=False
+        model_card.model_params_es.huggingface_model_reference, return_dict=False
     )
     
     logger.info("Initializing model and tokenizer for Catalan")
     tokenizer_ca = AutoTokenizer.from_pretrained(
-        model_card.SumModelParamsCa.huggingface_model_reference
+        model_card.model_params_ca.huggingface_model_reference
     )
     model_ca = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.SumModelParamsCa.huggingface_model_reference, return_dict=False
+        model_card.model_params_ca.huggingface_model_reference, return_dict=False
     )
     
     logger.info("Initializing model and tokenizer for Italian")
     tokenizer_it = AutoTokenizer.from_pretrained(
-        model_card.SumModelParamsIt.huggingface_model_reference
+        model_card.model_params_it.huggingface_model_reference
     )
     model_it = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.SumModelParamsIt.huggingface_model_reference, return_dict=False
+        model_card.model_params_it.huggingface_model_reference, return_dict=False
     )
     
     # summarization settings
