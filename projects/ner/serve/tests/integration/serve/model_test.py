@@ -49,12 +49,12 @@ def test_served_ner_model_predict(
         served_model_artifacts=test_served_model_artifacts
     )
     served_ner_model.load()
-    input = PredictRequestModel(
+    input_ = PredictRequestModel(
         configuration=PredictConfiguration(return_pos=True, language="en"),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
-    actual_output = served_ner_model.predict(input)
+    actual_output = served_ner_model.predict(input_)
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
@@ -81,12 +81,12 @@ def test_served_ner_model_predict_no_pos(
         served_model_artifacts=test_served_model_artifacts
     )
     served_ner_model.load()
-    input = PredictRequestModel(
+    input_ = PredictRequestModel(
         configuration=PredictConfiguration(return_pos=False, language="en"),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
-    actual_output = served_ner_model.predict(input)
+    actual_output = served_ner_model.predict(input_)
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
