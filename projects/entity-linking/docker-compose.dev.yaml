@@ -111,6 +111,44 @@ services:
     networks:
       - onclusive-net
 
+  # functional tests
+  serve-functional:
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: entity-linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/entity-linking/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/entity-linking/serve/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    environment:
+      ENVIRONMENT: dev
+      DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
+    hostname: onclusiveml
+    depends_on:
+      entity-fishing-backend:
+        condition: service_healthy
+      ner-serve:
+        condition: service_healthy
+    networks:
+      - onclusive-net
+
   # serving image
   ner-serve:
     devices:
@@ -145,7 +183,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://ner-serve:8000/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -175,8 +213,17 @@ services:
     ports:
       - 8090:8090
       - 8091:8091
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [CMD-SHELL, sleep 10s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 15s
     environment:
       ENVIRONMENT: dev
+    hostname: onclusiveml
     networks:
       - onclusive-net
 
