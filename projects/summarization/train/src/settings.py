@@ -43,16 +43,20 @@ class SumSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class SumModelParamsEn(TrackedParams):
-    """English Summarization model settings."""
-
-    huggingface_model_reference: str = "Yale-LILY/brio-cnndm-uncased"
+class SumModelParams(TrackedParams):
+    """summarization model settings."""
 
     sum_settings: SumSettings = SumSettings()
 
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
+
+
+class SumModelParamsEn(TrackedParams):
+    """English Summarization model settings."""
+
+    huggingface_model_reference: str = "Yale-LILY/brio-cnndm-uncased"
         
         
 class SumModelParamsFrDe(TrackedParams):
@@ -60,47 +64,23 @@ class SumModelParamsFrDe(TrackedParams):
 
     huggingface_model_reference: str = "ctu-aic/mbart25-multilingual-summarization-multilarge-cs"
 
-    sum_settings: SumSettings = SumSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
         
-
 class SumModelParamsEs(TrackedParams):
     """Spanish Summarization model settings."""
 
     huggingface_model_reference: str = "knkarthick/MEETING_SUMMARY"
 
-    sum_settings: SumSettings = SumSettings()
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-        
-        
 class SumModelParamsCa(TrackedParams):
     """Catalan Summarization model settings."""
 
     huggingface_model_reference: str = "ELiRF/NASCA"
-
-    sum_settings: SumSettings = SumSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class SumModelParamsIt(TrackedParams):
     """Italian Summarization model settings."""
 
     huggingface_model_reference: str = "morenolq/bart-it-fanpage"
-
-    sum_settings: SumSettings = SumSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8" 
 
 
 class TrackedSumModelCard(TrackedModelCard):
