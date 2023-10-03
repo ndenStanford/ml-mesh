@@ -26,7 +26,7 @@ from src.settings import (  # type: ignore[attr-defined]
 def main() -> None:
     """Register trained model."""
     model_specs = TrackedSumModelSpecs()
-    model_card = TrackedSumModelCard()
+    model_card = TrackedSumBaseModelCard()
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
@@ -41,31 +41,27 @@ def main() -> None:
     model = AutoModelForSeq2SeqLM.from_pretrained(
         model_card.model_params.huggingface_model_reference, return_dict=False
     )
-    
-        # summarization settings
+    # Create pipeline using summarization model and tokenizer
+    logger.info("Creating huggingface pipeline")
+    hf_pipeline = pipeline(
+        task=model_card.model_params.huggingface_pipeline_task,
+        model=model,
+        tokenizer=tokenizer,
+    )
+    # summarization settings
     sum_settings = model_card.model_params.sum_settings.dict()
     # --- create prediction files
-        # --- add assets to registered model version on neptune ai
-    # testing assets - inputs, inference specs and outputs
-    
-    # Making predictions from example inputs
     logger.info("Making predictions from example inputs")
-    
-    # Tokenize the sample documents
-    inputs = tokenizer.batch_encode_plus(
-        model_card.model_inputs.sample_documents,
-        return_tensors="pt",
-        truncation=True,
-        padding="longest",
-        max_length=512
+    sum_predictions: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline(
+        model_card.model_inputs.sample_documents
     )
-    
-    # Generate summaries
-    summaries = model.generate(**inputs)
-    
-    # Decode the summaries
-    sum_predictions = [tokenizer.decode(summary, skip_special_tokens=True) for summary in summaries]
-    
+    # Convert score's value from np.float32 to just float
+    # Reason for this is because float32 types are not JSON serializable
+    for sublist in sum_predictions:
+        for dictionary in sublist:
+            dictionary["score"] = float(dictionary["score"])
+    # --- add assets to registered model version on neptune ai
+    # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
         (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
@@ -77,11 +73,11 @@ def main() -> None:
         )
     logger.info("Pushing model artifact and assets to s3")
     # model artifact
-    hf_model_local_dir = os.path.join(model_card.local_output_dir, "hf_model")
-    model.save_pretrained(hf_model_local_dir)
+    hf_pipeline_local_dir = os.path.join(model_card.local_output_dir, "hf_pipeline")
+    hf_pipeline.save_pretrained(hf_pipeline_local_dir)
 
     model_version.upload_directory_to_model_version(
-        local_directory_path=hf_model_local_dir,
+        local_directory_path=hf_pipeline_local_dir,
         neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
     # model card

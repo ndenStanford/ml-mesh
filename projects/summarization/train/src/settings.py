@@ -109,7 +109,11 @@ class TrackedSumModelCard(TrackedModelCard):
     model_type: str = "trained"
     # --- custom fields
     # model params
-    model_params: SumModelParams = SumModelParams()
+    model_params_en: SumModelParamsEn = SumModelParamsEn()
+    model_params_frde: SumModelParamsFrDe = SumModelParamsFrDe()
+    model_params_es: SumModelParamsEs = SumModelParamsEs()
+    model_params_ca: SumModelParamsCa = SumModelParamsCa()
+    model_params_it: SumModelParamsIt = SumModelParamsIt()
     model_inputs: Inputs = Inputs()
     # admin
     local_output_dir: str = os.path.join(".", "sum_model_artifacts")

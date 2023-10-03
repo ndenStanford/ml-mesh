@@ -9,6 +9,6 @@ def test_tracked_sum_model_specs():
     TrackedSumModelSpecs()
 
 
-def test_tracked_sum_base_model_card():
+def test_tracked_sum_model_card():
     """Test tracked summarization model card."""
-    TrackedSSumModelCard()
+    TrackedSumModelCard()
