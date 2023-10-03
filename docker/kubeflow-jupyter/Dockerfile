@@ -34,6 +34,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     bzip2 \
     ca-certificates \
     curl \
+    elasticsearch \
     gcc \
     git \
     gnupg \
@@ -59,6 +60,9 @@ RUN curl -s https://deb.nodesource.com/setup_18.x | bash
 
 # hadolint ignore=DL3008
 RUN apt-get -yq install --no-install-recommends nodejs
+
+RUN curl -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
+ && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
 
 # install - s6 overlay
 RUN export GNUPGHOME=/tmp/ \

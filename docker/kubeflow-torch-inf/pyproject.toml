@@ -20,6 +20,8 @@ matplotlib = "^3.7.2"
 seaborn = "^0.12.2"
 torch = "1.13.1"
 torch-neuron = "^1.0"
+elasticsearch-dsl = "^7.0.0"
+pandasticsearch = {extras=["[pandas"], version=0.6.0}
 
 
 [build-system]
