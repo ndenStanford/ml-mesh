@@ -102,10 +102,7 @@ class ModelServer(FastAPI):
         of the RESTApp instance.
         """
         self.uvicorn_configuration = uvicorn.Config(
-            app=self,
-            host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",
-            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type
-            port=self.configuration.uvicorn_settings.http_port,
+            app=self, **self.configuration.uvicorn_settings.dict()
         )
 
         return self.uvicorn_configuration
