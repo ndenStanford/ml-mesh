@@ -12,7 +12,7 @@ from pyarrow import fs
 from pyarrow import parquet as pq
 
 # Source
-from src.settings import IngestionParams
+from src.settings import IngestionParams  # type: ignore[attr-defined]
 
 
 def ingest() -> None:
