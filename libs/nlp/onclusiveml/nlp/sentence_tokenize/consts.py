@@ -7,40 +7,29 @@ from pydantic import BaseModel
 from onclusiveml.nlp.language.constants import LanguageIso
 
 
-class SupportedNLTKLanguagesISO(BaseModel):
-    """Class to represent special characters.
-
-    Args:
-        lang (LanguageIso): languageISOs that support NLTK sentence tokenizer
-
-    """
-
-    lang: LanguageIso
-
-
 SUPPORTED_LANGUAGEISO_LIST = [
-    SupportedNLTKLanguagesISO(lang=LanguageIso.CS),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.DA),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.NL),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.EN),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.ET),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.FI),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.FR),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.DE),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.EL),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.IT),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.NO),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.PL),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.PT),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.RU),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.SL),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.ES),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.SV),
-    SupportedNLTKLanguagesISO(lang=LanguageIso.TR),
+    LanguageIso.CS,
+    LanguageIso.DA,
+    LanguageIso.NL,
+    LanguageIso.EN,
+    LanguageIso.ET,
+    LanguageIso.FI,
+    LanguageIso.FR,
+    LanguageIso.DE,
+    LanguageIso.EL,
+    LanguageIso.IT,
+    LanguageIso.NO,
+    LanguageIso.PL,
+    LanguageIso.PT,
+    LanguageIso.RU,
+    LanguageIso.SL,
+    LanguageIso.ES,
+    LanguageIso.SV,
+    LanguageIso.TR,
 ]
 
 NLTK_SUPPORTED_LANGS = [
-    next(iter(item.lang.locales.values()))["en"].lower()
+    next(iter(item.locales.values()))["en"].lower()
     for item in SUPPORTED_LANGUAGEISO_LIST
 ]
 
