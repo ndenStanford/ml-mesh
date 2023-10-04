@@ -22,7 +22,7 @@ class IngestionSettings(BaseSettings):
     @property
     def target_path(self):
         """Target path property."""
-        return f"s3://{self.target_bucket}/iptc/{self.iptc_level}/ingested"
+        return f"{self.target_bucket}/iptc/{self.iptc_level}/ingested"
 
     class Config:
         env_file = "config/dev.env"
