@@ -10,19 +10,23 @@ from apache_beam.dataframe.convert import to_pcollection
 from apache_beam.dataframe.io import read_csv
 from pyarrow import fs
 from pyarrow import parquet as pq
+from pydantic import BaseSettings
 
 # Source
-from src.settings import IngestionParams  # type: ignore[attr-defined]
+from src.settings import get_settings  # type: ignore[attr-defined]
 
 
-def ingest() -> None:
-    """Read the opoint data, write to the data lake bucket in .parquet."""
-    params = IngestionParams()
-    target_path = f"{params.target_bucket}/iptc/{params.iptc_level}/ingested"
-    s3 = fs.S3FileSystem(region=fs.resolve_s3_region(params.source_bucket))
+def ingest(settings: BaseSettings) -> None:
+    """Read the opoint data, write to the data lake bucket in .parquet.
+
+    Args:
+        settings (BaseSettings): Settings class
+
+    """
+    s3 = fs.S3FileSystem(region=fs.resolve_s3_region(settings.source_bucket))
     with beam.Pipeline() as p:
         dfs = p | "Read CSVs" >> read_csv(
-            f"s3://{params.source_bucket}/raw/{params.iptc_level}/{params.files}.csv",
+            settings.source_path,
             engine="c",
             lineterminator="\n",
             quoting=csv.QUOTE_NONNUMERIC,
@@ -36,7 +40,9 @@ def ingest() -> None:
             | "Write to parquet files"
             >> beam.Map(
                 lambda seq: [
-                    pq.write_table(table, f"{target_path}-{idx}.parquet", filesystem=s3)
+                    pq.write_table(
+                        table, f"{settings.target_path}-{idx}.parquet", filesystem=s3
+                    )
                     for idx, table in enumerate(seq)
                 ]
             )
@@ -44,4 +50,5 @@ def ingest() -> None:
 
 
 if __name__ == "__main__":
-    ingest()
+    settings = get_settings()
+    ingest(settings)
