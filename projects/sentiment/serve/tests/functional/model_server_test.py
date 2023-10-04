@@ -22,25 +22,25 @@ from src.serve.server_models import (
 
 
 @pytest.mark.order(5)
-def test_model_server_root(test_client):
+def test_model_server_root(test_client, test_serving_params):
     """Tests the running ModelServer instance's root endpoint."""
-    root_response = test_client.get("/v1/")
+    root_response = test_client.get(f"/{test_serving_params.api_version}/")
     assert root_response.status_code == 200
 
 
 @pytest.mark.order(6)
-def test_model_server_liveness(test_client):
+def test_model_server_liveness(test_client, test_serving_params):
     """Tests the running ModelServer instance's liveness endpoint."""
-    liveness_response = test_client.get("/v1/live")
+    liveness_response = test_client.get(f"/{test_serving_params.api_version}/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
 
 
 @pytest.mark.order(6)
-def test_model_server_readiness(test_client):
+def test_model_server_readiness(test_client, test_serving_params):
     """Tests the running ModelServer instance's readiness endpoint."""
-    readiness_response = test_client.get("/v1/ready")
+    readiness_response = test_client.get(f"/{test_serving_params.api_version}/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -49,6 +49,7 @@ def test_model_server_readiness(test_client):
 @pytest.mark.order(7)
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
 def test_model_server_predict(
+    test_serving_params,
     test_model_name,
     test_client,
     test_inputs,
@@ -68,7 +69,8 @@ def test_model_server_predict(
     )
 
     test_response = test_client.post(
-        f"/v1/model/{test_model_name}/predict", json=input.dict()
+        f"/{test_serving_params.api_version}/model/{test_model_name}/predict",
+        json=input.dict(),
     )
 
     assert test_response.status_code == 200
@@ -109,6 +111,7 @@ def test_model_server_predict(
     ],
 )
 def test_served_sent_model_with_entities_predict(
+    test_serving_params,
     test_model_name,
     test_client,
     test_served_model_artifacts,
@@ -128,7 +131,8 @@ def test_served_sent_model_with_entities_predict(
     )
 
     test_response = test_client.post(
-        f"/v1/model/{test_model_name}/predict", json=input.dict()
+        f"/{test_serving_params.api_version}/model/{test_model_name}/predict",
+        json=input.dict(),
     )
 
     assert test_response.status_code == 200
@@ -143,13 +147,17 @@ def test_served_sent_model_with_entities_predict(
 
 
 @pytest.mark.order(7)
-def test_model_server_bio(test_model_name, test_client, test_model_card):
+def test_model_server_bio(
+    test_serving_params, test_model_name, test_client, test_model_card
+):
     """Tests the running ModelServer's bio endpoint by making genuine http requests.
 
     This test uses the custom data models for validation and the model card from the model
     artifact as ground truth for the regression test element.
     """
-    test_response = test_client.get(f"/v1/model/{test_model_name}/bio")
+    test_response = test_client.get(
+        f"/{test_serving_params.api_version}/model/{test_model_name}/bio"
+    )
 
     assert test_response.status_code == 200
     actual_output = test_response.json()
