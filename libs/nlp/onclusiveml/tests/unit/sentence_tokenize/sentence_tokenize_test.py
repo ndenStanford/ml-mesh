@@ -45,6 +45,25 @@ def test_tokenize_fr():
     ]
 
 
+def test_tokenize_unknown_language():
+    """Test SentenceTokenizer with an unknown language should default to English tokenization."""
+    text = """This is a sample English text. It contains multiple sentences."""
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="xyz")
+    assert res["sentences"] == [
+        "This is a sample English text.",
+        "It contains multiple sentences.",
+    ]
+
+
+def test_tokenize_unsupported_nltk_language():
+    """Test SentenceTokenizer with a language that NLTK doesn't support."""
+    text = """이것은 샘플 영어 텍스트입니다. 여러 문장이 포함되어 있습니다."""
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="ko")
+    assert res["sentences"] == ["이것은 샘플 영어 텍스트입니다.", "여러 문장이 포함되어 있습니다."]
+
+
 @pytest.mark.parametrize(
     "char",
     SPECIAL_CHARACTERS,

@@ -41,8 +41,13 @@ class SentenceTokenizer:
         """
         # return language iso equivalent of language e.g. fr is LanguageIso.FR
         langIso = LanguageIso.from_language_iso(language)
-        # return english equivalent of LanguageIso e.g. LanguageIso.FR is french
-        lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
+
+        # if LanguageIso of the language is not None, return english name of LanguageIso
+        # e.g. LanguageIso.FR is french
+        if langIso:
+            lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
+        else:
+            lang_simplified = "english"
 
         if lang_simplified in NLTK_SUPPORTED_LANGS:
             sentences_first = nltk.sent_tokenize(content, lang_simplified)
