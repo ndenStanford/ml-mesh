@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from onclusiveml.nlp.language.constants import LanguageIso
 
 
-SUPPORTED_LANGUAGEISO_LIST = [
+SUPPORTED_LANGUAGE_ISO_LIST = [
     LanguageIso.CS,
     LanguageIso.DA,
     LanguageIso.NL,
@@ -30,7 +30,7 @@ SUPPORTED_LANGUAGEISO_LIST = [
 
 NLTK_SUPPORTED_LANGS = [
     next(iter(item.locales.values()))["en"].lower()
-    for item in SUPPORTED_LANGUAGEISO_LIST
+    for item in SUPPORTED_LANGUAGE_ISO_LIST
 ]
 
 
