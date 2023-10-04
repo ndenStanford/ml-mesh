@@ -141,12 +141,19 @@ RUN mkdir -p /tmp_home \
     && chown -R "${NB_USER}:users" /tmp_home \
     && chown -R ${NB_USER}:users ${HOME}
 
+WORKDIR "/"
+
+RUN ./bin/systemctl daemon-reload \
+ && ./bin/systemctl enable elasticsearch.service
+
 USER "${NB_USER}"
 
 EXPOSE 8888
 
 # hadolint ignore=DL3002
 USER root
+
+WORKDIR "${HOME}"
 
 ENTRYPOINT ["/init"]
 
