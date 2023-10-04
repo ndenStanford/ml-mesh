@@ -261,6 +261,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-160
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [integration]
     hostname: onclusiveml
     networks:
