@@ -28,7 +28,7 @@ from src.serve.server_models import (
 
 @pytest.fixture
 def test_serving_params():
-    """Test serving params."""
+    """Serving params fixture."""
     return ServingParams()
 
 

@@ -16,7 +16,7 @@ from src.serve.params import ServedModelArtifacts
 
 @pytest.fixture
 def test_serving_params():
-    """Test serving params."""
+    """Serving params fixture."""
     return ServingParams()
 
 
