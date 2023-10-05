@@ -205,7 +205,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.__main__]
+    command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
@@ -243,7 +243,7 @@ services:
         source: serve/src
         target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, /projects/ner/serve/src/download/compiled_model.py]
+    command: [python, -m, src.download.__main__]
     profiles: [serve, integration, functional, load]
 
     environment:
@@ -362,7 +362,7 @@ services:
         source: serve/src
         target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload.test_results]
+    command: [python, -m, src.upload.__main__]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
