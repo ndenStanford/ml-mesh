@@ -114,7 +114,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         with:
           cond: ${{ inputs.event-name == 'pull_request' }}
-          if_true: ci-${{ github.run_id }}
+          if_true: ci-${{ github.run_id }}-${{ github.run_attempt }}
           if_false: ${{ steps.version-increment.outputs.V_VERSION }}
 
       - name: Generate Release
