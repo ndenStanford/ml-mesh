@@ -3,10 +3,10 @@
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiResponseSchema, JsonApiSchemas
 from onclusiveml.serving.serialization.ner.v1 import (
-    BioRequestAttributeSchema,
-    PredictRequestAttributeSchema,
-    PredictRequestParametersSchema,
-    PredictResponseAttributeSchema,
+    BioRequestAttributeSchemaV1,
+    PredictRequestAttributeSchemaV1,
+    PredictRequestParametersSchemaV1,
+    PredictResponseAttributeSchemaV1,
 )
 
 # Source
@@ -18,12 +18,12 @@ settings = get_settings()
 
 PredictRequestSchema, PredictResponseSchema = JsonApiSchemas(
     namespace=settings.model_name,
-    request_attributes_schema=PredictRequestAttributeSchema,
-    response_attributes_schema=PredictResponseAttributeSchema,
-    request_parameters_schema=PredictRequestParametersSchema,
+    request_attributes_schema=PredictRequestAttributeSchemaV1,
+    response_attributes_schema=PredictResponseAttributeSchemaV1,
+    request_parameters_schema=PredictRequestParametersSchemaV1,
 )
 
 
 BioResponseSchema = JsonApiResponseSchema(
-    namespace=settings.model_name, attributes_schema=BioRequestAttributeSchema
+    namespace=settings.model_name, attributes_schema=BioRequestAttributeSchemaV1
 )
