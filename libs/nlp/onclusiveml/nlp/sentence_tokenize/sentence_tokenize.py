@@ -7,12 +7,19 @@ from typing import Any, Dict, List
 # 3rd party libraries
 import nltk
 
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
 
 nltk.download("punkt")
+logger = get_default_logger(__name__)
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
-from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.sentence_tokenize.consts import (
+    NLTK_SUPPORTED_LANGS,
+    SPECIAL_CHARACTERS,
+)
 
 
 class SentenceTokenizer:
@@ -34,12 +41,20 @@ class SentenceTokenizer:
         """
         # return language iso equivalent of language e.g. fr is LanguageIso.FR
         langIso = LanguageIso.from_language_iso(language)
-        # return english equivalent of LanguageIso e.g. LanguageIso.FR is french
-        lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
 
-        sentences_first = nltk.sent_tokenize(content, lang_simplified)
+        # if LanguageIso of the language is not None, return english name of LanguageIso
+        # e.g. LanguageIso.FR is french
+        if langIso:
+            lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
+        else:
+            lang_simplified = "english"
+
+        if lang_simplified in NLTK_SUPPORTED_LANGS:
+            sentences_first = nltk.sent_tokenize(content, lang_simplified)
+        else:
+            sentences_first = nltk.sent_tokenize(content, "english")
+
         sentences = []
-
         for sentence in sentences_first:
             s = self.regex.split(sentence)
             sentences += s
