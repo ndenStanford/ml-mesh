@@ -21,8 +21,8 @@ class InferenceOutput(NamedTuple):
     entity_type: int
     score: float
     entity_text: str
-    start: Optional[int]
-    end: Optional[int]
+    start: Optional[int] = None
+    end: Optional[int] = None
     sentence_index: Optional[int] = None
 
 
@@ -108,16 +108,18 @@ class CompiledNER:
         """Sentence tokenization.
 
         Args:
-            sentences (str): Input sentences
+            sentence (str): Input sentences
             language (str): Input sentences language
         Return:
             List[str]: Tokenized sentences
         """
-        list_sentences = self.sentence_tokenizer.tokenize(
-            content=sentences, language=language
-        )["sentences"]
-        # Filter out very short sentences as they likely be incorrect
-        list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
+        list_sentences = [
+            self.sentence_tokenizer.tokenize(content=sentence, language=language)[
+                "sentences"
+            ]
+            for sentence in sentences
+        ]
+
         return list_sentences
 
     def preprocess(self, sentences: List[str], language: str) -> List[List[str]]:
@@ -131,8 +133,8 @@ class CompiledNER:
         """
         sentences = [self.remove_html(sentence) for sentence in sentences]
         sentences = [self.remove_whitespace(sentence) for sentence in sentences]
-        list_sentences = self.sentence_tokenize(sentences, language)
-        return list_sentences
+        sentences = self.sentence_tokenize(sentences, language)
+        return sentences
 
     def inference(
         self, sentences: List[str], language: str
@@ -177,26 +179,23 @@ class CompiledNER:
         """
         return sum(scores) / len(scores)
 
-    def postprocess(
-        self, output: List[InferenceOutput], return_pos: bool
-    ) -> List[List[InferenceOutput]]:
+    def postprocess(self, output: InferenceOutput) -> List[List[InferenceOutput]]:
         """Postprocess NER labels to merge contiguous entities and compute scores.
 
         Args:
-            InferenceOutput: List of lists of NER predictions which has the attributes:
+            output (InferenceOutput): List of lists of NER predictions which has the attributes:
                 - entity_type (str): entity type
                 - score (float): probability of given entity
                 - entity_text (str): targeted word for given entity
                 - start (int): starting position of word
                 - end (int): ending position of word
-            return_pos (bool): Flag indicating whether to return positional information
 
         Returns:
             List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
         """
         output_list: List[
-            InferenceOutput
+            List[InferenceOutput]
         ] = []  # List to store the postprocessed NER labels
 
         sentence_index = 0  # Initialize sentence index for tracking
@@ -284,35 +283,22 @@ class CompiledNER:
             output_list.append(merged_sublist)
             # Increment the sentence index for the next iteration
             sentence_index += 1
-        # Flatten the output list
-        output_list = [item for sublist in output_list for item in sublist]
-        # Remove leftover double hashes in beginning from text that dont use Roman characters
-        for x in output_list:
-            if x.entity_text[:2] == "##":
-                x.entity_text = x.entity_text[2:]
-        # Remove start and end key from output if we do not want to have the word positions
-        if not return_pos:
-            output_list = [
-                InferenceOutput(**ent.dict(exclude={"start", "end"}))
-                for ent in output_list
-            ]
         return output_list
 
     def __call__(
-        self, sentences: str, language: str, return_pos: bool
+        self, sentences: List[str], language: str
     ) -> List[List[InferenceOutput]]:
         """Extract named entities from input sentence using NER.
 
         Args:
             sentences (str): The input sentences to extract entities from
             language (str): input sentences language
-            return_pos (bool): Flag indiciating whether to return positional information in the
-                output
         Returns:
             List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
         """
         list_sentences = self.preprocess(sentences, language)
         ner_labels = self.inference(list_sentences, language)
-        entities = self.postprocess(ner_labels, return_pos)
+        entities = self.postprocess(ner_labels)
+
         return entities

@@ -16,7 +16,6 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
-    return_pos: bool = True
     language: str = "en"
 
 

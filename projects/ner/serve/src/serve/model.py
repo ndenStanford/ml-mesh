@@ -70,8 +70,11 @@ class ServedNERModel(ServedModel):
         attributes = payload.attributes
         parameters = payload.parameters
 
-        # score the model
-        entities = self.model(sentences=[attributes.content], **parameters.dict())
+        if attributes.content == "":
+            entities: list = [[]]
+        else:
+            # score the model
+            entities = self.model(sentences=[attributes.content], **parameters.dict())
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
