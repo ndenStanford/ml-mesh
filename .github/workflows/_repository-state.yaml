@@ -54,6 +54,8 @@ jobs:
           echo "github.head_ref (PR only):" ${{ github.head_ref }}
           echo github.ref: ${{ github.ref }}
           echo github.type: ${{ github.type }}
+          echo github.run_id: ${{ github.run_id }}
+          echo github.run_attempt: ${{ github.run_attempt }}
 
   get-repository-state:
     name: Get repository release state
@@ -114,7 +116,7 @@ jobs:
         uses: haya14busa/action-cond@v1
         with:
           cond: ${{ inputs.event-name == 'pull_request' }}
-          if_true: ci-${{ github.run_id }}
+          if_true: ci-${{ github.run_id }}-${{ github.run_attempt }}
           if_false: ${{ steps.version-increment.outputs.V_VERSION }}
 
       - name: Generate Release
