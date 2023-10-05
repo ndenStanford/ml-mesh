@@ -54,6 +54,8 @@ jobs:
           echo "github.head_ref (PR only):" ${{ github.head_ref }}
           echo github.ref: ${{ github.ref }}
           echo github.type: ${{ github.type }}
+          echo github.run_id: ${{ github.run_id }}
+          echo github.run_attempt: ${{ github.run_attempt }}
 
   get-repository-state:
     name: Get repository release state
