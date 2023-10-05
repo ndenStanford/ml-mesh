@@ -1,7 +1,13 @@
 """Pydantic based base classes."""
 
+# Standard Library
+from typing import Type
+
 # 3rd party libraries
 from pydantic import BaseModel, BaseSettings
+
+# Internal libraries
+from onclusiveml.core.base.exception import BaseClassNotFound
 
 
 class OnclusiveBaseSettings(BaseSettings):
@@ -15,6 +21,7 @@ class OnclusiveBaseSettings(BaseSettings):
 
 class OnclusiveFrozenSettings(OnclusiveBaseSettings):
     """Immutable Settings.
+
     After initialization, updating the attribute values
     will not be possible.
     """
@@ -47,3 +54,18 @@ class OnclusiveFrozenSchema(OnclusiveBaseSchema):
         # make the frozen schema immutable and hashable
         allow_mutation = False
         frozen = True
+
+
+def cast(
+    obj: OnclusiveBaseSettings, t: Type[OnclusiveBaseSchema]
+) -> OnclusiveBaseSettings:
+    """Cast pydantic settings to parent class.
+
+    Args:
+        obj (OnclusiveBaseSettings): object to cast
+        t: parent class
+    """
+    if t not in type(obj).__bases__:
+        raise BaseClassNotFound(base=str(t), derived=type(obj))
+    data = {k: getattr(obj, k) for k in t.schema().get("properties").keys()}
+    return t(**data)
