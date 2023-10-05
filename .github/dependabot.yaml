@@ -105,6 +105,76 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
+  # kubeflow torch gpu
+
+  - package-ecosystem: pip
+    directory: /docker/kubeflow-torch-gpu
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # kubeflow torch inf
+
+  - package-ecosystem: pip
+    directory: /docker/kubeflow-torch-inf
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # gpu base
+
+  - package-ecosystem: pip
+    directory: /docker/gpu-base
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # gpu train
+
+  - package-ecosystem: pip
+    directory: /docker/gpu-train
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # dask base
+
+  - package-ecosystem: pip
+    directory: /docker/dask-base
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
   # ====================================
   # LIBS
   # ====================================
@@ -141,6 +211,48 @@ updates:
 
   - package-ecosystem: pip
     directory: /libs/models
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # nlp lib
+
+  - package-ecosystem: pip
+    directory: /libs/nlp
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # serving lib
+
+  - package-ecosystem: pip
+    directory: /libs/serving
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # syndicate lib
+
+  - package-ecosystem: pip
+    directory: /libs/syndicate
     target-branch: develop
     schedule:
       interval: monthly
@@ -232,6 +344,90 @@ updates:
   ## serve
   - package-ecosystem: pip
     directory: /projects/entity-linking/serve
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # NER
+
+  ## compile
+
+  - package-ecosystem: pip
+    directory: /projects/ner/compile
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/ner/serve
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## train
+  - package-ecosystem: pip
+    directory: /projects/ner/train
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # Sentiment
+
+  ## compile
+
+  - package-ecosystem: pip
+    directory: /projects/sentiment/compile
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/sentiment/serve
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## train
+  - package-ecosystem: pip
+    directory: /projects/sentiment/train
     target-branch: develop
     schedule:
       interval: monthly

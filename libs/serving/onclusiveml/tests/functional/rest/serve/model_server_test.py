@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 # Internal libraries
 from libs.serving.onclusiveml.serving.rest.serve.params import (
+    BetterStackSettings,
     FastAPISettings,
     ServingParams,
     UvicornSettings,
@@ -116,6 +117,7 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
         api_version=test_api_version,
         fastapi_settings=FastAPISettings(name="test-api"),
         uvicorn_settings=UvicornSettings(http_port=test_port),
+        betterstack_settings=BetterStackSettings(enable=True),
     )
 
     test_model_server = ModelServer(

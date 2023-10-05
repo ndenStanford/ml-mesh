@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kubeflow-jupyter"
-version = "0.1.0"
+version = "0.2.0"
 description = "Base for all kubeflow images."
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
@@ -16,6 +16,22 @@ tracking = {path = "../../libs/tracking"}
 neptune-notebooks = "^0.9.3"
 matplotlib = "^3.7.2"
 seaborn = "^0.12.2"
+pandas = "~1.3.0"
+dask = "~2023.3.1"
+kfp = "~1.8.22"
+dask-kubernetes = "~2023.3.1"
+distributed = "~2023.3.1"
+kubernetes = "~23.6.0"
+graphviz = "~0.20.1"
+lz4 = "~4.3.2"
+ipympl = "~0.9.3"
+dask-labextension = "~6.2.0"
+pyarrow = "^13.0.0"
+s3fs = "^2023.9.0"
+scikit-learn = "~1.3.0"
+xgboost = "~1.7.3"
+scipy = "~1.9.3"
+joblib = "~1.3.1"
 
 [build-system]
 requires = ["poetry-core"]

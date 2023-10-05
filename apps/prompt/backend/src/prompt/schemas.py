@@ -128,15 +128,24 @@ class PromptTemplateSchema(BaseModel):
         if alias is None:
             # Cannot use lambda function here as we need to convert parameters field into dict
             # JSONAttributes doesnt convert "stringed" dicts back to dicts
-            prompt_templates = []
+            prompt_templates = {}
             prompt_table = PromptTemplateTable.scan()
             for prompt in prompt_table:
-                prompt_json = prompt.to_json()
-                prompt_data = json.loads(prompt_json)
+                prompt_data = json.loads(prompt.to_json())
                 prompt_data["parameters"] = json.loads(prompt_data["parameters"])
                 prompt_template = PromptTemplateSchema(**prompt_data)
-                prompt_templates.append(prompt_template)
-            return prompt_templates
+
+                # temporarily holding alias and version of current template
+                alias = prompt_data["alias"]
+                version = prompt_data["version"]
+
+                # Check if alias is not in prompt_templates or if the current version is greater
+                if (
+                    alias not in prompt_templates
+                    or version > prompt_templates[alias].version
+                ):
+                    prompt_templates[alias] = prompt_template
+            return list(prompt_templates.values())
 
         if version is None:
             # if no version specified get the latest.

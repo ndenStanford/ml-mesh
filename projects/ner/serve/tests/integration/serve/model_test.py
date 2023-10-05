@@ -16,6 +16,16 @@ from src.serve.server_models import (
 )
 
 
+# Generate the parameter combinations using a list comprehension
+test_sample_indices = [0, 1, 2, 3]
+languages = ["en", "ja"]
+parametrize_values = [
+    (index, language, languages.index(language))
+    for language in languages
+    for index in test_sample_indices
+]
+
+
 @pytest.mark.order(1)
 def test_served_ner_model__init__(test_served_model_artifacts):
     """Tests the constructor of the ServedNERModel."""
@@ -36,31 +46,35 @@ def test_served_ner_model_load(test_served_model_artifacts):
     assert served_ner_model.is_ready()
 
 
-@pytest.mark.parametrize("test_record_index", [0, 1, 2])
+@pytest.mark.parametrize("test_record_index, language, lang_index", parametrize_values)
 def test_served_ner_model_predict(
     test_served_model_artifacts,
     test_inputs,
     test_inference_params,
     test_predictions,
     test_record_index,
+    language,
+    lang_index,
 ):
     """Tests the fully initialized and loaded ServedNERModel's predict method."""
     served_ner_model = ServedNERModel(
         served_model_artifacts=test_served_model_artifacts
     )
     served_ner_model.load()
-    input_ = PredictRequestModel(
-        configuration=PredictConfiguration(return_pos=True, language="en"),
-        inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
+    input = PredictRequestModel(
+        configuration=PredictConfiguration(return_pos=True, language=language),
+        inputs=PredictInputContentModel(
+            content=test_inputs[lang_index][test_record_index]
+        ),
     )
 
-    actual_output = served_ner_model.predict(input_)
+    actual_output = served_ner_model.predict(input)
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             predicted_content=[
                 PredictionExtractedEntity(**i)
-                for i in test_predictions[test_record_index]
+                for i in test_predictions[lang_index][test_record_index]
             ]
         )
     )
@@ -68,31 +82,35 @@ def test_served_ner_model_predict(
     assert actual_output == expected_output
 
 
-@pytest.mark.parametrize("test_record_index", [0, 1, 2])
+@pytest.mark.parametrize("test_record_index, language, lang_index", parametrize_values)
 def test_served_ner_model_predict_no_pos(
     test_served_model_artifacts,
     test_inputs,
     test_inference_params,
     test_predictions,
     test_record_index,
+    language,
+    lang_index,
 ):
     """Tests the fully initialized and loaded ServedNERModel's predict method."""
     served_ner_model = ServedNERModel(
         served_model_artifacts=test_served_model_artifacts
     )
     served_ner_model.load()
-    input_ = PredictRequestModel(
-        configuration=PredictConfiguration(return_pos=False, language="en"),
-        inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
+    input = PredictRequestModel(
+        configuration=PredictConfiguration(return_pos=False, language=language),
+        inputs=PredictInputContentModel(
+            content=test_inputs[lang_index][test_record_index]
+        ),
     )
 
-    actual_output = served_ner_model.predict(input_)
+    actual_output = served_ner_model.predict(input)
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             predicted_content=[
                 PredictionExtractedEntity(**i)
-                for i in test_predictions[test_record_index]
+                for i in test_predictions[lang_index][test_record_index]
             ]
         )
     )
