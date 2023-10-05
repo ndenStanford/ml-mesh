@@ -1,23 +1,26 @@
 """Settings."""
 
 # Standard Library
-import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field, SecretStr
+from pydantic import BaseSettings, Field
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
-from onclusiveml.tracking import TrackedModelSpecs
+from onclusiveml.tracking import (
+    TrackedGithubActionsSpecs,
+    TrackedImageSpecs,
+    TrackedModelSpecs,
+)
 
 
 class TrackedCompiledModelSpecs(TrackedModelSpecs):
     """Tracked compiled model settings."""
+
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
     with_id: str = Field("NER-COMPILED-12", env="neptune_model_version_id")
@@ -32,7 +35,12 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
-class GlobalSettings(ServerModelSettings, TrackedCompiledModelSpecs):
+class GlobalSettings(
+    ServerModelSettings,
+    TrackedCompiledModelSpecs,
+    TrackedGithubActionsSpecs,
+    TrackedImageSpecs,
+):
     """Global server settings."""
 
 
