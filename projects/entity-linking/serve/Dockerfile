@@ -9,6 +9,8 @@ ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 ENV HOME="${PROJECT_DIR}"
 
+USER root
+
 RUN mkdir -p "${HOME}" && \
     chown -R "${USER}:users" "${HOME}"
 
@@ -32,12 +34,22 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+USER "${USER}"
 
 # --- production stage
 FROM builder as production
 
 # --- test build stage
 FROM builder as development
+
+# TODO: switching user to root is security risk. Instead extend the permission of the app user
+# required to access mounted docker volume with write permission
+# hadolint ignore=DL3002
+USER root
+
+
+RUN mkdir -p "/opt" && \
+    chown -R "${USER}:users" "/opt"
 
 WORKDIR "/"
 

@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 # 3rd party libraries
 from pydantic import BaseSettings, SecretStr
@@ -11,6 +11,18 @@ from pydantic import BaseSettings, SecretStr
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
+
+
+class KnowledgeGraphDataSettings(ServingParams):
+    """Serve model parameters."""
+
+    source_bucket: str = "mesh-external-ml-models-dev"
+    source_path: str = "entity-fishing"
+    target_path: str = "/opt/entity-fishing/data/db"
+    knowledge_bases: List[str] = [
+        "kb",
+        "en",
+    ]
 
 
 class ServedModelSettings(ServingParams):
@@ -30,7 +42,9 @@ class ApplicationSettings(OnclusiveBaseSettings):
     enable_metrics: bool = False
 
 
-class GlobalSettings(ServedModelSettings, ApplicationSettings):
+class GlobalSettings(
+    ServedModelSettings, ApplicationSettings, KnowledgeGraphDataSettings
+):
     """Global server settings."""
 
 
