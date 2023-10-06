@@ -90,6 +90,12 @@ jobs:
       #         {"Key": "Billing", "Value": "ML"}
       #       ]
 
+      - name: Show all relevant github action context vars 1
+        run: |
+          echo github.actor: $${{ github.actor }}
+          echo github.actor_id: $${{ github.actor_id }}
+          echo github.ref_name: ${{ github.ref_name }}
+
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: Wandalen/wretry.action@master
@@ -112,6 +118,12 @@ jobs:
               ]
           attempt_limit: 3
           attempt_delay: 10
+
+      - name: Show all relevant github action context vars 2
+        run: |
+          echo github.actor: $${{ github.actor }}
+          echo github.actor_id: $${{ github.actor_id }}
+          echo github.ref_name: ${{ github.ref_name }}
 
       # - name: Check start runner outputs
       #   run: |
