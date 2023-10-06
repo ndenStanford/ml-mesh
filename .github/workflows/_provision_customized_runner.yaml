@@ -124,7 +124,8 @@ jobs:
           echo github.actor: ${{ github.actor }}
           echo github.actor_id: ${{ github.actor_id }}
           echo github.ref_name: ${{ github.ref_name }}
-          echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ) }}
+          echo ${{ steps.start-ec2-runner.outputs }}
+          # echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ) }}
 
       # - name: Check start runner outputs
       #   run: |
