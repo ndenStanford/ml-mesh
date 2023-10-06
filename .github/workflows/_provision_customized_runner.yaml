@@ -59,8 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
-      label: ${{ fromJSON( steps.start-ec2-runner.outputs.out ).label }}
-      ec2-instance-id: ${{ fromJSON( steps.start-ec2-runner.outputs.out ).ec2-instance-id }}
+      label: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).label }}
+      ec2-instance-id: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).ec2-instance-id }}
 
     steps:
       - name: Configure AWS credentials
@@ -90,12 +90,6 @@ jobs:
       #         {"Key": "Billing", "Value": "ML"}
       #       ]
 
-      - name: Show all relevant github action context vars 1
-        run: |
-          echo github.actor: ${{ github.actor }}
-          echo github.actor_id: ${{ github.actor_id }}
-          echo github.ref_name: ${{ github.ref_name }}
-
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: Wandalen/wretry.action@master
@@ -121,11 +115,9 @@ jobs:
 
       - name: Show all relevant github action context vars 2
         run: |
-          echo github.actor: ${{ github.actor }}
-          echo github.actor_id: ${{ github.actor_id }}
-          echo github.ref_name: ${{ github.ref_name }}
-          echo ${{ steps.start-ec2-runner.outputs }}
-          # echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ) }}
+          echo ${{ steps.start-ec2-runner.outputs.outputs }}
+          echo ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).label }}
+          echo ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).ec2-instance-id }}
 
       # - name: Check start runner outputs
       #   run: |
