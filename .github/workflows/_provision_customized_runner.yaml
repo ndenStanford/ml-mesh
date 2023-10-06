@@ -115,9 +115,11 @@ jobs:
 
       - name: Check start runner outputs
         run: |
-          echo ${{ fromJSON(steps.start-ec2-runner.outputs) }}
-          echo ${{ fromJSON(steps.start-ec2-runner.outputs.out).label }}
-          echo ${{ fromJSON(steps.start-ec2-runner.outputs.out).ec2-instance-id }}
+          echo ${{ steps.start-ec2-runner.outputs }}
+          echo ${{ fromJSON( steps.start-ec2-runner.outputs ) }}
+          echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ) }}
+          echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ).label }}
+          echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ).ec2-instance-id }}
 
   customize-runner:
     name: Customize self-hosted EC2 runner
