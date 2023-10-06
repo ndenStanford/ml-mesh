@@ -50,7 +50,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     tzdata \
     unzip \
     vim \
-    wget \
     zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -61,16 +60,7 @@ RUN curl -s https://deb.nodesource.com/setup_18.x | bash
 # hadolint ignore=DL3008
 RUN apt-get -yq install --no-install-recommends nodejs
 
-# hadolint ignore=DL4001
-RUN wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
-    && echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
-
-# hadolint ignore=DL3008, DL3009
-RUN apt-get -yq update \
-    && apt-get -yq install --no-install-recommends elasticsearch
-
 # install - s6 overlay
-# hadolint ignore=DL4001
 RUN export GNUPGHOME=/tmp/ \
     && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer" -o /tmp/s6-overlay-${S6_VERSION}-installer \
     && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer.sig" -o /tmp/s6-overlay-${S6_VERSION}-installer.sig \
@@ -81,7 +71,6 @@ RUN export GNUPGHOME=/tmp/ \
     && rm /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer
 
 # install - kubectl
-# hadolint ignore=DL4001
 RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" -o /usr/local/bin/kubectl \
     && curl -sL "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl.sha256" -o /tmp/kubectl.sha256 \
     && echo "$(cat /tmp/kubectl.sha256) /usr/local/bin/kubectl" | sha256sum --check \
@@ -141,19 +130,12 @@ RUN mkdir -p /tmp_home \
     && chown -R "${NB_USER}:users" /tmp_home \
     && chown -R ${NB_USER}:users ${HOME}
 
-WORKDIR "/"
-
-RUN ./bin/systemctl daemon-reload \
- && ./bin/systemctl enable elasticsearch.service
-
 USER "${NB_USER}"
 
 EXPOSE 8888
 
 # hadolint ignore=DL3002
 USER root
-
-WORKDIR "${HOME}"
 
 ENTRYPOINT ["/init"]
 
