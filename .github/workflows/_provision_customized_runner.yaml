@@ -70,26 +70,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      # - name: Start EC2 runner
-      #   id: start-ec2-runner
-      #   uses: machulav/ec2-github-runner@v2
-      #   with:
-      #     mode: start
-      #     github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-      #     ec2-image-id: ami-07b4e00e2c69c3702
-      #     ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-      #     subnet-id: subnet-0a66725cebe82001d # us-east-2b
-      #     security-group-id: sg-0783d340a2340549a
-      #     # TODO: add timestamp and environment name to the instance name
-      #     aws-resource-tags: > # optional, requires additional permissions
-      #       [
-      #         {"Key": "Name", "Value": "ml-ec2-github-runner"},
-      #         {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
-      #         {"Key": "Environment", "Value": "dev"},
-      #         {"Key": "Stack", "Value": "mesh"},
-      #         {"Key": "Billing", "Value": "ML"}
-      #       ]
-
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: Wandalen/wretry.action@master
@@ -112,20 +92,6 @@ jobs:
               ]
           attempt_limit: 3
           attempt_delay: 10
-
-      - name: Show retry wrapper outputs of EC2 runner start
-        run: |
-          echo Retry json output: "${{ steps.start-ec2-runner.outputs.outputs }}"
-          echo Retry json output `label` field: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).label }}
-          echo Retry json output `ec2-instance-id` field: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).ec2-instance-id }}
-
-      # - name: Check start runner outputs
-      #   run: |
-      #     echo ${{ steps.start-ec2-runner.outputs }}
-      #     echo ${{ fromJSON( steps.start-ec2-runner.outputs ) }}
-      #     echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ) }}
-      #     echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ).label }}
-      #     echo ${{ fromJSON( steps.start-ec2-runner.outputs.out ).ec2-instance-id }}
 
   customize-runner:
     name: Customize self-hosted EC2 runner
