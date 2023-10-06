@@ -102,8 +102,7 @@ jobs:
             ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
             subnet-id: subnet-0a66725cebe82001d # us-east-2b
             security-group-id: sg-0783d340a2340549a
-            # TODO: add timestamp to the instance name
-            aws-resource-tags: > # optional, requires additional permissions
+            aws-resource-tags: >
               [
                 {"Key": "Name", "Value": "ml-ec2-github-runner"},
                 {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
