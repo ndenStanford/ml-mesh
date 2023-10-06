@@ -100,7 +100,7 @@ jobs:
             github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
             ec2-image-id: ami-07b4e00e2c69c3702
             ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-            subnet-id: subnet-0a66725cebe82001d # us-east-2b
+            subnet-id: subnet-0a66725cebe82001d
             security-group-id: sg-0783d340a2340549a
             aws-resource-tags: |
               [
