@@ -1,7 +1,7 @@
 """Request schema."""
 
 # Standard Library
-from typing import Any, Generic, List, Optional, Type, TypeVar
+from typing import Generic, Optional, Type, TypeVar
 
 # 3rd party libraries
 from pydantic.generics import GenericModel
@@ -66,10 +66,11 @@ def JsonApiRequestSchema(
     namespace: str, attributes_schema: JsonApiSchema, parameters_schema: JsonApiSchema
 ) -> Type[RequestSchema]:
     """JSON API Request.
+
     Args:
-        namespace (str):
-        attributes_schema (JsonApiSchema):
-        parameters_schema (JsonApiSchema):
+        namespace (str): namespace.
+        attributes_schema (JsonApiSchema): attributes data schema.
+        parameters_schema (JsonApiSchema): paramters data schema.
     """
     request_data_model = RequestDataModel[
         Literal[namespace], attributes_schema, parameters_schema

@@ -9,11 +9,15 @@ from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
 
 
 class TestSettings(OnclusiveBaseSettings):
+    """Test settings."""
+
     setting1: str
     setting2: int
 
 
 class TestModel(OnclusiveBaseSchema):
+    """Test model."""
+
     attribute1: int
     attribute2: bool
 

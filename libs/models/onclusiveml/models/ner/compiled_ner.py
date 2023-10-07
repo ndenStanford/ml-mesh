@@ -18,7 +18,7 @@ from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 class InferenceOutput(NamedTuple):
     """Inference output data structure."""
 
-    entity_type: int
+    entity_type: str
     score: float
     entity_text: str
     start: Optional[int] = None
@@ -104,14 +104,15 @@ class CompiledNER:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def sentence_tokenize(self, sentences: List[str], language: str) -> List[List[str]]:
+    def sentence_tokenize(self, sentences: List[str], language: str) -> List[str]:
         """Sentence tokenization.
 
         Args:
-            sentence (str): Input sentences
-            language (str): Input sentences language
+            sentences (List[str]): Input sentences.
+            language (str): Input sentences language.
+
         Return:
-            List[str]: Tokenized sentences
+            List[List[str]]: Tokenized sentences
         """
         list_sentences = [
             self.sentence_tokenizer.tokenize(content=sentence, language=language)[
@@ -122,19 +123,19 @@ class CompiledNER:
 
         return list_sentences
 
-    def preprocess(self, sentences: List[str], language: str) -> List[List[str]]:
+    def preprocess(self, sentences: List[str], language: str) -> List[str]:
         """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
         Args:
-            sentences (str): Input sentences
+            sentences (List[str]): Input sentences
             language (str): Input sentences language
+
         Return:
-            List[str]: Tokenized sentences
+            List[List[str]]: Tokenized sentences
         """
         sentences = [self.remove_html(sentence) for sentence in sentences]
         sentences = [self.remove_whitespace(sentence) for sentence in sentences]
-        sentences = self.sentence_tokenize(sentences, language)
-        return sentences
+        return self.sentence_tokenize(sentences, language)
 
     def inference(
         self, sentences: List[str], language: str
@@ -179,24 +180,27 @@ class CompiledNER:
         """
         return sum(scores) / len(scores)
 
-    def postprocess(self, output: InferenceOutput) -> List[List[InferenceOutput]]:
+    def postprocess(
+        self, output: List[List[InferenceOutput]]
+    ) -> List[List[InferenceOutput]]:
         """Postprocess NER labels to merge contiguous entities and compute scores.
 
         Args:
-            output (InferenceOutput): List of lists of NER predictions which has the attributes:
-                - entity_type (str): entity type
-                - score (float): probability of given entity
-                - entity_text (str): targeted word for given entity
-                - start (int): starting position of word
-                - end (int): ending position of word
+            output (List[List[InferenceOutput]]): List of lists of NER predictions
+                which has the attributes:
+                    - entity_type (str): entity type
+                    - score (float): probability of given entity
+                    - entity_text (str): targeted word for given entity
+                    - start (int): starting position of word
+                    - end (int): ending position of word
 
         Returns:
             List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
         """
-        output_list: List[
-            List[InferenceOutput]
-        ] = []  # List to store the postprocessed NER labels
+        output_list: List[List[InferenceOutput]] = [
+            []
+        ]  # List to store the postprocessed NER labels
 
         sentence_index = 0  # Initialize sentence index for tracking
         # Loop through each sublist of NER labels (one sublist per sentence)

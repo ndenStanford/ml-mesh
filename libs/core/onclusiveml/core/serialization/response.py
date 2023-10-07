@@ -1,7 +1,7 @@
 """Response Schema."""
 
 # Standard Library
-from typing import Any, Generic, List, Optional, Type, TypeVar, get_type_hints
+from typing import Generic, Optional, Type, TypeVar
 
 # 3rd party libraries
 from pydantic.generics import GenericModel
@@ -44,7 +44,7 @@ class ResponseSchema(GenericModel, Generic[DataT]):
         version: int,
         attributes: AttributesT,
         identifier: Optional[str] = None,
-    ) -> "RequestSchema":
+    ) -> "ResponseSchema":
         """Instanciates schema from data (identifier, namespace and attributes)."""
         return cls(
             version=version,

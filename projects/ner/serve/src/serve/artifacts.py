@@ -21,7 +21,6 @@ class ServedModelArtifacts(object):
             Assumes that the neptune file attribute paths have been mapped to relative local paths
             (e.g. as the `TrackedModelVersion.download_directory_from_model_version` method does)
         """
-
         self.model_name = settings.model_name
         self.model_directory = settings.model_directory
 
