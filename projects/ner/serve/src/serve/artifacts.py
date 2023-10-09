@@ -4,17 +4,16 @@
 import json
 import os
 
-# Source
-from src.settings import get_settings
-
-
-settings = get_settings()
+# Internal libraries
+from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
 
 class ServedModelArtifacts(object):
     """Served model artifacts."""
 
-    def __init__(self, remove_model_prefix: bool = True):
+    def __init__(
+        self, settings: OnclusiveBaseSettings, remove_model_prefix: bool = True
+    ):
         """Utility class that reads in the model card and assembles model artifact local paths.
 
         Note:
@@ -23,7 +22,6 @@ class ServedModelArtifacts(object):
         """
         self.model_name = settings.model_name
         self.model_directory = settings.model_directory
-
         # load model card
         if remove_model_prefix:
             self.model_card_file = os.path.join(self.model_directory, "model_card")

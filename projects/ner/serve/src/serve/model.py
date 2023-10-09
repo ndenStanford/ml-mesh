@@ -43,13 +43,22 @@ class ServedNERModel(ServedModel):
             served_model_artifacts (ServedModelArtifacts): Served model artifact
         """
         self.served_model_artifacts = served_model_artifacts
-
+        self._model = None
         super().__init__(name=served_model_artifacts.model_name)
+
+    @property
+    def model(self) -> CompiledNER:
+        """Model class."""
+        if self.ready:
+            return self._model
+        raise ValueError(
+            "Model has not been initialized. Please call .load() before making a prediction"
+        )
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledNER instance
-        self.model = CompiledNER.from_pretrained(
+        self._model = CompiledNER.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
