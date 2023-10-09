@@ -1,3 +1,4 @@
+# type: ignore
 """Request schema."""
 
 # Standard Library
@@ -75,7 +76,5 @@ def JsonApiRequestSchema(
     request_data_model = RequestDataModel[
         Literal[namespace], attributes_schema, parameters_schema
     ]
-    # request_data_model.__name__ = f"RequestSchema[{namespace}]"
     request_model = RequestSchema[request_data_model]
-    # request_model.__name__ = f"Request[{namespace}]"
     return request_model

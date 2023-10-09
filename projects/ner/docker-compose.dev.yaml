@@ -226,8 +226,8 @@ services:
         source: serve/src
         target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.download.__main__]
-    profiles: [serve, integration, functional, load]
+    command: [python, -m, src.download]
+    profiles: [serve, functional, load]
 
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -289,6 +289,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -311,7 +313,8 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [functional]
     hostname: onclusiveml
     networks:
@@ -345,6 +348,8 @@ services:
       ONCLUSIVEML_SERVING_RESET_STATS: No
       ONCLUSIVEML_SERVING_RUN_TIME: 45s
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [load]
     hostname: onclusiveml
     networks:
@@ -363,7 +368,7 @@ services:
         source: serve/src
         target: /projects/ner/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload.__main__]
+    command: [python, -m, src.upload]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}

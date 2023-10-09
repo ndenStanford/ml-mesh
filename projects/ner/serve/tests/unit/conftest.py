@@ -30,7 +30,7 @@ def model_card():
 
 @pytest.fixture(scope="function")
 def artifacts(settings):
-    """Settings fixture."""
+    """Model artifacts fixture."""
     return ServedModelArtifacts(settings)
 
 

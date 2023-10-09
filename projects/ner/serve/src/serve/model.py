@@ -97,4 +97,8 @@ class ServedNERModel(ServedModel):
         Returns:
             BioResponseModel: Bio information about the model
         """
-        return BioResponseSchema(model_name=self.name, model_card=self.model_card)
+        return BioResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=self.name,
+            attributes={"model_name": self.name, "model_card": self.model_card},
+        )

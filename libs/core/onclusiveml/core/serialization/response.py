@@ -1,3 +1,4 @@
+# type: ignore
 """Response Schema."""
 
 # Standard Library
@@ -65,7 +66,5 @@ def JsonApiResponseSchema(
         Literal[namespace],
         attributes_schema,
     ]
-    # response_data_model.__name__ = f"ResponseSchema[{namespace}]"
     response_model = ResponseSchema[response_data_model]
-    # response_model.__name__ = f"Response[{namespace}]"
     return response_model
