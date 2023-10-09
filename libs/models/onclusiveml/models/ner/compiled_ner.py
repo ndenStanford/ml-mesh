@@ -11,8 +11,10 @@ from bs4 import BeautifulSoup
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
-from onclusiveml.models.ner.settings import DISTILBERT_SUPPORTED_LANGS
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+
+
+DISTILBERT_SUPPORTED_LANGS = ["ko", "ja"]
 
 
 class InferenceOutput(NamedTuple):
