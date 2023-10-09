@@ -8,7 +8,7 @@ from pydantic import BaseSettings
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.download.helpers import sync_folder
+from src.download.s3 import sync_folder
 from src.settings import get_settings
 
 
