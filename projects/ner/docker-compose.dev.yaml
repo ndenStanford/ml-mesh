@@ -252,7 +252,17 @@ services:
       - type: bind
         source: serve/src
         target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -272,6 +282,9 @@ services:
       - type: bind
         source: serve/src
         target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
     environment:
@@ -292,6 +305,9 @@ services:
       - type: bind
         source: serve/src
         target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
@@ -315,6 +331,9 @@ services:
       - type: bind
         source: serve/src
         target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
