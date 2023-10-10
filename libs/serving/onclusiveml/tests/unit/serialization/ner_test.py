@@ -36,7 +36,7 @@ def test_request_schema_attributes_extra():
 
 
 @pytest.mark.parametrize("lang", ["en", "fr"])
-def test_request_schema_parameters(return_pos, lang):
+def test_request_schema_parameters(lang):
     """Test request schema parameters."""
     parameters = PredictRequestParametersSchemaV1(language=lang)
 
