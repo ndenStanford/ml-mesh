@@ -232,6 +232,9 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
+    environment:
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
     networks:
       - onclusive-net
 
