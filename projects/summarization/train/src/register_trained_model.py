@@ -36,42 +36,52 @@ def main() -> None:
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer for English")
     tokenizer_en = AutoTokenizer.from_pretrained(
-        model_card.model_params_en.huggingface_model_reference
+        model_card.model_params_en.huggingface_model_reference,
+        max_length=512,
+        truncate=True
     )
-    model_en = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.model_params_en.huggingface_model_reference, return_dict=False
+    model_en = BartForConditionalGeneration.from_pretrained(
+        model_card.model_params_en.huggingface_model_reference
     )
     
     logger.info("Initializing model and tokenizer for French and German")
     tokenizer_frde = AutoTokenizer.from_pretrained(
-        model_card.model_params_frde.huggingface_model_reference
+        model_card.model_params_frde.huggingface_model_reference,
+        max_length=512,
+        truncate=True
     )
-    model_frde = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.model_params_frde.huggingface_model_reference, return_dict=False
+    model_frde = MBartForConditionalGeneration.from_pretrained(
+        model_card.model_params_frde.huggingface_model_reference
     )
     
     logger.info("Initializing model and tokenizer for Spanish")
     tokenizer_es = AutoTokenizer.from_pretrained(
-        model_card.model_params_es.huggingface_model_reference
+        model_card.model_params_es.huggingface_model_reference,
+        max_length=512,
+        truncate=True
     )
-    model_es = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.model_params_es.huggingface_model_reference, return_dict=False
+    model_es = BartForConditionalGeneration.from_pretrained(
+        model_card.model_params_es.huggingface_model_reference
     )
     
     logger.info("Initializing model and tokenizer for Catalan")
     tokenizer_ca = AutoTokenizer.from_pretrained(
-        model_card.model_params_ca.huggingface_model_reference
+        model_card.model_params_ca.huggingface_model_reference, 
+        max_length=512,
+        truncate=True
     )
-    model_ca = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.model_params_ca.huggingface_model_reference, return_dict=False
+    model_ca = BartForConditionalGeneration.from_pretrained(
+        model_card.model_params_ca.huggingface_model_reference
     )
     
     logger.info("Initializing model and tokenizer for Italian")
     tokenizer_it = AutoTokenizer.from_pretrained(
-        model_card.model_params_it.huggingface_model_reference
+        model_card.model_params_it.huggingface_model_reference,
+        max_length=512,
+        truncate=True
     )
-    model_it = AutoModelForSeq2SeqLM.from_pretrained(
-        model_card.model_params_it.huggingface_model_reference, return_dict=False
+    model_it = BartForConditionalGeneration.from_pretrained(
+        model_card.model_params_it.huggingface_model_reference
     )
     
     tokenizers = [tokenizer_en, tokenizer_frde, tokenizer_es, tokenizer_ca, tokenizer_it]
@@ -84,7 +94,7 @@ def main() -> None:
     sum_settings_ca = model_card.model_params_ca.sum_settings.dict()
     sum_settings_it = model_card.model_params_it.sum_settings.dict()
     
-    sum_settings =  [sum_settings_en, 
+    sum_settings =  [sum_settings_en,
                      sum_settings_frde, 
                      sum_settings_es,
                      sum_settings_ca, 
@@ -97,18 +107,23 @@ def main() -> None:
     # Tokenize the sample documents
     sum_predictions = []
     for idx in range(len(sum_settings)):
-        inputs = tokenizers[idx].batch_encode_plus(
+        inputs = tokenizers[idx](
             model_card.model_inputs.sample_documents[idx],
             return_tensors="pt",
             truncation=True,
-            padding="longest",
+            padding="max_length",
             max_length=512
         )
     
         # Generate summaries
-        summaries = models[idx].generate(**inputs)
+        summaries = models[idx].generate(
+            **inputs,
+            min_length=32,
+            max_length=128,
+            num_beams=1,
+            num_return_sequences=1)
         # Decode the summaries
-        sum_predictions.append(tokenizers[idx].decode(summaries, skip_special_tokens=True))
+        sum_predictions.append([tokenizers[idx].decode(t, skip_special_tokens=True) for t in summaries][0])
         
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
