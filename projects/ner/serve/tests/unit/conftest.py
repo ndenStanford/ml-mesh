@@ -1,5 +1,8 @@
 """Conftest."""
 
+# Standard Library
+from unittest.mock import patch
+
 # 3rd party libraries
 import pytest
 
@@ -29,7 +32,9 @@ def model_card():
 
 
 @pytest.fixture(scope="function")
-def artifacts(settings):
+@patch("json.loads")
+@patch("builtins.open")
+def artifacts(mock_open, mock_json, settings):
     """Model artifacts fixture."""
     return ServedModelArtifacts(settings)
 
