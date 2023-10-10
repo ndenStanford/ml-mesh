@@ -35,16 +35,14 @@ def test_request_schema_attributes_extra():
         _ = PredictRequestAttributeSchemaV1(content="content", extra="")
 
 
-@pytest.mark.parametrize("return_pos, lang", [(True, "en"), (False, "fr")])
+@pytest.mark.parametrize("lang", ["en", "fr"])
 def test_request_schema_parameters(return_pos, lang):
     """Test request schema parameters."""
-    parameters = PredictRequestParametersSchemaV1(language=lang, return_pos=return_pos)
+    parameters = PredictRequestParametersSchemaV1(language=lang)
 
     assert parameters.language == lang
-    assert parameters.return_pos == return_pos
     assert isinstance(parameters.language, str)
-    assert isinstance(parameters.return_pos, bool)
-    assert dict(parameters) == {"language": lang, "return_pos": return_pos}
+    assert dict(parameters) == {"language": lang}
 
 
 def test_request_schema_parameters_extra():
