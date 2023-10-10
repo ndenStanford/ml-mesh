@@ -74,6 +74,9 @@ def main() -> None:
         model_card.model_params_it.huggingface_model_reference, return_dict=False
     )
     
+    tokenizers = [tokenizer_en, tokenizer_frde, tokenizer_es, tokenizer_ca, tokenizer_it]
+    models = [model_en, model_frde, model_es, model_ca, model_it]
+    
     # summarization settings
     sum_settings_en = model_card.model_params_en.sum_settings.dict()
     sum_settings_frde = model_card.model_params_frde.sum_settings.dict()
@@ -81,32 +84,38 @@ def main() -> None:
     sum_settings_ca = model_card.model_params_ca.sum_settings.dict()
     sum_settings_it = model_card.model_params_it.sum_settings.dict()
     
+    sum_settings =  [sum_settings_en, 
+                     sum_settings_frde, 
+                     sum_settings_es,
+                     sum_settings_ca, 
+                     sum_settings_it]
     
     # --- create prediction files    
     # Making predictions from example inputs
     logger.info("Making predictions from example inputs")
     
     # Tokenize the sample documents
-    inputs = tokenizer_en.batch_encode_plus(
-        model_card.model_inputs.sample_documents,
-        return_tensors="pt",
-        truncation=True,
-        padding="longest",
-        max_length=512
-    )
+    sum_predictions = []
+    for idx in range(len(sum_settings)):
+        inputs = tokenizers[idx].batch_encode_plus(
+            model_card.model_inputs.sample_documents[idx],
+            return_tensors="pt",
+            truncation=True,
+            padding="longest",
+            max_length=512
+        )
     
-    # Generate summaries
-    summaries = model_en.generate(**inputs)
-    
-    # Decode the summaries
-    sum_predictions = [tokenizer_en.decode(summary, skip_special_tokens=True) for summary in summaries]
-    
+        # Generate summaries
+        summaries = models[idx].generate(**inputs)
+        # Decode the summaries
+        sum_predictions.append(tokenizers[idx].decode(summaries, skip_special_tokens=True))
+        
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
         (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
-        (sum_settings_en, model_card.model_test_files.inference_params),
+        (sum_settings, model_card.model_test_files.inference_params),
         (sum_predictions, model_card.model_test_files.predictions),
     ]:
         model_version.upload_config_to_model_version(
