@@ -46,8 +46,8 @@ jobs:
     steps:
       - name: Show all relevant github action context vars
         run: |
-          echo github.actor: $${{ github.actor }}
-          echo github.actor_id: $${{ github.actor_id }}
+          echo github.actor: ${{ github.actor }}
+          echo github.actor_id: ${{ github.actor_id }}
           echo github.ref_name: ${{ github.ref_name }}
           echo github.event_name: ${{ github.event_name }}
           echo "github.base_ref (PR only):" ${{ github.base_ref }}
