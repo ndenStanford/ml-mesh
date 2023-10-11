@@ -166,7 +166,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     build:
-      context: ../../../projects/ner/serve
+      context: ../../
       dockerfile: projects/ner/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
@@ -176,7 +176,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.__main__]
+    command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
@@ -204,7 +204,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     build:
-      context: ../../../projects/ner/serve
+      context: ../../
       dockerfile: projects/ner/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
@@ -236,7 +236,7 @@ services:
   # entity fishing backend
   entity-fishing-backend:
     build:
-      context: ../../apps/entity-fishing/backend
+      context: ../../
       dockerfile: apps/entity-fishing/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host

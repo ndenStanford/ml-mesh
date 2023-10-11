@@ -195,7 +195,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     build:
-      context: ../../../projects/ner/serve
+      context: ../../
       dockerfile: projects/ner/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
@@ -235,7 +235,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     build:
-      context: ../../../projects/ner/serve
+      context: ../../
       dockerfile: projects/ner/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
@@ -268,8 +268,8 @@ services:
   # entity fishing backend
   entity-fishing-backend:
     build:
-      context: ../../apps/entity-fishing/backend
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: apps/entity-fishing/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
