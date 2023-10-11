@@ -48,6 +48,7 @@ or update your `.envrc` file accordingly.
 The following `docker compose` services are typically associated with a project's `train` component:
 - `train`
    - contains build section of training image
+- `train-train-model`
    - contains the container run command to execute training
 - `train-unit`
    - used to run `unit` test suite

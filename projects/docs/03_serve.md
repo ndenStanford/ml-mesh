@@ -64,6 +64,8 @@ The following `docker compose` services are typically associated with a project'
 component:
 - `serve`
   - contains build section of compilation image
+- `serve-serve-model`
+  - contains the container run command to execute serving
 - `serve-download-model` (optional)
   - used to download model artifact (if applicable)
 - `serve-unit`
@@ -115,8 +117,7 @@ To retrieve model artifacts and run the `serve` container locally using
 2. Run the `serve` container's model download function:
 
 ```bash
-make projects.start/${PROJECT_NAME}-download-model \
-   COMPONENT=serve
+make projects.run/${PROJECT_NAME} COMPONENT=serve TASK=download-model
 ```
 3. Check the model artifacts are located in the right location
 
@@ -268,5 +269,5 @@ environment variable values directly into the running container (see below) to a
 #### 4.2.2 Serve the model
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=serve
+make projects.run/${PROJECT_NAME} COMPONENT=serve TASK=serve-model
 ```

@@ -191,23 +191,23 @@ Update
 #### 4.2.2 Download the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=download-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=download-model
 ```
 
 #### 4.2.3 Compile the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=compile-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=compile-model
 ```
 
 #### 4.2.4 Validate compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=validate-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=validate-model
 ```
 
 #### 4.2.5 Upload compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=upload-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=upload-model
 ```
