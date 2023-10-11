@@ -44,12 +44,12 @@ jobs:
         run: make libs.install/install-all
       - name: Run unit tests
         run: |
-          make libs.unit-unit/serving
-          make libs.unit-unit/tracking
+          make libs.coverage-unit/serving
+          make libs.coverage-unit/tracking
       - name: Run integration tests
         run: |
-          make libs.unit-integration/serving
-          make libs.unit-integration/tracking
+          make libs.coverage-integration/serving
+          make libs.coverage-integration/tracking
       - name: Generate coverage xml
         run: |
           poetry run coverage combine .coverage-*
