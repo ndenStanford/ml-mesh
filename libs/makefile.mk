@@ -27,3 +27,9 @@ libs.functional-all: $(foreach I, $(ALL_LIBS), libs.functional/$(I)) # run funct
 libs.test-all: $(foreach I, $(ALL_LIBS), libs.test/$(I)) # run full test suite for all libraries
 
 libs.install-all: $(foreach I, $(ALL_LIBS), libs.install/$(I)) # install library dependencies
+
+libs.coverage-unit/%: ## Run coverage check on unit tests
+	poetry run coverage run --data-file=.coverage-libs-unit-$(notdir $@) -m pytest libs/$(notdir $@)/onclusiveml/tests/unit
+
+libs.coverage-integration/%: ## Run coverage check on integration tests
+	poetry run coverage run --data-file=.coverage-libs-integration-$(notdir $@) -m pytest libs/$(notdir $@)/onclusiveml/tests/integration
