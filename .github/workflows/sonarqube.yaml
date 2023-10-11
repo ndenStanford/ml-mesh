@@ -50,7 +50,6 @@ jobs:
           make projects.install/ner COMPONENT=serve
       - name: Generate coverage for projects
         run: |
-          make projects.coverage-unit/entity-linking COMPONENT=serve
           make projects.coverage-unit/keywords COMPONENT=serve
           make projects.coverage-unit/lsh COMPONENT=serve
           make projects.coverage-unit/ner COMPONENT=serve
