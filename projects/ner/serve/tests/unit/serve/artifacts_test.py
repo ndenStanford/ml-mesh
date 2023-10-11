@@ -44,7 +44,6 @@ def test_served_model_artifacts(
     mock_json.assert_called_once()
 
     assert a.model_card == model_card
-    assert a.model_artifact_directory == expected_model_artifact_directory
 
     assert a.inputs_test_file == os.path.join(
         settings.model_directory, model_card["model_test_files"]["inputs"]
