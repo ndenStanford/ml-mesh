@@ -106,16 +106,22 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(object):
+class IOSettings(TrackedParams):
     """Configuring container file system output locations for all 4 components."""
 
-    # admin
+    # storage
     download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
 
+    # logging
     log_level: int = INFO
+
+    class Config:
+        env_prefix = "io_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class TokenizerSettings(TrackedParams):

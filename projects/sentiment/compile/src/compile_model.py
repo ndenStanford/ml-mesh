@@ -59,7 +59,7 @@ def main() -> None:
     # export compiled sent model for next workflow component: test
     compiled_sent.save_pretrained(io_settings.compile.model_directory)
 
-    logger.debug(
+    logger.info(
         f"Successfully exported compiled sent model to {io_settings.compile.model_directory}"
     )
 

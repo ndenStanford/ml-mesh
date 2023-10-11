@@ -73,7 +73,7 @@ def main() -> None:
     # export compiled keybert model for next workflow component: test
     compiled_keybert.save_pretrained(io_settings.compile.model_directory)
 
-    logger.debug(
+    logger.info(
         f"Successfully exported compiled keybert model to {io_settings.compile.model_directory}"
     )
 

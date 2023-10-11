@@ -57,7 +57,7 @@ def main() -> None:
     # export compiled ner model for next workflow component: test
     compiled_ner.save_pretrained(io_settings.compile.model_directory)
 
-    logger.debug(
+    logger.info(
         f"Successfully exported compiled ner model to {io_settings.compile.model_directory}"
     )
 

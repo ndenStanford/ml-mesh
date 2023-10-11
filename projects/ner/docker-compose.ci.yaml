@@ -87,10 +87,6 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
-      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
-      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
@@ -107,8 +103,6 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -123,8 +117,6 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
     env_file: compile/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -137,7 +129,6 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/ner/compile/outputs
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
       GITHUB_ACTOR: ${GITHUB_ACTOR}
       GITHUB_ENV: ${GITHUB_ENV}
@@ -153,9 +144,6 @@ services:
       RUNNER_ARCH: ${RUNNER_ARCH}
       RUNNER_NAME: ${RUNNER_NAME}
       RUNNER_OS: ${RUNNER_OS}
-      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
-      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
