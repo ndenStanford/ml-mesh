@@ -157,7 +157,7 @@ You can also [test your model service manually](#35-run-manual-tests)
 To run the `unit` tests for the `serve` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.unit/{$PROJECT_NAME} COMPONENT=serve
+make projects.unit/${PROJECT_NAME} COMPONENT=serve
 ```
 
 ### 3.2 Run `integration` tests :warning: :nut_and_bolt: :nut_and_bolt:
@@ -173,7 +173,7 @@ make projects.unit/{$PROJECT_NAME} COMPONENT=serve
 To run the `integration` tests for the `serve` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.integration/{$PROJECT_NAME} COMPONENT=serve
+make projects.integration/${PROJECT_NAME} COMPONENT=serve
 ```
 
 ### 3.3 Run `functional` tests :warning: :rocket: :dart:
@@ -191,7 +191,7 @@ make projects.integration/{$PROJECT_NAME} COMPONENT=serve
 To run the `functional` tests for the `serve` component using the `docker-compose.dev.yaml` file,  run:
 
 ```bash
-make projects.functional/{$PROJECT_NAME} COMPONENT=serve
+make projects.functional/${PROJECT_NAME} COMPONENT=serve
 ```
 
 ### 3.4 Run `load` tests :warning: :rocket: :watch:
@@ -215,7 +215,7 @@ make projects.functional/{$PROJECT_NAME} COMPONENT=serve
 To run the `load` tests for the `serve` component using the `docker-compose.dev.yaml` file, run:
 
 ```bash
-make projects.load/{$PROJECT_NAME} COMPONENT=serve
+make projects.load/${PROJECT_NAME} COMPONENT=serve
 ```
 
 ### 3.5 Run manual tests :warning: :hand:
