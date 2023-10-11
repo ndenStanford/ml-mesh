@@ -158,5 +158,5 @@ Update
 #### 4.2.2 (Train, evaluate &) register the model
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=train
+make projects.run/${PROJECT_NAME} COMPONENT=train TASK=train-model
 ```

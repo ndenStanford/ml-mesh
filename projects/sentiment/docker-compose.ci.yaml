@@ -18,6 +18,12 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
+    profiles: [train]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-train-model:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
     environment:

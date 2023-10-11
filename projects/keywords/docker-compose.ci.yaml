@@ -17,6 +17,12 @@ services:
         PROJECT: keywords
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
+    profiles: [train]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-train-model:
     volumes:
       - type: bind
         source: train/src
