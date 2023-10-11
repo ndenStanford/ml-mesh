@@ -60,31 +60,31 @@ class SumModelParams(TrackedParams):
 class SumModelParamsEn(SumModelParams):
     """English Summarization model settings."""
     huggingface_pipeline_task: str = "summarization"
-    huggingface_model_reference: str = "Yale-LILY/brio-cnndm-uncased"
+    huggingface_model_reference_en: str = "Yale-LILY/brio-cnndm-uncased"
         
         
 class SumModelParamsFrDe(SumModelParams):
     """French/German Summarization model settings."""
     huggingface_pipeline_task: str = "summarization"
-    huggingface_model_reference: str = "ctu-aic/mbart25-multilingual-summarization-multilarge-cs"
+    huggingface_model_reference_frde: str = "ctu-aic/mbart25-multilingual-summarization-multilarge-cs"
 
         
 class SumModelParamsEs(SumModelParams):
     """Spanish Summarization model settings."""
     huggingface_pipeline_task: str = "summarization"
-    huggingface_model_reference: str = "knkarthick/MEETING_SUMMARY"
+    huggingface_model_reference_es: str = "knkarthick/MEETING_SUMMARY"
 
 
 class SumModelParamsCa(SumModelParams):
     """Catalan Summarization model settings."""
     huggingface_pipeline_task: str = "summarization"
-    huggingface_model_reference: str = "ELiRF/NASCA"
+    huggingface_model_reference_ca: str = "ELiRF/NASCA"
 
 
 class SumModelParamsIt(SumModelParams):
     """Italian Summarization model settings."""
     huggingface_pipeline_task: str = "summarization"
-    huggingface_model_reference: str = "morenolq/bart-it-fanpage"
+    huggingface_model_reference_it: str = "morenolq/bart-it-fanpage"
 
 
 class TrackedSumModelCard(TrackedModelCard):

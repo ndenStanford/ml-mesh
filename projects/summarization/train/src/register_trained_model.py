@@ -35,13 +35,13 @@ def main() -> None:
     # --- initialize models
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer for English")
-    tokenizer_en = AutoTokenizer.from_pretrained(
-        model_card.model_params_en.huggingface_model_reference,
+    tokenizer_en = BartTokenizer.from_pretrained(
+        model_card.model_params_en.huggingface_model_reference_en,
         max_length=512,
         truncate=True
     )
     model_en = BartForConditionalGeneration.from_pretrained(
-        model_card.model_params_en.huggingface_model_reference
+        model_card.model_params_en.huggingface_model_reference_en
     )
     hf_pipeline_en = pipeline(
         task=model_card.model_params_en.huggingface_pipeline_task,
@@ -50,13 +50,13 @@ def main() -> None:
     )    
     
     logger.info("Initializing model and tokenizer for French and German")
-    tokenizer_frde = AutoTokenizer.from_pretrained(
-        model_card.model_params_frde.huggingface_model_reference,
+    tokenizer_frde = MBartTokenizer.from_pretrained(
+        model_card.model_params_frde.huggingface_model_reference_frde,
         max_length=512,
         truncate=True
     )
     model_frde = MBartForConditionalGeneration.from_pretrained(
-        model_card.model_params_frde.huggingface_model_reference
+        model_card.model_params_frde.huggingface_model_reference_frde
     )
     
     hf_pipeline_frde = pipeline(
@@ -66,13 +66,13 @@ def main() -> None:
     )    
     
     logger.info("Initializing model and tokenizer for Spanish")
-    tokenizer_es = AutoTokenizer.from_pretrained(
-        model_card.model_params_es.huggingface_model_reference,
+    tokenizer_es = BartTokenizer.from_pretrained(
+        model_card.model_params_es.huggingface_model_reference_es,
         max_length=512,
         truncate=True
     )
     model_es = BartForConditionalGeneration.from_pretrained(
-        model_card.model_params_es.huggingface_model_reference
+        model_card.model_params_es.huggingface_model_reference_es
     )
     
     hf_pipeline_es = pipeline(
@@ -82,13 +82,13 @@ def main() -> None:
     )    
     
     logger.info("Initializing model and tokenizer for Catalan")
-    tokenizer_ca = AutoTokenizer.from_pretrained(
-        model_card.model_params_ca.huggingface_model_reference, 
+    tokenizer_ca = BartTokenizer.from_pretrained(
+        model_card.model_params_ca.huggingface_model_reference_ca, 
         max_length=512,
         truncate=True
     )
     model_ca = BartForConditionalGeneration.from_pretrained(
-        model_card.model_params_ca.huggingface_model_reference
+        model_card.model_params_ca.huggingface_model_reference_ca
     )
     
     hf_pipeline_ca = pipeline(
@@ -98,13 +98,13 @@ def main() -> None:
     )    
     
     logger.info("Initializing model and tokenizer for Italian")
-    tokenizer_it = AutoTokenizer.from_pretrained(
-        model_card.model_params_it.huggingface_model_reference,
+    tokenizer_it = BartTokenizer.from_pretrained(
+        model_card.model_params_it.huggingface_model_reference_it,
         max_length=512,
         truncate=True
     )
     model_it = BartForConditionalGeneration.from_pretrained(
-        model_card.model_params_it.huggingface_model_reference
+        model_card.model_params_it.huggingface_model_reference_it
     )
     
     hf_pipeline_it = pipeline(
