@@ -10,15 +10,19 @@ services:
     build:
       context: ../../
       dockerfile: projects/ner/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
+      target: ${TARGET_BUILD_STAGE:-production}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: ner
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
-    command: [python, -m, src.register_trained_model]
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/ner/train/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -29,26 +33,21 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    build:
-      context: ../../
-      dockerfile: projects/ner/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: ner
-        COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/ner/train/src
+      - type: bind
+        source: train/tests
+        target: /projects/ner/train/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
+    profiles: [train, unit]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: train/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
+
 
   # =============================================
   # COMPILE
@@ -185,7 +184,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [serve, functional, load]
@@ -215,11 +214,11 @@ services:
       NEPTUNE_CLIENT_MODE: read-only
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-12
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-39
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
     hostname: onclusiveml
     networks: [onclusive-net]
 
@@ -245,7 +244,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -260,7 +259,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
     profiles: [functional]
     hostname: onclusiveml
     networks:
@@ -278,7 +277,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
@@ -308,11 +307,11 @@ services:
       NEPTUNE_CLIENT_MODE: async
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-12
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-39
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}

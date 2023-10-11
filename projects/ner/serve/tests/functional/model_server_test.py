@@ -21,6 +21,15 @@ from src.serve.server_models import (
 )
 
 
+test_sample_indices = [0, 1, 2, 3]
+languages = ["en", "ja"]
+parametrize_values = [
+    (index, language, languages.index(language))
+    for language in languages
+    for index in test_sample_indices
+]
+
+
 def test_model_server_root(test_client):
     """Tests the running ModelServer instance's root endpoint."""
     root_response = test_client.get("/v1/")
@@ -43,7 +52,7 @@ def test_model_server_readiness(test_client):
     assert readiness_response.json() == ReadinessProbeResponse().dict()
 
 
-@pytest.mark.parametrize("test_record_index", [0, 1, 2])
+@pytest.mark.parametrize("test_record_index, language, lang_index", parametrize_values)
 def test_model_server_predict(
     test_model_name,
     test_client,
@@ -51,6 +60,8 @@ def test_model_server_predict(
     test_inference_params,
     test_predictions,
     test_record_index,
+    language,
+    lang_index,
 ):
     """Tests the running ModelServer's predict endpoint by making genuine http requests.
 
@@ -58,8 +69,10 @@ def test_model_server_predict(
     artifact as ground truth for the regression test element.
     """
     input = PredictRequestModel(
-        configuration=PredictConfiguration(return_pos=True, language="en"),
-        inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
+        configuration=PredictConfiguration(return_pos=True, language=language),
+        inputs=PredictInputContentModel(
+            content=test_inputs[lang_index][test_record_index]
+        ),
     )
 
     test_response = test_client.post(
@@ -73,7 +86,7 @@ def test_model_server_predict(
         outputs=PredictionOutputContent(
             predicted_content=[
                 PredictionExtractedEntity(**i)
-                for i in test_predictions[test_record_index]
+                for i in test_predictions[lang_index][test_record_index]
             ]
         )
     ).dict()
