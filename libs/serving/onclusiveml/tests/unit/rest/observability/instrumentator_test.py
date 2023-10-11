@@ -49,18 +49,26 @@ def assert_metric_value(
     """
     params = []
     full_metric_name = get_full_name(metric)
+    pod_name = "unknown_pod"
     if full_metric_name == "fastapi_responses_total":
         params = [
             full_metric_name,
             {
                 "app_name": app_name,
+                "pod_name": pod_name,
                 "path": path,
                 "method": method,
                 "status_code": status_code,
             },
         ]
     elif full_metric_name == "fastapi_app_info":
-        params = [full_metric_name, {"app_name": app_name}]
+        params = [
+            full_metric_name,
+            {
+                "app_name": app_name,
+                "pod_name": pod_name,
+            },
+        ]
     elif full_metric_name in (
         "fastapi_requests_total",
         "fastapi_requests_duration_seconds",
@@ -68,13 +76,19 @@ def assert_metric_value(
     ):
         params = [
             full_metric_name,
-            {"app_name": app_name, "path": path, "method": method},
+            {
+                "app_name": app_name,
+                "pod_name": pod_name,
+                "path": path,
+                "method": method,
+            },
         ]
     elif full_metric_name == "fastapi_exceptions_total":
         params = [
             full_metric_name,
             {
                 "app_name": app_name,
+                "pod_name": pod_name,
                 "path": path,
                 "method": method,
                 "exception_type": exception_type,
