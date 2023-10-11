@@ -239,6 +239,7 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-39
     networks:
       - onclusive-net
 
