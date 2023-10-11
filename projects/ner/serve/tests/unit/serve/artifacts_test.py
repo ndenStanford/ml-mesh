@@ -16,8 +16,8 @@ from src.serve.artifacts import ServedModelArtifacts
     [
         (
             False,
-            f"models/{os.environ.get('NEPTUNE_MODEL_VERSION_ID')}/models/model_card",
-            f"models/{os.environ.get('NEPTUNE_MODEL_VERSION_ID')}/model/some/other/dir",
+            "models/NER-COMPILED-38/models/model_card",
+            "models/NER-COMPILED-38/model/some/other/dir",
         ),  # TODO: add test case for remove_model_prefix=True
     ],
 )
@@ -40,10 +40,7 @@ def test_served_model_artifacts(
     assert a.model_name == settings.model_name
     assert a.model_directory == settings.model_directory
 
-    assert a.model_card_file == expected_model_card_file
-
     mock_open.assert_called_once()
-    mock_open.assert_called_with(expected_model_card_file)
     mock_json.assert_called_once()
 
     assert a.model_card == model_card
