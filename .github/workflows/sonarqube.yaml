@@ -45,6 +45,17 @@ jobs:
       - name: Generate coverage for libs
         run: |
           make libs.coverage-unit-all
+      - name: Install projects dependencies
+        run: |
+          make projects.install/ner COMPONENT=serve
+      - name: Generate coverage for projects
+        run: |
+          make projects.coverage-unit/entity-linking COMPONENT=serve
+          make projects.coverage-unit/keywords COMPONENT=serve
+          make projects.coverage-unit/lsh COMPONENT=serve
+          make projects.coverage-unit/ner COMPONENT=serve
+          make projects.coverage-unit/sentiment COMPONENT=serve
+          make projects.coverage-unit/summarization COMPONENT=serve
       - name: Generate coverage xml
         run: |
           poetry run coverage combine .coverage-*

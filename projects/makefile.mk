@@ -48,3 +48,6 @@ projects.set:
 	export IMAGE_TAG=$(IMAGE_TAG)
 	export TARGET_BUILD_STAGE=$(TARGET_BUILD_STAGE)
 	export AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
+
+projects.coverage-unit/%: projects.set ## Run unit tests for project component
+	poetry run coverage run --data-file=.coverage-projects-unit-$(notdir $@) -m pytest projects/$(notdir $@)/serve/tests/unit
