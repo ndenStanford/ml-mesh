@@ -33,3 +33,6 @@ libs.coverage-unit/%: ## Run coverage check on unit tests
 
 libs.coverage-integration/%: ## Run coverage check on integration tests
 	poetry run coverage run --data-file=.coverage-libs-integration-$(notdir $@) -m pytest libs/$(notdir $@)/onclusiveml/tests/integration
+
+libs.coverage-unit-all: $(foreach I, $(ALL_LIBS), libs.coverage-unit/$(I))
+libs.coverage-integration-all: $(foreach I, $(ALL_LIBS), libs.coverage-integration/$(I))

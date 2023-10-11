@@ -41,15 +41,11 @@ jobs:
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install lib dependencies
-        run: make libs.install/install-all
-      - name: Run unit tests
+        run: make libs.install-all
+      - name: Generate coverage for libs
         run: |
-          make libs.coverage-unit/serving
-          make libs.coverage-unit/tracking
-      - name: Run integration tests
-        run: |
-          make libs.coverage-integration/serving
-          make libs.coverage-integration/tracking
+          make libs.coverage-unit-all
+          make libs.coverage-integration-all
       - name: Generate coverage xml
         run: |
           poetry run coverage combine .coverage-*
