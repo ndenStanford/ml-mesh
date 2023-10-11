@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
@@ -14,9 +15,6 @@ from onclusiveml.tracking import (
     TrackedModelSpecs,
     TrackedParams,
 )
-
-
-# from typing import List
 
 
 # --- atomic settings and models
@@ -117,7 +115,6 @@ class IOSettings(TrackedParams):
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
-
     # logging
     log_level: int = INFO
 
