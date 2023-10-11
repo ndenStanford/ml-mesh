@@ -16,8 +16,8 @@ from src.serve.artifacts import ServedModelArtifacts
     [
         (
             False,
-            f"models/{os.environ('NEPTUNE_MODEL_VERSION_ID')}/models/model_card",
-            f"models/{os.environ('NEPTUNE_MODEL_VERSION_ID')}/model/some/other/dir",
+            f"models/{os.environ.get('NEPTUNE_MODEL_VERSION_ID')}/models/model_card",
+            f"models/{os.environ.get('NEPTUNE_MODEL_VERSION_ID')}/model/some/other/dir",
         ),  # TODO: add test case for remove_model_prefix=True
     ],
 )
