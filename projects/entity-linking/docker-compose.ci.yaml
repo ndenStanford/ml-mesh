@@ -117,6 +117,7 @@ services:
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
@@ -148,6 +149,7 @@ services:
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
@@ -178,7 +180,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-11
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
