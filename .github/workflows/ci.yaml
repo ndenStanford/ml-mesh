@@ -324,12 +324,13 @@ jobs       :
 
           # serve
           - name: serve
-            download-model: false
+            download-model: true
             integration: true
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-20.04
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
 
     with:
       project: entity-linking
