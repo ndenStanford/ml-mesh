@@ -35,7 +35,6 @@ jobs:
       - name: Install coverage utils
         run: |
           pip install coverage
-          pip install pytest-cov
       - name: Setup Poetry
         uses: abatilo/actions-poetry@v2
         with:
