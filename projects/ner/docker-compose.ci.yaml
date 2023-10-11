@@ -162,10 +162,6 @@ services:
 
   # serving image
   serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - serve-vol:/projects/ner/serve/models
     build:
       context: ../../
       dockerfile: projects/ner/serve/Dockerfile
@@ -177,23 +173,10 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.serve.model_server]
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [serve, functional, load]
-    ports:
-      - 8000:8000
     hostname: onclusiveml
     networks:
       - onclusive-net
-    healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
 
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
@@ -216,6 +199,31 @@ services:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
     hostname: onclusiveml
     networks: [onclusive-net]
+
+  # serving image
+  serve-serve-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - serve-vol:/projects/ner/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.model_server]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-12
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   # unit tests
   # - do NOT include model artifact

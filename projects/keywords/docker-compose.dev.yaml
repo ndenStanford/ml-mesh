@@ -196,6 +196,10 @@ services:
   serve-serve-model:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: serve/
+        target: /projects/keywords/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
@@ -205,10 +209,6 @@ services:
     profiles: [serve, functional, load]
     ports:
       - 8000:8000
-    volumes:
-      - type: bind
-        source: serve/
-        target: /projects/keywords/serve/
     hostname: onclusiveml
     networks:
       - onclusive-net

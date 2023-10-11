@@ -26,15 +26,15 @@ services:
 
   # serving image
   serve-serve-model:
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /home/projects/entity-linking/serve/src
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '9000', --reload, --log-level, debug]
     profiles: [serve]
     ports:
       - 9000:9000
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /home/projects/entity-linking/serve/src
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -44,23 +44,13 @@ services:
 
   # unit tests
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
         target: /home/projects/entity-linking/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/entity-linking/serve/train
+        target: /home/projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -74,23 +64,13 @@ services:
 
   # integration tests
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
         target: /home/projects/entity-linking/serve/src
       - type: bind
         source: serve/tests
-        target: /home/projects/entity-linking/serve/train
+        target: /home/projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]

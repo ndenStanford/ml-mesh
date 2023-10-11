@@ -40,16 +40,6 @@ services:
 
   # unit tests
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -63,16 +53,6 @@ services:
 
   # integration tests
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
