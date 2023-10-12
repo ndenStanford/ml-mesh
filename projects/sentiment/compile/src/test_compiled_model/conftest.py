@@ -12,13 +12,13 @@ from onclusiveml.core.logging import LogFormat, get_default_logger
 from onclusiveml.models.sentiment import CompiledSent
 
 # Source
-from src.settings import CompilationTestSettings, CompilePipelineIOSettings
+from src.settings import CompilationTestSettings, IOSettings
 
 
 @pytest.fixture
-def io_settings() -> CompilePipelineIOSettings:
-    """Compile pipeline IO Settings."""
-    return CompilePipelineIOSettings()
+def io_settings() -> IOSettings:
+    """IO Settings."""
+    return IOSettings()
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def compilation_test_settings() -> CompilationTestSettings:
 
 
 @pytest.fixture()
-def logger(io_settings: CompilePipelineIOSettings) -> Any:
+def logger(io_settings: IOSettings) -> Any:
     """Logger fixture."""
     return get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
@@ -36,7 +36,7 @@ def logger(io_settings: CompilePipelineIOSettings) -> Any:
 
 
 @pytest.fixture
-def compiled_sent(io_settings: CompilePipelineIOSettings) -> CompiledSent:
+def compiled_sent(io_settings: IOSettings) -> CompiledSent:
     """Compiled sentiment model fixture."""
     # load compiled Sent from previous workflow component
     compiled_sent = CompiledSent.from_pretrained(io_settings.compile.model_directory)
@@ -45,7 +45,7 @@ def compiled_sent(io_settings: CompilePipelineIOSettings) -> CompiledSent:
 
 
 @pytest.fixture
-def test_files(io_settings: CompilePipelineIOSettings) -> Dict[str, Any]:
+def test_files(io_settings: IOSettings) -> Dict[str, Any]:
     """Test files fixtures."""
     # get test files & load directly into dict
     test_files = io_settings.download.test_files.copy()

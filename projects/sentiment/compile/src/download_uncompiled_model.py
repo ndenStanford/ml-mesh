@@ -9,21 +9,20 @@ from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    CompilePipelineIOSettings,
+    IOSettings,
     UncompiledTrackedModelSpecs,
 )
 
 
-def download_uncompiled_model(
-    io_settings: CompilePipelineIOSettings,
-    base_model_specs: UncompiledTrackedModelSpecs,
-) -> None:
+def download_uncompiled_model() -> None:
     """Download trained model."""
+    io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
 
     # get read-only base model version
+    base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
     # get base model version assets to local disk
     base_model_card: Dict = base_model_version.download_config_from_model_version(
@@ -56,3 +55,7 @@ def download_uncompiled_model(
         )
 
     base_model_version.stop()
+
+
+if __name__ == "__main__":
+    download_uncompiled_model()

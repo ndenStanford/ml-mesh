@@ -60,10 +60,7 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4} #should have been v23.8.4?
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.run_compile_pipeline]
     profiles: [compile, unit, integration, pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
