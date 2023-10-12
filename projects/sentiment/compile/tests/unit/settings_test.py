@@ -4,19 +4,13 @@
 from src.settings import (
     CompiledSentTrackedModelCard,
     CompiledTrackedModelSpecs,
-    CompilePipelineExecutionSettings,
-    CompilePipelineIOSettings,
+    IOSettings,
 )
 
 
-def test_compile_pipeline_io_settings():
-    """Test compile pipeline IO settings fixture."""
-    CompilePipelineIOSettings()
-
-
-def test_compile_pipeline_execution_settings():
-    """Test compile pipeline execution settings."""
-    CompilePipelineExecutionSettings()
+def test_io_settings():
+    """Test IO settings."""
+    IOSettings()
 
 
 def test_compiled_tracked_model_specs():
