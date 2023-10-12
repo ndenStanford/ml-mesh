@@ -14,22 +14,20 @@ from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    CompilePipelineIOSettings,
+    IOSettings,
     NERPipelineCompilationSettings,
     UncompiledTrackedModelSpecs,
 )
 
 
-def compile_model(
-    io_settings: CompilePipelineIOSettings,
-    base_model_specs: UncompiledTrackedModelSpecs,
-    ner_pipeline_compilation_settings: NERPipelineCompilationSettings,
-) -> None:
+def compile_model() -> None:
     """Compile model."""
+    io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
     # get read-only base model version
+    base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(
@@ -47,6 +45,7 @@ def compile_model(
         model=io_settings.download.model_directory_kj,
     )
     # compile base model pipeline for NER
+    ner_pipeline_compilation_settings = NERPipelineCompilationSettings()
 
     logger.debug(
         f"Using the following ner pipeline compilation settings: "
@@ -73,3 +72,7 @@ def compile_model(
     logger.info(
         f"Successfully exported compiled ner model to {io_settings.compile.model_directory}"
     )
+
+
+if __name__ == "__main__":
+    compile_model()

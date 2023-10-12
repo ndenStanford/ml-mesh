@@ -56,10 +56,6 @@ services:
   # =============================================
 
   compile:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - compile-vol:/projects/ner/compile/outputs
     build:
       context: ../../
       dockerfile: projects/ner/compile/Dockerfile
@@ -71,10 +67,7 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.run_compile_pipeline]
     profiles: [compile, unit, integration, pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
