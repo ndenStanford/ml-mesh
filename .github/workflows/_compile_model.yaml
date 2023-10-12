@@ -143,7 +143,7 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-compile
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Run compile pipeline
+      - name: Download model
         run: |
           echo 'Downloading Uncompiled Model'
           make projects.run/${{ inputs.project }} \
