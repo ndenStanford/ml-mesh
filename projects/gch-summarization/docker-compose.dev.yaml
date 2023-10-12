@@ -3,20 +3,65 @@ version : '3.9'
 
 services:
   # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/gch-summarization/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: gch-summarization
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/gch-summarization/train/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.register_trained_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train/
+        target: /projects/gch-summarization/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-train:${IMAGE_TAG:-latest}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [train, unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
   # SERVE
   # =============================================
   serve:
     build:
       context: ../../
-      dockerfile: projects/summarization/serve/Dockerfile
+      dockerfile: projects/gch-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: summarization
+        PROJECT: gch-summarization
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG:-latest}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8888', --reload, --log-level, debug]
     profiles: [serve]
     ports:
@@ -24,10 +69,10 @@ services:
     volumes:
       - type: bind
         source: serve/src
-        target: /projects/summarization/serve/src
+        target: /projects/gch-summarization/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/summarization/serve/tests
+        target: /projects/gch-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -44,24 +89,24 @@ services:
   serve-unit:
     build:
       context: ../../
-      dockerfile: projects/summarization/serve/Dockerfile
+      dockerfile: projects/gch-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: summarization
+        PROJECT: gch-summarization
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     volumes:
       - type: bind
         source: serve/src
-        target: /projects/summarization/serve/src
+        target: /projects/gch-summarization/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/summarization/serve/tests
+        target: /projects/gch-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -75,24 +120,24 @@ services:
   serve-integration:
     build:
       context: ../../
-      dockerfile: projects/summarization/serve/Dockerfile
+      dockerfile: projects/gch-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: summarization
+        PROJECT: gch-summarization
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     volumes:
       - type: bind
         source: serve/src
-        target: /projects/summarization/serve/src
+        target: /projects/gch-summarization/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/summarization/serve/tests
+        target: /projects/gch-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
