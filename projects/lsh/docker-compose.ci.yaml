@@ -19,6 +19,14 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    profiles: [serve, functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # main service: runs the mode server
+  serve-serve-model:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
     profiles: [serve, functional]
     ports:
@@ -63,10 +71,6 @@ services:
   # functional tests
   # - include REST model server process
   serve-functional:
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
@@ -74,7 +78,7 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve:
+      serve-serve-model:
         condition: service_healthy
 
 networks:

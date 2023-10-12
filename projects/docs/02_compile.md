@@ -200,23 +200,23 @@ step's associated `make` target argument as shown below.
 #### 4.2.2 Download the model
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=compile DOWNLOAD=true
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=download-model
 ```
 
 #### 4.2.3 Compile the model
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=compile COMPILE=true
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=compile-model
 ```
 
 #### 4.2.4 Validate compiled model:
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=compile TEST=true
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=validate-model
 ```
 
 #### 4.2.5 Upload compiled model:
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=compile UPLOAD=true
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=upload-model
 ```

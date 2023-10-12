@@ -107,7 +107,7 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class CompilePipelineIOSettings(BaseSettings):
+class IOSettings(TrackedParams):
     """Configuring container file system output locations for all 4 components."""
 
     # storage
@@ -115,25 +115,11 @@ class CompilePipelineIOSettings(BaseSettings):
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
-    # log level
-    logger_level: int = INFO
+    # logging
+    log_level: int = INFO
 
     class Config:
-        env_prefix = "compile_pipeline_io_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
-class CompilePipelineExecutionSettings(BaseSettings):
-    """Compile pipeline step configuration class. Used to enable/disable individual steps."""
-
-    download: bool = True
-    compile: bool = True
-    test: bool = True
-    upload: bool = True
-
-    class Config:
-        env_prefix = "compile_pipeline_execution_"
+        env_prefix = "io_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 

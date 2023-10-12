@@ -48,6 +48,7 @@ or update your `.envrc` file accordingly.
 The following `docker compose` services are typically associated with a project's `train` component:
 - `train`
    - contains build section of training image
+- `train-train-model`
    - contains the container run command to execute training
 - `train-unit`
    - used to run `unit` test suite
@@ -158,7 +159,7 @@ Update
 #### 4.2.2 (Train, evaluate &) register the model
 
 ```bash
-make projects.start/${PROJECT_NAME} COMPONENT=train
+make projects.run/${PROJECT_NAME} COMPONENT=train TASK=train-model
 ```
 ## 5 Running the `train` component in CI:
 

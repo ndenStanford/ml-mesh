@@ -19,14 +19,22 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [python, -m, src.serve.model_server]
     profiles: [serve, functional]
-    ports:
-      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # main service: runs the model server
+  serve-serve-model:
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [python, -m, src.serve.model_server]
+    profiles: [serve, functional]
+    ports:
+      - 8000:8000
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
@@ -42,13 +50,13 @@ services:
 
   # unit tests
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     environment:
       ENVIRONMENT: dev
     hostname: onclusiveml
@@ -57,13 +65,13 @@ services:
 
   # integration tests
   serve-integration:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
-    profiles: [integration]
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     environment:
       ENVIRONMENT: dev
     hostname: onclusiveml
@@ -84,7 +92,7 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve:
+      serve=serve-model:
         condition: service_healthy
 
 networks:
