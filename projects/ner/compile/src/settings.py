@@ -6,7 +6,7 @@ from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field
+from pydantic import Field
 
 # Internal libraries
 from onclusiveml.core.logging import INFO
