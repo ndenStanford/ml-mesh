@@ -50,10 +50,6 @@ services:
   # =============================================
 
   compile:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - compile-vol:/projects/sentiment/compile/outputs
     build:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
@@ -88,7 +84,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -102,7 +98,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -116,7 +112,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/prod.env
     volumes:
-      - compile-pipeline-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     hostname: onclusive-ml
     networks: [onclusive-net]
 
