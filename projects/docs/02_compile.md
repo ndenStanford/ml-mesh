@@ -59,13 +59,21 @@ or update your `.envrc` file accordingly.
 
 The following `docker compose` services are typically associated with a project's `compile`
 component:
-- `compile`
-- `compile-unit`
-   - used to run `unit` test suite
-- `compile-integration` (optional)
-   - used to run `integration` test suite (if applicable)
-- `compile-functional` (optional)
-   - used to run `functional` test suite (if applicable)
+- :construction: `compile`
+- :warning: `compile-unit`
+   - runs the `unit` test suite
+- :warning: `compile-integration` (optional)
+   - runs `integration` test suite (if applicable)
+- :warning: `compile-functional` (optional)
+   - runs `functional` test suite (if applicable)
+- :rocket: `compile-download-model`
+   - downloads the uncompilde model from the model registry
+- :rocket: `compile-compile-model`
+   - compiles the model
+- :rocket: `compile-validate-model`
+   -  validates the model compilation output
+- :rocket: `compile-upload-model`
+   - uploads the compiled model to the model registry
 
 
 ### 2.3 Building the `compile` component :construction:

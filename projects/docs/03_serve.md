@@ -62,20 +62,22 @@ or update your `.envrc` file accordingly.
 
 The following `docker compose` services are typically associated with a project's `serve`
 component:
-- `serve`
-  - contains build section of compilation image
-- `serve-serve-model`
-  - contains the container run command to execute serving
-- `serve-download-model` (optional)
-  - used to download model artifact (if applicable)
-- `serve-unit`
-  - used to run `unit` test suite
-- `serve-integration`
-   - used to run `integration` test suite
-- `serve-functional`
-   - used to run `functional` test suite
-- `serve-load` (optional)
-   - used to run `load` test suite (if applicable)
+- :construction: `serve`
+  - builds the serving image
+- :warning: `serve-unit`
+  - runs `unit` test suite
+- :warning: `serve-integration`
+  - runs `integration` test suite
+- :warning: `serve-functional`
+  - runs `functional` test suite
+- :warning: `serve-load` (optional)
+  - runs `load` test suite (if applicable)
+- :rocket: `serve-upload-results` (optional)
+  - uploads load test results to model registry
+- :rocket: `serve-download-model` (optional)
+  - downloads model from model registry (if applicable)
+- :rocket: `serve-serve-model`
+  - runs the model server process
 
 ### 2.3 Building the `serve` component :construction:
 
