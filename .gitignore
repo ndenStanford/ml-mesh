@@ -5,8 +5,17 @@ __pycache__/
 test_model
 */**/*.pt
 
+# iptc
+projects/iptc/train/test_train.ipynb
+*.mar
+projects/iptc/train/iptc_model_artifacts/
+projects/iptc/train/models/
+projects/iptc/serve/models/
+projects/iptc/serve/projects/
+projects/iptc/compile/projects/
 # project `compile` pipeline artifacts
 projects/**/compile/outputs/
+projects/**/compile/models/
 docker/**/tests/output*
 
 # project `serve` component model artifacts
