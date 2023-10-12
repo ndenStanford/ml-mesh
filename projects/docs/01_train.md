@@ -163,7 +163,7 @@ make projects.run/${PROJECT_NAME} COMPONENT=train TASK=train-model
 ```
 ## 5 Running the `train` component in CI:
 
-To run the training component on CI, you will need to update the [**ci.yaml's**](../../.github/workflow/ci.yaml)
+To run the training component on CI, you will need to update the [**ci.yaml's**](../../.github/workflows/ci.yaml)
  `run-train-pipelines` section. Below is an example of what to add:
 
 ```
