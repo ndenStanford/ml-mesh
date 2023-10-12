@@ -10,26 +10,24 @@ from onclusiveml.tracking import TrackedModelVersion
 from src.settings import (  # type: ignore[attr-defined]
     CompiledKeywordsTrackedModelCard,
     CompiledTrackedModelSpecs,
-    CompilePipelineIOSettings,
+    IOSettings,
     UncompiledTrackedModelSpecs,
 )
 
 
-def upload_compiled_model(
-    io_settings: CompilePipelineIOSettings,
-    base_model_specs: UncompiledTrackedModelSpecs,
-    compiled_model_specs: CompiledTrackedModelSpecs,
-    compiled_model_card: CompiledKeywordsTrackedModelCard,
-) -> None:
+def upload_compiled_model() -> None:
     """Upload compiled model."""
+    io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
     )
 
     # --- upload compiled model
+    compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
 
     # upload model card - holds all settings
+    compiled_model_card = CompiledKeywordsTrackedModelCard()
     compiled_model_version.upload_config_to_model_version(
         config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
     )
@@ -58,7 +56,8 @@ def upload_compiled_model(
     )
     # --- update uncompiled model
     # get read-only base model version
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_specs = UncompiledTrackedModelSpecs()
+    base_model_version = TrackedModelVersion(**base_model_specs.dict(exclude={"mode"}))
 
     if base_model_version.exists("model/compiled_model_versions"):
         compiled_model_versions = base_model_version.download_config_from_model_version(
@@ -86,3 +85,7 @@ def upload_compiled_model(
         f"list of compiled model versions of the uncompiled model "
         f"{base_model_specs.with_id}"
     )
+
+
+if __name__ == "__main__":
+    upload_compiled_model()

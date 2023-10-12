@@ -112,8 +112,8 @@ services:
     #networks: [onclusive-net]
 
   compile-compile-model:
-    # devices:
-    #   - /dev/neuron0:/dev/neuron0
+    devices:
+      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: compile/
@@ -128,8 +128,8 @@ services:
     networks: [onclusive-net]
 
   compile-validate-model:
-    # devices:
-    #   - /dev/neuron0:/dev/neuron0
+    devices:
+      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: compile/
