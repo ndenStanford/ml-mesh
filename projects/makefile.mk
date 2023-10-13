@@ -11,7 +11,10 @@ projects.install/%:
 projects.deploy/%: ## Deploy project component docker image to ECR.
 	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml push $(COMPONENT)
 
-projects.run/%: # Start development container of component
+projects.start/%: # Run main task of component in container
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate
+
+projects.run/%: # Run auxiliary task of component in container
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT)-$(TASK) --exit-code-from $(COMPONENT)-$(TASK) --force-recreate
 
 projects.stop/%: # Start development container of component
