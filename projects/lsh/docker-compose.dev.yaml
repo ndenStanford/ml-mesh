@@ -8,6 +8,10 @@ services:
 
   # serving image
   serve:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/lsh/serve
     build:
       context: ../../
       dockerfile: projects/lsh/serve/Dockerfile
@@ -18,18 +22,6 @@ services:
         PROJECT: lsh
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    profiles: [serve, functional]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-
-  # main service: runs the model server
-  serve-serve-model:
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
     profiles: [serve, functional]
@@ -42,7 +34,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve-serve-model:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -92,7 +84,7 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve=serve-model:
+      serve:
         condition: service_healthy
 
 networks:

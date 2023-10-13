@@ -70,7 +70,7 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve-serve-model:
+      serve:
         condition: service_healthy
 
 networks:
