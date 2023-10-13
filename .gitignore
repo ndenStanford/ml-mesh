@@ -5,6 +5,10 @@ __pycache__/
 test_model
 */**/*.pt
 
+# project `compile` pipeline artifacts
+projects/**/compile/outputs/
+docker/**/tests/output*
+
 # project `serve` component model artifacts
 projects/**/serve/models/
 
