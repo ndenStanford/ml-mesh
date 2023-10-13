@@ -19,14 +19,6 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-23.8.4}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    profiles: [serve, functional]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-
-  # main service: runs the mode server
-  serve-serve-model:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
     profiles: [serve, functional]
     ports:
