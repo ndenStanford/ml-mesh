@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     # Prompt url
     PROMPT_API: str = "http://prompt-backend:4000"
+    # PROMPT_API: str = "http://0.0.0.0:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     # interested aspects/categories
     CATEGORY_LIST = [
@@ -149,12 +150,20 @@ class TopicHandler:
         }  # input target category & articles
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
+        print("-----------------")
+        print("header :", headers)
+        print("alias :", alias)
+        print("-----------------")
+        print("input :", input_dict)
+        # print('prompt :', )
+
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
             headers=headers,
             json=input_dict,
         )
         print("-------------------")
+        print("status code : ", q.status_code)
         print("-------------------")
         print("result in inference : ", q)
         # print('\n')
