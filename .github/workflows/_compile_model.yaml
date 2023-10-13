@@ -159,10 +159,9 @@ jobs:
       - name: Compile Model
         run: |
           echo 'Compiling Model'
-          make projects.run/${{ inputs.project }} \
+          make projects.start/${{ inputs.project }} \
             ENVIRONMENT=ci \
             COMPONENT=compile \
-            TASK=compile-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \

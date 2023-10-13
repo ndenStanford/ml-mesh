@@ -17,13 +17,6 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
-    profiles: [serve]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-
-  serve-serve-model:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8888', --reload, --log-level, debug]
     profiles: [serve]
     ports:
