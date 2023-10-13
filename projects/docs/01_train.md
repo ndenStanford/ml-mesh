@@ -46,16 +46,15 @@ or update your `.envrc` file accordingly.
 ### 2.2 Docker compose :whale:
 
 The following `docker compose` services are typically associated with a project's `train` component:
-- :construction: `train`
+- :construction: :rocket: `train`
    - builds the training image
+   - trains and registers the model in the model registry
 - :warning: `train-unit`
    - runs `unit` test suite
 - :warning: `train-integration` (optional)
    - runs `integration` test suite (if applicable)
 - :warning: `train-functional` (optional)
    - runs `functional` test suite (if applicable)
-- :rocket: `train-train-model`
-   - trains and registers the model in the model registry
 
 ### 2.3 Building the `train` component :construction:
 
@@ -159,7 +158,7 @@ Update
 #### 4.2.2 (Train, evaluate &) register the model
 
 ```bash
-make projects.run/${PROJECT_NAME} COMPONENT=train TASK=train-model
+make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
 ## 5 Running the `train` component in CI:
 

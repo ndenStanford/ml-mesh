@@ -59,7 +59,9 @@ or update your `.envrc` file accordingly.
 
 The following `docker compose` services are typically associated with a project's `compile`
 component:
-- :construction: `compile`
+- :construction: :rocket: `compile`
+   - builds the compilation image
+   - compiles the model
 - :warning: `compile-unit`
    - runs the `unit` test suite
 - :warning: `compile-integration` (optional)
@@ -68,8 +70,6 @@ component:
    - runs `functional` test suite (if applicable)
 - :rocket: `compile-download-model`
    - downloads the uncompilde model from the model registry
-- :rocket: `compile-compile-model`
-   - compiles the model
 - :rocket: `compile-validate-model`
    -  validates the model compilation output
 - :rocket: `compile-upload-model`
@@ -182,28 +182,15 @@ follow the below steps.
 
 Update
 - the `dev.env` file in the `config` directory and
-- the `docker-compose.dev.yaml`'s `compile` service as needed. `docker compose` will inject the
-file's environment variable values directly into the running container(s) (see below) to allow for
- pipeline runtime configurations without requiring a rebuild of the docker container.
+- the following `docker-compose.dev.yaml`'s services as needed:
+  - `compile-download-model`
+  - `compile`
+  - `compile-validate-model`
+  - `compile-upload-model`
 
-The following environment variables in the `dev.env` file are responsible for enabling/disabling the
- execution of the associated pipeline step; all of them default to `false`. They are:
-
-- `COMPILE_PIPELINE_EXECUTION_DOWNLOAD`
-  - If `true`, pipeline will execute model download step
-  - corresponding `make` target argument: `DOWNLOAD`
-- `COMPILE_PIPELINE_EXECUTION_COMPILE`
-  - If `true`, pipeline will execute model compilation step
-  - corresponding `make` target argument: `COMPILE`
-- `COMPILE_PIPELINE_EXECUTION_TEST`
-  - If `true`, pipeline will execute compiled model test step
-  - corresponding `make` target argument: `TEST`
-- `COMPILE_PIPELINE_EXECUTION_UPLOAD`
-  - If `true`, pipeline will execute compiled model upload step
-  - corresponding `make` target argument: `UPLOAD`
-
-Since they all default to `false`, we can run any one individual pipeline step by enabling the
-step's associated `make` target argument as shown below.
+`docker compose` will inject the `dev.env` file's environment variable values directly into the
+ running container(s) (see below) to allow for pipeline runtime configurations without requiring a
+  rebuild of the docker container.
 
 #### 4.2.2 Download the model
 
@@ -214,7 +201,7 @@ make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=download-model
 #### 4.2.3 Compile the model
 
 ```bash
-make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=compile-model
+make projects.start/${PROJECT_NAME} COMPONENT=compile
 ```
 
 #### 4.2.4 Validate compiled model:

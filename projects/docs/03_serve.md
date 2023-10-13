@@ -62,8 +62,9 @@ or update your `.envrc` file accordingly.
 
 The following `docker compose` services are typically associated with a project's `serve`
 component:
-- :construction: `serve`
+- :construction: :rocket: `serve`
   - builds the serving image
+  - runs the model server process
 - :warning: `serve-unit`
   - runs `unit` test suite
 - :warning: `serve-integration`
@@ -76,8 +77,7 @@ component:
   - uploads load test results to model registry
 - :rocket: `serve-download-model` (optional)
   - downloads model from model registry (if applicable)
-- :rocket: `serve-serve-model`
-  - runs the model server process
+
 
 ### 2.3 Building the `serve` component :construction:
 
@@ -271,5 +271,5 @@ environment variable values directly into the running container (see below) to a
 #### 4.2.2 Serve the model
 
 ```bash
-make projects.run/${PROJECT_NAME} COMPONENT=serve TASK=serve-model
+make projects.start/${PROJECT_NAME} COMPONENT=serve
 ```
