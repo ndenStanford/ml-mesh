@@ -24,7 +24,7 @@ def test_client():
     """
     serving_params = ServingParams()
     model_server_port = serving_params.uvicorn_settings.http_port
-    test_model_server_url = f"http://serve-serve-model:{model_server_port}"
+    test_model_server_url = f"http://serve:{model_server_port}"
 
     return BaseUrlSession(base_url=test_model_server_url)
 
