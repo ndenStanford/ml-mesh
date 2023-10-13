@@ -2,7 +2,7 @@
 name = "gch-summarization-train"
 version = "0.1.0"
 description = "Docker image for registering model for named entity recognition"
-authors = ["Syed Reza <syed.reza@onclusive.com>"]
+authors = ["Zheyuan Hu <zheyuan.hu@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
