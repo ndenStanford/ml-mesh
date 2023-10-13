@@ -5,14 +5,6 @@ on  :
   push:
     branches:
       - develop
-  pull_request:
-    branches:
-      - develop
-    types:
-      - ready_for_review
-      - opened
-      - synchronize
-      - reopened
 jobs:
   build:
     name: Build
