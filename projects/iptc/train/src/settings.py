@@ -68,6 +68,7 @@ class IPTCModelParams(TrackedParams):
     """IPTC Model parameters."""
 
     huggingface_pipeline_task: str = "text-classification"
+    huggingface_model_reference: str = "xlm-roberta-base"
 
     iptc_settings: IPTCSettings = IPTCSettings()
 

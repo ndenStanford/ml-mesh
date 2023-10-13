@@ -2,12 +2,11 @@
 
 # Standard Library
 import os
-import pickle
 from typing import Dict, List, Union
 
 # ML libs
 import torch
-from transformers import pipeline
+from transformers import XLMRobertaTokenizerFast, pipeline
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -38,7 +37,9 @@ def main() -> None:
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer")
     model = torch.load("/projects/iptc/train/models/model.pt")
-    tokenizer = pickle.load(open("/projects/iptc/train/models/tokenizer.vocab", "rb"))
+    tokenizer = XLMRobertaTokenizerFast.from_pretrained(
+        model_card.model_params.huggingface_model_reference
+    )
     # Create pipeline using iptc model and tokenizer
     logger.info("Creating huggingface pipeline")
     hf_pipeline = pipeline(
@@ -72,10 +73,8 @@ def main() -> None:
     logger.info("Pushing model artifact and assets to s3")
     # model artifact
     hf_pipeline_local_dir = os.path.join(model_card.local_output_dir, "hf_pipeline")
-    # hf_pipeline.save_pretrained(hf_pipeline_local_dir)
-    model.save_pretrained(hf_pipeline_local_dir)
-    tokenizer.vocab_file = "/projects/iptc/train/models/tokenizer.vocab"
 
+    model.save_pretrained(hf_pipeline_local_dir)
     tokenizer.save_vocabulary(hf_pipeline_local_dir)
 
     model_version.upload_directory_to_model_version(
