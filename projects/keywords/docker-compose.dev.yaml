@@ -247,7 +247,7 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve-model:
+      serve:
         condition: service_healthy
 
   # load tests
@@ -274,7 +274,7 @@ services:
     networks:
       - onclusive-net
     depends_on:
-      serve-model:
+      serve:
         condition: service_healthy
 
   # utility service: uploading the relevant test results to the model registry
