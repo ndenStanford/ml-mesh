@@ -19,7 +19,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [python, -m, src.__main__]
+    command: [python, -m, src.serve.__main__]
     profiles: [serve]
     ports:
       - 9000:9000
@@ -50,7 +50,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [python, -m, src.download.knowledge_bases]
+    command: [python, -m, src.download.__main__]
     profiles: [serve]
     ports:
       - 9000:9000
@@ -218,8 +218,8 @@ services:
     volumes:
       - ner-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.util.download_compiled_model]
-    profiles: [serve, integration, functional, load]
+    command: [python, -m, src.download]
+    profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
