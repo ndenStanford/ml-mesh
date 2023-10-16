@@ -62,18 +62,22 @@ or update your `.envrc` file accordingly.
 
 The following `docker compose` services are typically associated with a project's `serve`
 component:
-- `serve`
-  - contains build section of compilation image
-- `serve-download-model` (optional)
-  - used to download model artifact (if applicable)
-- `serve-unit`
-  - used to run `unit` test suite
-- `serve-integration`
-   - used to run `integration` test suite
-- `serve-functional`
-   - used to run `functional` test suite
-- `serve-load` (optional)
-   - used to run `load` test suite (if applicable)
+- :construction: :rocket: `serve`
+  - builds the serving image
+  - runs the model server process
+- :warning: `serve-unit`
+  - runs `unit` test suite
+- :warning: `serve-integration`
+  - runs `integration` test suite
+- :warning: `serve-functional`
+  - runs `functional` test suite
+- :warning: `serve-load` (optional)
+  - runs `load` test suite (if applicable)
+- :rocket: `serve-upload-results` (optional)
+  - uploads load test results to model registry
+- :rocket: `serve-download-model` (optional)
+  - downloads model from model registry (if applicable)
+
 
 ### 2.3 Building the `serve` component :construction:
 
@@ -115,8 +119,7 @@ To retrieve model artifacts and run the `serve` container locally using
 2. Run the `serve` container's model download function:
 
 ```bash
-make projects.start/${PROJECT_NAME} \
-   COMPONENT=serve-download-model
+make projects.run/${PROJECT_NAME} COMPONENT=serve TASK=download-model
 ```
 3. Check the model artifacts are located in the right location
 
