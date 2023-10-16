@@ -591,6 +591,7 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-train-pipelines
+      - run-iptc-project
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -610,6 +611,11 @@ jobs       :
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: sentiment
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.6xlarge
+            project: iptc
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
