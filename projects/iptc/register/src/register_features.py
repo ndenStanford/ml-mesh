@@ -21,6 +21,7 @@ def register() -> None:
         feast_config_bucket=feature_registration_params.feast_config_bucket,
         config_file=feature_registration_params.config_file,
         local_config_dir=feature_registration_params.local_config_dir,
+        data_source=feature_registration_params.redshift_table,
     )
 
     iptc_data_source = RedshiftSourceCustom(
@@ -56,7 +57,6 @@ def register() -> None:
         # feature view
         tags={},
     )
-
     fs_handle.register([iptc_entity])
     fs_handle.register([iptc_features])
 

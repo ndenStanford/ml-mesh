@@ -143,7 +143,7 @@ class FeatureStoreHandle:
         self.entity_sql = f"""
                 SELECT
                     {self.data_id_key}, event_timestamp
-                FROM {self.fs.get_data_source({self.data_source}).get_table_query_string()}
+                FROM {self.list_data_sources()[0].get_table_query_string()}
                 WHERE {self.data_id_key} in {self.data_ids}
             """
 
