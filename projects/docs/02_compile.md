@@ -30,8 +30,8 @@ environment variable either
 
 Specs defined in the `config/prod.env` are used only during CI processes.
 
-Orchestration & execution of these components as a model compile *pipeline* is done by the Github
-Actions CI process of this same `ml-mesh` repository.
+Orchestration & execution of these components as a model compile *pipeline* is implemented by the
+`run_compile_pipeline.py` script.
 
 ## 2 Setup & references :wrench:
 
@@ -59,22 +59,21 @@ or update your `.envrc` file accordingly.
 
 The following `docker compose` services are typically associated with a project's `compile`
 component:
-- `compile`
-  - contains build section of compilation image
-- `compile-download-model`
-  - step 1 of the compile pipeline - used to download uncompiled model artifact
-- `compile-compile-model`
-  - step 2 of the compile pipeline - used to compile model artifact
-- `compile-validate-model`
-  - step 3 of the compile pipeline - used to validate compiled model artifact
-- `compile-upload-model`
-  - step 4 of the compile pipeline - used to upload compiled & validated model artifact
-- `compile-unit`
-   - used to run `unit` test suite
-- `compile-integration` (optional)
-   - used to run `integration` test suite (if applicable)
-- `compile-functional` (optional)
-   - used to run `functional` test suite (if applicable)
+- :construction: :rocket: `compile`
+   - builds the compilation image
+   - compiles the model
+- :warning: `compile-unit`
+   - runs the `unit` test suite
+- :warning: `compile-integration` (optional)
+   - runs `integration` test suite (if applicable)
+- :warning: `compile-functional` (optional)
+   - runs `functional` test suite (if applicable)
+- :rocket: `compile-download-model`
+   - downloads the uncompilde model from the model registry
+- :rocket: `compile-validate-model`
+   -  validates the model compilation output
+- :rocket: `compile-upload-model`
+   - uploads the compiled model to the model registry
 
 
 ### 2.3 Building the `compile` component :construction:
@@ -183,31 +182,36 @@ follow the below steps.
 
 Update
 - the `dev.env` file in the `config` directory and
-- the `docker-compose.dev.yaml`'s `compile...` services
- as needed. `docker compose` will inject the file's environment variable values directly into the
+- the following `docker-compose.dev.yaml`'s services as needed:
+  - `compile-download-model`
+  - `compile`
+  - `compile-validate-model`
+  - `compile-upload-model`
+
+`docker compose` will inject the `dev.env` file's environment variable values directly into the
  running container(s) (see below) to allow for pipeline runtime configurations without requiring a
- rebuild of the docker container.
+  rebuild of the docker container.
 
 #### 4.2.2 Download the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=download-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=download-model
 ```
 
 #### 4.2.3 Compile the model
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=compile-model
+make projects.start/${PROJECT_NAME} COMPONENT=compile
 ```
 
 #### 4.2.4 Validate compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=validate-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=validate-model
 ```
 
 #### 4.2.5 Upload compiled model:
 
 ```bash
-make projects.compile/${PROJECT_NAME} PIPELINE_COMPONENT=upload-model
+make projects.run/${PROJECT_NAME} COMPONENT=compile TASK=upload-model
 ```

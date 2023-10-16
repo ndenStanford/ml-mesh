@@ -20,11 +20,11 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
+def compile_model() -> None:
     """Compile model."""
     io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
@@ -43,7 +43,6 @@ def main() -> None:
 
     # compile base model pipeline for sent
     sent_pipeline_compilation_settings = SentPipelineCompilationSettings()
-
     logger.debug(
         f"Using the following sent pipeline compilation settings: "
         f"{sent_pipeline_compilation_settings.dict()}. Compiling ..."
@@ -59,10 +58,10 @@ def main() -> None:
     # export compiled sent model for next workflow component: test
     compiled_sent.save_pretrained(io_settings.compile.model_directory)
 
-    logger.debug(
+    logger.info(
         f"Successfully exported compiled sent model to {io_settings.compile.model_directory}"
     )
 
 
 if __name__ == "__main__":
-    main()
+    compile_model()

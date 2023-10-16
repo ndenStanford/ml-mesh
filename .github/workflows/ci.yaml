@@ -544,7 +544,6 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
-      max-parallel: 2
       matrix:
         models:
           - runner-kind: custom
