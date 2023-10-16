@@ -66,7 +66,7 @@ services:
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_HTTP_PORT: 9000
-      ONCLUSIVEML_SERVING_SOURCE_BUCKET: mesh-external-ml-models-prod
+      ONCLUSIVEML_SERVING_SOURCE_BUCKET: onclusive-model-store-dev
       ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
     depends_on:
       - entity-fishing-backend

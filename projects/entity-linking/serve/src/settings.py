@@ -16,7 +16,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 class KnowledgeGraphDataSettings(ServingParams):
     """Serve model parameters."""
 
-    source_bucket: str = "mesh-external-ml-models-dev"
+    source_bucket: str = "onclusive-model-store-dev"
     source_path: str = "entity-fishing"
     target_path: str = "/opt/entity-fishing/data/db"
     knowledge_bases: List[str] = [
