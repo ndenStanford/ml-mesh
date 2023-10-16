@@ -9,7 +9,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.models.iptc import CompiledIPTC
 
 # Source
 from src.settings import CompilationTestSettings, IOSettings
@@ -36,12 +36,12 @@ def logger(io_settings: IOSettings) -> Any:
 
 
 @pytest.fixture
-def compiled_sent(io_settings: IOSettings) -> CompiledSent:
-    """Compiled sentiment model fixture."""
-    # load compiled Sent from previous workflow component
-    compiled_sent = CompiledSent.from_pretrained(io_settings.compile.model_directory)
+def compiled_iptc(io_settings: IOSettings) -> CompiledIPTC:
+    """Compiled iptc model fixture."""
+    # load compiled iptc from previous workflow component
+    compiled_iptc = CompiledIPTC.from_pretrained(io_settings.compile.model_directory)
 
-    return compiled_sent
+    return compiled_iptc
 
 
 @pytest.fixture
