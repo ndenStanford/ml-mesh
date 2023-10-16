@@ -21,15 +21,15 @@ logger = get_default_logger(__name__)
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    TrackedSumModelCard,
-    TrackedSumModelSpecs,
+    TrackedSummarizationModelCard,
+    TrackedSummarizationModelSpecs,
 )
 
 
 def main() -> None:
     """Register trained model."""
-    model_specs = TrackedSumModelSpecs()
-    model_card = TrackedSumModelCard()
+    model_specs = TrackedSummarizationModelSpecs()
+    model_card = TrackedSummarizationModelCard()
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
@@ -124,39 +124,41 @@ def main() -> None:
         hf_pipeline_it,
     ]
     # summarization settings
-    sum_settings_en = model_card.model_params_en.sum_settings.dict()
-    sum_settings_frde = model_card.model_params_frde.sum_settings.dict()
-    sum_settings_es = model_card.model_params_es.sum_settings.dict()
-    sum_settings_ca = model_card.model_params_ca.sum_settings.dict()
-    sum_settings_it = model_card.model_params_it.sum_settings.dict()
+    summarization_settings_en = model_card.model_params_en.summarization_settings.dict()
+    summarization_settings_frde = (
+        model_card.model_params_frde.summarization_settings.dict()
+    )
+    summarization_settings_es = model_card.model_params_es.summarization_settings.dict()
+    summarization_settings_ca = model_card.model_params_ca.summarization_settings.dict()
+    summarization_settings_it = model_card.model_params_it.summarization_settings.dict()
 
-    sum_settings = [
-        sum_settings_en,
-        sum_settings_frde,
-        sum_settings_es,
-        sum_settings_ca,
-        sum_settings_it,
+    summarization_settings = [
+        summarization_settings_en,
+        summarization_settings_frde,
+        summarization_settings_es,
+        summarization_settings_ca,
+        summarization_settings_it,
     ]
     # --- create prediction files
     # Making predictions from example inputs
     logger.info("Making predictions from example inputs")
     # Tokenize the sample documents
-    sum_predictions = []
-    for idx in range(len(sum_settings)):
+    summarization_predictions = []
+    for idx in range(len(summarization_settings)):
         summaries = pipelines[idx](
             model_card.model_inputs.sample_documents[idx],
             min_length=32,
             max_length=128,
             num_beams=1,
         )
-        sum_predictions.append(summaries[0]["summary_text"])
+        summarization_predictions.append(summaries[0]["summary_text"])
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
         (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
-        (sum_settings, model_card.model_test_files.inference_params),
-        (sum_predictions, model_card.model_test_files.predictions),
+        (summarization_settings, model_card.model_test_files.inference_params),
+        (summarization_predictions, model_card.model_test_files.predictions),
     ]:
         model_version.upload_config_to_model_version(
             config=test_file, neptune_attribute_path=test_file_attribute_path

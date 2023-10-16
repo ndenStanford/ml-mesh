@@ -13,11 +13,11 @@ from onclusiveml.tracking import (
 
 
 # --- settings classes
-class TrackedSumModelSpecs(TrackedModelSpecs):
+class TrackedSummarizationModelSpecs(TrackedModelSpecs):
     """Tracked summarization model specs."""
 
     project: str = "onclusive/gch-summarization"
-    model = "SUM-TRAINED"
+    model = "SUMMARIZATION-TRAINED"
 
     class Config:
         env_file = "config/dev.env"
@@ -71,7 +71,7 @@ di stupefacenti e portati in carcere.",
         env_file_encoding = "utf-8"
 
 
-class SumSettings(TrackedParams):
+class SummarizationSettings(TrackedParams):
     """Summarization settings."""
 
     class Config:
@@ -79,24 +79,24 @@ class SumSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class SumModelParams(TrackedParams):
+class SummarizationModelParams(TrackedParams):
     """summarization model settings."""
 
-    sum_settings: SumSettings = SumSettings()
+    summarization_settings: SummarizationSettings = SummarizationSettings()
 
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
-class SumModelParamsEn(SumModelParams):
+class SummarizationModelParamsEn(SummarizationModelParams):
     """English Summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_en: str = "Yale-LILY/brio-cnndm-uncased"
 
 
-class SumModelParamsFrDe(SumModelParams):
+class SummarizationModelParamsFrDe(SummarizationModelParams):
     """French/German Summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"
@@ -105,48 +105,48 @@ class SumModelParamsFrDe(SumModelParams):
     )
 
 
-class SumModelParamsEs(SumModelParams):
+class SummarizationModelParamsEs(SummarizationModelParams):
     """Spanish Summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_es: str = "knkarthick/MEETING_SUMMARY"
 
 
-class SumModelParamsCa(SumModelParams):
+class SummarizationModelParamsCa(SummarizationModelParams):
     """Catalan Summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_ca: str = "ELiRF/NASCA"
 
 
-class SumModelParamsIt(SumModelParams):
+class SummarizationModelParamsIt(SummarizationModelParams):
     """Italian Summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_it: str = "morenolq/bart-it-fanpage"
 
 
-class TrackedSumModelCard(TrackedModelCard):
+class TrackedSummarizationModelCard(TrackedModelCard):
     """The model cards for the model of the multilingual Summarization ML project."""
 
     model_type: str = "trained"
     # --- custom fields
     # model params
-    model_params_en: SumModelParamsEn = SumModelParamsEn()
-    model_params_frde: SumModelParamsFrDe = SumModelParamsFrDe()
-    model_params_es: SumModelParamsEs = SumModelParamsEs()
-    model_params_ca: SumModelParamsCa = SumModelParamsCa()
-    model_params_it: SumModelParamsIt = SumModelParamsIt()
+    model_params_en: SummarizationModelParamsEn = SummarizationModelParamsEn()
+    model_params_frde: SummarizationModelParamsFrDe = SummarizationModelParamsFrDe()
+    model_params_es: SummarizationModelParamsEs = SummarizationModelParamsEs()
+    model_params_ca: SummarizationModelParamsCa = SummarizationModelParamsCa()
+    model_params_it: SummarizationModelParamsIt = SummarizationModelParamsIt()
     model_inputs: Inputs = Inputs()
     # admin
-    local_output_dir: str = os.path.join(".", "sum_model_artifacts")
+    local_output_dir: str = os.path.join(".", "summarization_model_artifacts")
     logging_level: str = "INFO"
 
-    en_model_subdirectory: str = "/english_sum"
-    frde_model_subdirectory: str = "/french_german_sum"
-    es_model_subdirectory: str = "/spanish_sum"
-    ca_model_subdirectory: str = "/catalan_sum"
-    it_model_subdirectory: str = "/italian_sum"
+    en_model_subdirectory: str = "/english_summarization"
+    frde_model_subdirectory: str = "/french_german_summarization"
+    es_model_subdirectory: str = "/spanish_summarization"
+    ca_model_subdirectory: str = "/catalan_summarization"
+    it_model_subdirectory: str = "/italian_summarization"
 
     class Config:
         env_file = "config/dev.env"
