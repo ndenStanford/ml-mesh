@@ -11,6 +11,8 @@ projects/iptc/compile/projects/
 # project `compile` pipeline artifacts
 projects/**/compile/outputs/
 projects/**/compile/models/
+
+# docker validation test outputs
 docker/**/tests/output*
 
 # project `serve` component model artifacts
