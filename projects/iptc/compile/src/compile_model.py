@@ -35,25 +35,16 @@ def main() -> None:
     )
 
     logger.debug(f"Base model model_card: {base_model_card}")
-    # from transformers import XLMRobertaTokenizer, XLMRobertaModel
-    # import sentencepiece as spm
-    # import os
-    # tokenizer_path = os.path.join(io_settings.download.model_directory, "sentencepiece.bpe.model")
-    # sp = spm.SentencePieceProcessor()
-    # sp.Load(tokenizer_path)
-    # tokenizer = XLMRobertaTokenizer.from_pretrained(io_settings.download.model_directory)
-    # model = XLMRobertaModel.from_pretrained(io_settings.download.model_directory)
 
-    model_name = "xlm-roberta-base"
-    # ML libs
-    from transformers import XLMRobertaTokenizerFast
+    # model_name = "xlm-roberta-base"
+    # # ML libs
+    # from transformers import XLMRobertaTokenizerFast
 
-    tokenizer = XLMRobertaTokenizerFast.from_pretrained(model_name)
+    # tokenizer = XLMRobertaTokenizerFast.from_pretrained(model_name)
     # re-load base model pipeline
     base_model_pipeline = pipeline(
         task=base_model_card["model_params"]["huggingface_pipeline_task"],
         model=io_settings.download.model_directory,
-        tokenizer=tokenizer,
     )
     # compile base model pipeline for iptc
     iptc_pipeline_compilation_settings = IPTCPipelineCompilationSettings()

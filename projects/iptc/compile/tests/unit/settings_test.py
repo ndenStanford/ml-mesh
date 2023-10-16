@@ -2,7 +2,7 @@
 
 # Source
 from src.settings import (
-    CompiledSentTrackedModelCard,
+    CompiledIPTCTrackedModelCard,
     CompiledTrackedModelSpecs,
     IOSettings,
 )
@@ -18,6 +18,6 @@ def test_compiled_tracked_model_specs():
     CompiledTrackedModelSpecs()
 
 
-def test_compiled_ner_tracked_model_card():
-    """Compiled NER tracked model card."""
-    CompiledSentTrackedModelCard()
+def test_compiled_iptc_tracked_model_card():
+    """Compiled IPTC tracked model card."""
+    CompiledIPTCTrackedModelCard()
