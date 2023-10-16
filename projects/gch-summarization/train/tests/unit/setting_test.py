@@ -1,7 +1,10 @@
 """Settings test."""
 
 # Source
-from src.settings import TrackedSummarizationModelCard, TrackedSummarizationModelSpecs
+from src.settings import (
+    TrackedSummarizationModelCard,
+    TrackedSummarizationModelSpecs,
+)
 
 
 def test_tracked_sum_model_specs():
