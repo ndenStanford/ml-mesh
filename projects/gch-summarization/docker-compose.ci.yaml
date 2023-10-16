@@ -46,3 +46,6 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+networks:
+  onclusive-net:
