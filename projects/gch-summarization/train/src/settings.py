@@ -17,7 +17,7 @@ class TrackedSummarizationModelSpecs(TrackedModelSpecs):
     """Tracked summarization model specs."""
 
     project: str = "onclusive/gch-summarization"
-    model = "SUMMARIZATION-TRAINED"
+    model = "SUM-TRAINED"
 
     class Config:
         env_file = "config/dev.env"
