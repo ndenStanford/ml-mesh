@@ -5,12 +5,17 @@ __pycache__/
 test_model
 */**/*.pt
 
+# docker validation test outputs
+docker/**/tests/output*
+
 # project `compile` pipeline artifacts
 projects/**/compile/outputs/
-docker/**/tests/output*
 
 # project `serve` component model artifacts
 projects/**/serve/models/
+
+# project component caches
+projects/**/**/projects
 
 # C extensions
 *.so
@@ -33,9 +38,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-projects/keywords/serve/models
-projects/keywords/compile/outputs
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
