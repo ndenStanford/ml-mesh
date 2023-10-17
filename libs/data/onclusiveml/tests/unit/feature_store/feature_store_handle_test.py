@@ -44,7 +44,7 @@ def feature_store_handle_instance(mocker):
     )
     mocker.patch(
         "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.list_data_sources",
-        return_value=[None],
+        return_value=None,
     )
     mocker.patch(
         "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.get_historical_features",
