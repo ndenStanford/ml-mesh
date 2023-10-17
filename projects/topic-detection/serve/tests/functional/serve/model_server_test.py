@@ -4,10 +4,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import (
-    LivenessProbeResponse,
-    ReadinessProbeResponse,
-)
+from onclusiveml.serving.rest.serve import LivenessProbeResponse, ReadinessProbeResponse
 
 # Source
 from src.serve.server_models import (
@@ -58,7 +55,8 @@ def test_model_server_predict(
     input = PredictRequestModel(
         configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
-            content=test_predict_input,
+            industry=test_predict_input.industry,
+            content=test_predict_input.content,
         ),
     )
 
