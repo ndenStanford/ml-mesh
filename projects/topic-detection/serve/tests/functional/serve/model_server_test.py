@@ -1,10 +1,14 @@
 """Model server."""
+# isort: skip_file
 
 # 3rd party libraries
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import LivenessProbeResponse, ReadinessProbeResponse
+from onclusiveml.serving.rest.serve import (
+    LivenessProbeResponse,
+    ReadinessProbeResponse,
+)
 
 # Source
 from src.serve.server_models import (
