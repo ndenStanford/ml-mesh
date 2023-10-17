@@ -11,21 +11,21 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-vol:/projects/iptc/serve/models
     build:
       context: ../../
-      dockerfile: projects/sentiment/serve/Dockerfile
+      dockerfile: projects/iptc/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: sentiment
+        PROJECT: iptc
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.model_server]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-5
       ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [serve, functional, load]
@@ -44,8 +44,8 @@ services:
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.util.download_compiled_model]
     profiles: [serve, integration, functional, load]
     environment:
@@ -53,11 +53,11 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
-      NEPTUNE_PROJECT: onclusive/sentiment
-      NEPTUNE_MODEL_ID: SEN-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: SEN-COMPILED-31
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-5
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-5
     hostname: onclusiveml
     networks: [onclusive-net]
 
@@ -65,7 +65,7 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -79,11 +79,11 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-5
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -94,11 +94,11 @@ services:
   # - include REST model server process
   serve-functional:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-5
     profiles: [functional]
     hostname: onclusiveml
     networks:
@@ -112,11 +112,11 @@ services:
   # - include REST model server process
   serve-load:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-5
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
@@ -135,8 +135,8 @@ services:
   # utility service: uploading the relevant test results to the model registry
   serve-upload-results:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.util.upload_test_results]
     profiles: [serve]
     environment:
@@ -144,14 +144,14 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: async
-      NEPTUNE_PROJECT: onclusive/sentiment
-      NEPTUNE_MODEL_ID: SEN-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: SEN-COMPILED-31
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-5
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
-      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-5
+      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}

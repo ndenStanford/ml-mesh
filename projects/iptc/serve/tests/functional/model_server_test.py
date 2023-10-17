@@ -47,7 +47,7 @@ def test_model_server_readiness(test_client):
 
 
 @pytest.mark.order(7)
-@pytest.mark.parametrize("test_record_index", [0, 1, 2])
+@pytest.mark.parametrize("test_record_index", [0, 1])
 def test_model_server_predict(
     test_model_name,
     test_client,
@@ -63,7 +63,7 @@ def test_model_server_predict(
     artifact as ground truth for the regression test element.
     """
     input = PredictRequestModel(
-        configuration=PredictConfiguration(language="en"),
+        configuration=PredictConfiguration(),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
@@ -72,57 +72,44 @@ def test_model_server_predict(
     )
 
     assert test_response.status_code == 200
-    actual_output = test_response.json()["outputs"]
+    actual_output = test_response.json()["outputs"][0]
     expected_output = test_predictions[test_record_index]
 
     assert actual_output.get("label") == expected_output.get("label")
     torch.testing.assert_close(
-        actual_output.get("positive_prob"),
-        expected_output.get("positive_prob"),
-        atol=test_atol,
-        rtol=test_rtol,
-    )
-    torch.testing.assert_close(
-        actual_output.get("negative_prob"),
-        expected_output.get("negative_prob"),
+        actual_output.get("score"),
+        expected_output.get("score"),
         atol=test_atol,
         rtol=test_rtol,
     )
 
 
 @pytest.mark.parametrize(
-    "test_sample_content, test_sample_entities, test_sample_response",
+    "test_sample_content, test_sample_response",
     [
         (
-            "I love John. I hate Jack",
-            [{"text": "John"}, {"text": "Jack"}],
-            {
-                "label": "negative",
-                "negative_prob": 0.4735,
-                "positive_prob": 0.4508,
-                "entities": [
-                    {"text": "John", "sentiment": "positive"},
-                    {"text": "Jack", "sentiment": "negative"},
-                ],
-            },
+            """Stocks reversed earlier losses to close higher despite rising oil prices
+            that followed the attack by Hamas on Israel over the weekend. Dovish comments by
+            Federal Reserve officials boosted the three major indexes. The Dow Jones Industrial
+            Average added nearly 200 points.""",
+            {"label": "economy, business and finance", "score": 0.9870237112045288},
         )
     ],
 )
-def test_served_sent_model_with_entities_predict(
+def test_served_sent_model_with_iptc_predict(
     test_model_name,
     test_client,
     test_served_model_artifacts,
     test_sample_content,
-    test_sample_entities,
     test_sample_response,
 ):
     """Tests the running ModelServer's predict endpoint by making genuine http requests.
 
-    This test the functionality of the endpoint with entities and content input
+    This test the functionality of the endpoint with content input
     """
     input = PredictRequestModel(
         configuration=PredictConfiguration(
-            language="en", entities=test_sample_entities
+            # language="en"
         ),
         inputs=PredictInputContentModel(content=test_sample_content),
     )
@@ -132,14 +119,8 @@ def test_served_sent_model_with_entities_predict(
     )
 
     assert test_response.status_code == 200
-    actual_output = test_response.json()["outputs"]
-
-    assert actual_output.get("entities")[0].get("text") == test_sample_response.get(
-        "entities"
-    )[0].get("text")
-    assert actual_output.get("entities")[0].get(
-        "sentiment"
-    ) == test_sample_response.get("entities")[0].get("sentiment")
+    actual_output = test_response.json()["outputs"][0]
+    assert actual_output.get("label") == expected_output.get("label")
 
 
 @pytest.mark.order(7)

@@ -20,13 +20,13 @@ from src.serve.server_models import (
 
 @pytest.mark.order(1)
 def test_served_iptc_model__init__(test_served_model_artifacts):
-    """Tests the constructor of the ServedNERModel."""
+    """Tests the constructor of the ServedIPTCModel."""
     ServedIPTCModel(served_model_artifacts=test_served_model_artifacts)
 
 
 @pytest.mark.order(2)
 def test_served_iptc_model_load(test_served_model_artifacts):
-    """Tests the constructor of the ServedNERModel."""
+    """Tests the constructor of the ServedIPTCModel."""
     served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
@@ -38,7 +38,7 @@ def test_served_iptc_model_load(test_served_model_artifacts):
     assert served_iptc_model.is_ready()
 
 
-@pytest.mark.parametrize("test_record_index", [0, 1, 2])
+@pytest.mark.parametrize("test_record_index", [0, 1])
 def test_served_iptc_model_predict(
     test_served_model_artifacts,
     test_inputs,
@@ -47,13 +47,13 @@ def test_served_iptc_model_predict(
     test_atol,
     test_rtol,
 ):
-    """Tests the fully initialized and loaded ServedNERModel's predict method."""
+    """Tests the fully initialized and loaded ServedIPTCModel's predict method."""
     served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
     served_iptc_model.load()
     input = PredictRequestModel(
-        configuration=PredictConfiguration(language="en"),
+        configuration=PredictConfiguration(),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
@@ -66,67 +66,40 @@ def test_served_iptc_model_predict(
         )
     )
 
-    expected_output = PredictResponseModel(
-        outputs=PredictionOutputContent(
-            predicted_content=[
-                PredictionExtractedIPTC(**i)
-                for i in test_predictions[test_record_index]
-            ]
-        )
-    )
-
-    assert actual_output == expected_output
-
-    assert actual_output.outputs.label == expected_output.outputs.label
+    assert actual_output.outputs[0].label == expected_output.outputs.label
     torch.testing.assert_close(
-        actual_output.outputs.positive_prob,
-        expected_output.outputs.positive_prob,
-        atol=test_atol,
-        rtol=test_rtol,
-    )
-    torch.testing.assert_close(
-        actual_output.outputs.negative_prob,
-        expected_output.outputs.negative_prob,
+        actual_output.outputs[0].score,
+        expected_output.outputs.score,
         atol=test_atol,
         rtol=test_rtol,
     )
 
 
 @pytest.mark.parametrize(
-    "test_sample_content, test_sample_entities, test_sample_response",
+    "test_sample_content, test_sample_response",
     [
         (
-            "I love John. I hate Jack",
-            [{"text": "John"}, {"text": "Jack"}],
-            {
-                "label": "negative",
-                "negative_prob": 0.4735,
-                "positive_prob": 0.4508,
-                "entities": [
-                    {"text": "John", "iptciment": "positive"},
-                    {"text": "Jack", "iptciment": "negative"},
-                ],
-            },
+            """Stocks reversed earlier losses to close higher despite rising oil prices
+            that followed the attack by Hamas on Israel over the weekend. Dovish comments by
+            Federal Reserve officials boosted the three major indexes. The Dow Jones Industrial
+            Average added nearly 200 points.""",
+            {"label": "economy, business and finance", "score": 0.9870237112045288},
         )
     ],
 )
-def test_served_iptc_model_with_entities_predict(
+def test_served_iptc_model_with_iptc_predict(
     test_served_model_artifacts,
     test_sample_content,
-    test_sample_entities,
     test_sample_response,
 ):
-    """Tests the fully initialized and loaded ServedNERModel's predict method.
-
-    With the entities input.
-    """
+    """Tests the fully initialized and loaded ServedIPTCModel's predict method."""
     served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
     served_iptc_model.load()
     input = PredictRequestModel(
         configuration=PredictConfiguration(
-            language="en", entities=test_sample_entities
+            # language="en"
         ),
         inputs=PredictInputContentModel(content=test_sample_content),
     )
@@ -136,27 +109,18 @@ def test_served_iptc_model_with_entities_predict(
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             label=test_sample_response.get("label"),
-            negative_prob=test_sample_response.get("negative_prob"),
-            positive_prob=test_sample_response.get("positive_prob"),
-            entities=test_sample_response.get("entities"),
+            score=test_sample_response.get("score"),
         )
     )
 
-    assert (
-        actual_output.outputs.entities[0].text
-        == expected_output.outputs.entities[0].text
-    )
-    assert (
-        actual_output.outputs.entities[0].iptciment
-        == expected_output.outputs.entities[0].iptciment
-    )
+    assert actual_output.outputs[0].label == expected_output.outputs.label
 
 
 @pytest.mark.order(3)
 def test_served_iptc_model_bio(
     test_model_name, test_served_model_artifacts, test_model_card
 ):
-    """Tests the fully initialized and loaded ServedNERModel's bio method."""
+    """Tests the fully initialized and loaded ServedIPTCModel's bio method."""
     served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )

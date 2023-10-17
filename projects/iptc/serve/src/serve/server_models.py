@@ -15,7 +15,7 @@ class PredictConfiguration(BaseModel):
         language (Optional[str]): Language used for prediction. Defaults to "en"
     """
 
-    language: Optional[str] = "en"
+    # language: Optional[str] = "en"
 
 
 class PredictInputContentModel(BaseModel):
