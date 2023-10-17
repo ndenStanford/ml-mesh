@@ -7,7 +7,7 @@ import torch
 import pytest
 
 # Source
-from src.serve.served_model import ServedSentModel
+from src.serve.served_model import ServedIPTCModel
 from src.serve.server_models import (
     BioResponseModel,
     PredictConfiguration,
@@ -19,27 +19,27 @@ from src.serve.server_models import (
 
 
 @pytest.mark.order(1)
-def test_served_sent_model__init__(test_served_model_artifacts):
+def test_served_iptc_model__init__(test_served_model_artifacts):
     """Tests the constructor of the ServedNERModel."""
-    ServedSentModel(served_model_artifacts=test_served_model_artifacts)
+    ServedIPTCModel(served_model_artifacts=test_served_model_artifacts)
 
 
 @pytest.mark.order(2)
-def test_served_sent_model_load(test_served_model_artifacts):
+def test_served_iptc_model_load(test_served_model_artifacts):
     """Tests the constructor of the ServedNERModel."""
-    served_sent_model = ServedSentModel(
+    served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
 
-    assert not served_sent_model.is_ready()
+    assert not served_iptc_model.is_ready()
 
-    served_sent_model.load()
+    served_iptc_model.load()
 
-    assert served_sent_model.is_ready()
+    assert served_iptc_model.is_ready()
 
 
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
-def test_served_sent_model_predict(
+def test_served_iptc_model_predict(
     test_served_model_artifacts,
     test_inputs,
     test_predictions,
@@ -48,25 +48,34 @@ def test_served_sent_model_predict(
     test_rtol,
 ):
     """Tests the fully initialized and loaded ServedNERModel's predict method."""
-    served_sent_model = ServedSentModel(
+    served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
-    served_sent_model.load()
+    served_iptc_model.load()
     input = PredictRequestModel(
         configuration=PredictConfiguration(language="en"),
         inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
     )
 
-    actual_output = served_sent_model.predict(input)
+    actual_output = served_iptc_model.predict(input)
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             label=test_predictions[test_record_index].get("label"),
-            negative_prob=test_predictions[test_record_index].get("negative_prob"),
-            positive_prob=test_predictions[test_record_index].get("positive_prob"),
-            entities=test_predictions[test_record_index].get("entities"),
+            score=test_predictions[test_record_index].get("score"),
         )
     )
+
+    expected_output = PredictResponseModel(
+        outputs=PredictionOutputContent(
+            predicted_content=[
+                PredictionExtractedIPTC(**i)
+                for i in test_predictions[test_record_index]
+            ]
+        )
+    )
+
+    assert actual_output == expected_output
 
     assert actual_output.outputs.label == expected_output.outputs.label
     torch.testing.assert_close(
@@ -94,14 +103,14 @@ def test_served_sent_model_predict(
                 "negative_prob": 0.4735,
                 "positive_prob": 0.4508,
                 "entities": [
-                    {"text": "John", "sentiment": "positive"},
-                    {"text": "Jack", "sentiment": "negative"},
+                    {"text": "John", "iptciment": "positive"},
+                    {"text": "Jack", "iptciment": "negative"},
                 ],
             },
         )
     ],
 )
-def test_served_sent_model_with_entities_predict(
+def test_served_iptc_model_with_entities_predict(
     test_served_model_artifacts,
     test_sample_content,
     test_sample_entities,
@@ -111,10 +120,10 @@ def test_served_sent_model_with_entities_predict(
 
     With the entities input.
     """
-    served_sent_model = ServedSentModel(
+    served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
-    served_sent_model.load()
+    served_iptc_model.load()
     input = PredictRequestModel(
         configuration=PredictConfiguration(
             language="en", entities=test_sample_entities
@@ -122,7 +131,7 @@ def test_served_sent_model_with_entities_predict(
         inputs=PredictInputContentModel(content=test_sample_content),
     )
 
-    actual_output = served_sent_model.predict(input)
+    actual_output = served_iptc_model.predict(input)
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
@@ -138,23 +147,23 @@ def test_served_sent_model_with_entities_predict(
         == expected_output.outputs.entities[0].text
     )
     assert (
-        actual_output.outputs.entities[0].sentiment
-        == expected_output.outputs.entities[0].sentiment
+        actual_output.outputs.entities[0].iptciment
+        == expected_output.outputs.entities[0].iptciment
     )
 
 
 @pytest.mark.order(3)
-def test_served_sent_model_bio(
+def test_served_iptc_model_bio(
     test_model_name, test_served_model_artifacts, test_model_card
 ):
     """Tests the fully initialized and loaded ServedNERModel's bio method."""
-    served_sent_model = ServedSentModel(
+    served_iptc_model = ServedIPTCModel(
         served_model_artifacts=test_served_model_artifacts
     )
 
-    served_sent_model.load()
+    served_iptc_model.load()
 
-    actual_output = served_sent_model.bio()
+    actual_output = served_iptc_model.bio()
     expected_output = BioResponseModel(
         model_name=test_model_name, model_card=test_model_card
     )
