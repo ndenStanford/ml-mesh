@@ -21,23 +21,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     profiles: [serve]
-    ports:
-      - 9000:9000
-    volumes:
-      - type: bind
-        source: serve/src
-        target: /projects/entity-linking/serve/src
-    environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
-      INTERNAL_ML_API_KEY: ''
-      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
-      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
-      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
-    depends_on:
-      - entity-fishing-backend
-      - ner-serve
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -84,16 +67,6 @@ services:
 
   # unit tests
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
@@ -117,16 +90,6 @@ services:
 
   # integration tests
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
