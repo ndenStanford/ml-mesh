@@ -7,11 +7,16 @@ from onclusiveml.core.logging.constants import (  # noqa: F401
     ERROR,
     INFO,
     WARNING,
+    OnclusiveLogMessageFormats,
 )
-from onclusiveml.core.logging.loggers import LogFormat, get_default_logger
+from onclusiveml.core.logging.loggers import (
+    get_default_logger,
+    get_logging_config,
+)
 
 
 __all__ = [
+    "get_logging_config",
     "get_default_logger",
     "LogFormat",
     "DEBUG",
@@ -19,4 +24,5 @@ __all__ = [
     "WARNING",
     "ERROR",
     "CRITICAL",
+    "OnclusiveLogMessageFormats",
 ]

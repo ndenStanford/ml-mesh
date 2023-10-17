@@ -3,7 +3,9 @@
 # Standard Library
 import logging
 import sys
-from enum import Enum
+
+# Internal libraries
+from onclusiveml.core.base.utils import OnclusiveEnum
 
 
 DEFAULT_LOGGING_HANDLER: logging.Handler = logging.StreamHandler(sys.stdout)
@@ -14,9 +16,11 @@ WARNING = logging.WARNING
 ERROR = logging.ERROR
 CRITICAL = logging.CRITICAL
 
+VALID_LOG_LEVELS = (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
-class LogFormat(Enum):
-    """Standardized logging formats."""
+
+class OnclusiveLogMessageFormats(OnclusiveEnum):
+    """Standardized log message formats."""
 
     MESSAGE_ONLY = "%(message)s"
     BASIC = "%(levelname)s - %(message)s"
