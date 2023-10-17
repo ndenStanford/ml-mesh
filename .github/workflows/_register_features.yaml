@@ -97,4 +97,4 @@ jobs:
 
       - name: Run feature registration for the project
         run: |
-          python src/register_features.py
+          make projects.start/${{ inputs.project }} COMPONENT=register ENVIRONMENT=${{ inputs.environment }}
