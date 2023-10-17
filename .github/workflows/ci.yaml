@@ -396,7 +396,7 @@ jobs       :
             load: true
             upload-test-results: true
             runner-kind: custom
-            self-hosted-runner-type: inf1.2xlarge
+            self-hosted-runner-type: inf1.xlarge
 
     with:
       project: sentiment
@@ -592,7 +592,6 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
-      max-parallel: 2
       matrix:
         models:
           - runner-kind: custom

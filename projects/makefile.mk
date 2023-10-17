@@ -11,11 +11,11 @@ projects.install/%:
 projects.deploy/%: ## Deploy project component docker image to ECR.
 	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml push $(COMPONENT)
 
-projects.run/%: # Run task in development container
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml up $(COMPONENT)-$(TASK) --force-recreate
+projects.start/%: # Run main task of component in container
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate
 
-projects.start/%: # Start development container of component and related services
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up --force-recreate
+projects.run/%: # Run auxiliary task of component in container
+	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT)-$(TASK) --exit-code-from $(COMPONENT)-$(TASK) --force-recreate
 
 projects.stop/%: # Start development container of component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
@@ -40,9 +40,6 @@ projects.load/%: ## Run load tests for project component
 
 	# ensure dependency service(s) shuts down
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
-
-projects.compile/%: ## Run model compilation pipeline component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile pipeline up compile-$(PIPELINE_COMPONENT) --exit-code-from compile-$(PIPELINE_COMPONENT)
 
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)

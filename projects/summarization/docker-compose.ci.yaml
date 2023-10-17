@@ -35,16 +35,6 @@ services:
       - onclusive-net
 
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/summarization/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: summarization
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -59,16 +49,6 @@ services:
       - onclusive-net
 
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/summarization/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: summarization
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]

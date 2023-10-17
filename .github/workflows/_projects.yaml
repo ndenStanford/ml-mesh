@@ -199,7 +199,9 @@ jobs:
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.download-model }}
         run: |
-          make projects.run/${{ inputs.project }} COMPONENT=${{ inputs.component }} TASK=download-model \
+          make projects.run/${{ inputs.project }} \
+            COMPONENT=${{ inputs.component }} \
+            TASK=download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
@@ -242,7 +244,9 @@ jobs:
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.upload-test-results }}
         run: |
-          make projects.run/${{ inputs.project }} COMPONENT=${{ inputs.component }} TASK=upload-results \
+          make projects.run/${{ inputs.project }} \
+            COMPONENT=${{ inputs.component }} \
+            TASK=upload-results \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
