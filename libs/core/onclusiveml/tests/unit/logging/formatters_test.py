@@ -43,4 +43,4 @@ def test_onclusive_json_formatter_format_message():
     assert (
         formatted_message_actual
         == '{"asctime": null, "levelname": "DEBUG", "name": "test logger", "filename": "", "funcName": "test_onclusive_json_log_record", "lineno": 1, "message": "test message"}'  # noqa: E501
-    )  # noqa:
+    )  # noqa: E501
