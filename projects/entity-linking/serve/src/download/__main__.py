@@ -28,7 +28,7 @@ def main(settings: BaseSettings) -> None:
         sync_folder(
             client=boto3.client("s3"),
             bucket=settings.source_bucket,
-            source_folder=f"entity-fishing/0.0.6/db/db-{kb}",
+            source_folder=f"entity-fishing/{settings.source_version}/db/db-{kb}",
             target_folder=f"/opt/entity-fishing/data/db/db-{kb}",
         )
 

@@ -18,6 +18,7 @@ class KnowledgeGraphDataSettings(ServingParams):
 
     source_bucket: str = "onclusive-model-store-dev"
     source_path: str = "entity-fishing"
+    source_version: str = "0.0.6"
     target_path: str = "/opt/entity-fishing/data/db"
     knowledge_bases: List[str] = [
         "kb",
