@@ -12,11 +12,12 @@ from onclusiveml.core.logging.constants import (
 )
 
 
-class OnclusiveLogConfig(Params):
-    """Environment variable entrypoint for configuring behaviour of the core.logging logger."""
+class OnclusiveLogSettings(Params):
+    """Environment variable entrypoint for `get_default_logger` method inputs."""
 
     level: int = DEBUG
-    message_format_type: str = OnclusiveLogMessageFormats.SIMPLE.value
+    fmt_level: str = OnclusiveLogMessageFormats.SIMPLE.name
+    json: bool = True
 
     @validator("level")
     def check_level_value(value: int) -> int:
@@ -29,9 +30,9 @@ class OnclusiveLogConfig(Params):
 
         return value
 
-    @validator("message_format_type")
+    @validator("fmt_level")
     def check_log_formatting(value: str) -> str:
-        """Validates the log message formatting type."""
+        """Validates the log message formatting level against OnclusiveLogMessageFormats fields."""
         valid_log_message_formats = OnclusiveLogMessageFormats.list(names=True)
 
         if value not in valid_log_message_formats:

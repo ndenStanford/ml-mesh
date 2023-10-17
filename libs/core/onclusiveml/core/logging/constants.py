@@ -2,13 +2,10 @@
 
 # Standard Library
 import logging
-import sys
 
 # Internal libraries
 from onclusiveml.core.base.utils import OnclusiveEnum
 
-
-DEFAULT_LOGGING_HANDLER: logging.Handler = logging.StreamHandler(sys.stdout)
 
 DEBUG = logging.DEBUG
 INFO = logging.INFO
