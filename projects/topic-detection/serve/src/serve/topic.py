@@ -3,7 +3,7 @@
 # Standard Library
 import datetime
 import re
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 # 3rd party libraries
 # OpenAI library
@@ -33,7 +33,7 @@ class TopicHandler:
     # use gpt to generate summary on certain category; will be called in aggregate.
     def inference(
         self,
-        article: list,
+        article: List[str],
         cate: str,
         industry: str,
     ) -> str:
