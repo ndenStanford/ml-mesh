@@ -97,4 +97,8 @@ jobs:
 
       - name: Run feature registration for the project
         run: |
-          make projects.start/${{ inputs.project }} COMPONENT=register ENVIRONMENT=${{ inputs.environment }}
+          make projects.start/${{ inputs.project }} COMPONENT=register ENVIRONMENT=ci \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            IMAGE_TAG="${{ inputs.tag }}"
