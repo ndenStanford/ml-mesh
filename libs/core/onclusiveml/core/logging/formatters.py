@@ -24,23 +24,47 @@ class OnclusiveJSONLogRecord(pydantic.BaseModel):
     lineno: int
     message: str
 
+    class Config:
+        orm_mode = True
+
 
 class OnclusiveJSONFormatter(logging.Formatter):
-    """Standard JSON log record formatter for all onclusive python (ML) applications."""
+    """Standard JSON log record formatter for all onclusive python (ML) applications.
+
+    Can be subclassed by overloading the
+    - `log_record_data_model` attributes and the
+    - `formatMessage` method
+    with custom data model and logic, respectively.
+    """
+
+    log_record_data_model = OnclusiveJSONLogRecord
+
+    def _jsonify_record(self, record: logging.LogRecord) -> str:
+        """Takes a record instance and converts it into a JSON string.
+
+        Args:
+            record (logging.LogRecord): The log record that is converted to JSON string.
+
+        Returns:
+            json_record (str): The JSON string version of the log record.
+        """
+        json_record = self.log_record_data_model.from_orm(record).json()
+
+        return json_record
 
     def formatMessage(self, record: logging.LogRecord) -> str:
-        """Converts a LogRecord instance to JSON using the OnclusiveJSONLogRecord data model."""
-        formatted_message = super().formatMessage(record)
+        """Converts a LogRecord instance to JSON using the OnclusiveJSONLogRecord data model.
 
-        formatted_record = OnclusiveJSONLogRecord(
-            asctime=getattr(record, "asctime", None),
-            levelname=record.levelname,
-            name=record.name,
-            pathName=record.pathname,
-            filename=record.filename,
-            funcName=record.funcName,
-            lineno=record.lineno,
-            message=formatted_message,
-        )
+        Note that the only time the _fmt attribute is used is to implicitly generate the asctime
+        attribute depedning on whether the format supports the time stamp. The message attribute of
+        the resulting json string contains the unformatted, original log message.
 
-        return formatted_record.json()
+        Args:
+            record (logging.LogRecord): The log record that is converted to JSON.
+
+        Returns:
+            json_record (str): The JSON string version of the log record.
+        """
+        json_record = self._jsonify_record(record)
+
+        return json_record

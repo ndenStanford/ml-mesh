@@ -100,5 +100,5 @@ def test_get_default_logger_from_env_message_format(monkeypatch):
     logger.debug(msg)
 
     actual_log_entry = buffer.getvalue()
-    expected_log_entry = '{"asctime": "dummy time stamp", "levelname": "DEBUG", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - DEBUG - testing logging format"}\n'  # noqa: E501
+    expected_log_entry = '{"asctime": "dummy time stamp", "levelname": "DEBUG", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n'  # noqa: E501
     assert actual_log_entry == expected_log_entry
