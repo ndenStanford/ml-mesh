@@ -387,8 +387,8 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # train
-          - name: train
+          # compile
+          - name: compile
             download-model: false
             integration: false
             functional: false
@@ -545,7 +545,7 @@ jobs       :
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-      - run-iptc-project
+
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -557,9 +557,7 @@ jobs       :
           - project: ner
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
+
     with:
       environment: prod
       project: ${{ matrix.models.project }}

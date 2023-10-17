@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+import re
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -10,6 +11,7 @@ import torch
 
 # 3rd party libraries
 import regex
+from bs4 import BeautifulSoup
 from nptyping import NDArray
 
 # Internal libraries
@@ -77,6 +79,28 @@ class CompiledIPTC:
             compiled_iptc_pipeline=compiled_iptc_pipeline,
         )
 
+    def remove_html(self, text: str) -> str:
+        """Remove HTML tags from input text.
+
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with HTML tags removed
+        """
+        text = BeautifulSoup(text, "html.parser").text
+        return text
+
+    def remove_whitespace(self, text: str) -> str:
+        """Remove extra white spaces from input text.
+
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with extra whitespaces removed
+        """
+        text = re.sub(r"\s+", " ", text)
+        return text
+
     def preprocess(self, input_data: str) -> str:
         """Preprocess the input.
 
@@ -85,6 +109,8 @@ class CompiledIPTC:
         Return:
             inputdata(str): input data
         """
+        input_data = self.remove_html(input_data)
+        input_data = self.remove_whitespace(input_data)
         return input_data
 
     def inference(self, content: str) -> NDArray:
@@ -124,7 +150,6 @@ class CompiledIPTC:
             }
             for index, prob in enumerate(probs)
         ]
-
         # Sort the predictions by score in descending order
         sorted_predictions = sorted(predictions, key=lambda x: x["score"], reverse=True)
 

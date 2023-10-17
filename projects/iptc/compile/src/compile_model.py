@@ -36,11 +36,6 @@ def main() -> None:
 
     logger.debug(f"Base model model_card: {base_model_card}")
 
-    # model_name = "xlm-roberta-base"
-    # # ML libs
-    # from transformers import XLMRobertaTokenizerFast
-
-    # tokenizer = XLMRobertaTokenizerFast.from_pretrained(model_name)
     # re-load base model pipeline
     base_model_pipeline = pipeline(
         task=base_model_card["model_params"]["huggingface_pipeline_task"],
