@@ -1,4 +1,5 @@
 """Conftest."""
+# isort: skip_file
 
 # Standard Library
 import json
@@ -6,10 +7,10 @@ from typing import Dict
 
 # 3rd party libraries
 import pytest
+from requests_toolbelt.sessions import BaseUrlSession
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServingParams
-from requests_toolbelt.sessions import BaseUrlSession
 
 # Source
 from src.serve.server_models import (
