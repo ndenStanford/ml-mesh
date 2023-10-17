@@ -51,6 +51,13 @@ def test_get_default_logger_message_format_with_default_handler(monkeypatch):
     # patch sys.stdout with local buffer
     buffer = StringIO()
     monkeypatch.setattr(sys, "stdout", buffer)
+
+    # patch Logger.findCaller with dummy file name and line number
+    def dummy_find_caller(self, stack_info=False, stacklevel=1):
+        return ("testfile.py", 1, "test_function", None)
+
+    monkeypatch.setattr(logging.Logger, "findCaller", dummy_find_caller)
+
     # use
     logger = get_default_logger(
         "test logger",
@@ -63,5 +70,5 @@ def test_get_default_logger_message_format_with_default_handler(monkeypatch):
     logger.info(msg)
 
     actual_log_entry = buffer.getvalue()
-    expected_log_entry = '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "loggers_test.py", "funcName": "test_get_default_logger_message_format_with_default_handler", "lineno": 63, "message": "testing logging format"}\n'  # noqa: E501
+    expected_log_entry = '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n'  # noqa: E501
     assert actual_log_entry == expected_log_entry
