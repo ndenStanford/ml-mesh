@@ -72,23 +72,19 @@ def get_default_logger(
 
 def get_default_logger_from_env(
     name: str,
-    handler: Optional[logging.Handler] = None,
 ) -> logging.Logger:
-    """Utility for outputs of `get_default_logger` using environment variables.
+    """Environment variable based wrapper around `get_default_logger` function.
 
     For details on the associated environment variables, see the OnclusiveLogSettings class.
 
     Args:
         name (str): The name of the logger.
-        handler (Optional[logging.Handler], optional): The logger handler to be used. If not
-            specified, falls back on the returns of `get_default_streamhandler` with `level`, `fmt`
-            and `json` arguments parsed from the associated environment variables. Defaults to None.
 
     Returns:
         logger (logging.Logger): A configured logger instance.
     """
     log_settings = OnclusiveLogSettings()
 
-    logger = get_default_logger(name=name, handler=handler, **log_settings.dict())
+    logger = get_default_logger(name=name, handler=None, **log_settings.dict())
 
     return logger
