@@ -86,14 +86,14 @@ files = [
 
 [[package]]
 name = "langdetect"
-version = "1.0.9"
+version = "1.0.8"
 description = "Language detection library ported from Google's language-detection."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "langdetect-1.0.9-py2-none-any.whl", hash = "sha256:7cbc0746252f19e76f77c0b1690aadf01963be835ef0cd4b56dddf2a8f1dfc2a"},
-    {file = "langdetect-1.0.9.tar.gz", hash = "sha256:cbc1fef89f8d062739774bd51eda3da3274006b3661d199c2655f6b3f6d605a0"},
+    {file = "langdetect-1.0.8-py2-none-any.whl", hash = "sha256:f37495e63607865e47deed08d78f7f8e58172658216ff954b2f14671bcd87740"},
+    {file = "langdetect-1.0.8.tar.gz", hash = "sha256:363795ea005f1243c958e953245dac5d814fabdc025c9afa91588c5fa6b2fa83"},
 ]
 
 [package.dependencies]
@@ -387,4 +387,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "c35e5a298dc3f906232758265ab28b20ed861258887a0c24ce48d56bfb08e932"
+content-hash = "810e4639941ec1781c8ac4652a54e544ae532f92f232d6ff238567d21874e0be"
