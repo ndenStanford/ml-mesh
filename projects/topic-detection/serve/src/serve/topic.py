@@ -1,4 +1,5 @@
 """Topic handler."""
+# isort: skip_file
 
 # Standard Library
 import datetime
