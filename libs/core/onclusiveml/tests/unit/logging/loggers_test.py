@@ -63,5 +63,5 @@ def test_get_default_logger_message_format_with_default_handler(monkeypatch):
     logger.info(msg)
 
     actual_log_entry = buffer.getvalue()
-    expected_log_entry = '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "loggers_test.py", "funcName": "test_get_default_logger_message_format_with_default_handler", "lineno": 65, "message": "testing logging format"}\n'  # noqa: E501
+    expected_log_entry = '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "loggers_test.py", "funcName": "test_get_default_logger_message_format_with_default_handler", "lineno": 63, "message": "testing logging format"}\n'  # noqa: E501
     assert actual_log_entry == expected_log_entry
