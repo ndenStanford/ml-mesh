@@ -87,8 +87,8 @@ def get_default_logger_from_env(
     Returns:
         logger (logging.Logger): A configured logger instance.
     """
-    logging_settings = OnclusiveLogSettings()
+    log_settings = OnclusiveLogSettings()
 
-    logger = get_default_logger(name=name, handler=handler, **logging_settings)
+    logger = get_default_logger(name=name, handler=handler, **log_settings.dict())
 
     return logger
