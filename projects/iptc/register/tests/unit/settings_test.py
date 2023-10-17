@@ -15,7 +15,7 @@ def test_feature_registration_params():
     assert feature_registration_params.entity_name == "iptc"
     assert feature_registration_params.entity_join_key == "iptc_id"
     assert feature_registration_params.feature_view_name == "iptc_feature_view"
-    assert feature_registration_params.redshift_database == "sources"
+    assert feature_registration_params.redshift_database == "sources_dev"
     assert feature_registration_params.redshift_schema == "feast"
     assert feature_registration_params.redshift_table == "iptc"
     assert feature_registration_params.redshift_timestamp_field == "event_timestamp"
