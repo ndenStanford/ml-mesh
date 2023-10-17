@@ -7,10 +7,6 @@ services:
   # =============================================
 
   train:
-    volumes:
-      - type: bind
-        source: train/src
-        target: /projects/ner/train/src
     build:
       context: ../../
       dockerfile: projects/ner/train/Dockerfile
@@ -161,10 +157,6 @@ services:
   serve:
     devices:
       - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: serve/
-        target: /projects/ner/serve/
     build:
       context: ../../
       dockerfile: projects/ner/serve/Dockerfile
