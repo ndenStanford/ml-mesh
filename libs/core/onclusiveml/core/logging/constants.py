@@ -16,7 +16,7 @@ CRITICAL = logging.CRITICAL
 VALID_LOG_LEVELS = (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
 
-class OnclusiveLogMessageFormats(OnclusiveEnum):
+class OnclusiveLogMessageFormat(OnclusiveEnum):
     """Standardized log message formats."""
 
     MESSAGE_ONLY = "%(message)s"

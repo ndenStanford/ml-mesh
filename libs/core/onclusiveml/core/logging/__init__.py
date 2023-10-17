@@ -7,7 +7,7 @@ from onclusiveml.core.logging.constants import (  # noqa: F401
     ERROR,
     INFO,
     WARNING,
-    OnclusiveLogMessageFormats,
+    OnclusiveLogMessageFormat,
 )
 from onclusiveml.core.logging.formatters import (
     OnclusiveJSONFormatter,
@@ -18,6 +18,7 @@ from onclusiveml.core.logging.loggers import (
     get_default_logger,
     get_default_logger_from_env,
 )
+from onclusiveml.core.logging.params import OnclusiveLogSettings
 
 
 __all__ = [
@@ -30,7 +31,8 @@ __all__ = [
     "WARNING",
     "ERROR",
     "CRITICAL",
-    "OnclusiveLogMessageFormats",
+    "OnclusiveLogSettings",
+    "OnclusiveLogMessageFormat",
     "OnclusiveJSONLogRecord",
     "OnclusiveJSONFormatter",
 ]

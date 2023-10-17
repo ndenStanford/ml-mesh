@@ -5,7 +5,7 @@ import logging
 from typing import Optional
 
 # Internal libraries
-from onclusiveml.core.logging.constants import DEBUG, OnclusiveLogMessageFormats
+from onclusiveml.core.logging.constants import DEBUG, OnclusiveLogMessageFormat
 from onclusiveml.core.logging.handlers import get_default_handler
 from onclusiveml.core.logging.params import OnclusiveLogSettings
 
@@ -13,15 +13,15 @@ from onclusiveml.core.logging.params import OnclusiveLogSettings
 def get_default_logger(
     name: str,
     level: int = DEBUG,
-    fmt_level: str = OnclusiveLogMessageFormats.SIMPLE.name,
+    fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name,
+    json_format: bool = True,
     handler: Optional[logging.Handler] = None,
-    json: bool = True,
 ) -> logging.Logger:
     """Utility for an opionated logger that encourages Onclusive ML app logging conventions.
 
     Those conventions are
     - a formatter using
-        - one of the templates defined in OnclusiveLogMessageFormats
+        - one of the templates defined in OnclusiveLogMessageFormat
         - Optional: JSON formatting of logs records as defined in the classes OnclusiveJSONLogRecord
             and OnclusiveJSONFormatter
     - a streamhandler writing to sys.stdout.
@@ -36,26 +36,24 @@ def get_default_logger(
         name (str): The name of the logger.
         level (Optional[int], optional): The log level to be used for the logger. Defaults to
             `DEBUG`.
-        fmt_level (Optional[str], optional): The log message format type to be used. Only used if
-            the `handler` arg is not specified. The type gets mapped onto a valid format using the
-            OnclusiveLogMessageFormats class. Defaults to `OnclusiveLogMessageFormats.SIMPLE.name`.
+        fmt_level (Optional[str], optional): The log message format level to be used. Only used if
+            the `handler` arg is not specified.
+        json_format (bool): Whether to use the OnclusiveJSONFormatter or standard Formatter. Defalts
+            to True.
         handler (Optional[logging.Handler], optional): The logger handler to be used. If not
             specified, falls back on the returns of `get_default_streamhandler` with provided
-            `level`, `fmt` and `json` arguments. Defaults to None.
-        json (bool): Whether to use the OnclusiveJSONFormatter or standard Formatter. Defalts to
-            True.
+            `level`, `fmt` and `json_format` arguments. Defaults to None.
 
     Returns:
         logger (logging.Logger): A configured logger instance.
     """
     # validate inputs
-    OnclusiveLogSettings(name=name, level=level, fmt_level=fmt_level, json=json)
+    log_settings = OnclusiveLogSettings(
+        level=level, fmt_level=fmt_level, json_format=json_format
+    )
 
     logger = logging.getLogger(name)
     logger.setLevel(level)
-
-    # resolve format
-    fmt = OnclusiveLogMessageFormats[fmt_level].value
 
     # clear any and all handlers to avoid duplication when calling this method repeatedly
     existing_handlers = logger.handlers
@@ -65,7 +63,7 @@ def get_default_logger(
 
     # if no handler is specified, create a configured one using handler util
     if handler is None:
-        handler = get_default_handler(level=level, fmt=fmt, json=json)
+        handler = get_default_handler(**log_settings.dict())
 
     logger.addHandler(handler)
 

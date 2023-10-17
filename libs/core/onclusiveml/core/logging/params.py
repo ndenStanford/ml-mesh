@@ -8,7 +8,7 @@ from onclusiveml.core.base.params import Params
 from onclusiveml.core.logging.constants import (
     DEBUG,
     VALID_LOG_LEVELS,
-    OnclusiveLogMessageFormats,
+    OnclusiveLogMessageFormat,
 )
 
 
@@ -16,11 +16,11 @@ class OnclusiveLogSettings(Params):
     """Environment variable entrypoint for `get_default_logger` method inputs."""
 
     level: int = DEBUG
-    fmt_level: str = OnclusiveLogMessageFormats.SIMPLE.name
-    json: bool = True
+    fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name
+    json_format: bool = True
 
     @validator("level")
-    def check_level_value(value: int) -> int:
+    def validate_level(value: int) -> int:
         """Validates the log level value against log levels defined in the `constants` module."""
         if value not in VALID_LOG_LEVELS:
             raise ValueError(
@@ -31,9 +31,9 @@ class OnclusiveLogSettings(Params):
         return value
 
     @validator("fmt_level")
-    def check_log_formatting(value: str) -> str:
-        """Validates the log message formatting level against OnclusiveLogMessageFormats fields."""
-        valid_log_message_formats = OnclusiveLogMessageFormats.list(names=True)
+    def check_fmt_level(value: str) -> str:
+        """Validates the log message formatting level against OnclusiveLogMessageFormat fields."""
+        valid_log_message_formats = OnclusiveLogMessageFormat.list(names=True)
 
         if value not in valid_log_message_formats:
             raise ValueError(

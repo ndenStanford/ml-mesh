@@ -8,36 +8,56 @@ from io import StringIO
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
+from onclusiveml.core.logging.constants import VALID_LOG_LEVELS
 
 
-def test_default_logger_init():
-    """Test default logger init."""
-    logger = get_default_logger(
-        "pytest", fmt=LogFormat.SIMPLE.value, level=logging.INFO
-    )
+@pytest.mark.parametrize("level", VALID_LOG_LEVELS)
+@pytest.mark.parametrize("fmt_level", OnclusiveLogMessageFormat.list(names=True))
+@pytest.mark.parametrize("json_format", [True, False])
+def test_get_default_logger(level, fmt_level, json_format):
+    """Tests the get_default_logger method with all valid input configurations."""
+    logger = get_default_logger("pytest", level, fmt_level, json_format)
+
+    assert len(logger.handlers) == 1
     assert not logger.disabled
+    assert logger.isEnabledFor(level)
 
 
-def test_default_logger():
+def test_get_default_logger_message_format_with_custom_handler():
     """Test default logger setup."""
     buffer = StringIO()
     logger = get_default_logger(
         "pytest",
-        logging.StreamHandler(buffer),
-        LogFormat.MESSAGE_ONLY.value,
         level=logging.INFO,
+        fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+        handler=logging.StreamHandler(buffer),
     )
     msg = "testing logging format"
     logger.info(msg)
-    log = buffer.getvalue()
-    assert log == f"{msg}\n"
+
+    actual_log_entry = buffer.getvalue()
+    expected_log_entry = f"{msg}\n"
+    assert actual_log_entry == expected_log_entry
 
 
-@pytest.mark.parametrize(
-    "level", [logging.DEBUG, logging.INFO, logging.WARNING, logging.CRITICAL]
-)
-def test_logging_level(level):
-    """Test logging level."""
-    logger = get_default_logger("pytest", fmt=LogFormat.SIMPLE.value, level=level)
-    assert logger.isEnabledFor(level)
+def test_get_default_logger_message_format_with_default_handler():
+    """Test default logger setup."""
+    buffer = StringIO()
+
+    logger = get_default_logger(
+        "pytest",
+        level=logging.INFO,
+        fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+        handler=logging.StreamHandler(buffer),
+    )
+
+    msg = "testing logging format"
+    logger.info(msg)
+
+    actual_log_entry = buffer.getvalue()
+    expected_log_entry = f"{msg}\n"
+    assert actual_log_entry == expected_log_entry
