@@ -19,10 +19,12 @@ def main(settings: BaseSettings) -> None:
     """Download compiled model."""
     logger = get_default_logger(__name__)
 
-    logger.debug("Syncing knowledge bases ....")
+    logger.debug(f"Syncing knowledge bases from bucket: {settings.source_bucket} ...")
     # download knowledge base
     for kb in settings.knowledge_bases:
-        logger.debug(f"Syncing knowledge base: {kb}....")
+        logger.debug(
+            f"Syncing knowledge base: {kb} from bucket: {settings.source_bucket} ..."
+        )
         sync_folder(
             client=boto3.client("s3"),
             bucket=settings.source_bucket,
