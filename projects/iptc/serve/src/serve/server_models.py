@@ -1,7 +1,7 @@
 """Prediction data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -12,12 +12,9 @@ class PredictConfiguration(BaseModel):
     """Configuration for prediction request.
 
     Attributes:
-        entities (Optional[List[Dict[str, Union[str, List]]]]):
-                List of detected entities from the NER model
         language (Optional[str]): Language used for prediction. Defaults to "en"
     """
 
-    entities: Optional[List[Dict[str, Union[str, List]]]]
     language: Optional[str] = "en"
 
 
@@ -35,65 +32,40 @@ class PredictRequestModel(BaseModel):
     """Request model for making a prediction.
 
     Attributes:
-        configuration (PredictConfiguration): The prediction configuration
         inputs (PredictInputContentModel): The input content for prediction
     """
 
-    configuration: PredictConfiguration = PredictConfiguration()
+    configuration: Optional[PredictConfiguration] = PredictConfiguration()
     inputs: PredictInputContentModel
 
 
-class InputEntity(BaseModel):
-    """Input entity information from NER result.
+class PredictionExtractedIPTC(BaseModel):
+    """Extracted iptc information from a prediction.
 
     Attributes:
-        entity_type (Optional[str]): The type of the extracted entity.
-        text (str): The text of the extracted entity
-        score (Optional[float]): Confidence score of extracted entity
-        sentence_index (Optional[int]): Index of the sentence containing the entity
-        start (Optiona[int]): Start position of entity in the sentence
-        end (Optiona[int]): End position of entity in the sentence
-    """
-
-    entity_type: Optional[str]
-    text: str
-    score: Optional[float]
-    sentence_index: Optional[int]
-    start: Optional[int]
-    end: Optional[int]
-
-
-class OutputEntity(InputEntity):
-    """Input entity information from NER result.
-
-    Attributes:
-        sentiment: str
-    """
-
-    sentiment: str
-
-
-class PredictionOutputContent(BaseModel):
-    """Output content containing extracted entities from a prediction.
-
-    Attributes:
-        label (str): Overall sentiment of the article
-        negative_prob (float): Probablity of negative sentiment
-        positive_prob (float): Probablity of positive sentiment
-        entities (Optional[List[OutputEntity]]): entities with detected sentiment
+        label (str): The iptc label of the article.
+        score (float): softmax score of iptc
     """
 
     label: str
-    negative_prob: float
-    positive_prob: float
-    entities: Optional[List[OutputEntity]]
+    score: float
+
+
+class PredictionOutputContent(BaseModel):
+    """Output content containing extracted iptc from a prediction.
+
+    Attributes:
+        predicted_content (List[PredictionExtractedIPTC]): List of extracted iptc
+    """
+
+    predicted_content: List[PredictionExtractedIPTC]
 
 
 class PredictResponseModel(BaseModel):
     """Response model for a prediction request.
 
     Attributes:
-        output (PredictionOutputContent): The output content containing extracted entities
+        output (PredictionOutputContent): The output content containing extracted iptc
     """
 
     outputs: PredictionOutputContent
@@ -108,5 +80,5 @@ class BioResponseModel(BaseModel):
         model_card (Dict): Information about the model
     """
 
-    model_name: str = "sentiment-model"
+    model_name: str = "iptc-model"
     model_card: Dict

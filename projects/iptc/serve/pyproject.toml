@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "sentiment-serve"
+name = "iptc-serve"
 version = "0.1.0"
-description = "Implementation of Sentiment API."
+description = "Implementation of iptc API."
 authors = ["Nutchapol Dendumrongsup <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 

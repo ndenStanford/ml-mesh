@@ -7,7 +7,7 @@ from typing import Type
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.models.iptc import CompiledIPTC
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -20,8 +20,8 @@ from src.serve.server_models import (
 )
 
 
-class ServedSentModel(ServedModel):
-    """Served Sent model.
+class ServedIPTCModel(ServedModel):
+    """Served IPTC model.
 
     Attributes:
         predict_request_model (Type[BaseModel]):  Request model for prediction
@@ -34,7 +34,7 @@ class ServedSentModel(ServedModel):
     bio_response_model: Type[BaseModel] = BioResponseModel
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
-        """Initalize the served Sent model with its artifacts.
+        """Initalize the served IPTC model with its artifacts.
 
         Args:
             served_model_artifacts (ServedModelArtifacts): Served model artifact
@@ -45,8 +45,8 @@ class ServedSentModel(ServedModel):
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
-        # load model artifacts into ready CompiledSent instance
-        self.model = CompiledSent.from_pretrained(
+        # load model artifacts into ready CompiledIPTC instance
+        self.model = CompiledIPTC.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
@@ -55,7 +55,7 @@ class ServedSentModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
-        """Make predictions using the loaded Sent model.
+        """Make predictions using the loaded IPTC model.
 
         Args:
             payload (PredictRequestModel): The input data for making predictions
@@ -67,21 +67,19 @@ class ServedSentModel(ServedModel):
         configuration = payload.configuration
         inputs = payload.inputs
         # score the model
-        sentiment = self.model.extract_sentiment(
-            sentences=inputs.content, **configuration.dict()
+        iptc = self.model.extract_iptc(
+            input_data=inputs.content, **configuration.dict()
         )
 
-        sentiment_model = PredictionOutputContent(
-            label=sentiment.get("label"),
-            negative_prob=sentiment.get("negative_prob"),
-            positive_prob=sentiment.get("positive_prob"),
-            entities=sentiment.get("entities"),
+        iptc_model = PredictionOutputContent(
+            label=iptc.get("label"),
+            score=iptc.get("score"),
         )
 
-        return PredictResponseModel(outputs=sentiment_model)
+        return PredictResponseModel(outputs=iptc_model)
 
     def bio(self) -> BioResponseModel:
-        """Get bio information about the served Sent model.
+        """Get bio information about the served IPTC model.
 
         Returns:
             BioResponseModel: Bio information about the model

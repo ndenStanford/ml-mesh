@@ -80,7 +80,7 @@ def test_served_model_artifacts(
     )
 
 
-def test_ner_served_model_params():
+def test_iptc_served_model_params():
     """Tests the initialization of the ServedModelParams class."""
     ServedModelParams()
 
@@ -108,10 +108,10 @@ def test_served_model_params_set_fields_via_env_vars(
     prefixed_field_env_var_ref = f"onclusiveml_serving_{test_field_name}"
     os.environ[prefixed_field_env_var_ref] = test_field_value_expected
 
-    test_ner_served_model_params = ServedModelParams()
+    test_iptc_served_model_params = ServedModelParams()
 
     test_attribute_values_actual = getattr(
-        test_ner_served_model_params, test_field_name
+        test_iptc_served_model_params, test_field_name
     )
     assert test_attribute_values_actual == test_field_value_expected
 
