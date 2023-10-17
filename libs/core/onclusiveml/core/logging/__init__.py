@@ -14,12 +14,16 @@ from onclusiveml.core.logging.formatters import (
     OnclusiveJSONLogRecord,
 )
 from onclusiveml.core.logging.handlers import get_default_handler
-from onclusiveml.core.logging.loggers import get_default_logger
+from onclusiveml.core.logging.loggers import (
+    get_default_logger,
+    get_default_logger_from_env,
+)
 
 
 __all__ = [
     "get_default_handler",
     "get_default_logger",
+    "get_default_logger_from_env",
     "LogFormat",
     "DEBUG",
     "INFO",
