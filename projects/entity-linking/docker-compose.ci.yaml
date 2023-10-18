@@ -67,8 +67,7 @@ services:
       ONCLUSIVEML_SERVING_SOURCE_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
     depends_on:
-      - entity-fishing-backend
-      - ner-serve
+      - ner-serve-download-model
     hostname: onclusiveml
     networks:
       - onclusive-net
