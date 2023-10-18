@@ -53,11 +53,7 @@ class OnclusiveJSONFormatter(logging.Formatter):
         return json_record
 
     def formatMessage(self, record: logging.LogRecord) -> str:
-        """Converts a LogRecord instance to JSON using the OnclusiveJSONLogRecord data model.
-
-        Note that the only time the _fmt attribute is used is to implicitly generate the asctime
-        attribute depedning on whether the format supports the time stamp. The message attribute of
-        the resulting json string contains the unformatted, original log message.
+        """Extends the `formatMessage` method with JSON conversion using OnclusiveJSONLogRecord.
 
         Args:
             record (logging.LogRecord): The log record that is converted to JSON.
@@ -65,6 +61,8 @@ class OnclusiveJSONFormatter(logging.Formatter):
         Returns:
             json_record (str): The JSON string version of the log record.
         """
+        record.message = super().formatMessage(record)
+
         json_record = self._jsonify_record(record)
 
         return json_record

@@ -47,11 +47,40 @@ def test_get_default_logger_message_format_with_custom_handler():
     assert actual_log_entry == expected_log_entry
 
 
-def test_get_default_logger_message_format_with_default_handler(monkeypatch):
+@pytest.mark.parametrize(
+    "fmt_level, expected_log_entry",
+    [
+        (
+            OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+            '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n',  # noqa: E501
+        ),
+        (
+            OnclusiveLogMessageFormat.BASIC.name,
+            '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing logging format"}\n',  # noqa: E501
+        ),
+        (
+            OnclusiveLogMessageFormat.SIMPLE.name,
+            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing logging format"}\n',  # noqa: E501
+        ),
+        (
+            OnclusiveLogMessageFormat.DETAILED.name,
+            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
+        ),
+    ],
+)
+def test_get_default_logger_message_format_with_default_json_handler(
+    monkeypatch, fmt_level, expected_log_entry
+):
     """Tests the basic functionality of the get_default_logger method using the default handler."""
     # patch sys.stdout with local buffer
     buffer = StringIO()
     monkeypatch.setattr(sys, "stdout", buffer)
+
+    # patch Formatter.formatTime with dummy time stamp
+    def dummy_format_time(self, record, datefmt=None):
+        return "dummy time stamp"
+
+    monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
 
     # patch Logger.findCaller with dummy file name and line number
     def dummy_find_caller(self, stack_info=False, stacklevel=1):
@@ -63,7 +92,7 @@ def test_get_default_logger_message_format_with_default_handler(monkeypatch):
     logger = get_default_logger(
         "test logger",
         level=logging.INFO,
-        fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+        fmt_level=fmt_level,
         json_format=True,
     )
 
@@ -71,7 +100,6 @@ def test_get_default_logger_message_format_with_default_handler(monkeypatch):
     logger.info(msg)
 
     actual_log_entry = buffer.getvalue()
-    expected_log_entry = '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n'  # noqa: E501
     assert actual_log_entry == expected_log_entry
 
 
@@ -100,5 +128,5 @@ def test_get_default_logger_from_env_message_format(monkeypatch):
     logger.debug(msg)
 
     actual_log_entry = buffer.getvalue()
-    expected_log_entry = '{"asctime": "dummy time stamp", "levelname": "DEBUG", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n'  # noqa: E501
+    expected_log_entry = '{"asctime": "dummy time stamp", "levelname": "DEBUG", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - DEBUG - testing logging format"}\n'  # noqa: E501
     assert actual_log_entry == expected_log_entry

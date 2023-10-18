@@ -1,7 +1,10 @@
 """Formatters test suite."""
 
 # Standard Library
-from logging import LogRecord
+import logging
+
+# 3rd party libraries
+import pytest
 
 # Internal libraries
 from onclusiveml.core.logging import (
@@ -24,23 +27,49 @@ def test_onclusive_json_log_record():
     )
 
 
-def test_onclusive_json_formatter_format_message():
+@pytest.mark.parametrize(
+    "fmt, expected_formatted_message",
+    [
+        (
+            OnclusiveLogMessageFormat.MESSAGE_ONLY.value,
+            '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing message formatting"}',  # noqa: E501
+        ),
+        (
+            OnclusiveLogMessageFormat.BASIC.value,
+            '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing message formatting"}',  # noqa: E501
+        ),
+        (
+            OnclusiveLogMessageFormat.SIMPLE.value,
+            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
+        ),
+        (
+            OnclusiveLogMessageFormat.DETAILED.value,
+            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
+        ),
+    ],
+)
+def test_onclusive_json_formatter_format_message(
+    monkeypatch, fmt, expected_formatted_message
+):
     """Tests the OnclusiveJSONFormatter `formatMessage` method."""
-    formatter = OnclusiveJSONFormatter(fmt=OnclusiveLogMessageFormat.MESSAGE_ONLY.value)
+    # patch Formatter.formatTime with dummy time stamp
+    def dummy_format_time(self, record, datefmt=None):
+        return "dummy time stamp"
 
-    test_record = LogRecord(
+    monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
+
+    formatter = OnclusiveJSONFormatter(fmt=fmt)
+
+    test_record = logging.LogRecord(
         name="test logger",
-        level=10,
-        pathname="",
-        msg="test message",
-        func="test_onclusive_json_log_record",
+        level=20,
+        pathname="testfile.py",
+        msg="testing message formatting",
+        func="test_function",
         lineno=1,
         args=None,
         exc_info=None,
     )
-    formatted_message_actual = formatter.format(test_record)
+    actual_formatted_message = formatter.format(test_record)
 
-    assert (
-        formatted_message_actual
-        == '{"asctime": null, "levelname": "DEBUG", "name": "test logger", "filename": "", "funcName": "test_onclusive_json_log_record", "lineno": 1, "message": "test message"}'  # noqa: E501
-    )  # noqa: E501
+    assert actual_formatted_message == expected_formatted_message
