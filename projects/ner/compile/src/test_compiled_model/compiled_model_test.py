@@ -72,9 +72,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compilation_test_settings: Compilation settings
     """
     compiled_predictions = compiled_ner.extract_entities(
-        test_files["inputs"][lang_index][test_sample_index],
-        language=language,
-        return_pos=True,
+        test_files["inputs"][lang_index][test_sample_index], language=language
     )
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler

@@ -126,7 +126,7 @@ class EntityLinkingServedModel(ServedModel):
                     "attributes": {
                         "content": content,
                     },
-                    "parameters": {"return_pos": True, "language": lang},
+                    "parameters": {"language": lang},
                 }
             },
         ).json()

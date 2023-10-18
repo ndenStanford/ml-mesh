@@ -518,7 +518,7 @@ def test_model__get_entity_linking(
                 "attributes": {
                     "content": content,
                 },
-                "parameters": {"return_pos": True, "language": "en"},
+                "parameters": {"language": "en"},
             }
         },
     )
