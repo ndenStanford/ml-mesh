@@ -71,7 +71,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         lang_index (int): Index of sample texts where each list is specific language
         compilation_test_settings: Compilation settings
     """
-    compiled_predictions = compiled_ner.extract_entities(
+    compiled_predictions = compiled_ner(
         test_files["inputs"][lang_index][test_sample_index], language=language
     )
     # Converting from pydantic classes to dictionaries to allow conversion to
