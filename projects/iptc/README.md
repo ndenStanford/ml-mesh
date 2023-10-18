@@ -6,7 +6,7 @@ For details on how to run and maintain the `iptc` project components, please ref
 - [the project README](../README.md) and
 - [the project docs.](../docs/)
 
-To download model and tokenizer file,run:
+To download model file,run:
 
 ```bash
 make projects.start/${PROJECT_NAME} COMPONENT=train-download-model
