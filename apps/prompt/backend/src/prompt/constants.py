@@ -28,7 +28,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_EN = [
         "You are an expert in news writing."
         + "\n"
-        + "I have an article delimited by < and >, and I want you to write a title for this article."
+        + "I have an article delimited by < and >, \
+            and I want you to write a title for this article."
         + "\n"
         + "Your title must satisfy all of the following aspects:"
         + "\n"
@@ -47,7 +48,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_FR = [
         "Vous êtes un expert dans la rédaction d'articles d'actualité."
         + "\n"
-        + "J'ai un article délimité par < et > et je souhaite que vous écriviez un titre pour cet article."
+        + "J'ai un article délimité par < et > \
+            et je souhaite que vous écriviez un titre pour cet article."
         + "\n"
         + "Votre titre doit satisfaire à tous les aspects suivants:"
         + "\n"
@@ -66,7 +68,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_CA = [
         "Ets un expert en redacció de notícies."
         + "\n"
-        + "Tinc un article delimitat per < i >, i vull que escriguis un títol per a aquest article."
+        + "Tinc un article delimitat per < i >, \
+            i vull que escriguis un títol per a aquest article."
         + "\n"
         + "El teu títol ha de satisfer tots els següents aspectes:"
         + "\n"
@@ -85,7 +88,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_ES = [
         "Eres un experto en escribir noticias."
         + "\n"
-        + "Tengo un artículo delimitado por < y >, y quiero que escribas un título para este artículo."
+        + "Tengo un artículo delimitado por < y >, \
+            y quiero que escribas un título para este artículo."
         + "\n"
         + "Tu título debe cumplir con todos los siguientes aspectos:" 
         + "\n"
@@ -104,7 +108,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_IT = [
         "Sei un esperto nella scrittura di notizie."
         + "\n"
-        + "Ho un articolo delimitato da < e >, e voglio che tu scriva un titolo per questo articolo."
+        + "Ho un articolo delimitato da < e >, \
+            e voglio che tu scriva un titolo per questo articolo."
         + "\n"
         + "Il tuo titolo dovrebbe soddisfare tutti i seguenti aspetti:"
         + "\n"
@@ -123,7 +128,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_DE = [
         "Sie sind ein Experte im Nachrichtenschreiben."
         + "\n"
-        + "Ich habe einen Artikel, der durch < und > begrenzt ist, und ich möchte, dass Sie einen Titel für diesen Artikel schreiben."
+        + "Ich habe einen Artikel, der durch < und > \
+            begrenzt ist, und ich möchte, dass Sie einen Titel für diesen Artikel schreiben."
         + "\n"
         + "Ihr Titel muss alle folgenden Aspekte erfüllen:"
         + "\n"
@@ -142,7 +148,8 @@ class PromptEnum(OnclusiveEnum):
     HEADLINE_JP = [
         "あなたはニュース作成の専門家です。"
         + "\n"
-        + "私は<と>で区切られた記事を持っています、そしてあなたにこの記事のためのタイトルを書いてほしいです。"
+        + "私は<と>で区切られた記事を持っています、\
+            そしてあなたにこの記事のためのタイトルを書いてほしいです。"
         + "\n"
         + "あなたのタイトルは以下のすべての側面を満たさなければなりません："
         + "\n"
