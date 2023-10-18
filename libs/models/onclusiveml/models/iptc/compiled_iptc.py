@@ -2,11 +2,16 @@
 
 # Standard Library
 import os
+import re
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Dict, List, Union
+
+# ML libs
+import torch
 
 # 3rd party libraries
 import regex
+from bs4 import BeautifulSoup
 from nptyping import NDArray
 
 # Internal libraries
@@ -74,6 +79,28 @@ class CompiledIPTC:
             compiled_iptc_pipeline=compiled_iptc_pipeline,
         )
 
+    def remove_html(self, text: str) -> str:
+        """Remove HTML tags from input text.
+
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with HTML tags removed
+        """
+        text = BeautifulSoup(text, "html.parser").text
+        return text
+
+    def remove_whitespace(self, text: str) -> str:
+        """Remove extra white spaces from input text.
+
+        Args:
+            text (str): Input text
+        Returns:
+            str: Text with extra whitespaces removed
+        """
+        text = re.sub(r"\s+", " ", text)
+        return text
+
     def preprocess(self, input_data: str) -> str:
         """Preprocess the input.
 
@@ -82,6 +109,8 @@ class CompiledIPTC:
         Return:
             inputdata(str): input data
         """
+        input_data = self.remove_html(input_data)
+        input_data = self.remove_whitespace(input_data)
         return input_data
 
     def inference(self, content: str) -> NDArray:
@@ -98,26 +127,35 @@ class CompiledIPTC:
         )
 
         res = self.compiled_iptc_pipeline.model(**self.inputs)
-        iptc_probs_arr: NDArray = res["logits"].clone().detach().numpy().astype(float)
+        iptc_probs_arr: NDArray = (
+            torch.nn.functional.softmax(res["logits"]).cpu().detach().numpy()[0]
+        )
 
-        assert iptc_probs_arr.shape[0] == 1
         return iptc_probs_arr
 
-    def postprocess(self, probs: NDArray) -> Dict[Any, float]:
-        """Postprecess the probs.
+    def postprocess(self, probs: NDArray) -> List[Dict[str, Union[str, float]]]:
+        """Postprocess the probs.
 
         Args:
             probs (NDArray): List of iptc probability
         Return:
-            result(dict): predict label for iptc
+            result(list): List of dicts with predict label, score, and mediatopic_id for iptc
         """
-        prediction_dict = {
-            self.id2label[index]: round(float(prob), 4)
+        # Create a dictionary with labels, scores, and mediatopic_ids
+        predictions = [
+            {
+                "label": self.id2label[index],
+                "score": round(float(prob), 4),
+                # 'mediatopic_id': self.id2mediatopic[index]
+            }
             for index, prob in enumerate(probs)
-        }
-        return prediction_dict
+        ]
+        # Sort the predictions by score in descending order
+        sorted_predictions = sorted(predictions, key=lambda x: x["score"], reverse=True)
 
-    def extract_iptc(self, input_data: str) -> Dict[Any, float]:
+        return sorted_predictions
+
+    def extract_iptc(self, input_data: str) -> List[Dict[str, Union[str, float]]]:
         """Iptc detection of input content.
 
         Args:

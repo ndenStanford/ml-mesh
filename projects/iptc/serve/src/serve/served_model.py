@@ -67,14 +67,11 @@ class ServedIPTCModel(ServedModel):
         configuration = payload.configuration
         inputs = payload.inputs
         # score the model
-        iptc = self.model.extract_iptc(
+        iptc_list = self.model.extract_iptc(
             input_data=inputs.content, **configuration.dict()
         )
 
-        iptc_model = PredictionOutputContent(
-            label=iptc.get("label"),
-            score=iptc.get("score"),
-        )
+        iptc_model = PredictionOutputContent(predicted_content=iptc_list)
 
         return PredictResponseModel(outputs=iptc_model)
 

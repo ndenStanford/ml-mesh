@@ -61,8 +61,12 @@ def test_served_iptc_model_predict(
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
-            label=test_predictions[test_record_index].get("label"),
-            score=test_predictions[test_record_index].get("score"),
+            predicted_content=[
+                {
+                    "label": test_predictions[test_record_index].get("label"),
+                    "score": test_predictions[test_record_index].get("score"),
+                }
+            ]
         )
     )
 
@@ -91,6 +95,7 @@ def test_served_iptc_model_with_iptc_predict(
     test_served_model_artifacts,
     test_sample_content,
     test_sample_response,
+    test_predictions,
 ):
     """Tests the fully initialized and loaded ServedIPTCModel's predict method."""
     served_iptc_model = ServedIPTCModel(
@@ -108,8 +113,12 @@ def test_served_iptc_model_with_iptc_predict(
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
-            label=test_sample_response.get("label"),
-            score=test_sample_response.get("score"),
+            predicted_content=[
+                {
+                    "label": test_predictions[test_record_index].get("label"),
+                    "score": test_predictions[test_record_index].get("score"),
+                }
+            ]
         )
     )
 
