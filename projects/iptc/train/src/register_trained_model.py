@@ -36,7 +36,8 @@ def main() -> None:
     # --- initialize models
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer")
-    model = torch.load("/projects/iptc/train/models/model.pt")
+    # model = torch.load("/projects/iptc/train/models/model.pt")
+    model = torch.load(model_card.local_model_dir)
     tokenizer = XLMRobertaTokenizerFast.from_pretrained(
         model_card.model_params.huggingface_model_reference
     )

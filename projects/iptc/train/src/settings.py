@@ -86,6 +86,7 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     model_params: IPTCModelParams = IPTCModelParams()
     model_inputs: Inputs = Inputs()
     # admin
+    local_model_dir: str = os.path.join(".", "models/model.pt")
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
 
