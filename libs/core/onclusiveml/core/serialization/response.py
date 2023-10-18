@@ -34,6 +34,11 @@ class ResponseSchema(GenericModel, Generic[DataT]):
     data: DataT
 
     @property
+    def namespace(self) -> NamespaceT:
+        """Request namespace."""
+        return self.data.namespace
+
+    @property
     def attributes(self) -> AttributesT:
         """Response attributes."""
         return self.data.attributes

@@ -35,6 +35,16 @@ class RequestSchema(GenericModel, Generic[DataT]):
     data: DataT
 
     @property
+    def namespace(self) -> NamespaceT:
+        """Request namespace."""
+        return self.data.namespace
+
+    @property
+    def identifier(self) -> Optional[str]:
+        """Request identifier."""
+        return self.data.identifier
+
+    @property
     def attributes(self) -> AttributesT:
         """Request attributes."""
         return self.data.attributes
