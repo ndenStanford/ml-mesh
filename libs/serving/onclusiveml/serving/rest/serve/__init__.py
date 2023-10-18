@@ -15,6 +15,7 @@ from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
     get_readiness_router,
     get_model_predict_router,
     get_model_bio_router,
+    get_logging_config,
 )
 
 from onclusiveml.serving.rest.serve.params import (  # noqa: F401

@@ -14,7 +14,5 @@ from onclusiveml.serving.rest.observability.instrumentator import (  # noqa: F40
 )
 from onclusiveml.serving.rest.observability.formatters import (  # noqa: F401
     OnclusiveServingJSONAccessLogRecord,
-    OnclusiveServingJSONDefaultLogRecord,
     OnclusiveServingJSONAccessFormatter,
-    OnclusiveServingJSONDefaultFormatter,
 )

@@ -248,7 +248,7 @@ def get_logging_config(level: int, json_format: bool = True) -> Dict:
     else:
         logging_config = DEFAULT_MODEL_SERVER_LOGGING_CONFIG
     # set log level
-    for logger in logging_config["loggers"]:
+    for logger in logging_config["loggers"].values():
         logger["level"] = LOG_LEVEL_MAP[level]
 
     return logging_config

@@ -1,9 +1,10 @@
 """Constants."""
+
 # Standard Library
 from typing import Any, Dict
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveEnum
 from onclusiveml.core.logging.constants import (
     CRITICAL,
     DEBUG,
@@ -11,13 +12,21 @@ from onclusiveml.core.logging.constants import (
     INFO,
     WARNING,
 )
+from onclusiveml.serving.rest.observability import (  # noqa: F401
+    OnclusiveServingJSONAccessFormatter,
+)
 
 
-class OnclusiveModelServerLogMessageFormat(OnclusiveEnum):
+class OnclusiveServingLogMessageFormat(OnclusiveEnum):
     """Standardized log message formats for model servers."""
 
-    ACCESS = '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
-    DEFAULT = "%(levelprefix)s %(message)s"
+    # keep `levelprefix` & `status_code` to retain colouring feature
+    DEFAULT = "%(levelprefix)s %(asctime)s - %(message)s"
+    ACCESS = '%(levelprefix)s %(asctime)s %(client_addr)s - "%(request_line)s" %(status_code)s'
+    # json string is uncoloured, so use default `levelname` and split status information into
+    # `status_code` integer type and `status_phrase` string type
+    DEFAULT_JSON = "[%(levelname)s] %(asctime)s - %(message)s"
+    ACCESS_JSON = '[%(levelname)s] %(asctime)s - %(client_addr)s - "%(request_line)s" %(status_code)d %(status_phrase)s'  # noqa: E501
 
 
 LOG_LEVEL_MAP: Dict[int, str] = {
@@ -54,24 +63,23 @@ DEFAULT_MODEL_SERVER_LOGGING_CONFIG = BASE_MODEL_SERVER_LOGGING_CONFIG.copy()
 DEFAULT_MODEL_SERVER_LOGGING_CONFIG["formatters"] = {
     "default": {
         "()": "uvicorn.logging.DefaultFormatter",
-        "fmt": OnclusiveModelServerLogMessageFormat.DEFAULT,
+        "fmt": OnclusiveServingLogMessageFormat.DEFAULT.value,  # type: ignore[attr-defined]
         "use_colors": None,
     },
     "access": {
         "()": "uvicorn.logging.AccessFormatter",
-        "fmt": OnclusiveModelServerLogMessageFormat.ACCESS,  # noqa: E501
+        "fmt": OnclusiveServingLogMessageFormat.ACCESS.value,  # type: ignore[attr-defined]
     },
 }
 
 JSON_MODEL_SERVER_LOGGING_CONFIG = BASE_MODEL_SERVER_LOGGING_CONFIG.copy()
-JSON_MODEL_SERVER_LOGGING_CONFIG["handlers"] = {
+JSON_MODEL_SERVER_LOGGING_CONFIG["formatters"] = {
     "default": {
-        "()": "onclusiveml.serving.rest.observability.OnclusiveServingJSONDefaultFormatter",
-        "fmt": OnclusiveModelServerLogMessageFormat.DEFAULT,
-        "use_colors": None,
+        "()": "onclusiveml.core.logging.OnclusiveJSONFormatter",
+        "fmt": OnclusiveServingLogMessageFormat.DEFAULT_JSON.value,  # type: ignore[attr-defined]
     },
     "access": {
         "()": "onclusiveml.serving.rest.observability.OnclusiveServingJSONAccessFormatter",
-        "fmt": OnclusiveModelServerLogMessageFormat.ACCESS,
+        "fmt": OnclusiveServingLogMessageFormat.ACCESS_JSON.value,  # type: ignore[attr-defined]
     },
 }
