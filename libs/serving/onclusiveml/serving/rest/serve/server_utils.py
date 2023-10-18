@@ -9,6 +9,11 @@ from fastapi import APIRouter, status
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.serving.rest.serve.constants import (
+    DEFAULT_MODEL_SERVER_LOGGING_CONFIG,
+    JSON_MODEL_SERVER_LOGGING_CONFIG,
+    LOG_LEVEL_MAP,
+)
 from onclusiveml.serving.rest.serve.params import (
     BetterStackSettings,
     FastAPISettings,
@@ -211,3 +216,39 @@ def get_model_bio_router(model: ServedModel, api_version: str = "v1") -> APIRout
     )(model.bio)
 
     return model_bio_router
+
+
+def get_logging_config(level: int, json_format: bool = True) -> Dict:
+    """Returns a logging config for the uvicorn server underpinning running the ModelServer.
+
+    Returns a manipulated version of uvicorn.config.LOGGING_CONFIG to ensure uvicorn server logs
+    adhere to internal formatting conventions.
+
+    If `json_format` is set to True, additionally updates the uvicorn.config.LOGGING_CONFIG
+    dictionary to use internal JSON formatting utilities
+        - OnclusiveServingJSONDefaultFormatter, and
+        - OnclusiveServingJSONAccessFormatter
+    to ensure that uvicorn server log format is a strucutred JSON string
+
+    Args:
+        level (int): The log level that is universally applied to all uvicorn server level loggers:
+            - uvicorn
+            - uvicorn.error
+            - uvicorn.access
+        json_format (bool, optional): Whether te uvicorn server level loggers should use JSON
+            formatting. Defaults to True.
+
+    Returns:
+        Dict: A functional logging config to configure uvicorn server logging behaviour that can be
+            specified as the `log_config` argument to the `uvicorn.run` method.
+    """
+    # resolve json input -> config
+    if json_format:
+        logging_config = JSON_MODEL_SERVER_LOGGING_CONFIG
+    else:
+        logging_config = DEFAULT_MODEL_SERVER_LOGGING_CONFIG
+    # set log level
+    for logger in logging_config["loggers"]:
+        logger["level"] = LOG_LEVEL_MAP[level]
+
+    return logging_config

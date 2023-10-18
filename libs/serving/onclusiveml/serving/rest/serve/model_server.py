@@ -12,6 +12,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
     get_liveness_router,
+    get_logging_config,
     get_model_bio_router,
     get_model_predict_router,
     get_readiness_router,
@@ -101,10 +102,14 @@ class ModelServer(FastAPI):
         Sources its parameters from the `configuration` arugment specified during initialization
         of the RESTApp instance.
         """
+        log_config = get_logging_config(
+            **self.configuration.uvicorn_settings.log_config
+        )
+
         self.uvicorn_configuration = uvicorn.Config(
             app=self,
             host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",
-            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type
+            log_config=log_config,  # str/Dict type
             port=self.configuration.uvicorn_settings.http_port,
         )
 
