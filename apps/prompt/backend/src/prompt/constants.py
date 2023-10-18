@@ -91,7 +91,7 @@ class PromptEnum(OnclusiveEnum):
         + "Tengo un artículo delimitado por < y >, \
             y quiero que escribas un título para este artículo."
         + "\n"
-        + "Tu título debe cumplir con todos los siguientes aspectos:" 
+        + "Tu título debe cumplir con todos los siguientes aspectos:"
         + "\n"
         + "1. El título debe estar en español."
         + "\n"
