@@ -48,10 +48,8 @@ def test_onclusive_json_log_record():
         ),
     ],
 )
-def test_onclusive_json_formatter_format_message(
-    monkeypatch, fmt, expected_formatted_message
-):
-    """Tests the OnclusiveJSONFormatter `formatMessage` method."""
+def test_onclusive_json_formatter_format(monkeypatch, fmt, expected_formatted_message):
+    """Tests the OnclusiveJSONFormatter `format` method."""
     # patch Formatter.formatTime with dummy time stamp
     def dummy_format_time(self, record, datefmt=None):
         return "dummy time stamp"
