@@ -375,6 +375,13 @@ def test_delete_prompt(
     [
         ("english-summarization", PromptEnum.EN.value[0]),
         ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
+        ("english-headline-generation", PromptEnum.HEADLINE_EN.value[0]),
+        ("french-headline-generation", PromptEnum.HEADLINE_FR.value[0]),
+        ("catalan-headline-generation", PromptEnum.HEADLINE_CA.value[0]),
+        ("spanish-headline-generation", PromptEnum.HEADLINE_ES.value[0]),
+        ("italian-headline-generation", PromptEnum.HEADLINE_IT.value[0]),
+        ("german-headline-generation", PromptEnum.HEADLINE_DE.value[0]),
+        ("japanese-headline-generation", PromptEnum.HEADLINE_JP.value[0]),
     ],
 )
 @patch("src.db.Model.delete")
