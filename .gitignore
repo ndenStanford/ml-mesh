@@ -5,9 +5,6 @@ __pycache__/
 test_model
 */**/*.pt
 
-# iptc
-projects/iptc/compile/projects/
-
 # docker validation test outputs
 docker/**/tests/output*
 
