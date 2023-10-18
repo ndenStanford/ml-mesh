@@ -26,7 +26,7 @@ class PredictConfiguration(BaseModel):
     # num_perm: Optional[int] = 128
     content: List[str] = [""]  # industry for first, article for second
     industry: str = ""
-    max_tokens: Optional[int] = 8192
+    max_tokens: Optional[int] = 0
     temperature: Optional[float] = 1
     top_p: Optional[float] = 1
     presence_penalty: Optional[float] = 0
