@@ -1,3 +1,4 @@
+"""Init."""
 # required to avoid non-unique test module issues caused by `params_test.py` files in
 # - rest/testing/load_test
 # - rest/serve

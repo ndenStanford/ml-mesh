@@ -1,3 +1,5 @@
+"""Compile model."""
+
 # Standard Library
 from typing import Dict
 
@@ -19,8 +21,8 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
-
+def compile_model() -> None:
+    """Compile model."""
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
@@ -41,7 +43,6 @@ def main() -> None:
     )
     # compile base model pipeline for word embedding feature extraction
     word_pipeline_compilation_settings = WordPipelineCompilationSettings()
-
     logger.debug(
         f"Using the following word pipeline compilation settings: "
         f"{word_pipeline_compilation_settings.dict()}. Compiling ..."
@@ -53,7 +54,6 @@ def main() -> None:
     )
     # compile base model pipeline for document embedding feature extraction
     document_pipeline_compilation_settings = DocumentPipelineCompilationSettings()
-
     logger.debug(
         f"Using the following document pipeline compilation settings: "
         f"{document_pipeline_compilation_settings.dict()}. Compiling ..."
@@ -71,10 +71,10 @@ def main() -> None:
     # export compiled keybert model for next workflow component: test
     compiled_keybert.save_pretrained(io_settings.compile.model_directory)
 
-    logger.debug(
+    logger.info(
         f"Successfully exported compiled keybert model to {io_settings.compile.model_directory}"
     )
 
 
 if __name__ == "__main__":
-    main()
+    compile_model()

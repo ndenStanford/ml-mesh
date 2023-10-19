@@ -68,6 +68,3 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
-
-# hadolint ignore=DL3002
-USER root

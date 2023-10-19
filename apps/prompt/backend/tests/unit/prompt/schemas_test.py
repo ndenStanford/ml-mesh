@@ -21,7 +21,7 @@ from src.prompt.tables import PromptTemplateTable
 )
 @patch("src.db.Model.save")
 def test_init_prompt_template_schema(mock_save, template, alias):
-    """Assert prompt initialization"""
+    """Assert prompt initialization."""
     prompt = PromptTemplateSchema(template=template, alias=alias)
 
     assert prompt.template == template
@@ -96,7 +96,7 @@ def test_generate_prompt(template, values, alias, expected_prompt):
 )
 @patch("src.db.Model.save")
 def test_save_prompt_template_schema(mock_save, template, alias):
-    """Assert prompt initialization"""
+    """Assert prompt initialization."""
     template = PromptTemplateSchema(template=template, alias=alias)
 
     saved_template = template.save()

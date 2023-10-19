@@ -60,8 +60,28 @@ _setup_package_manager(){
     separator
 }
 
+_mount_ebs_volume() {
+
+    info "🌕  Setup EBS volume ..."
+
+    if [ ! -d "$HOME/data" ]; then
+        sudo mkfs -t xfs /dev/nvme1n1
+        sudo mkdir "$HOME/data"
+        sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
+        sudo chown ec2-user: "$HOME/data"
+    else
+        warn "Mount target exists. This step will be skipped"
+    fi
+
+    separator
+}
+
 # Installing global dependencies
 _install_global_deps() {
+
+    local NEURON
+
+    NEURON=$1
 
     info "🌕  Installing system dependencies..."
 
@@ -83,14 +103,59 @@ _install_global_deps() {
                         gd-devel \
                         xz-devel \
                         python-backports-lzma
+
+    # install neuron dependencies if required
+    if [ "${NEURON}" == "y" ]; then
+        echo "Installing neuron libraries"
+        sudo tee /etc/yum.repos.d/neuron.repo > /dev/null <<EOF
+[neuron]
+name=Neuron YUM Repository
+baseurl=https://yum.repos.neuron.amazonaws.com
+enabled=1
+metadata_expire=0
+EOF
+        sudo rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB
+        sudo yum update -y
+        sudo yum install kernel-devel-"$(uname -r)" kernel-headers-"$(uname -r)" -y
+        sudo yum install aws-neuronx-dkms-2.9.4.0 -y
+        sudo yum install aws-neuronx-tools-2.10.1.0 -y
+        export PATH=/opt/aws/neuron/bin:$PATH
+        echo "Neuron OS dependency installation complete."
+        echo "Available neuron device(s):"
+        neuron-ls
+        ls /dev/neuron* -l
+    else
+        warn "No Neuron OS dependencies specified. This step will be skipped"
+    fi
+
+    # install docker & docker compose plugin
+    echo "Stopping all docker processes"
+    sudo systemctl stop docker
+    sudo systemctl stop docker.socket
+    sudo systemctl stop containerd
+    echo "Installing docker compose"
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
     sudo yum install -y docker-compose-plugin
+
+    # configure docker storage directory & restart
+    echo "Configuring docker dir to mounted EBS volume"
+    sudo touch /etc/docker/daemon.json
+    jq -n --arg docker_dir "$HOME/data/docker" '{"data-root": $docker_dir}' | sudo tee /etc/docker/daemon.json >/dev/null
+    echo "Restarting docker"
     sudo systemctl enable docker
     sudo systemctl start docker
+    echo "Docker installation file directory:"
+    docker info -f '{{ .DockerRootDir}}'
+    echo "Docker (compose) installation and configuration complete."
+    echo "Docker version:"
+    docker version
+    echo "Docker compose version:"
+    docker compose version
 
     # extra global deps (pyenv, direnv)
-    curl -sfL https://direnv.net/install.sh | bash
+    export bin_path=/usr/local/bin # whhere to install direnv
+    curl -sfL https://direnv.net/install.sh | sudo bash
     if [ ! -d "$HOME/.pyenv" ]; then
         curl https://pyenv.run | bash
     else
@@ -225,30 +290,18 @@ _setup_git_hooks(){
     separator
 }
 
-_mount_ebs_volume() {
-
-    info "🌕  Setup EBS volume ..."
-
-    if [ ! -d "$HOME/data" ]; then
-        sudo mkfs -t xfs /dev/nvme1n1
-        sudo mkdir "$HOME/data"
-        sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
-    else
-        warn "Mount target exists. This step will be skipped"
-    fi
-
-    separator
-}
-
 _setup(){
 
     local NAME
     local EMAIL
+    local NEURON
 
     NAME=$1
     EMAIL=$2
+    NEURON=$3
 
-    _install_global_deps
+    _mount_ebs_volume
+    _install_global_deps "$NEURON"
     _setup_ssh_key "$EMAIL"
     _setup_git "$NAME" "$EMAIL"
     _clone_repositories
@@ -256,13 +309,12 @@ _setup(){
     _install_poetry
     _install_project_deps
     _setup_git_hooks
-    _mount_ebs_volume
 }
 
 # Main entrypoint for script.
 main(){
 
-    info "🌕  Kick starting your machine..."
+    info "��  Kick starting your machine..."
     separator
 
     if [[ "${KERNEL}" == "Linux" ]]; then
@@ -278,16 +330,21 @@ main(){
             read -r EMAIL
             [[ $EMAIL == "" ]] && EMAIL="$(whoami)@$(hostname)"
             separator
+            echo "Neuron OS dependencies required? ( y / n ) [default is 'n']"
+            read -r NEURON
+            [[ $NEURON == "" ]] && NEURON="n"
+            separator
             info "Name: ${NAME}"
             info "Email: ${EMAIL}"
+            info "Neuron OS dependencies required: ${NEURON}"
             separator
-            info "does this look ok? ( y / N )"
+            info "does this look ok? ( y / n )"
             read -r OK
             [[ $OK == "y" || $OK == "Y" ]] && break
         done
 
         _setup_package_manager
-        _setup "$NAME" "$EMAIL"
+        _setup "$NAME" "$EMAIL" "$NEURON"
     else
 
         info "Kernel ${KERNEL} is not supported by the script."

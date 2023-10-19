@@ -1,9 +1,10 @@
+"""Model server tests."""
+
 # Standard Library
 import time
 
 # 3rd party libraries
 import pytest
-from served_model_test import TestServedModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
@@ -27,12 +28,14 @@ from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
 def test_model_server___init__no_model(
     test_add_liveness, test_add_readiness, test_api_version, test_api_name
 ):
-    """Tests initialization of the ModelServer class without passing a model, validating
-    - toggling of liveness endpoint
-    - toggling of readiness endpoint
-    - capturing of api name and api version
-    - the configuration attribute capturing the serving params"""
+    """Tests initialization of the ModelServer class without passing a model.
 
+    Validating
+        - toggling of liveness endpoint
+        - toggling of readiness endpoint
+        - capturing of api name and api version
+        - the configuration attribute capturing the serving params
+    """
     test_serving_params = ServingParams(
         add_liveness=test_add_liveness,
         add_readiness=test_add_readiness,
@@ -64,7 +67,10 @@ def test_model_server___init__no_model(
     assert test_model_server.configuration == test_serving_params
 
 
-@pytest.mark.parametrize("test_served_model_class", [ServedModel, TestServedModel])
+@pytest.mark.parametrize(
+    "test_served_model_class",
+    [ServedModel, pytest.lazy_fixture("get_test_served_model")],
+)
 @pytest.mark.parametrize(
     "test_add_model_predict, test_add_model_bio, test_api_version, test_on_startup",
     [
@@ -82,12 +88,14 @@ def test_model_server___init__with_model(
     test_on_startup,
     test_model_name,
 ):
-    """Tests initialization of the ModelServer class without passing a model, validating
-    - toggling of liveness endpoint
-    - toggling of readiness endpoint
-    - capturing of api name and api version
-    - the configuration attribute capturing the serving params"""
+    """Tests initialization of the ModelServer class without passing a model.
 
+    Validating:
+        - toggling of liveness endpoint
+        - toggling of readiness endpoint
+        - capturing of api name and api version
+        - the configuration attribute capturing the serving params
+    """
     test_serving_params = ServingParams(
         add_liveness=False,
         add_readiness=False,

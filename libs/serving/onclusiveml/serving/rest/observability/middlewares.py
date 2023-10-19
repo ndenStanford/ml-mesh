@@ -1,4 +1,7 @@
+"""Middlewares."""
+
 # Standard Library
+import os
 import time
 
 # 3rd party libraries
@@ -25,8 +28,7 @@ from onclusiveml.serving.rest.observability.utils import get_path
 
 
 class PrometheusMiddleware(BaseHTTPMiddleware):
-    """A middleware class for monitoring HTTP requests and responses
-       using Prometheus.
+    """A middleware class for monitoring HTTP requests and responses using Prometheus.
 
     Args:
         app (ASGIApp): The ASGI application instance.
@@ -38,8 +40,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp, app_name: str = "fastapi-app") -> None:
-        """Initialize the PrometheusMiddleware with the ASGI application
-           instance andan optional app name.
+        """Initialize the PrometheusMiddleware with the ASGI application.
 
         Args:
             app (ASGIApp): The ASGI application instance.
@@ -48,7 +49,8 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         """
         super().__init__(app)
         self.app_name = app_name
-        INFO.labels(app_name=self.app_name).inc()
+        self.pod_name = os.getenv("HOSTNAME", "unknown_pod")
+        INFO.labels(app_name=self.app_name, pod_name=self.pod_name).inc()
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -73,9 +75,11 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         REQUESTS_IN_PROGRESS.labels(
-            method=method, path=path, app_name=self.app_name
+            method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
         ).inc()
-        REQUESTS.labels(method=method, path=path, app_name=self.app_name).inc()
+        REQUESTS.labels(
+            method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+        ).inc()
         before_time = time.perf_counter()
         try:
             response = await call_next(request)
@@ -86,6 +90,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 path=path,
                 exception_type=type(e).__name__,
                 app_name=self.app_name,
+                pod_name=self.pod_name,
             ).inc()
             raise e from None
         else:
@@ -96,7 +101,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             trace_id = trace.format_trace_id(span.get_span_context().trace_id)
 
             REQUESTS_PROCESSING_TIME.labels(
-                method=method, path=path, app_name=self.app_name
+                method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
             ).observe(after_time - before_time, exemplar={"TraceID": trace_id})
         finally:
             RESPONSES.labels(
@@ -104,9 +109,10 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 path=path,
                 status_code=status_code,
                 app_name=self.app_name,
+                pod_name=self.pod_name,
             ).inc()
             REQUESTS_IN_PROGRESS.labels(
-                method=method, path=path, app_name=self.app_name
+                method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
             ).dec()
 
         return response

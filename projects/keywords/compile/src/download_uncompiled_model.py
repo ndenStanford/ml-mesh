@@ -1,3 +1,5 @@
+"""Download trained model."""
+
 # Standard Library
 from typing import Dict
 
@@ -12,8 +14,8 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
-
+def download_uncompiled_model() -> None:
+    """Download trained model."""
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
@@ -56,4 +58,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    download_uncompiled_model()

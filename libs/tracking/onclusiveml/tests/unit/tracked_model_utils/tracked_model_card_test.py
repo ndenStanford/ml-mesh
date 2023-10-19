@@ -1,3 +1,5 @@
+"""Model card tests."""
+
 # 3rd party libraries
 import pytest
 
@@ -42,7 +44,7 @@ def test_from__init__(
     model_artifact_attribute_path,
     # model_loader,
 ):
-
+    """Test initialization."""
     # create model card
     tracked_model_test_files = TrackedModelTestFiles(
         inputs=inputs, inference_params=inference_params, predictions=predictions

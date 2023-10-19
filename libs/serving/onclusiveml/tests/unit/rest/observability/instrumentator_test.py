@@ -1,3 +1,5 @@
+"""Instrumentator tests."""
+
 # 3rd party libraries
 import pytest
 from prometheus_client import REGISTRY
@@ -11,6 +13,8 @@ from onclusiveml.serving.rest.observability.utils import get_full_name
 
 
 class NotTrackedMetricError(Exception):
+    """Test exception."""
+
     pass
 
 
@@ -23,9 +27,12 @@ def assert_metric_value(
     status_code: str = "200",
     exception_type: str = "AttributeError",
 ) -> None:
-    """A utility function that asserts that the metric value for the
-       given parameters in the Prometheus metrics registry matches the
-       expected value.
+    """Test helper function.
+
+    Note:
+        Asserts that the metric value for the
+        given parameters in the Prometheus metrics registry matches the
+        expected value.
 
     Args:
         expected (float): The expected count of requests that should be recorded
@@ -36,23 +43,32 @@ def assert_metric_value(
         method (str, optional): The HTTP method to filter the metric by.
         status_code (str, optional): The HTTP status code to filter the metric by.
         exception_type (str, optional): The Exception type.
+
     Raises:
         NotTrackedMetricError: Unknown Metric
     """
     params = []
     full_metric_name = get_full_name(metric)
+    pod_name = "unknown_pod"
     if full_metric_name == "fastapi_responses_total":
         params = [
             full_metric_name,
             {
                 "app_name": app_name,
+                "pod_name": pod_name,
                 "path": path,
                 "method": method,
                 "status_code": status_code,
             },
         ]
     elif full_metric_name == "fastapi_app_info":
-        params = [full_metric_name, {"app_name": app_name}]
+        params = [
+            full_metric_name,
+            {
+                "app_name": app_name,
+                "pod_name": pod_name,
+            },
+        ]
     elif full_metric_name in (
         "fastapi_requests_total",
         "fastapi_requests_duration_seconds",
@@ -60,13 +76,19 @@ def assert_metric_value(
     ):
         params = [
             full_metric_name,
-            {"app_name": app_name, "path": path, "method": method},
+            {
+                "app_name": app_name,
+                "pod_name": pod_name,
+                "path": path,
+                "method": method,
+            },
         ]
     elif full_metric_name == "fastapi_exceptions_total":
         params = [
             full_metric_name,
             {
                 "app_name": app_name,
+                "pod_name": pod_name,
                 "path": path,
                 "method": method,
                 "exception_type": exception_type,
@@ -83,9 +105,7 @@ def assert_metric_value(
 
 
 def test_metrics_endpoint(test_model_server):
-    """Tests initialization of the Instrumentator with ModelServer
-    - tests metrics endpoint is exposed
-    """
+    """Tests initialization of the Instrumentator with ModelServer."""
     metrics_endpoint = (
         Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
     )
@@ -110,8 +130,7 @@ def test_metrics_endpoint(test_model_server):
 def test_metrics_values(
     test_model_server, url, expected_app_info, expected_total, expected_rest
 ):
-    """Tests if the metrics endpoint returns the expected response"""
-
+    """Tests if the metrics endpoint returns the expected response."""
     metrics_endpoint = (
         Instrumentator(test_model_server, app_name="test").setup().metrics_endpoint
     )

@@ -1,3 +1,5 @@
+"""Helpers."""
+
 # Standard Library
 from typing import List, Optional
 
@@ -10,14 +12,13 @@ def stopwords(
     content: Optional[List[str]] = None,
     lowercase: Optional[bool] = False,
 ) -> List[str]:
-    """
-    Filters out stop words from the provided content for a given language
+    """Filters out stop words from the provided content for a given language.
 
     Args:
         lang (str): The language for which stopwords are to be filtered
-        Content Optional[List[str]]: Content from which stopwords are to be filtered.
+        content (Optional[List[str]]): Content from which stopwords are to be filtered.
             Defaults to None
-        Lowercase Optional[bool]: Flag indicating whetehr to convert the content to lowercase
+        lowercase (Optional[bool]): Flag indicating whetehr to convert the content to lowercase
             before filtering out the stopwords. Defaults to false.
     """
     if content and lang:

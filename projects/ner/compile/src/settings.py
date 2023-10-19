@@ -1,3 +1,5 @@
+"""Settings."""
+
 # Standard Library
 import os
 from typing import List
@@ -24,8 +26,7 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
-    """
-    Tracked specifications for an uncompiled model
+    """Tracked specifications for an uncompiled model.
 
     Attributes:
         project (str): The project name for the model.
@@ -49,8 +50,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
-    """
-    Tracked specifications for a compiled model
+    """Tracked specifications for a compiled model.
 
     Attributes:
         project (str): The project name for the model
@@ -67,8 +67,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
 
 class WorkflowOutputDir(TrackedParams):
-    """
-    Parameters for the output directory
+    """Parameters for the output directory.
 
     Attributes:
         outpath (str): The output directory path
@@ -77,20 +76,21 @@ class WorkflowOutputDir(TrackedParams):
     outpath: str = "./outputs"
 
     class Config:
-        env_prefix = "io_"
+        env_prefix = "compiled_pipeline_io_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
 class WorkflowComponentIOSettings(object):
-    """
-    I/O settings for a workflow component
+    """I/O settings for a workflow component.
 
     Attributes:
         workflow_ouput_dir (str): Base output directory
         workflow_component (str): Name of workflow component
         workflow_component_output_dir (str): The output directory specific to the component
         model_directory (str): The directory for model artifacts
+        model_directory_base (str): The directory for base NER model
+        model_directory_kj (str): The directory for NER model used for korean/japanese
         test_files (dict): Paths to test related files
 
     """
@@ -113,6 +113,13 @@ class WorkflowComponentIOSettings(object):
             self.workflow_component_output_dir, "model_artifacts"
         )
 
+        self.model_directory_base: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts/base_ner"
+        )
+        self.model_directory_kj: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts/korean_japanese_ner"
+        )
+
         self.test_files = {
             "inputs": os.path.join(self.workflow_component_output_dir, "inputs.json"),
             "inference_params": os.path.join(
@@ -126,7 +133,7 @@ class WorkflowComponentIOSettings(object):
 
     @staticmethod
     def check_component_reference(workflow_component: str):
-
+        """Check component reference."""
         if workflow_component not in WORKFLOW_COMPONENTS:
             raise ValueError(
                 f"Component reference {workflow_component} must be one of the following options: "
@@ -134,9 +141,8 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(object):
-    """
-    Configuring container file system output locations for all 4 components
+class IOSettings(TrackedParams):
+    """Configuring container file system output locations for all 4 components.
 
     Attributes:
         download (WorkflowComponentIOSettings): I/O settings for download component
@@ -146,18 +152,23 @@ class IOSettings(object):
 
     """
 
-    # admin
+    # storage
     download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
 
+    # logging
     log_level: int = INFO
+
+    class Config:
+        env_prefix = "io_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class TokenizerSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_tokenizer for details
+    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details.
 
     Attributes:
         add_special_tokens (bool): Flag for adding special tokens
@@ -172,8 +183,7 @@ class TokenizerSettings(TrackedParams):
 
 
 class ModelTracingSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_model.compile_model for details
+    """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
     https://onclusive.atlassian.net/browse/DS-596
@@ -195,8 +205,7 @@ class ModelTracingSettings(TrackedParams):
 
 
 class PipelineCompilationSettings(TrackedParams):
-    """
-    See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details
+    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details.
 
     Attributes:
         pipeline_name (str): Name of pipeline
@@ -223,8 +232,7 @@ class PipelineCompilationSettings(TrackedParams):
 
 
 class NERPipelineCompilationSettings(PipelineCompilationSettings):
-    """
-    Tracked model card for a compiled NER model
+    """Tracked model card for a compiled NER model.
 
     Attributes:
         pipeline_name (str): Name of the NER pipeline
@@ -241,8 +249,7 @@ class NERPipelineCompilationSettings(PipelineCompilationSettings):
 
 
 class CompilationTestSettings(TrackedParams):
-    """
-    Settings for compilation tests
+    """Settings for compilation tests.
 
     Attributes:
         regression_atol (float): Relative tolerance for validation
@@ -259,8 +266,7 @@ class CompilationTestSettings(TrackedParams):
 
 
 class CompiledNERTrackedModelCard(TrackedModelCard):
-    """
-    Tracked model card for a compiled NER model
+    """Tracked model card for a compiled NER model.
 
     Attributes:
         model_type(str): Type of the model card

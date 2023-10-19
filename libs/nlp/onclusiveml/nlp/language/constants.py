@@ -94,7 +94,7 @@ class LanguageIso(Enum):
 
     @classmethod
     def from_language_iso(cls, lang: str) -> Optional["LanguageIso"]:
-        """Returns LanguageIso from string input"""
+        """Returns LanguageIso from string input."""
         reverse: Dict[str, "LanguageIso"] = {iso.value: iso for iso in LanguageIso}
         return reverse.get(lang.lower())
 
@@ -281,8 +281,8 @@ _LOCALES: Dict[LanguageIso, Dict[str, Dict[str, str]]] = {
         "sk-SK": {"name": "Slovenčina (Slovakia)", "en": "Slovak (Slovakia)"},
     },
     LanguageIso.SL: {
-        "sl": {"name": "Slovenščina", "en": "Slovenian"},
-        "sl-SI": {"name": "Slovenščina", "en": "Slovenian"},
+        "sl": {"name": "Slovenščina", "en": "Slovene"},
+        "sl-SI": {"name": "Slovenščina", "en": "Slovene"},
     },
     LanguageIso.SO: {"so-SO": {"name": "Soomaaliga", "en": "Somali"}},
     LanguageIso.SQ: {

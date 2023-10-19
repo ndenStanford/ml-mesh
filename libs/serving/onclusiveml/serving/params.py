@@ -1,9 +1,11 @@
-# 3rd party libraries
-from pydantic import BaseSettings
+"""Settings."""
+
+# Internal libraries
+from onclusiveml.core.base import OnclusiveFrozenSettings
 
 
-class ServingBaseParams(BaseSettings):
-    """Base class implementing the environment variable prefix"""
+class ServingBaseParams(OnclusiveFrozenSettings):
+    """Base class implementing the environment variable prefix."""
 
     class Config:
         env_prefix = "onclusiveml_serving_"
