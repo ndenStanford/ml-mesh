@@ -14,6 +14,9 @@ projects/**/compile/outputs/
 # project `serve` component model artifacts
 projects/**/serve/models/
 
+# project component caches
+projects/**/**/projects
+
 # C extensions
 *.so
 
@@ -35,9 +38,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-projects/keywords/serve/models
-projects/keywords/compile/outputs
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -243,7 +243,6 @@ bazel-ml-mesh/
 
 # random compile artifact
 outputs/
-models/
 projects/ner/compile/projects/ner/compile/nltk_data
 projects/ner/serve/projects/ner/serve/nltk_data
 projects/sentiment/compile/projects/sentiment/compile/nltk_data

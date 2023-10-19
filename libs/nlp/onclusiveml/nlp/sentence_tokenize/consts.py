@@ -3,6 +3,36 @@
 # 3rd party libraries
 from pydantic import BaseModel
 
+# Internal libraries
+from onclusiveml.nlp.language.constants import LanguageIso
+
+
+SUPPORTED_LANGUAGE_ISO_LIST = [
+    LanguageIso.CS,
+    LanguageIso.DA,
+    LanguageIso.NL,
+    LanguageIso.EN,
+    LanguageIso.ET,
+    LanguageIso.FI,
+    LanguageIso.FR,
+    LanguageIso.DE,
+    LanguageIso.EL,
+    LanguageIso.IT,
+    LanguageIso.NO,
+    LanguageIso.PL,
+    LanguageIso.PT,
+    LanguageIso.RU,
+    LanguageIso.SL,
+    LanguageIso.ES,
+    LanguageIso.SV,
+    LanguageIso.TR,
+]
+
+NLTK_SUPPORTED_LANGS = [
+    next(iter(item.locales.values()))["en"].lower()
+    for item in SUPPORTED_LANGUAGE_ISO_LIST
+]
+
 
 class SpecialCharacter(BaseModel):
     """Class to represent special characters.

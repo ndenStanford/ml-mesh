@@ -1,10 +1,15 @@
-FROM 211212199399.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:v2023.3.2 as builder
+ARG AWS_ACCOUNT_ID
+ARG BASE_IMAGE_TAG
+
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 ENV HOME="${PROJECT_DIR}"
+
+USER root
 
 RUN mkdir -p "${HOME}" && \
     chown -R "${USER}:users" "${HOME}"
@@ -29,12 +34,22 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+USER "${USER}"
 
 # --- production stage
 FROM builder as production
 
 # --- test build stage
 FROM builder as development
+
+# TODO: switching user to root is security risk. Instead extend the permission of the app user
+# required to access mounted docker volume with write permission
+# hadolint ignore=DL3002
+USER root
+
+
+RUN mkdir -p "/opt" && \
+    chown -R "${USER}:users" "/opt"
 
 WORKDIR "/"
 

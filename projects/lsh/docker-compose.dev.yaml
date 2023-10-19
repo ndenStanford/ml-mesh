@@ -8,6 +8,10 @@ services:
 
   # serving image
   serve:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/lsh/serve
     build:
       context: ../../
       dockerfile: projects/lsh/serve/Dockerfile
@@ -23,10 +27,6 @@ services:
     profiles: [serve, functional]
     ports:
       - 8000:8000
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
@@ -42,13 +42,13 @@ services:
 
   # unit tests
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
     environment:
       ENVIRONMENT: dev
     hostname: onclusiveml
@@ -57,13 +57,13 @@ services:
 
   # integration tests
   serve-integration:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
-    profiles: [integration]
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     environment:
       ENVIRONMENT: dev
     hostname: onclusiveml

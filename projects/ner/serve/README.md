@@ -27,7 +27,7 @@ curl -X 'GET' 'http://0.0.0.0:8000/v1/model/ner/bio'
 To invoke the `predict` endpoint for inference, use:
 
 ```bash
-curl -X 'POST' 'http://0.0.0.0:8000/v1/model/ner/predict' -H 'Content-Type: application/json' -d '{"configuration": {"return_pos": true, "language": "en"}, "inputs": {"content": "Google is cool"}}'
+curl -X 'POST' 'http://0.0.0.0:8000/v1/model/ner/predict' -H 'Content-Type: application/json' -d '{"configuration": {"language": "en"}, "inputs": {"content": "Google is cool"}}'
 ```
 
 This should return a response along the lines of
