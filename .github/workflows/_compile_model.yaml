@@ -143,12 +143,13 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-compile
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Download uncompiled model
+      - name: Download model
         run: |
           echo 'Downloading Uncompiled Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.run/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=download-model \
+            COMPONENT=compile \
+            TASK=download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -158,9 +159,9 @@ jobs:
       - name: Compile Model
         run: |
           echo 'Compiling Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.start/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=compile-model \
+            COMPONENT=compile \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -170,9 +171,10 @@ jobs:
       - name: Validate Compiled Model
         run: |
           echo 'Validating Compiled Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.run/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=validate-model \
+            COMPONENT=compile \
+            TASK=validate-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -183,9 +185,10 @@ jobs:
         if: ${{ inputs.upload-compiled-model }}
         run: |
           echo 'Uploading Compiled Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.run/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=upload-model \
+            COMPONENT=compile \
+            TASK=upload-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \

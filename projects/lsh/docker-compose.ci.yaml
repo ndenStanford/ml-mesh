@@ -63,10 +63,6 @@ services:
   # functional tests
   # - include REST model server process
   serve-functional:
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]

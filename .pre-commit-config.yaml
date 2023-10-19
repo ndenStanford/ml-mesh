@@ -68,7 +68,7 @@ repos                   :
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
-        additional_dependencies: ['types-requests']
+        additional_dependencies: [types-requests]
 
   # isort
   - repo: https://github.com/pycqa/isort
