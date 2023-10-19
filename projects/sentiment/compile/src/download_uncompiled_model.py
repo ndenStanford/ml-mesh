@@ -14,7 +14,7 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
+def download_uncompiled_model() -> None:
     """Download trained model."""
     io_settings = IOSettings()
     logger = get_default_logger(
@@ -58,4 +58,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    download_uncompiled_model()
