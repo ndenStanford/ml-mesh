@@ -4,7 +4,7 @@
 from fastapi import FastAPI
 
 # Internal libraries
-from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.logging import DEBUG, get_default_logger
 
 # Source
 from src._init import init
@@ -12,7 +12,7 @@ from src.routes import entity_linking_router, health_router, readiness_router
 from src.settings import settings
 
 
-logger = get_default_logger(__name__)
+logger = get_default_logger(__name__, DEBUG)
 
 
 def create_app() -> FastAPI:

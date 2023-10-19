@@ -7,16 +7,14 @@ from typing import List, Optional
 # Third party libs
 from fastapi import APIRouter, HTTPException, status
 
-# Internal libraries
-# Internal libs
-from onclusiveml.core.logging import get_default_logger
-
 # Source
 from src.predict.entity_fishing import get_entity_linking
 from src.schemas import EntityDictInput
 
 
-logger = get_default_logger(__name__)
+# Internal libs
+
+
 router = APIRouter(
     prefix="/ready",
 )

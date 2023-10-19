@@ -9,15 +9,9 @@ from typing import Any, Dict, List, Optional
 # 3rd party libraries
 import requests
 
-# Internal libraries
-from onclusiveml.core.logging import get_default_logger
-
 # Source
 from src.schemas import EntityDictInput
 from src.settings import settings
-
-
-logger = get_default_logger(__name__)
 
 
 def generate_entity_query(text: str, entities: EntityDictInput) -> List[Dict[str, Any]]:

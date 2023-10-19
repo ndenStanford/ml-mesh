@@ -1,4 +1,5 @@
 """Conftest."""
+
 # Standard Library
 import json
 from typing import Any, Dict, List, Union
@@ -7,7 +8,10 @@ from typing import Any, Dict, List, Union
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 from onclusiveml.models.ner import CompiledNER
 
 # Source
@@ -48,7 +52,9 @@ def logger(io_settings: IOSettings) -> Any:
         Any: Logger instance
     """
     return get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        level=io_settings.log_level,
     )
 
 

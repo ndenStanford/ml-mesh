@@ -8,16 +8,13 @@ from typing import Any, Dict
 # Third party libs
 from fastapi import APIRouter, status
 
-# Internal libraries
-# Internal libs
-from onclusiveml.core.logging import get_default_logger
-
 # Source
 from src.predict.entity_fishing import get_entity_linking
 from src.schemas import Request, Response
 
 
-logger = get_default_logger(__name__)
+# Internal libs
+
 
 router = APIRouter(
     prefix="/entity-linking",

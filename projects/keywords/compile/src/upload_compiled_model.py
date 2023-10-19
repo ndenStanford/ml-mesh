@@ -1,4 +1,5 @@
 """Upload compiled model."""
+
 # Standard Library
 from datetime import datetime as dt
 
@@ -6,7 +7,10 @@ from datetime import datetime as dt
 from neptune.types.mode import Mode
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
@@ -22,9 +26,10 @@ def main() -> None:
     """Upload compiled model."""
     io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        level=io_settings.log_level,
     )
-
     # --- upload compiled model
     compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
