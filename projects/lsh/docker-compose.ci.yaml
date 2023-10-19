@@ -24,8 +24,10 @@ services:
     ports:
       - 8000:8000
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -54,8 +56,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -65,6 +67,9 @@ services:
   serve-functional:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [functional]
     hostname: onclusiveml
     networks:
