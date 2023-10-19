@@ -56,6 +56,7 @@ class ModelServer(FastAPI):
         self.include_router(
             get_root_router(
                 api_config=configuration.fastapi_settings,
+                model=model,
                 api_version=configuration.api_version,
             )
         )
@@ -63,6 +64,7 @@ class ModelServer(FastAPI):
         if configuration.add_liveness:
             self.include_router(
                 get_liveness_router(
+                    model=model,
                     api_version=configuration.api_version,
                     betterstack_settings=configuration.betterstack_settings,
                 )
@@ -70,7 +72,7 @@ class ModelServer(FastAPI):
         # add default K8s readiness probe endpoint if desired
         if configuration.add_readiness:
             self.include_router(
-                get_readiness_router(api_version=configuration.api_version)
+                get_readiness_router(model=model, api_version=configuration.api_version)
             )
         # ML services should expose the following additional routes implemented in the ServedModel:
         # - predict
