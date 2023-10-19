@@ -12,6 +12,7 @@ from src.serve.server_models import (
     BioResponseModel,
     PredictConfiguration,
     PredictInputContentModel,
+    PredictionExtractedIPTC,
     PredictionOutputContent,
     PredictRequestModel,
     PredictResponseModel,
@@ -62,17 +63,15 @@ def test_served_iptc_model_predict(
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
             predicted_content=[
-                {
-                    "label": test_predictions[test_record_index].get("label"),
-                    "score": test_predictions[test_record_index].get("score"),
-                }
+                PredictionExtractedIPTC(**i)
+                for i in test_predictions[test_record_index]
             ]
         )
     )
 
-    assert actual_output.outputs[0].label == expected_output.outputs.label
+    assert actual_output[0].label == expected_output.outputs.label
     torch.testing.assert_close(
-        actual_output.outputs[0].score,
+        actual_output[0].score,
         expected_output.outputs.score,
         atol=test_atol,
         rtol=test_rtol,
@@ -92,10 +91,7 @@ def test_served_iptc_model_predict(
     ],
 )
 def test_served_iptc_model_with_iptc_predict(
-    test_served_model_artifacts,
-    test_sample_content,
-    test_sample_response,
-    test_predictions,
+    test_served_model_artifacts, test_sample_content, test_sample_response
 ):
     """Tests the fully initialized and loaded ServedIPTCModel's predict method."""
     served_iptc_model = ServedIPTCModel(
@@ -103,9 +99,7 @@ def test_served_iptc_model_with_iptc_predict(
     )
     served_iptc_model.load()
     input = PredictRequestModel(
-        configuration=PredictConfiguration(
-            # language="en"
-        ),
+        configuration=PredictConfiguration(),
         inputs=PredictInputContentModel(content=test_sample_content),
     )
 
@@ -113,16 +107,11 @@ def test_served_iptc_model_with_iptc_predict(
 
     expected_output = PredictResponseModel(
         outputs=PredictionOutputContent(
-            predicted_content=[
-                {
-                    "label": test_predictions[test_record_index].get("label"),
-                    "score": test_predictions[test_record_index].get("score"),
-                }
-            ]
+            predicted_content=PredictionExtractedIPTC(test_sample_response)
         )
     )
 
-    assert actual_output.outputs[0].label == expected_output.outputs.label
+    assert actual_output[0].label == expected_output.outputs.label
 
 
 @pytest.mark.order(3)
