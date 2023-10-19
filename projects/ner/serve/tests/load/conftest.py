@@ -35,21 +35,15 @@ def test_served_model_artifacts(settings):
 
 
 @pytest.fixture
-def test_model_name(test_served_model_artifacts):
-    """Model name fixture."""
-    return test_served_model_artifacts.model_name
-
-
-@pytest.fixture
-def test_model_bio_endpoint_url(test_serving_params, test_model_name):
+def test_model_bio_endpoint_url():
     """Model bio endpoint URL fixture."""
-    return f"/{test_serving_params.api_version}/model/{test_model_name}/bio"
+    return "/v1/model/ner/bio"
 
 
 @pytest.fixture
-def test_model_predict_endpoint_url(test_serving_params, test_model_name):
+def test_model_predict_endpoint_url():
     """Model predict endpoint URL fixture."""
-    return f"/{test_serving_params.api_version}/model/{test_model_name}/predict"
+    return "/v1/model/ner/predict"
 
 
 @pytest.fixture
@@ -68,24 +62,6 @@ def test_inference_params(test_served_model_artifacts):
         test_inference_params = json.load(json_file)
 
     return test_inference_params
-
-
-@pytest.fixture
-def test_predictions(test_served_model_artifacts):
-    """Test predictions."""
-    with open(test_served_model_artifacts.predictions_test_file, "r") as json_file:
-        test_predictions = json.load(json_file)
-
-    return test_predictions
-
-
-@pytest.fixture
-def test_model_card(test_served_model_artifacts):
-    """Test model card."""
-    with open(test_served_model_artifacts.model_card_file, "r") as json_file:
-        test_model_card = json.load(json_file)
-
-    return test_model_card
 
 
 @pytest.fixture
