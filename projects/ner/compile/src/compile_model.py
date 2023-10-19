@@ -23,7 +23,7 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
+def compile_model() -> None:
     """Compile model."""
     io_settings = IOSettings()
     logger = get_default_logger(
@@ -74,10 +74,10 @@ def main() -> None:
     # export compiled ner model for next workflow component: test
     compiled_ner.save_pretrained(io_settings.compile.model_directory)
 
-    logger.debug(
-        f"Successfully exported compiled ner models to {io_settings.compile.model_directory}"
+    logger.info(
+        f"Successfully exported compiled ner model to {io_settings.compile.model_directory}"
     )
 
 
 if __name__ == "__main__":
-    main()
+    compile_model()

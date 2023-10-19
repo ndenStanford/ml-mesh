@@ -5,7 +5,6 @@ import time
 
 # 3rd party libraries
 import pytest
-from served_model_test import TestServedModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
@@ -68,7 +67,10 @@ def test_model_server___init__no_model(
     assert test_model_server.configuration == test_serving_params
 
 
-@pytest.mark.parametrize("test_served_model_class", [ServedModel, TestServedModel])
+@pytest.mark.parametrize(
+    "test_served_model_class",
+    [ServedModel, pytest.lazy_fixture("get_test_served_model")],
+)
 @pytest.mark.parametrize(
     "test_add_model_predict, test_add_model_bio, test_api_version, test_on_startup",
     [
