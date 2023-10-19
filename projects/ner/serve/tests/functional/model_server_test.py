@@ -32,13 +32,13 @@ parametrize_values = [
 
 def test_model_server_root(test_client):
     """Tests the running ModelServer instance's root endpoint."""
-    root_response = test_client.get("/v1/")
+    root_response = test_client.get("/ner/v1/")
     assert root_response.status_code == 200
 
 
 def test_model_server_liveness(test_client):
     """Tests the running ModelServer instance's liveness endpoint."""
-    liveness_response = test_client.get("/v1/live")
+    liveness_response = test_client.get("/ner/v1/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
@@ -46,7 +46,7 @@ def test_model_server_liveness(test_client):
 
 def test_model_server_readiness(test_client):
     """Tests the running ModelServer instance's readiness endpoint."""
-    readiness_response = test_client.get("/v1/ready")
+    readiness_response = test_client.get("/ner/v1/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -75,9 +75,7 @@ def test_model_server_predict(
         ),
     )
 
-    test_response = test_client.post(
-        f"/v1/model/{test_model_name}/predict", json=input.dict()
-    )
+    test_response = test_client.post("/ner/v1/model/predict", json=input.dict())
 
     assert test_response.status_code == 200
     actual_output = test_response.json()
@@ -102,9 +100,7 @@ def test_model_server_predict_no_entities(test_model_name, test_client, test_inp
         inputs=PredictInputContentModel(content=test_input),
     )
 
-    test_response = test_client.post(
-        f"/v1/model/{test_model_name}/predict", json=input.dict()
-    )
+    test_response = test_client.post("/ner/v1/model/predict", json=input.dict())
 
     assert test_response.status_code == 200
     actual_output = test_response.json()
@@ -117,7 +113,7 @@ def test_model_server_bio(test_model_name, test_client, test_model_card):
     This test uses the custom data models for validation and the model card from the model
     artifact as ground truth for the regression test element.
     """
-    test_response = test_client.get(f"/v1/model/{test_model_name}/bio")
+    test_response = test_client.get("/ner/v1/bio")
 
     assert test_response.status_code == 200
     actual_output = test_response.json()

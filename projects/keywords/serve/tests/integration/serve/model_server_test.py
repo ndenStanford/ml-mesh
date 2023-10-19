@@ -47,3 +47,11 @@ def test_model_server_readiness(test_client):
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
+
+
+@pytest.mark.order(6)
+def test_model_docs(test_client):
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    docs_response = test_client.get("/keywords/v1/docs")
+
+    assert docs_response.status_code == 200
