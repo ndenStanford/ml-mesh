@@ -10,7 +10,7 @@ python = "3.8.16"
 typing-extensions = "^4.6.2"
 pydantic = "1.10.4"
 nltk = "^3.8.1"
-langdetect = "1.0.9"
+langdetect = "1.0.8"
 core = {path = "../core"}
 
 
