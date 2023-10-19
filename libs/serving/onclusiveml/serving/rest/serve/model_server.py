@@ -1,7 +1,7 @@
 """Model server."""
 
 # Standard Library
-from typing import Any, Optional
+from typing import Any
 
 # 3rd party libraries
 import uvicorn
@@ -14,6 +14,7 @@ from onclusiveml.serving.rest.serve.server_utils import (
     get_liveness_router,
     get_model_bio_router,
     get_model_predict_router,
+    get_model_server_urls,
     get_readiness_router,
     get_root_router,
 )
@@ -30,12 +31,15 @@ class ModelServer(FastAPI):
     def __init__(
         self,
         configuration: ServingParams = ServingParams(),
-        model: Optional[ServedModel] = None,
+        model: ServedModel = ServedModel(name="no_model"),
         *args: Any,
         **kwargs: Any,
     ):
         self.configuration = configuration
         self.model = model
+        self.model_server_urls = get_model_server_urls(
+            api_version=configuration.api_version, model_name=model.name
+        )
         # if model is specified, ensure model loads are done in individual worker processes by
         # specifying start up behaviour
         if model is not None:
@@ -50,6 +54,8 @@ class ModelServer(FastAPI):
         super().__init__(
             *args,
             on_startup=on_startup,
+            docs_url=self.model_server_urls.docs,
+            redoc_url=self.model_server_urls.redoc,
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
         # add root endpoint with API meta data

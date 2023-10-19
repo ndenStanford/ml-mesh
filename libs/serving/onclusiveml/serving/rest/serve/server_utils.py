@@ -51,6 +51,8 @@ def get_model_server_urls(
 
     model_predict_url = f"{root_url}/{served_model_methods.predict}"
     model_bio_url = f"{root_url}/{served_model_methods.bio}"
+    docs_url = f"{root_url}/docs"
+    redoc_url = f"{root_url}/redoc"
     # dump into url data model with auto validation
     model_server_urls = ModelServerURLs(
         root=root_url,
@@ -58,6 +60,8 @@ def get_model_server_urls(
         readiness=readiness_url,
         model_predict=model_predict_url,
         model_bio=model_bio_url,
+        docs=docs_url,
+        redoc=redoc_url,
     )
 
     return model_server_urls
