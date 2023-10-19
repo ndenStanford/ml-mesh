@@ -7,6 +7,10 @@ services:
   # =============================================
 
   train:
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/sentiment/train
     build:
       context: ../../
       dockerfile: projects/sentiment/train/Dockerfile
@@ -17,10 +21,6 @@ services:
         PROJECT: sentiment
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    volumes:
-      - type: bind
-        source: train
-        target: /projects/sentiment/train
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
@@ -54,6 +54,12 @@ services:
   # =============================================
 
   compile:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/sentiment/compile
     build:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
@@ -65,9 +71,11 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG:-latest}
+    command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -92,28 +100,8 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/sentiment/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-compile-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: compile
-        target: /projects/sentiment/compile
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile_model]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/sentiment/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -130,8 +118,6 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/sentiment/compile/outputs
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -146,27 +132,8 @@ services:
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/sentiment/compile/outputs
-      GITHUB_REPOSITORY: development-repository
-      GITHUB_ACTOR: development-actor
-      GITHUB_ENV: development-env
-      GITHUB_WORKFLOW: development-workflow
-      GITHUB_JOB: development-job
-      GITHUB_REF: development-ref
-      GITHUB_BASE_REF: development-base-ref
-      GITHUB_HEAD_REF: development-head-ref
-      GITHUB_SHA: development-sha
-      GITHUB_EVENT_NAME: development-event-name
-      GITHUB_RUN_ID: development-run-id
-      GITHUB_RUN_NUMBER: development-run-number
-      RUNNER_ARCH: development-arch
-      RUNNER_NAME: development-name
-      RUNNER_OS: development-os
-      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 

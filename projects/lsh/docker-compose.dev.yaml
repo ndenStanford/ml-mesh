@@ -53,6 +53,8 @@ services:
         source: serve
         target: /projects/lsh/serve
     profiles: [unit]
+    environment:
+      ENVIRONMENT: dev
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -65,10 +67,10 @@ services:
         target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     environment:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
-    profiles: [integration]
     hostname: onclusiveml
     networks:
       - onclusive-net

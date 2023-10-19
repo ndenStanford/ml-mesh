@@ -154,7 +154,8 @@ EOF
     docker compose version
 
     # extra global deps (pyenv, direnv)
-    curl -sfL https://direnv.net/install.sh | bash
+    export bin_path=/usr/local/bin # whhere to install direnv
+    curl -sfL https://direnv.net/install.sh | sudo bash
     if [ ! -d "$HOME/.pyenv" ]; then
         curl https://pyenv.run | bash
     else

@@ -31,7 +31,7 @@ def compilation_test_settings() -> CompilationTestSettings:
 def logger(io_settings: IOSettings) -> Any:
     """Logger fixture."""
     return get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
     )
 
 

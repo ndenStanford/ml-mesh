@@ -1,10 +1,10 @@
 """Settings."""
 
-# 3rd party libraries
-from pydantic import BaseSettings
+# Internal libraries
+from onclusiveml.core.base import OnclusiveFrozenSettings
 
 
-class ServingBaseParams(BaseSettings):
+class ServingBaseParams(OnclusiveFrozenSettings):
     """Base class implementing the environment variable prefix."""
 
     class Config:
