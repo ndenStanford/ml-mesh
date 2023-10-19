@@ -166,7 +166,7 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [serve, functional, load]
     ports:
