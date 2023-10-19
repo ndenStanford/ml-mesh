@@ -54,6 +54,7 @@ def get_default_logger(
 
     logger = logging.getLogger(name)
     logger.setLevel(level)
+    logger.propagate = False
 
     # clear any and all handlers to avoid duplication when calling this method repeatedly
     existing_handlers = logger.handlers

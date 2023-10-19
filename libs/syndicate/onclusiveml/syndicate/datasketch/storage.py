@@ -22,18 +22,18 @@ from typing import (
     Union,
 )
 
+# Internal libraries
+from onclusiveml.core.logging import ERROR, get_default_logger
+
 
 # IMPORTANT: redis has been removed from this version of the script
 try:
-    # Standard Library
-    import logging
-
     # 3rd party libraries
     import cassandra
     from cassandra import cluster as c_cluster
     from cassandra import concurrent as c_concurrent
 
-    logging.getLogger("cassandra").setLevel(logging.ERROR)
+    get_default_logger("cassandra", ERROR)
 except ImportError:
     cassandra = None
     c_cluster = None
