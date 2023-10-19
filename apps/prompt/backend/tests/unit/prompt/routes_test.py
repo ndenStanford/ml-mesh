@@ -373,7 +373,7 @@ def test_delete_prompt(
 @pytest.mark.parametrize(
     "alias, template",
     [
-        ("ml-summarization-en", PromptEnum.ML_SUMMARIZATION_EN.value[0]),
+        ("english-summarization", PromptEnum.EN.value[0]),
         ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
         ("ml-headline-generation-en", PromptEnum.ML_HEADLINE_EN.value[0]),
         ("ml-headline-generation-fr", PromptEnum.ML_HEADLINE_FR.value[0]),
@@ -404,7 +404,7 @@ def test_delete_prompt_protection_409(
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-@pytest.mark.parametrize("alias", ["ml-summarization-en-1"])
+@pytest.mark.parametrize("alias", ["english-summarization-1"])
 @patch("src.db.Model.delete")
 @patch.object(PromptTemplateTable, "query")
 def test_delete_prompt_protection_404(

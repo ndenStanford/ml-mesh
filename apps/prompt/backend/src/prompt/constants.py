@@ -7,14 +7,14 @@ from onclusiveml.core.base.utils import OnclusiveEnum
 class PromptEnum(OnclusiveEnum):
     """Enum values for prompts."""
 
-    ML_SUMMARIZATION_EN = [
+    EN = [
         "Give an abstractive summary while retaining important quotes of speech in less than "
         + "{number}"  # noqa: W503
         + " words: "  # noqa: W503
         + "\n"  # noqa: W503
         + "{text}"  # noqa: W503
         + "\n",  # noqa: W503
-        "ml-summarization-en",
+        "english-summarization",
         {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
     ]
     ML_SEG = [
