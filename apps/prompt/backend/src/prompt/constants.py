@@ -7,14 +7,14 @@ from onclusiveml.core.base.utils import OnclusiveEnum
 class PromptEnum(OnclusiveEnum):
     """Enum values for prompts."""
 
-    EN = [
+    ML_SUMMARIZATION_EN = [
         "Give an abstractive summary while retaining important quotes of speech in less than "
         + "{number}"  # noqa: W503
         + " words: "  # noqa: W503
         + "\n"  # noqa: W503
         + "{text}"  # noqa: W503
         + "\n",  # noqa: W503
-        "english-summarization",
+        "ml-summarization-en",
         {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
     ]
     ML_SEG = [
@@ -25,7 +25,7 @@ class PromptEnum(OnclusiveEnum):
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 0},
     ]
     # These are headline generation prompt3 in their given language
-    HEADLINE_EN = [
+    ML_HEADLINE_EN = [
         "You are an expert in news writing."
         + "\n"
         + "I have an article delimited by < and >, \
@@ -42,10 +42,10 @@ class PromptEnum(OnclusiveEnum):
         + "Article: "
         + "<{text}>"
         + "\n",
-        "english-headline-generation",
+        "ml-headline-generation-en",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
-    HEADLINE_FR = [
+    ML_HEADLINE_FR = [
         "Vous êtes un expert dans la rédaction d'articles d'actualité."
         + "\n"
         + "J'ai un article délimité par < et > \
@@ -62,10 +62,10 @@ class PromptEnum(OnclusiveEnum):
         + "Article: "
         + "<{text}>"
         + "\n",
-        "french-headline-generation",
+        "ml-headline-generation-fr",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
-    HEADLINE_CA = [
+    ML_HEADLINE_CA = [
         "Ets un expert en redacció de notícies."
         + "\n"
         + "Tinc un article delimitat per < i >, \
@@ -82,10 +82,10 @@ class PromptEnum(OnclusiveEnum):
         + "Article: "
         + "<{text}>"
         + "\n",
-        "catalan-headline-generation",
+        "ml-headline-generation-ca",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
-    HEADLINE_ES = [
+    ML_HEADLINE_ES = [
         "Eres un experto en escribir noticias."
         + "\n"
         + "Tengo un artículo delimitado por < y >, \
@@ -102,10 +102,10 @@ class PromptEnum(OnclusiveEnum):
         + "Artículo: "
         + "<{text}>"
         + "\n",
-        "spanish-headline-generation",
+        "ml-headline-generation-es",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
-    HEADLINE_IT = [
+    ML_HEADLINE_IT = [
         "Sei un esperto nella scrittura di notizie."
         + "\n"
         + "Ho un articolo delimitato da < e >, \
@@ -122,10 +122,10 @@ class PromptEnum(OnclusiveEnum):
         + "Articolo: "
         + "<{text}>"
         + "\n",
-        "italian-headline-generation",
+        "ml-headline-generation-it",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
-    HEADLINE_DE = [
+    ML_HEADLINE_DE = [
         "Sie sind ein Experte im Nachrichtenschreiben."
         + "\n"
         + "Ich habe einen Artikel, der durch < und > \
@@ -142,10 +142,10 @@ class PromptEnum(OnclusiveEnum):
         + "Artikel: "
         + "<{text}>"
         + "\n",
-        "german-headline-generation",
+        "ml-headline-generation-de",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
-    HEADLINE_JP = [
+    ML_HEADLINE_JP = [
         "あなたはニュース作成の専門家です。"
         + "\n"
         + "私は<と>で区切られた記事を持っています、\
@@ -162,6 +162,6 @@ class PromptEnum(OnclusiveEnum):
         + "記事: "
         + "<{text}>"
         + "\n",
-        "japanese-headline-generation",
+        "ml-headline-generation-jp",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
     ]
