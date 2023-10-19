@@ -28,6 +28,8 @@ services:
     ports:
       - 8000:8000
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: no
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
     hostname: onclusiveml
