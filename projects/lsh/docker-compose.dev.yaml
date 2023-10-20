@@ -30,6 +30,8 @@ services:
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
     hostname: onclusiveml
     networks:
       - onclusive-net
