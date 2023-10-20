@@ -17,7 +17,7 @@ class OnclusiveLogSettings(Params):
 
     level: int = DEBUG
     fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name
-    json_format: bool = True
+    json_format: bool = False
 
     @validator("level")
     def validate_level(value: int) -> int:

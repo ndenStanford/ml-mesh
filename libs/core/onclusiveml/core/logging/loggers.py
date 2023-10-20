@@ -14,7 +14,7 @@ def get_default_logger(
     name: str,
     level: int = DEBUG,
     fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name,
-    json_format: bool = True,
+    json_format: bool = False,
     handler: Optional[logging.Handler] = None,
 ) -> logging.Logger:
     """Utility for an opionated logger that encourages Onclusive ML app logging conventions.
@@ -66,25 +66,5 @@ def get_default_logger(
         handler = get_default_handler(**log_settings.dict())
 
     logger.addHandler(handler)
-
-    return logger
-
-
-def get_default_logger_from_env(
-    name: str,
-) -> logging.Logger:
-    """Environment variable based wrapper around `get_default_logger` function.
-
-    For details on the associated environment variables, see the OnclusiveLogSettings class.
-
-    Args:
-        name (str): The name of the logger.
-
-    Returns:
-        logger (logging.Logger): A configured logger instance.
-    """
-    log_settings = OnclusiveLogSettings()
-
-    logger = get_default_logger(name=name, handler=None, **log_settings.dict())
 
     return logger

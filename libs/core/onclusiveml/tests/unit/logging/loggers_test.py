@@ -12,7 +12,6 @@ import pytest
 from onclusiveml.core.logging import (
     OnclusiveLogMessageFormat,
     get_default_logger,
-    get_default_logger_from_env,
 )
 from onclusiveml.core.logging.constants import VALID_LOG_LEVELS
 
@@ -100,33 +99,4 @@ def test_get_default_logger_message_format_with_default_json_handler(
     logger.info(msg)
 
     actual_log_entry = buffer.getvalue()
-    assert actual_log_entry == expected_log_entry
-
-
-def test_get_default_logger_from_env_message_format(monkeypatch):
-    """Tests the basic functionality of the get_default_logger_from_env method."""
-    # patch sys.stdout with local buffer
-    buffer = StringIO()
-    monkeypatch.setattr(sys, "stdout", buffer)
-
-    # patch Formatter.formatTime with dummy time stamp
-    def dummy_format_time(self, record, datefmt=None):
-        return "dummy time stamp"
-
-    monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
-
-    # patch Logger.findCaller with dummy file name and line number
-    def dummy_find_caller(self, stack_info=False, stacklevel=1):
-        return ("testfile.py", 1, "test_function", None)
-
-    monkeypatch.setattr(logging.Logger, "findCaller", dummy_find_caller)
-
-    # use
-    logger = get_default_logger_from_env("test logger")
-
-    msg = "testing logging format"
-    logger.debug(msg)
-
-    actual_log_entry = buffer.getvalue()
-    expected_log_entry = '{"asctime": "dummy time stamp", "levelname": "DEBUG", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - DEBUG - testing logging format"}\n'  # noqa: E501
     assert actual_log_entry == expected_log_entry
