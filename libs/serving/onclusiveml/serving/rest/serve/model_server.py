@@ -1,7 +1,7 @@
 """Model server."""
 
 # Standard Library
-from typing import Any
+from typing import Any, Optional
 
 # 3rd party libraries
 import uvicorn
@@ -31,14 +31,17 @@ class ModelServer(FastAPI):
     def __init__(
         self,
         configuration: ServingParams = ServingParams(),
-        model: ServedModel = ServedModel(name="no_model"),
+        model: Optional[ServedModel] = None,
         *args: Any,
         **kwargs: Any,
     ):
         self.configuration = configuration
-        self.model = model
+        if model is None:
+            self.model = ServedModel(name="no_model")
+        else:
+            self.model = model
         self.model_server_urls = get_model_server_urls(
-            api_version=configuration.api_version, model_name=model.name
+            api_version=configuration.api_version, model_name=self.model.name
         )
         # if model is specified, ensure model loads are done in individual worker processes by
         # specifying start up behaviour
@@ -62,7 +65,7 @@ class ModelServer(FastAPI):
         self.include_router(
             get_root_router(
                 api_config=configuration.fastapi_settings,
-                model=model,
+                model=self.model,
                 api_version=configuration.api_version,
             )
         )
@@ -70,7 +73,7 @@ class ModelServer(FastAPI):
         if configuration.add_liveness:
             self.include_router(
                 get_liveness_router(
-                    model=model,
+                    model=self.model,
                     api_version=configuration.api_version,
                     betterstack_settings=configuration.betterstack_settings,
                 )
@@ -78,26 +81,28 @@ class ModelServer(FastAPI):
         # add default K8s readiness probe endpoint if desired
         if configuration.add_readiness:
             self.include_router(
-                get_readiness_router(model=model, api_version=configuration.api_version)
+                get_readiness_router(
+                    model=self.model, api_version=configuration.api_version
+                )
             )
         # ML services should expose the following additional routes implemented in the ServedModel:
         # - predict
         # - bio
         if configuration.add_model_predict:
 
-            assert model is not None
+            assert self.model is not None
 
             model_predict_router = get_model_predict_router(
-                model=model, api_version=configuration.api_version
+                model=self.model, api_version=configuration.api_version
             )
             self.include_router(model_predict_router)
 
         if configuration.add_model_bio:
 
-            assert model is not None
+            assert self.model is not None
 
             model_bio_router = get_model_bio_router(
-                model=model, api_version=configuration.api_version
+                model=self.model, api_version=configuration.api_version
             )
             self.include_router(model_bio_router)
         # finally, generate and attach the uvicorn server process configuration object instance
