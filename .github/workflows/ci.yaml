@@ -560,7 +560,7 @@ jobs       :
           - project: gch-summarization
             sagemaker-runner-type: ml.c5.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            
+
     with:
       environment: prod
       project: ${{ matrix.models.project }}
