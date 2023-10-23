@@ -14,7 +14,10 @@ from onclusiveml.serving.rest.serve import (
     get_root_router,
 )
 from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
-from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
+from onclusiveml.serving.rest.serve.server_utils import (
+    TEST_MODEL_NAME,
+    get_model_server_urls,
+)
 
 
 @pytest.mark.parametrize(
@@ -22,19 +25,19 @@ from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
     [
         (
             {},  # test defaults
-            "/",
-            "/live",
-            "/ready",
-            "/model/no_model/predict",
-            "/model/no_model/bio",
+            "/no_model/v1/",
+            "/no_model/v1/live",
+            "/no_model/v1/ready",
+            "/no_model/v1/predict",
+            "/no_model/v1/bio",
         ),
         (
             {"api_version": "test-version", "model_name": "test-model"},
-            "/test-version/",
-            "/test-version/live",
-            "/test-version/ready",
-            "/test-version/model/test-model/predict",
-            "/test-version/model/test-model/bio",
+            "/test-model/test-version/",
+            "/test-model/test-version/live",
+            "/test-model/test-version/ready",
+            "/test-model/test-version/predict",
+            "/test-model/test-version/bio",
         ),
     ],
 )
@@ -99,10 +102,14 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
     """
     if get_router_method == get_liveness_router:
         test_router = get_router_method(
-            api_version=test_api_version, betterstack_settings=BetterStackSettings()
+            api_version=test_api_version,
+            betterstack_settings=BetterStackSettings(),
+            model=ServedModel(TEST_MODEL_NAME),
         )
     else:
-        test_router = get_router_method(api_version=test_api_version)
+        test_router = get_router_method(
+            api_version=test_api_version, model=ServedModel(TEST_MODEL_NAME)
+        )
 
     test_route_url_actual = test_router.routes[0].path
 
