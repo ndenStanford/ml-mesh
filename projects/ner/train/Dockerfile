@@ -45,15 +45,19 @@ RUN poetry install --no-interaction --no-ansi && \
 # --- production stage
 FROM builder as production
 
-ENV PYTHONPATH=${HOME}
-
 # --- test build stage
 FROM builder as development
 
-WORKDIR "/"
+# install development dependencies
+RUN poetry install \
+    --only dev \
+    --no-root \
+    --no-interaction \
+    --no-ansi \
+    -v && \
+    rm -rf ~/.cache/pypoetry/cache && \
+    rm -rf ~/.cache/pypoetry/artifacts && \
+    poetry cache clear pypi --all -q && \
+    chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
-
-WORKDIR "${HOME}"
-
-RUN poetry install --no-interaction
+COPY --chown=${USER}:users "${HOME}/tests" ./tests

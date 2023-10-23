@@ -117,7 +117,7 @@ jobs       :
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
 
   # ===============================================
   # DOCKER
@@ -148,7 +148,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -187,7 +187,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -250,7 +250,7 @@ jobs       :
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -296,7 +296,7 @@ jobs       :
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -308,6 +308,54 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+
+  # entity-linking
+
+  run-entity-linking-project:
+    name: Entity Linking Project components
+    uses: ./.github/workflows/_projects.yaml
+    needs: [run-repository-state, run-libs-tests]
+    strategy:
+      max-parallel: 10
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        components:
+          # NOTE: list of project components to run
+
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+
+    with:
+      project: entity-linking
+      environment: prod
+      component: ${{ matrix.components.name }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      download-model: ${{ matrix.components.download-model }}
+      integration: ${{ matrix.components.integration }}
+      functional: ${{ matrix.components.functional }}
+      load: ${{ matrix.components.load }}
+      upload-test-results: ${{ matrix.components.upload-test-results }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+
 
   # sentiment
 
@@ -348,7 +396,7 @@ jobs       :
             load: true
             upload-test-results: true
             runner-kind: custom
-            self-hosted-runner-type: inf1.2xlarge
+            self-hosted-runner-type: inf1.xlarge
 
     with:
       project: sentiment
@@ -361,7 +409,7 @@ jobs       :
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -408,7 +456,7 @@ jobs       :
           # serve
           - name: serve
             download-model: true
-            integration: true
+            integration: false
             functional: true
             load: true
             upload-test-results: true
@@ -426,7 +474,7 @@ jobs       :
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -472,7 +520,7 @@ jobs       :
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -507,6 +555,9 @@ jobs       :
           - project: keywords
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: ner
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
     with:
       environment: prod
       project: ${{ matrix.models.project }}
@@ -514,7 +565,7 @@ jobs       :
       tag: ${{ matrix.models.tag }}
       python-version: 3.8.16
       poetry-version: 1.3.2
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -541,7 +592,6 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
-      max-parallel: 2
       matrix:
         models:
           - runner-kind: custom
@@ -565,7 +615,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       upload-compiled-model: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -613,7 +663,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

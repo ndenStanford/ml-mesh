@@ -17,18 +17,21 @@ from onclusiveml.serving.rest.testing.load_test import (
 )
 
 # Source
-from src.serve.params import ServedModelArtifacts
-from src.serve.server_models import (
-    PredictConfiguration,
-    PredictInputContentModel,
-    PredictRequestModel,
-)
+from src.serve.artifacts import ServedModelArtifacts
+from src.serve.schemas import PredictRequestSchema
+from src.settings import get_settings
+
+
+@pytest.fixture(scope="function")
+def settings():
+    """Settings fixture."""
+    return get_settings()
 
 
 @pytest.fixture
-def test_served_model_artifacts():
+def test_served_model_artifacts(settings):
     """Model artifacts fixture."""
-    return ServedModelArtifacts()
+    return ServedModelArtifacts(settings)
 
 
 @pytest.fixture
@@ -104,7 +107,7 @@ def test_model_bio_user(test_model_bio_endpoint_url):
 
 @pytest.fixture
 def test_model_predict_user(
-    test_inputs, test_inference_params, test_model_predict_endpoint_url
+    settings, test_inputs, test_inference_params, test_model_predict_endpoint_url
 ):
     """Test model predict user."""
 
@@ -112,15 +115,15 @@ def test_model_predict_user(
         """Model predict user."""
 
         # assemble & attach list of sample payloads for model predict endpoint requests
-        sample_payloads: List[PredictRequestModel] = []
-
-        for test_record_index in range(len(test_inputs)):
-            sample_payload = input = PredictRequestModel(
-                configuration=PredictConfiguration(**test_inference_params),
-                inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
-            )
-
-            sample_payloads.append(sample_payload)
+        sample_payloads: List[PredictRequestSchema] = []
+        for lang_index in range(len(test_inputs)):
+            for test_record_index in range(len(test_inputs[lang_index])):
+                sample_payload = PredictRequestSchema.from_data(
+                    namespace=settings.model_name,
+                    parameters=test_inference_params[lang_index],
+                    attributes={"content": test_inputs[lang_index][test_record_index]},
+                )
+                sample_payloads.append(sample_payload)
 
         @task()
         def get_model_prediction(self):

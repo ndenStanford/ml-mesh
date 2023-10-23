@@ -136,6 +136,7 @@ jobs:
   set-runner-specs:
     name: Set runner specs conditional on hosting requirements
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
@@ -162,6 +163,7 @@ jobs:
     name: Run project test suite(s)
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    timeout-minutes: 20
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
@@ -199,7 +201,9 @@ jobs:
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.download-model }}
         run: |
-          make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-download-model \
+          make projects.run/${{ inputs.project }} \
+            COMPONENT=${{ inputs.component }} \
+            TASK=download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
@@ -242,7 +246,9 @@ jobs:
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.upload-test-results }}
         run: |
-          make projects.start/${{ inputs.project }} COMPONENT=${{ inputs.component }}-upload-results \
+          make projects.run/${{ inputs.project }} \
+            COMPONENT=${{ inputs.component }} \
+            TASK=upload-results \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
@@ -274,6 +280,7 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
@@ -283,7 +290,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: us-east-2
 
       - name: Stop EC2 runner
         uses: machulav/ec2-github-runner@v2
