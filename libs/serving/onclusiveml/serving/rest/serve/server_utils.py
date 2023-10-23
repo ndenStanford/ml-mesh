@@ -46,15 +46,15 @@ def get_model_server_urls(
         ModelServerURLs: A data model representing validated ModelServer URLs.
     """
     # ensure root url ends on '/' regardless of api_version
-    root_url = os.path.join(f"/{model_name}", api_version)
+    root_url = os.path.join(f"/{model_name}", f"{api_version}/")
 
-    liveness_url = os.path.join(root_url, "live")  # ~ /{api_version}/live
-    readiness_url = os.path.join(root_url, "ready")  # ~ /{api_version}/readiness
+    liveness_url = os.path.join(root_url, "live/")  # ~ /{api_version}/live
+    readiness_url = os.path.join(root_url, "ready/")  # ~ /{api_version}/readiness
 
     served_model_methods = ServedModelMethods()
 
-    model_predict_url = os.path.join(root_url, served_model_methods.predict)
-    model_bio_url = os.path.join(root_url, served_model_methods.bio)
+    model_predict_url = os.path.join(root_url, f"{served_model_methods.predict}/")
+    model_bio_url = os.path.join(root_url, f"{served_model_methods.bio}/")
     docs_url = os.path.join(root_url, "docs")
     redoc_url = os.path.join(root_url, "redoc")
     # dump into url data model with auto validation
