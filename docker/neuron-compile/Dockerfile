@@ -65,8 +65,7 @@ RUN poetry install \
     --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+    poetry cache clear pypi --all -q
 
 RUN pip install \
     tensorflow==1.15.5 \
@@ -87,8 +86,7 @@ RUN poetry install \
     --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+    poetry cache clear pypi --all -q
 
 WORKDIR "/"
 
