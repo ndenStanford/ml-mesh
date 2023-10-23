@@ -5,8 +5,7 @@ import os
 from typing import Dict, List, Union
 
 # ML libs
-import torch
-from transformers import XLMRobertaTokenizerFast, pipeline
+from transformers import pipeline
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -20,39 +19,50 @@ from src.settings import (  # type: ignore[attr-defined]
     CLASS_DICT_FIRST,
     TrackedIPTCBaseModelCard,
     TrackedIPTCModelSpecs,
+    UncompiledTrackedModelSpecs,
 )
 
 
 # def upload_single_model(model_path):
 def main() -> None:
-    """Register main method."""
+    """Download and Register main method."""
+    # get read-only base model version
+    base_model_specs = UncompiledTrackedModelSpecs()
+    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    # get base model version assets to local disk
+    base_model_card: Dict = base_model_version.download_config_from_model_version(
+        neptune_attribute_path="model/model_card"
+    )
+
     model_specs = TrackedIPTCModelSpecs()
     model_card = TrackedIPTCBaseModelCard()
-
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
+    # download model artifact
+    base_model_version.download_directory_from_model_version(
+        local_directory_path=model_card.local_output_dir,
+        neptune_attribute_path=base_model_card["model_artifact_attribute_path"],
+    )
+
+    logger.info(
+        f"Successfully downloaded base iptc model into "
+        f"{model_card.local_output_dir}"
+    )
+
+    base_model_version.stop()
     # initialize registered model on neptune ai
     model_version = TrackedModelVersion(**model_specs.dict())
-    # --- initialize models
-    # get pretrained model and tokenizer
-    logger.info("Initializing model and tokenizer")
-    # model = torch.load("/projects/iptc/train/models/model.pt")
-    model = torch.load(model_card.local_model_dir)
-    tokenizer = XLMRobertaTokenizerFast.from_pretrained(
-        model_card.model_params.huggingface_model_reference
-    )
-    # Create pipeline using iptc model and tokenizer
-    logger.info("Creating huggingface pipeline")
-    hf_pipeline = pipeline(
-        task=model_card.model_params.huggingface_pipeline_task,
-        model=model,
-        tokenizer=tokenizer,
+    # Create pipeline using base model on neptune
+    logger.info("Create pipeline using base model on neptune")
+    base_model_pipeline = pipeline(
+        task=base_model_card["model_params"]["huggingface_pipeline_task"],
+        model=model_card.local_output_dir,
     )
     # iptc settings
     iptc_settings = model_card.model_params.iptc_settings.dict()
     # --- create prediction files
     logger.info("Making predictions from example inputs")
-    iptc_predictions: List[Dict[str, Union[str, float, int]]] = hf_pipeline(
+    iptc_predictions: List[Dict[str, Union[str, float, int]]] = base_model_pipeline(
         model_card.model_inputs.sample_documents
     )
     # Convert score's value from np.float32 to just float
@@ -73,13 +83,8 @@ def main() -> None:
         )
     logger.info("Pushing model artifact and assets to s3")
     # model artifact
-    hf_pipeline_local_dir = os.path.join(model_card.local_output_dir, "hf_pipeline")
-
-    model.save_pretrained(hf_pipeline_local_dir)
-    tokenizer.save_vocabulary(hf_pipeline_local_dir)
-
     model_version.upload_directory_to_model_version(
-        local_directory_path=hf_pipeline_local_dir,
+        local_directory_path=model_card.local_output_dir,
         neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
     # model card

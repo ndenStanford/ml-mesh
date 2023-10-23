@@ -39,23 +39,5 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  train-download-model:
-    volumes:
-      - type: bind
-        source: train/
-        target: /projects/iptc/train/
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
-    command: [/bin/sh, src/download_trained_models.sh]
-    profiles: [train]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      IO_OUTPATH: /projects/iptc/train/models
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: train/config/prod.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
 networks:
   onclusive-net:

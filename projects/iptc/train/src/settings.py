@@ -4,6 +4,10 @@
 import os
 from typing import List
 
+# 3rd party libraries
+from neptune.types.mode import Mode
+from pydantic import Field
+
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
@@ -12,6 +16,7 @@ from onclusiveml.tracking import (
 )
 
 
+# --- atomic settings and models
 CLASS_DICT_FIRST = {
     "root": {
         "LABEL_0": "arts, culture, entertainment and media",
@@ -42,6 +47,23 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
     model = "IPTC-TRAINED"
 
     class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+    """Trained model settings."""
+
+    project: str = "onclusive/iptc"
+    model: str = "IPTC-BASE"
+    # we need an additional version tag since we are referencing an EXISTING model version, rather
+    # than creating a new one
+    with_id: str = "IPTC-BASE-14"
+    # we only need to download from the base model, not upload
+    mode: str = Field(Mode.READ_ONLY)
+
+    class Config:
+        env_prefix = "uncompiled_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
