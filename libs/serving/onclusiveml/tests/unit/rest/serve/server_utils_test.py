@@ -14,7 +14,10 @@ from onclusiveml.serving.rest.serve import (
     get_root_router,
 )
 from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
-from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
+from onclusiveml.serving.rest.serve.server_utils import (
+    TEST_MODEL_NAME,
+    get_model_server_urls,
+)
 
 
 @pytest.mark.parametrize(
@@ -101,11 +104,11 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
         test_router = get_router_method(
             api_version=test_api_version,
             betterstack_settings=BetterStackSettings(),
-            model=ServedModel("no_model"),
+            model=ServedModel(TEST_MODEL_NAME),
         )
     else:
         test_router = get_router_method(
-            api_version=test_api_version, model=ServedModel("no_model")
+            api_version=test_api_version, model=ServedModel(TEST_MODEL_NAME)
         )
 
     test_route_url_actual = test_router.routes[0].path

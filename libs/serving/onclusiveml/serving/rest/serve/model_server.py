@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
+    TEST_MODEL_NAME,
     get_liveness_router,
     get_model_bio_router,
     get_model_predict_router,
@@ -37,7 +38,7 @@ class ModelServer(FastAPI):
     ):
         self.configuration = configuration
         if model is None:
-            self.model = ServedModel(name="no_model")
+            self.model = ServedModel(name=TEST_MODEL_NAME)
         else:
             self.model = model
         self.model_server_urls = get_model_server_urls(
