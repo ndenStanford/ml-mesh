@@ -51,7 +51,7 @@ behaviour (input, processing and output). This allows us to create well defined 
 
 An overview of developer utilitites and existing images on can be found [here](./apps/README.md)
 
-All internal core images can be found [here](./apps/). See the individual app for detailed
+All internal core images can be found [here](./apps/). See individual app for detailed
 documentation.
 
 ## Developing
