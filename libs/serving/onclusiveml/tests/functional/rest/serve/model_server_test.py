@@ -141,7 +141,11 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
     ],
 )
 def test_model_server_client_no_model(
-    test_api_version, test_port, test_url_reference, test_probe_response_model
+    test_api_version,
+    test_model_name,
+    test_port,
+    test_url_reference,
+    test_probe_response_model,
 ):
     """Tests the availability and response format of a live ModelServer endpoints.
 
@@ -153,13 +157,19 @@ def test_model_server_client_no_model(
 
     Requires test_model_server_serve_with_model to have been called on the same machine
     """
-    test_model_server_urls = get_model_server_urls(api_version=test_api_version)
+    test_model_server_urls = get_model_server_urls(
+        api_version=test_api_version, model_name=test_model_name
+    )
+
+    print(test_model_server_urls)
 
     url = f"http://localhost:{test_port}" + getattr(
         test_model_server_urls, test_url_reference
     )
 
     response = requests.get(url)
+
+    print(response)
 
     test_probe_response_model(**response.json())
 
