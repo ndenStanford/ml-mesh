@@ -68,8 +68,11 @@ class OnclusiveServingJSONAccessFormatter(OnclusiveJSONFormatter):
             }
         )
         # uvicorn.logging.AccessFormatter.formatMessage/
-        record_copy.message = self._style.format(record_copy)
 
-        formatted_record = self._jsonify_record(record_copy)
+        # record_copy.message = self._style.format(record_copy)
+
+        # formatted_record = self._jsonify_record(record_copy)
+
+        formatted_record = super().formatMessage(record_copy)
 
         return formatted_record

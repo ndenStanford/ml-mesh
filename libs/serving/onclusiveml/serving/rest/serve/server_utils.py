@@ -9,6 +9,7 @@ import requests
 from fastapi import APIRouter, status
 
 # Internal libraries
+from onclusiveml.core.logging import INFO, OnclusiveService
 from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.serving.rest.serve.constants import (
     DEFAULT_MODEL_SERVER_LOGGING_CONFIG,
@@ -232,7 +233,11 @@ def get_model_bio_router(model: ServedModel, api_version: str = "v1") -> APIRout
     return model_bio_router
 
 
-def get_logging_config(level: int, json_format: bool = True) -> Dict:
+def get_logging_config(
+    service: str = OnclusiveService.DEFAULT.value,
+    level: int = INFO,
+    json_format: bool = True,
+) -> Dict:
     """Returns a logging config for the uvicorn server underpinning running the ModelServer.
 
     Returns a manipulated version of uvicorn.config.LOGGING_CONFIG to ensure uvicorn server logs
@@ -245,6 +250,8 @@ def get_logging_config(level: int, json_format: bool = True) -> Dict:
     to ensure that uvicorn server log format is a strucutred JSON string
 
     Args:
+        service (str): The onclusive ML service name for the JSON logs. Only relevant if
+            `json_format`=True. Defaults to `OnclusiveService.DEFAULT.value`.
         level (int): The log level that is universally applied to all uvicorn server level loggers:
             - uvicorn
             - uvicorn.error
@@ -259,6 +266,15 @@ def get_logging_config(level: int, json_format: bool = True) -> Dict:
     # resolve json input -> config
     if json_format:
         logging_config = JSON_MODEL_SERVER_LOGGING_CONFIG
+        # validate service name
+        if service not in OnclusiveService.list():
+            raise ValueError(
+                f"The specified service reference {service} is not in the valid range: "
+                f"{OnclusiveService.list()}"
+            )
+        # set service name
+        for formatter in logging_config["formatters"].values():
+            formatter["service"] = service
     else:
         logging_config = DEFAULT_MODEL_SERVER_LOGGING_CONFIG
     # set log level

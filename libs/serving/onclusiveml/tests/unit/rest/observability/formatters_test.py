@@ -20,6 +20,7 @@ from onclusiveml.serving.rest.serve.constants import (
 def test_onclusive_serving_json_access_log_record():
     """Tests the OnclusiveServingJSONAccessLogRecord constructor with basic sample inputs."""
     OnclusiveServingJSONAccessLogRecord(
+        service="test-service",
         asctime="test asctime",
         levelname="test log level name",
         name="test logger name",
@@ -39,15 +40,15 @@ def test_onclusive_serving_json_access_log_record():
     [
         (
             OnclusiveServingLogMessageFormat.ACCESS_JSON.value,
-            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "[INFO] dummy time stamp - test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200 OK", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "test-service | dummy time stamp - [INFO] - test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200 OK", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.SIMPLE.value,
-            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.DETAILED.value,
-            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
         ),
     ],
 )
@@ -61,7 +62,7 @@ def test_onclusive_serving_json_access_formatter_format(
 
     monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
 
-    formatter = OnclusiveServingJSONAccessFormatter(fmt=fmt)
+    formatter = OnclusiveServingJSONAccessFormatter(service="test-service", fmt=fmt)
 
     test_record = logging.LogRecord(
         name="test logger",

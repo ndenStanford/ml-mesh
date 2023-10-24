@@ -11,6 +11,8 @@ from onclusiveml.core.logging.constants import (
     ERROR,
     INFO,
     WARNING,
+    OnclusiveLogMessageFormat,
+    OnclusiveService,
 )
 from onclusiveml.serving.rest.observability import (  # noqa: F401
     OnclusiveServingJSONAccessFormatter,
@@ -20,13 +22,14 @@ from onclusiveml.serving.rest.observability import (  # noqa: F401
 class OnclusiveServingLogMessageFormat(OnclusiveEnum):
     """Standardized log message formats for model servers."""
 
-    # keep `levelprefix` & `status_code` to retain colouring feature
+    # keep `levelprefix` & `status_code` to retain colouring feature using uvicorn formatters
     DEFAULT = "%(levelprefix)s %(asctime)s - %(message)s"
     ACCESS = '%(levelprefix)s %(asctime)s %(client_addr)s - "%(request_line)s" %(status_code)s'
     # json string is uncoloured, so use default `levelname` and split status information into
     # `status_code` integer type and `status_phrase` string type
-    DEFAULT_JSON = "[%(levelname)s] %(asctime)s - %(message)s"
-    ACCESS_JSON = '[%(levelname)s] %(asctime)s - %(client_addr)s - "%(request_line)s" %(status_code)d %(status_phrase)s'  # noqa: E501
+    # DEFAULT_JSON = "[%(levelname)s] %(asctime)s - %(message)s"
+    DEFAULT_JSON = OnclusiveLogMessageFormat.JSON.value
+    ACCESS_JSON = '%(service)s | %(asctime)s - [%(levelname)s] - %(client_addr)s - "%(request_line)s" %(status_code)d %(status_phrase)s'  # noqa: E501
 
 
 LOG_LEVEL_MAP: Dict[int, str] = {
@@ -76,10 +79,12 @@ JSON_MODEL_SERVER_LOGGING_CONFIG = BASE_MODEL_SERVER_LOGGING_CONFIG.copy()
 JSON_MODEL_SERVER_LOGGING_CONFIG["formatters"] = {
     "default": {
         "()": "onclusiveml.core.logging.OnclusiveJSONFormatter",
-        "fmt": OnclusiveServingLogMessageFormat.DEFAULT_JSON.value,  # type: ignore[attr-defined]
+        "fmt": OnclusiveServingLogMessageFormat.DEFAULT_JSON.value,
+        "service": OnclusiveService.DEFAULT.value,
     },
     "access": {
         "()": "onclusiveml.serving.rest.observability.OnclusiveServingJSONAccessFormatter",
         "fmt": OnclusiveServingLogMessageFormat.ACCESS_JSON.value,  # type: ignore[attr-defined]
+        "service": OnclusiveService.DEFAULT.value,
     },
 }
