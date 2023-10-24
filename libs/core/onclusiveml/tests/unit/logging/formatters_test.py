@@ -48,6 +48,10 @@ def test_onclusive_json_log_record(service):
             OnclusiveLogMessageFormat.DETAILED.value,
             '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
         ),
+        (
+            OnclusiveLogMessageFormat.JSON.value,
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "[test-service] - dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
+        ),
     ],
 )
 def test_onclusive_json_formatter_format(monkeypatch, fmt, expected_formatted_message):

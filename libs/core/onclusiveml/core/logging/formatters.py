@@ -2,7 +2,6 @@
 
 # Standard Library
 import logging
-from copy import copy
 from typing import Literal, Optional
 
 # 3rd party libraries
@@ -68,7 +67,7 @@ class OnclusiveJSONFormatter(logging.Formatter):
         self.service = service
 
     def _add_service_attribute(self, record: logging.LogRecord) -> logging.LogRecord:
-        """Creates a LogRecord copy with an additional `service` attribute.
+        """Updates/creates a LogRecord's "service" attribute.
 
         Args:
             record (logging.LogRecord): A logging.LogRecord instance
@@ -76,10 +75,9 @@ class OnclusiveJSONFormatter(logging.Formatter):
         Returns:
             logging.LogRecord: A logging.LogRecord instance with an updated `service` attribute.
         """
-        record_copy = copy(record)
-        record_copy.__dict__.update({"service": self.service})
+        setattr(record, "service", self.service)
 
-        return record_copy
+        return record
 
     def _jsonify_record(self, record: logging.LogRecord) -> str:
         """Takes a record instance and converts it into a JSON string.
@@ -103,9 +101,9 @@ class OnclusiveJSONFormatter(logging.Formatter):
         Returns:
             json_record (str): The JSON string version of the log record.
         """
-        record.message = super().formatMessage(record)
-
         record_copy = self._add_service_attribute(record)
+
+        record.message = super().formatMessage(record)
 
         json_record = self._jsonify_record(record_copy)
 

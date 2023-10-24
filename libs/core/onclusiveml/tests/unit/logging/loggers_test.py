@@ -72,6 +72,10 @@ def test_get_default_logger_message_format_with_custom_handler():
             OnclusiveLogMessageFormat.DETAILED.name,
             '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
         ),
+        (
+            OnclusiveLogMessageFormat.JSON.name,
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "[test-service] - dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
+        ),
     ],
 )
 def test_get_default_logger_message_format_with_default_json_handler(
