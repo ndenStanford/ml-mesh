@@ -593,7 +593,6 @@ jobs       :
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-      - run-gch-summarization-project
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -604,9 +603,6 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: ner
             sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: gch-summarization
-            sagemaker-runner-type: ml.c5.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
