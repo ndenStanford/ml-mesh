@@ -27,7 +27,6 @@ class OnclusiveServingLogMessageFormat(OnclusiveEnum):
     ACCESS = '%(levelprefix)s %(asctime)s %(client_addr)s - "%(request_line)s" %(status_code)s'
     # json string is uncoloured, so use default `levelname` and split status information into
     # `status_code` integer type and `status_phrase` string type
-    # DEFAULT_JSON = "[%(levelname)s] %(asctime)s - %(message)s"
     DEFAULT_JSON = OnclusiveLogMessageFormat.JSON.value
     ACCESS_JSON = '%(service)s | %(asctime)s - [%(levelname)s] - %(client_addr)s - "%(request_line)s" %(status_code)d %(status_phrase)s'  # noqa: E501
 
