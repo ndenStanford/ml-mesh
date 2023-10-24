@@ -13,7 +13,7 @@ This folder contains the implementation of all our machine learning projects. Ea
 
 | Project       | Reference       | Description                       | Data Type | Prepare | Train | Compile | Serve |
 | ------------- | --------------- | --------------------------------- | --------- | ------- | ----- | ------- | ----- |
-| IPTC          | n/a             | Document topic classification     | Text      |         |       |         |       |
+| IPTC          |  `iptc`         | Document topic classification     | Text      |         |   x   |    x    |       |
 | Sentiment     | `sentiment`     | Document Sentiment classification | Text      |         |   x   |    x    |   x   |
 | Keywords      | `keywords`      | Keyword extractions from text     | Text      |         |   x   |    x    |   x   |
 | NER           | `ner`           | Named Entity Recognition          | Text      |         |   x   |    x    |   x   |
