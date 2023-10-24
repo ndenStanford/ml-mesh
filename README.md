@@ -14,7 +14,7 @@ This repository contains the modular implementation of the logic powering Onclus
 
 A top-level doc on can be found [here](./libs/README.md)
 
-All internal libraries can be found [here](./libs). See individual library for a detailed
+All internal libraries can be found [here](./libs). See individual library for  detailed
 documentation.
 
 ### Core images
