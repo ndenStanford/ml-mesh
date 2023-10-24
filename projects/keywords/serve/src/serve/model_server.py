@@ -18,9 +18,11 @@ def get_model_server() -> ModelServer:
     )
     # initialize model server
     serving_params = ServingParams()
+
     model_server = ModelServer(
         configuration=serving_params, model=keywords_served_model
     )
+
     Instrumentator.enable(model_server, app_name="keywords")
 
     return model_server
