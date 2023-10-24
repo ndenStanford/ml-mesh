@@ -1,6 +1,7 @@
 """Serving helper methods."""
 
 # Standard Library
+import os
 from typing import Callable, Dict
 
 # 3rd party libraries
@@ -26,8 +27,11 @@ from onclusiveml.serving.rest.serve.server_models import (
 )
 
 
+TEST_MODEL_NAME = "no_model"
+
+
 def get_model_server_urls(
-    api_version: str = "", model_name: str = "no_model"
+    api_version: str = "v1", model_name: str = TEST_MODEL_NAME
 ) -> ModelServerURLs:
     """Utility for assembling the five currently supported Model server URLs.
 
@@ -47,18 +51,17 @@ def get_model_server_urls(
         ModelServerURLs: A data model representing validated ModelServer URLs.
     """
     # ensure root url ends on '/' regardless of api_version
-    if not api_version:
-        root_url = "/"
-    else:
-        root_url = f"/{api_version}/"
+    root_url = os.path.join(f"/{model_name}", f"{api_version}/")
 
-    liveness_url = f"{root_url}live"  # ~ /{api_version}/live
-    readiness_url = f"{root_url}ready"  # ~ /{api_version}/readiness
+    liveness_url = os.path.join(root_url, "live")  # ~ /{api_version}/live
+    readiness_url = os.path.join(root_url, "ready")  # ~ /{api_version}/readiness
 
     served_model_methods = ServedModelMethods()
 
-    model_predict_url = f"{root_url}model/{model_name}/{served_model_methods.predict}"
-    model_bio_url = f"{root_url}model/{model_name}/{served_model_methods.bio}"
+    model_predict_url = os.path.join(root_url, served_model_methods.predict)
+    model_bio_url = os.path.join(root_url, served_model_methods.bio)
+    docs_url = os.path.join(root_url, "docs")
+    redoc_url = os.path.join(root_url, "redoc")
     # dump into url data model with auto validation
     model_server_urls = ModelServerURLs(
         root=root_url,
@@ -66,18 +69,24 @@ def get_model_server_urls(
         readiness=readiness_url,
         model_predict=model_predict_url,
         model_bio=model_bio_url,
+        docs=docs_url,
+        redoc=redoc_url,
     )
 
     return model_server_urls
 
 
 def get_root_router(
-    api_version: str = "v1", api_config: Dict = FastAPISettings().dict()
+    model: ServedModel,
+    api_version: str = "v1",
+    api_config: Dict = FastAPISettings().dict(),
 ) -> Callable:
     """Utility for a consistent api root endpoint."""
     root_router = APIRouter()
 
-    model_server_urls = get_model_server_urls(api_version=api_version)
+    model_server_urls = get_model_server_urls(
+        api_version=api_version, model_name=model.name
+    )
 
     @root_router.get(model_server_urls.root, status_code=status.HTTP_200_OK)
     async def root() -> Dict:
@@ -87,6 +96,7 @@ def get_root_router(
 
 
 def get_liveness_router(
+    model: ServedModel,
     betterstack_settings: BetterStackSettings,
     api_version: str = "v1",
 ) -> Callable:
@@ -111,7 +121,9 @@ def get_liveness_router(
     """
     liveness_router = APIRouter()
 
-    model_server_urls = get_model_server_urls(api_version=api_version)
+    model_server_urls = get_model_server_urls(
+        api_version=api_version, model_name=model.name
+    )
 
     @liveness_router.get(
         model_server_urls.liveness,
@@ -128,7 +140,7 @@ def get_liveness_router(
     return liveness_router
 
 
-def get_readiness_router(api_version: str = "v1") -> Callable:
+def get_readiness_router(model: ServedModel, api_version: str = "v1") -> Callable:
     """Utility for a consistent readiness probe endpoint.
 
     For more information on how K8s uses these, see:
@@ -136,7 +148,9 @@ def get_readiness_router(api_version: str = "v1") -> Callable:
     """
     readiness_router = APIRouter()
 
-    model_server_urls = get_model_server_urls(api_version=api_version)
+    model_server_urls = get_model_server_urls(
+        api_version=api_version, model_name=model.name
+    )
 
     @readiness_router.get(
         model_server_urls.readiness,

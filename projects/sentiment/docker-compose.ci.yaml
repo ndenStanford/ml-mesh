@@ -165,7 +165,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/sentiment/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s

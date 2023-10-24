@@ -11,10 +11,12 @@ from fastapi import FastAPI
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.serving.rest.serve.served_model import ServedModel
 from onclusiveml.serving.rest.serve.server_utils import (
+    TEST_MODEL_NAME,
     get_liveness_router,
     get_logging_config,
     get_model_bio_router,
     get_model_predict_router,
+    get_model_server_urls,
     get_readiness_router,
     get_root_router,
 )
@@ -36,7 +38,13 @@ class ModelServer(FastAPI):
         **kwargs: Any,
     ):
         self.configuration = configuration
-        self.model = model
+        if model is None:
+            self.model = ServedModel(name=TEST_MODEL_NAME)
+        else:
+            self.model = model
+        self.model_server_urls = get_model_server_urls(
+            api_version=configuration.api_version, model_name=self.model.name
+        )
         # if model is specified, ensure model loads are done in individual worker processes by
         # specifying start up behaviour
         if model is not None:
@@ -51,12 +59,15 @@ class ModelServer(FastAPI):
         super().__init__(
             *args,
             on_startup=on_startup,
+            docs_url=self.model_server_urls.docs,
+            redoc_url=self.model_server_urls.redoc,
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
         # add root endpoint with API meta data
         self.include_router(
             get_root_router(
                 api_config=configuration.fastapi_settings,
+                model=self.model,
                 api_version=configuration.api_version,
             )
         )
@@ -64,6 +75,7 @@ class ModelServer(FastAPI):
         if configuration.add_liveness:
             self.include_router(
                 get_liveness_router(
+                    model=self.model,
                     api_version=configuration.api_version,
                     betterstack_settings=configuration.betterstack_settings,
                 )
@@ -71,26 +83,28 @@ class ModelServer(FastAPI):
         # add default K8s readiness probe endpoint if desired
         if configuration.add_readiness:
             self.include_router(
-                get_readiness_router(api_version=configuration.api_version)
+                get_readiness_router(
+                    model=self.model, api_version=configuration.api_version
+                )
             )
         # ML services should expose the following additional routes implemented in the ServedModel:
         # - predict
         # - bio
         if configuration.add_model_predict:
 
-            assert model is not None
+            assert self.model is not None
 
             model_predict_router = get_model_predict_router(
-                model=model, api_version=configuration.api_version
+                model=self.model, api_version=configuration.api_version
             )
             self.include_router(model_predict_router)
 
         if configuration.add_model_bio:
 
-            assert model is not None
+            assert self.model is not None
 
             model_bio_router = get_model_bio_router(
-                model=model, api_version=configuration.api_version
+                model=self.model, api_version=configuration.api_version
             )
             self.include_router(model_bio_router)
         # finally, generate and attach the uvicorn server process configuration object instance
