@@ -65,11 +65,6 @@ class FeatureStoreHandle:
         Returns: None
 
         """
-        print("=========================fs_yaml_file:", self.config_file_path)
-        # Standard Library
-        from os import system
-
-        system(f"cat {self.config_file_path}")
         self.fs = FeatureStore(fs_yaml_file=self.config_file_path)
         self.fs.apply([])
 
