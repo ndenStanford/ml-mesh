@@ -30,7 +30,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/lsh/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -63,10 +63,6 @@ services:
   # functional tests
   # - include REST model server process
   serve-functional:
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
