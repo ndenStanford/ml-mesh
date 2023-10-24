@@ -243,7 +243,6 @@ bazel-ml-mesh/
 
 # random compile artifact
 outputs/
-models/
 projects/ner/compile/projects/ner/compile/nltk_data
 projects/ner/serve/projects/ner/serve/nltk_data
 projects/sentiment/compile/projects/sentiment/compile/nltk_data

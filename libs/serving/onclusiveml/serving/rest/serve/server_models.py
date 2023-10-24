@@ -26,6 +26,8 @@ class ModelServerURLs(BaseModel):
     readiness: Optional[str] = ""
     model_predict: Optional[str] = ""
     model_bio: Optional[str] = ""
+    docs: Optional[str] = ""
+    redoc: Optional[str] = ""
 
     @root_validator
     def check_non_root_urls(cls, values: Dict) -> Dict:
