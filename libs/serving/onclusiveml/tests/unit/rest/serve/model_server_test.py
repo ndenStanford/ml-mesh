@@ -49,7 +49,7 @@ def test_model_server___init__no_model(
     test_versioned_model_server_routes = [
         route
         for route in test_model_server.router.routes
-        if route.path.startswith(f"/{test_api_version}")
+        if route.path.startswith(f"/no_model/{test_api_version}")
     ]
     test_has_liveness_route = [
         route for route in test_versioned_model_server_routes if route.name == "live"
@@ -113,7 +113,7 @@ def test_model_server___init__with_model(
     test_versioned_model_server_routes = [
         route
         for route in test_model_server.router.routes
-        if route.path.startswith(f"/{test_api_version}")
+        if route.path.startswith(f"/{test_model_name}/{test_api_version}")
     ]
     test_has_predict_route = [
         route
