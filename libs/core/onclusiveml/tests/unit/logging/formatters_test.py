@@ -14,9 +14,11 @@ from onclusiveml.core.logging import (
 )
 
 
-def test_onclusive_json_log_record():
+@pytest.mark.parametrize("service", ["test-service", "onclusive-ml"])
+def test_onclusive_json_log_record(service):
     """Tests the OnclusiveJSONLogRecord constructor with basic sample inputs."""
     OnclusiveJSONLogRecord(
+        service=service,
         asctime="test asctime",
         levelname="test log level name",
         name="test logger name",
@@ -32,19 +34,19 @@ def test_onclusive_json_log_record():
     [
         (
             OnclusiveLogMessageFormat.MESSAGE_ONLY.value,
-            '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing message formatting"}',  # noqa: E501
+            '{"service": "test-service", "asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing message formatting"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.BASIC.value,
-            '{"asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing message formatting"}',  # noqa: E501
+            '{"service": "test-service", "asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing message formatting"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.SIMPLE.value,
-            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.DETAILED.value,
-            '{"asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
         ),
     ],
 )
@@ -56,7 +58,7 @@ def test_onclusive_json_formatter_format(monkeypatch, fmt, expected_formatted_me
 
     monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
 
-    formatter = OnclusiveJSONFormatter(fmt=fmt)
+    formatter = OnclusiveJSONFormatter(service="test-service", fmt=fmt)
 
     test_record = logging.LogRecord(
         name="test logger",

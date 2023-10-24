@@ -9,12 +9,14 @@ from onclusiveml.core.logging.constants import (
     DEBUG,
     VALID_LOG_LEVELS,
     OnclusiveLogMessageFormat,
+    OnclusiveService,
 )
 
 
 class OnclusiveLogSettings(Params):
     """Environment variable entrypoint for `get_default_logger` method inputs."""
 
+    service: str = OnclusiveService.DEFAULT.value
     level: int = DEBUG
     fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name
     json_format: bool = False

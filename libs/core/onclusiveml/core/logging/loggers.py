@@ -5,13 +5,18 @@ import logging
 from typing import Optional
 
 # Internal libraries
-from onclusiveml.core.logging.constants import DEBUG, OnclusiveLogMessageFormat
+from onclusiveml.core.logging.constants import (
+    DEBUG,
+    OnclusiveLogMessageFormat,
+    OnclusiveService,
+)
 from onclusiveml.core.logging.handlers import get_default_handler
 from onclusiveml.core.logging.params import OnclusiveLogSettings
 
 
 def get_default_logger(
     name: str,
+    service: str = OnclusiveService.DEFAULT.value,
     level: int = DEBUG,
     fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name,
     json_format: bool = False,
@@ -34,6 +39,8 @@ def get_default_logger(
 
     Args:
         name (str): The name of the logger.
+        service (str): The onclusive ML service name for the JSON logs. Only relevant if
+            `json_format`=True. Defaults to `OnclusiveService.DEFAULT.value`.
         level (Optional[int], optional): The log level to be used for the logger. Defaults to
             `DEBUG`.
         fmt_level (Optional[str], optional): The log message format level to be used. Only used if
@@ -49,7 +56,7 @@ def get_default_logger(
     """
     # validate inputs
     log_settings = OnclusiveLogSettings(
-        level=level, fmt_level=fmt_level, json_format=json_format
+        service=service, level=level, fmt_level=fmt_level, json_format=json_format
     )
 
     logger = logging.getLogger(name)

@@ -2,10 +2,13 @@
 
 # Standard Library
 import logging
-from typing import Optional
+from typing import Literal, Optional
 
 # 3rd party libraries
 import pydantic
+
+# Internal libraries
+from onclusiveml.core.logging.constants import OnclusiveService
 
 
 class OnclusiveJSONLogRecord(pydantic.BaseModel):
@@ -16,6 +19,7 @@ class OnclusiveJSONLogRecord(pydantic.BaseModel):
     # OnclusiveLogMessageFormat.MESSAGE_ONLY.value and OnclusiveLogMessageFormat.BASIC.value).
     # Source: https://github.com/python/cpython/blob/232465204edb070751f4794c67dd31cd9b7c8c53/...
     # ...Lib/logging/__init__.py#L704
+    service: str
     asctime: Optional[str] = None
     levelname: str
     name: str
@@ -26,6 +30,17 @@ class OnclusiveJSONLogRecord(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+
+    @pydantic.validator("service")
+    def check_service(value) -> str:
+        """Validate the service field against standardized log service values."""
+        if value not in OnclusiveService.list():
+            raise ValueError(
+                f"The specified service reference {value} is not in the valid range: "
+                f"{OnclusiveService.list()}"
+            )
+
+        return value
 
 
 class OnclusiveJSONFormatter(logging.Formatter):
@@ -38,6 +53,18 @@ class OnclusiveJSONFormatter(logging.Formatter):
     """
 
     log_record_data_model = OnclusiveJSONLogRecord
+
+    def __init__(
+        self,
+        service: str,
+        fmt: Optional[str] = None,
+        datefmt: Optional[str] = None,
+        style: Literal["%", "{", "$"] = "%",
+        validate: bool = True,
+    ) -> None:
+        super().__init__(fmt, datefmt, style, validate)
+
+        self.service = service
 
     def _jsonify_record(self, record: logging.LogRecord) -> str:
         """Takes a record instance and converts it into a JSON string.
@@ -62,6 +89,7 @@ class OnclusiveJSONFormatter(logging.Formatter):
             json_record (str): The JSON string version of the log record.
         """
         record.message = super().formatMessage(record)
+        record.service = self.service
 
         json_record = self._jsonify_record(record)
 

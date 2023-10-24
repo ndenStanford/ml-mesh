@@ -8,6 +8,7 @@ from onclusiveml.core.logging.constants import (  # noqa: F401
     INFO,
     WARNING,
     OnclusiveLogMessageFormat,
+    OnclusiveService,
 )
 from onclusiveml.core.logging.formatters import (
     OnclusiveJSONFormatter,
@@ -31,4 +32,5 @@ __all__ = [
     "OnclusiveLogMessageFormat",
     "OnclusiveJSONLogRecord",
     "OnclusiveJSONFormatter",
+    "OnclusiveService",
 ]
