@@ -121,10 +121,10 @@ def test_metrics_endpoint(test_model_server):
 @pytest.mark.parametrize(
     "url, expected_app_info, expected_total, expected_rest",
     [
-        ("/v1/live", 1.0, 1.0, 0.0),
-        ("/v1/ready", 2.0, 1.0, 0.0),
-        ("/v1/live", 3.0, 2.0, 0.0),
-        ("/v1/ready", 4.0, 2.0, 0.0),
+        ("/no_model/v1/live", 1.0, 1.0, 0.0),
+        ("/no_model/v1/ready", 2.0, 1.0, 0.0),
+        ("/no_model/v1/live", 3.0, 2.0, 0.0),
+        ("/no_model/v1/ready", 4.0, 2.0, 0.0),
     ],
 )
 def test_metrics_values(

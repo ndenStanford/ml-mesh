@@ -12,14 +12,14 @@ from onclusiveml.serving.rest.serve import (
 
 def test_model_server_root(test_client):
     """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = test_client.get("/v1/")
+    root_response = test_client.get("/entity-linking/v1/")
 
     assert root_response.status_code == 200
 
 
 def test_model_server_liveness(test_client):
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
-    liveness_response = test_client.get("/v1/live")
+    liveness_response = test_client.get("/entity-linking/v1/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
@@ -27,7 +27,7 @@ def test_model_server_liveness(test_client):
 
 def test_model_server_readiness(test_client):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = test_client.get("/v1/ready")
+    readiness_response = test_client.get("/entity-linking/v1/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -91,7 +91,7 @@ def test_model_server_readiness(test_client):
 def test_model_server_prediction(test_client, payload, expected_response):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     response = test_client.post(
-        "/v1/model/entity-linking/predict",
+        "/entity-linking/v1/predict",
         json=payload,
     )
 
