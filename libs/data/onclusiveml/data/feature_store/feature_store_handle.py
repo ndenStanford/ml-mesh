@@ -56,7 +56,6 @@ class FeatureStoreHandle:
         self.data_source = data_source
         self.data_id_key = data_id_key
         self.data_ids = data_ids
-        self.get_entity_df_query()
         self.features = features
 
     def initialize(self) -> None:
