@@ -10,13 +10,15 @@ from onclusiveml.serving.rest.serve import (
 )
 
 # Source
-from src.serve.model_server import model_server
+from src.serve.model_server import get_model_server
 from src.serve.served_model import ServedSentModel
 
 
 @pytest.mark.order(4)
 def test_get_model_server():
     """Tests the utility method get_model_server."""
+    model_server = get_model_server()
+
     assert isinstance(model_server.model, ServedSentModel)
     assert not model_server.model.is_ready()
 

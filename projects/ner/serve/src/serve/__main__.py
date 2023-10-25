@@ -10,15 +10,25 @@ from src.serve.model import ServedNERModel
 from src.settings import get_settings
 
 
-settings = get_settings()
-artifacts = ServedModelArtifacts(settings)
+def get_model_server() -> ModelServer:
+    """Utility to retrieve a fully configured model server instance.
+
+    Returns:
+        ModelServer: A model server instance.
+    """
+    settings = get_settings()
+    artifacts = ServedModelArtifacts(settings)
+
+    # initialize model
+    ner_served_model = ServedNERModel(served_model_artifacts=artifacts)
+    # initialize model server
+    model_server = ModelServer(configuration=settings, model=ner_served_model)
+    Instrumentator.enable(model_server, app_name=settings.model_name)
+
+    return model_server
 
 
-# initialize model
-ner_served_model = ServedNERModel(served_model_artifacts=artifacts)
-# initialize model server
-model_server = ModelServer(configuration=settings, model=ner_served_model)
-Instrumentator.enable(model_server, app_name=settings.model_name)
+model_server = get_model_server()
 
 if __name__ == "__main__":
     # launch server process(es)
