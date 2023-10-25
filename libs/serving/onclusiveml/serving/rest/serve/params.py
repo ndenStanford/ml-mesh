@@ -7,6 +7,7 @@ from typing import Dict, Optional, Union
 from pydantic import Field, SecretStr, root_validator
 
 # Internal libraries
+from onclusiveml.core.logging import OnclusiveService
 from onclusiveml.serving.params import ServingBaseParams
 
 
@@ -23,6 +24,7 @@ class FastAPISettings(ServingBaseParams):
 class LogConfigSettings(ServingBaseParams):
     """Logging settings for the uvicorn server loggers."""
 
+    service: str = OnclusiveService.DEFAULT.value
     level: int = 20  # INFO
     json_format: bool = True
 
