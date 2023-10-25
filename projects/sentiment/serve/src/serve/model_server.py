@@ -23,6 +23,8 @@ def get_model_server() -> ModelServer:
     model_server = ModelServer(configuration=serving_params, model=sent_served_model)
     Instrumentator.enable(model_server, app_name="sentiment")
 
+    return model_server
+
 
 model_server = get_model_server()
 
