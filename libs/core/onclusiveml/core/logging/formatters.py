@@ -11,7 +11,7 @@ import pydantic
 from onclusiveml.core.logging.constants import OnclusiveService
 
 
-class OnclusiveJSONLogRecord(pydantic.BaseModel):
+class OnclusiveLogRecord(pydantic.BaseModel):
     """Standard JSON log format for all onclusive python (ML) applications."""
 
     # The asctime attribute is dynamic and depends on the fmt, so needs to be optional if users
@@ -43,16 +43,10 @@ class OnclusiveJSONLogRecord(pydantic.BaseModel):
         return value
 
 
-class OnclusiveJSONFormatter(logging.Formatter):
-    """Standard JSON log record formatter for all onclusive python (ML) applications.
+class OnclusiveFormatter(logging.Formatter):
+    """Default formatter for onclusve ML apps for non-JSON logs."""
 
-    Can be subclassed by overloading the
-    - `log_record_data_model` attributes and the
-    - `formatMessage` method
-    with custom data model and logic, respectively.
-    """
-
-    log_record_data_model = OnclusiveJSONLogRecord
+    log_record_data_model = OnclusiveLogRecord
 
     def __init__(
         self,
@@ -79,8 +73,48 @@ class OnclusiveJSONFormatter(logging.Formatter):
 
         return record
 
+    def _format_record(self, record: logging.LogRecord) -> logging.LogRecord:
+        """Adds `service` attribute to record, then formats its message attribute.
+
+        Args:
+            record (logging.LogRecord): The log record that needs formatting.
+
+        Returns:
+            record (logging.LogRecord): The formatted log record.
+        """
+        record = self._add_service_attribute(record)
+
+        record.message = super().formatMessage(record)
+
+        return record
+
+    def formatMessage(self, record: logging.LogRecord) -> str:
+        """Adds `service` attribute to record, then formats and returns its message attribute.
+
+        Args:
+            record (logging.LogRecord): The log record that is converted to JSON.
+
+        Returns:
+            formatted_record.message (str): The formatted message of the log record.
+        """
+        formatted_record = self._format_record(record)
+
+        return formatted_record.message
+
+
+class OnclusiveJSONFormatter(OnclusiveFormatter):
+    """Default formatter for onclusve ML apps for non-JSON logs.
+
+    Can be subclassed by overloading the
+    - `log_record_data_model` attributes and the
+    - `formatMessage` method
+    with custom data model and logic, respectively.
+    """
+
     def _jsonify_record(self, record: logging.LogRecord) -> str:
-        """Takes a record instance and converts it into a JSON string.
+        """Takes a log record instance and converts it into a JSON string.
+
+        The log record must contain all fields of the OnclusiveLogRecord schema.
 
         Args:
             record (logging.LogRecord): The log record that is converted to JSON string.
@@ -93,18 +127,16 @@ class OnclusiveJSONFormatter(logging.Formatter):
         return json_record
 
     def formatMessage(self, record: logging.LogRecord) -> str:
-        """Extends the `formatMessage` method with JSON conversion using OnclusiveJSONLogRecord.
+        """Extends the OnclusiveFormatter.formatMessage with a JSON conversion step.
 
         Args:
-            record (logging.LogRecord): The log record that is converted to JSON.
+            record (logging.LogRecord): The log record that is converted to JSON string.
 
         Returns:
-            json_record (str): The JSON string version of the log record.
+            json_message: The formatted log record message in JSON format.
         """
-        record_copy = self._add_service_attribute(record)
+        formatted_record = super()._format_record(record)
 
-        record.message = super().formatMessage(record)
+        json_message = self._jsonify_record(formatted_record)
 
-        json_record = self._jsonify_record(record_copy)
-
-        return json_record
+        return json_message
