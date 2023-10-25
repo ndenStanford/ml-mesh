@@ -75,10 +75,12 @@ def register() -> None:
         f"Registered entities: {[entity.name for entity in fs_handle.list_entities()]}"
     )
     logger.info(
-        f"Registered datasources: {[datasource.name for datasource in fs_handle.list_data_sources()]}"
+        f"Registered datasources: "
+        f"{[datasource.name for datasource in fs_handle.list_data_sources()]}"
     )
     logger.info(
-        f"Registered feature_views: {[feature_view.features for feature_view in fs_handle.list_feature_views()]}"
+        f"Registered feature_views: "
+        f"{[feature_view.features for feature_view in fs_handle.list_feature_views()]}"
     )
 
 
