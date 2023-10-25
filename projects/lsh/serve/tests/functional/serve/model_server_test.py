@@ -62,8 +62,7 @@ def test_model_server_predict(
         ),
     )
 
-    test_response = test_client.post("/lsh/v1/predict", json=input.dict())
-
+    test_response = test_client.post("/lsh/v1/predict", json=input_.dict())
 
     assert test_response.status_code == 200
     test_actual_predict_output = test_response.json()
