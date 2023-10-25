@@ -11,8 +11,9 @@ from onclusiveml.core.logging.constants import (  # noqa: F401
     OnclusiveService,
 )
 from onclusiveml.core.logging.formatters import (
+    OnclusiveFormatter,
     OnclusiveJSONFormatter,
-    OnclusiveJSONLogRecord,
+    OnclusiveLogRecord,
 )
 from onclusiveml.core.logging.handlers import get_default_handler
 from onclusiveml.core.logging.loggers import get_default_logger
@@ -30,7 +31,8 @@ __all__ = [
     "CRITICAL",
     "OnclusiveLogSettings",
     "OnclusiveLogMessageFormat",
-    "OnclusiveJSONLogRecord",
+    "OnclusiveLogRecord",
+    "OnclusiveFormatter",
     "OnclusiveJSONFormatter",
     "OnclusiveService",
 ]

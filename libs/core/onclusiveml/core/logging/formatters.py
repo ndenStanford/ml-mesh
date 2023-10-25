@@ -8,11 +8,14 @@ from typing import Literal, Optional
 import pydantic
 
 # Internal libraries
-from onclusiveml.core.logging.constants import OnclusiveService
+from onclusiveml.core.logging.constants import (
+    OnclusiveLogMessageFormat,
+    OnclusiveService,
+)
 
 
 class OnclusiveLogRecord(pydantic.BaseModel):
-    """Standard JSON log format for all onclusive python (ML) applications."""
+    """Standard (base) log format schema for all onclusive python (ML) applications."""
 
     # The asctime attribute is dynamic and depends on the fmt, so needs to be optional if users
     # decide to use a fmt that doesnt support the asctime attribute creation (e.g.
@@ -44,14 +47,14 @@ class OnclusiveLogRecord(pydantic.BaseModel):
 
 
 class OnclusiveFormatter(logging.Formatter):
-    """Default formatter for onclusve ML apps for non-JSON logs."""
+    """Default (base) formatter for onclusve ML apps for non-JSON logs."""
 
     log_record_data_model = OnclusiveLogRecord
 
     def __init__(
         self,
         service: str,
-        fmt: Optional[str] = None,
+        fmt: Optional[str] = OnclusiveLogMessageFormat.DEFAULT.value,
         datefmt: Optional[str] = None,
         style: Literal["%", "{", "$"] = "%",
         validate: bool = True,
@@ -103,7 +106,7 @@ class OnclusiveFormatter(logging.Formatter):
 
 
 class OnclusiveJSONFormatter(OnclusiveFormatter):
-    """Default formatter for onclusve ML apps for non-JSON logs.
+    """Default (base) formatter for onclusve ML apps for non-JSON logs.
 
     Can be subclassed by overloading the
     - `log_record_data_model` attributes and the

@@ -1,13 +1,14 @@
 """Handlers test suite."""
 
-# Standard Library
-import logging
-
 # 3rd party libraries
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging import OnclusiveJSONFormatter, get_default_handler
+from onclusiveml.core.logging import (
+    OnclusiveFormatter,
+    OnclusiveJSONFormatter,
+    get_default_handler,
+)
 from onclusiveml.core.logging.constants import (
     VALID_LOG_LEVELS,
     OnclusiveLogMessageFormat,
@@ -31,6 +32,7 @@ def test_get_default_handler(level, fmt_level, json_format):
 
     if json_format:
         assert isinstance(handler.formatter, OnclusiveJSONFormatter)
-        assert handler.formatter.service == "test-service"
     else:
-        assert isinstance(handler.formatter, logging.Formatter)
+        assert isinstance(handler.formatter, OnclusiveFormatter)
+
+    assert handler.formatter.service == "test-service"

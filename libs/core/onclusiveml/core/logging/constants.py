@@ -63,5 +63,5 @@ class OnclusiveLogMessageFormat(OnclusiveEnum):
     SIMPLE = "%(asctime)s - %(levelname)s - %(message)s"
     DETAILED = "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"  # noqa: E501
 
-    # requires OnclusiveJSONFormatter (subclass)
-    JSON = "%(service)s | %(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"  # noqa: E501
+    # requires OnclusiveFormatter (subclass)
+    DEFAULT = "%(service)s | %(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"  # noqa: E501

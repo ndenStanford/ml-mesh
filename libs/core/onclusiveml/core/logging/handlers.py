@@ -10,13 +10,16 @@ from onclusiveml.core.logging.constants import (
     OnclusiveLogMessageFormat,
     OnclusiveService,
 )
-from onclusiveml.core.logging.formatters import OnclusiveJSONFormatter
+from onclusiveml.core.logging.formatters import (
+    OnclusiveFormatter,
+    OnclusiveJSONFormatter,
+)
 
 
 def get_default_handler(
     service: str = OnclusiveService.DEFAULT.value,
     level: int = DEBUG,
-    fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name,
+    fmt_level: str = OnclusiveLogMessageFormat.DEFAULT.name,
     json_format: bool = True,
 ) -> logging.Handler:
     """Returns a logging Handler that defaults to onclusive ML JSON formatting conventions.
@@ -40,7 +43,7 @@ def get_default_handler(
     if json_format:
         formatter = OnclusiveJSONFormatter(service=service, fmt=fmt)
     else:
-        formatter = logging.Formatter(fmt=fmt)
+        formatter = OnclusiveFormatter(service=service, fmt=fmt)
 
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(formatter)

@@ -18,7 +18,7 @@ def get_default_logger(
     name: str,
     service: str = OnclusiveService.DEFAULT.value,
     level: int = DEBUG,
-    fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name,
+    fmt_level: str = OnclusiveLogMessageFormat.DEFAULT.name,
     json_format: bool = False,
     handler: Optional[logging.Handler] = None,
 ) -> logging.Logger:
