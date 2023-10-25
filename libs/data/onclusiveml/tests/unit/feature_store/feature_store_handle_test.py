@@ -181,6 +181,7 @@ def test_fetch_historical_features(feature_store_handle_instance):
 
     """
     # Call the fetch_historical_features method
+    feature_store_handle_instance.get_entity_df_query()
     feature_store_handle_instance.fetch_historical_features()
     feature_store_handle_instance.fs.get_historical_features.assert_called_with(
         entity_df=feature_store_handle_instance.entity_sql,
