@@ -33,3 +33,9 @@ class OnclusiveException(Exception):
 
     def __str__(self) -> str:
         return self.message
+
+
+class BaseClassNotFound(OnclusiveException):
+    """Base class not found error."""
+
+    message_format = "Class {base} is not a base class of {derived}"

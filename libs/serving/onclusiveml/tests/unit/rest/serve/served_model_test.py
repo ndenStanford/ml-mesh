@@ -1,7 +1,7 @@
 """Prediction schemas tests."""
 
 # Standard Library
-from typing import Any, List
+from typing import List
 
 # 3rd party libraries
 import pytest
@@ -17,68 +17,22 @@ class TestRecord(BaseModel):
     number_of_legs: int
 
 
-class TestModelPredictRequestModel(BaseModel):
-    """Test model."""
-
-    instances: List[TestRecord]
-
-
 class TestPrediction(BaseModel):
     """Test model."""
 
     animal: str
 
 
+class TestModelPredictRequestModel(BaseModel):
+    """Test model."""
+
+    instances: List[TestRecord]
+
+
 class TestModelPredictResponseModel(BaseModel):
     """Test model."""
 
     predictions: List[TestPrediction]
-
-
-class TestBioResponseModel(ServedModel.bio_response_model):
-    """Bio response model."""
-
-    type: str = "classifier"
-
-
-class TestServedModel(ServedModel):
-    """A minimal working example of a subclasses custom model for testing purposes."""
-
-    predict_request_model = TestModelPredictRequestModel
-    predict_response_model = TestModelPredictResponseModel
-    bio_response_model = TestBioResponseModel
-
-    def predict(
-        self, payload: predict_request_model, *args: Any, **kwargs: Any
-    ) -> predict_response_model:
-        """Inference method.
-
-        Implements a very basic animal classifier using the
-            - TestModelPredictRequestModel and
-            - TestModelPredictResponseModel
-        test classes.
-        """
-        predictions = []
-
-        for test_record in payload.instances:
-            if test_record.number_of_legs == 0:
-                predictions.append(TestPrediction(animal="snake"))
-            elif test_record.number_of_legs == 1:
-                predictions.append(TestPrediction(animal="flamingo"))
-            elif test_record.number_of_legs == 2:
-                predictions.append(TestPrediction(animal="robin"))
-            else:
-                predictions.append(TestPrediction(animal="dog"))
-
-        return self.predict_response_model(predictions=predictions)
-
-    def bio(self) -> bio_response_model:
-        """Model meta data method.
-
-        Implements a basic model bio data model using the TestBioResponseModel
-        test class.
-        """
-        return self.bio_response_model(name=self.name)
 
 
 # --- test the ServedModel class
@@ -118,9 +72,9 @@ def test_served_model_bio(test_model_name):
 
 
 # --- test the TestServedModel class
-def test_test_served_model_load(test_model_name):
+def test_test_served_model_load(test_model_name, get_test_served_model):
     """Tests the initialization and loading behaviour of the subclassed TestServedModel class."""
-    test_served_model = TestServedModel(name=test_model_name)
+    test_served_model = get_test_served_model(name=test_model_name)
 
     assert test_served_model.ready is not True
 
@@ -161,11 +115,11 @@ def test_test_served_model_load(test_model_name):
     ),
 )
 def test_test_served_model_predict(
-    test_model_name, test_inputs, test_predictions_expected
+    test_model_name, test_inputs, test_predictions_expected, get_test_served_model
 ):
     """Tests the predict method of the subclassed TestServedModel class."""
     # get loaded model
-    test_served_model = TestServedModel(name=test_model_name)
+    test_served_model = get_test_served_model(name=test_model_name)
 
     test_served_model.load()
     # score model & validate outputs
@@ -174,13 +128,13 @@ def test_test_served_model_predict(
     assert test_predictions_actual == test_predictions_expected
 
 
-def test_test_served_model_bio(test_model_name):
+def test_test_served_model_bio(test_model_name, get_test_served_model):
     """Tests the bio method of the subclassed TestServedModel class."""
     # get loaded model
-    test_served_model = TestServedModel(name=test_model_name)
+    test_served_model = get_test_served_model(name=test_model_name)
 
     test_served_model.load()
 
-    assert test_served_model.bio() == TestServedModel.bio_response_model(
+    assert test_served_model.bio() == get_test_served_model.bio_response_model(
         name=test_model_name
     )

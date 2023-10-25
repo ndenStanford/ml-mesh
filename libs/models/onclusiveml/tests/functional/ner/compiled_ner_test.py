@@ -61,7 +61,7 @@ def test_compiled_ner_extract_entities_latency(
 
     compiled_start = time.time()
     for i in range(n_runs):
-        compiled_ner.extract_entities(test_document, return_pos=True)
+        compiled_ner.extract_entities(test_document)
     average_compiled_duration = (time.time() - compiled_start) / n_runs
     logger.info(
         f"Average compiled ner inference duration: {average_compiled_duration}s"
