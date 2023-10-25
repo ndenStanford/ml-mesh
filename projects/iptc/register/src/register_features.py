@@ -5,17 +5,18 @@ from feast import Entity, FeatureView, Field
 from feast.types import String
 
 # Internal libraries
+from onclusiveml.core.logging import get_default_logger
 from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     RedshiftSourceCustom,
 )
-from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]
 
 
 logger = get_default_logger(__name__)
+
 
 def register() -> None:
     """Register features."""
@@ -70,9 +71,15 @@ def register() -> None:
     logger.info("Registering features...")
     fs_handle.register([iptc_features])
 
-    logger.info(f"Registered entities: {[entity.name for entity in fs_handle.list_entities()]}")
-    logger.info(f"Registered datasources: {[datasource.name for datasource in fs_handle.list_data_sources()]}")
-    logger.info(f"Registered feature_views: {[feature_view.features for feature_view in fs_handle.list_feature_views()]}")
+    logger.info(
+        f"Registered entities: {[entity.name for entity in fs_handle.list_entities()]}"
+    )
+    logger.info(
+        f"Registered datasources: {[datasource.name for datasource in fs_handle.list_data_sources()]}"
+    )
+    logger.info(
+        f"Registered feature_views: {[feature_view.features for feature_view in fs_handle.list_feature_views()]}"
+    )
 
 
 if __name__ == "__main__":
