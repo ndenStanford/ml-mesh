@@ -1,51 +1,55 @@
 """Settings."""
 
 # Standard Library
-from typing import Optional
+from functools import lru_cache
+from pathlib import Path
+from typing import List, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic import BaseSettings, SecretStr
+
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.serving.rest.serve.params import ServingParams
 
 
-class Settings(BaseSettings):
-    """API configuration."""
+class KnowledgeGraphDataSettings(ServingParams):
+    """Serve model parameters."""
 
-    # Generic settings
-
-    # api name
-    API_NAME: str = "Entity Linking"
-
-    # api description
-    API_DESCRIPTION: str = ""
-
-    # api environment
-    ENVIRONMENT: str = "stage"
-
-    # api debug level
-    DEBUG: bool = True
-
-    # api runtime
-    KUBERNETES_IN_POD: bool = False
-
-    # log level
-    LOGGING_LEVEL: str = "info"
-
-    # documentation endpoint
-    DOCS_URL: Optional[str] = None
-
-    # entity fishing endpoint
-    # our endpoint does not have load balancer for now
-    ENTITY_FISHING_ENDPOINT: str = (
-        "https://internal.api.ml.stage.onclusive.com/service/disambiguate"
-    )
-
-    # entity recognition endpoint
-    ENTITY_RECOGNITION_ENDPOINT: str = (
-        "https://eks-data-prod.onclusive.com/predictions/ner_neuron_v2"
-    )
-
-    API_KEY_NAME: str = "x-api-key"
-    INTERNAL_ML_ENDPOINT_API_KEY: str
+    source_bucket: str = "onclusive-model-store-dev"
+    source_path: str = "entity-fishing"
+    source_version: str = "0.0.6"
+    target_path: str = "/opt/entity-fishing/data/db"
+    knowledge_bases: List[str] = [
+        "kb",
+        "en",
+    ]
 
 
-settings = Settings()
+class ServedModelSettings(ServingParams):
+    """Serve model parameters."""
+
+    model_name: str = "entity-linking"
+    model_directory: Union[str, Path] = "."
+
+
+class ApplicationSettings(OnclusiveBaseSettings):
+    """App base settings."""
+
+    api_key_name: str = "x-api-key"
+    entity_fishing_endpoint: str
+    internal_ml_api_key: SecretStr
+    entity_recognition_endpoint: str
+    enable_metrics: bool = False
+
+
+class GlobalSettings(
+    ServedModelSettings, ApplicationSettings, KnowledgeGraphDataSettings
+):
+    """Global server settings."""
+
+
+@lru_cache
+def get_settings() -> BaseSettings:
+    """Returns instanciated global settings class."""
+    return GlobalSettings()

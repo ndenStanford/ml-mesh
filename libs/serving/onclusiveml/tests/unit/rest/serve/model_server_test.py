@@ -5,7 +5,6 @@ import time
 
 # 3rd party libraries
 import pytest
-from served_model_test import TestServedModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
@@ -50,7 +49,7 @@ def test_model_server___init__no_model(
     test_versioned_model_server_routes = [
         route
         for route in test_model_server.router.routes
-        if route.path.startswith(f"/{test_api_version}")
+        if route.path.startswith(f"/no_model/{test_api_version}")
     ]
     test_has_liveness_route = [
         route for route in test_versioned_model_server_routes if route.name == "live"
@@ -68,7 +67,10 @@ def test_model_server___init__no_model(
     assert test_model_server.configuration == test_serving_params
 
 
-@pytest.mark.parametrize("test_served_model_class", [ServedModel, TestServedModel])
+@pytest.mark.parametrize(
+    "test_served_model_class",
+    [ServedModel, pytest.lazy_fixture("get_test_served_model")],
+)
 @pytest.mark.parametrize(
     "test_add_model_predict, test_add_model_bio, test_api_version, test_on_startup",
     [
@@ -111,7 +113,7 @@ def test_model_server___init__with_model(
     test_versioned_model_server_routes = [
         route
         for route in test_model_server.router.routes
-        if route.path.startswith(f"/{test_api_version}")
+        if route.path.startswith(f"/{test_model_name}/{test_api_version}")
     ]
     test_has_predict_route = [
         route
