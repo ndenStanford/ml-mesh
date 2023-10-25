@@ -57,6 +57,7 @@ jobs:
   provision-runner:
     name: Provision self-hosted EC2 runner
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment: ${{ inputs.environment }}
     outputs:
       label: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).label }}
