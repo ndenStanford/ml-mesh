@@ -9,21 +9,25 @@ from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     RedshiftSourceCustom,
 )
+from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]
 
 
+logger = get_default_logger(__name__)
+
 def register() -> None:
     """Register features."""
     feature_registration_params = FeatureRegistrationParams()
+    logger.info("initializing feature-store handle...")
     fs_handle = FeatureStoreHandle(
         feast_config_bucket=feature_registration_params.feast_config_bucket,
         config_file=feature_registration_params.config_file,
         local_config_dir=feature_registration_params.local_config_dir,
         data_source=feature_registration_params.redshift_table,
     )
-
+    logger.info("Creating datastore...")
     iptc_data_source = RedshiftSourceCustom(
         table=feature_registration_params.redshift_table,
         timestamp_field=feature_registration_params.redshift_timestamp_field,
@@ -31,11 +35,13 @@ def register() -> None:
         schema=feature_registration_params.redshift_schema,
     )
 
+    logger.info("Creating entity...")
     iptc_entity = Entity(
         name=feature_registration_params.entity_name,
         join_keys=[feature_registration_params.entity_join_key],
     )
 
+    logger.info("Creating featureview...")
     iptc_features = FeatureView(
         # The unique name of this feature view. Two feature views in a single
         # project cannot have the same name
@@ -57,8 +63,16 @@ def register() -> None:
         # feature view
         tags={},
     )
+
+    logger.info("Registering entity...")
     fs_handle.register([iptc_entity])
+
+    logger.info("Registering features...")
     fs_handle.register([iptc_features])
+
+    logger.info(f"Registered entities: {[entity.name for entity in fs_handle.list_entities()]}")
+    logger.info(f"Registered datasources: {[datasource.name for datasource in fs_handle.list_data_sources()]}")
+    logger.info(f"Registered feature_views: {[feature_view.features for feature_view in fs_handle.list_feature_views()]}")
 
 
 if __name__ == "__main__":
