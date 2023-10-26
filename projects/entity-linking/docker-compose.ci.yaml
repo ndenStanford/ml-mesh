@@ -180,6 +180,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
