@@ -113,6 +113,11 @@ WORKDIR "${HOME}"
 
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.config .config
 
+ENV POETRY_VIRTUALENVS_CREATE=true
+ENV POETRY_VIRTUALENVS_IN_PORJECT=true
+
+RUN poetry config virtualenvs.create true \
+    && poetry config virtualenvs.in-project true
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache &&\
     rm -rf ~/.cache/pypoetry/artifacts
