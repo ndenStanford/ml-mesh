@@ -1,9 +1,9 @@
 """Feature registration inputs."""
 # Internal libraries
-from onclusiveml.tracking import TrackedParams
+from onclusiveml.data.feature_store import FeatureStoreParams
 
 
-class FeatureRegistrationParams(TrackedParams):
+class FeatureRegistrationParams(FeatureStoreParams):
     """Feature registration inputs."""
 
     feast_config_bucket: str
