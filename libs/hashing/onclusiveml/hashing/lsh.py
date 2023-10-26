@@ -11,14 +11,14 @@ import numpy as np
 from scipy.integrate import quad as integrate
 
 # Internal libraries
-from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
-from onclusiveml.nlp.word_tokenize import WordTokenizer
-from onclusiveml.syndicate.datasketch.minhash import MinHash
-from onclusiveml.syndicate.datasketch.storage import (
+from onclusiveml.hashing.minhash import MinHash
+from onclusiveml.hashing.storage import (
     _random_name,
     ordered_storage,
     unordered_storage,
 )
+from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
+from onclusiveml.nlp.word_tokenize import WordTokenizer
 
 
 def _probability(s: float, r: int, b: int) -> float:
@@ -203,7 +203,7 @@ class MinHashLSH(object):
         """Generates signature.
 
         Args:
-            minhash (datasketch.MinHash): The MinHash of the query set.
+            minhash (MinHash): The MinHash of the query set.
         """
         signature = [
             base64.b64encode(self._H(minhash.hashvalues[start:end])).decode("ascii")
@@ -219,7 +219,7 @@ class MinHashLSH(object):
         similarities greater than the threshold.
 
         Args:
-            minhash (datasketch.MinHash): The MinHash of the query set.
+            minhash (MinHash): The MinHash of the query set.
         """
         if len(minhash) != self.h:
             raise ValueError(
@@ -246,7 +246,7 @@ class MinHashLSH(object):
         is used with `shared_buffer`.
 
         Args:
-            minhash (datasketch.MinHash): The MinHash of the query set.
+            minhash (MinHash): The MinHash of the query set.
         """
         if len(minhash) != self.h:
             raise ValueError(
@@ -350,7 +350,7 @@ class MinHashLSH(object):
         """Returns the bucket allocation counts restricted to the list of keys given.
 
         Note:
-            see :func:`~datasketch.MinHashLSH.get_counts` above
+            see :func:`~MinHashLSH.get_counts` above
 
         Args:
             *keys (hashable): the keys for which to get the bucket allocation

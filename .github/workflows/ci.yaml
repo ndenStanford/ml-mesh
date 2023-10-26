@@ -102,7 +102,7 @@ jobs       :
             integration: false
             functional: false
 
-          - name: syndicate
+          - name: hashing
             integration: false
             functional: false
 
