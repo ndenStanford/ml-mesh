@@ -17,7 +17,7 @@ from onclusiveml.serving.rest.testing.load_test import (
 )
 
 # Source
-from src.serve.params import ServedModelArtifacts
+from src.serve.artifacts import ServedModelArtifacts
 from src.serve.server_models import (
     PredictConfiguration,
     PredictInputContentModel,

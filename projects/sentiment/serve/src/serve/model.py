@@ -11,18 +11,16 @@ from onclusiveml.models.sentiment import CompiledSent
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.params import ServedModelArtifacts
-# from src.serve.server_models import (
-#     BioResponseSchema,
-#     PredictionOutputContent,
-#     PredictRequestSchema,
-#     PredictResponseSchema,
-# )
+from src.serve.artifacts import ServedModelArtifacts
 from src.serve.schemas import (
     BioResponseSchema,
     PredictRequestSchema,
     PredictResponseSchema,
 )
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 class ServedSentModel(ServedModel):
@@ -76,14 +74,18 @@ class ServedSentModel(ServedModel):
             sentences=inputs.content, **configuration.dict()
         )
 
-        sentiment_model = PredictionOutputContent(
-            label=sentiment.get("label"),
-            negative_prob=sentiment.get("negative_prob"),
-            positive_prob=sentiment.get("positive_prob"),
-            entities=sentiment.get("entities"),
-        )
+        attributes = {
+            "label": sentiment.get("label"),
+            "negative_prob": sentiment.get("negative_prob"),
+            "positive_prob": sentiment.get("positive_prob"),
+            "entities": sentiment.get("entities"),
+        }
 
-        return PredictResponseSchema(outputs=sentiment_model)
+        return PredictResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=settings.model_name,
+            attributes=attributes,
+        )
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sent model.

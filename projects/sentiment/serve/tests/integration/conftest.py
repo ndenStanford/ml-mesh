@@ -8,8 +8,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Source
-from src.serve.model_server import get_model_server
-from src.serve.params import ServedModelArtifacts
+from src.serve.artifacts import ServedModelArtifacts
+from src.serve.server import get_model_server
 
 
 @pytest.fixture

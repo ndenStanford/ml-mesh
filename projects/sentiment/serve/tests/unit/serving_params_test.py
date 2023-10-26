@@ -10,7 +10,7 @@ import os
 import pytest
 
 # Source
-from src.serve.params import ServedModelArtifacts, ServedModelParams
+from src.serve.artifacts import ServedModelArtifacts, ServedModelParams
 
 
 @pytest.mark.parametrize(
