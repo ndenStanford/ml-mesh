@@ -16,7 +16,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: register
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
     volumes:
       - type: bind
         source: register/src
