@@ -12,11 +12,16 @@ from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
 from src.serve.params import ServedModelArtifacts
-from src.serve.server_models import (
-    BioResponseModel,
-    PredictionOutputContent,
-    PredictRequestModel,
-    PredictResponseModel,
+# from src.serve.server_models import (
+#     BioResponseSchema,
+#     PredictionOutputContent,
+#     PredictRequestSchema,
+#     PredictResponseSchema,
+# )
+from src.serve.schemas import (
+    BioResponseSchema,
+    PredictRequestSchema,
+    PredictResponseSchema,
 )
 
 
@@ -29,9 +34,9 @@ class ServedSentModel(ServedModel):
         bio_response_model (Type[BaseModel]): Response model for bio
     """
 
-    predict_request_model: Type[BaseModel] = PredictRequestModel
-    predict_response_model: Type[BaseModel] = PredictResponseModel
-    bio_response_model: Type[BaseModel] = BioResponseModel
+    predict_request_model: Type[BaseModel] = PredictRequestSchema
+    predict_response_model: Type[BaseModel] = PredictResponseSchema
+    bio_response_model: Type[BaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initalize the served Sent model with its artifacts.
@@ -54,14 +59,14 @@ class ServedSentModel(ServedModel):
 
         self.ready = True
 
-    def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
+    def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded Sent model.
 
         Args:
-            payload (PredictRequestModel): The input data for making predictions
+            payload (PredictRequestSchema): The input data for making predictions
 
         Returns:
-            PredictResponseModel: Response containing extracted entities
+            PredictResponseSchema: Response containing extracted entities
         """
         # content and configuration from payload
         configuration = payload.configuration
@@ -78,12 +83,12 @@ class ServedSentModel(ServedModel):
             entities=sentiment.get("entities"),
         )
 
-        return PredictResponseModel(outputs=sentiment_model)
+        return PredictResponseSchema(outputs=sentiment_model)
 
-    def bio(self) -> BioResponseModel:
+    def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sent model.
 
         Returns:
-            BioResponseModel: Bio information about the model
+            BioResponseSchema: Bio information about the model
         """
-        return BioResponseModel(model_name=self.name, model_card=self.model_card)
+        return BioResponseSchema(model_name=self.name, model_card=self.model_card)
