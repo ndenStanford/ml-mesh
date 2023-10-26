@@ -8,7 +8,7 @@ from typing import Any, Callable
 from onclusiveml.core.logging import INFO, get_default_logger
 
 
-logger = get_default_logger(__name__, INFO)
+logger = get_default_logger(__name__, level=INFO)
 
 
 def timing_decorator(func: Callable) -> Callable:

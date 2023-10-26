@@ -31,24 +31,24 @@ from onclusiveml.serving.rest.testing.load_test.params import (
 
 # approximate effect of locust.log.setup_logging with internal utilities
 get_default_logger(
-    "",
-    INFO,
+    name="",
+    level=INFO,
     fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
 )
 
 get_default_logger(
-    "locust",
-    INFO,
+    name="locust",
+    level=INFO,
     fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
 )
 
 get_default_logger(
-    "locust.stats_logger",
-    INFO,
+    name="locust.stats_logger",
+    level=INFO,
     fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
 )
 
-logger = get_default_logger(__name__, INFO, json_format=False)
+logger = get_default_logger(__name__, level=INFO, json_format=False)
 
 
 def sig_term_handler() -> None:

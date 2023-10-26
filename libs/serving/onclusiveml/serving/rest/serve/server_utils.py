@@ -267,11 +267,7 @@ def get_logging_config(
     if json_format:
         logging_config = JSON_MODEL_SERVER_LOGGING_CONFIG
         # validate service name
-        if service not in OnclusiveService.list():
-            raise ValueError(
-                f"The specified service reference {service} is not in the valid range: "
-                f"{OnclusiveService.list()}"
-            )
+        OnclusiveService.validate(service)
         # set service name
         for formatter in logging_config["formatters"].values():
             formatter["service"] = service

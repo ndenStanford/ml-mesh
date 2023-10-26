@@ -54,6 +54,23 @@ class OnclusiveService(OnclusiveEnum):
     # --- prompt backend
     PROMPT_BACKEND_SERVE = "prompt-backend-serve"
 
+    @classmethod
+    def validate(cls, service: str) -> None:
+        """Validates a service name against the internal service range.
+
+        Args:
+            service (str): Onlusive service name to be validated
+
+        Raises:
+            ValueError: If the `service` is not a value from the list of class attributes., this
+                execption will be raised.
+        """
+        if service not in cls.list():
+            raise ValueError(
+                f"The specified service reference {service} is not in the valid range: "
+                f"{OnclusiveService.list()}"
+            )
+
 
 class OnclusiveLogMessageFormat(OnclusiveEnum):
     """Standardized log message formats."""

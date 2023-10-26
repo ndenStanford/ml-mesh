@@ -34,17 +34,6 @@ class OnclusiveLogRecord(pydantic.BaseModel):
     class Config:
         orm_mode = True
 
-    @pydantic.validator("service")
-    def check_service(value) -> str:
-        """Validate the service field against standardized log service values."""
-        if value not in OnclusiveService.list():
-            raise ValueError(
-                f"The specified service reference {value} is not in the valid range: "
-                f"{OnclusiveService.list()}"
-            )
-
-        return value
-
 
 class OnclusiveFormatter(logging.Formatter):
     """Default (base) formatter for onclusve ML apps for non-JSON logs."""
@@ -60,6 +49,8 @@ class OnclusiveFormatter(logging.Formatter):
         validate: bool = True,
     ) -> None:
         super().__init__(fmt, datefmt, style, validate)
+
+        OnclusiveService.validate(service)
 
         self.service = service
 

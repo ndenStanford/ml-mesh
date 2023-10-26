@@ -12,7 +12,7 @@ from onclusiveml.core.decorator import decorator
 from onclusiveml.core.logging import INFO, get_default_logger
 
 
-logger = get_default_logger(__name__, INFO)
+logger = get_default_logger(name=__name__, level=INFO)
 
 
 def _retry(
