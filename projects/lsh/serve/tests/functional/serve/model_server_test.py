@@ -55,14 +55,14 @@ def test_model_server_predict(
     Uses the custom data models for validation and the test files from the model
     artifact as ground truth for the regression test element.
     """
-    input = PredictRequestModel(
+    input_ = PredictRequestModel(
         configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
             content=test_predict_input,
         ),
     )
 
-    test_response = test_client.post("/lsh/v1/predict", json=input.dict())
+    test_response = test_client.post("/lsh/v1/predict", json=input_.dict())
 
     assert test_response.status_code == 200
     test_actual_predict_output = test_response.json()
