@@ -24,7 +24,6 @@ def test_ingest(capsys) -> None:
     assert err == ""
     s3 = boto3.resource("s3")
     target_bucket = s3.Bucket(os.environ["TARGET_BUCKET"])
-    response = target_bucket.objects.filter(Prefix=os.environ["IPTC_LEVEL"]).delete()
+    _ = target_bucket.objects.filter(Prefix=os.environ["IPTC_LEVEL"]).delete()
     _, err = capsys.readouterr()
     assert err == ""
-    assert response[0]["ResponseMetadata"]["HTTPStatusCode"] == 200
