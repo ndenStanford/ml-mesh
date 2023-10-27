@@ -31,7 +31,7 @@ class ModelServer(FastAPI):
 
     def __init__(
         self,
-        configuration: ServingParams = ServingParams(),
+        configuration: ServingParams,
         model: Optional[ServedModel] = None,
         *args: Any,
         **kwargs: Any,
@@ -106,29 +106,7 @@ class ModelServer(FastAPI):
                 model=self.model, api_version=configuration.api_version
             )
             self.include_router(model_bio_router)
-        # finally, generate and attach the uvicorn server process configuration object instance
-        self.generate_uvicorn_config()
-
-    def generate_uvicorn_config(self) -> uvicorn.Config:
-        """Utility for generating and attaching a uvicorn configuration.
-
-        Sources its parameters from the `configuration` arugment specified during initialization
-        of the RESTApp instance.
-        """
-        self.uvicorn_configuration = uvicorn.Config(
-            app=self,
-            host=self.configuration.uvicorn_settings.host,  # e.g "0.0.0.0",
-            log_config=self.configuration.uvicorn_settings.log_config,  # str/Dict type
-            port=self.configuration.uvicorn_settings.http_port,
-        )
-
-        return self.uvicorn_configuration
 
     def serve(self) -> None:
         """Utility for running the fully configured app programmatically."""
-        # ensure the serving parameters have populated a server config by this point
-        if not hasattr(self, "uvicorn_configuration"):
-            self.generate_uvicorn_config()
-
-        server = uvicorn.Server(self.uvicorn_configuration)
-        server.run()
+        uvicorn.run(**self.configuration.uvicorn_settings.dict())

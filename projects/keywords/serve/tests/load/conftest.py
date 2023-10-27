@@ -10,6 +10,7 @@ import pytest
 from locust import HttpUser, between, task
 
 # Internal libraries
+from onclusiveml.serving.rest.serve import ServingParams
 from onclusiveml.serving.rest.testing.load_test import (
     Criterion,
     LoadTestingParams,
@@ -26,6 +27,12 @@ from src.serve.server_models import (
 
 
 @pytest.fixture
+def test_serving_params():
+    """Serving params fixture."""
+    return ServingParams()
+
+
+@pytest.fixture
 def test_served_model_artifacts():
     """Test served model artifact."""
     return ServedModelArtifacts()
@@ -38,15 +45,15 @@ def test_model_name(test_served_model_artifacts):
 
 
 @pytest.fixture
-def test_model_bio_endpoint_url(test_model_name):
+def test_model_bio_endpoint_url(test_serving_params, test_model_name):
     """Test model bio endpoint URL."""
-    return f"/v1/model/{test_model_name}/bio"
+    return f"/{test_serving_params.api_version}/model/{test_model_name}/bio"
 
 
 @pytest.fixture
-def test_model_predict_endpoint_url(test_model_name):
+def test_model_predict_endpoint_url(test_serving_params, test_model_name):
     """Test model predict endpoint URL."""
-    return f"/v1/model/{test_model_name}/predict"
+    return f"/{test_serving_params.api_version}/model/{test_model_name}/predict"
 
 
 @pytest.fixture

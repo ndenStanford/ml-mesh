@@ -1,7 +1,7 @@
 """Serving parameters."""
 
 # Standard Library
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
 from pydantic import Field, SecretStr, root_validator
@@ -77,9 +77,15 @@ class UvicornSettings(ServingBaseParams):
     uvicorn/config.py#L187
     """
 
-    http_port: int = 8000
+    app: str = "src.serve.model_server:model_server"
+    port: int = 8000
     host: str = "0.0.0.0"
     log_config: Optional[Union[str, Dict]] = LogConfigSettings().dict()
+    reload: bool = False
+    reload_dirs: Optional[Union[List[str], str]] = None
+    reload_delay: float = 0.25
+    reload_includes: Optional[Union[List[str], str]] = None
+    reload_excludes: Optional[Union[List[str], str]] = None
     workers: int = 1
 
     class Config:

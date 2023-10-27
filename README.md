@@ -14,7 +14,7 @@ This repository contains the modular implementation of the logic powering Onclus
 
 A top-level doc on can be found [here](./libs/README.md)
 
-All internal libraries can be found [here](./libs). See individual library for detailed
+All internal libraries can be found [here](./libs). See individual library for  detailed
 documentation.
 
 ### Core images
@@ -33,7 +33,8 @@ An overview of developer utilitites and existing images on can be found [here](.
 
 - **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to
 bring data into our internal storage.
-- **prepare**: dataset pre-processing and feature engineering (if any).
+- **register**: register features to be used in training component.
+  - [see here](./projects/docs/00_register.md) for this component's doc
 - **train**: model training and registering to internal model registry.
   - [see here](./projects/docs/01_train.md) for this component's doc
 - **compile**: model compilation (optimized for serving) and registering to internal model registry

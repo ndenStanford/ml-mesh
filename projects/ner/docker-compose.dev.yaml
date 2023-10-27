@@ -171,7 +171,11 @@ services:
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/ner
@@ -269,6 +273,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [integration]
@@ -293,6 +299,9 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [functional]
@@ -320,7 +329,10 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
+    # serving params
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
