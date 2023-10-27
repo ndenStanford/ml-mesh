@@ -11,7 +11,8 @@ ENV NB_UID=1000
 ENV NB_PREFIX=/
 ENV SHELL=/bin/bash
 ENV HOME="/home/${NB_USER}"
-ENV PYTHONPATH="${HOME}/pip-packages"
+#ENV PIP_TARGET="${HOME}/user-pip-packages"
+ENV PYTHONPATH="${HOME}/user-pip-packages"
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
@@ -103,6 +104,9 @@ USER "${NB_UID}"
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
 
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+
+RUN mkdir "${HOME}/user-pip-packages" \
+    && chown "${NB_USER}:users" "${HOME}/user-pip-packages"
 
 RUN touch "${HOME}/test-file" \
     && chown "${NB_USER}:users" "${HOME}/test-file"
