@@ -9,7 +9,7 @@ from typing import Any, Callable, Generator, Iterable, List, Optional, Union
 import numpy as np
 
 # Internal libraries
-from onclusiveml.syndicate.datasketch.hashfunc import sha1_hash32
+from onclusiveml.hashing.hashfunc import sha1_hash32
 
 
 # The size of a hash value in number of bytes
@@ -44,14 +44,7 @@ class MinHash(object):
             state from another MinHash.
 
     Note:
-        To save memory usage, consider using :class:`datasketch.LeanMinHash`.
-
-    Note:
-        Since version 1.1.1, MinHash will only support serialization using
-        `pickle`_. ``serialize`` and ``deserialize`` methods are removed,
-        and are supported in :class:`datasketch.LeanMinHash` instead.
-        MinHash serialized before version 1.1.1 cannot be deserialized properly
-        in newer versions (`need to migrate? <https://github.com/ekzhu/datasketch/issues/18>`_).
+        To save memory usage, consider using :class:`LeanMinHash`.
 
     Note:
         Since version 1.1.3, MinHash uses Numpy's random number generator
@@ -212,7 +205,7 @@ class MinHash(object):
         """Deepcopy.
 
         Returns:
-            datasketch.MinHash: A copy of this MinHash by exporting its state.
+            MinHash: A copy of this MinHash by exporting its state.
         """
         return MinHash(
             seed=self.seed,

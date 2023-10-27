@@ -52,8 +52,8 @@ ALL_PROJECTS:= \
 	summarization \
 	entity-linking \
 	ner \
-	lsh \
-	iptc
+	iptc \
+	lsh
 
 ## SUBFOLDER MAKEFILES
 include apps/makefile.mk
