@@ -10,10 +10,10 @@ from src.serve.served_model import ServedSentModel
 
 
 def get_model_server() -> ModelServer:
-    """Utility method for prepping a fully configured model server instance ready to serve.
+    """Utility to retrieve a fully configured model server instance.
 
     Returns:
-        ModelServer: Configured model server instance
+        ModelServer: A model server instance.
     """
     # initialize model
     served_model_artifacts = ServedModelArtifacts()
@@ -26,7 +26,8 @@ def get_model_server() -> ModelServer:
     return model_server
 
 
+model_server = get_model_server()
+
 if __name__ == "__main__":
-    model_server = get_model_server()
     # launch server process(es)
     model_server.serve()

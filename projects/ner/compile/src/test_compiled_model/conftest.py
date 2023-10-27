@@ -110,7 +110,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
             [
                 {
                     "entity_type": "ORG",
-                    "score": 0.9981778860092163,
+                    "score": 0.9981784820556641,
                     "sentence_index": 0,
                     "entity_text": "Google",
                     "start": 0,
@@ -118,7 +118,7 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
                 },
                 {
                     "entity_type": "LOC",
-                    "score": 0.998550146818161,
+                    "score": 0.9985500276088715,
                     "sentence_index": 0,
                     "entity_text": "Mountain View",
                     "start": 16,

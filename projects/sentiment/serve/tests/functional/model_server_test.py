@@ -22,14 +22,15 @@ from src.serve.server_models import (
 
 
 @pytest.mark.order(5)
-def test_model_server_root(test_client):
+def test_model_server_root(test_client, test_serving_params):
     """Tests the running ModelServer instance's root endpoint."""
     root_response = test_client.get("/sentiment/v1/")
+
     assert root_response.status_code == 200
 
 
 @pytest.mark.order(6)
-def test_model_server_liveness(test_client):
+def test_model_server_liveness(test_client, test_serving_params):
     """Tests the running ModelServer instance's liveness endpoint."""
     liveness_response = test_client.get("/sentiment/v1/live")
 
@@ -38,7 +39,7 @@ def test_model_server_liveness(test_client):
 
 
 @pytest.mark.order(6)
-def test_model_server_readiness(test_client):
+def test_model_server_readiness(test_client, test_serving_params):
     """Tests the running ModelServer instance's readiness endpoint."""
     readiness_response = test_client.get("/sentiment/v1/ready")
 
@@ -49,7 +50,6 @@ def test_model_server_readiness(test_client):
 @pytest.mark.order(7)
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
 def test_model_server_predict(
-    test_model_name,
     test_client,
     test_inputs,
     test_predictions,
@@ -107,9 +107,7 @@ def test_model_server_predict(
     ],
 )
 def test_served_sent_model_with_entities_predict(
-    test_model_name,
     test_client,
-    test_served_model_artifacts,
     test_sample_content,
     test_sample_entities,
     test_sample_response,
