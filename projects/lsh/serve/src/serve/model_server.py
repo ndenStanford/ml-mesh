@@ -18,6 +18,7 @@ def get_model_server() -> ModelServer:
     lsh_served_model = ServedLshModel()
     # initialize model server
     serving_params = ServingParams()
+
     model_server = ModelServer(configuration=serving_params, model=lsh_served_model)
     Instrumentator.enable(model_server, app_name="lsh")
 
