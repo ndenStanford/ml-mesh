@@ -1,17 +1,29 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${BASE_IMAGE_TAG} as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
+ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-RUN mkdir -p "${HOME}" && \
-    chown -R "${USER}:users" "${HOME}"
+# create non root user
+RUN useradd -l -M -s /bin/bash -N -u 1000 app \
+ && mkdir -p "${HOME}" \
+ && mkdir -p "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users /usr/local/bin \
+ && chown -R ${USER}:users /usr/local/lib \
+ && chown -R ${USER}:users /usr/local/share
 
+# hadolint ignore=DL3002
+USER root
+
+# setup workspace
 WORKDIR "/"
 
 # install - poetry requirements
@@ -26,23 +38,18 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-# hadolint ignore=DL3002
-USER root
-
-RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
+RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+    poetry cache clear pypi --all -q
 
-USER app
 
 # --- production stage
 FROM builder as production
 
-# required to access mounted docker volume with write permission
-# hadolint ignore=DL3002
-USER root
+USER app
+
+ENV PYTHONPATH=${HOME}
 
 # --- test build stage
 FROM builder as development
@@ -55,6 +62,4 @@ WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction
 
-# required to access mounted docker volume with write permission
-# hadolint ignore=DL3002
-USER root
+USER app

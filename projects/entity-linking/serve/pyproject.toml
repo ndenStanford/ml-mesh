@@ -14,7 +14,7 @@ serving = {path = "../../../libs/serving"}
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
 pydantic = "1.10.4"
-uvicorn = "0.22.0"
+uvicorn = "0.23.2"
 pytest-unordered = "^0.5.2"
 boto3 = "1.26.58"
 
