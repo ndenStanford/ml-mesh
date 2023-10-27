@@ -4,7 +4,7 @@ This folder contains the implementation of all our machine learning projects. Ea
  into a maximum of 5 components:
 
 - ingest
-- prepare
+- register
 - train
 - compile
 - serve

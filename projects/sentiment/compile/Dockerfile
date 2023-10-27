@@ -26,12 +26,16 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
+# hadolint ignore=DL3002
+USER root
+
 RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+USER app
 
 # --- production stage
 FROM builder as production
