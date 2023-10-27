@@ -311,7 +311,7 @@ jobs       :
 
   # gch-summarization
 
-  run-gch-sumamrization-project:
+  run-gch-summarization-project:
     name: GCH-Summarization Project components
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests]
