@@ -43,13 +43,23 @@ class ServedSentModel(ServedModel):
             served_model_artifacts (ServedModelArtifacts): Served model artifact
         """
         self.served_model_artifacts = served_model_artifacts
-
+        self._model = None
         super().__init__(name=served_model_artifacts.model_name)
+        # self.load() # REMOVE
+
+    @property
+    def model(self) -> CompiledSent:
+        """Model class."""
+        if self.ready:
+            return self._model
+        raise ValueError(
+            "Model has not been initialized. Please call .load() before making a prediction"
+        )
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledSent instance
-        self.model = CompiledSent.from_pretrained(
+        self._model = CompiledSent.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
@@ -67,12 +77,10 @@ class ServedSentModel(ServedModel):
             PredictResponseSchema: Response containing extracted entities
         """
         # content and configuration from payload
-        configuration = payload.configuration
-        inputs = payload.inputs
+        attributes = payload.attributes
+        parameters = payload.parameters
         # score the model
-        sentiment = self.model.extract_sentiment(
-            sentences=inputs.content, **configuration.dict()
-        )
+        sentiment = self.model(sentences=attributes.content, **parameters.dict())
 
         attributes = {
             "label": sentiment.get("label"),
