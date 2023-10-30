@@ -1,7 +1,7 @@
 """Ner v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -12,12 +12,13 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 
     content: str = ""
 
+
 class InputEntity(JsonApiSchema):
     """Input entity information from NER result.
 
     Attributes:
         entity_type (Optional[str]): The type of the extracted entity.
-        text (str): The text of the extracted entity
+        entity_text (str): The text of the extracted entity
         score (Optional[float]): Confidence score of extracted entity
         sentence_index (Optional[int]): Index of the sentence containing the entity
         start (Optiona[int]): Start position of entity in the sentence
@@ -25,7 +26,7 @@ class InputEntity(JsonApiSchema):
     """
 
     entity_type: Optional[str]
-    text: str
+    entity_text: str
     score: Optional[float]
     sentence_index: Optional[int]
     start: Optional[int]
@@ -34,7 +35,7 @@ class InputEntity(JsonApiSchema):
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data.
-    
+
     Attributes:
         entities (Optional[List[InputEntity]]):
                 List of detected entities from the NER model
@@ -57,7 +58,7 @@ class OutputEntity(InputEntity):
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data.
-    
+
     Attributes:
         label (str): Overall sentiment of the article
         negative_prob (float): Probablity of negative sentiment
