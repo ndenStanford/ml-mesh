@@ -13,7 +13,7 @@ consistent and maintainable ecosystem.
 | `compile`        | `core`                    | Compilation utilities for `transformers` type models  | inf1            |   x  |             |      x     |
 | `models`         | `compile`                 | Model classes to be used in project `serve` component | inf1, cpu       |   x  |      x      |      x     |
 | `nlp`            | `core`                    | Cross project NLP utilities                           | cpu             |   x  |             |            |
-| `syndicate`      | `nlp      `               | Cross project hashing utilities                       | cpu             |   x  |             |            |
+| `hashing`        | `nlp      `               | Cross project hashing utilities                       | cpu             |   x  |             |            |
 
 ## Dependency management
 
