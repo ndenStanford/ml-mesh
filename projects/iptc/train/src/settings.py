@@ -51,7 +51,7 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+class BaseTrackedModelSpecs(TrackedModelSpecs):
     """Trained model settings."""
 
     project: str = "onclusive/iptc"
@@ -90,7 +90,6 @@ class IPTCModelParams(TrackedParams):
     """IPTC Model parameters."""
 
     huggingface_pipeline_task: str = "text-classification"
-    huggingface_model_reference: str = "xlm-roberta-base"
 
     iptc_settings: IPTCSettings = IPTCSettings()
 
@@ -108,7 +107,6 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     model_params: IPTCModelParams = IPTCModelParams()
     model_inputs: Inputs = Inputs()
     # admin
-    local_model_dir: str = os.path.join(".", "models/model.pt")
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
 

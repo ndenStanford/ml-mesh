@@ -17,9 +17,9 @@ logger = get_default_logger(__name__)
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CLASS_DICT_FIRST,
+    BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
     TrackedIPTCModelSpecs,
-    UncompiledTrackedModelSpecs,
 )
 
 
@@ -27,7 +27,7 @@ from src.settings import (  # type: ignore[attr-defined]
 def main() -> None:
     """Download and Register main method."""
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
+    base_model_specs = BaseTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
     # get base model version assets to local disk
     base_model_card: Dict = base_model_version.download_config_from_model_version(
