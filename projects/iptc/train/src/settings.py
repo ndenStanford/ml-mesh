@@ -63,7 +63,7 @@ class BaseTrackedModelSpecs(TrackedModelSpecs):
     mode: str = Field(Mode.READ_ONLY)
 
     class Config:
-        env_prefix = "uncompiled_"
+        env_prefix = "base_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
