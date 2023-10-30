@@ -17,15 +17,58 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: entity-linking
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '9000', --reload, --log-level, debug]
+    command: [python, -m, src.serve.__main__]
     profiles: [serve]
     ports:
       - 9000:9000
     environment:
-      ENVIRONMENT: dev
+      ENVIRONMENT: stage
       DOCS_URL: /docs
+      INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
+    depends_on:
+      - entity-fishing-backend
+      - ner-serve
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  serve-download-model:
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: entity-linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
+    command: [python, -m, src.download.__main__]
+    profiles: [serve]
+    volumes:
+      - entity-fishing-volume:/opt/entity-fishing/data/db
+    environment:
+      ENVIRONMENT: stage
+      DOCS_URL: /docs
+      INTERNAL_ML_API_KEY: ''
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
+      ONCLUSIVEML_SERVING_SOURCE_BUCKET: onclusive-model-store-prod
+      ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
+    depends_on:
+      - ner-serve-download-model
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -41,14 +84,17 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: entity-linking
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      ENVIRONMENT: ci
+      ENVIRONMENT: stage
       DOCS_URL: /docs
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -64,16 +110,170 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: entity-linking
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      ENVIRONMENT: ci
+      ENVIRONMENT: stage
       DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
+    hostname: onclusiveml
+    depends_on:
+      entity-fishing-backend:
+        condition: service_healthy
+      ner-serve:
+        condition: service_healthy
+    networks:
+      - onclusive-net
+
+  # functional tests
+  serve-functional:
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: entity-linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    environment:
+      ENVIRONMENT: stage
+      DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
+    hostname: onclusiveml
+    depends_on:
+      entity-fishing-backend:
+        condition: service_healthy
+      ner-serve:
+        condition: service_healthy
+    networks:
+      - onclusive-net
+
+  # ner serve
+  ner-serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/ner/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: ner
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
+    profiles: [serve, integration, functional, load]
+    volumes:
+      - ner-volume:/projects/ner/serve/models
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://ner-serve:8000/ner/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # ner serve download model
+  ner-serve-download-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/ner/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: ner
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
+    volumes:
+      - ner-volume:/projects/ner/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+      NEPTUNE_PROJECT: onclusive/ner
+      NEPTUNE_MODEL_ID: NER-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-39
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  # entity fishing backend
+  entity-fishing-backend:
+    build:
+      context: ../../
+      dockerfile: apps/entity-fishing/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: entity-fishing
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
+    restart: on-failure
+    command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes, -d]
+    profiles: [serve, integration, functional, load]
+    volumes:
+      - entity-fishing-volume:/opt/entity-fishing/data/db
+    ports:
+      - 8090:8090
+      - 8091:8091
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [CMD-SHELL, sleep 10s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 15s
+    environment:
+      ENVIRONMENT: stage
     hostname: onclusiveml
     networks:
       - onclusive-net
 
 networks:
   onclusive-net:
+
+volumes :
+  entity-fishing-volume:
+  ner-volume:

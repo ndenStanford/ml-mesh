@@ -8,6 +8,10 @@ services:
 
   # serving image
   serve:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/lsh/serve
     build:
       context: ../../
       dockerfile: projects/lsh/serve/Dockerfile
@@ -20,21 +24,25 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
-    profiles: [serve, functional]
-    ports:
-      - 8000:8000
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+    profiles: [serve, functional]
+    ports:
+      - 8000:8000
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/lsh/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -44,11 +52,11 @@ services:
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    profiles: [unit]
     environment:
       ENVIRONMENT: dev
     hostname: onclusiveml
@@ -57,15 +65,16 @@ services:
 
   # integration tests
   serve-integration:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
-    profiles: [integration]
     volumes:
       - type: bind
         source: serve
         target: /projects/lsh/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
     environment:
-      ENVIRONMENT: dev
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -79,6 +88,9 @@ services:
         target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [functional]
     hostname: onclusiveml
     networks:

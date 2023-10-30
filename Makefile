@@ -52,6 +52,7 @@ ALL_PROJECTS:= \
 	summarization \
 	entity-linking \
 	ner \
+	iptc \
 	lsh
 
 ## SUBFOLDER MAKEFILES

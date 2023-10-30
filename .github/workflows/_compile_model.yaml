@@ -102,6 +102,7 @@ jobs:
     name: Set runner specs conditional on hosting requirements
     needs: provision-customized-runner
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
@@ -127,6 +128,7 @@ jobs:
     name: Compile a base or trained model and register
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    timeout-minutes: 30
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
@@ -143,12 +145,13 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-compile
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Download uncompiled model
+      - name: Download model
         run: |
           echo 'Downloading Uncompiled Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.run/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=download-model \
+            COMPONENT=compile \
+            TASK=download-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -158,9 +161,9 @@ jobs:
       - name: Compile Model
         run: |
           echo 'Compiling Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.start/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=compile-model \
+            COMPONENT=compile \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -170,9 +173,10 @@ jobs:
       - name: Validate Compiled Model
         run: |
           echo 'Validating Compiled Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.run/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=validate-model \
+            COMPONENT=compile \
+            TASK=validate-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -183,9 +187,10 @@ jobs:
         if: ${{ inputs.upload-compiled-model }}
         run: |
           echo 'Uploading Compiled Model'
-          make projects.compile/${{ inputs.project }} \
+          make projects.run/${{ inputs.project }} \
             ENVIRONMENT=ci \
-            PIPELINE_COMPONENT=upload-model \
+            COMPONENT=compile \
+            TASK=upload-model \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
@@ -195,6 +200,7 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, compile-model]
     environment: ${{ inputs.environment }}
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
