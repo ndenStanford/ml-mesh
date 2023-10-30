@@ -154,7 +154,8 @@ EOF
     docker compose version
 
     # extra global deps (pyenv, direnv)
-    curl -sfL https://direnv.net/install.sh | bash
+    export bin_path=/usr/local/bin # whhere to install direnv
+    curl -sfL https://direnv.net/install.sh | sudo bash
     if [ ! -d "$HOME/.pyenv" ]; then
         curl https://pyenv.run | bash
     else
@@ -165,11 +166,18 @@ EOF
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
 
+    # shellcheck disable=SC2016,SC2129
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> .bashrc
     # shellcheck disable=SC2016
-    { echo 'export PYENV_ROOT="$HOME/.pyenv"'; \
-        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'; \
-        echo 'eval "$(pyenv init -)"'; \
-        echo 'eval "$(direnv hook bash)"'; } >> .bashrc
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> .bashrc
+    # shellcheck disable=SC2016
+    echo 'eval "$(pyenv init -)"' >> .bashrc
+    # shellcheck disable=SC2016
+    echo 'eval "$(direnv hook bash)"' >> .bashrc
+    # shellcheck disable=SC2016
+    echo 'export PIP_CACHE_DIR="$HOME/data/.cache"' >> .bashrc
+    # shellcheck disable=SC2016
+    echo 'export POETRY_CACHE_DIR="$HOME/data/.cache/pypoetry"' >> .bashrc
 
     eval "$(pyenv init --path)"
     # shellcheck disable=SC1091

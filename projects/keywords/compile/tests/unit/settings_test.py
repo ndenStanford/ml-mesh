@@ -9,15 +9,15 @@ from src.settings import (
 
 
 def test_io_settings():
-    """IO settings fixture."""
+    """Tests IO settings."""
     IOSettings()
 
 
 def test_compiled_tracked_model_specs():
-    """Compiled tracked model specs fixture."""
+    """Tests Compiled tracked model specs."""
     CompiledTrackedModelSpecs()
 
 
 def test_compiled_keywords_tracked_model_card():
-    """Compiled keywords model card fixture."""
+    """Tests compiled keywords model card."""
     CompiledKeywordsTrackedModelCard()

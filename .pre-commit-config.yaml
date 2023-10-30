@@ -64,11 +64,11 @@ repos                   :
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude:
-          ^(libs/.*/tests/|projects/.*/tests|docker/.*/tests|projects/entity-linking/serve/src/predict/entity_fishing.py|projects/summarization/serve/src/_init.py|projects/summarization/serve/src/routes/health.py|projects/summarization/serve/src/predict/summarization.py|projects/keywords/compile/src/test_compiled_model/conftest.py|projects/ner/compile/src/test_compiled_model/conftest.py|projects/sentiment/compile/src/test_compiled_model/conftest.py)
+          ^(libs/.*/tests/|projects/.*/tests|projects/.*/test_compiled_model)
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
-        additional_dependencies: ['types-requests']
+        additional_dependencies: [types-requests]
 
   # isort
   - repo: https://github.com/pycqa/isort

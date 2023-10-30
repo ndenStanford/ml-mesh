@@ -1,4 +1,5 @@
 """Conftest."""
+
 # Standard Library
 import json
 from typing import Any, Dict, List, Union
@@ -7,7 +8,10 @@ from typing import Any, Dict, List, Union
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 from onclusiveml.models.ner import CompiledNER
 
 # Source
@@ -48,7 +52,9 @@ def logger(io_settings: IOSettings) -> Any:
         Any: Logger instance
     """
     return get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        level=io_settings.log_level,
     )
 
 
@@ -101,67 +107,135 @@ def test_files_predictions() -> List[List[Dict[str, Union[str, int, float]]]]:
     """
     return [
         [
-            {
-                "entity_type": "ORG",
-                "score": 0.9981778860092163,
-                "sentence_index": 0,
-                "entity_text": "Google",
-                "start": 0,
-                "end": 6,
-            },
-            {
-                "entity_type": "LOC",
-                "score": 0.998550146818161,
-                "sentence_index": 0,
-                "entity_text": "Mountain View",
-                "start": 16,
-                "end": 29,
-            },
-            {
-                "entity_type": "LOC",
-                "score": 0.9993670582771301,
-                "sentence_index": 0,
-                "entity_text": "CA",
-                "start": 31,
-                "end": 33,
-            },
+            [
+                {
+                    "entity_type": "ORG",
+                    "score": 0.9981784820556641,
+                    "sentence_index": 0,
+                    "entity_text": "Google",
+                    "start": 0,
+                    "end": 6,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9985500276088715,
+                    "sentence_index": 0,
+                    "entity_text": "Mountain View",
+                    "start": 16,
+                    "end": 29,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9993670582771301,
+                    "sentence_index": 0,
+                    "entity_text": "CA",
+                    "start": 31,
+                    "end": 33,
+                },
+            ],
+            [
+                {
+                    "entity_type": "LOC",
+                    "score": 0.991286963224411,
+                    "sentence_index": 0,
+                    "entity_text": "Gulf Stream",
+                    "start": 21,
+                    "end": 32,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9935731490453085,
+                    "sentence_index": 0,
+                    "entity_text": "Cape Cod",
+                    "start": 81,
+                    "end": 89,
+                },
+            ],
+            [
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9925467371940613,
+                    "sentence_index": 0,
+                    "entity_text": "Jupiter",
+                    "start": 105,
+                    "end": 112,
+                }
+            ],
+            [
+                {
+                    "entity_type": "ORG",
+                    "score": 0.7017723023891449,
+                    "sentence_index": 0,
+                    "entity_text": "Loggerhead Marinelife Center",
+                    "start": 10,
+                    "end": 38,
+                }
+            ],
         ],
         [
-            {
-                "entity_type": "LOC",
-                "score": 0.991286963224411,
-                "sentence_index": 0,
-                "entity_text": "Gulf Stream",
-                "start": 21,
-                "end": 32,
-            },
-            {
-                "entity_type": "LOC",
-                "score": 0.9935731490453085,
-                "sentence_index": 0,
-                "entity_text": "Cape Cod",
-                "start": 81,
-                "end": 89,
-            },
-        ],
-        [
-            {
-                "entity_type": "LOC",
-                "score": 0.9925467371940613,
-                "sentence_index": 0,
-                "entity_text": "Jupiter",
-                "start": 105,
-                "end": 112,
-            }
-        ],
-        [
-            {
-                "entity_type": "ORG",
-                "score": 0.7017723023891449,
-                "sentence_index": 0,
-                "entity_text": "Loggerhead Marinelife Center",
-                "start": 10,
-                "end": 38,
-            }
+            [
+                {
+                    "entity_type": "ORG",
+                    "score": 0.9998427629470825,
+                    "entity_text": "Google",
+                    "start": 0,
+                    "end": 6,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.9976749370495478,
+                    "entity_text": "カリフォルニアウンテンビュー",
+                    "start": 10,
+                    "end": 26,
+                    "sentence_index": 0,
+                },
+            ],
+            [
+                {
+                    "entity_type": "LOC",
+                    "score": 0.998959994316101,
+                    "entity_text": "メキシコ",
+                    "start": 0,
+                    "end": 5,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "PER",
+                    "score": 0.9701058566570282,
+                    "entity_text": "ウミガメ",
+                    "start": 19,
+                    "end": 23,
+                    "sentence_index": 0,
+                },
+            ],
+            [
+                {
+                    "entity_type": "LOC",
+                    "score": 0.998335987329483,
+                    "entity_text": "런던",
+                    "start": 0,
+                    "end": 2,
+                    "sentence_index": 0,
+                },
+                {
+                    "entity_type": "LOC",
+                    "score": 0.999501903851827,
+                    "entity_text": "샌프란시스코",
+                    "start": 4,
+                    "end": 10,
+                    "sentence_index": 0,
+                },
+            ],
+            [
+                {
+                    "entity_type": "ORG",
+                    "score": 0.9580032527446747,
+                    "entity_text": "Loggerhead Marinelife Center",
+                    "start": 17,
+                    "end": 45,
+                    "sentence_index": 0,
+                }
+            ],
         ],
     ]
