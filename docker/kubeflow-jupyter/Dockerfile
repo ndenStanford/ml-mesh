@@ -115,9 +115,6 @@ COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_
 
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
-RUN touch "${HOME}/test-file" \
-    && chown "${NB_USER}:users" "${HOME}/test-file"
-
 # s6 - copy scripts
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/s6 /etc/
 
