@@ -82,6 +82,7 @@ class SummarizationSettings(TrackedParams):
 class SummarizationModelParams(TrackedParams):
     """summarization model settings."""
 
+    huggingface_pipeline_task: str = "summarization"
     summarization_settings: SummarizationSettings = SummarizationSettings()
 
     class Config:
@@ -92,14 +93,12 @@ class SummarizationModelParams(TrackedParams):
 class SummarizationModelParamsEn(SummarizationModelParams):
     """English Summarization model settings."""
 
-    huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_en: str = "Yale-LILY/brio-cnndm-uncased"
 
 
 class SummarizationModelParamsFrDe(SummarizationModelParams):
     """French/German Summarization model settings."""
 
-    huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_frde: str = (
         "ctu-aic/mbart25-multilingual-summarization-multilarge-cs"
     )
@@ -108,21 +107,18 @@ class SummarizationModelParamsFrDe(SummarizationModelParams):
 class SummarizationModelParamsEs(SummarizationModelParams):
     """Spanish Summarization model settings."""
 
-    huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_es: str = "knkarthick/MEETING_SUMMARY"
 
 
 class SummarizationModelParamsCa(SummarizationModelParams):
     """Catalan Summarization model settings."""
 
-    huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_ca: str = "ELiRF/NASCA"
 
 
 class SummarizationModelParamsIt(SummarizationModelParams):
     """Italian Summarization model settings."""
 
-    huggingface_pipeline_task: str = "summarization"
     huggingface_model_reference_it: str = "morenolq/bart-it-fanpage"
 
 
