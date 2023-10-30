@@ -25,6 +25,9 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: lsh-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server

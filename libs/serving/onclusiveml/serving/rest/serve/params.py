@@ -7,7 +7,60 @@ from typing import Dict, List, Optional, Union
 from pydantic import Field, SecretStr, root_validator
 
 # Internal libraries
+from onclusiveml.core.logging import INFO, OnclusiveService
 from onclusiveml.serving.params import ServingBaseParams
+from onclusiveml.serving.rest.serve.constants import (
+    DEFAULT_MODEL_SERVER_LOGGING_CONFIG,
+    JSON_MODEL_SERVER_LOGGING_CONFIG,
+    LOG_LEVEL_MAP,
+)
+
+
+def get_logging_config(
+    service: str = OnclusiveService.DEFAULT.value,
+    level: int = INFO,
+    json_format: bool = True,
+) -> Dict:
+    """Returns a logging config for the uvicorn server underpinning running the ModelServer.
+
+    Returns a manipulated version of uvicorn.config.LOGGING_CONFIG to ensure uvicorn server logs
+    adhere to internal formatting conventions.
+
+    If `json_format` is set to True, additionally updates the uvicorn.config.LOGGING_CONFIG
+    dictionary to use internal JSON formatting utilities
+        - OnclusiveServingJSONDefaultFormatter, and
+        - OnclusiveServingJSONAccessFormatter
+    to ensure that uvicorn server log format is a strucutred JSON string
+
+    Args:
+        service (str): The onclusive ML service name for the JSON logs. Only relevant if
+            `json_format`=True. Defaults to `OnclusiveService.DEFAULT.value`.
+        level (int): The log level that is universally applied to all uvicorn server level loggers:
+            - uvicorn
+            - uvicorn.error
+            - uvicorn.access
+        json_format (bool, optional): Whether te uvicorn server level loggers should use JSON
+            formatting. Defaults to True.
+
+    Returns:
+        Dict: A functional logging config to configure uvicorn server logging behaviour that can be
+            specified as the `log_config` argument to the `uvicorn.run` method.
+    """
+    # resolve json input -> config
+    if json_format:
+        logging_config = JSON_MODEL_SERVER_LOGGING_CONFIG
+        # validate service name
+        OnclusiveService.validate(service)
+        # set service name
+        for formatter in logging_config["formatters"].values():
+            formatter["service"] = service
+    else:
+        logging_config = DEFAULT_MODEL_SERVER_LOGGING_CONFIG
+    # set log level
+    for logger in logging_config["loggers"].values():
+        logger["level"] = LOG_LEVEL_MAP[level]
+
+    return logging_config
 
 
 class FastAPISettings(ServingBaseParams):
@@ -21,46 +74,11 @@ class FastAPISettings(ServingBaseParams):
 
 
 class LogConfigSettings(ServingBaseParams):
-    """Log config default settings.
+    """Logging settings for the uvicorn server loggers."""
 
-    Reference:
-        Taken from the uvicorn log configuration handling approach
-        shown here: https://github.com/encode/uvicorn/blob/...
-        ffa5b1ac96b10976ed0e092a0bc1dd5526101356/uvicorn/config.py#L74
-    """
-
-    version: int = 1
-    disable_existing_loggers: bool = False
-    formatters: Dict = {
-        "default": {
-            "()": "uvicorn.logging.DefaultFormatter",
-            "fmt": "%(levelprefix)s %(message)s",
-            "use_colors": None,
-        },
-        "access": {
-            "()": "uvicorn.logging.AccessFormatter",
-            "fmt": '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s',  # noqa: E501
-        },
-    }
-
-    handlers: Dict = {
-        "default": {
-            "formatter": "default",
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stderr",
-        },
-        "access": {
-            "formatter": "access",
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout",
-        },
-    }
-
-    loggers: Dict = {
-        "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
-        "uvicorn.error": {"level": "INFO"},
-        "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
-    }
+    service: str = OnclusiveService.DEFAULT.value
+    level: int = 20  # INFO
+    json_format: bool = True
 
     class Config:
         env_prefix = f"{ServingBaseParams.Config.env_prefix}logconfig_"
@@ -80,7 +98,9 @@ class UvicornSettings(ServingBaseParams):
     app: str = "src.serve.model_server:model_server"
     port: int = 8000
     host: str = "0.0.0.0"
-    log_config: Optional[Union[str, Dict]] = LogConfigSettings().dict()
+    log_config: Optional[Union[str, Dict]] = Field(
+        default_factory=lambda: get_logging_config(**LogConfigSettings().dict())
+    )
     reload: bool = False
     reload_dirs: Optional[Union[List[str], str]] = None
     reload_delay: float = 0.25

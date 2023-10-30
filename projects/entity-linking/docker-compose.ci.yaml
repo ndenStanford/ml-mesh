@@ -27,6 +27,9 @@ services:
       ENVIRONMENT: stage
       DOCS_URL: /docs
       INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: no
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
