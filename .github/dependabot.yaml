@@ -249,10 +249,10 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # syndicate lib
+  # hashing lib
 
   - package-ecosystem: pip
-    directory: /libs/syndicate
+    directory: /libs/hashing
     target-branch: develop
     schedule:
       interval: monthly

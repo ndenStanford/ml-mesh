@@ -44,7 +44,7 @@ ALL_LIBS:= \
 	nlp \
 	serving \
 	tracking \
-	syndicate
+	hashing
 
 # all projects
 ALL_PROJECTS:= \
