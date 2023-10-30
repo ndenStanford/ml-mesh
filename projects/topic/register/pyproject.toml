@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "topic"
+version = "0.1.0"
+description = "TOPIC features registration"
+authors = ["vishal-singh <vishal.singh@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+core = {path = "../../../libs/core"}
+data = {path = "../../../libs/data"}
+feast = {version = "0.33.1", extras = ["aws"]}
+typing-extensions = "4.6.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
