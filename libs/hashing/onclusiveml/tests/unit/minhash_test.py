@@ -1,11 +1,11 @@
-"""Sentence tokenizer test."""
+"""Hashing algorithm tests."""
 
 # Internal libraries
-from onclusiveml.syndicate.datasketch import MinHash, MinHashLSH
+from onclusiveml.hashing import MinHash, MinHashLSH
 
 
 def test_syndicate():
-    """Test syndicates."""
+    """Test hashing algo."""
     shingle_set = {"functions generate hash signatures article"}
     num_perm = 128
     threshold = 0.6

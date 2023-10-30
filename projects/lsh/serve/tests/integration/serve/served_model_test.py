@@ -35,14 +35,14 @@ def test_served_lsh_model_predict(test_predict_input, test_expected_predict_outp
     served_lsh_model = ServedLshModel()
     served_lsh_model.load()
 
-    input = PredictRequestModel(
+    input_ = PredictRequestModel(
         configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
             content=test_predict_input,
         ),
     )
 
-    test_actual_predict_output = served_lsh_model.predict(input)
+    test_actual_predict_output = served_lsh_model.predict(input_)
 
     assert test_actual_predict_output == test_expected_predict_output
 
