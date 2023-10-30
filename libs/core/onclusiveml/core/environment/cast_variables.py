@@ -1,10 +1,16 @@
 """Cast variables."""
 
 # Internal libraries
-from onclusiveml.core.logging import INFO, LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    INFO,
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 
 
-logger = get_default_logger(__name__, fmt=LogFormat.DETAILED.value, level=INFO)
+logger = get_default_logger(
+    __name__, fmt_level=OnclusiveLogMessageFormat.DETAILED.name, level=INFO
+)
 
 
 def as_boolean(var_value: str) -> bool:

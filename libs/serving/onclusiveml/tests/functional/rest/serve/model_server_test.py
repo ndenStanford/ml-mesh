@@ -1,106 +1,34 @@
 """Model server tests."""
-
 # Standard Library
-from typing import List
 
 # 3rd party libraries
 import pytest
 import requests
-from pydantic import BaseModel
 
 # Internal libraries
-from libs.serving.onclusiveml.serving.rest.serve.params import (
-    BetterStackSettings,
-    FastAPISettings,
-    ServingParams,
-    UvicornSettings,
+from libs.serving.onclusiveml.tests.functional.conftest import (
+    RootResponse,
+    TestBioResponseModel,
+    TestModelPredictRequestModel,
+    TestModelPredictResponseModel,
+    TestPrediction,
+    TestRecord,
 )
 from onclusiveml.serving.rest.serve import (
     LivenessProbeResponse,
-    ModelServer,
     ReadinessProbeResponse,
-    ServedModel,
 )
 from onclusiveml.serving.rest.serve.server_utils import get_model_server_urls
 
 
-class RootResponse(BaseModel):
-    """Root response."""
-
-    name: str
-
-
-class TestRecord(BaseModel):
-    """Test record."""
-
-    number_of_legs: int
-
-
-class TestModelPredictRequestModel(BaseModel):
-    """Test model predict request model."""
-
-    instances: List[TestRecord]
-
-
-class TestPrediction(BaseModel):
-    """Test prediction."""
-
-    animal: str
-
-
-class TestModelPredictResponseModel(BaseModel):
-    """Test model predict response model."""
-
-    predictions: List[TestPrediction]
-
-
-class TestBioResponseModel(ServedModel.bio_response_model):
-    """Test bio response model."""
-
-    type: str = "classifier"
-
-
-class TestServedModel(ServedModel):
-    """A minimal working example of a subclasses custom model for testing purposes."""
-
-    predict_request_model = TestModelPredictRequestModel
-    predict_response_model = TestModelPredictResponseModel
-    bio_response_model = TestBioResponseModel
-
-    def predict(
-        self,
-        payload: predict_request_model,
-    ) -> predict_response_model:
-        """Inference method.
-
-        Implements a very basic animal classifier using the
-            - TestModelPredictRequestModel and
-            - TestModelPredictResponseModel
-        test classes.
-        """
-        predictions = []
-
-        for test_record in payload.instances:
-            if test_record.number_of_legs == 0:
-                predictions.append(TestPrediction(animal="snake"))
-            elif test_record.number_of_legs == 1:
-                predictions.append(TestPrediction(animal="flamingo"))
-            elif test_record.number_of_legs == 2:
-                predictions.append(TestPrediction(animal="robin"))
-            else:
-                predictions.append(TestPrediction(animal="dog"))
-
-        return self.predict_response_model(predictions=predictions)
-
-    def bio(self) -> bio_response_model:
-        """Model meta data method. Implements a basic model bio data model."""
-        return self.bio_response_model(name=self.name)
+# import pdb
+# pdb.set_trace()
 
 
 # --- server
 @pytest.mark.order(1)
 @pytest.mark.server
-def test_model_server_serve_with_model(test_api_version, test_port, test_model_name):
+def test_model_server_serve_with_model(test_model_server):
     """Test model server serve method with model.
 
     Launches a fully fledged ModelServer hosting all utility endpoints as well as a loaded
@@ -109,21 +37,6 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
     Designed for manual testing during development, not for CI due to library test suite setup
     limitations.
     """
-    test_serving_params = ServingParams(
-        add_liveness=True,
-        add_readiness=True,
-        add_model_predict=True,
-        add_model_bio=True,
-        api_version=test_api_version,
-        fastapi_settings=FastAPISettings(name="test-api"),
-        uvicorn_settings=UvicornSettings(port=test_port),
-        betterstack_settings=BetterStackSettings(enable=True),
-    )
-
-    test_model_server = ModelServer(
-        configuration=test_serving_params, model=TestServedModel(name=test_model_name)
-    )
-
     test_model_server.serve()
 
 
@@ -139,7 +52,11 @@ def test_model_server_serve_with_model(test_api_version, test_port, test_model_n
     ],
 )
 def test_model_server_client_no_model(
-    test_api_version, test_port, test_url_reference, test_probe_response_model
+    test_api_version,
+    test_model_name,
+    test_port,
+    test_url_reference,
+    test_probe_response_model,
 ):
     """Tests the availability and response format of a live ModelServer endpoints.
 
@@ -151,13 +68,17 @@ def test_model_server_client_no_model(
 
     Requires test_model_server_serve_with_model to have been called on the same machine
     """
-    test_model_server_urls = get_model_server_urls(api_version=test_api_version)
+    test_model_server_urls = get_model_server_urls(
+        api_version=test_api_version, model_name=test_model_name
+    )
 
     url = f"http://localhost:{test_port}" + getattr(
         test_model_server_urls, test_url_reference
     )
 
     response = requests.get(url)
+
+    print(response)
 
     test_probe_response_model(**response.json())
 
