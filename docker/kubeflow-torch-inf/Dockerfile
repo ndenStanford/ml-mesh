@@ -11,6 +11,8 @@ ENV NB_UID=1000
 ENV NB_PREFIX=/
 ENV SHELL=/bin/bash
 ENV HOME="/home/${NB_USER}"
+ENV POETRY_HOME="${HOME}"
+ENV POETRY_VIRTUALENVS_CREATE=false
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
@@ -114,6 +116,16 @@ ENV LC_ALL en_GB.UTF-8
 
 # switch to NB_UID for installs
 USER "${NB_UID}"
+
+# install and activate venv to ensure poetry installed python packages end up on mounted volume
+# source: https://github.com/python-poetry/poetry/issues/1579#issuecomment-863737675
+ENV VIRTUAL_ENV="${HOME}/venv"
+RUN python -m venv "${VIRTUAL_ENV}"
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
+
+# install pip, poetry and python into venv
+RUN pip install --upgrade pip=="${PIP_VERSION}" poetry=="${POETRY_VERSION}" --no-cache-dir \
+    && python -V
 
 # install - poetry requirements
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
