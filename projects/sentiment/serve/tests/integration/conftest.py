@@ -7,9 +7,18 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
+# Internal libraries
+from onclusiveml.serving.rest.serve import ServingParams
+
 # Source
-from src.serve.model_server import get_model_server
+from src.serve.model_server import model_server
 from src.serve.params import ServedModelArtifacts
+
+
+@pytest.fixture
+def test_serving_params():
+    """Serving params fixture."""
+    return ServingParams()
 
 
 @pytest.fixture
@@ -63,8 +72,6 @@ def test_model_card(test_served_model_artifacts):
 @pytest.fixture
 def test_client():
     """Test client fixture."""
-    model_server = get_model_server()
-
     return TestClient(model_server)
 
 

@@ -3,7 +3,7 @@
 The `tracking` library provides utilities to consistently interact with the ML team's
 [neptune.ai platform](https://app.neptune.ai/o/onclusive/-/projects).
 
-Specifically, at its core - at the time of writing - it provides a customized `TrackedModelVersion`
+Specifically, at its core - at the time of writing, it provides a customized `TrackedModelVersion`
 class that enables more functional upload/download behaviour of files, directories and dictionary
 python objects, as well as the ability to configure S3 buckets as the storage backend rather than
 the neptune ai servers.
