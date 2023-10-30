@@ -11,4 +11,7 @@ class Params(BaseSettings):
     via environment variables.
     """
 
-    pass
+    class Config:
+        env_prefix = "onclusiveml_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"

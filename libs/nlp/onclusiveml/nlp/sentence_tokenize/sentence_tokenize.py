@@ -7,12 +7,8 @@ from typing import Any, Dict, List
 # 3rd party libraries
 import nltk
 
-# Internal libraries
-from onclusiveml.core.logging import get_default_logger
-
 
 nltk.download("punkt")
-logger = get_default_logger(__name__)
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
@@ -41,7 +37,6 @@ class SentenceTokenizer:
         """
         # return language iso equivalent of language e.g. fr is LanguageIso.FR
         langIso = LanguageIso.from_language_iso(language)
-
         # if LanguageIso of the language is not None, return english name of LanguageIso
         # e.g. LanguageIso.FR is french
         if langIso:
