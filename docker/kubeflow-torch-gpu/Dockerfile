@@ -125,6 +125,11 @@ RUN jupyter lab build --debug
 
 USER root
 
+# s6 - 01-copy-tmp-home
+RUN mkdir -p /tmp_home \
+    && cp -r "${HOME}" /tmp_home \
+    && chown -R "${NB_USER}:users" /tmp_home
+
 USER "${NB_USER}"
 
 EXPOSE 8888
