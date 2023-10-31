@@ -12,7 +12,15 @@ from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
 from src.serve.model_server import model_server
-from src.serve.server_models import BioResponseModel, PredictResponseModel
+from src.serve.server_models import (
+    BioResponseModel,
+    PredictDataModelResponse,
+    PredictIdentifierResponse,
+    PredictNamespace,
+    PredictResponseModel,
+    PredictSignatureModel,
+    PredictVersion,
+)
 
 
 @pytest.fixture
