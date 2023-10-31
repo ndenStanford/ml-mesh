@@ -276,7 +276,7 @@ class CompiledSent:
 
         return entity_sentiment
 
-    def extract_sentiment(
+    def __call__(
         self,
         sentences: str,
         entities: Optional[List[Dict[str, Union[str, List]]]] = None,
