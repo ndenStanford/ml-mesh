@@ -1,7 +1,7 @@
 """Conftest."""
 
 # Standard Library
-from typing import List
+from typing import Dict, List
 
 # 3rd party libraries
 import pytest
@@ -12,15 +12,7 @@ from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
 from src.serve.model_server import model_server
-from src.serve.server_models import (
-    BioResponseModel,
-    PredictDataModelResponse,
-    PredictIdentifierResponse,
-    PredictNamespace,
-    PredictResponseModel,
-    PredictSignatureModel,
-    PredictVersion,
-)
+from src.serve.schemas import BioResponseSchema
 
 
 @pytest.fixture
@@ -44,13 +36,13 @@ def test_predict_input() -> str:
 @pytest.fixture
 def test_expected_predict_output() -> List[str]:
     """Expected predict output fixture."""
-    return PredictResponseModel(
-        version=PredictVersion(),
-        data=PredictDataModelResponse(
-            identifier=PredictIdentifierResponse(),
-            namespace=PredictNamespace(),
-            attributes=PredictSignatureModel(
-                signature=[
+    return {
+        "version": 1,
+        "data": {
+            "identifier": None,
+            "namespace": "lsh",
+            "attributes": {
+                "signature": [
                     "AAAAAD7VrJYAAAAAUtj2YwAAAABnUo5LAAAAAKEQ6osAAAAAGN7zAQAAAACvI05uAAAAAP5T14M=",
                     "AAAAAImeBE8AAAAArLzBiwAAAABXJtUuAAAAADuLk0EAAAAABdQyawAAAABsuvhdAAAAAA1DABQ=",
                     "AAAAAN80jQ0AAAAA4AMsTwAAAAAdQ+nJAAAAADQX7AwAAAAAOInWSgAAAADW8ezsAAAAALmkSmc=",
@@ -70,12 +62,16 @@ def test_expected_predict_output() -> List[str]:
                     "AAAAANrB0GcAAAAAkNMRaAAAAAA0QhyKAAAAABLE06gAAAAAzi1LqAAAAACo+jipAAAAAIUoHM4=",
                     "AAAAAHxFrisAAAAAkf5FlgAAAACQ7ru+AAAAAO4TeqUAAAAAcsOYLwAAAAAHk+gFAAAAAHSHwzQ=",
                 ]
-            ),
-        ),
-    )
+            },
+        },
+    }
 
 
 @pytest.fixture
 def test_expected_bio_output():
     """Test expected bio output."""
-    return BioResponseModel(model_name="lsh")
+    return BioResponseSchema.from_data(
+        version=1,
+        namespace="lsh",
+        attributes={"model_name": "lsh", "model_card": Dict},
+    )

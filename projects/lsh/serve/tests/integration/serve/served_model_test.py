@@ -5,13 +5,6 @@ import pytest
 
 # Source
 from src.serve.served_model import ServedLshModel
-from src.serve.server_models import (
-    PredictConfiguration,
-    PredictDataModel,
-    PredictInputDocumentModel,
-    PredictNamespace,
-    PredictRequestModel,
-)
 
 
 @pytest.mark.order(1)
@@ -37,13 +30,17 @@ def test_served_lsh_model_predict(test_predict_input, test_expected_predict_outp
     served_lsh_model = ServedLshModel()
     served_lsh_model.load()
 
-    input_ = PredictRequestModel(
-        data=PredictDataModel(
-            namespace=PredictNamespace(),
-            attributes=PredictInputDocumentModel(content=test_predict_input),
-            parameters=PredictConfiguration(),
-        )
-    )
+    input_ = {
+        "identifier": None,
+        "namespace": "lsh",
+        "attributes": {"content": test_predict_input},  # noqa
+        "parameters": {
+            "language": "en",
+            "shingle_list": 5,
+            "threshold": 0.6,
+            "num_perm": 128,
+        },
+    }
 
     test_actual_predict_output = served_lsh_model.predict(input_)
 
