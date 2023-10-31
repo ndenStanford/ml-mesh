@@ -20,7 +20,6 @@ This folder contains the implementation of all our machine learning projects. Ea
 | LSH             | `lsh`            | LSH                               | Text      |         |  n/a  |   n/a   |   x   |
 | Summarization   | `summarization`  | Text summarization                | Text      |         |       |         |   x*  |
 | Entity linking  | `entity-linking` | Entity linking                    | Text      |         |       |         |   x*  |
-| Topic Detection | `topic-detection`| GPT Topic Detection               | Text      |         |       |         |   x   |
 
 Note: x* - denotes a serving component that hasnt been migrated to the `serving` library yet
 
