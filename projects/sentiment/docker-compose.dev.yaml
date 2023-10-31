@@ -244,6 +244,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -312,7 +314,7 @@ services:
         source: serve/
         target: /projects/sentiment/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, src.util.upload_test_results]
+    command: [python, -m, src.upload]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}

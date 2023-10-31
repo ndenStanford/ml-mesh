@@ -69,7 +69,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     label: str
     negative_prob: float
     positive_prob: float
-    entities: Optional[List[OutputEntity]]
+    entities: Optional[List[OutputEntity]] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
@@ -80,5 +80,5 @@ class BioRequestAttributeSchemaV1(JsonApiSchema):
         model_card (Dict): Information about the model
     """
 
-    model_name: str = "ner"
+    model_name: str = "sentiment"
     model_card: Dict
