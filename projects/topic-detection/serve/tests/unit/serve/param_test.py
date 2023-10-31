@@ -1,4 +1,6 @@
 """Unit test inference and aggregate."""
+# isort: skip_file
+
 # Standard Library
 from unittest.mock import patch
 
