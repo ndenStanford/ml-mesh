@@ -5,14 +5,13 @@ from typing import Optional
 
 # 3rd party libraries
 import requests
-from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from pydantic import BaseSettings
 
-
-# from src.settings import settings
-
+# Source
+from src.serve.prompt_storage import Prompt_dict
 
 logger = get_default_logger(__name__)
 
@@ -40,7 +39,6 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     # Prompt url
     PROMPT_API: str = "http://prompt-backend:4000"
-    # PROMPT_API: str = "http://0.0.0.0:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     # interested aspects/categories
     CATEGORY_LIST = [
@@ -55,49 +53,7 @@ class Settings(BaseSettings):
         "Industry trends",
     ]
     # prompt for iteratively input; each time one category only
-    PROMPT_DICT = {
-        "analysis": {
-            "alias": "topic-detection-analysis",
-            "template": """
-                I want you to summarize the protential impact on the given category in the target industry, based on all the articles together.
-
-                I will give you a target industry delimited by *, the target category delimited by < and >,
-                and many articles related to this industry delimited by triple backticks.
-
-                Target industry: *{target_industry}*
-
-                Target category: <{target_category}>
-
-                For the category isn't not related to the articles, output 'Not mentioned'.
-
-                Generate your output in following format:
-                For category Risk detection, the articles suggest that the risk detection in the science and technology industry is
-                related to the dependency on imported components, especially semiconductor ones, volatility in weather patterns,
-                and the limited understanding about the universe including black holes.
-
-                {content}
-                """,  # noqa: E501
-        },
-        "aggregate": {
-            "alias": "topic-analysis-aggregation",
-            "template": """
-                I want you to provide a concise summary that combines the main points of the following summaries.
-
-                Those summaries are from multiple articles, focusing on a given aspect of a target industry.
-
-                I will give you the target industry delimited by *, a target category delimited by < and >,
-                and many summaries from articles related to this industry delimited by triple backticks.
-
-                Target industry: *{target_industry}*
-
-                Target category: <{target_category}>
-
-                Restrict your output in 100 words.
-
-                {Summary}
-        """,  # noqa: E501
-        },
-    }
+    PROMPT_DICT = Prompt_dict
 
 
 settings = Settings()
@@ -114,7 +70,6 @@ def _setup_prompts() -> None:
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
     for prompt_key in settings.PROMPT_DICT.keys():
-        # print('prompt_dict :',prompt_dict)
         alias = settings.PROMPT_DICT[prompt_key]["alias"]
         template = settings.PROMPT_DICT[prompt_key]["template"]
         requests.post(

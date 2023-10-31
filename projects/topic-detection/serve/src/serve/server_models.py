@@ -9,21 +9,11 @@ from pydantic import BaseModel
 
 # --- prediction request models
 class PredictConfiguration(BaseModel):
-    """Signature request item.
+    """GPT parameters.
 
     Holds the required information to be provided in the payload and their type
-
-    Attributes:
-        lang (Optional[str]): Text to indicate the language
-        shingle_list (Optional[int])
-        threshold (Optional[float])
-        num_perm (Optional[int]))
     """
 
-    # language: Optional[str] = "en"
-    # shingle_list: Optional[int] = 5
-    # threshold: Optional[float] = 0.6
-    # num_perm: Optional[int] = 128
     content: List[str] = [""]  # industry for first, article for second
     industry: str = ""
     max_tokens: Optional[int] = 0

@@ -7,8 +7,6 @@ import re
 from typing import Any, Dict, List
 
 # 3rd party libraries
-# OpenAI library
-# import openai
 import requests
 
 # Internal libraries
@@ -17,11 +15,6 @@ from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.serve._init import Settings
-
-# from pydantic import BaseSettings
-
-
-# OpenAI api key
 
 logger = get_default_logger(__name__)
 # setting class
