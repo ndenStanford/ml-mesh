@@ -8,6 +8,18 @@ from pydantic import BaseModel
 
 
 # --- prediction request models
+class PredictNamespace(BaseModel):
+    """namespace.
+
+    Holds the name of the api
+
+    Attributes:
+        content (str): lsh
+    """
+
+    namespace: str = "lsh"
+
+
 class PredictConfiguration(BaseModel):
     """Signature request item.
 
@@ -36,14 +48,21 @@ class PredictInputDocumentModel(BaseModel):
     content: str
 
 
+class PredictDataModel(BaseModel):
+    """Predict data Model."""
+
+    namespace: PredictNamespace
+    attributes: PredictInputDocumentModel
+    parameters: PredictConfiguration
+
+
 class PredictRequestModel(BaseModel):
     """Predict Request Model."""
 
-    configuration: PredictConfiguration
-    inputs: PredictInputDocumentModel
+    data: PredictDataModel
 
 
-class PredictResponseModel(BaseModel):
+class PredictSignatureModel(BaseModel):
     """Signature response item.
 
     Holds the information on expected output at inference
@@ -55,8 +74,54 @@ class PredictResponseModel(BaseModel):
     signature: Optional[List[str]]
 
 
+class PredictIdentifierResponse(BaseModel):
+    """identifier.
+
+    Holds the name of the identifier
+
+    Attributes:
+        content (Optional[str]): None
+    """
+
+    identifier: Optional[str] = None
+
+
+class PredictDataModelResponse(BaseModel):
+    """dataresponse item.
+
+    Holds the information on expected data output in the json format
+
+    Attributes:
+        indentifier: (Optional[str]): identifier text in string, can be None
+        namespace: (str): name of the model
+        signature (Optional[str]): Signature text in string, can be None
+    """
+
+    identifier: PredictIdentifierResponse
+    namespace: PredictNamespace
+    attributes: PredictSignatureModel
+
+
+class PredictVersion(BaseModel):
+    """Version.
+
+    Holds the version number
+    Attributes:
+        int: version number
+    """
+
+    version: int = 1
+
+
+class PredictResponseModel(BaseModel):
+    """Predict Response Model."""
+
+    version: PredictVersion
+    data: PredictDataModelResponse
+
+
 # --- bio response models
 class BioResponseModel(BaseModel):
     """Bio Response model."""
 
-    model_name: str = "lsh-model"
+    model_name: str = "lsh"

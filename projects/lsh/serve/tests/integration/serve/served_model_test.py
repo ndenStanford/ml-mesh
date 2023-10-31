@@ -7,7 +7,9 @@ import pytest
 from src.serve.served_model import ServedLshModel
 from src.serve.server_models import (
     PredictConfiguration,
+    PredictDataModel,
     PredictInputDocumentModel,
+    PredictNamespace,
     PredictRequestModel,
 )
 
@@ -36,10 +38,11 @@ def test_served_lsh_model_predict(test_predict_input, test_expected_predict_outp
     served_lsh_model.load()
 
     input_ = PredictRequestModel(
-        configuration=PredictConfiguration(),
-        inputs=PredictInputDocumentModel(
-            content=test_predict_input,
-        ),
+        data=PredictDataModel(
+            namespace=PredictNamespace(),
+            attributes=PredictInputDocumentModel(content=test_predict_input),
+            parameters=PredictConfiguration(),
+        )
     )
 
     test_actual_predict_output = served_lsh_model.predict(input_)

@@ -12,7 +12,9 @@ from onclusiveml.serving.rest.serve import (
 # Source
 from src.serve.server_models import (
     PredictConfiguration,
+    PredictDataModel,
     PredictInputDocumentModel,
+    PredictNamespace,
     PredictRequestModel,
 )
 
@@ -55,10 +57,11 @@ def test_model_server_predict(
     artifact as ground truth for the regression test element.
     """
     input_ = PredictRequestModel(
-        configuration=PredictConfiguration(),
-        inputs=PredictInputDocumentModel(
-            content=test_predict_input,
-        ),
+        data=PredictDataModel(
+            namespace=PredictNamespace(),
+            attributes=PredictInputDocumentModel(content=test_predict_input),
+            parameters=PredictConfiguration(),
+        )
     )
 
     test_response = test_client.post("/lsh/v1/predict", json=input_.dict())

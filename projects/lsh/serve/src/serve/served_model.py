@@ -13,8 +13,13 @@ from onclusiveml.serving.rest.serve import ServedModel
 # Source
 from src.serve.server_models import (
     BioResponseModel,
+    PredictDataModelResponse,
+    PredictIdentifierResponse,
+    PredictNamespace,
     PredictRequestModel,
     PredictResponseModel,
+    PredictSignatureModel,
+    PredictVersion,
 )
 
 
@@ -42,8 +47,8 @@ class ServedLshModel(ServedModel):
             payload (PredictRequestModel): prediction request payload.
         """
         # extract inputs data and inference specs from incoming payload
-        inputs = payload.inputs
-        configuration = payload.configuration
+        inputs = payload.data.attributes
+        configuration = payload.data.parameters
 
         words = self.model.pre_processing(
             text=inputs.content, lang=configuration.language
@@ -51,7 +56,14 @@ class ServedLshModel(ServedModel):
 
         shingle_list = self.model.k_shingle(words, k=configuration.shingle_list)
         if len(shingle_list) < 1:
-            return PredictResponseModel(signature=None)
+            return PredictResponseModel(
+                version=PredictVersion(),
+                data=PredictDataModelResponse(
+                    identifier=PredictIdentifierResponse(),
+                    namespace=PredictNamespace(),
+                    attributes=PredictSignatureModel(signature=None),
+                ),
+            )
 
         signature = self.model.generate_lsh_signature(
             shingle_list=shingle_list,
@@ -59,7 +71,14 @@ class ServedLshModel(ServedModel):
             threshold=configuration.threshold,
         )
 
-        return PredictResponseModel(signature=signature)
+        return PredictResponseModel(
+            version=PredictVersion(),
+            data=PredictDataModelResponse(
+                identifier=PredictIdentifierResponse(),
+                namespace=PredictNamespace(),
+                attributes=PredictSignatureModel(signature=signature),
+            ),
+        )
 
     def bio(self) -> BioResponseModel:
         """Model bio endpoint."""
