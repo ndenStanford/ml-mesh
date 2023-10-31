@@ -96,9 +96,13 @@ class ServedSentModel(ServedModel):
         )
 
     def bio(self) -> BioResponseSchema:
-        """Get bio information about the served Sent model.
+        """Get bio information about the served Sentiment model.
 
         Returns:
-            BioResponseSchema: Bio information about the model
+            BioResponseModel: Bio information about the model
         """
-        return BioResponseSchema(model_name=self.name, model_card=self.model_card)
+        return BioResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=self.name,
+            attributes={"model_name": self.name, "model_card": self.model_card},
+        )
