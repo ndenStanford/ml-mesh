@@ -131,9 +131,7 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/artifacts
 
 RUN poetry cache clear pypi --all -q \
-    && chown -R "${NB_USER}:users" "${HOME}"
-
-RUN jupyter lab build --debug
+    && jupyter lab build --debug
 
 USER "${NB_USER}"
 
