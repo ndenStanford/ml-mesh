@@ -106,50 +106,52 @@ class CompiledNER:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def sentence_tokenize(self, sentences: List[str], language: str) -> List[str]:
+    def sentence_tokenize(self, documents: List[str], language: str) -> List[List[str]]:
         """Sentence tokenization.
 
         Args:
-            sentences (List[str]): Input sentences.
+            documents (List[str]): List of documents.
             language (str): Input sentences language.
 
         Return:
-            List[List[str]]: Tokenized sentences
+            List[List[str]]: Tokenized sentences for each document as a list
         """
         list_sentences = [
-            self.sentence_tokenizer.tokenize(content=sentence, language=language)[
+            self.sentence_tokenizer.tokenize(content=doc, language=language)[
                 "sentences"
             ]
-            for sentence in sentences
+            for doc in documents
         ]
 
         return list_sentences
 
-    def preprocess(self, sentences: List[str], language: str) -> List[str]:
-        """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
+    def preprocess(self, documents: List[str], language: str) -> List[List[str]]:
+        """Preprocess the list of documents by removing unwanted text and tokenizing.
 
         Args:
-            sentences (List[str]): Input sentences
+            documents (List[str]): List of documents
             language (str): Input sentences language
 
         Return:
-            List[List[str]]: Tokenized sentences
+            List[List[str]]: Tokenized sentences, each sublist are tokenized strings for a document
         """
-        sentences = [self.remove_html(sentence) for sentence in sentences]
-        sentences = [self.remove_whitespace(sentence) for sentence in sentences]
-        return self.sentence_tokenize(sentences, language)
+        documents = [self.remove_html(doc) for doc in documents]
+        documents = [self.remove_whitespace(doc) for doc in documents]
+        return self.sentence_tokenize(documents, language)
 
     def inference(
-        self, sentences: List[str], language: str
+        self, sent_tokenized_documents: List[List[str]], language: str
     ) -> List[List[InferenceOutput]]:
-        """Perform NER inference on a list of sentences.
+        """Perform NER inference on a list of documents.
 
         Args:
-            sentences (List[str]): list of sentences
-            language: (str) language of given sentences
+            sent_tokenized_documents (List[List[str]]): Nested list of tokenized sentence where
+                each sublist represent a document
+            language: (str) Input sentences language
 
         Returns:
-            InferenceOutput: List of lists of NER predictions which has the attributes:
+            InferenceOutput: Nested list of NER predictions where each sublist represents entities
+                of a document. Attributes:
                 - entity_type (str): entity type
                 - score (float): probability of given entity
                 - entity_text (str): targeted word for given entity
@@ -157,9 +159,11 @@ class CompiledNER:
                 - end (int): ending position of word
         """
         if language in DISTILBERT_SUPPORTED_LANGS:
-            res = self.compiled_ner_pipeline_kj(sentences)
+            res = list(map(self.compiled_ner_pipeline_kj, sent_tokenized_documents))
         else:
-            res = list(map(self.compiled_ner_pipeline_base, sentences))
+            res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
+
+        # results are in nested list of entities where each sublist represents a doc
         for doc in res:
             for entities_list in doc:
                 for dictionary in entities_list:
@@ -190,8 +194,8 @@ class CompiledNER:
         """Postprocess NER labels to merge contiguous entities and compute scores.
 
         Args:
-            output (List[List[InferenceOutput]]): List of lists of NER predictions
-                which has the attributes:
+            output (List[List[InferenceOutput]]): Nested list of NER predictions
+                where each sublist represents entities of a document. Attributes:
                     - entity_type (str): entity type
                     - score (float): probability of given entity
                     - entity_text (str): targeted word for given entity
@@ -295,18 +299,18 @@ class CompiledNER:
         return output_list
 
     def __call__(
-        self, sentences: List[str], language: str
+        self, documents: List[str], language: str
     ) -> List[List[InferenceOutput]]:
         """Extract named entities from input sentence using NER.
 
         Args:
-            sentences (List[str]): The input sentences to extract entities from
+            documents (List[str]): List of documents to extract entities from
             language (str): input sentences language
         Returns:
             List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
         """
-        list_sentences = self.preprocess(sentences, language)
-        ner_labels = self.inference(list_sentences, language)
+        sent_tokenized_documents = self.preprocess(documents, language)
+        ner_labels = self.inference(sent_tokenized_documents, language)
         entities = self.postprocess(ner_labels)
         return entities

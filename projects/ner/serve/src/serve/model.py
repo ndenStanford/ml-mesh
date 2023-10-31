@@ -83,7 +83,7 @@ class ServedNERModel(ServedModel):
             entities: list = [[]]
         else:
             # score the model
-            entities = self.model(sentences=[attributes.content], **parameters.dict())
+            entities = self.model(documents=[attributes.content], **parameters.dict())
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
