@@ -157,18 +157,20 @@ class CompiledNER:
                 - end (int): ending position of word
         """
         if language in DISTILBERT_SUPPORTED_LANGS:
-            entities = self.compiled_ner_pipeline_kj(sentences)
+            res = self.compiled_ner_pipeline_kj(sentences)
         else:
-            entities = self.compiled_ner_pipeline_base(sentences)
-        for sublist in entities:
-            for dictionary in sublist:
-                dictionary.pop("index", None)
-                dictionary["entity_type"] = dictionary.pop("entity")
-                dictionary["entity_text"] = dictionary.pop("word")
+            res = list(map(self.compiled_ner_pipeline_base, sentences))
+        for doc in res:
+            for entities_list in doc:
+                for dictionary in entities_list:
+                    dictionary.pop("index", None)
+                    dictionary["entity_type"] = dictionary.pop("entity")
+                    dictionary["entity_text"] = dictionary.pop("word")
 
         return [
-            [InferenceOutput(**dictionary) for dictionary in sublist]
-            for sublist in entities
+            [InferenceOutput(**dictionary) for dictionary in entities_list]
+            for docs in res
+            for entities_list in docs
         ]
 
     def compute_moving_average(self, scores: List[float]) -> float:
@@ -298,7 +300,7 @@ class CompiledNER:
         """Extract named entities from input sentence using NER.
 
         Args:
-            sentences (str): The input sentences to extract entities from
+            sentences (List[str]): The input sentences to extract entities from
             language (str): input sentences language
         Returns:
             List[List[InferenceOutput]]: List of extracted named
@@ -307,5 +309,4 @@ class CompiledNER:
         list_sentences = self.preprocess(sentences, language)
         ner_labels = self.inference(list_sentences, language)
         entities = self.postprocess(ner_labels)
-
         return entities

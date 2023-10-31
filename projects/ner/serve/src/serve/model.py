@@ -84,11 +84,16 @@ class ServedNERModel(ServedModel):
         else:
             # score the model
             entities = self.model(sentences=[attributes.content], **parameters.dict())
-
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"entities": [entity._asdict() for entity in entities[0]]},
+            attributes={
+                "entities": [
+                    entity._asdict()
+                    for entities_list in entities
+                    for entity in entities_list
+                ]
+            },
         )
 
     def bio(self) -> BioResponseSchema:
