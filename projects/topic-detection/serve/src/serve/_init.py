@@ -1,14 +1,15 @@
 """Service initialization."""
+# isort: skip_file
 
 # Standard Library
 from typing import Optional
 
 # 3rd party libraries
 import requests
+from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from pydantic import BaseSettings
 
 # Source
 from src.serve.prompt_storage import Prompt_dict

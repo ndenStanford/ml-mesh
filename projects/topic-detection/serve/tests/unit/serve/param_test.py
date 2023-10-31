@@ -5,9 +5,6 @@ from unittest.mock import patch
 # Source
 from src.serve.topic import TopicHandler
 
-# 3rd party libraries
-
-
 _service = TopicHandler()
 
 
