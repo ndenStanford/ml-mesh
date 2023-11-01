@@ -16,7 +16,7 @@ from src.serve.served_model import ServedKeywordsModel
 
 @pytest.mark.order(4)
 def test_get_model_server():
-    """Tests the utility method get_model_server."""
+    """Tests the prepped model_server."""
     model_server = get_model_server()
 
     assert isinstance(model_server.model, ServedKeywordsModel)

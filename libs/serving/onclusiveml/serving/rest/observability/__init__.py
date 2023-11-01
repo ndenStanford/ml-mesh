@@ -12,3 +12,7 @@ from onclusiveml.serving.rest.observability.metrics import (  # noqa: F401
 from onclusiveml.serving.rest.observability.instrumentator import (  # noqa: F401
     Instrumentator,
 )
+from onclusiveml.serving.rest.observability.formatters import (  # noqa: F401
+    OnclusiveServingJSONAccessLogRecord,
+    OnclusiveServingJSONAccessFormatter,
+)

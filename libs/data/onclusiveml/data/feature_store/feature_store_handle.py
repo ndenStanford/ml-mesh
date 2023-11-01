@@ -21,6 +21,11 @@ class FeatureStoreHandle:
         config_file (str): Name of the feast-config yaml.
         local_config_dir (str): Name of the local directory to store the feast-config yaml.
         s3_handle (Client): S3 client for interacting with the bucket.
+        features (List[str): List of features to fetch from feast.
+        data_source (DataSource): Name of the datasource to fetch features from.
+        data_id_key (str): Name of the field that records data ids.
+        data_ids (str): List of data ids to fetch.
+
     """
 
     def __init__(
@@ -29,6 +34,10 @@ class FeatureStoreHandle:
         config_file: Optional[str] = "feature_store.yaml",
         local_config_dir: str = "feature_config",
         s3_handle: Client = None,
+        features: List[str] = ["test_feature_view:feature_1"],
+        data_source: DataSource = None,
+        data_id_key: str = "entity_key",
+        data_ids: List[str] = ["1", "2"],
     ):
 
         self.feast_config_bucket = feast_config_bucket
@@ -41,7 +50,13 @@ class FeatureStoreHandle:
             self.s3_handle = s3_handle
 
         self.config_file_path = self.s3_config_downloader()
+
         self.initialize()
+
+        self.data_source = data_source
+        self.data_id_key = data_id_key
+        self.data_ids = data_ids
+        self.features = features
 
     def initialize(self) -> None:
         """Initializes feature store registry.
@@ -92,7 +107,7 @@ class FeatureStoreHandle:
         Returns: None
 
         """
-        self.fs.apply(objects_to_delete=components, partial=False)
+        self.fs.apply([], objects_to_delete=components, partial=False)
 
     def list_entities(self) -> List[FeastObject]:
         """Lists feast entites.
@@ -118,7 +133,7 @@ class FeatureStoreHandle:
         """
         return self.fs.list_data_sources()
 
-    def redshift_entity_df_query_builder(self) -> None:
+    def get_entity_df_query(self) -> None:
         """Builds redshift query for entity dataframe.
 
         Returns: None
@@ -126,35 +141,18 @@ class FeatureStoreHandle:
         """
         self.entity_sql = f"""
                 SELECT
-                    {self.version_key}, event_timestamp
-                FROM {self.fs.get_data_source({self.data_source}).get_table_query_string()}
-                WHERE {self.version_key} in {self.dataset_versions}
+                    {self.data_id_key}, event_timestamp
+                FROM {self.fs.get_data_source(self.data_source).get_table_query_string()}
+                WHERE {self.data_id_key} in {self.data_ids}
             """
 
-    def fetch_historical_features(
-        self,
-        features: List[str],
-        data_source: DataSource,
-        version_key: str = "dataset_version",
-        dataset_versions: str = "v1",
-    ) -> None:
+    def fetch_historical_features(self) -> None:
         """Fetches Historical features from feast feature store.
-
-        Args:
-            features (List[str): List of features to fetch from feast.
-            data_source (DataSource): Name of the datasource to fetch features from.
-            version_key (str): Name of the field that records dataset version.
-            dataset_versions (str): List of dataset versions to fetch.
-
 
         Returns: Pandas dataframe with historical features.
 
         """
-        self.data_source = data_source
-        self.version_key = version_key
-        self.dataset_versions = dataset_versions
-        self.redshift_entity_df_query_builder()
         return self.fs.get_historical_features(
             entity_df=self.entity_sql,
-            features=features,
+            features=self.features,
         ).to_df()

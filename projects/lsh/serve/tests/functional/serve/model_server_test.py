@@ -45,7 +45,6 @@ def test_model_server_readiness(test_client):
 
 @pytest.mark.order(7)
 def test_model_server_predict(
-    test_model_name,
     test_client,
     test_predict_input,
     test_expected_predict_output,
@@ -55,14 +54,14 @@ def test_model_server_predict(
     Uses the custom data models for validation and the test files from the model
     artifact as ground truth for the regression test element.
     """
-    input = PredictRequestModel(
+    input_ = PredictRequestModel(
         configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
             content=test_predict_input,
         ),
     )
 
-    test_response = test_client.post("/lsh/v1/predict", json=input.dict())
+    test_response = test_client.post("/lsh/v1/predict", json=input_.dict())
 
     assert test_response.status_code == 200
     test_actual_predict_output = test_response.json()
@@ -71,7 +70,7 @@ def test_model_server_predict(
 
 
 @pytest.mark.order(7)
-def test_model_server_bio(test_model_name, test_client, test_expected_bio_output):
+def test_model_server_bio(test_client, test_expected_bio_output):
     """Tests the running ModelServer's bio endpoint.
 
     Uses the custom data models for validation and the model card from the model

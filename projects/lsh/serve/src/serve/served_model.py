@@ -7,8 +7,8 @@ from typing import Type
 from pydantic import BaseModel
 
 # Internal libraries
+from onclusiveml.hashing.lsh import LshHandler
 from onclusiveml.serving.rest.serve import ServedModel
-from onclusiveml.syndicate.datasketch.lsh import LshHandler
 
 # Source
 from src.serve.server_models import (
