@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "syndicate"
+name = "hashing"
 version = "0.1.0"
-description = "Syndicate library"
+description = "Hashing algorithms."
 authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 

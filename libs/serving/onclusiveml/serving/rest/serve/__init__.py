@@ -19,6 +19,7 @@ from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
 )
 
 from onclusiveml.serving.rest.serve.params import (  # noqa: F401
+    get_logging_config,
     FastAPISettings,
     UvicornSettings,
     LogConfigSettings,

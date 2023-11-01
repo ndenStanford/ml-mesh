@@ -16,7 +16,7 @@ from src.serve.served_model import ServedLshModel
 
 @pytest.mark.order(4)
 def test_get_model_server():
-    """Tests the utility method get_model_server and the attached server."""
+    """Tests the prepped model server."""
     model_server = get_model_server()
 
     assert isinstance(model_server.model, ServedLshModel)
