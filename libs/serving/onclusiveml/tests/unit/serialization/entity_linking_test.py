@@ -86,7 +86,7 @@ def test_response_attribute_schema(
     assert isinstance(attributes.entities[0].score, float)
     assert isinstance(attributes.entities[0].sentence_index, int)
     assert isinstance(attributes.entities[0].wiki_link, str)
-    assert isinstance(attributes.entities[0].salience_score, int)
+    assert isinstance(attributes.entities[0].salience_score, float)
     assert isinstance(attributes.entities[0].text, str)
 
     assert dict(attributes) == {
