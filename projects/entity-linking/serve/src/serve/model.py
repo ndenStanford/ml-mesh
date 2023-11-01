@@ -67,7 +67,7 @@ class EntityLinkingServedModel(ServedModel):
         text = re.sub("\n+", " ", text)
         lang = LanguageIso.from_language_iso(lang).value
         if entities is None:
-            output = self._predict(text, lang)
+            output = self._predict(text, lang, None)
         else:
             output = self._predict(text, lang, entities)
         return PredictResponseSchema.from_data(
