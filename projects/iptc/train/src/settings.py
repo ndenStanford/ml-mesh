@@ -79,7 +79,7 @@ class Inputs(TrackedParams):
 
 
 class IPTCSettings(TrackedParams):
-    """IPTCiment settings."""
+    """IPTC settings."""
 
     class Config:
         env_file = "config/dev.env"
@@ -90,7 +90,7 @@ class IPTCModelParams(TrackedParams):
     """IPTC Model parameters."""
 
     huggingface_pipeline_task: str = "text-classification"
-
+    base_model: BaseTrackedModelSpecs = BaseTrackedModelSpecs()
     iptc_settings: IPTCSettings = IPTCSettings()
 
     class Config:
