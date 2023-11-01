@@ -155,8 +155,7 @@ def test_model_predict(
 
     response = entity_linking_model.predict(PredictRequestSchema(**payload))
 
-    # Extract entities if they are present, otherwise set to None
-    entities = getattr(attributes, "entities", None)
+    entities = attributes.get("entities", None)
 
     mock_predict.assert_called_with(attributes["content"], parameters["lang"], entities)
 
