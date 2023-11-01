@@ -52,11 +52,11 @@ def test_request_schema_parameters_extra():
 
 
 @pytest.mark.parametrize(
-    "entity_type, entity_text, score, sentence_index, wiki_link, salience_score, text",
+    "entity_type, entity_text, score, sentence_index, wiki_link",
     [("ORG", "Company name", 0.9, 0, "link", 0.9, "company name")],
 )
 def test_response_attribute_schema(
-    entity_type, entity_text, score, sentence_index, wiki_link, salience_score, text
+    entity_type, entity_text, score, sentence_index, wiki_link
 ):
     """Test response schema parameters."""
     attributes = PredictResponseAttributeSchemaV1(
@@ -67,8 +67,6 @@ def test_response_attribute_schema(
                 score=score,
                 sentence_index=sentence_index,
                 wiki_link=wiki_link,
-                salience_score=salience_score,
-                text=text,
             )
         ]
     )
@@ -78,16 +76,12 @@ def test_response_attribute_schema(
     assert attributes.entities[0].score == score
     assert attributes.entities[0].sentence_index == sentence_index
     assert attributes.entities[0].wiki_link == wiki_link
-    assert attributes.entities[0].salience_score == salience_score
-    assert attributes.entities[0].text == text
 
     assert isinstance(attributes.entities[0].entity_type, str)
     assert isinstance(attributes.entities[0].entity_text, str)
     assert isinstance(attributes.entities[0].score, float)
     assert isinstance(attributes.entities[0].sentence_index, int)
     assert isinstance(attributes.entities[0].wiki_link, str)
-    assert isinstance(attributes.entities[0].salience_score, float)
-    assert isinstance(attributes.entities[0].text, str)
 
     assert dict(attributes) == {
         "entities": [
@@ -97,8 +91,6 @@ def test_response_attribute_schema(
                 "score": score,
                 "sentence_index": sentence_index,
                 "wiki_link": wiki_link,
-                "salience_score": salience_score,
-                "text": text,
             }
         ]
     }
