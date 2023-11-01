@@ -47,7 +47,6 @@ def test_model_server_bio():
     (
         {
             "data": {
-                "identifier": None,
                 "namespace": "lsh",
                 "attributes": {
                     "content": "Call functions to generate hash signatures for each article"  # noqa
