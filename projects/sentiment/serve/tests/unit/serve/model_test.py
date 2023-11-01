@@ -11,8 +11,8 @@ from onclusiveml.models.sentiment import CompiledSent
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
-from src.serve.model import ServedSentModel
-from src.serve.schemas import PredictRequestSchema, PredictResponseSchema
+# from src.serve.model import ServedSentModel
+# from src.serve.schemas import PredictRequestSchema, PredictResponseSchema
 
 
 def test_served_model_init(served_model):
