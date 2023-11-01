@@ -150,11 +150,15 @@ def test_model_predict(
     """Test model predict."""
     mock_predict.return_value = predict_return
 
+    attributes = payload["data"]["attributes"]
+    parameters = payload["data"]["parameters"]
+
     response = entity_linking_model.predict(PredictRequestSchema(**payload))
 
-    mock_predict.assert_called_with(
-        payload["data"]["attributes"]["content"], payload["data"]["parameters"]["lang"]
-    )
+    # Extract entities if they are present, otherwise set to None
+    entities = getattr(attributes, "entities", None)
+
+    mock_predict.assert_called_with(attributes["content"], parameters["lang"], entities)
 
     assert response == expected_response
 
