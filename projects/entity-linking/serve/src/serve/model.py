@@ -109,34 +109,37 @@ class EntityLinkingServedModel(ServedModel):
         return q.json()
 
     def _get_entity_linking(
-        self, content: str, lang: str = "en"
+        self,
+        content: str,
+        lang: str = "en",
+        entities: Optional[List[Dict[str, Any]]] = None,
     ) -> List[Dict[str, Any]]:
         """Link all entities in text to Wiki data id.
 
         Args:
             content (str): text to be wiki linked
             lang (str): language of the text
+            entities (Optional[List[Dict[str, Any]]]): Optional list of entities.
+            If provided, the function will not make a request to get the entities.
         """
-        response = requests.post(
-            settings.entity_recognition_endpoint,
-            json={
-                "data": {
-                    "identifier": "string",
-                    "namespace": "ner",
-                    "attributes": {
-                        "content": content,
-                    },
-                    "parameters": {"language": lang},
-                }
-            },
-        ).json()
-
-        entities = response["data"]["attributes"]["entities"]
+        if entities is None:
+            response = requests.post(
+                settings.entity_recognition_endpoint,
+                json={
+                    "data": {
+                        "identifier": "string",
+                        "namespace": "ner",
+                        "attributes": {
+                            "content": content,
+                        },
+                        "parameters": {"language": lang},
+                    }
+                },
+            ).json()
+            entities = response["data"]["attributes"]["entities"]
 
         query = self._generate_query(content, lang, entities)
-
         wiki_response = self._query_wiki(query)
-
         entity_fish_entities = wiki_response.get("entities", [])
 
         for entity in entities:
@@ -146,8 +149,8 @@ class EntityLinkingServedModel(ServedModel):
             if wiki:
                 wiki_link = "https://www.wikidata.org/wiki/{}".format(wiki)
                 entity["wiki_link"] = wiki_link
-            entity.pop("start")
-            entity.pop("end")
+            entity.pop("start", None)
+            entity.pop("end", None)
 
         return entities
 
@@ -182,7 +185,9 @@ class EntityLinkingServedModel(ServedModel):
                 entities within text recognized by an external NER model
         """
         entity_query = []
-        unique_entity_text = set([entity["entity_text"] for entity in entities])
+        unique_entity_text = set(
+            entity.get("entity_text", entity.get("text")) for entity in entities
+        )
         for entity_text in unique_entity_text:
             matched_entities = list(re.finditer(entity_text, text))
             spans = [m.span() for m in matched_entities]

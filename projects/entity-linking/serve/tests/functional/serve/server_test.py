@@ -86,6 +86,44 @@ def test_model_server_readiness(test_client):
                 },
             },
         ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "text": "Tottenham Hotspur Football Club",
+                                "salience_score": 0.9259419441223145,
+                                "sentence_index": 0,
+                            }
+                        ],
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Tottenham Hotspur Football Club",
+                                "score": 0.9259419441223145,
+                                "sentence_index": 0,
+                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                            }
+                        ]
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
