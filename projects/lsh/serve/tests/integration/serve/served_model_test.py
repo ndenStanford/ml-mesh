@@ -4,7 +4,12 @@
 import pytest
 
 # Source
+from src.serve.schemas import PredictRequestSchema
 from src.serve.served_model import ServedLshModel
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 @pytest.mark.order(1)
@@ -25,24 +30,20 @@ def test_served_lsh_model_load():
 
 
 @pytest.mark.order(3)
-def test_served_lsh_model_predict(test_predict_input, test_expected_predict_output):
+def test_served_lsh_model_predict(
+    test_predict_input, test_inference_params, test_expected_predict_output
+):
     """Tests the fully initialized and loaded ServedLshModel's predict method."""
     served_lsh_model = ServedLshModel()
     served_lsh_model.load()
 
-    input_ = {
-        "identifier": None,
-        "namespace": "lsh",
-        "attributes": {"content": test_predict_input},  # noqa
-        "parameters": {
-            "language": "en",
-            "shingle_list": 5,
-            "threshold": 0.6,
-            "num_perm": 128,
-        },
-    }
+    test_input = PredictRequestSchema.from_data(
+        namespace=settings.model_name,
+        parameters=test_inference_params,
+        attributes={"content": test_predict_input},
+    )
 
-    test_actual_predict_output = served_lsh_model.predict(input_)
+    test_actual_predict_output = served_lsh_model.predict(test_input)
 
     assert test_actual_predict_output == test_expected_predict_output
 

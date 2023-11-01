@@ -34,6 +34,12 @@ def test_predict_input() -> str:
 
 
 @pytest.fixture
+def test_inference_params() -> str:
+    """Predict input fixture."""
+    return {"language": "en", "shingle_list": 5, "threshold": 0.6, "num_perm": 128}
+
+
+@pytest.fixture
 def test_expected_predict_output() -> List[str]:
     """Expected predict output fixture."""
     return {
