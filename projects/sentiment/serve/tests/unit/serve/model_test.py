@@ -3,9 +3,6 @@
 # Standard Library
 from unittest.mock import patch
 
-# 3rd party libraries
-import pytest
-
 # Internal libraries
 from onclusiveml.models.sentiment import CompiledSent
 
