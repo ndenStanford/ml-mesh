@@ -1,7 +1,7 @@
 """Ner v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -37,4 +37,3 @@ class BioRequestAttributeSchemaV1(JsonApiSchema):
     """
 
     model_name: str = "lsh"
-    model_card: Dict

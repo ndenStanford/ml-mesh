@@ -1,7 +1,7 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Dict, Type
+from typing import Type
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -81,5 +81,5 @@ class ServedLshModel(ServedModel):
         return BioResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"model_name": settings.model_name, "model_card": Dict},
+            attributes={"model_name": settings.model_name},
         )

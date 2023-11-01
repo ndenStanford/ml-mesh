@@ -1,7 +1,7 @@
 """Conftest."""
 
 # Standard Library
-from typing import Dict, List
+from typing import List
 
 # 3rd party libraries
 import pytest
@@ -79,5 +79,5 @@ def test_expected_bio_output():
     return BioResponseSchema.from_data(
         version=1,
         namespace="lsh",
-        attributes={"model_name": "lsh", "model_card": Dict},
+        attributes={"model_name": "lsh"},
     )
