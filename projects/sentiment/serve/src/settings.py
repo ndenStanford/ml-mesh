@@ -32,7 +32,9 @@ class ServerModelSettings(ServingParams):
     """Prediction model settings."""
 
     model_name: str = "sentiment"
-    model_directory: Union[str, Path] = "."
+    model_directory: Union[
+        str, Path
+    ] = "."  # "projects/sentiment/serve/models/SEN-COMPILED-31/"
 
 
 class GlobalSettings(
@@ -48,6 +50,3 @@ class GlobalSettings(
 def get_settings() -> BaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()
-
-
-get_settings()

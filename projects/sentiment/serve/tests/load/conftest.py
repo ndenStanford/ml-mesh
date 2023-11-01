@@ -34,6 +34,7 @@ def test_serving_params():
     """Serving params fixture."""
     return ServingParams()
 
+
 @pytest.fixture
 def test_served_model_artifacts():
     """Model artifacts fixture."""
