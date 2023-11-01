@@ -62,7 +62,7 @@ class EntityLinkingServedModel(ServedModel):
 
         text = attributes.content
         lang = parameters.lang
-        entities = attributes.get("entities")  # Fetch entities if provided
+        entities = getattr(attributes, "entities", None)  # Fetch entities if provided
 
         text = re.sub("\n+", " ", text)
         lang = LanguageIso.from_language_iso(lang).value
