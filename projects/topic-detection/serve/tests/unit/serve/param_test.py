@@ -17,7 +17,7 @@ def test_handler_inference(mock_post, article_input, model_card):
 
     gpt_inference = _service.inference(
         article=article_input,
-        cate="Opportunities",
+        category="Opportunities",
         industry="Science and technology",
     )
     assert isinstance(gpt_inference, str)

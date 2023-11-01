@@ -28,14 +28,14 @@ class TopicHandler:
     def inference(
         self,
         article: List[str],
-        cate: str,
+        category: str,
         industry: str,
     ) -> str:
         """Topic detection handler method.
 
         Args:
             article (list): list of str
-            cate (str): target category, one of ['Risk detection', 'Opportunities',
+            category (str): target category, one of ['Risk detection', 'Opportunities',
             'Threats for the brand','Company or spokespersons', 'Brand Reputation',
             'CEO Reputation', 'Customer Response', 'Stock Price Impact',
             'Industry trends']
@@ -55,7 +55,7 @@ class TopicHandler:
 
         input_dict = {
             "target_industry": industry,
-            "target_category": cate,
+            "target_category": category,
             "content": processed_article,
         }  # input target category & articles
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
@@ -75,14 +75,14 @@ class TopicHandler:
         category_list = settings.CATEGORY_LIST
         record = {cate: "" for cate in category_list}
         # do topic analysis for each category
-        for cate in category_list:
+        for category in category_list:
             # print('current category : ', cate)
             record_cate = []
             # divide the articles into groups and summarize each group
             while art_index < num_article:
                 end_index = min(art_index + n, num_article)
                 input_article = article[art_index:end_index]  # E203
-                res_now = self.inference(input_article, cate, industry)
+                res_now = self.inference(input_article, category, industry)
                 record_cate.append(res_now)
                 art_index += n
 
@@ -100,7 +100,7 @@ class TopicHandler:
 
             input_dict = {
                 "target_industry": industry,
-                "target_category": cate,
+                "target_category": category,
                 "Summary": processed_summary,
             }  # input target category & articles
             headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
@@ -111,7 +111,7 @@ class TopicHandler:
                 json=input_dict,
             )
 
-            record[cate] = eval(q.content)["generated"]
+            record[category] = eval(q.content)["generated"]
         return record
 
     def pre_process(self, article: list) -> list:
