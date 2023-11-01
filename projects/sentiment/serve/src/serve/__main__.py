@@ -7,9 +7,8 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-
+model_server = get_model_server(ServedModelArtifacts(settings))
 
 if __name__ == "__main__":
-    model_server = get_model_server(ServedModelArtifacts(settings))
     # launch server process(es)
     model_server.serve()
