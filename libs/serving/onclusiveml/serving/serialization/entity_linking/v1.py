@@ -11,6 +11,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     content: str
+    entities: Optional[List[PredictResponseEntity]] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
