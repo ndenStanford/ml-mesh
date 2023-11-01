@@ -9,6 +9,7 @@ from onclusiveml.models.sentiment import CompiledSent
 # Source
 from src.serve.artifacts import ServedModelArtifacts
 
+
 def test_served_model_init(served_model):
     """Test served model initialization."""
     assert isinstance(served_model.served_model_artifacts, ServedModelArtifacts)
