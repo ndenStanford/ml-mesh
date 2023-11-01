@@ -62,20 +62,25 @@ class EntityLinkingServedModel(ServedModel):
 
         text = attributes.content
         lang = parameters.lang
+        entities = getattr(attributes, "entities", None)  # Fetch entities if provided
 
         text = re.sub("\n+", " ", text)
         lang = LanguageIso.from_language_iso(lang).value
-        output = self._predict(text, lang)
-
+        if entities is None:
+            output = self._predict(text, lang, None)
+        else:
+            output = self._predict(text, lang, entities)
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={"entities": output},
         )
 
-    def _predict(self, content: str, lang: str) -> List[Dict[str, Any]]:
+    def _predict(
+        self, content: str, lang: str, entities: Optional[List[Dict[str, Any]]] = None
+    ) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
-        return self._get_entity_linking(content, lang)
+        return self._get_entity_linking(content, lang, entities)
 
     def _generate_query(
         self, content: str, lang: str, entities: List[Dict[str, Any]]
