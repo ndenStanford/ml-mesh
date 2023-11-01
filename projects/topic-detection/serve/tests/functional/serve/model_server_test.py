@@ -71,7 +71,7 @@ def test_model_server_predict(
     assert test_response.status_code == 200
     test_actual_predict_output = test_response.json()
 
-    assert test_actual_predict_output
+    assert type(test_actual_predict_output) == dict
 
 
 @pytest.mark.order(7)
