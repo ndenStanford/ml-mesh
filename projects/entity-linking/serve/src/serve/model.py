@@ -209,4 +209,4 @@ class EntityLinkingServedModel(ServedModel):
 
     def _get_entity_text(self, entity: Dict[str, Any]) -> str:
         """Fetch entity text from entities dictionary."""
-        return entity.get("text", entity["entity_text"])
+        return entity.get("text", "") or entity.get("entity_text", "")
