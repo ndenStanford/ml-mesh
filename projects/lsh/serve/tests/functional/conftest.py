@@ -16,15 +16,19 @@ from src.serve.server_models import BioResponseModel, PredictResponseModel
 
 
 @pytest.fixture
-def test_client():
+def test_serving_params():
+    """Serving params fixture."""
+    return ServingParams()
+
+
+@pytest.fixture
+def test_client(test_serving_params):
     """Client-like session with base url to avoid duplication.
 
     References:
         https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession
     """
-    serving_params = ServingParams()
-    model_server_port = serving_params.uvicorn_settings.http_port
-    test_model_server_url = f"http://serve:{model_server_port}"
+    test_model_server_url = f"http://serve:{test_serving_params.uvicorn_settings.port}"
 
     return BaseUrlSession(base_url=test_model_server_url)
 

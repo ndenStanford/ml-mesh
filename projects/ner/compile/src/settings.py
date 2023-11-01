@@ -76,7 +76,7 @@ class WorkflowOutputDir(TrackedParams):
     outpath: str = "./outputs"
 
     class Config:
-        env_prefix = "io_"
+        env_prefix = "compiled_pipeline_io_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
@@ -89,6 +89,8 @@ class WorkflowComponentIOSettings(object):
         workflow_component (str): Name of workflow component
         workflow_component_output_dir (str): The output directory specific to the component
         model_directory (str): The directory for model artifacts
+        model_directory_base (str): The directory for base NER model
+        model_directory_kj (str): The directory for NER model used for korean/japanese
         test_files (dict): Paths to test related files
 
     """
@@ -109,6 +111,13 @@ class WorkflowComponentIOSettings(object):
 
         self.model_directory: str = os.path.join(
             self.workflow_component_output_dir, "model_artifacts"
+        )
+
+        self.model_directory_base: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts/base_ner"
+        )
+        self.model_directory_kj: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts/korean_japanese_ner"
         )
 
         self.test_files = {
@@ -132,7 +141,7 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(object):
+class IOSettings(TrackedParams):
     """Configuring container file system output locations for all 4 components.
 
     Attributes:
@@ -143,13 +152,19 @@ class IOSettings(object):
 
     """
 
-    # admin
+    # storage
     download: WorkflowComponentIOSettings = WorkflowComponentIOSettings(DOWNLOAD)
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
 
+    # logging
     log_level: int = INFO
+
+    class Config:
+        env_prefix = "io_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class TokenizerSettings(TrackedParams):

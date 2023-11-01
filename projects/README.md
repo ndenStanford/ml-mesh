@@ -4,7 +4,7 @@ This folder contains the implementation of all our machine learning projects. Ea
  into a maximum of 5 components:
 
 - ingest
-- prepare
+- register
 - train
 - compile
 - serve
@@ -38,7 +38,8 @@ Available targets are:
     projects.build/<project>                    Builds the component docker image. Variable(s): COMPONENT, ENVIRONMENT.
     projects.install/<project>                  Install component dependencies locally. Variable(s): COMPONENT
     projects.deploy/<project>                   Deploys component docker image to ECR. Variable(s): COMPONENT, ENVIRONMENT.
-    projects.start/<project>                    Start development container for component. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.start/<project>                    Start main task of development container for component. Variable(s): COMPONENT, ENVIRONMENT.
+    projects.run/<project>                      Start auxiliary task of development container for component. Variable(s): COMPONENT, ENVIRONMENT, TASK.
     projects.stop/<project>                     Stop development container for component. Variable(s): COMPONENT, ENVIRONMENT.
     projects.test/<project>                     Runs component full test suite. Variable(s): COMPONENT, ENVIRONMENT.
     projects.unit/<project>                     Runs component unit test. Variable(s): COMPONENT, ENVIRONMENT.
