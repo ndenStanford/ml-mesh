@@ -196,6 +196,13 @@ services:
   # - do NOT include REST model server process
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -214,6 +221,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -229,6 +238,8 @@ services:
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     profiles: [functional]
     hostname: onclusiveml
     networks:
@@ -254,6 +265,8 @@ services:
       ONCLUSIVEML_SERVING_RESET_STATS: No
       ONCLUSIVEML_SERVING_RUN_TIME: 45
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     profiles: [load]
     hostname: onclusiveml
     networks:
