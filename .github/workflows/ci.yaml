@@ -154,7 +154,7 @@ jobs       :
   run-us-east-1-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker]
     strategy:
       max-parallel: 1
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
