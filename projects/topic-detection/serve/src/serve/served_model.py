@@ -36,8 +36,8 @@ class ServedTopicModel(ServedModel):
         """Load model."""
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
-        self.ready = True
         self.model_card = BioResponseModel(model_name="topic-detection")
+        self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
         """Topic-detection prediction.
