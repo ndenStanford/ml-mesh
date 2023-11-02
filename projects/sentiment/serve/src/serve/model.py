@@ -80,12 +80,7 @@ class ServedSentModel(ServedModel):
         attributes = payload.attributes
         parameters = payload.parameters
         # score the model
-        # print("*" * 20)
-        # print(attributes)
-        # print(parameters)
         sentiment = self.model(sentences=attributes.content, **parameters.dict())
-        # sentiment = sentiment._asdict()
-        # print(sentiment)
 
         attributes = {
             "label": sentiment.get("label"),
@@ -94,7 +89,6 @@ class ServedSentModel(ServedModel):
             "entities": sentiment.get("entities"),
         }
 
-        print(attributes)
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,

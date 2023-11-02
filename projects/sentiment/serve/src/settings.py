@@ -34,7 +34,7 @@ class ServerModelSettings(ServingParams):
     model_name: str = "sentiment"
     model_directory: Union[
         str, Path
-    ] = "."  # "projects/sentiment/serve/models/SEN-COMPILED-31/"
+    ] = "."
 
 
 class GlobalSettings(
