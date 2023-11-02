@@ -34,6 +34,10 @@ def ingest(settings: BaseSettings) -> None:
         pcoll_df = to_pcollection(dfs, include_indexes=False, yield_elements="pandas")
         _ = (
             pcoll_df
+            | "Add id"
+            >> beam.Map(
+                lambda x: x.assign(id=x.apply(lambda y: hash(tuple(y)), axis=1))
+            )
             | "Transform to tables"
             >> beam.Map(lambda x: pa.Table.from_pandas(x, preserve_index=False))
             | "Combine" >> beam.combiners.ToList()
