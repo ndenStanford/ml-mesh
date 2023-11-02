@@ -45,7 +45,7 @@ class ServedSentModel(ServedModel):
         self.served_model_artifacts = served_model_artifacts
         self._model = None
         super().__init__(name=served_model_artifacts.model_name)
-        self.load()  # REMOVE
+        # self.load()  # FOR LOCAL TESTING ONLY, REMOVE FOR PRODUCTION
 
     @property
     def model(self) -> CompiledSent:
