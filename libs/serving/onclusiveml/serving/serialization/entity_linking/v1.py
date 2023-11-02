@@ -28,6 +28,8 @@ class PredictResponseEntity(JsonApiSchema):
     score: Optional[float] = None
     sentence_index: Optional[int] = None
     wiki_link: Optional[str] = None
+    salience_score: Optional[float] = None
+    text: Optional[str] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
