@@ -26,7 +26,7 @@ def test_request_schema_attributes(content):
 
     assert attributes.content == content
     assert isinstance(attributes.content, str)
-    assert dict(attributes) == {"content": content}
+    assert dict(attributes) == {"content": content, "entities": None}
 
 
 def test_request_schema_attributes_extra():
