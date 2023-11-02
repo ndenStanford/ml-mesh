@@ -4,7 +4,10 @@
 from datetime import datetime as dt
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
@@ -20,7 +23,9 @@ def upload_compiled_model() -> None:
     """Upload compiled model."""
     io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.logger_level
+        name=__name__,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        level=io_settings.log_level,
     )
     # --- upload compiled model
     compiled_model_specs = CompiledTrackedModelSpecs()

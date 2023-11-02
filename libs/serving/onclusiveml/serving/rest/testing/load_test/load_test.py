@@ -4,7 +4,6 @@
 # licence: https://github.com/FutureSharks/invokust/blob/master/LICENSE
 
 # Standard Library
-import logging
 import signal
 import sys
 import time
@@ -12,11 +11,15 @@ import time
 # 3rd party libraries
 import gevent
 from locust.env import Environment
-from locust.log import setup_logging
 from locust.stats import stats_printer
 from locust.util.timespan import parse_timespan
 
 # Internal libraries
+from onclusiveml.core.logging import (
+    INFO,
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 from onclusiveml.serving.rest.testing.load_test.params import (
     EndpointReport,
     LoadTestingParams,
@@ -26,8 +29,26 @@ from onclusiveml.serving.rest.testing.load_test.params import (
 )
 
 
-setup_logging("INFO", None)
-logger = logging.getLogger(__name__)
+# approximate effect of locust.log.setup_logging with internal utilities
+get_default_logger(
+    name="",
+    level=INFO,
+    fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+)
+
+get_default_logger(
+    name="locust",
+    level=INFO,
+    fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+)
+
+get_default_logger(
+    name="locust.stats_logger",
+    level=INFO,
+    fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+)
+
+logger = get_default_logger(__name__, level=INFO, json_format=False)
 
 
 def sig_term_handler() -> None:

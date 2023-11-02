@@ -9,7 +9,11 @@ from src.serve.served_model import ServedLshModel
 
 
 def get_model_server() -> ModelServer:
-    """Utility method for prepping a fully configured model server instance ready to serve."""
+    """Utility method for retrieving a fully configured model server instance.
+
+    Returns:
+        ModelServer: A model server instance.
+    """
     # initialize model
     lsh_served_model = ServedLshModel()
     # initialize model server
@@ -21,7 +25,8 @@ def get_model_server() -> ModelServer:
     return model_server
 
 
+model_server = get_model_server()
+
 if __name__ == "__main__":
-    model_server = get_model_server()
     # launch server process(es)
     model_server.serve()
