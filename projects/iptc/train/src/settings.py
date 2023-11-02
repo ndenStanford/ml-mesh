@@ -90,7 +90,7 @@ class IPTCModelParams(TrackedParams):
     """IPTC Model parameters."""
 
     huggingface_pipeline_task: str = "text-classification"
-    base_model: BaseTrackedModelSpecs = BaseTrackedModelSpecs()
+    base_model_reference: BaseTrackedModelSpecs = BaseTrackedModelSpecs()
     iptc_settings: IPTCSettings = IPTCSettings()
 
     class Config:
