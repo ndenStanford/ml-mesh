@@ -39,7 +39,7 @@ def test_model_server_bio():
     readiness_response = requests.get("http://serve:8000/lsh/v1/bio")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
+    assert readiness_response.json()["data"]["attributes"].get("model_name") is not None
 
 
 @pytest.mark.parametrize(
