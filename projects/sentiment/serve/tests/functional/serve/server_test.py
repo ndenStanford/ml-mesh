@@ -49,8 +49,8 @@ def test_model_server_bio():
             {
                 "data": {
                     "namespace": "sentiment",
-                    "attributes": {"content": "London is a wonderful city."},
-                    "parameters": {
+                    "attributes": {
+                        "content": "London is a wonderful city.",
                         "entities": [
                             {
                                 "entity_type": "LOC",
@@ -61,6 +61,8 @@ def test_model_server_bio():
                                 "end": 6,
                             },
                         ],
+                    },
+                    "parameters": {
                         "language": "en",
                     },
                 }

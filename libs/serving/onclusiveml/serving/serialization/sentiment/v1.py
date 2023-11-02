@@ -1,4 +1,4 @@
-"""Ner v1 data schemas."""
+"""Sentiment v1 data schemas."""
 
 # Standard Library
 from typing import Dict, List, Optional
@@ -9,7 +9,7 @@ from onclusiveml.core.serialization import JsonApiSchema
 
 
 class InputEntity(OnclusiveBaseSchema):
-    """Input entity information from NER result.
+    """Input entity information from sentiment result.
 
     Attributes:
         entity_type (Optional[str]): The type of the extracted entity.
@@ -34,7 +34,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     Attributes:
         content (str):
         entities (Optional[List[InputEntity]]):
-                List of detected entities from the NER model
+                List of detected entities from the sentiment model
     """
 
     content: str = ""
@@ -52,7 +52,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 
 
 class OutputEntity(InputEntity):
-    """Input entity information from NER result.
+    """Input entity information from sentiment result.
 
     Attributes:
         sentiment: str
