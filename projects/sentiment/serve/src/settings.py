@@ -32,9 +32,7 @@ class ServerModelSettings(ServingParams):
     """Prediction model settings."""
 
     model_name: str = "sentiment"
-    model_directory: Union[
-        str, Path
-    ] = "."  # "projects/sentiment/serve/models/SEN-COMPILED-31/"
+    model_directory: Union[str, Path] = "."
 
 
 class GlobalSettings(
