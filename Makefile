@@ -44,7 +44,7 @@ ALL_LIBS:= \
 	nlp \
 	serving \
 	tracking \
-	syndicate
+	hashing
 
 # all projects
 ALL_PROJECTS:= \
@@ -52,6 +52,7 @@ ALL_PROJECTS:= \
 	summarization \
 	entity-linking \
 	ner \
+	iptc \
 	lsh
 
 ## SUBFOLDER MAKEFILES

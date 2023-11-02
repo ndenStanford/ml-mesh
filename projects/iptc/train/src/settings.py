@@ -4,6 +4,10 @@
 import os
 from typing import List
 
+# 3rd party libraries
+from neptune.types.mode import Mode
+from pydantic import Field
+
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
@@ -12,6 +16,7 @@ from onclusiveml.tracking import (
 )
 
 
+# --- atomic settings and models
 CLASS_DICT_FIRST = {
     "root": {
         "LABEL_0": "arts, culture, entertainment and media",
@@ -46,6 +51,23 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
+class BaseTrackedModelSpecs(TrackedModelSpecs):
+    """Trained model settings."""
+
+    project: str = "onclusive/iptc"
+    model: str = "IPTC-BASE"
+    # we need an additional version tag since we are referencing an EXISTING model version, rather
+    # than creating a new one
+    with_id: str = "IPTC-BASE-14"
+    # we only need to download from the base model, not upload
+    mode: str = Field(Mode.READ_ONLY)
+
+    class Config:
+        env_prefix = "base_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
 class Inputs(TrackedParams):
     """iptc input parameters."""
 
@@ -57,7 +79,7 @@ class Inputs(TrackedParams):
 
 
 class IPTCSettings(TrackedParams):
-    """IPTCiment settings."""
+    """IPTC settings."""
 
     class Config:
         env_file = "config/dev.env"
@@ -68,8 +90,7 @@ class IPTCModelParams(TrackedParams):
     """IPTC Model parameters."""
 
     huggingface_pipeline_task: str = "text-classification"
-    huggingface_model_reference: str = "xlm-roberta-base"
-
+    base_model: BaseTrackedModelSpecs = BaseTrackedModelSpecs()
     iptc_settings: IPTCSettings = IPTCSettings()
 
     class Config:
@@ -86,7 +107,6 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     model_params: IPTCModelParams = IPTCModelParams()
     model_inputs: Inputs = Inputs()
     # admin
-    local_model_dir: str = os.path.join(".", "models/model.pt")
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
 

@@ -4,19 +4,28 @@
 import os
 import re
 from pathlib import Path
-from typing import List, Union
+from typing import List, NamedTuple, Optional, Union
 
 # 3rd party libraries
 from bs4 import BeautifulSoup
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
-from onclusiveml.models.ner.settings import (
-    InferenceOutput,
-    PostprocessOutput,
-    PostprocessOutputNoPos,
-)
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+
+
+DISTILBERT_SUPPORTED_LANGS = ["ko", "ja"]
+
+
+class InferenceOutput(NamedTuple):
+    """Inference output data structure."""
+
+    entity_type: str
+    score: float
+    entity_text: str
+    start: Optional[int] = None
+    end: Optional[int] = None
+    sentence_index: Optional[int] = None
 
 
 class CompiledNER:
@@ -24,14 +33,19 @@ class CompiledNER:
 
     def __init__(
         self,
-        compiled_ner_pipeline: CompiledPipeline,
+        compiled_ner_pipeline_base: CompiledPipeline,
+        compiled_ner_pipeline_kj: CompiledPipeline,
     ):
         """Initalize the CompiledNER object.
 
         Args:
-            compiled_ner_pipeline (CompiledPipeline): The compiled NER pipline used for inference
+            compiled_ner_pipeline_base (CompiledPipeline): The compiled NER pipline used for
+                inference
+            compiled_ner_pipeline_kj (CompiledPipeline): The compiled NER pipline used for
+                inference for korean and japanese
         """
-        self.compiled_ner_pipeline = compiled_ner_pipeline
+        self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
+        self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
@@ -41,8 +55,11 @@ class CompiledNER:
         Args:
             directory (Union[Path, str]): Directory to save the compiled NER pipeline
         """
-        self.compiled_ner_pipeline.save_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline")
+        self.compiled_ner_pipeline_base.save_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_base")
+        )
+        self.compiled_ner_pipeline_kj.save_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
     @classmethod
@@ -55,12 +72,16 @@ class CompiledNER:
         Returns:
             CompiledNER: The loaded pre-trained CompiledNER object
         """
-        compiled_ner_pipeline = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline")
+        compiled_ner_pipeline_base = CompiledPipeline.from_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_base")
+        )
+        compiled_ner_pipeline_kj = CompiledPipeline.from_pretrained(
+            os.path.join(directory, "compiled_ner_pipeline_kj")
         )
 
         return cls(
-            compiled_ner_pipeline=compiled_ner_pipeline,
+            compiled_ner_pipeline_base=compiled_ner_pipeline_base,
+            compiled_ner_pipeline_kj=compiled_ner_pipeline_kj,
         )
 
     def remove_html(self, text: str) -> str:
@@ -85,58 +106,76 @@ class CompiledNER:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def sentence_tokenize(self, sentences: str, language: str) -> List[str]:
+    def sentence_tokenize(self, documents: List[str], language: str) -> List[List[str]]:
         """Sentence tokenization.
 
         Args:
-            sentences (str): Input sentences
-            language (str): Input sentences language
+            documents (List[str]): List of documents.
+            language (str): Input sentences language.
+
         Return:
-            List[str]: Tokenized sentences
+            List[List[str]]: Tokenized sentences for each document as a list
         """
-        list_sentences = self.sentence_tokenizer.tokenize(
-            content=sentences, language=language
-        )["sentences"]
-        # Filter out very short sentences as they likely be incorrect
-        list_sentences = [sentence for sentence in list_sentences if len(sentence) > 5]
+        list_sentences = [
+            self.sentence_tokenizer.tokenize(content=doc, language=language)[
+                "sentences"
+            ]
+            for doc in documents
+        ]
+
         return list_sentences
 
-    def preprocess(self, sentences: str, language: str) -> List[str]:
-        """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
+    def preprocess(self, documents: List[str], language: str) -> List[List[str]]:
+        """Preprocess the list of documents by removing unwanted text and tokenizing.
 
         Args:
-            sentences (str): Input sentences
+            documents (List[str]): List of documents
             language (str): Input sentences language
-        Return:
-            List[str]: Tokenized sentences
-        """
-        sentences = self.remove_html(sentences)
-        sentences = self.remove_whitespace(sentences)
-        list_sentences = self.sentence_tokenize(sentences, language)
-        return list_sentences
 
-    def inference(self, sentences: List[str]) -> InferenceOutput:
-        """Perform NER inference on a list of sentences.
+        Return:
+            List[List[str]]: Tokenized sentences, each sublist are tokenized strings for a document
+        """
+        documents = [self.remove_html(doc) for doc in documents]
+        documents = [self.remove_whitespace(doc) for doc in documents]
+        return self.sentence_tokenize(documents, language)
+
+    def inference(
+        self, sent_tokenized_documents: List[List[str]], language: str
+    ) -> List[List[InferenceOutput]]:
+        """Perform NER inference on a list of documents.
 
         Args:
-            sentences (List[str]): list of sentences
+            sent_tokenized_documents (List[List[str]]): Nested list of tokenized sentence where
+                each sublist represent a document
+            language: (str) Input sentences language
 
         Returns:
-            InferenceOutput: List of lists of NER predictions which has the attributes:
+            InferenceOutput: Nested list of NER predictions where each sublist represents entities
+                of a document. Attributes:
                 - entity_type (str): entity type
                 - score (float): probability of given entity
                 - entity_text (str): targeted word for given entity
                 - start (int): starting position of word
                 - end (int): ending position of word
         """
-        entities = self.compiled_ner_pipeline(sentences)
-        for sublist in entities:
-            for dictionary in sublist:
-                dictionary.pop("index", None)
-                dictionary["entity_type"] = dictionary.pop("entity")
-                dictionary["entity_text"] = dictionary.pop("word")
+        if language in DISTILBERT_SUPPORTED_LANGS:
+            res = list(map(self.compiled_ner_pipeline_kj, sent_tokenized_documents))
+        else:
+            res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
 
-        return InferenceOutput(ner_labels=entities)
+        # results are in nested list of entities where each sublist represents a doc
+        for doc in res:
+            for entities_list in doc:
+                for dictionary in entities_list:
+                    dictionary.pop("index", None)
+                    dictionary["entity_type"] = dictionary.pop("entity")
+                    dictionary["entity_text"] = dictionary.pop("word")
+
+        return [
+            [InferenceOutput(**dictionary) for dictionary in entities_list]
+            for docs in res
+            for entities_list in docs
+        ]
 
     def compute_moving_average(self, scores: List[float]) -> float:
         """Compute the moving average of a list of scores.
@@ -150,42 +189,30 @@ class CompiledNER:
         return sum(scores) / len(scores)
 
     def postprocess(
-        self, ner_labels: InferenceOutput, return_pos: bool
-    ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
+        self, output: List[List[InferenceOutput]]
+    ) -> List[List[InferenceOutput]]:
         """Postprocess NER labels to merge contiguous entities and compute scores.
 
         Args:
-            InferenceOutput: List of lists of NER predictions which has the attributes:
-                - entity_type (str): entity type
-                - score (float): probability of given entity
-                - entity_text (str): targeted word for given entity
-                - start (int): starting position of word
-                - end (int): ending position of word
-            return_pos (bool): Flag indicating whether to return positional information
-
-        Returns:
-            Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
-                entities in dictionary format.
-                PostprocessOutput has attributes:
+            output (List[List[InferenceOutput]]): Nested list of NER predictions
+                where each sublist represents entities of a document. Attributes:
                     - entity_type (str): entity type
                     - score (float): probability of given entity
                     - entity_text (str): targeted word for given entity
                     - start (int): starting position of word
                     - end (int): ending position of word
-                    - sentence index (int): sentence location of word
 
-                PostprocessOutputNoPos has attributes:
-                    - entity_type (str): entity type
-                    - score (float): probability of given entity
-                    - entity_text (str): targeted word for given entity
-                    - start (int): starting position of word
+        Returns:
+            List[List[InferenceOutput]]: List of extracted named
+                entities in dictionary format.
         """
         output_list: List[
-            PostprocessOutput
+            List[InferenceOutput]
         ] = []  # List to store the postprocessed NER labels
+
         sentence_index = 0  # Initialize sentence index for tracking
         # Loop through each sublist of NER labels (one sublist per sentence)
-        for sublist in ner_labels.ner_labels:
+        for sublist in output:
             merged_sublist = (
                 []
             )  # List to store merged contiguous entities for the current sentence
@@ -228,7 +255,7 @@ class CompiledNER:
                     if current_entity is not None:
                         # Append the merged entity with computed score to the merged_sublist
                         merged_sublist.append(  # type: ignore[unreachable]
-                            PostprocessOutput(
+                            InferenceOutput(
                                 entity_type=current_entity[2:],
                                 score=float(
                                     self.compute_moving_average(current_score_list)
@@ -251,7 +278,7 @@ class CompiledNER:
             if current_entity is not None:
                 # Append the merged entity with computed score to the merged_sublist
                 merged_sublist.append(
-                    PostprocessOutput(
+                    InferenceOutput(
                         entity_type=current_entity[2:],
                         score=float(
                             self.compute_moving_average(current_score_list)
@@ -268,47 +295,22 @@ class CompiledNER:
             output_list.append(merged_sublist)
             # Increment the sentence index for the next iteration
             sentence_index += 1
-        # Flatten the output list
-        output_list = [item for sublist in output_list for item in sublist]
 
-        # Remove start and end key from output if we do not want to have the word positions
-        if not return_pos:
-            output_list_no_pos = []
-            for ent in output_list:
-                output_list_no_pos.append(
-                    PostprocessOutputNoPos(**ent.dict(exclude={"start", "end"}))
-                )
-            return output_list_no_pos
         return output_list
 
-    def extract_entities(
-        self, sentences: str, language: str, return_pos: bool
-    ) -> Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]:
+    def __call__(
+        self, documents: List[str], language: str
+    ) -> List[List[InferenceOutput]]:
         """Extract named entities from input sentence using NER.
 
         Args:
-            sentences (str): The input sentences to extract entities from
+            documents (List[str]): List of documents to extract entities from
             language (str): input sentences language
-            return_pos (bool): Flag indiciating whether to return positional information in the
-                output
         Returns:
-            Union[List[PostprocessOutput], List[PostprocessOutputNoPos]]: List of extracted named
+            List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
-                PostprocessOutput has attributes:
-                    - entity (str): entity type
-                    - score (float): probability of given entity
-                    - word (str): targeted word for given entity
-                    - start (int): starting position of word
-                    - end (int): ending position of word
-                    - sentence index (int): sentence location of word
-
-                PostprocessOutputNoPos has attributes:
-                    - entity (str): entity type
-                    - score (float): probability of given entity
-                    - word (str): targeted word for given entity
-                    - start (int): starting position of word
         """
-        list_sentences = self.preprocess(sentences, language)
-        ner_labels = self.inference(list_sentences)
-        entities = self.postprocess(ner_labels, return_pos)
+        sent_tokenized_documents = self.preprocess(documents, language)
+        ner_labels = self.inference(sent_tokenized_documents, language)
+        entities = self.postprocess(ner_labels)
         return entities
