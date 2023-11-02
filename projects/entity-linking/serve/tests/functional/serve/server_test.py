@@ -98,7 +98,7 @@ def test_model_server_readiness(test_client):
                                 "entity_type": "ORG",
                                 "text": "Tottenham Hotspur Football Club",
                                 "salience_score": 0.9259419441223145,
-                                "sentence_index": 0,
+                                "sentence_indexes": [0],
                             }
                         ],
                     },
@@ -116,7 +116,7 @@ def test_model_server_readiness(test_client):
                                 "entity_type": "ORG",
                                 "entity_text": "Tottenham Hotspur Football Club",
                                 "score": 0.9259419441223145,
-                                "sentence_index": 0,
+                                "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q18741",
                             }
                         ]

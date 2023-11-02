@@ -150,6 +150,7 @@ class EntityLinkingServedModel(ServedModel):
         for entity in entities:
             ent = {}
             entity_text = self._get_entity_text(entity)
+            score = self._get_entity_score(entity)
             wiki = self._get_wiki_id(entity_text, entity_fish_entities)
 
             if wiki:
@@ -160,9 +161,12 @@ class EntityLinkingServedModel(ServedModel):
             entity.pop("end", None)
 
             ent["entity_type"] = entity["entity_type"]
-            ent["entity_text"] = entity["entity_text"]
-            ent["sentence_index"] = entity["sentence_index"]
-            ent["score"] = entity["score"]
+            ent["entity_text"] = entity_text
+            if "sentence_indexes" in entity:
+                ent["sentence_index"] = entity["sentence_indexes"]
+            elif "sentence_index" in entity:
+                ent["sentence_index"] = entity["sentence_index"]
+            ent["score"] = score
 
             processed_entities.append(ent)
 
@@ -219,3 +223,7 @@ class EntityLinkingServedModel(ServedModel):
     def _get_entity_text(self, entity: Dict[str, Any]) -> str:
         """Fetch entity text from entities dictionary."""
         return entity.get("text", "") or entity.get("entity_text", "")
+
+    def _get_entity_score(self, entity: Dict[str, Any]) -> float:
+        """Fetch entity text from entities dictionary."""
+        return entity.get("score", 0.0) or entity.get("salience_score", 0.0)
