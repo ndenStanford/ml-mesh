@@ -4,16 +4,11 @@
 from typing import Dict, List, Optional
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSchema
 from onclusiveml.core.serialization import JsonApiSchema
 
 
-class PredictRequestAttributeSchemaV1(JsonApiSchema):
-    """Prediction request data."""
-
-    content: str = ""
-
-
-class InputEntity(JsonApiSchema):
+class InputEntity(OnclusiveBaseSchema):
     """Input entity information from NER result.
 
     Attributes:
@@ -33,16 +28,26 @@ class InputEntity(JsonApiSchema):
     end: Optional[int]
 
 
+class PredictRequestAttributeSchemaV1(JsonApiSchema):
+    """Prediction request data.
+
+    Attributes:
+        content (str):
+        entities (Optional[List[InputEntity]]):
+                List of detected entities from the NER model
+    """
+
+    content: str = ""
+    entities: Optional[List[InputEntity]]
+
+
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data.
 
     Attributes:
-        entities (Optional[List[InputEntity]]):
-                List of detected entities from the NER model
         language (Optional[str]): Language used for prediction. Defaults to "en"
     """
 
-    entities: Optional[List[InputEntity]]
     language: str = "en"
 
 

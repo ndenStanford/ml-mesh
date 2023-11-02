@@ -45,7 +45,7 @@ class ServedSentModel(ServedModel):
         self.served_model_artifacts = served_model_artifacts
         self._model = None
         super().__init__(name=served_model_artifacts.model_name)
-        # self.load() # REMOVE
+        self.load()  # REMOVE
 
     @property
     def model(self) -> CompiledSent:
@@ -80,7 +80,10 @@ class ServedSentModel(ServedModel):
         attributes = payload.attributes
         parameters = payload.parameters
         # score the model
-        sentiment = self.model(sentences=attributes.content, **parameters.dict())
+        entities = [dict(e) for e in attributes.entities]
+        sentiment = self.model(
+            sentences=attributes.content, entities=entities, **parameters.dict()
+        )
 
         attributes = {
             "label": sentiment.get("label"),
