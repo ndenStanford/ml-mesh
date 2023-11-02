@@ -225,5 +225,5 @@ class EntityLinkingServedModel(ServedModel):
         return entity.get("text", "") or entity.get("entity_text", "")
 
     def _get_entity_score(self, entity: Dict[str, Any]) -> float:
-        """Fetch entity text from entities dictionary."""
+        """Fetch entity score from entities dictionary."""
         return entity.get("score", 0.0) or entity.get("salience_score", 0.0)
