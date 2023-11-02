@@ -146,7 +146,7 @@ class EntityLinkingServedModel(ServedModel):
         query = self._generate_query(content, lang, entities)
         wiki_response = self._query_wiki(query)
         entity_fish_entities = wiki_response.get("entities", [])
-
+        processed_entities = []
         for entity in entities:
             entity_text = self._get_entity_text(entity)
             wiki = self._get_wiki_id(entity_text, entity_fish_entities)
@@ -156,8 +156,15 @@ class EntityLinkingServedModel(ServedModel):
                 entity["wiki_link"] = wiki_link
             entity.pop("start", None)
             entity.pop("end", None)
+            ent = {}
+            ent["entity_type"] = entity["entity_type"]
+            ent["entity_text"] = entity["entity_text"]
+            ent["sentence_index"] = entity["sentence_index"]
+            ent["score"] = entity["score"]
+            ent["wiki_link"] = entity["wiki_link"]
+            processed_entities.append(ent)
 
-        return entities
+        return processed_entities
 
     def _get_wiki_id(self, text: str, entities: List[Dict[str, Any]]) -> Optional[str]:
         """Get most likely Wiki id of a single entity from entity fishing backend response.
