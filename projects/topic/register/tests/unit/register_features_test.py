@@ -56,18 +56,18 @@ def test_register(
         feast_config_bucket="kubeflow-feast-config-dev",
         config_file="feature_store.yaml",
         local_config_dir="local-config-dir",
-        data_source="iptc",
+        data_source="topic",
     )
 
     mock_redshift_source_custom.assert_called_once_with(
-        table="iptc",
+        table="topic",
         timestamp_field="event_timestamp",
         database="sources_dev",
         schema="feast",
     )
 
     mock_entity.assert_called_once_with(
-        name="iptc",
+        name="topic",
         join_keys=["iptc_id"],
     )
     # Additional assertions

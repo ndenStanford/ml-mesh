@@ -9,19 +9,19 @@ services:
   register:
     build:
       context: ../../
-      dockerfile: projects/iptc/register/Dockerfile
+      dockerfile: projects/topic/register/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: iptc
+        PROJECT: topic
         COMPONENT: register
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
     volumes:
       - type: bind
         source: register/src
-        target: /projects/iptc/register/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
+        target: /projects/topic/register/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_features]
     profiles: [register]
     environment:
@@ -35,8 +35,8 @@ services:
     volumes:
       - type: bind
         source: register/
-        target: /projects/iptc/register/
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
+        target: /projects/topic/register/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     hostname: onclusive-ml

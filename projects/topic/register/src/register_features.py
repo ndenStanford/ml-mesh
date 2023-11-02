@@ -80,7 +80,7 @@ def register() -> None:
     )
     logger.info(
         f"Registered feature views: "
-        f"{[feature_view.features for feature_view in fs_handle.list_feature_views()]}"
+        f"{[(feature_view.projection.name , feature_view.features) for feature_view in fs_handle.list_feature_views()]}"
     )
 
 
