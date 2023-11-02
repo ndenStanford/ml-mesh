@@ -148,20 +148,22 @@ class EntityLinkingServedModel(ServedModel):
         entity_fish_entities = wiki_response.get("entities", [])
         processed_entities = []
         for entity in entities:
+            ent = {}
             entity_text = self._get_entity_text(entity)
             wiki = self._get_wiki_id(entity_text, entity_fish_entities)
 
             if wiki:
                 wiki_link = "https://www.wikidata.org/wiki/{}".format(wiki)
                 entity["wiki_link"] = wiki_link
+                ent["wiki_link"] = entity["wiki_link"]
             entity.pop("start", None)
             entity.pop("end", None)
-            ent = {}
+
             ent["entity_type"] = entity["entity_type"]
             ent["entity_text"] = entity["entity_text"]
             ent["sentence_index"] = entity["sentence_index"]
             ent["score"] = entity["score"]
-            ent["wiki_link"] = entity["wiki_link"]
+
             processed_entities.append(ent)
 
         return processed_entities
