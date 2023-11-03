@@ -24,6 +24,54 @@ class IngestionSettings(BaseSettings):
         """Target path property."""
         return f"{self.target_bucket}/iptc/{self.iptc_level}/ingested"
 
+    @property
+    def schema(self):
+        """Schema property."""
+        map = {
+            "first_level": [
+                "topic_1",
+                "title",
+                "content",
+            ],
+            "first_level_multi_lingual": [
+                "topic_1",
+                "title",
+                "content",
+                "language",
+            ],
+            "first_level_multi_lingual_top_n": [
+                "topic_1_0",
+                "topic_1_1",
+                "topic_1_2",
+                "title",
+                "content",
+                "language",
+            ],
+            "second_level_multi_lingual": [
+                "topic_1",
+                "topic_2",
+                "title",
+                "content",
+                "language",
+            ],
+            "second_level": [
+                "topic_1",
+                "topic_2",
+                "title",
+                "content",
+            ],
+            "third_level_multi_lingual": [
+                "topic_1",
+                "topic_2",
+                "topic_3",
+                "title",
+                "content",
+                "summary",
+                "language",
+            ],
+        }
+        return map[self.iptc_level]
+
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"

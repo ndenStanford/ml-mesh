@@ -2,6 +2,7 @@
 
 # Standard Library
 import csv
+from datetime import datetime
 
 # 3rd party libraries
 import apache_beam as beam
@@ -28,15 +29,20 @@ def ingest(settings: BaseSettings) -> None:
         dfs = p | "Read CSVs" >> read_csv(
             settings.source_path,
             engine="c",
+            usecols=settings.schema,
             lineterminator="\n",
             quoting=csv.QUOTE_NONNUMERIC,
         )
         pcoll_df = to_pcollection(dfs, include_indexes=False, yield_elements="pandas")
         _ = (
             pcoll_df
-            | "Add id"
+            | "Fill NaN" >> beam.Map(lambda x: x.fillna("nan"))
+            | "Add id and timestamp columns"
             >> beam.Map(
-                lambda x: x.assign(id=x.apply(lambda y: hash(tuple(y)), axis=1))
+                lambda x: x.assign(
+                    id=x.apply(lambda y: hash(tuple(y)), axis=1),
+                    timestamp=datetime.now(),
+                )
             )
             | "Transform to tables"
             >> beam.Map(lambda x: pa.Table.from_pandas(x, preserve_index=False))
