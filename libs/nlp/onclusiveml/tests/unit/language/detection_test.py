@@ -30,7 +30,9 @@ def test_detect_language_unknown():
 
 def test_detect_language_content():
     """Test language detection for English."""
-    text = "I am an engineer from London"
+    text = (
+        "I work in London as a Machine Learning Engineer. It takes one hour to commute"
+    )
     res = detect_language(content=text)
     assert res == LanguageIso.EN
 
