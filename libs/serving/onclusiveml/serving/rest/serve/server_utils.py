@@ -9,7 +9,13 @@ import requests
 from fastapi import APIRouter, status
 
 # Internal libraries
+from onclusiveml.core.logging import INFO, OnclusiveService
 from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.serving.rest.serve.constants import (
+    DEFAULT_MODEL_SERVER_LOGGING_CONFIG,
+    JSON_MODEL_SERVER_LOGGING_CONFIG,
+    LOG_LEVEL_MAP,
+)
 from onclusiveml.serving.rest.serve.params import (
     BetterStackSettings,
     FastAPISettings,

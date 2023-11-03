@@ -9,10 +9,10 @@ from typing import Any, Callable, Optional, Tuple, Union
 
 # Internal libraries
 from onclusiveml.core.decorator import decorator
-from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.logging import INFO, get_default_logger
 
 
-logger = get_default_logger(__name__)
+logger = get_default_logger(name=__name__, level=INFO)
 
 
 def _retry(

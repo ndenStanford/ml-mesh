@@ -9,13 +9,14 @@ from pydantic import root_validator
 
 # Internal libraries
 from onclusiveml.core.base.params import Params
-from onclusiveml.core.logging.constants import (  # noqa:F401
+from onclusiveml.core.logging import (  # noqa:F401
     CRITICAL,
     DEBUG,
     ERROR,
     INFO,
     WARNING,
-    LogFormat,
+    OnclusiveLogMessageFormat,
+    OnclusiveLogSettings,
 )
 
 
@@ -37,12 +38,12 @@ class TrackingLibraryS3Backends(Enum):
     prod: str = "onclusive-model-store-prod"
 
 
-class TrackingLibraryLoggingSettings(Params):
+class TrackingLibraryLogSettings(OnclusiveLogSettings):
     """Entrypoint to configure logging behaviour of the tracking library for the current session."""
 
-    name: str = __name__
-    fmt: str = LogFormat.DETAILED.value
-    level: int = INFO  # 10=DEBUG, 20=INFO, 30=WARNING, 40=ERROR, 50=CRITICAL
+    fmt_level: str = OnclusiveLogMessageFormat.DETAILED.name
+    level: int = INFO
+    json_format: bool = True
 
     class Config:
         env_prefix = "onclusiveml_tracking_logger_"
