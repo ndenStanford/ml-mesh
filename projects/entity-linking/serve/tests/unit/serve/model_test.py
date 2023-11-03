@@ -94,6 +94,53 @@ def test_model_headers(entity_linking_model):
                 },
             },
         ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "text": "Tottenham Hotspur Football Club",
+                                "salience_score": 0.9259419441223145,
+                                "sentence_indexes": [0],
+                            }
+                        ],
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            [
+                {
+                    "entity_type": "ORG",
+                    "entity_text": "Tottenham Hotspur Football Club",
+                    "score": 0.9259419441223145,
+                    "sentence_index": [0],
+                    "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                }
+            ],
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Tottenham Hotspur Football Club",
+                                "score": 0.9259419441223145,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                            }
+                        ]
+                    },
+                },
+            },
+        ),
     ],
 )
 @patch.object(EntityLinkingServedModel, "_predict")
@@ -103,11 +150,14 @@ def test_model_predict(
     """Test model predict."""
     mock_predict.return_value = predict_return
 
+    attributes = payload["data"]["attributes"]
+    parameters = payload["data"]["parameters"]
+
     response = entity_linking_model.predict(PredictRequestSchema(**payload))
 
-    mock_predict.assert_called_with(
-        payload["data"]["attributes"]["content"], payload["data"]["parameters"]["lang"]
-    )
+    entities = attributes.get("entities", None)
+
+    mock_predict.assert_called_with(attributes["content"], parameters["lang"], entities)
 
     assert response == expected_response
 
