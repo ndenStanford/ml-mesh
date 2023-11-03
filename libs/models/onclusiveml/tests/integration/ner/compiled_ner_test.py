@@ -34,9 +34,7 @@ def test_compiled_ner_extract_ner(compiled_ner_pipeline, test_documents):
     """
     compiled_ner = CompiledNER(compiled_ner_pipeline=compiled_ner_pipeline)
 
-    test_compiled_ner = compiled_ner.extract_entities(
-        sentences=test_documents, return_pos=True
-    )
+    test_compiled_ner = compiled_ner.extract_entities(sentences=test_documents)
     assert len(test_compiled_ner) > 0
 
 
@@ -64,16 +62,14 @@ def test_compiled_ner_save_pretrained_from_pretrained(
         compiled_ner_pipeline=compiled_ner_pipeline,
     )
 
-    test_compiled_entities = compiled_ner.extract_entities(
-        sentences=test_documents, return_pos=True
-    )
+    test_compiled_entities = compiled_ner.extract_entities(sentences=test_documents)
 
     # save, load and score again
     compiled_ner.save_pretrained("./test")
     compiled_ner_reloaded = CompiledNER.from_pretrained("./test")
 
     test_compiled_entities_reloaded = compiled_ner_reloaded.extract_entities(
-        sentences=test_documents, return_pos=True
+        sentences=test_documents
     )
 
     assert test_compiled_entities == test_compiled_entities_reloaded

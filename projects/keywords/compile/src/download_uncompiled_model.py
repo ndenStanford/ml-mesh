@@ -4,7 +4,10 @@
 from typing import Dict
 
 # Internal libraries
-from onclusiveml.core.logging import LogFormat, get_default_logger
+from onclusiveml.core.logging import (
+    OnclusiveLogMessageFormat,
+    get_default_logger,
+)
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
@@ -14,13 +17,14 @@ from src.settings import (  # type: ignore[attr-defined]
 )
 
 
-def main() -> None:
+def download_uncompiled_model() -> None:
     """Download trained model."""
     io_settings = IOSettings()
     logger = get_default_logger(
-        name=__name__, fmt=LogFormat.DETAILED.value, level=io_settings.log_level
+        name=__name__,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        level=io_settings.log_level,
     )
-
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
@@ -58,4 +62,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    download_uncompiled_model()

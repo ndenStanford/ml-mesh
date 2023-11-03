@@ -77,7 +77,7 @@ jobs:
               - added | modified: 'docker/**'
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

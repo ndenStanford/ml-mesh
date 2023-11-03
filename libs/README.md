@@ -13,7 +13,7 @@ consistent and maintainable ecosystem.
 | `compile`        | `core`                    | Compilation utilities for `transformers` type models  | inf1            |   x  |             |      x     |
 | `models`         | `compile`                 | Model classes to be used in project `serve` component | inf1, cpu       |   x  |      x      |      x     |
 | `nlp`            | `core`                    | Cross project NLP utilities                           | cpu             |   x  |             |            |
-| `syndicate`      | `nlp      `               | Cross project hashing utilities                       | cpu             |   x  |             |            |
+| `hashing`        | `nlp      `               | Cross project hashing utilities                       | cpu             |   x  |             |            |
 
 ## Dependency management
 
@@ -68,3 +68,7 @@ To run your library's integration tests, run: `make libs.integration/${LIBRARY_N
 To run your library's functional tests, run: `make libs.functional/${LIBRARY_NAME}`
 
 For more documentation on a given library, see the individual library's dedicated `README.md`.
+
+## Dependabot
+
+Add the updated component on the [dependabot config file](./../.github/dependabot.yaml)

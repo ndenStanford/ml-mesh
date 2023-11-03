@@ -46,15 +46,15 @@ or update your `.envrc` file accordingly.
 ### 2.2 Docker compose :whale:
 
 The following `docker compose` services are typically associated with a project's `train` component:
-- `train`
-   - contains build section of training image
-   - contains the container run command to execute training
-- `train-unit`
-   - used to run `unit` test suite
-- `train-integration` (optional)
-   - used to run `integration` test suite (if applicable)
-- `train-functional` (optional)
-   - used to run `functional` test suite (if applicable)
+- :construction: :rocket: `train`
+   - builds the training image
+   - trains and registers the model in the model registry
+- :warning: `train-unit`
+   - runs `unit` test suite
+- :warning: `train-integration` (optional)
+   - runs `integration` test suite (if applicable)
+- :warning: `train-functional` (optional)
+   - runs `functional` test suite (if applicable)
 
 ### 2.3 Building the `train` component :construction:
 
@@ -160,3 +160,17 @@ Update
 ```bash
 make projects.start/${PROJECT_NAME} COMPONENT=train
 ```
+## 5 Running the `train` component in CI:
+
+To run the training component on CI, you will need to update the [**ci.yaml's**](../../.github/workflows/ci.yaml)
+ `run-train-pipelines` section. Below is an example of what to add:
+
+```
+- runner-kind: custom
+  self-hosted-runner-type: inf1.2xlarge
+  project: keywords
+  tag: ${{ needs.run-repository-state.outputs.tag }}
+```
+
+This will allow for the training component to be run on CI and register the model with our neptuen
+mode registry AI (backed by the `onclusive-model-store-stage` S3 bucket).

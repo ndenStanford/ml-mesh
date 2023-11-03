@@ -30,17 +30,21 @@ ALL_DOCKER_IMGS:= \
 	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \
-	kubeflow-data-science
+	kubeflow-torch-gpu \
+	kubeflow-torch-inf \
+	kubeflow-data-science \
+	dask-base
 
 # all python libraries
 ALL_LIBS:= \
 	compile \
 	core \
+	data \
 	models \
 	nlp \
 	serving \
 	tracking \
-	syndicate
+	hashing
 
 # all projects
 ALL_PROJECTS:= \
@@ -48,6 +52,7 @@ ALL_PROJECTS:= \
 	summarization \
 	entity-linking \
 	ner \
+	iptc \
 	lsh
 
 ## SUBFOLDER MAKEFILES

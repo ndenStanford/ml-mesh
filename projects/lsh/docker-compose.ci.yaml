@@ -24,13 +24,20 @@ services:
     ports:
       - 8000:8000
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: lsh-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/lsh/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -54,8 +61,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -63,12 +70,11 @@ services:
   # functional tests
   # - include REST model server process
   serve-functional:
-    volumes:
-      - type: bind
-        source: serve
-        target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [functional]
     hostname: onclusiveml
     networks:

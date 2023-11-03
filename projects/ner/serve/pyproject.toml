@@ -16,7 +16,7 @@ tracking = {path = "../../../libs/tracking"}
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 pytest-order = "1.1.0"
-httpx = "0.24.1"
+httpx = "0.25.0"
 requests-toolbelt = "^1.0.0"
 
 [build-system]
