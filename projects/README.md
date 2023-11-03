@@ -11,6 +11,7 @@ This folder contains the implementation of all our machine learning projects. Ea
 
 ## Projects
 
+
 | Project          | Reference          | Description                                 | Data Type | Prepare | Train | Compile | Serve |
 | ---------------- | ------------------ | ------------------------------------------- | --------- | ------- | ----- | ------- | ----- |
 | IPTC             | `iptc`             | Document topic classification               | Text      |         |   x   |         |       |
@@ -21,6 +22,7 @@ This folder contains the implementation of all our machine learning projects. Ea
 | Summarization    | `summarization`    | Summarization for Analyst with OpenAI's GPT | Text      |         |       |         |   x*  |
 | GCH-Summarization| `gch-summarization`| Summarization for GCH with Pretrained Models| Text      |         |   x   |    x    |   x*  |
 | Entity linking   | `entity-linking`   | Entity linking                              | Text      |         |       |         |   x*  |
+
 
 Note: x* - denotes a serving component that hasnt been migrated to the `serving` library yet
 
