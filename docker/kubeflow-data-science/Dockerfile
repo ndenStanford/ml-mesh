@@ -22,6 +22,7 @@ COPY --chown=${NB_USER}:users docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NA
 
 WORKDIR "${HOME}"
 
+# install python dependencies into configured virtual environment at /home/jovyan
 RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \

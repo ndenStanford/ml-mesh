@@ -27,8 +27,12 @@ services:
       ENVIRONMENT: stage
       DOCS_URL: /docs
       INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: no
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     depends_on:
@@ -61,7 +65,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_HTTP_PORT: 9000
       ONCLUSIVEML_SERVING_SOURCE_BUCKET: onclusive-model-store-prod
@@ -91,7 +95,7 @@ services:
       ENVIRONMENT: stage
       DOCS_URL: /docs
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
@@ -118,7 +122,7 @@ services:
       DOCS_URL: /docs
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
@@ -150,7 +154,7 @@ services:
       DOCS_URL: /docs
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
-      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/v1/model/ner/predict
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
@@ -179,6 +183,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
@@ -194,7 +199,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://ner-serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://ner-serve:8000/ner/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s

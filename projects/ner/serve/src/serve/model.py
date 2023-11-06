@@ -80,15 +80,22 @@ class ServedNERModel(ServedModel):
         parameters = payload.parameters
 
         if attributes.content == "":
-            entities: list = [[]]
+            entities_list: list = [[]]
         else:
             # score the model
-            entities = self.model(sentences=[attributes.content], **parameters.dict())
-
+            entities_list = self.model(
+                documents=[attributes.content], **parameters.dict()
+            )
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"entities": [entity._asdict() for entity in entities[0]]},
+            attributes={
+                "entities": [
+                    entity._asdict()
+                    for entities in entities_list
+                    for entity in entities
+                ]
+            },
         )
 
     def bio(self) -> BioResponseSchema:

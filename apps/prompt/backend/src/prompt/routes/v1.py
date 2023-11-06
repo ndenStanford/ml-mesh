@@ -8,9 +8,6 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, HTTPException, status
 from slugify import slugify
 
-# Internal libraries
-from onclusiveml.core.logging import get_default_logger
-
 # Source
 from src.model.constants import ModelEnum
 from src.model.exceptions import ModelNotFound
@@ -36,9 +33,6 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-
-logger = get_default_logger(__name__)
-
 
 router = APIRouter(
     prefix="/v1/prompts",

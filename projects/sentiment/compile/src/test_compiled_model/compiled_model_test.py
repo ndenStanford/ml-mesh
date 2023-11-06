@@ -26,9 +26,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
     for test_sample_index in range(total_sample_size):
 
-        compiled_predictions = compiled_sent.extract_sentiment(
-            test_files["inputs"][test_sample_index]
-        )
+        compiled_predictions = compiled_sent(test_files["inputs"][test_sample_index])
 
         expected_predictions = test_files["predictions"][test_sample_index]
 
@@ -95,9 +93,7 @@ def compiled_model_entity_sentiment_test(  # type: ignore[no-untyped-def]
         test_sample_entities (str): Sample entities to be tested
         test_sample_response (str): Sample response to be compared with
     """
-    compiled_predictions = compiled_sent.extract_sentiment(
-        test_sample_content, test_sample_entities
-    )
+    compiled_predictions = compiled_sent(test_sample_content, test_sample_entities)
 
     assert (compiled_predictions["entities"].sort(key=lambda x: x["text"])) == (
         test_sample_response["entities"].sort(key=lambda x: x["text"])

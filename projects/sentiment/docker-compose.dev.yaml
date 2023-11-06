@@ -160,11 +160,20 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, src.serve.model_server]
+    command: [python, -m, src.serve.__main__]
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: sentiment-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     profiles: [serve, functional, load]
     ports:
       - 8000:8000
@@ -172,7 +181,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/sentiment/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -185,7 +194,7 @@ services:
         source: serve/
         target: /projects/sentiment/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, src.util.download_compiled_model]
+    command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -205,9 +214,22 @@ services:
   serve-unit:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
+        source: ${HOME}/data
+        target: /projects/sentiment/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/sentiment/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/sentiment/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -228,6 +250,10 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -239,12 +265,22 @@ services:
   serve-functional:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
+        source: ${HOME}/data
+        target: /projects/sentiment/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/sentiment/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/sentiment/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
     profiles: [functional]
     hostname: onclusiveml
     networks:
@@ -264,7 +300,10 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
+      # serving params
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SEN-COMPILED-31
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
@@ -272,6 +311,8 @@ services:
       ONCLUSIVEML_SERVING_RESET_STATS: No
       ONCLUSIVEML_SERVING_RUN_TIME: 45s
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+      NEPTUNE_PROJECT: onclusive/sentiment
+      NEPTUNE_MODEL_ID: SEN-COMPILED
     profiles: [load]
     hostname: onclusiveml
     networks:
@@ -287,7 +328,7 @@ services:
         source: serve/
         target: /projects/sentiment/serve/
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, src.util.upload_test_results]
+    command: [python, -m, src.upload]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}

@@ -63,7 +63,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: ner
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5-pre.917ba137}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
@@ -160,7 +160,11 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: ner-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
@@ -172,7 +176,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/ner/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -231,6 +235,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [integration]
@@ -248,6 +254,8 @@ services:
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
     profiles: [functional]
@@ -267,7 +275,10 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
+    # serving params
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached

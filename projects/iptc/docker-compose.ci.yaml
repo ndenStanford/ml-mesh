@@ -6,7 +6,7 @@ services:
   # COMPILE
   # =============================================
 
-  compile:
+  register:
     build:
       context: ../../
       dockerfile: projects/iptc/compile/Dockerfile
