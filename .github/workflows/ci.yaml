@@ -507,8 +507,8 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # compile
-          - name: compile
+          # serve
+          - name: register
             download-model: false
             integration: false
             functional: false
@@ -518,6 +518,15 @@ jobs       :
 
           # train
           - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # compile
+          - name: compile
             download-model: false
             integration: false
             functional: false
@@ -715,7 +724,6 @@ jobs       :
       - run-lsh-project
       - run-iptc-project
       - run-register-pipelines
-
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
