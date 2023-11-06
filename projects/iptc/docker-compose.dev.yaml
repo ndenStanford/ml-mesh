@@ -16,20 +16,28 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/iptc/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: train/config/prod.env
+    env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   train-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/iptc/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -64,7 +72,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: register/config/prod.env
+    env_file: register/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -78,7 +86,6 @@ services:
     profiles: [register, unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
-
   # =============================================
   # COMPILE
   # =============================================
