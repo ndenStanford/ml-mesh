@@ -62,20 +62,22 @@ class EntityLinkingServedModel(ServedModel):
 
         text = attributes.content
         lang = parameters.lang
+        entities = getattr(attributes, "entities", None)  # Fetch entities if provided
 
         text = re.sub("\n+", " ", text)
         lang = LanguageIso.from_language_iso(lang).value
-        output = self._predict(text, lang)
-
+        output = self._predict(text, lang, entities)
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={"entities": output},
         )
 
-    def _predict(self, content: str, lang: str) -> List[Dict[str, Any]]:
+    def _predict(
+        self, content: str, lang: str, entities: Optional[List[Dict[str, Any]]] = None
+    ) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
-        return self._get_entity_linking(content, lang)
+        return self._get_entity_linking(content, lang, entities)
 
     def _generate_query(
         self, content: str, lang: str, entities: List[Dict[str, Any]]
@@ -109,47 +111,63 @@ class EntityLinkingServedModel(ServedModel):
         return q.json()
 
     def _get_entity_linking(
-        self, content: str, lang: str = "en"
+        self,
+        content: str,
+        lang: str = "en",
+        entities: Optional[List[Dict[str, Any]]] = None,
     ) -> List[Dict[str, Any]]:
         """Link all entities in text to Wiki data id.
 
         Args:
             content (str): text to be wiki linked
             lang (str): language of the text
+            entities (Optional[List[Dict[str, Any]]]): Optional list of entities.
+            If provided, the function will not make a request to get the entities.
         """
-        response = requests.post(
-            settings.entity_recognition_endpoint,
-            json={
-                "data": {
-                    "identifier": "string",
-                    "namespace": "ner",
-                    "attributes": {
-                        "content": content,
-                    },
-                    "parameters": {"language": lang},
-                }
-            },
-        ).json()
-
-        entities = response["data"]["attributes"]["entities"]
+        if entities is None:
+            response = requests.post(
+                settings.entity_recognition_endpoint,
+                json={
+                    "data": {
+                        "identifier": "string",
+                        "namespace": "ner",
+                        "attributes": {
+                            "content": content,
+                        },
+                        "parameters": {"language": lang},
+                    }
+                },
+            ).json()
+            entities = response["data"]["attributes"]["entities"]
 
         query = self._generate_query(content, lang, entities)
-
         wiki_response = self._query_wiki(query)
-
         entity_fish_entities = wiki_response.get("entities", [])
-
+        processed_entities = []
         for entity in entities:
+            ent = {}
             entity_text = self._get_entity_text(entity)
+            score = self._get_entity_score(entity)
             wiki = self._get_wiki_id(entity_text, entity_fish_entities)
 
             if wiki:
                 wiki_link = "https://www.wikidata.org/wiki/{}".format(wiki)
                 entity["wiki_link"] = wiki_link
-            entity.pop("start")
-            entity.pop("end")
+                ent["wiki_link"] = entity["wiki_link"]
+            entity.pop("start", None)
+            entity.pop("end", None)
 
-        return entities
+            ent["entity_type"] = entity["entity_type"]
+            ent["entity_text"] = entity_text
+            if "sentence_indexes" in entity:
+                ent["sentence_index"] = entity["sentence_indexes"]
+            elif "sentence_index" in entity:
+                ent["sentence_index"] = entity["sentence_index"]
+            ent["score"] = score
+
+            processed_entities.append(ent)
+
+        return processed_entities
 
     def _get_wiki_id(self, text: str, entities: List[Dict[str, Any]]) -> Optional[str]:
         """Get most likely Wiki id of a single entity from entity fishing backend response.
@@ -182,7 +200,9 @@ class EntityLinkingServedModel(ServedModel):
                 entities within text recognized by an external NER model
         """
         entity_query = []
-        unique_entity_text = set([entity["entity_text"] for entity in entities])
+        unique_entity_text = set(
+            entity.get("entity_text", entity.get("text")) for entity in entities
+        )
         for entity_text in unique_entity_text:
             matched_entities = list(re.finditer(entity_text, text))
             spans = [m.span() for m in matched_entities]
@@ -199,4 +219,8 @@ class EntityLinkingServedModel(ServedModel):
 
     def _get_entity_text(self, entity: Dict[str, Any]) -> str:
         """Fetch entity text from entities dictionary."""
-        return entity.get("text", entity["entity_text"])
+        return entity.get("text", "") or entity.get("entity_text", "")
+
+    def _get_entity_score(self, entity: Dict[str, Any]) -> float:
+        """Fetch entity score from entities dictionary."""
+        return entity.get("score", 0.0) or entity.get("salience_score", 0.0)
