@@ -20,6 +20,3 @@ CLASS_DICT_FIRST = {
         15: "weather",
     }
 }
-
-CLASS_DICT = CLASS_DICT_FIRST
-CLASS_DICT
