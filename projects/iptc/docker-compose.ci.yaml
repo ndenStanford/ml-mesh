@@ -174,4 +174,4 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-pipeline-vol:
+  compile-vol:
