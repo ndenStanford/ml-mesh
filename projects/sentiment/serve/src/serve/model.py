@@ -80,7 +80,10 @@ class ServedSentModel(ServedModel):
         attributes = payload.attributes
         parameters = payload.parameters
         # score the model
-        entities = [dict(e) for e in attributes.entities]
+        entities = attributes.entities
+        if entities:
+            entities = [dict(e) for e in entities]
+
         sentiment = self.model(
             sentences=attributes.content, entities=entities, **parameters.dict()
         )
