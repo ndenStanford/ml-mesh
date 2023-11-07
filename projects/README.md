@@ -62,6 +62,8 @@ Note that some of the default values for `make` variables are defined in the
 ## Useful commands
 
 The following component-specific in-depth docs are available:
+- [ingest](./docs/00_ingest.md)
+- [register](./docs/01_register.md)
 - [train](./docs/02_train.md)
 - [compile](./docs/03_compile.md)
 - [serve](./docs/04_serve.md)
