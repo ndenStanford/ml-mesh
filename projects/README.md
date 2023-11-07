@@ -12,16 +12,16 @@ This folder contains the implementation of all our machine learning projects. Ea
 ## Projects
 
 
-| Project          |    Owner                                                       | Reference          | Description                                 | Data Type | Prepare | Train | Compile | Serve |
-| ---------------- | -------------------------------------------------------------- | ------------------ | ------------------------------------------- | --------- | ------- | ----- | ------- | ----- |
-| IPTC             | <jian.tong@onclusive.com>                           | `iptc`             | Document topic classification               | Text      |         |   x   |         |       |
-| Sentiment        | [Nutch Dendumrongsup](nutchapol.dendumrongsup@onclusive.com)   | `sentiment`        | Document Sentiment classification           | Text      |         |   x   |    x    |   x   |
-| Keywords         | [Sebastian Scherer](sebastian.scherer@onclusive.com)           | `keywords`         | Keyword extractions from text               | Text      |         |   x   |    x    |   x   |
-| NER              | [Syed Reza](syed.reza@onclusive.com)                           | `ner`              | Named Entity Recognition                    | Text      |         |   x   |    x    |   x   |
-| LSH              | [Amaury de Guillebon](amaury.deguillebon@onclusive.com)        | `lsh`              | LSH                                         | Text      |         |  n/a  |   n/a   |   x   |
-| Summarization    | [Nutch Dendumrongsup](nutchapol.dendumrongsup@onclusive.com)   | `summarization`    | Summarization for Analyst with OpenAI's GPT | Text      |         |       |         |   x*  |
-| GCH-Summarization| [Zheyuan Hu](zheyuan.hu@onclusive.com)                         | `gch-summarization`| Summarization for GCH with Pretrained Models| Text      |         |   x   |         |       |
-| Entity linking   | [Rene-Jean Corneille](rene-jean.corneille@onclusive.com)       | `entity-linking`   | Entity linking                              | Text      |         |       |         |   x   |
+| Project          |    Owner                                   | Reference          | Description                                 | Data Type | Prepare | Train | Compile | Serve |
+| ---------------- | ------------------------------------------ | ------------------ | ------------------------------------------- | --------- | ------- | ----- | ------- | ----- |
+| IPTC             | <jian.tong@onclusive.com>                  | `iptc`             | Document topic classification               | Text      |         |   x   |         |       |
+| Sentiment        | <nutchapol.dendumrongsup@onclusive.com>    | `sentiment`        | Document Sentiment classification           | Text      |         |   x   |    x    |   x   |
+| Keywords         | <sebastian.scherer@onclusive.com>          | `keywords`         | Keyword extractions from text               | Text      |         |   x   |    x    |   x   |
+| NER              | <syed.reza@onclusive.com>                  | `ner`              | Named Entity Recognition                    | Text      |         |   x   |    x    |   x   |
+| LSH              | <amaury.deguillebon@onclusive.com>         | `lsh`              | LSH                                         | Text      |         |  n/a  |   n/a   |   x   |
+| Summarization    | <nutchapol.dendumrongsup@onclusive.com>    | `summarization`    | Summarization for Analyst with OpenAI's GPT | Text      |         |       |         |   x*  |
+| GCH-Summarization| <zheyuan.hu@onclusive.com>                 | `gch-summarization`| Summarization for GCH with Pretrained Models| Text      |         |   x   |         |       |
+| Entity linking   | <rene-jean.corneille@onclusive.com>        | `entity-linking`   | Entity linking                              | Text      |         |       |         |   x   |
 
 Note: x* - denotes a serving component that hasnt been migrated to the `serving` library yet
 
