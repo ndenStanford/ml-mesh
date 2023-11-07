@@ -117,6 +117,11 @@ class IOSettings(object):
 
     log_level: int = INFO
 
+    class Config:
+        env_prefix = "io_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
 
 class TokenizerSettings(TrackedParams):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details."""
