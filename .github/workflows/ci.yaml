@@ -507,7 +507,16 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # serve
+          # ingest
+          - name: ingest
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # register
           - name: register
             download-model: false
             integration: false

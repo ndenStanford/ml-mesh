@@ -2,6 +2,51 @@
 version : '3.9'
 
 services:
+
+  # =============================================
+  # INGEST
+  # =============================================
+
+  ingest:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
+    volumes:
+      - type: bind
+        source: ingest/src
+        target: /home/projects/iptc/ingest/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    command: [python, -m, src.ingest]
+    profiles: [ingest]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: ingest/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  ingest-unit:
+    volumes:
+      - type: bind
+        source: ingest/
+        target: /home/projects/iptc/ingest/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: ingest/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
   # =============================================
   # TRAIN
   # =============================================
