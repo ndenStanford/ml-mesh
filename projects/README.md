@@ -14,7 +14,7 @@ This folder contains the implementation of all our machine learning projects. Ea
 
 | Project          |    Owner                                                       | Reference          | Description                                 | Data Type | Prepare | Train | Compile | Serve |
 | ---------------- | -------------------------------------------------------------- | ------------------ | ------------------------------------------- | --------- | ------- | ----- | ------- | ----- |
-| IPTC             | [Jian Tong](<jian.tong@onclusive.com>)                           | `iptc`             | Document topic classification               | Text      |         |   x   |         |       |
+| IPTC             | <jian.tong@onclusive.com>                           | `iptc`             | Document topic classification               | Text      |         |   x   |         |       |
 | Sentiment        | [Nutch Dendumrongsup](nutchapol.dendumrongsup@onclusive.com)   | `sentiment`        | Document Sentiment classification           | Text      |         |   x   |    x    |   x   |
 | Keywords         | [Sebastian Scherer](sebastian.scherer@onclusive.com)           | `keywords`         | Keyword extractions from text               | Text      |         |   x   |    x    |   x   |
 | NER              | [Syed Reza](syed.reza@onclusive.com)                           | `ner`              | Named Entity Recognition                    | Text      |         |   x   |    x    |   x   |
