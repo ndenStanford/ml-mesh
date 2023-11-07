@@ -72,7 +72,7 @@ jobs       :
     needs: [run-repository-state]
 
     strategy:
-      max-parallel: 5
+      max-parallel: 10
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         python-version: [3.8.16]
@@ -102,7 +102,7 @@ jobs       :
             integration: false
             functional: false
 
-          - name: syndicate
+          - name: hashing
             integration: false
             functional: false
 
@@ -123,8 +123,8 @@ jobs       :
   # DOCKER
   # ===============================================
 
-  run-us-east-1-docker:
-    name: Core Docker Images.
+  run-us-east-1-base-docker:
+    name: Base Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests]
     strategy:
@@ -134,6 +134,32 @@ jobs       :
         image:
           - python-base
           - gpu-base
+        validate-build: [false]
+        region: [us-east-1]
+
+    with:
+      environment: prod
+      image: ${{ matrix.image }}
+      region: ${{ matrix.region }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      validate-build: ${{ matrix.validate-build }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  run-us-east-1-docker:
+    name: Core Docker Images.
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker]
+    strategy:
+      max-parallel: 1
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        image:
           - gpu-train
           - neuron-compile
           - neuron-inference
@@ -158,7 +184,7 @@ jobs       :
   run-us-east-2-docker:
     name: Core Kubeflow Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, run-us-east-1-docker]
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker]
     strategy:
       max-parallel: 1
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -309,6 +335,52 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
+  # gch-summarization
+
+  run-gch-summarization-project:
+    name: GCH-Summarization Project components
+    uses: ./.github/workflows/_projects.yaml
+    needs: [run-repository-state, run-libs-tests]
+    strategy:
+      max-parallel: 10
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        components:
+          # NOTE: list of project components to run
+
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+    with:
+      project: gch-summarization
+      environment: prod
+      component: ${{ matrix.components.name }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      download-model: ${{ matrix.components.download-model }}
+      integration: ${{ matrix.components.integration }}
+      functional: ${{ matrix.components.functional }}
+      load: ${{ matrix.components.load }}
+      upload-test-results: ${{ matrix.components.upload-test-results }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+
   # entity-linking
 
   run-entity-linking-project:
@@ -391,7 +463,7 @@ jobs       :
           # serve
           - name: serve
             download-model: true
-            integration: true
+            integration: false
             functional: true
             load: true
             upload-test-results: true
@@ -434,6 +506,33 @@ jobs       :
       matrix:
         components:
           # NOTE: list of project components to run
+
+          # ingest
+          - name: ingest
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # register
+          - name: register
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # compile
           - name: compile
@@ -549,8 +648,8 @@ jobs       :
           # serve
           - name: serve
             download-model: false
-            integration: false
-            functional: false
+            integration: true
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
@@ -579,6 +678,44 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
+
+  # ===============================================
+  # REGISTER FEATURES
+  # ===============================================
+
+  run-register-pipelines:
+    name: Register features
+    uses: ./.github/workflows/_register_features.yaml
+    needs:
+      - run-repository-state
+      - run-keywords-project
+      - run-summarization-project
+      - run-gch-summarization-project
+      - run-sentiment-project
+      - run-ner-project
+      - run-lsh-project
+      - run-iptc-project
+
+    strategy:
+      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      matrix:
+        models:
+          - project: iptc
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+    with:
+      environment: prod
+      project: ${{ matrix.models.project }}
+      tag: ${{ matrix.models.tag }}
+      python-version: 3.8.16
+      poetry-version: 1.3.2
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
   # ===============================================
   # TRAIN MODELS
   # ===============================================
@@ -590,10 +727,12 @@ jobs       :
       - run-repository-state
       - run-keywords-project
       - run-summarization-project
+      - run-gch-summarization-project
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-
+      - run-iptc-project
+      - run-register-pipelines
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -603,6 +742,12 @@ jobs       :
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: ner
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 

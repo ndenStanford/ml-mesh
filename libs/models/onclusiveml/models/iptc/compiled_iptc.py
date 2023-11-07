@@ -17,7 +17,7 @@ from nptyping import NDArray
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.iptc.class_dict import CLASS_DICT
+from onclusiveml.models.iptc.class_dict import CLASS_DICT_FIRST
 
 
 logger = get_default_logger(__name__, level=20)
@@ -37,7 +37,7 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.id2label = CLASS_DICT["root"]
+        self.id2label = CLASS_DICT_FIRST["root"]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
             compiled_iptc_pipeline.compiled_pipeline.model.compilation_specs[

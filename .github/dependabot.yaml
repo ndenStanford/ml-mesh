@@ -249,10 +249,10 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # syndicate lib
+  # hashing lib
 
   - package-ecosystem: pip
-    directory: /libs/syndicate
+    directory: /libs/hashing
     target-branch: develop
     schedule:
       interval: monthly
@@ -329,6 +329,22 @@ updates:
   ## serve
   - package-ecosystem: pip
     directory: /projects/summarization/serve
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+
+  # GCH-SUMMARIZATION
+
+  ## train
+  - package-ecosystem: pip
+    directory: /projects/gch-summarization/train
     target-branch: develop
     schedule:
       interval: monthly
@@ -428,6 +444,21 @@ updates:
   ## train
   - package-ecosystem: pip
     directory: /projects/sentiment/train
+    target-branch: develop
+    schedule:
+      interval: monthly
+      time: "09:00"
+      timezone: Europe/London
+      day: monday
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # IPTC
+
+  ## ingest
+  - package-ecosystem: pip
+    directory: /projects/iptc/ingest
     target-branch: develop
     schedule:
       interval: monthly

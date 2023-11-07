@@ -102,6 +102,7 @@ jobs:
     name: Set runner specs conditional on hosting requirements
     needs: provision-customized-runner
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
@@ -127,6 +128,7 @@ jobs:
     name: Compile a base or trained model and register
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    timeout-minutes: 30
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
@@ -198,6 +200,7 @@ jobs:
   stop-runner:
     name: Stop self-hosted EC2 runner
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, compile-model]
     environment: ${{ inputs.environment }}
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs

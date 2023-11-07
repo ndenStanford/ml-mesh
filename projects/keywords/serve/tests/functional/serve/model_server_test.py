@@ -24,14 +24,16 @@ from src.serve.server_models import (
 @pytest.mark.order(5)
 def test_model_server_root(test_client):
     """Tests the running ModelServer instance's root endpoint."""
-    root_response = test_client.get("/v1/")
+    root_response = test_client.get("/keywords/v1/")
+
     assert root_response.status_code == 200
 
 
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
     """Tests the running ModelServer instance's liveness endpoint."""
-    liveness_response = test_client.get("/v1/live")
+    liveness_response = test_client.get("/keywords/v1/live")
+
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
 
@@ -39,7 +41,7 @@ def test_model_server_liveness(test_client):
 @pytest.mark.order(6)
 def test_model_server_readiness(test_client):
     """Tests the running ModelServer instance's readiness endpoint."""
-    readiness_response = test_client.get("/v1/ready")
+    readiness_response = test_client.get("/keywords/v1/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -48,7 +50,6 @@ def test_model_server_readiness(test_client):
 @pytest.mark.order(7)
 @pytest.mark.parametrize("test_record_index", [0, 1, 2])
 def test_model_server_predict(
-    test_model_name,
     test_client,
     test_inputs,
     test_inference_params,
@@ -64,9 +65,7 @@ def test_model_server_predict(
         configuration=PredictConfiguration(**test_inference_params),
         inputs=[PredictInputDocumentModel(document=test_inputs[test_record_index])],
     )
-    test_response = test_client.post(
-        f"/v1/model/{test_model_name}/predict", json=input.dict()
-    )
+    test_response = test_client.post("/keywords/v1/predict", json=input.dict())
 
     assert test_response.status_code == 200
     actual_output = test_response.json()
@@ -92,7 +91,7 @@ def test_model_server_bio(test_model_name, test_client, test_model_card):
     Uses the custom data models for validation and the model card from the model artifact
     as ground truth for the regression test element.
     """
-    test_response = test_client.get(f"/v1/model/{test_model_name}/bio")
+    test_response = test_client.get("/keywords/v1/bio")
 
     assert test_response.status_code == 200
     actual_output = test_response.json()
