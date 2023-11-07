@@ -12,18 +12,19 @@ This folder contains the implementation of all our machine learning projects. Ea
 ## Projects
 
 
-| Project                                                                                               |    Owner                                   | Reference          | Description                                 | Data Type | Prepare | Train | Compile | Serve |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------ | ------------------------------------------- | --------- | ------- | ----- | ------- | ----- |
-| [IPTC](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815811/IPTC)                          | <jian.tong@onclusive.com>                  | `iptc`             | Document topic classification               | Text      |         |   x   |         |       |
-| [Sentiment](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815818/Sentiment)                | <nutchapol.dendumrongsup@onclusive.com>    | `sentiment`        | Document Sentiment classification           | Text      |         |   x   |    x    |   x   |
-| [Keywords](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3208904707/Keybert)                   | <sebastian.scherer@onclusive.com>          | `keywords`         | Keyword extractions from text               | Text      |         |   x   |    x    |   x   |
-| [NER](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192652408/Entity)                         | <syed.reza@onclusive.com>                  | `ner`              | Named Entity Recognition                    | Text      |         |   x   |    x    |   x   |
-| [LSH](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3357573656/Syndicate+Detection)            | <amaury.deguillebon@onclusive.com>         | `lsh`              | LSH                                         | Text      |         |  n/a  |   n/a   |   x   |
-| Summarization                                                                                         | <nutchapol.dendumrongsup@onclusive.com>    | `summarization`    | Summarization for Analyst with OpenAI's GPT | Text      |         |       |         |   x*  |
-| GCH-Summarization                                                                                     | <zheyuan.hu@onclusive.com>                 | `gch-summarization`| Summarization for GCH with Pretrained Models| Text      |         |   x   |         |       |
-| [Entity linking](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815790/Entity+Linking)      | <rene-jean.corneille@onclusive.com>        | `entity-linking`   | Entity linking                              | Text      |         |       |         |   x   |
+| Project                                                                                         |    Owner                                   | Reference          | Description                                 | Data Type | Ingest | Register | Train | Compile | Serve |
+| ----------------                                                                                | ------------------------------------------ | ------------------ | ------------------------------------------- | --------- | ------ | -------- | ----- | ------- | ----- |
+| [IPTC](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815811/IPTC)                    | <jian.tong@onclusive.com>                  | `iptc`             | Document topic classification               | Text      |    x   |     x    |   x   |         |       |
+| [Sentiment](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815818/Sentiment)          | <nutchapol.dendumrongsup@onclusive.com>    | `sentiment`        | Document Sentiment classification           | Text      |        |          |   x   |    x    |   x   |
+| [Keywords](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3208904707/Keybert)             | <sebastian.scherer@onclusive.com>          | `keywords`         | Keyword extractions from text               | Text      |        |          |   x   |    x    |   x   |
+| [NER](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192652408/Entity)                   | <syed.reza@onclusive.com>                  | `ner`              | Named Entity Recognition                    | Text      |        |          |   x   |    x    |   x   |
+| [LSH](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3357573656/Syndicate+Detection)      | <amaury.deguillebon@onclusive.com>         | `lsh`              | LSH                                         | Text      |        |          |  n/a  |   n/a   |   x   |
+| Summarization                                                                                   | <nutchapol.dendumrongsup@onclusive.com>    | `summarization`    | Summarization for Analyst with OpenAI's GPT | Text      |        |          |       |         |   x*  |
+| GCH-Summarization                                                                               | <zheyuan.hu@onclusive.com>                 | `gch-summarization`| Summarization for GCH with Pretrained Models| Text      |        |          |   x   |    x    |   x*  |
+| [Entity linking](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815790/Entity+Linking)| <rene-jean.corneille@onclusive.com>        | `entity-linking`   | Entity linking                              | Text      |        |          |       |         |   x*  |
 
-Note: x* - denotes a serving component that hasnt been migrated to the `serving` library yet
+
+Note: x* - denotes a serving component that hasn't been migrated to the `serving` library yet
 
 ## Makefile Targets & Docker-Compose Services
 
@@ -61,10 +62,11 @@ Note that some of the default values for `make` variables are defined in the
 ## Useful commands
 
 The following component-specific in-depth docs are available:
-- [register](./docs/00_register.md)
-- [train](./docs/01_train.md)
-- [compile](./docs/02_compile.md)
-- [serve](./docs/03_serve.md)
+- [ingest](./docs/00_ingest.md)
+- [register](./docs/01_register.md)
+- [train](./docs/02_train.md)
+- [compile](./docs/03_compile.md)
+- [serve](./docs/04_serve.md)
 
 ## Dependabot
 
