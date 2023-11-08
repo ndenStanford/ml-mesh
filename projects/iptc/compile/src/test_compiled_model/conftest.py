@@ -35,7 +35,7 @@ def logger(io_settings: IOSettings) -> Any:
     """Logger fixture."""
     return get_default_logger(
         name=__name__,
-        fmt=OnclusiveLogMessageFormat.DETAILED.value,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
         level=io_settings.log_level,
     )
 

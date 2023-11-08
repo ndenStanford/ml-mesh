@@ -22,7 +22,7 @@ def main() -> None:
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__,
-        fmt=OnclusiveLogMessageFormat.DETAILED.value,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
         level=io_settings.log_level,
     )
     # get read-only base model version
