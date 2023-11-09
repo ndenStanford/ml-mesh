@@ -37,22 +37,6 @@ def test_served_topic_model_predict(test_predict_input, test_expected_predict_ou
     )
 
     test_actual_predict_output = served_topic_model.predict(input)
-    # Standard Library
-    import json
-    import os
-
-    print(f"Current working dir: {os.getcwd()}")
-
-    with open(
-        os.path.join("/projects/topic-summarization/serve/src", "actual_pred.json"), "w"
-    ) as actual_file:
-        json.dump(test_actual_predict_output.dict(), actual_file)
-
-    with open(
-        os.path.join("/projects/topic-summarization/serve/src", "expected_pred.json"),
-        "w",
-    ) as expected_file:
-        json.dump(test_expected_predict_output.dict(), expected_file)
 
     assert test_actual_predict_output == test_expected_predict_output
 
