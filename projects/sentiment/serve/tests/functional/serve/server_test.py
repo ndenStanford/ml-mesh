@@ -103,3 +103,42 @@ def test_model_server_prediction(payload, expected_response):
     assert response.status_code == 200
     # TODO: assert score close to expected
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload, expected_response",
+    [
+        (
+            {
+                "data": {
+                    "namespace": "sentiment",
+                    "attributes": {"content": "AI is a fantastic tool."},
+                    "parameters": {"language": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "sentiment",
+                    "attributes": {
+                        "label": "positive",
+                        "negative_prob": 0.0256,
+                        "positive_prob": 0.9139,
+                        "entities": None,
+                    },
+                },
+            },
+        )
+    ],
+)
+def test_model_server_prediction_no_entities(payload, expected_response):
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    response = requests.post(
+        "http://serve:8000/sentiment/v1/predict",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    # TODO: assert score close to expected
+    assert response.json() == expected_response
