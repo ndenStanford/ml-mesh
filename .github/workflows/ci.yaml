@@ -728,7 +728,7 @@ jobs       :
           # register
           - name: serve
             download-model: false
-            integration: true
+            integration: true # regression test disabled since gpt responses drift within 30 mins
             functional: true
             load: false
             upload-test-results: false

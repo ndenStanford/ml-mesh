@@ -75,7 +75,7 @@ def test_predict_input() -> str:
 
 @pytest.fixture
 def test_expected_predict_output() -> Dict[str, str]:
-    """Expected predict output fixture."""
+    """Expected predict output fixture. Temporarily unused bc GPT responses drift within 30mins."""
     return PredictResponseModel(
         topic={
             "Opportunities": "The science and technology industry has several opportunities for growth and development. Firstly, there is an increasing demand for semiconductor components in India, with the country projected to become the second largest market globally. Secondly, the expansion of the electronic system design and manufacturing sector will be crucial in meeting the demand for semiconductor components. Lastly, the adoption of advanced technologies in key industries such as consumer electronics and wearables will drive the demand for semiconductor components. Overall, these opportunities present a chance for the science and technology industry to drive growth, innovation, and economic development.",  # noqa: E501
