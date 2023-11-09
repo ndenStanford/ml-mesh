@@ -1,6 +1,6 @@
 ARG CUDA_VERSION
 
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu20.04 as builder
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04 as builder
 
 ARG IMAGE_NAME
 ARG PYTHON_VERSION=3.8.16
