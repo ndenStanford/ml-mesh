@@ -689,6 +689,18 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            setup-neuron: false
+
+              # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            setup-neuron: false
 
     with:
       project: topic
@@ -704,6 +716,7 @@ jobs       :
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      setup-neuron: ${{ matrix.components.setup-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -774,6 +787,7 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -814,6 +828,7 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
       - run-register-pipelines
 
     strategy:
@@ -831,6 +846,9 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: topic
+            sagemaker-runner-type: ml.g4dn.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:

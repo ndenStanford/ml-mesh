@@ -63,6 +63,11 @@ on  :
         required: false
         type: string
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
+      setup-neuron:
+        required: false
+        default: true
+        type: boolean
+        description: Whether to setup Neuron OS depedencies on the custom runner.
 
     secrets:
       AWS_ACCOUNT_ID:
@@ -126,7 +131,7 @@ jobs:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
       setup-docker-compose: true
-      setup-neuron: true
+      setup-neuron: ${{ inputs.setup-neuron }}
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
