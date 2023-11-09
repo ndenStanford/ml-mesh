@@ -30,14 +30,18 @@ services:
         target: /projects/topic-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8888
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-summarization-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/topic-summarization/v1/ready]
+      test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -127,7 +131,7 @@ services:
         source: serve/tests
         target: /projects/topic-summarization/serve/tests
     environment:
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8888
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ENVIRONMENT: dev
       DOCS_URL: /docs
