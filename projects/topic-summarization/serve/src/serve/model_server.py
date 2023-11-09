@@ -19,7 +19,7 @@ def get_model_server() -> ModelServer:
     _setup_prompts()
 
     model_server = ModelServer(configuration=serving_params, model=topic_served_model)
-    Instrumentator.enable(model_server, app_name="topic-detection")
+    Instrumentator.enable(model_server, app_name="topic-summarization")
 
     return model_server
 
