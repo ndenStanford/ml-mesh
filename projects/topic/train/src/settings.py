@@ -27,6 +27,7 @@ class TrackedTopicModelSpecs(TrackedModelSpecs):
 
 class TopicModelParams(TrackedParams):
     """Ground truth specification for model inference mode.
+
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
     `serve`) during testing
     """

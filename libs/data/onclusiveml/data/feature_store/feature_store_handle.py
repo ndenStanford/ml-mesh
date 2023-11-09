@@ -135,6 +135,7 @@ class FeatureStoreHandle:
         self, features: List[str] = ["test_feature_view:feature_1"]
     ) -> None:
         """Fetches Historical features from feast feature store.
+
         Returns: Pandas dataframe with historical features.
         """
         self.entity_sql = f"""

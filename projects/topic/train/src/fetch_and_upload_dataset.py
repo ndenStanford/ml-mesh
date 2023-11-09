@@ -20,6 +20,7 @@ logger = get_default_logger(__name__)
 
 def upload(object_to_upload: Any, file_name: str) -> str:
     """Upload a dataset version.
+    
     Attributes:
         object_to_upload (Any): dataset object to be uploaded.
         file_name (str): name to be given to uploaded file.
