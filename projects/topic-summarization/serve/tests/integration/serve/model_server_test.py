@@ -4,7 +4,10 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import LivenessProbeResponse, ReadinessProbeResponse
+from onclusiveml.serving.rest.serve import (
+    LivenessProbeResponse,
+    ReadinessProbeResponse,
+)
 
 # Source
 from src.serve.model_server import get_model_server
