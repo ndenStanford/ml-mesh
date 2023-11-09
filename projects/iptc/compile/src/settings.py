@@ -32,7 +32,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "IPTC-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "IPTC-TRAINED-18"
+    with_id: str = "IPTC-TRAINED-32"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
