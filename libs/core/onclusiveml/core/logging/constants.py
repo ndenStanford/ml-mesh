@@ -50,6 +50,7 @@ class OnclusiveService(OnclusiveEnum):
     # APPS
     # --- summarization
     SUMMARIZATION_SERVE = "summarization-serve"
+    TOPIC_SUMMARIZATION = "topic-summarization-serve"
 
     # --- prompt backend
     PROMPT_BACKEND_SERVE = "prompt-backend-serve"

@@ -50,4 +50,4 @@ def test_served_topic_model_bio(test_expected_bio_output):
 
     test_actual_bio_output = served_topic_model.bio()
 
-    assert test_actual_bio_output
+    assert test_actual_bio_output == test_expected_bio_output
