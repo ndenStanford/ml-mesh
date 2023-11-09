@@ -50,7 +50,7 @@ def test_model_server_bio():
                 "data": {
                     "namespace": "sentiment",
                     "attributes": {
-                        "content": "London is a wonderful city.",
+                        "content": "London is a wonderful city. John is a terrible man.",
                         "entities": [
                             {
                                 "entity_type": "LOC",
@@ -59,6 +59,14 @@ def test_model_server_bio():
                                 "sentence_index": 0,
                                 "start": 0,
                                 "end": 6,
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "John",
+                                "score": "0.9991505",
+                                "sentence_index": 1,
+                                "start": 0,
+                                "end": 4,
                             },
                         ],
                     },
@@ -74,8 +82,8 @@ def test_model_server_bio():
                     "namespace": "sentiment",
                     "attributes": {
                         "label": "positive",
-                        "negative_prob": 0.0174,
-                        "positive_prob": 0.9418,
+                        "negative_prob": 0.4854,
+                        "positive_prob": 0.4794,
                         "entities": [
                             {
                                 "entity_type": "LOC",
@@ -84,8 +92,17 @@ def test_model_server_bio():
                                 "sentence_index": 0,
                                 "start": 0,
                                 "end": 6,
-                                "sentiment": "neutral",
-                            }
+                                "sentiment": "positive",
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "John",
+                                "score": 0.9991505,
+                                "sentence_index": 1,
+                                "start": 0,
+                                "end": 4,
+                                "sentiment": "negative",
+                            },
                         ],
                     },
                 },
