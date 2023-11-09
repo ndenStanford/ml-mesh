@@ -8,15 +8,15 @@ services:
   serve:
     build:
       context: ../../
-      dockerfile: projects/topic-detection/serve/Dockerfile
+      dockerfile: projects/topic-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: topic-detection
+        PROJECT: topic-summarization
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.1}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.model_server]
     profiles: [serve, integration, functional]
     ports:
@@ -24,18 +24,28 @@ services:
     volumes:
       - type: bind
         source: serve
-        target: /projects/topic-detection/serve
+        target: /projects/topic-summarization/serve
       - type: bind
         source: serve/tests
-        target: /projects/topic-detection/serve/tests
+        target: /projects/topic-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8888
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-summarization-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -44,26 +54,16 @@ services:
       - onclusive-net
 
   serve-unit:
-    build:
-      context: ../../
-      dockerfile: projects/topic-detection/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: topic-detection
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     volumes:
       - type: bind
         source: serve/src
-        target: /projects/topic-detection/serve/src
+        target: /projects/topic-summarization/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/topic-detection/serve/tests
+        target: /projects/topic-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -75,26 +75,16 @@ services:
       - onclusive-net
 
   serve-integration:
-    build:
-      context: ../../
-      dockerfile: projects/topic-detection/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: topic-detection
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     volumes:
       - type: bind
         source: serve/src
-        target: /projects/topic-detection/serve/src
+        target: /projects/topic-summarization/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/topic-detection/serve/tests
+        target: /projects/topic-summarization/serve/tests
     environment:
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -110,18 +100,18 @@ services:
 
   # functional tests
   serve-functional:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-detection-serve:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     volumes:
       - type: bind
         source: serve/src
-        target: /projects/topic-detection/serve/src
+        target: /projects/topic-summarization/serve/src
       - type: bind
         source: serve/tests
-        target: /projects/topic-detection/serve/tests
+        target: /projects/topic-summarization/serve/tests
     environment:
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8888
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ENVIRONMENT: dev
       DOCS_URL: /docs
@@ -130,7 +120,8 @@ services:
       # PROMPT_API: http://0.0.0.0:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     depends_on:
-      - serve
+      serve:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
