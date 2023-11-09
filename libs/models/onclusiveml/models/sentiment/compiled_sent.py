@@ -242,7 +242,7 @@ class CompiledSent:
         entity_sentiment = []
         for entity in entities:
             try:
-                entity_text = entity.get("text")
+                entity_text = entity.get("entity_text")
                 indexes = entity.get("sentence_indexes", None)
                 if indexes is None:
                     indexes = [
