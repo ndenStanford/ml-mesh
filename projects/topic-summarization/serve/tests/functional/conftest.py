@@ -30,7 +30,7 @@ def test_client():
         https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession
     """
     serving_params = ServingParams()
-    model_server_port = serving_params.uvicorn_settings.http_port
+    model_server_port = serving_params.uvicorn_settings.port
     test_model_server_url = f"http://serve:{model_server_port}"
 
     return BaseUrlSession(base_url=test_model_server_url)
@@ -39,7 +39,7 @@ def test_client():
 @pytest.fixture
 def test_model_name() -> str:
     """Model name fixture."""
-    return "topic-detection"
+    return "topic-summarization"
 
 
 @pytest.fixture
