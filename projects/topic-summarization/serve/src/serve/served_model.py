@@ -30,7 +30,7 @@ class ServedTopicModel(ServedModel):
     bio_response_model: Type[BaseModel] = BioResponseModel
 
     def __init__(self) -> None:
-        super().__init__(name="topic-detection")
+        super().__init__(name="topic-summarization")
 
     def load(self) -> None:
         """Load model."""

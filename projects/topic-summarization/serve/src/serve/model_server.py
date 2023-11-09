@@ -24,7 +24,8 @@ def get_model_server() -> ModelServer:
     return model_server
 
 
+model_server = get_model_server()
+
 if __name__ == "__main__":
-    model_server = get_model_server()
     # launch server process(es)
     model_server.serve()
