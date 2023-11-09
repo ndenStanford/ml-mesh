@@ -19,7 +19,7 @@ documentation.
 
 ### Core images
 
-An overview of developer utilitites and existing images on can be found [here](./docker/README.md)
+An overview of developer utilities and existing images on can be found [here](./docker/README.md)
 
 All internal core images can be found [here](./docker). See individual core image for detailed
 documentation.
@@ -29,18 +29,19 @@ documentation.
 ML projects are decomposed into multiple pre-defined steps that represent an abstraction of a model
 lifecycle at Onclusive.
 
-An overview of developer utilitites and existing images on can be found [here](./projects/README.md)
+An overview of developer utilities and existing images on can be found [here](./projects/README.md)
 
 - **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to
 bring data into our internal storage.
+  - [see here](./projects/docs/00_ingest.md) for this component's doc
 - **register**: register features to be used in training component.
-  - [see here](./projects/docs/00_register.md) for this component's doc
+  - [see here](./projects/docs/01_register.md) for this component's doc
 - **train**: model training and registering to internal model registry.
-  - [see here](./projects/docs/01_train.md) for this component's doc
+  - [see here](./projects/docs/02_train.md) for this component's doc
 - **compile**: model compilation (optimized for serving) and registering to internal model registry
-  - [see here](./projects/docs/02_compile.md) for this component's doc
+  - [see here](./projects/docs/03_compile.md) for this component's doc
 - **serve**: model served as a REST API.
-  - [see here](./projects/docs/03_serve.md) for this component's doc
+  - [see here](./projects/docs/04_serve.md) for this component's doc
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component
 behaviour (input, processing and output). This allows us to create well defined patterns that can
@@ -50,7 +51,7 @@ behaviour (input, processing and output). This allows us to create well defined 
 
 ### Apps
 
-An overview of developer utilitites and existing images on can be found [here](./apps/README.md)
+An overview of developer utilities and existing images on can be found [here](./apps/README.md)
 
 All internal core images can be found [here](./apps/). See individual app for detailed
 documentation.
@@ -59,7 +60,7 @@ documentation.
 
 ### Setting up your local environment
 
-If you are on MacOS, you can run the script `./bin/boostrap/darwin` that will set up your local machine for development. If you are using Linux, use `./bin/boostrap/linux`.
+If you are on MacOS, you can run the script `./bin/bootstrap/darwin` that will set up your local machine for development. If you are using Linux, use `./bin/bootstrap/linux`.
 
 **Windows setup is not supported yet - to be explored**. If you want to contribute to this please reach out to the MLOPs team.
 

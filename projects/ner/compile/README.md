@@ -3,7 +3,7 @@
 For details on how to run and maintain the `ner` project `compile` component, please refer
 to the
 - [the project README](../README.md) and
-- [the project compile doc.](../../docs/02_compile.md)
+- [the project compile doc.](../../docs/03_compile.md)
 
 using
 
