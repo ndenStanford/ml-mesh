@@ -220,7 +220,7 @@ jobs       :
           - name: kubeflow-torch-gpu
             base-region: us-east-1
             runner-kind: custom
-            self-hosted-runner-type: m7g.medium
+            self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-neuron: false
 
           # dask-base
