@@ -17,7 +17,7 @@ on         :
       - reopened
 
 concurrency:
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true #${{ github.event_name == 'pull_request' }}
   group: Deployment ${{ github.ref_name }}
 
 jobs       :
