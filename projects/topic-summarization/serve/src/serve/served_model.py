@@ -30,13 +30,13 @@ class ServedTopicModel(ServedModel):
     bio_response_model: Type[BaseModel] = BioResponseModel
 
     def __init__(self) -> None:
-        super().__init__(name="topic-detection")
+        super().__init__(name="topic-summarization")
 
     def load(self) -> None:
         """Load model."""
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
-        self.model_card = BioResponseModel(model_name="topic-detection")
+        self.model_card = BioResponseModel(model_name=self.name)
         self.ready = True
 
     def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
