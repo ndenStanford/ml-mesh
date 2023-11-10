@@ -219,7 +219,7 @@ jobs       :
           # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
             base-region: us-east-1
-            runner-kind: ubuntu-20.04
+            runner-kind: custom
             self-hosted-runner-type: m7g.medium
             self-hosted-runner-neuron: false
 
