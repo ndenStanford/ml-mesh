@@ -12,6 +12,11 @@ on  :
         default: inf1.2xlarge
         type: string
         description: The EC2 instance type of the self hosted runner.
+      self-hosted-runner-ami:
+        required: false
+        default: ami-07b4e00e2c69c3702
+        type: string
+        description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       setup-docker-compose:
         required: true
         default: true
@@ -79,7 +84,7 @@ jobs:
           with: |
             mode: start
             github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-            ec2-image-id: ami-07b4e00e2c69c3702
+            ec2-image-id: ${{ inputs.self-hosted-runner-ami }}
             ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
             subnet-id: subnet-0a66725cebe82001d
             security-group-id: sg-0783d340a2340549a
