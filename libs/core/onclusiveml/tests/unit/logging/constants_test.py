@@ -30,6 +30,7 @@ def test_onclusive_service_validate_raise():
         "sentiment-compile",
         "sentiment-serve",
         "summarization-serve",
+        "topic-summarization-serve",
         "prompt-backend-serve",
     ],
 )
