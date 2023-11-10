@@ -155,7 +155,7 @@ jobs:
         run: |
           make docker.login \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            AWS_REGION=${{ base-region }}
+            AWS_REGION=${{ inputs.base-region }}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         run: |
