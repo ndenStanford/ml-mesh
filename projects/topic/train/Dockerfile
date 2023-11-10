@@ -60,7 +60,6 @@ RUN sed -i '/from umap import UMAP/s/^/#/' /usr/local/lib/python3.8/site-package
 # --- production stage
 FROM builder as production
 
-USER app
 
 # --- test build stage
 FROM builder as development
