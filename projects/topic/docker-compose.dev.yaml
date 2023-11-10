@@ -73,7 +73,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: topic
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.2}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
