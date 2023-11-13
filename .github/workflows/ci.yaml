@@ -167,19 +167,17 @@ jobs       :
       matrix:
         image:
           - name: gpu-train
-            runner-kind: custom
-            self-hosted-runner-type: g4dn.xlarge # (e.g. Tesla GPUs)
-            self-hosted-runner-ami: ami-0cd6b97ad78d4c09e
-            self-hosted-runner-neuron: false
-            validate-build: true
+            runner-kind: ubuntu-20.04
+            validate-build: false
 
           - name: neuron-compile
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
             self-hosted-runner-neuron: true
-            validate-build: false # validation is being run in `neuron-inference` below
+            validate-build: true
 
           - name: neuron-inference
+            runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
             self-hosted-runner-neuron: true
             validate-build: true
@@ -224,7 +222,8 @@ jobs       :
           - name: kubeflow-torch-gpu
             base-region: us-east-1
             runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-type: m7a.medium
+            self-hosted-runner-neuron: false
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -265,6 +264,7 @@ jobs       :
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
