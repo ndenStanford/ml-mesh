@@ -221,7 +221,6 @@ jobs       :
             base-region: us-east-1
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-neuron: false
 
           # dask-base
           - name: dask-base
@@ -247,7 +246,6 @@ jobs       :
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
-      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
