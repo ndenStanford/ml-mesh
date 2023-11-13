@@ -153,7 +153,7 @@ jobs       :
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      validate-build: ${{ matrix.validate-build }}
+      validate-build: ${{ matrix.image.validate-build }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
