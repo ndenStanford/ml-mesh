@@ -872,8 +872,9 @@ jobs       :
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
-      - run-train-pipelines
       - run-iptc-project
+      - run-train-pipelines
+
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
