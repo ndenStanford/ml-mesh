@@ -134,7 +134,10 @@ jobs       :
         image:
           - name: python-base
           - name: gpu-base
-        runner-kind: [ubuntu-20.04]
+
+        runner-kind: [custom]
+        self-hosted-runner-type: [m7a.medium]
+        self-hosted-runner-neuron: [false]
         validate-build: [false]
         base-region: [us-east-1]
         region: [us-east-1]
@@ -149,6 +152,8 @@ jobs       :
       validate-build: ${{ matrix.validate-build }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -201,6 +206,17 @@ jobs       :
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
+          # kubeflow-torch-gpu
+          - name: kubeflow-torch-gpu
+            base-region: us-east-1
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+
+          # kubeflow-torch-inf
+          - name: kubeflow-torch-inf
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
           # kubeflow-jupyter
           - name: kubeflow-jupyter
             base-region: us-east-1
@@ -216,19 +232,8 @@ jobs       :
             base-region: us-east-2
             runner-kind: ubuntu-20.04
 
-          # kubeflow-torch-gpu
-          - name: kubeflow-torch-gpu
-            base-region: us-east-1
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
-
           # dask-base
           - name: dask-base
-            base-region: us-east-1
-            runner-kind: ubuntu-20.04
-
-          # kubeflow-torch-inf
-          - name: kubeflow-torch-inf
             base-region: us-east-1
             runner-kind: ubuntu-20.04
 
