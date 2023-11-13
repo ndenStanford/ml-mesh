@@ -375,6 +375,13 @@ def test_delete_prompt(
     [
         ("english-summarization", PromptEnum.EN.value[0]),
         ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
+        ("ml-short-summary-english", PromptEnum.ML_SHORT_SUMMARY_EN.value[0]),
+        ("ml-short-summary-french", PromptEnum.ML_SHORT_SUMMARY_FR.value[0]),
+        ("ml-short-summary-catalan", PromptEnum.ML_SHORT_SUMMARY_CA.value[0]),
+        ("ml-short-summary-spanish", PromptEnum.ML_SHORT_SUMMARY_ES.value[0]),
+        ("ml-short-summary-german", PromptEnum.ML_SHORT_SUMMARY_DE.value[0]),
+        ("ml-short-summary-italian", PromptEnum.ML_SHORT_SUMMARY_IT.value[0]),
+        ("ml-short-summary-japanese", PromptEnum.ML_SHORT_SUMMARY_JP.value[0]),
         ("ml-headline-generation-en", PromptEnum.ML_HEADLINE_EN.value[0]),
         ("ml-headline-generation-fr", PromptEnum.ML_HEADLINE_FR.value[0]),
         ("ml-headline-generation-ca", PromptEnum.ML_HEADLINE_CA.value[0]),

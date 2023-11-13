@@ -17,6 +17,64 @@ class PromptEnum(OnclusiveEnum):
         "english-summarization",
         {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
     ]
+    # These are prompts for generating short summaries for each language
+    ML_SHORT_SUMMARY_EN = [
+        "Give me a short summary for this text in english: "
+        + "\n"
+        + "{text}"
+        + "\n",
+        "ml-short-summary-english",
+        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    ML_SHORT_SUMMARY_FR = [
+        "Donnez-moi un petit résumé de ce texte en français: "
+        + "\n"
+        + "{text}"
+        + "\n",
+        "ml-short-summary-french",
+        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    ML_SHORT_SUMMARY_CA = [
+    "Dóna'm un breu resum d'aquest text en català: "
+    + "\n"
+    + "{text}"
+    + "\n",
+    "ml-short-summary-catalan",
+    {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    ML_SHORT_SUMMARY_ES = [
+    "Dame un breve resumen de este texto en español: "
+    + "\n"
+    + "{text}"
+    + "\n",
+    "ml-short-summary-spanish",
+    {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    ML_SHORT_SUMMARY_DE = [
+    "Geben Sie mir eine kurze Zusammenfassung für diesen Text auf Deutsch: "
+    + "\n"
+    + "{text}"
+    + "\n",
+    "ml-short-summary-german",
+    {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    ML_SHORT_SUMMARY_IT = [
+    "Datemi un breve riassunto di questo testo in italiano: "
+    + "\n"
+    + "{text}"
+    + "\n",
+    "ml-short-summary-italian",
+    {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    ML_SHORT_SUMMARY_JP = [
+    "この文章の要約を日本語で教えてください。: "
+    + "\n"
+    + "{text}"
+    + "\n",
+    "ml-short-summary-japanese",
+    {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+    ]
+    # this s the transcript segmentation prompt
     ML_SEG = [
         "Do a segmentation unifying the main stories of this text in their given language and "
         + "output a json object where the key is the start time code and "  # noqa: W503
