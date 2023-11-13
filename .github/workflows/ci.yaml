@@ -173,13 +173,11 @@ jobs       :
           - name: neuron-compile
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-neuron: true
             validate-build: true
 
           - name: neuron-inference
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-neuron: true
             validate-build: true
 
           - name: fastapi-serve
@@ -200,8 +198,6 @@ jobs       :
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -222,7 +218,7 @@ jobs       :
           - name: kubeflow-torch-gpu
             base-region: us-east-1
             runner-kind: custom
-            self-hosted-runner-type: m7a.medium
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             self-hosted-runner-neuron: false
 
           # kubeflow-torch-inf
