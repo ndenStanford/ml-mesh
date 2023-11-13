@@ -133,12 +133,16 @@ jobs       :
       matrix:
         image:
           - name: python-base
-          - name: gpu-base
+            runner-kind: ubuntu-20.04
+            validate-build: false
 
-        runner-kind: [custom]
-        self-hosted-runner-type: [m7a.medium]
-        self-hosted-runner-neuron: [false]
-        validate-build: [false]
+          - name: gpu-base
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.xlarge # (e.g. Tesla GPUs)
+            self-hosted-runner-ami: ami-0cd6b97ad78d4c09e
+            self-hosted-runner-neuron: false
+            validate-build: true
+
         base-region: [us-east-1]
         region: [us-east-1]
 
@@ -151,9 +155,9 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
-      runner-kind: ${{ matrix.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.self-hosted-runner-type }}
-      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
