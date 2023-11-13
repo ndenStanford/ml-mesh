@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import Tuple
+from typing import List, Tuple
 
 # ML libs
 import torch
@@ -35,6 +35,16 @@ def torch_function_input() -> Tuple[torch.Tensor, torch.Tensor]:
 def torch_graph_input() -> torch.Tensor:
     """Torch graph input fixture."""
     return torch.rand(1, 1, 3, 3)
+
+
+@pytest.fixture
+def torch_model_text_input() -> List[str]:
+    """Torch model text input fixture."""
+    return [
+        "This is a sentence record to generate sample inputs for the neuron compilation step",
+        "This is the second record to generate tracing compilation inputs.",
+        "This is the third text record. It has more than one sentence.",
+    ]
 
 
 @pytest.fixture
