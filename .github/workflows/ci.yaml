@@ -174,12 +174,15 @@ jobs       :
             validate-build: true
 
           - name: neuron-compile
-            runner-kind: ubuntu-20.04
-            validate-build: false
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-neuron: true
+            validate-build: false # validation is being run in `neuron-inference` below
 
           - name: neuron-inference
-            runner-kind: ubuntu-20.04
-            validate-build: false
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-neuron: true
+            validate-build: true
 
           - name: fastapi-serve
             runner-kind: ubuntu-20.04
