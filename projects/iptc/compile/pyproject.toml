@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "iptc-compile"
 version = "0.1.0"
-description = "Docker image for registering model for named entity recognition"
+description = "Docker image for registering model for IPTC"
 authors = ["Jian <jian.tong@onclusive.com>"]
 packages = [{include = "src"}]
 
