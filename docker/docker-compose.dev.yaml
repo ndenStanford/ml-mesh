@@ -147,7 +147,7 @@ services:
         target: /docker/neuron-compile/tests
     environment:
       NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile # must match the "neuron-compile/{...}" suffix of the test suite output volume bind
-    command: [pytest, tests/core/torch_neuron_test.py, -ra, -vv, --capture=no, -m, no_lib]
+    command: [pytest, tests/core/torch_neuron_test.py, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
 
   # ===========================================================

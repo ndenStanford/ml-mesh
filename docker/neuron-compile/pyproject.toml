@@ -2,7 +2,7 @@
 name = "neuron-compile"
 version = "0.1.0"
 description = "Neuron compilation of a torch based model graph"
-authors = ["Sebastian sebastian.scherer@onclusive.com>"]
+authors = ["Sebastian Scherer sebastian.scherer@onclusive.com>"]
 readme = "README.md"
 packages = [{include = "neuron_compile"}]
 
