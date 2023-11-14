@@ -129,9 +129,16 @@ services:
       NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile # must match the "neuron-compile/{...}" suffix of the test suite output volume bind
     command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
-    depends_on:
-      - neuron-compile
 
+  neuron-compile-tests-no-lib:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - neuron-vol:/docker/neuron-compile/tests/output_compile
+    environment:
+      NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile # must match the "neuron-compile/{...}" suffix of the test suite output volume bind
+    command: [pytest, tests/core/torch_neuron_test.py, -ra, -vv, --capture=no, -m, no_lib]
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
   # ===========================================================
   # NEURON INFERENCE
   # ===========================================================
@@ -147,8 +154,6 @@ services:
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: neuron-inference
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
-    depends_on:
-      - python-base
 
   neuron-inference-tests:
     devices:
@@ -160,10 +165,8 @@ services:
     command: [pytest, tests/core, -ra, -vv, --capture=no]
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
     depends_on:
-      neuron-compile-tests:
+      neuron-compile-tests-no-lib:
         condition: service_completed_successfully
-      neuron-inference:
-        condition: service_started
 
   # ===========================================================
   # KUBEFLOW JUPYTER

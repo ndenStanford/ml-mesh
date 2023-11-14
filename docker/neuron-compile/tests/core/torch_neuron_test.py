@@ -13,7 +13,7 @@ from transformers import AutoModelForSequenceClassification
 import pytest
 
 
-@pytest.mark.core
+@pytest.mark.no_lib
 @pytest.mark.compilation
 def test_neuron_compile_torch_function(torch_function_input, test_output_dir) -> None:
     """Test neuron compile torch function."""
@@ -30,6 +30,7 @@ def test_neuron_compile_torch_function(torch_function_input, test_output_dir) ->
     )
 
 
+@pytest.mark.no_lib
 @pytest.mark.inference
 def test_neuron_inference_torch_function(test_output_dir, torch_function_input):
     """Test neuron inference torch function."""
@@ -39,7 +40,7 @@ def test_neuron_inference_torch_function(test_output_dir, torch_function_input):
     traced_foo(*torch_function_input)
 
 
-@pytest.mark.core
+@pytest.mark.no_lib
 @pytest.mark.compilation
 def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
     """Test neuron compile torch graph."""
@@ -66,6 +67,7 @@ def test_neuron_compile_torch_graph(torch_graph_input, test_output_dir) -> None:
     torch.jit.save(neuron_net, os.path.join(test_output_dir, "compiled_torch_net.pt"))
 
 
+@pytest.mark.no_lib
 @pytest.mark.inference
 def test_neuron_inference_torch_graph(test_output_dir, torch_graph_input):
     """Test neuron inference torch graph."""
@@ -78,7 +80,7 @@ def test_neuron_inference_torch_graph(test_output_dir, torch_graph_input):
     neuron_net.forward(torch_graph_input)
 
 
-@pytest.mark.core
+@pytest.mark.no_lib
 @pytest.mark.compilation
 def test_neuron_compile_transformer_nlp_model(
     torch_model_name: str,
@@ -102,6 +104,7 @@ def test_neuron_compile_transformer_nlp_model(
     )
 
 
+@pytest.mark.no_lib
 @pytest.mark.inference
 def test_neuron_inference_transformer_nlp_model(test_output_dir, torch_model_input):
     """Test neuron inference transformer NLP model."""
