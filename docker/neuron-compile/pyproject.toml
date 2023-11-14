@@ -11,7 +11,7 @@ python = "3.8.16"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
-pytest = "7.2.0" # required for neuron-inference validation
+transformers = "^4.27.2"
 
 [[tool.poetry.source]]
 name = "aws-neuron"
@@ -19,9 +19,8 @@ url = "https://pip.repos.neuron.amazonaws.com/"
 default = false
 secondary = true
 
-
 [tool.poetry.group.dev.dependencies]
-compile = {path = "../../libs/compile"}
+pytest = "7.2.0"
 
 [build-system]
 requires = ["poetry-core"]
