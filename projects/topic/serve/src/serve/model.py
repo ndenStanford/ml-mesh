@@ -78,7 +78,6 @@ class ServedTopicModel(ServedModel):
         """
         # content and configuration from payload
         attributes = payload.attributes
-        parameters = payload.parameters
 
         topic_prediction = self.model.inference(text=attributes.text)
 

@@ -1,15 +1,11 @@
 """Compiled topic."""
 
 # Standard Library
-import os
 import re
-import string
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Union
 
 # 3rd party libraries
-import numpy as np
-import regex
 from bertopic import BERTopic
 from bs4 import BeautifulSoup
 from nptyping import NDArray
@@ -29,7 +25,6 @@ class TrainedTopic:
         trained_topic_model: BERTopic,
     ):
         """Initalize the TrainedTopic object."""
-
         self.embedding_model = (
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         )
@@ -73,7 +68,7 @@ class TrainedTopic:
         text = re.sub(r"\s+", " ", text)
         return text
 
-    def preprocess(self, sentences: str) -> List[str]:
+    def preprocess(self, sentences: str) -> str:
         """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
         Args:
@@ -91,6 +86,7 @@ class TrainedTopic:
 
         Args:
             text (str): Input text for topic detection.
+
         Returns:
             topic_representaion (NDArray): List of keywords for topic representation.
         """
@@ -103,15 +99,16 @@ class TrainedTopic:
     def __call__(
         self,
         text: str,
-    ) -> List[str]:
+    ) -> str:
         """Topic detection of input text.
 
         Args:
             text (str): The input text to detect topic.
+
         Returns:
-            topic_representation (List[str]):
-                Representaion of the predicted topic.
+            topic_id (str):
+                ID of the predicted topic.
         """
         pre_processed_text = self.preprocess(text)
-        topic_representation = self.inference(pre_processed_text)
-        return topic_representation
+        topic_id = self.inference(pre_processed_text)
+        return topic_id

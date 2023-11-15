@@ -1,7 +1,7 @@
 """Topic v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSchema
