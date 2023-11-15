@@ -124,5 +124,207 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - serve-vol:/projects/iptc/serve/models
+    build:
+      context: ../../
+      dockerfile: projects/iptc/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/iptc/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # utility service: downloading the compiled model artifact that will be served
+  serve-download-model:
+    volumes:
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve, integration, functional, load]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-8
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusiveml
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-8
+    networks:
+      - onclusive-net
+
+  # integration tests
+  # - include model artifact
+  # - do NOT include REST model server process
+  serve-integration:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [integration]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # load tests
+  # - include model artifact
+  # - include REST model server process
+  serve-load:
+    volumes:
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/load, -ra, -vv, --capture=no]
+    environment:
+    # serving params
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      # load test params
+      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
+      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
+      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
+      ONCLUSIVEML_SERVING_RESET_STATS: No
+      ONCLUSIVEML_SERVING_RUN_TIME: 45
+      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [load]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # utility service: uploading the relevant test results to the model registry
+  serve-upload-results:
+    volumes:
+      - serve-vol:/projects/iptc/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [python, -m, src.upload]
+    profiles: [serve]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: async
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-8
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-8
+      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve
+      DOCKER_IMAGE_TAG: ${IMAGE_TAG}
+      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      GITHUB_ACTOR: ${GITHUB_ACTOR}
+      GITHUB_ENV: ${GITHUB_ENV}
+      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
+      GITHUB_JOB: ${GITHUB_JOB}
+      GITHUB_REF: ${GITHUB_REF}
+      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
+      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
+      GITHUB_SHA: ${GITHUB_SHA}
+      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
+      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
+      RUNNER_ARCH: ${RUNNER_ARCH}
+      RUNNER_NAME: ${RUNNER_NAME}
+      RUNNER_OS: ${RUNNER_OS}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
 networks:
   onclusive-net:
+
+volumes :
+  serve-vol:
