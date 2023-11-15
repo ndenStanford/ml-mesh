@@ -3,7 +3,7 @@
 # Standard Library
 import re
 from pathlib import Path
-from typing import List, Union
+from typing import Union
 
 # 3rd party libraries
 from bertopic import BERTopic
