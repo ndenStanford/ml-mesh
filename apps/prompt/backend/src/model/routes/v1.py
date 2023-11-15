@@ -3,15 +3,9 @@
 # 3rd party libraries
 from fastapi import APIRouter, HTTPException, status
 
-# Internal libraries
-from onclusiveml.core.logging import get_default_logger
-
 # Source
 from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelListSchema, ModelSchema
-
-
-logger = get_default_logger(__name__)
 
 
 router = APIRouter(

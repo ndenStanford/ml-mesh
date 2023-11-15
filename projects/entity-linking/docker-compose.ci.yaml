@@ -27,6 +27,10 @@ services:
       ENVIRONMENT: stage
       DOCS_URL: /docs
       INTERNAL_ML_API_KEY: ''
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: no
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
@@ -179,6 +183,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
       ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1

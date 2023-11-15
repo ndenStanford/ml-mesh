@@ -114,7 +114,7 @@ def test_served_model_predict(
     assert isinstance(response, PredictResponseSchema)
 
     model_call_mock.assert_called_with(
-        sentences=[payload["data"]["attributes"]["content"]],
+        documents=[payload["data"]["attributes"]["content"]],
         **payload["data"]["parameters"]
     )
 
