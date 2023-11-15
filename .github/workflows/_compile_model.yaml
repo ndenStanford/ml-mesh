@@ -42,6 +42,7 @@ on  :
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       self-hosted-runner-neuron:
         required: false
+        default: true
         type: boolean
         description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
     secrets:
