@@ -80,9 +80,7 @@ class ServedTopicModel(ServedModel):
         attributes = payload.attributes
         parameters = payload.parameters
 
-        topic_prediction= self.model.inference(
-            text=attributes.text
-        )
+        topic_prediction = self.model.inference(text=attributes.text)
 
         attributes = {
             "topic_id": str(topic_prediction[0]),

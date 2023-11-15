@@ -10,12 +10,13 @@ from typing import Any, Dict, List, Optional, Union
 # 3rd party libraries
 import numpy as np
 import regex
+from bertopic import BERTopic
 from bs4 import BeautifulSoup
 from nptyping import NDArray
-from bertopic import BERTopic
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+
 
 logger = get_default_logger(__name__, level=20)
 
@@ -25,11 +26,13 @@ class TrainedTopic:
 
     def __init__(
         self,
-        trained_topic_model : BERTopic,
+        trained_topic_model: BERTopic,
     ):
         """Initalize the TrainedTopic object."""
 
-        self.embedding_model = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+        self.embedding_model = (
+            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+        )
         self.trained_topic_model = trained_topic_model
 
     @classmethod

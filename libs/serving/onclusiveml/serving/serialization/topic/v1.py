@@ -38,12 +38,12 @@ class OutputEntity(OnclusiveBaseSchema):
 
     topic_representation: List[str]
 
-class PredictResponseAttributeSchemaV1(JsonApiSchema):
-    """Prediction response data.
 
-    """
+class PredictResponseAttributeSchemaV1(JsonApiSchema):
+    """Prediction response data."""
 
     topic_id: str
+
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
     """Response model for a bio response.

@@ -57,7 +57,14 @@ def test_model_server_bio():
                     },
                 }
             },
-            {'version': 1, 'data': {'identifier': None, 'namespace': 'topic', 'attributes': {'topic_id': '861'}}},
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "topic",
+                    "attributes": {"topic_id": "861"},
+                },
+            },
         )
     ],
 )
