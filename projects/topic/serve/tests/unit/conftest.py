@@ -8,7 +8,7 @@ import pytest
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
-from src.serve.model import ServedSentModel
+from src.serve.model import ServedTopicModel
 from src.settings import get_settings
 
 
@@ -42,4 +42,4 @@ def artifacts(mock_open, mock_json, settings):
 @pytest.fixture(scope="function")
 def served_model(artifacts):
     """Served model fixture."""
-    return ServedSentModel(served_model_artifacts=artifacts)
+    return ServedTopicModel(served_model_artifacts=artifacts)

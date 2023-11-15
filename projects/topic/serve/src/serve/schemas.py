@@ -2,7 +2,7 @@
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiResponseSchema, JsonApiSchemas
-from onclusiveml.serving.serialization.sentiment.v1 import (
+from onclusiveml.serving.serialization.topic.v1 import (
     BioRequestAttributeSchemaV1,
     PredictRequestAttributeSchemaV1,
     PredictRequestParametersSchemaV1,

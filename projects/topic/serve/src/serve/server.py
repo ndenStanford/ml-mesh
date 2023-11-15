@@ -6,7 +6,7 @@ from onclusiveml.serving.rest.serve import ModelServer
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
-from src.serve.model import ServedSentModel
+from src.serve.model import ServedTopicModel
 from src.settings import get_settings
 
 
@@ -20,7 +20,7 @@ def get_model_server(artifacts: ServedModelArtifacts) -> ModelServer:
         ModelServer: Configured model server instance
     """
     # initialize model
-    sent_served_model = ServedSentModel(served_model_artifacts=artifacts)
+    sent_served_model = ServedTopicModel(served_model_artifacts=artifacts)
     # initialize model server
     model_server = ModelServer(configuration=settings, model=sent_served_model)
     Instrumentator.enable(model_server, app_name=settings.model_name)

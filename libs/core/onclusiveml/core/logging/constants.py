@@ -47,6 +47,10 @@ class OnclusiveService(OnclusiveEnum):
     SENTIMENT_COMPILE = "sentiment-compile"
     SENTIMENT_SERVE = "sentiment-serve"
 
+    # # --- topic
+    TOPIC_TRAIN = "topic-train"
+    TOPIC_SERVE = "topic-serve"
+
     # APPS
     # --- summarization
     SUMMARIZATION_SERVE = "summarization-serve"

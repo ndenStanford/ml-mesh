@@ -16,8 +16,8 @@ from src.serve.artifacts import ServedModelArtifacts
     [
         (
             False,
-            "models/SEN-COMPILED-46/models/model_card",
-            "models/SEN-COMPILED-46/model/some/other/dir",
+            "models/TOPIC-TRAINED-43/models/model_card",
+            "models/TOPIC-TRAINED-43/model/some/other/dir",
         ),  # TODO: add test case for remove_model_prefix=True
     ],
 )

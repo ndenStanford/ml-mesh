@@ -7,7 +7,7 @@ from typing import Type
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.models.topic import TrainedTopic
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -23,8 +23,8 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-class ServedSentModel(ServedModel):
-    """Served Sent model.
+class ServedTopicModel(ServedModel):
+    """Served Topic model.
 
     Attributes:
         predict_request_model (Type[BaseModel]):  Request model for prediction
@@ -48,7 +48,7 @@ class ServedSentModel(ServedModel):
         # self.load()  # FOR LOCAL TESTING ONLY, REMOVE FOR PRODUCTION
 
     @property
-    def model(self) -> CompiledSent:
+    def model(self) -> TrainedTopic:
         """Model class."""
         if self.ready:
             return self._model
@@ -59,7 +59,7 @@ class ServedSentModel(ServedModel):
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledSent instance
-        self._model = CompiledSent.from_pretrained(
+        self._model = TrainedTopic.load_trained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
@@ -68,31 +68,24 @@ class ServedSentModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
-        """Make predictions using the loaded Sent model.
+        """Make predictions using the loaded topic model.
 
         Args:
             payload (PredictRequestSchema): The input data for making predictions
 
         Returns:
-            PredictResponseSchema: Response containing extracted entities
+            PredictResponseSchema: Response containing topic prediction
         """
         # content and configuration from payload
         attributes = payload.attributes
         parameters = payload.parameters
-        # score the model
-        entities = attributes.entities
-        if entities:
-            entities = [dict(e) for e in entities]
 
-        sentiment = self.model(
-            sentences=attributes.content, entities=entities, **parameters.dict()
+        topic_prediction= self.model.inference(
+            text=attributes.text
         )
 
         attributes = {
-            "label": sentiment.get("label"),
-            "negative_prob": sentiment.get("negative_prob"),
-            "positive_prob": sentiment.get("positive_prob"),
-            "entities": sentiment.get("entities"),
+            "topic_id": str(topic_prediction[0]),
         }
 
         return PredictResponseSchema.from_data(
