@@ -42,9 +42,11 @@ def test_request_schema_attributes_extra():
 def test_response_attribute_schema(label, score):
     """Test response schema parameters."""
     attributes = PredictResponseAttributeSchemaV1(
-        iptc=PredictResponseIPTC(
-            label="economy, business and finance", score=0.9870238304138184
-        )
+        iptc=[
+            PredictResponseIPTC(
+                label="economy, business and finance", score=0.9870238304138184
+            )
+        ]
     )
 
     assert attributes.iptc[0].label == label
