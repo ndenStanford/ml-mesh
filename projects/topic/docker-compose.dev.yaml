@@ -60,7 +60,7 @@ services:
               # capabilities the only required field. A device MUST
               # satisfy all the requested capabilities for a successful
               # reservation.
-              capabilities: [ gpu ]
+              capabilities: [gpu]
     volumes:
       - type: bind
         source: serve/
@@ -117,7 +117,7 @@ services:
               # capabilities the only required field. A device MUST
               # satisfy all the requested capabilities for a successful
               # reservation.
-              capabilities: [ gpu ]
+              capabilities: [gpu]
     volumes:
       - type: bind
         source: serve/
@@ -181,7 +181,7 @@ services:
               # capabilities the only required field. A device MUST
               # satisfy all the requested capabilities for a successful
               # reservation.
-              capabilities: [ gpu ]
+              capabilities: [gpu]
     volumes:
       - type: bind
         source: ${HOME}/data
