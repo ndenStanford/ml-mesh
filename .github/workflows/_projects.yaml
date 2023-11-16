@@ -136,7 +136,6 @@ jobs:
       self-hosted-runner-ami: ${{ inputs.self-hosted-runner-ami }}
       setup-docker-compose: true
       setup-neuron: ${{ inputs.setup-neuron }}
-      setup-neuron: ${{ inputs.self-hosted-runner-neuron }}
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
