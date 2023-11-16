@@ -132,24 +132,31 @@ jobs       :
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - python-base
-          - gpu-base
+          - name: python-base
+          - name: gpu-base
+
+        runner-kind: [ubuntu-20.04]
         validate-build: [false]
+        base-region: [us-east-1]
         region: [us-east-1]
 
     with:
       environment: prod
-      image: ${{ matrix.image }}
+      image: ${{ matrix.image.name }}
+      base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      runner-kind: ${{ matrix.runner-kind }}
+
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   run-us-east-1-docker:
     name: Core Docker Images.
@@ -160,26 +167,49 @@ jobs       :
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - gpu-train
-          - neuron-compile
-          - neuron-inference
-          - fastapi-serve
-        validate-build: [false]
+          - name: gpu-train
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+            validate-build: false
+
+          - name: neuron-compile
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-neuron: true
+            validate-build: true
+
+          - name: neuron-inference
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-neuron: true
+            validate-build: true
+
+          - name: fastapi-serve
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+            validate-build: false
+
+        base-region: [us-east-1]
         region: [us-east-1]
 
     with:
       environment: prod
-      image: ${{ matrix.image }}
+      image: ${{ matrix.image.name }}
+      base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      validate-build: ${{ matrix.validate-build }}
+      validate-build: ${{ matrix.image.validate-build }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   run-us-east-2-docker:
     name: Core Kubeflow Docker Images.
@@ -190,20 +220,40 @@ jobs       :
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - name: kubeflow-jupyter
-            base-region: us-east-1
-          - name: kubeflow-torch-cpu
-            base-region: us-east-2
-          - name: kubeflow-data-science
-            base-region: us-east-2
+          # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
             base-region: us-east-1
-          - name: dask-base
-            base-region: us-east-1
+            runner-kind: custom
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+
+          # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
+          # kubeflow-jupyter
+          - name: kubeflow-jupyter
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
+          # kubeflow-torch-cpu
+          - name: kubeflow-torch-cpu
+            base-region: us-east-2
+            runner-kind: ubuntu-20.04
+
+          # kubeflow-data-science
+          - name: kubeflow-data-science
+            base-region: us-east-2
+            runner-kind: ubuntu-20.04
+
+          # dask-base
+          - name: dask-base
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
         validate-build: [false]
         region: [us-east-2]
+        self-hosted-runner-neuron: [false]
 
     with:
       environment: prod
@@ -214,11 +264,15 @@ jobs       :
       pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
       release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # ===============================================
   # PROJECTS
@@ -527,6 +581,15 @@ jobs       :
 
           # train
           - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # compile
+          - name: compile
             download-model: false
             integration: false
             functional: false
@@ -863,7 +926,9 @@ jobs       :
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
+      - run-iptc-project
       - run-train-pipelines
+
 
     strategy:
       fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
@@ -882,6 +947,11 @@ jobs       :
           - runner-kind: custom
             self-hosted-runner-type: inf1.2xlarge
             project: sentiment
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.6xlarge
+            project: iptc
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
