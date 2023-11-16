@@ -187,3 +187,6 @@ services:
 
 networks:
   onclusive-net:
+
+volumes :
+  serve-vol:
