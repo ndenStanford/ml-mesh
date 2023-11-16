@@ -82,7 +82,8 @@ class ServedTopicModel(ServedModel):
         topic_prediction = self.model.inference(text=attributes.text)
 
         attributes = {
-            "topic_id": str(topic_prediction[0]),
+            "topic_id": str(topic_prediction[0][0]),
+            "topic_representation": [i[0] for i in topic_prediction[1]],
         }
 
         return PredictResponseSchema.from_data(

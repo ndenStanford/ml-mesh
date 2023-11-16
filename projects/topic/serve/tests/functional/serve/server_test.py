@@ -62,14 +62,15 @@ def test_model_server_bio():
                 "data": {
                     "identifier": None,
                     "namespace": "topic",
-                    "attributes": {"topic_id": "861"},
+                    "attributes": {"topic_id": "861",
+                                   "topic_representation" : ['conventional', 'wars', 'conflicts', 'humanitarian', 'informal', 'afghanistan', 'ocean', 'migration', 'warfare', 'indian']},
                 },
             },
         )
     ],
 )
 def test_model_server_prediction(payload, expected_response):
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    """Tests predict endpoint of the topic ModelServer."""
     response = requests.post(
         "http://serve:8000/topic/v1/predict",
         json=payload,

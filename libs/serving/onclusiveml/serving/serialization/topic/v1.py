@@ -29,20 +29,11 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     language: str = "en"
 
 
-class OutputEntity(OnclusiveBaseSchema):
-    """Output information.
-
-    Attributes:
-        topic_representation (List[str]): List of keywords for topic representation
-    """
-
-    topic_representation: List[str]
-
-
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction response data."""
 
     topic_id: str
+    topic_representation : List[str]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

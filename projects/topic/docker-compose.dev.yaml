@@ -167,7 +167,7 @@ services:
       - onclusive-net
     depends_on:
       serve:
-        condition: service_health
+        condition: service_healthy
 
 networks:
   onclusive-net:
