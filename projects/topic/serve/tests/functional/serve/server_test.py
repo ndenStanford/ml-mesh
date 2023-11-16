@@ -62,8 +62,21 @@ def test_model_server_bio():
                 "data": {
                     "identifier": None,
                     "namespace": "topic",
-                    "attributes": {"topic_id": "861",
-                                   "topic_representation" : ['conventional', 'wars', 'conflicts', 'humanitarian', 'informal', 'afghanistan', 'ocean', 'migration', 'warfare', 'indian']},
+                    "attributes": {
+                        "topic_id": "861",
+                        "topic_representation": [
+                            "conventional",
+                            "wars",
+                            "conflicts",
+                            "humanitarian",
+                            "informal",
+                            "afghanistan",
+                            "ocean",
+                            "migration",
+                            "warfare",
+                            "indian",
+                        ],
+                    },
                 },
             },
         )

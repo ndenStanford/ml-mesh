@@ -33,7 +33,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction response data."""
 
     topic_id: str
-    topic_representation : List[str]
+    topic_representation: List[str]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

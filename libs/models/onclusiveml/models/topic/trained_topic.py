@@ -93,7 +93,7 @@ class TrainedTopic:
         self.inputs = text
 
         topic_id, prob = self.trained_topic_model.transform(text)
-        topic =  self.trained_topic_model.get_topic(int(topic_id))
+        topic = self.trained_topic_model.get_topic(int(topic_id))
 
         return topic_id, topic
 
