@@ -85,7 +85,7 @@ services:
       ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/topic
       NEPTUNE_MODEL_ID: TOPIC-TRAINED
-    profiles: [serve, functional]
+    profiles: [serve, functional, load]
     ports:
       - 8000:8000
     hostname: onclusiveml
@@ -117,7 +117,7 @@ services:
       - serve-vol:/projects/topic/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
-    profiles: [serve, functional]
+    profiles: [serve, integration, functional, load]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
