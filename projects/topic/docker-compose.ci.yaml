@@ -48,19 +48,6 @@ services:
 
   # serving image
   serve:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              # that's the closest analogue to --gpus; provide
-              # an integer amount of devices or 'all'
-              count: 1
-              # Devices are reserved using a list of capabilities, making
-              # capabilities the only required field. A device MUST
-              # satisfy all the requested capabilities for a successful
-              # reservation.
-              capabilities: [gpu]
     volumes:
       - serve-vol:/projects/topic/serve/models
     build:
