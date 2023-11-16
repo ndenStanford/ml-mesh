@@ -76,21 +76,19 @@ class ServedIPTCModel(ServedModel):
         Returns:
             PredictResponseSchema: Response containing extracted entities
         """
-        # content and configuration from payload
+        # attributes and parameters from payload
         attributes = payload.attributes
         parameters = payload.parameters
 
-        iptc = self.model(input_data=attributes.content, **parameters.dict())
-
-        attributes = {
-            "label": iptc.get("label"),
-            "score": iptc.get("score"),
-        }
-
+        if attributes.content == "":
+            iptc_list: list = []
+        else:
+            # score the model
+            iptc_list = self.model(input_data=attributes.content, **parameters.dict())
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes=attributes,
+            attributes={"iptc": [iptc.dict() for iptc in iptc_list]},
         )
 
     def bio(self) -> BioResponseSchema:

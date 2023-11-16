@@ -9,6 +9,7 @@ from onclusiveml.serving.serialization.iptc.v1 import (
     PredictRequestAttributeSchemaV1,
     PredictRequestParametersSchemaV1,
     PredictResponseAttributeSchemaV1,
+    PredictResponseIPTC,
 )
 
 
@@ -41,19 +42,18 @@ def test_request_schema_attributes_extra():
 def test_response_attribute_schema(label, score):
     """Test response schema parameters."""
     attributes = PredictResponseAttributeSchemaV1(
-        label="economy, business and finance", score=0.9870238304138184
+        iptc=PredictResponseIPTC(
+            label="economy, business and finance", score=0.9870238304138184
+        )
     )
 
-    assert attributes.label == label
-    assert attributes.score == score
+    assert attributes.iptc[0].label == label
+    assert attributes.iptc[0].score == score
 
-    assert isinstance(attributes.label, str)
-    assert isinstance(attributes.score, float)
+    assert isinstance(attributes.iptc[0].label, str)
+    assert isinstance(attributes.iptc[0].score, float)
 
-    assert dict(attributes) == {
-        "label": label,
-        "score": score,
-    }
+    assert dict(attributes) == {"iptc": [{"label": label, "score": score}]}
 
 
 def test_request_request_attributes_extra():

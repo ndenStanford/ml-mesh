@@ -1,7 +1,7 @@
 """IPTC v1 data schemas."""
 
 # Standard Library
-from typing import Dict
+from typing import Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -21,16 +21,21 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
 
+class PredictResponseIPTC(JsonApiSchema):
+    """Prediction iptc."""
+
+    label: Optional[str] = None
+    score: Optional[float] = None
+
+
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data.
 
     Attributes:
-        label (str): Overall iptc of the article
-        score (float): Probablity of iptc
+        iptc (label): list of iptc of the article
     """
 
-    label: str
-    score: float
+    iptc: List[PredictResponseIPTC] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

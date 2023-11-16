@@ -48,6 +48,24 @@ def test_model_server_bio():
         (
             {
                 "data": {
+                    "identifier": None,
+                    "namespace": "iptc",
+                    "attributes": {"content": ""},
+                    "parameters": {},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "iptc",
+                    "attributes": {"iptc": []},
+                },
+            },
+        ),
+        (
+            {
+                "data": {
                     "namespace": "iptc",
                     "attributes": {
                         "content": """Stocks reversed earlier losses to close higher despite rising oil prices
@@ -64,12 +82,13 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "iptc",
                     "attributes": {
-                        "label": "economy, business and finance",
-                        "score": 0.9870237112045288,
+                        "iptc": [
+                            {"label": "economy, business and finance", "score": 0.9871}
+                        ]
                     },
                 },
             },
-        )
+        ),
     ],
 )
 def test_model_server_prediction(payload, expected_response):
@@ -81,4 +100,9 @@ def test_model_server_prediction(payload, expected_response):
 
     assert response.status_code == 200
     # TODO: assert score close to expected
-    assert response.json() == expected_response
+    iptc = response.json()
+    if len(iptc["data"]["attributes"]["iptc"]) != 0:
+        iptc["data"]["attributes"]["iptc"] = [
+            response.json()["data"]["attributes"]["iptc"][0]
+        ]
+    assert iptc == expected_response

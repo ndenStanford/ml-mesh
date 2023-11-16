@@ -29,10 +29,35 @@ To invoke the `predict` endpoint for inference, use:
 ```bash
 curl -X 'POST' 'http://0.0.0.0:8000/v1/model/iptc/predict' \
     -H 'Content-Type: application/json' \
-    -d '{"inputs": {"content": "London is a nice city."}, "configuration": {"language": "en", "entities": [{"entity_type": "LOC", "text": "London", "score": "0.9997141", "sentence_index": 0}]}}'
+    -d ' {
+                "data": {
+                    "namespace": "iptc",
+                    "attributes": {
+                        "content": """Stocks reversed earlier losses to close higher despite rising oil prices
+            that followed the attack by Hamas on Israel over the weekend. Dovish comments by
+            Federal Reserve officials boosted the three major indexes. The Dow Jones Industrial
+            Average added nearly 200 points."""
+                    },
+                    "parameters": {},
+                }
+            }'
 ```
 
 This should return a response along the lines of
 ```bash
-{"outputs":{"label":"positive","negative_prob":0.0207,"positive_prob":0.9209,"entities":[{"entity_type":"LOC","text":"London","score":0.9997141,"sentence_index":0,"start":null,"end":null,"iptc":"positive"}]}}
+'   {
+        "version": 1,
+        "data": {
+            "identifier": None,
+            "namespace": "iptc",
+            "attributes": {
+                "iptc": [
+                    {
+                        "label": "economy, business and finance",
+                        "score": 0.9871
+                    }
+                ]
+            },
+        },
+    }'
 ```
