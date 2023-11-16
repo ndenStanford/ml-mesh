@@ -48,6 +48,19 @@ services:
 
   # serving image
   serve:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # that's the closest analogue to --gpus; provide
+              # an integer amount of devices or 'all'
+              count: 1
+              # Devices are reserved using a list of capabilities, making
+              # capabilities the only required field. A device MUST
+              # satisfy all the requested capabilities for a successful
+              # reservation.
+              capabilities: [ gpu ]
     volumes:
       - type: bind
         source: serve/
@@ -77,7 +90,7 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/topic
       NEPTUNE_MODEL_ID: TOPIC-TRAINED
-    profiles: [serve, functional, load]
+    profiles: [serve, functiona]
     ports:
       - 8000:8000
     hostname: onclusiveml
@@ -92,6 +105,19 @@ services:
 
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # that's the closest analogue to --gpus; provide
+              # an integer amount of devices or 'all'
+              count: 1
+              # Devices are reserved using a list of capabilities, making
+              # capabilities the only required field. A device MUST
+              # satisfy all the requested capabilities for a successful
+              # reservation.
+              capabilities: [ gpu ]
     volumes:
       - type: bind
         source: serve/
@@ -143,6 +169,19 @@ services:
   # - include model artifact
   # - include REST model server process
   serve-functional:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # that's the closest analogue to --gpus; provide
+              # an integer amount of devices or 'all'
+              count: 1
+              # Devices are reserved using a list of capabilities, making
+              # capabilities the only required field. A device MUST
+              # satisfy all the requested capabilities for a successful
+              # reservation.
+              capabilities: [ gpu ]
     volumes:
       - type: bind
         source: ${HOME}/data

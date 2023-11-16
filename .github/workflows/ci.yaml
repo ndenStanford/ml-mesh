@@ -691,6 +691,17 @@ jobs       :
             runner-kind: ubuntu-20.04
             setup-neuron: false
 
+          # serve
+          - name: serve
+            download-model: true
+            integration: false
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.xlarge
+            setup-neuron: false
+
     with:
       project: topic
       environment: prod
