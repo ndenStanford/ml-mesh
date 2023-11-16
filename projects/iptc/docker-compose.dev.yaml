@@ -131,6 +131,93 @@ services:
     profiles: [register, unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
+  # =============================================
+  # COMPILE
+  # =============================================
+
+  compile:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    build:
+      context: ../../
+      dockerfile: projects/iptc/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.11.1}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
+    command: [python, -m, src.compile_model]
+    profiles: [compile, unit, integration, pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-unit:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-download-model:
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/iptc/compile/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [python, -m, src.download_uncompiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-validate-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-upload-model:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [python, -m, src.upload_compiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
 
  # =============================================
   # SERVE
