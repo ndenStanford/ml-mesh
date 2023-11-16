@@ -752,9 +752,7 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0498becedb611865d
+            runner-kind: ubuntu-20.04
             setup-neuron: false
 
     with:
