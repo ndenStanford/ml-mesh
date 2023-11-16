@@ -90,7 +90,7 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/topic
       NEPTUNE_MODEL_ID: TOPIC-TRAINED
-    profiles: [serve, functiona]
+    profiles: [serve, functional, load]
     ports:
       - 8000:8000
     hostname: onclusiveml
