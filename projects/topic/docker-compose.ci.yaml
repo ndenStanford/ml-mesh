@@ -40,7 +40,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     hostname: onclusive-ml
-    networks: [onclusive-net
+    networks: [onclusive-net]
 
 networks:
   onclusive-net:
