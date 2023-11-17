@@ -600,7 +600,7 @@ jobs       :
           # serve
           - name: serve
             download-model: true
-            integration: false
+            integration: true
             functional: true
             load: true
             upload-test-results: true
