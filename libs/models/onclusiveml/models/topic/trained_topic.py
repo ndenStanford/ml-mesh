@@ -3,12 +3,11 @@
 # Standard Library
 import re
 from pathlib import Path
-from typing import Union, Tuple
+from typing import Tuple, Union
 
 # 3rd party libraries
 from bertopic import BERTopic
 from bs4 import BeautifulSoup
-from nptyping import NDArray
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
