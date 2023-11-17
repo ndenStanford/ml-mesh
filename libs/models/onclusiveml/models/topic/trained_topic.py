@@ -3,7 +3,7 @@
 # Standard Library
 import re
 from pathlib import Path
-from typing import Union
+from typing import Union, Tuple
 
 # 3rd party libraries
 from bertopic import BERTopic
@@ -81,7 +81,7 @@ class TrainedTopic:
 
         return sentences
 
-    def inference(self, text: str) -> NDArray:
+    def inference(self, text: str) -> Tuple:
         """Detect topic of the input text.
 
         Args:
@@ -93,14 +93,14 @@ class TrainedTopic:
         self.inputs = text
 
         topic_id, prob = self.trained_topic_model.transform(text)
-        topic = self.trained_topic_model.get_topic(int(topic_id))
+        topic_representation = self.trained_topic_model.get_topic(int(topic_id))
 
-        return topic_id, topic
+        return (topic_id, topic_representation)
 
     def __call__(
         self,
         text: str,
-    ) -> str:
+    ) -> Tuple:
         """Topic detection of input text.
 
         Args:
@@ -111,5 +111,5 @@ class TrainedTopic:
                 ID of the predicted topic.
         """
         pre_processed_text = self.preprocess(text)
-        topic_id = self.inference(pre_processed_text)
-        return topic_id
+        topic_id, topic_representation = self.inference(pre_processed_text)
+        return (topic_id, topic_representation)
