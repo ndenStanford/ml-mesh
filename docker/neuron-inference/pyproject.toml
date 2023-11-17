@@ -10,7 +10,7 @@ packages = [{include = "neuron_inference"}]
 python = "3.8.16"
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
-
+transformers = "^4.27.2"
 
 [[tool.poetry.source]]
 name = "aws-neuron"
@@ -18,10 +18,13 @@ url = "https://pip.repos.neuron.amazonaws.com"
 default = false
 secondary = true
 
+[tool.poetry.group.compilation.dependencies]
+pytest = "7.4.2"
+neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
+transformers = "^4.27.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4.2"
-transformers = "4.33.1"
 
 [build-system]
 requires = ["poetry-core"]

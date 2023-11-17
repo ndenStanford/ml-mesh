@@ -2,14 +2,16 @@
 name = "neuron-compile"
 version = "0.1.0"
 description = "Neuron compilation of a torch based model graph"
-authors = ["Sebastian sebastian.scherer@onclusive.com>"]
+authors = ["Sebastian Scherer sebastian.scherer@onclusive.com>"]
 readme = "README.md"
 packages = [{include = "neuron_compile"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-compile = {path = "../../libs/compile"}
-
+neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
+torch = "1.12.1"
+torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
+transformers = "^4.27.2"
 
 [[tool.poetry.source]]
 name = "aws-neuron"
@@ -17,10 +19,8 @@ url = "https://pip.repos.neuron.amazonaws.com/"
 default = false
 secondary = true
 
-
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
-transformers = "^4.27.2"
 
 [build-system]
 requires = ["poetry-core"]

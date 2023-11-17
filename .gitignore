@@ -5,21 +5,17 @@ __pycache__/
 test_model
 */**/*.pt
 
-# iptc
-projects/iptc/train/test_train.ipynb
-*.mar
-projects/iptc/train/iptc_model_artifacts/
-projects/iptc/train/models/
-projects/iptc/serve/models/
-projects/iptc/serve/projects/
-projects/iptc/compile/projects/
+# docker validation test outputs
+docker/**/tests/output*
+
 # project `compile` pipeline artifacts
 projects/**/compile/outputs/
-projects/**/compile/models/
-docker/**/tests/output*
 
 # project `serve` component model artifacts
 projects/**/serve/models/
+
+# project component caches
+projects/**/**/projects
 
 # C extensions
 *.so
@@ -42,9 +38,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-projects/keywords/serve/models
-projects/keywords/compile/outputs
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -250,7 +243,6 @@ bazel-ml-mesh/
 
 # random compile artifact
 outputs/
-models/
 projects/ner/compile/projects/ner/compile/nltk_data
 projects/ner/serve/projects/ner/serve/nltk_data
 projects/sentiment/compile/projects/sentiment/compile/nltk_data

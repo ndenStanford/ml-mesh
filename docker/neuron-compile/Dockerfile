@@ -37,6 +37,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share \
+ && chown -R ${USER}:users /usr/local/include \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
 RUN mkdir -p "${HOME}" && \
@@ -65,8 +66,7 @@ RUN poetry install \
     --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+    poetry cache clear pypi --all -q
 
 RUN pip install \
     tensorflow==1.15.5 \
@@ -87,8 +87,7 @@ RUN poetry install \
     --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+    poetry cache clear pypi --all -q
 
 WORKDIR "/"
 

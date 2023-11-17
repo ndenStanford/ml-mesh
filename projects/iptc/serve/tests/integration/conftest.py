@@ -7,15 +7,28 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
+# Internal libraries
+from onclusiveml.serving.rest.serve import ServingParams
+
 # Source
-from src.serve.model_server import get_model_server
-from src.serve.params import ServedModelArtifacts
+from src.serve.__main__ import model_server
+from src.serve.artifacts import ServedModelArtifacts
+from src.settings import get_settings
+
+
+settings = get_settings()
+
+
+@pytest.fixture
+def test_serving_params():
+    """Serving params fixture."""
+    return ServingParams()
 
 
 @pytest.fixture
 def test_served_model_artifacts():
-    """Model artifacts fixture."""
-    return ServedModelArtifacts()
+    """Served model artifacts fixture."""
+    return ServedModelArtifacts(settings=settings)
 
 
 @pytest.fixture
@@ -26,7 +39,7 @@ def test_model_name(test_served_model_artifacts):
 
 @pytest.fixture
 def test_inputs(test_served_model_artifacts):
-    """Inputs test fixture."""
+    """Inputs fixture."""
     with open(test_served_model_artifacts.inputs_test_file, "r") as json_file:
         test_inputs = json.load(json_file)
 
@@ -35,7 +48,7 @@ def test_inputs(test_served_model_artifacts):
 
 @pytest.fixture
 def test_inference_params(test_served_model_artifacts):
-    """Test inference settings."""
+    """Inference settings fixture."""
     with open(test_served_model_artifacts.inference_params_test_file, "r") as json_file:
         test_inference_params = json.load(json_file)
 
@@ -44,7 +57,7 @@ def test_inference_params(test_served_model_artifacts):
 
 @pytest.fixture
 def test_predictions(test_served_model_artifacts):
-    """Test predictions."""
+    """Predictions fixture."""
     with open(test_served_model_artifacts.predictions_test_file, "r") as json_file:
         test_predictions = json.load(json_file)
 
@@ -63,18 +76,4 @@ def test_model_card(test_served_model_artifacts):
 @pytest.fixture
 def test_client():
     """Test client fixture."""
-    model_server = get_model_server()
-
     return TestClient(model_server)
-
-
-@pytest.fixture
-def test_atol() -> float:
-    """Test absolute tolerance."""
-    return 2e-02
-
-
-@pytest.fixture
-def test_rtol() -> float:
-    """Test relative tolerance."""
-    return 1e-02

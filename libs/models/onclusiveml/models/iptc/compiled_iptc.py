@@ -4,7 +4,7 @@
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import List, Union
 
 # ML libs
 import torch
@@ -13,14 +13,22 @@ import torch
 import regex
 from bs4 import BeautifulSoup
 from nptyping import NDArray
+from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.iptc.class_dict import CLASS_DICT
+from onclusiveml.models.iptc.class_dict import CLASS_DICT_FIRST
 
 
 logger = get_default_logger(__name__, level=20)
+
+
+class PostProcessOutput(BaseModel):
+    """output data structure."""
+
+    label: str
+    score: float
 
 
 class CompiledIPTC:
@@ -37,7 +45,7 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.id2label = CLASS_DICT["root"]
+        self.id2label = CLASS_DICT_FIRST["root"]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
             compiled_iptc_pipeline.compiled_pipeline.model.compilation_specs[
@@ -49,7 +57,6 @@ class CompiledIPTC:
                 "tracing__batch_size"
             ]
         )
-        self.device: str = "cpu"
 
     def save_pretrained(self, directory: Union[Path, str]) -> None:
         """Save compiled iptc pipeline to specified directory.
@@ -128,43 +135,37 @@ class CompiledIPTC:
 
         res = self.compiled_iptc_pipeline.model(**self.inputs)
         iptc_probs_arr: NDArray = (
-            torch.nn.functional.softmax(res["logits"]).cpu().detach().numpy()[0]
+            torch.nn.functional.softmax(res["logits"]).detach().numpy()[0]
         )
 
         return iptc_probs_arr
 
-    def postprocess(self, probs: NDArray) -> List[Dict[str, Union[str, float]]]:
-        """Postprocess the probs.
+    def postprocess(self, probs: NDArray) -> List[PostProcessOutput]:
+        """Postprocess the probabilities to output structured data.
 
         Args:
-            probs (NDArray): List of iptc probability
-        Return:
-            result(list): List of dicts with predict label, score, and mediatopic_id for iptc
+            probs (NDArray): Array of iptc probabilities.
+
+        Returns:
+            List[PostProcessOutput]: A list of PostProcessOutput objects with predicted
+            label and score.
         """
-        # Create a dictionary with labels, scores, and mediatopic_ids
         predictions = [
-            {
-                "label": self.id2label[index],
-                "score": round(float(prob), 4),
-                # 'mediatopic_id': self.id2mediatopic[index]
-            }
+            PostProcessOutput(label=self.id2label[index], score=round(float(prob), 4))
             for index, prob in enumerate(probs)
         ]
-        # Sort the predictions by score in descending order
-        sorted_predictions = sorted(predictions, key=lambda x: x["score"], reverse=True)
+        return sorted(predictions, key=lambda x: x.score, reverse=True)
 
-        return sorted_predictions
-
-    def extract_iptc(self, input_data: str) -> List[Dict[str, Union[str, float]]]:
-        """Iptc detection of input content.
+    def __call__(self, input_data: str) -> List[PostProcessOutput]:
+        """IPTC detection for input content.
 
         Args:
-            input_data (str): The input content
+            input_data (str): The input content to be analyzed.
+
         Returns:
-            iptc_output (Dict[str, Union[float, str, List]]):
-                Extracted iptc in dictionary format
+            List[PostProcessOutput]: A list of PostProcessOutput objects representing
+            the IPTC analysis results.
         """
         content = self.preprocess(input_data)
-        iptc_prob_list = self.inference(content)
-        iptc_output = self.postprocess(iptc_prob_list)
-        return iptc_output
+        iptc_probs = self.inference(content)
+        return self.postprocess(iptc_probs)
