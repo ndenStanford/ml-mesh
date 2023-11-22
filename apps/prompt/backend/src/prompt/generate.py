@@ -32,21 +32,28 @@ def generate_text(
         model_name == ModelEnum.GPT3_5.value
         or model_name == ModelEnum.GPT4.value  # noqa: W503
     ):
-        if model_name == "gpt-3.5-turbo" or model_name == "gpt-4":
-            response = openai.ChatCompletion.create(
+        if (
+            model_name == "gpt-3.5-turbo"
+            or model_name == "gpt-4"
+            or model_name == "gpt-3.5-turbo-1106"
+            or model_name == "gpt-4-1106-preview"
+        ):
+            response = openai.chat.completions.create(
                 model=model_name,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
                 temperature=temperature,
             )
-            return response["choices"][0]["message"]["content"]
+            # return response["choices"][0]["message"]["content"]
+            return response.choices[0].message.content
         else:
-            response = openai.Completion.create(
+            response = openai.completions.create(
                 model=model_name,
                 prompt=prompt,
                 max_tokens=max_tokens,
                 temperature=temperature,
             )
-            return response["choices"][0]["text"]
+            # return response["choices"][0]["text"]
+            return response.choices[0].text
     else:
         return "Model is unknown or not supported"
