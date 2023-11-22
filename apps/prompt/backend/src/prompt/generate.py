@@ -44,7 +44,6 @@ def generate_text(
                 max_tokens=max_tokens,
                 temperature=temperature,
             )
-            # return response["choices"][0]["message"]["content"]
             return response.choices[0].message.content
         else:
             response = openai.completions.create(
@@ -53,7 +52,6 @@ def generate_text(
                 max_tokens=max_tokens,
                 temperature=temperature,
             )
-            # return response["choices"][0]["text"]
             return response.choices[0].text
     else:
         return "Model is unknown or not supported"

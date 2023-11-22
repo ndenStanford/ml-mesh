@@ -473,7 +473,6 @@ def test_generate_text(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    # mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     Message = namedtuple("Message", "content")
     Choice = namedtuple("Choice", "message")
     Completion = namedtuple("Completion", "choices")
@@ -539,7 +538,6 @@ def test_generate_text_override_parameters(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    # mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     Message = namedtuple("Message", "content")
     Choice = namedtuple("Choice", "message")
     Completion = namedtuple("Completion", "choices")
@@ -614,7 +612,6 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    # mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
     Message = namedtuple("Message", "content")
     Choice = namedtuple("Choice", "message")
     Completion = namedtuple("Completion", "choices")
