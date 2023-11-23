@@ -28,16 +28,8 @@ def generate_text(
 
     openai.api_key = settings.OPENAI_API_KEY
     # Response based on what model we use
-    if (
-        model_name == ModelEnum.GPT3_5.value
-        or model_name == ModelEnum.GPT4.value  # noqa: W503
-    ):
-        if (
-            model_name == "gpt-3.5-turbo"
-            or model_name == "gpt-4"
-            or model_name == "gpt-3.5-turbo-1106"
-            or model_name == "gpt-4-1106-preview"
-        ):
+    if model_name in ModelEnum.list():
+        if model_name in ModelEnum.list():
             response = openai.chat.completions.create(
                 model=model_name,
                 messages=[{"role": "user", "content": prompt}],
