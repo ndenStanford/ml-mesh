@@ -68,8 +68,8 @@ jobs:
 
       - name: Reset promotion branch
         run: |
-          git fetch origin stage:stage
-          git reset --hard stage
+          git fetch origin stage:develop
+          git reset --hard develop
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v5
