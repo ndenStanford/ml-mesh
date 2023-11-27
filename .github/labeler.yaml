@@ -55,4 +55,4 @@ labels :
   - label: dependencies
     branch: (dependencies|dependabot)
   - label: release
-    base-branch: prod
+    base-branch: main
