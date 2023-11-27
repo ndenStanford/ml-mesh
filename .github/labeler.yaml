@@ -1,0 +1,58 @@
+---
+version: 1
+labels :
+  - label: apps
+    files:
+      - apps/*
+  - label: libs
+    files:
+      - libs/*
+  - label: docker
+    files:
+      - docker/*
+  - label: projects
+    files:
+      - projects/*
+  - label: prompt
+    files:
+      - apps/prompt/*
+  - label: entity_fishing
+    files:
+      - apps/entity-fishing/*
+  - label: ner
+    files:
+      - projects/ner/*
+  - label: entity-linking
+    files:
+      - projects/entity-linking/*
+  - label: gch-summarization
+    files:
+      - projects/gch-summarization/*
+  - label: iptc
+    files:
+      - projects/iptc/*
+  - label: keywords
+    files:
+      - projects/keywords/*
+  - label: lsh
+    files:
+      - projects/lsh/*
+  - label: sentiment
+    files:
+      - projects/sentiment/*
+  - label: summarization
+    files:
+      - projects/summarization/*
+  - label: github_actions
+    files:
+      - .github/*
+  - label: feature
+    branch: (feature|enhancement)
+  - label: fix
+    branch: (fix|bug|bugfix)
+  - label: chore
+    branch: (chore|update|patch)
+  - label: dependencies
+    branch: (dependencies|dependabot)
+  - label: release
+    base-branch: prod
