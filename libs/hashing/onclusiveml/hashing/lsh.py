@@ -17,6 +17,7 @@ from onclusiveml.hashing.storage import (
     ordered_storage,
     unordered_storage,
 )
+from onclusiveml.nlp.language import LanguageIso
 from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
 from onclusiveml.nlp.word_tokenize import WordTokenizer
 
@@ -458,5 +459,6 @@ class LshHandler:
         language = lang
         words = self.tokenizer.tokenize(content=text, language="english")
         words = words["words"]
-        words = stop_word_remover(content=words, lang=language)
+        if LanguageIso.exists(language):
+            words = stop_word_remover(content=words, lang=language)
         return words
