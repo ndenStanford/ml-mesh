@@ -9,7 +9,7 @@ from onclusiveml.core.retry import retry
 
 # Source
 from src.extensions.redis import cache
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnum_chat, ModelEnum_completions
 from src.settings import get_settings
 
 
@@ -28,8 +28,11 @@ def generate_text(
 
     openai.api_key = settings.OPENAI_API_KEY
     # Response based on what model we use
-    if model_name in ModelEnum.list():
-        if model_name in ModelEnum.list():
+    if (
+        model_name in ModelEnum_chat.list()
+        or model_name in ModelEnum_completions.list()
+    ):
+        if model_name in ModelEnum_chat.list():
             response = openai.chat.completions.create(
                 model=model_name,
                 messages=[{"role": "user", "content": prompt}],

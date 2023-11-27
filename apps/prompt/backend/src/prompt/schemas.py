@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, validator
 
 # Source
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnum_chat
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
     PromptInvalidTemplate,
@@ -38,7 +38,7 @@ class PromptTemplateSchema(BaseModel):
     version: int = 0
     created_at: Optional[datetime.datetime] = None
     parameters: Optional[Parameters] = Parameters(
-        model_name=ModelEnum.GPT3_5.value,
+        model_name=ModelEnum_chat.GPT3_5.value,
         temperature=settings.OPENAI_TEMPERATURE,
         max_tokens=settings.OPENAI_MAX_TOKENS,
     )

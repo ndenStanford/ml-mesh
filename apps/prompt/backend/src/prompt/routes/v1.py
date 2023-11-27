@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, status
 from slugify import slugify
 
 # Source
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnum_chat
 from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelSchema
 from src.prompt.chat import PromptChat
@@ -202,7 +202,7 @@ def generate(alias: str, values: Dict[str, Any]):
     prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     # defaul parameters
-    model_name = ModelEnum.GPT3_5.value
+    model_name = ModelEnum_chat.GPT3_5.value
     max_tokens = settings.OPENAI_MAX_TOKENS
     temperature = settings.OPENAI_TEMPERATURE
     # Override if parameters exist
@@ -268,7 +268,7 @@ def generate_text_from_chat(values: PromptChat):
     return {
         "generated": generate_text(
             values.prompt,
-            ModelEnum.GPT3_5.value,
+            ModelEnum_chat.GPT3_5.value,
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
         ),
