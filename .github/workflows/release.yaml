@@ -16,7 +16,7 @@ jobs:
     if: ${{ github.event_name == 'schedule' || startsWith(github.event.issue.title, '[RELEASE]:') }}
     with:
       pull-request: false
-      environment: stage
+      environment: prod
       publish: false
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
-    environment: stage
+    environment: prod
     needs: [run-repository-state]
 
     steps:
@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: prod
+          ref: main
 
       - uses: actions-ecosystem/action-regex-match@v2
         id: regex-match-version
@@ -68,7 +68,7 @@ jobs:
 
       - name: Reset promotion branch
         run: |
-          git fetch origin stage:develop
+          git fetch origin develop:develop
           git reset --hard develop
 
       - name: Create pull request
