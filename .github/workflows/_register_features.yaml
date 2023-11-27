@@ -28,6 +28,11 @@ on  :
         type: boolean
         default: true
         description: Release flag
+      pull-request:
+        required: true
+        default: true
+        type: boolean
+        description: Indicates whether this workflow is running for a Pull Request.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -99,6 +104,7 @@ jobs:
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Run feature registration for the project
+        if: ${{ !inputs.pull-request }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=register ENVIRONMENT=ci \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
