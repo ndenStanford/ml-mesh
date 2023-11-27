@@ -83,7 +83,28 @@ def test_model_server_bio():
                     "namespace": "iptc",
                     "attributes": {
                         "iptc": [
-                            {"label": "economy, business and finance", "score": 0.9871}
+                            {"label": "economy, business and finance", "score": 0.9871},
+                            {"label": "conflict, war and peace", "score": 0.0056},
+                            {"label": "crime, law and justice", "score": 0.0023},
+                            {"label": "science and technology", "score": 0.002},
+                            {"label": "labour", "score": 0.0009},
+                            {
+                                "label": "disaster, accident and emergency incident",
+                                "score": 0.0005,
+                            },
+                            {"label": "lifestyle and leisure", "score": 0.0004},
+                            {"label": "weather", "score": 0.0004},
+                            {"label": "politics", "score": 0.0002},
+                            {
+                                "label": "arts, culture, entertainment and media",
+                                "score": 0.0001,
+                            },
+                            {"label": "environment", "score": 0.0001},
+                            {"label": "health", "score": 0.0001},
+                            {"label": "society", "score": 0.0001},
+                            {"label": "sport", "score": 0.0001},
+                            {"label": "education", "score": 0.0},
+                            {"label": "religion", "score": 0.0},
                         ]
                     },
                 },
@@ -101,8 +122,4 @@ def test_model_server_prediction(payload, expected_response):
     assert response.status_code == 200
     # TODO: assert score close to expected
     iptc = response.json()
-    if len(iptc["data"]["attributes"]["iptc"]) != 0:
-        iptc["data"]["attributes"]["iptc"] = [
-            response.json()["data"]["attributes"]["iptc"][0]
-        ]
     assert iptc == expected_response
