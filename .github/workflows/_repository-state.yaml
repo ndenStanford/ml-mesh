@@ -21,7 +21,7 @@ on  :
       head-ref:
         required: false
         type: string
-        default: main
+        default: develop
         description: Release target branch.
       pre-release:
         required: false
@@ -135,7 +135,7 @@ jobs:
 
       - name: Changelog
         id: changelog
-        if: ${{ inputs.pull-request && inputs.base-ref == 'prod' }}
+        if: ${{ inputs.pull-request && inputs.base-ref == 'main' }}
         uses: mikepenz/release-changelog-builder-action@v4.0.1
         with:
           configuration: .github/changelog.json
@@ -146,7 +146,7 @@ jobs:
 
       - name: Update PR body
         id: update-pr-body
-        if: ${{ inputs.pull-request && inputs.base-ref == 'prod' }}
+        if: ${{ inputs.pull-request && inputs.base-ref == 'main' }}
         uses: Perdoo/pull-request-update-body-action@v1.0.1
         with:
           ghToken: ${{ secrets.GITHUB_TOKEN }}
