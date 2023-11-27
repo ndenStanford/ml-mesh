@@ -618,7 +618,7 @@ jobs       :
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
       pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
