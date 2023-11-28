@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 from pydantic import BaseSettings
 
 # Source
-from src.model.constants import ModelEnum_chat, ModelEnum_completions
+from src.model.constants import ModelEnumChat, ModelEnumCompletions
 from src.prompt.constants import PromptEnum
 
 
@@ -48,11 +48,11 @@ class Settings(BaseSettings):
     )
     # predefined models
     LIST_OF_MODELS: Dict[str, List[Union[str, int]]] = {
-        "1": [ModelEnum_chat.GPT3_5.value, OPENAI_PARAMETERS, 4098],
-        "2": [ModelEnum_chat.GPT4.value, OPENAI_PARAMETERS, 8192],
-        "3": [ModelEnum_chat.GPT3_5_turbo.value, OPENAI_PARAMETERS, 16385],
-        "4": [ModelEnum_chat.GPT4_turbo.value, OPENAI_PARAMETERS, 128000],
-        "5": [ModelEnum_completions.GPT3_5_instruct.value, OPENAI_PARAMETERS, 4096],
+        "1": [ModelEnumChat.GPT3_5.value, OPENAI_PARAMETERS, 4098],
+        "2": [ModelEnumChat.GPT4.value, OPENAI_PARAMETERS, 8192],
+        "3": [ModelEnumChat.GPT3_5_turbo.value, OPENAI_PARAMETERS, 16385],
+        "4": [ModelEnumChat.GPT4_turbo.value, OPENAI_PARAMETERS, 128000],
+        "5": [ModelEnumCompletions.GPT3_5_instruct.value, OPENAI_PARAMETERS, 4096],
     }
 
     LIST_OF_PROMPTS: List[List[Union[str, Dict]]] = PromptEnum.list()

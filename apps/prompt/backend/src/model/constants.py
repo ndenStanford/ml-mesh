@@ -4,7 +4,7 @@
 from onclusiveml.core.base.utils import OnclusiveEnum
 
 
-class ModelEnum_chat(OnclusiveEnum):
+class ModelEnumChat(OnclusiveEnum):
     """Enum values for chat models."""
 
     GPT3_5 = "gpt-3.5-turbo"
@@ -13,7 +13,7 @@ class ModelEnum_chat(OnclusiveEnum):
     GPT4_turbo = "gpt-4-1106-preview"
 
 
-class ModelEnum_completions(OnclusiveEnum):
+class ModelEnumCompletions(OnclusiveEnum):
     """Enum values for completions models."""
 
     GPT3_5_instruct = "gpt-3.5-turbo-instruct"
