@@ -25,11 +25,6 @@ on  :
         required: true
         type: string
         description: Version tag of image.
-      pull-request:
-        required: true
-        default: true
-        type: boolean
-        description: Indicates whether this workflow is running for a Pull Request.
       validate-build:
         required: false
         default: false
