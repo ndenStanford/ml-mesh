@@ -68,7 +68,6 @@ on  :
         default: true
         type: boolean
         description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
-
     secrets:
       AWS_ACCOUNT_ID:
         required: true
