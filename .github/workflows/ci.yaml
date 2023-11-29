@@ -43,24 +43,34 @@ jobs       :
     uses: ./.github/workflows/_repository-state.yaml
     needs: [run-code-quality-checks]
     with:
-      event-name: ${{ github.event_name }}
-      push-target-branch: ${{ github.ref_name }}
-      pull-request-target-branch: ${{ github.base_ref }}
-      verbose: true
+      environment: prod
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      base-ref: ${{ github.base_ref }}
+      head-ref: ${{ github.ref_name }}
+      pre-release: ${{ github.ref_name == 'develop' }}
+      include-pre-releases: ${{ github.ref_name == 'develop' }}
     secrets:
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
-  check-repository-state:
-    name: Check repository metadata
-    needs: [run-repository-state]
-    runs-on: ubuntu-20.04
+  # ===============================================
+  # GET TARGET BRANCH NAME
+  # ===============================================
 
+  get-target-branch-name:
+    name: Get Push/Pull target branch name.
+    runs-on: ubuntu-20.04
+    outputs:
+      name: ${{ steps.get-environment-name.outputs.value }}
     steps:
-      - name: Show captured repository state
-        run: |
-          echo Target branch: ${{ needs.run-repository-state.outputs.target-branch }}
-          echo "(Release) tag:" ${{ needs.run-repository-state.outputs.tag }}
-          echo ${{ toJSON(needs.run-repository-state.outputs.release-notes) }}
+
+      - name: Get Environment name
+        uses: haya14busa/action-cond@v1
+        id: get-environment-name
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: ${{ github.base_ref }}
+          if_false: ${{ github.ref_name }}
+
 
   # ===============================================
   # TEST LIBS
@@ -69,11 +79,11 @@ jobs       :
   run-libs-tests:
     name: Run libraries unit and integration tests.
     uses: ./.github/workflows/_libs.yaml
-    needs: [run-repository-state]
+    needs: [run-repository-state, get-target-branch-name]
 
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         python-version: [3.8.16]
         poetry-version: [1.3.2]
@@ -116,8 +126,7 @@ jobs       :
       functional: ${{ matrix.libs.functional }}
       python-version: ${{ matrix.python-version }}
       poetry-version: ${{ matrix.poetry-version }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
   # ===============================================
   # DOCKER
@@ -126,84 +135,132 @@ jobs       :
   run-us-east-1-base-docker:
     name: Base Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 1
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - python-base
-          - gpu-base
+          - name: python-base
+          - name: gpu-base
+
+        runner-kind: [ubuntu-20.04]
         validate-build: [false]
+        base-region: [us-east-1]
         region: [us-east-1]
 
     with:
       environment: prod
-      image: ${{ matrix.image }}
+      image: ${{ matrix.image.name }}
+      base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.runner-kind }}
+
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   run-us-east-1-docker:
     name: Core Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker]
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
       max-parallel: 1
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - gpu-train
-          - neuron-compile
-          - neuron-inference
-          - fastapi-serve
-        validate-build: [false]
+          - name: gpu-train
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+            validate-build: false
+
+          - name: neuron-compile
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-neuron: true
+            validate-build: true
+
+          - name: neuron-inference
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-neuron: true
+            validate-build: true
+
+          - name: fastapi-serve
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+            validate-build: false
+
+        base-region: [us-east-1]
         region: [us-east-1]
 
     with:
       environment: prod
-      image: ${{ matrix.image }}
+      image: ${{ matrix.image.name }}
+      base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      validate-build: ${{ matrix.validate-build }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      validate-build: ${{ matrix.image.validate-build }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   run-us-east-2-docker:
     name: Core Kubeflow Docker Images.
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker]
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
       max-parallel: 1
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - name: kubeflow-jupyter
-            base-region: us-east-1
-          - name: kubeflow-torch-cpu
-            base-region: us-east-2
-          - name: kubeflow-data-science
-            base-region: us-east-2
+          # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
             base-region: us-east-1
-          - name: dask-base
-            base-region: us-east-1
+            runner-kind: custom
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+
+          # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
+          # kubeflow-jupyter
+          - name: kubeflow-jupyter
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
+          # kubeflow-torch-cpu
+          - name: kubeflow-torch-cpu
+            base-region: us-east-2
+            runner-kind: ubuntu-20.04
+
+          # kubeflow-data-science
+          - name: kubeflow-data-science
+            base-region: us-east-2
+            runner-kind: ubuntu-20.04
+
+          # dask-base
+          - name: dask-base
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
+
         validate-build: [false]
         region: [us-east-2]
+        self-hosted-runner-neuron: [false]
 
     with:
       environment: prod
@@ -211,14 +268,17 @@ jobs       :
       region: ${{ matrix.region }}
       base-region: ${{ matrix.image.base-region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # ===============================================
   # PROJECTS
@@ -229,10 +289,10 @@ jobs       :
   run-keywords-project:
     name: Keywords Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 5
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -275,8 +335,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -294,10 +353,10 @@ jobs       :
   run-summarization-project:
     name: Summarization Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -321,8 +380,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -340,10 +398,10 @@ jobs       :
   run-gch-summarization-project:
     name: GCH-Summarization Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -367,8 +425,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -386,10 +443,10 @@ jobs       :
   run-entity-linking-project:
     name: Entity Linking Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -414,8 +471,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -434,10 +490,10 @@ jobs       :
   run-sentiment-project:
     name: Sentiment Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -480,8 +536,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -499,10 +554,10 @@ jobs       :
   run-iptc-project:
     name: IPTC Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -534,6 +589,25 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # compile
+          - name: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+
     with:
       project: iptc
       environment: prod
@@ -544,8 +618,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -563,10 +636,10 @@ jobs       :
   run-ner-project:
     name: NER Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -609,8 +682,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -628,10 +700,10 @@ jobs       :
   run-lsh-project:
     name: LSH Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -655,8 +727,7 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
@@ -673,10 +744,10 @@ jobs       :
   run-topic-project:
     name: TOPIC Project components
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
@@ -689,7 +760,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            setup-neuron: false
+            self-hosted-runner-neuron: false
 
               # train
           - name: train
@@ -700,7 +771,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            setup-neuron: false
+            self-hosted-runner-neuron: false
 
     with:
       project: topic
@@ -712,11 +783,10 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-      setup-neuron: ${{ matrix.components.setup-neuron }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -726,50 +796,6 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
-
-  # run-topic-summarization-project:
-  #   name: Topic-Summarization Project components
-  #   uses: ./.github/workflows/_projects.yaml
-  #   needs: [run-repository-state, run-libs-tests]
-  #   strategy:
-  #     max-parallel: 10
-  #     fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
-  #     matrix:
-  #       components:
-  #         # NOTE: list of project components to run
-
-  #         # register
-  #         - name: serve
-  #           download-model: false
-  #           integration: true # regression test disabled since gpt responses drift within 30 mins
-  #           functional: true
-  #           load: false
-  #           upload-test-results: false
-  #           runner-kind: ubuntu-20.04
-
-  #   with:
-  #     project: topic-summarization
-  #     environment: prod
-  #     component: ${{ matrix.components.name }}
-  #     tag: ${{ needs.run-repository-state.outputs.tag }}
-  #     download-model: ${{ matrix.components.download-model }}
-  #     integration: ${{ matrix.components.integration }}
-  #     functional: ${{ matrix.components.functional }}
-  #     load: ${{ matrix.components.load }}
-  #     upload-test-results: ${{ matrix.components.upload-test-results }}
-  #     pull-request: ${{ github.event_name == 'pull_request' }}
-  #     release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
-  #     runner-kind: ${{ matrix.components.runner-kind }}
-  #     self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-  #   secrets:
-  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #     GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-  #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  #     NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
-  #     INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ===============================================
   # REGISTER FEATURES
@@ -790,7 +816,7 @@ jobs       :
       - run-topic-project
 
     strategy:
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         models:
           - project: iptc
@@ -804,7 +830,8 @@ jobs       :
       tag: ${{ matrix.models.tag }}
       python-version: 3.8.16
       poetry-version: 1.3.2
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main'}}
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -830,9 +857,10 @@ jobs       :
       - run-iptc-project
       - run-topic-project
       - run-register-pipelines
+      - get-target-branch-name
 
     strategy:
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         models:
           - project: keywords
@@ -858,7 +886,8 @@ jobs       :
       tag: ${{ matrix.models.tag }}
       python-version: 3.8.16
       poetry-version: 1.3.2
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -881,10 +910,12 @@ jobs       :
       - run-sentiment-project
       - run-ner-project
       - run-lsh-project
+      - run-iptc-project
       - run-train-pipelines
+      - get-target-branch-name
 
     strategy:
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         models:
           - runner-kind: custom
@@ -902,13 +933,19 @@ jobs       :
             project: sentiment
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
+          - runner-kind: custom
+            self-hosted-runner-type: inf1.6xlarge
+            project: iptc
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
     with:
       environment: prod
       runner-kind: ${{ matrix.models.runner-kind }}
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
       upload-compiled-model: true
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -925,10 +962,10 @@ jobs       :
   run-apps:
     name: Web Applications
     uses: ./.github/workflows/_apps.yaml
-    needs: [run-repository-state, run-libs-tests]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
-      fail-fast: ${{ needs.run-repository-state.outputs.target-branch == 'develop' }}
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         apps:
           # NOTE: list of apps components to run
@@ -955,8 +992,7 @@ jobs       :
       component: ${{ matrix.apps.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      release: ${{ needs.run-repository-state.outputs.target-branch == 'main' || github.actor == 'dependabot[bot]' }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

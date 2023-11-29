@@ -15,7 +15,7 @@ on  :
         required: false
         default: us-east-1
         type: string
-        description: Bade image ECR repo region.
+        description: Base image ECR repo region.
       region:
         required: false
         default: us-east-1
@@ -25,11 +25,6 @@ on  :
         required: true
         type: string
         description: Version tag of image.
-      pull-request:
-        required: true
-        default: true
-        type: boolean
-        description: Indicates whether this workflow is running for a Pull Request.
       validate-build:
         required: false
         default: false
@@ -40,6 +35,25 @@ on  :
         default: true
         type: boolean
         description: If false, only the images that have been changed are ran, otherwise every image is ran.
+      runner-kind:
+        required: true
+        default: custom
+        type: string
+        description: If 'custom', a customized self hosted runner will be provided. Otherwise needs to be a valid Github Actions runner kind reference.
+      self-hosted-runner-type:
+        required: false
+        type: string
+        description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
+      self-hosted-runner-ami:
+        required: false
+        default: ami-07b4e00e2c69c3702
+        type: string
+        description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
+      self-hosted-runner-neuron:
+        required: false
+        default: true
+        type: boolean
+        description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -53,16 +67,17 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: AWS secret access key
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: Github PAT to allow EC2 instance to connect to Github repository content.
 
 jobs:
-  deploy:
-    runs-on: ubuntu-20.04
+  check-run-criteria:
+    name: Check if the docker flow needs to be run
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    env:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
+    outputs:
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -76,52 +91,134 @@ jobs:
             this:
               - added | modified: 'docker/**'
 
+  provision-customized-runner:
+    name: Provision self-hosted & customized runner
+    needs: check-run-criteria
+    uses: ./.github/workflows/_provision_customized_runner.yaml
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
+    with:
+      environment: ${{ inputs.environment }}
+      self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ inputs.self-hosted-runner-ami }}
+      setup-docker-compose: true
+      setup-neuron: ${{ inputs.self-hosted-runner-neuron }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+  set-runner-specs:
+    name: Set runner specs conditional on hosting requirements
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [check-run-criteria, provision-customized-runner]
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    outputs:
+      runner-label: ${{ steps.set-runner-label.outputs.value }}
+      runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
+    steps:
+      - name: Toggle runner label
+        uses: haya14busa/action-cond@v1
+        id: set-runner-label
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
+          if_false: ${{ inputs.runner-kind }}
+
+      - name: Toggle runner instance type
+        uses: haya14busa/action-cond@v1
+        id: set-runner-instance-id
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
+          if_false: ''
+
+  deploy:
+    name: Build, test and deploy core docker component
+    needs: [check-run-criteria, set-runner-specs]
+    runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    timeout-minutes: 30
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.region }}
 
-      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION="${{ inputs.base-region }}"
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        run: |
+          make docker.login \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_REGION=${{ inputs.base-region }}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
-        if: ${{ steps.files-changed.outputs.this == 'true' }}
         run: |
           make docker.build/${{ inputs.image }} \
-          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          TARGET_BUILD_STAGE="development" \
-          PLATFORM=linux/amd64 \
-          ENVIRONMENT="ci"
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="development" \
+            PLATFORM=linux/amd64 \
+            ENVIRONMENT="ci"
 
       - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ ( inputs.validate-build && inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.validate-build }}
-        run: make docker.validate/${{ inputs.image }} \ AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \ IMAGE_TAG="${{ inputs.tag }}" \ TARGET_BUILD_STAGE="development"
-          \ PLATFORM=linux/amd64 \ ENVIRONMENT="ci"
+        if: ${{ inputs.validate-build }}
+        run: |
+          make docker.validate/${{ inputs.image }} \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="development" \
+            PLATFORM=linux/amd64 \
+            ENVIRONMENT="ci"
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make docker.build/${{ inputs.image }} \
-          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          TARGET_BUILD_STAGE="production" \
-          PLATFORM=linux/amd64 \
-          ENVIRONMENT="ci" \
-          USE_DOCKER_CACHE=true
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="production" \
+            PLATFORM=linux/amd64 \
+            ENVIRONMENT="ci" \
+            USE_DOCKER_CACHE=true
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION="${{ inputs.region }}"
+        run: |
+          make docker.login \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make docker.deploy/${{ inputs.image }} \
-          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          ENVIRONMENT="ci"
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            ENVIRONMENT="ci"
+
+  stop-runner:
+    name: Stop self-hosted EC2 runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [check-run-criteria, set-runner-specs, deploy]
+    environment: ${{ inputs.environment }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Stop EC2 runner
+        uses: machulav/ec2-github-runner@v2
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          label: ${{ needs.set-runner-specs.outputs.runner-label }}
+          ec2-instance-id: ${{ needs.set-runner-specs.outputs.runner-instance-id }}
