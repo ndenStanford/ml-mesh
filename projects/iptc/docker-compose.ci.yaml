@@ -17,7 +17,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: ingest
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     volumes:
       - type: bind
         source: ingest/src
@@ -61,7 +61,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-2023.5.1}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
@@ -98,7 +98,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: register
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     volumes:
       - type: bind
         source: register/src
@@ -234,7 +234,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
