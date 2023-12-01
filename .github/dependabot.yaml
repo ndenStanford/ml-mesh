@@ -8,11 +8,13 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
       day: monday
+
   # ====================================
   # DOCKER
   # ====================================
@@ -22,6 +24,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/fastapi-serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -38,6 +41,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-data-science
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -53,6 +57,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-torch-cpu
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -67,6 +72,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-jupyter
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -82,6 +88,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/neuron-compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -96,6 +103,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/neuron-inference
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -110,6 +118,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-torch-gpu
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -124,6 +133,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-torch-inf
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -138,6 +148,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/gpu-base
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -152,6 +163,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/gpu-train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -166,6 +178,7 @@ updates:
   - package-ecosystem: pip
     directory: /docker/dask-base
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -184,6 +197,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/core
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -198,6 +212,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -212,6 +227,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/models
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -226,6 +242,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/nlp
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -240,6 +257,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/serving
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -254,6 +272,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/hashing
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -268,6 +287,7 @@ updates:
   - package-ecosystem: pip
     directory: /libs/tracking
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -288,6 +308,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/keywords/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -301,6 +322,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/keywords/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -314,6 +336,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/keywords/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -330,6 +353,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/summarization/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -346,6 +370,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/gch-summarization/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -361,6 +386,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/entity-linking/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -377,6 +403,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/ner/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -390,6 +417,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/ner/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -403,6 +431,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/ner/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -419,6 +448,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/sentiment/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -432,6 +462,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/sentiment/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -445,6 +476,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/sentiment/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -460,6 +492,7 @@ updates:
   - package-ecosystem: pip
     directory: /projects/iptc/ingest
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -478,6 +511,7 @@ updates:
   - package-ecosystem: maven
     directory: /apps/entity-fishing/backend
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -494,6 +528,7 @@ updates:
   - package-ecosystem: pip
     directory: /apps/prompt/backend
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
@@ -508,6 +543,7 @@ updates:
   - package-ecosystem: npm
     directory: /apps/prompt/frontend
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"

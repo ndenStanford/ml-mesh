@@ -100,7 +100,7 @@ jobs:
   provision-customized-runner:
     name: Provision self-hosted & customized runner
     needs: check-run-criteria
-    uses: ./.github/workflows/_provision_customized_runner.yaml
+    uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}

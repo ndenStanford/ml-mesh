@@ -128,7 +128,7 @@ jobs:
         id: export-tag
         run: |
           if [[ ${{ inputs.pull-request }} = true ]]; then
-              echo "tag=ci-${{ github.run_id }}" >> $GITHUB_OUTPUT
+              echo "tag=ci-${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
           else
               echo "tag=v${{ steps.version-increment.outputs.version }}" >> $GITHUB_OUTPUT
           fi
