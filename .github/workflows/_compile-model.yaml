@@ -25,6 +25,11 @@ on  :
         default: true
         type: boolean
         description: If false, the compilation pipeline is only being run if the project's `compile` component's directory has been altered.
+      pull-request:
+        required: true
+        default: true
+        type: boolean
+        description: Indicates whether this workflow is running for a Pull Request.
       runner-kind:
         required: true
         default: custom
@@ -95,7 +100,7 @@ jobs:
   provision-customized-runner:
     name: Provision self-hosted & customized runner
     needs: check-run-criteria
-    uses: ./.github/workflows/_provision_customized_runner.yaml
+    uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
@@ -195,7 +200,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
-        if: ${{ inputs.upload-compiled-model }}
+        if: ${{ inputs.upload-compiled-model && !inputs.pull-request }}
         run: |
           echo 'Uploading Compiled Model'
           make projects.run/${{ inputs.project }} \
