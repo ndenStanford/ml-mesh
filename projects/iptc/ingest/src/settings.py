@@ -13,6 +13,7 @@ class IngestionSettings(BaseSettings):
     target_bucket: str
     iptc_level: str
     files: str
+    shards: int
 
     @property
     def source_path(self):
@@ -22,7 +23,7 @@ class IngestionSettings(BaseSettings):
     @property
     def target_path(self):
         """Target path property."""
-        return f"{self.target_bucket}/iptc/{self.iptc_level}/ingested"
+        return f"s3://{self.target_bucket}/iptc/{self.iptc_level}/ingested"
 
     @property
     def schema(self):

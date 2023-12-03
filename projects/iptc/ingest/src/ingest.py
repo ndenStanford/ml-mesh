@@ -9,8 +9,7 @@ import apache_beam as beam
 import pyarrow as pa
 from apache_beam.dataframe.convert import to_pcollection
 from apache_beam.dataframe.io import read_csv
-from pyarrow import fs
-from pyarrow import parquet as pq
+from apache_beam.io.parquetio import WriteToParquetBatched
 from pydantic import BaseSettings
 
 # Source
@@ -24,7 +23,6 @@ def ingest(settings: BaseSettings) -> None:
         settings (BaseSettings): Settings class
 
     """
-    s3 = fs.S3FileSystem(region=fs.resolve_s3_region(settings.source_bucket))
     with beam.Pipeline() as p:
         dfs = p | "Read CSVs" >> read_csv(
             settings.source_path,
@@ -48,15 +46,15 @@ def ingest(settings: BaseSettings) -> None:
             )
             | "Transform to tables"
             >> beam.Map(lambda x: pa.Table.from_pandas(x, preserve_index=False))
-            | "Combine" >> beam.combiners.ToList()
             | "Write to parquet files"
-            >> beam.Map(
-                lambda seq: [
-                    pq.write_table(
-                        table, f"{settings.target_path}-{idx}.parquet", filesystem=s3
-                    )
-                    for idx, table in enumerate(seq)
-                ]
+            >> WriteToParquetBatched(
+                file_path_prefix=settings.target_path,
+                file_name_suffix=".parquet",
+                num_shards=settings.shards,
+                schema=pa.schema(
+                    [(k, pa.string()) for k in settings.schema]
+                    + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
+                ),
             )
         )
 
