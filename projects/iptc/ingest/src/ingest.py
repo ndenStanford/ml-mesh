@@ -28,6 +28,7 @@ def ingest(settings: BaseSettings) -> None:
             settings.source_path,
             engine="c",
             usecols=settings.schema,
+            dtype={k: str for k in settings.schema},
             lineterminator="\n",
             quoting=csv.QUOTE_NONNUMERIC,
             chunksize=128,
