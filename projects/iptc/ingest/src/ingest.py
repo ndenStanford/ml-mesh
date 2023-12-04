@@ -62,6 +62,10 @@ def ingest(settings: BaseSettings) -> None:
                 file_name_suffix=".parquet",
                 num_shards=settings.shards,
                 shard_name_template=f"-{len(str(settings.shards))*'S'}",
+                schema=pa.schema(
+                    [(k, pa.string()) for k in settings.schema]
+                    + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
+                ),
             )
         )
 
