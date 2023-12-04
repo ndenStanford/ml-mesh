@@ -34,9 +34,7 @@ def ingest(settings: BaseSettings) -> None:
             chunksize=128,
             iterator=True,
         )
-        pcoll_df = to_pcollection(
-            dfs, include_indexes=False, yield_elements="pandas", pipeline=p
-        )
+        pcoll_df = to_pcollection(dfs, include_indexes=False, yield_elements="pandas")
         _ = (
             pcoll_df
             | "Fill NaN" >> beam.Map(lambda x: x.fillna("nan"))
