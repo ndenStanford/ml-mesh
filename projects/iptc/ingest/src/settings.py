@@ -3,6 +3,7 @@
 from functools import lru_cache
 
 # 3rd party libraries
+import pyarrow as pa
 from pydantic import BaseSettings
 
 
@@ -72,6 +73,14 @@ class IngestionSettings(BaseSettings):
             ],
         }
         return map[self.iptc_level]
+
+    @property
+    def output_schema(self):
+        """Ouput schema property."""
+        return pa.schema(
+            [(k, pa.string()) for k in self.schema]
+            + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
+        )
 
     class Config:
         env_file = "config/dev.env"

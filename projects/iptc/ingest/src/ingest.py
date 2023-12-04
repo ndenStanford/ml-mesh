@@ -41,7 +41,7 @@ def ingest(settings: BaseSettings) -> None:
             | "Add id and timestamp columns"
             >> beam.Map(
                 lambda x: x.assign(
-                    id=x.apply(lambda y: hash(tuple(y)), axis=1),
+                    id=x.apply(lambda y: int(hash(tuple(y))), axis=1),
                     timestamp=datetime.now(),
                 )
             )
@@ -50,10 +50,7 @@ def ingest(settings: BaseSettings) -> None:
                 lambda x: pa.Table.from_pandas(
                     x,
                     preserve_index=False,
-                    schema=pa.schema(
-                        [(k, pa.string()) for k in settings.schema]
-                        + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
-                    ),
+                    schema=settings.output_schema,
                 )
             )
             | "Write to parquet files"
@@ -62,10 +59,7 @@ def ingest(settings: BaseSettings) -> None:
                 file_name_suffix=".parquet",
                 num_shards=settings.shards,
                 shard_name_template=f"-{len(str(settings.shards))*'S'}",
-                schema=pa.schema(
-                    [(k, pa.string()) for k in settings.schema]
-                    + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
-                ),
+                schema=settings.output_schema,
             )
         )
 
