@@ -34,7 +34,9 @@ def ingest(settings: BaseSettings) -> None:
             chunksize=128,
             iterator=True,
         )
-        pcoll_df = to_pcollection(dfs, include_indexes=False, yield_elements="pandas")
+        pcoll_df = to_pcollection(
+            dfs, include_indexes=False, yield_elements="pandas", pipeline=p
+        )
         _ = (
             pcoll_df
             | "Fill NaN" >> beam.Map(lambda x: x.fillna("nan"))
@@ -46,17 +48,22 @@ def ingest(settings: BaseSettings) -> None:
                 )
             )
             | "Transform to tables"
-            >> beam.Map(lambda x: pa.Table.from_pandas(x, preserve_index=False))
+            >> beam.Map(
+                lambda x: pa.Table.from_pandas(
+                    x,
+                    preserve_index=False,
+                    schema=pa.schema(
+                        [(k, pa.string()) for k in settings.schema]
+                        + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
+                    ),
+                )
+            )
             | "Write to parquet files"
             >> WriteToParquetBatched(
                 file_path_prefix=settings.target_path,
                 file_name_suffix=".parquet",
                 num_shards=settings.shards,
                 shard_name_template=f"-{len(str(settings.shards))*'S'}",
-                schema=pa.schema(
-                    [(k, pa.string()) for k in settings.schema]
-                    + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
-                ),
             )
         )
 
