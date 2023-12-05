@@ -20,7 +20,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: sentiment
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
@@ -69,7 +69,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: sentiment
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG:-latest}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
@@ -158,7 +158,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: sentiment
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:

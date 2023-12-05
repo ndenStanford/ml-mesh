@@ -32,6 +32,8 @@ def ingest(settings: BaseSettings) -> None:
             usecols=settings.schema,
             lineterminator="\n",
             quoting=csv.QUOTE_NONNUMERIC,
+            chunksize=128,
+            iterator=True,
         )
         pcoll_df = to_pcollection(dfs, include_indexes=False, yield_elements="pandas")
         _ = (
