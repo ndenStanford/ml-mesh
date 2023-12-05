@@ -3,6 +3,7 @@
 from functools import lru_cache
 
 # 3rd party libraries
+import pyarrow as pa
 from pydantic import BaseSettings
 
 
@@ -13,6 +14,7 @@ class IngestionSettings(BaseSettings):
     target_bucket: str
     iptc_level: str
     files: str
+    shards: int
 
     @property
     def source_path(self):
@@ -22,7 +24,7 @@ class IngestionSettings(BaseSettings):
     @property
     def target_path(self):
         """Target path property."""
-        return f"{self.target_bucket}/iptc/{self.iptc_level}/ingested"
+        return f"s3://{self.target_bucket}/iptc/{self.iptc_level}/{self.files.replace('*','')}"
 
     @property
     def schema(self):
@@ -71,6 +73,14 @@ class IngestionSettings(BaseSettings):
             ],
         }
         return map[self.iptc_level]
+
+    @property
+    def output_schema(self):
+        """Ouput schema property."""
+        return pa.schema(
+            [(k, pa.string()) for k in self.schema]
+            + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
+        )
 
     class Config:
         env_file = "config/dev.env"
