@@ -8,7 +8,7 @@ from typing import Optional
 from pydantic import BaseModel, validator
 
 # Source
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnumChat, ModelEnumCompletions
 from src.prompt.exceptions import (
     PromptInvalidParameters,
     PromptModelUnsupported,
@@ -26,14 +26,14 @@ class Parameters(BaseModel):
 
     Attributes:
         model_name (Optional[str]): The name of the model to be used. Defaults to
-            ModelEnum.GPT3_5.value
+            ModelEnumChat.GPT3_5.value
         max_tokens (Optional[int]): The max number of tokens in the generated prompt. Defaults
             to settings.OPENAI_MAX_TOKENS
         temperature (Optional[float]): The temperature for controlling the randomness in the
             output. Defaults to settings.OPENAI_TEMPERATURE
     """
 
-    model_name: Optional[str] = ModelEnum.GPT3_5.value
+    model_name: Optional[str] = ModelEnumChat.GPT3_5.value
     max_tokens: Optional[int] = settings.OPENAI_MAX_TOKENS
     temperature: Optional[float] = settings.OPENAI_TEMPERATURE
 
@@ -67,7 +67,9 @@ class Parameters(BaseModel):
         if value is None or value in [""]:
             raise PromptInvalidParameters(param_name="model_name", param=value)
         # if model is not supported then reject
-        elif value not in ModelEnum.list():
+        elif (value not in ModelEnumChat.list()) and (
+            value not in ModelEnumCompletions.list()
+        ):
             raise PromptModelUnsupported(model=value)
         return value
 
