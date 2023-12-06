@@ -789,6 +789,18 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+
+              # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
 
     with:
       project: topic
@@ -803,6 +815,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -829,7 +842,9 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
       - run-get-core-dependencies-versions
+
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -871,6 +886,7 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
       - run-register-pipelines
       - get-target-branch-name
       - run-get-core-dependencies-versions
@@ -890,6 +906,9 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: topic
+            sagemaker-runner-type: ml.g4dn.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
