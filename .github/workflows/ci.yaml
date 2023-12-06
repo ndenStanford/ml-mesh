@@ -53,6 +53,31 @@ jobs       :
       GITHUB_TOKEN_: ${{ secrets.GITHUB_TOKEN }}
 
   # ===============================================
+  # GET CORE DEPENDENCIES VERSIONS
+  # ===============================================
+
+  run-get-core-dependencies-versions:
+    name: Core dependencies versions
+    runs-on: ubuntu-20.04
+    needs: [run-code-quality-checks]
+    outputs:
+      python-version: ${{ steps.get-python.outputs.version }}
+      poetry-version: ${{ steps.get-poetry.outputs.version }}
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Get python version
+        id: get-python
+        run: |
+          echo "::set-output name=version::$(cat .python-version)"
+      - name: Get poetry version
+        id: get-poetry
+        run: |
+          echo "::set-output name=version::$(cat .poetry-version)"
+
+  # ===============================================
   # GET TARGET BRANCH NAME
   # ===============================================
 
@@ -79,14 +104,12 @@ jobs       :
   run-libs-tests:
     name: Run libraries unit and integration tests.
     uses: ./.github/workflows/_libs.yaml
-    needs: [run-repository-state, get-target-branch-name]
+    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
-        python-version: [3.8.16]
-        poetry-version: [1.3.2]
         libs:
           - name: core
             integration: false
@@ -124,8 +147,8 @@ jobs       :
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
       functional: ${{ matrix.libs.functional }}
-      python-version: ${{ matrix.python-version }}
-      poetry-version: ${{ matrix.poetry-version }}
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
   # ===============================================
@@ -137,17 +160,22 @@ jobs       :
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          - name: python-base
-          - name: gpu-base
 
-        runner-kind: [ubuntu-20.04]
+          - name: python-base
+            runner-kind: ubuntu-20.04
+
+          - name: gpu-base
+            runner-kind: custom
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+
         validate-build: [false]
         base-region: [us-east-1]
         region: [us-east-1]
+        self-hosted-runner-neuron: [false]
 
     with:
       environment: prod
@@ -157,8 +185,9 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       validate-build: ${{ matrix.validate-build }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      runner-kind: ${{ matrix.runner-kind }}
-
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -760,6 +789,18 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+
+              # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
 
     with:
       project: topic
@@ -774,6 +815,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -790,7 +832,7 @@ jobs       :
 
   run-register-pipelines:
     name: Register features
-    uses: ./.github/workflows/_register_features.yaml
+    uses: ./.github/workflows/_register-features.yaml
     needs:
       - run-repository-state
       - run-keywords-project
@@ -800,6 +842,9 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
+      - run-get-core-dependencies-versions
+
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -814,8 +859,8 @@ jobs       :
       environment: prod
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
-      python-version: 3.8.16
-      poetry-version: 1.3.2
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main'}}
       pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
@@ -831,7 +876,7 @@ jobs       :
 
   run-train-pipelines:
     name: Train ML models
-    uses: ./.github/workflows/_train_model.yaml
+    uses: ./.github/workflows/_train-model.yaml
     needs:
       - run-repository-state
       - run-keywords-project
@@ -841,8 +886,10 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
       - run-register-pipelines
       - get-target-branch-name
+      - run-get-core-dependencies-versions
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -860,14 +907,17 @@ jobs       :
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: topic
+            sagemaker-runner-type: ml.g4dn.2xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
       environment: prod
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
-      python-version: 3.8.16
-      poetry-version: 1.3.2
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
@@ -884,7 +934,7 @@ jobs       :
 
   run-compilation-pipelines:
     name: Compile ML models
-    uses: ./.github/workflows/_compile_model.yaml
+    uses: ./.github/workflows/_compile-model.yaml
     needs:
       - run-repository-state
       - run-keywords-project

@@ -16,7 +16,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: gch-summarization
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.8.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     volumes:
       - type: bind
         source: train/src
