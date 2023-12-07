@@ -2,6 +2,96 @@
 version : '3.9'
 
 services:
+
+  # =============================================
+  # INGEST
+  # =============================================
+
+  ingest:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    volumes:
+      - type: bind
+        source: ingest/src
+        target: /home/projects/iptc/ingest/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    command: [python, -m, src.ingest]
+    profiles: [ingest]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: ingest/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  ingest-unit:
+    volumes:
+      - type: bind
+        source: ingest/
+        target: /home/projects/iptc/ingest/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: ingest/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/iptc/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/iptc/train
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
   # =============================================
   # REGISTER
   # =============================================
@@ -16,7 +106,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: iptc
         COMPONENT: register
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     volumes:
       - type: bind
         source: register/src
@@ -39,6 +129,341 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+  # =============================================
+  # COMPILE
+  # =============================================
+
+  compile:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    build:
+      context: ../../
+      dockerfile: projects/iptc/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.1}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
+    command: [python, -m, src.compile_model]
+    profiles: [compile, unit, integration, pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-unit:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-download-model:
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/iptc/compile/
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [python, -m, src.download_uncompiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-validate-model:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-upload-model:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/iptc/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    command: [python, -m, src.upload_compiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+ # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/iptc/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: iptc
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/iptc/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # utility service: downloading the compiled model artifact that will be served
+  serve-download-model:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve, functional, load]
+
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
+  serve-unit:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/iptc/serve/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  # - include model artifact
+  # - do NOT include REST model server process
+  serve-integration:
+    devices:
+      - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/iptc/serve/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [integration]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/iptc/serve/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # load tests
+  # - include model artifact
+  # - include REST model server process
+  serve-load:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/iptc/serve/tests
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [pytest, tests/load, -ra, -vv, --capture=no]
+    environment:
+    # serving params
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      # load test params
+      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
+      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
+      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
+      ONCLUSIVEML_SERVING_RESET_STATS: No
+      ONCLUSIVEML_SERVING_RUN_TIME: 45s
+      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+    profiles: [load]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # utility service: uploading the relevant test results to the model registry
+  serve-upload-results:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/iptc/serve/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    command: [python, -m, src.upload]
+    profiles: [serve]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: async
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: IPTC-COMPILED-6
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve
+      DOCKER_IMAGE_TAG: ${IMAGE_TAG}
+      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
+      GITHUB_REPOSITORY: development-repository
+      GITHUB_ACTOR: development-actor
+      GITHUB_ENV: development-env
+      GITHUB_WORKFLOW: development-workflow
+      GITHUB_JOB: development-job
+      GITHUB_REF: development-ref
+      GITHUB_BASE_REF: development-base-ref
+      GITHUB_HEAD_REF: development-head-ref
+      GITHUB_SHA: development-sha
+      GITHUB_EVENT_NAME: development-event-name
+      GITHUB_RUN_ID: development-run-id
+      GITHUB_RUN_NUMBER: development-run-number
+      RUNNER_ARCH: development-arch
+      RUNNER_NAME: development-name
+      RUNNER_OS: development-os
     hostname: onclusive-ml
     networks: [onclusive-net]
 
