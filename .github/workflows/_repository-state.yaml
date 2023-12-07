@@ -96,7 +96,7 @@ jobs:
           echo "workdir=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
 
       - name: Tag Pull Request
-        uses: srvaroa/labeler@v1.7.0
+        uses: srvaroa/labeler@v1.8.1
         if: ${{ inputs.pull-request }}
         with:
           config_path: .github/labeler.yaml
