@@ -10,6 +10,7 @@ import requests
 from pydantic import BaseModel
 
 # Internal libraries
+from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve import ServedModel
 
@@ -60,24 +61,33 @@ class EntityLinkingServedModel(ServedModel):
         attributes = payload.data.attributes
         parameters = payload.data.parameters
 
-        text = attributes.content
+        content = attributes.content
         lang = parameters.lang
         entities = getattr(attributes, "entities", None)  # Fetch entities if provided
 
-        text = re.sub("\n+", " ", text)
-        lang = LanguageIso.from_language_iso(lang).value
-        output = self._predict(text, lang, entities)
+        content = re.sub("\n+", " ", content)
+
+        # try:
+        output = self._predict(content=content, language=lang, entities=entities)
+        # except LanguageFilterException as lfe:
+        #     self.uvicorn_error_logger.error(lfe)
+        #     raise lfe
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={"entities": output},
         )
 
+    @filter_language(supported_languages=list(LanguageIso), raise_if_none=True)
     def _predict(
-        self, content: str, lang: str, entities: Optional[List[Dict[str, Any]]] = None
+        self,
+        content: str,
+        language: str,
+        entities: Optional[List[Dict[str, Any]]] = None,
     ) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
-        return self._get_entity_linking(content, lang, entities)
+        return self._get_entity_linking(content, language, entities)
 
     def _generate_query(
         self, content: str, lang: str, entities: List[Dict[str, Any]]

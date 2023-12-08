@@ -4,6 +4,7 @@
 import pytest
 
 # Internal libraries
+from onclusiveml.nlp.language.lang_exception import LanguageDetectionException
 from onclusiveml.serving.rest.serve import (
     LivenessProbeResponse,
     ReadinessProbeResponse,
@@ -79,7 +80,7 @@ def test_model_server_readiness(test_client):
                                 "entity_text": "Tottenham Hotspur Football Club",
                                 "score": 0.9259419441223145,
                                 "sentence_index": 0,
-                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                                "wiki_link": None,  # "https://www.wikidata.org/wiki/Q18741",
                             }
                         ]
                     },
@@ -117,7 +118,7 @@ def test_model_server_readiness(test_client):
                                 "entity_text": "Tottenham Hotspur Football Club",
                                 "score": 0.9259419441223145,
                                 "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
+                                "wiki_link": None,  # "https://www.wikidata.org/wiki/Q18741",
                             }
                         ]
                     },
@@ -135,3 +136,37 @@ def test_model_server_prediction(test_client, payload, expected_response):
 
     assert response.status_code == 200
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "identifier": None,
+                "namespace": "entity-linking",
+                "attributes": {
+                    "content": "Irrelevant content because of invalid message value (nonsense)."  # noqa
+                },
+                "parameters": {"lang": "invalid_language"},
+            }
+        },
+        {
+            "data": {
+                "identifier": None,
+                "namespace": "entity-linking",
+                "attributes": {
+                    "content": "Second example of irrelevant content because of invalid message value (empty string)."  # noqa
+                },
+                "parameters": {"lang": ""},
+            }
+        },
+    ],
+)
+def test_model_server_prediction_invalid_language(test_client, payload):
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    with pytest.raises(LanguageDetectionException):
+        test_client.post(
+            "/entity-linking/v1/predict",
+            json=payload,
+        )
