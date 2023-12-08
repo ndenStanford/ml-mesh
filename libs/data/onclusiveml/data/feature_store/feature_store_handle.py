@@ -7,6 +7,7 @@ from typing import List, Optional
 # 3rd party libraries
 import boto3
 import botocore
+import pandas as pd
 from boto3_type_annotations.s3 import Client
 from feast import FeatureStore
 from feast.data_source import DataSource
@@ -34,7 +35,6 @@ class FeatureStoreHandle:
         config_file: Optional[str] = "feature_store.yaml",
         local_config_dir: str = "feature_config",
         s3_handle: Client = None,
-        features: List[str] = ["test_feature_view:feature_1"],
         data_source: DataSource = None,
         data_id_key: str = "entity_key",
         data_ids: List[str] = ["1", "2"],
@@ -56,7 +56,6 @@ class FeatureStoreHandle:
         self.data_source = data_source
         self.data_id_key = data_id_key
         self.data_ids = data_ids
-        self.features = features
 
     def initialize(self) -> None:
         """Initializes feature store registry.
@@ -133,26 +132,21 @@ class FeatureStoreHandle:
         """
         return self.fs.list_data_sources()
 
-    def get_entity_df_query(self) -> None:
-        """Builds redshift query for entity dataframe.
-
-        Returns: None
-
-        """
-        self.entity_sql = f"""
-                SELECT
-                    {self.data_id_key}, event_timestamp
-                FROM {self.fs.get_data_source(self.data_source).get_table_query_string()}
-                WHERE {self.data_id_key} in {self.data_ids}
-            """
-
-    def fetch_historical_features(self) -> None:
+    def fetch_historical_features(
+        self, features: List[str] = ["test_feature_view:feature_1"]
+    ) -> pd.DataFrame:
         """Fetches Historical features from feast feature store.
 
         Returns: Pandas dataframe with historical features.
-
         """
+        self.entity_sql = f"""
+                        SELECT
+                            {self.data_id_key}, event_timestamp
+                        FROM {self.fs.get_data_source(self.data_source).get_table_query_string()}
+                        WHERE event_timestamp < CURRENT_TIMESTAMP
+                    """
+
         return self.fs.get_historical_features(
             entity_df=self.entity_sql,
-            features=self.features,
+            features=features,
         ).to_df()
