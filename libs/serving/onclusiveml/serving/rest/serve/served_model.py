@@ -1,6 +1,7 @@
 """Served model."""
 
 # Standard Library
+from logging import getLogger
 from typing import Dict, Union
 
 # 3rd party libraries
@@ -37,6 +38,9 @@ class ServedModel(object):
         After calling this method, the model needs to be ready for inference.
         """
         self.ready = True
+        # access and attach the uvicorn server loggers
+        self.uvicorn_access_logger = getLogger("uvicorn.access")
+        self.uvicorn_error_logger = getLogger("uvicorn.error")
 
     def is_ready(self) -> bool:
         """Customizable readyness probe backend."""
