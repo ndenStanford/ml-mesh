@@ -33,7 +33,7 @@ def test__query_wiki(entity_linking_model, query):
     assert isinstance(result["nbest"], bool)
     assert result["text"] == query["text"]
     assert result["language"]["lang"] == query["language"]["lang"]
-    # assert isinstance(result["entities"], list)
+    assert isinstance(result["entities"], list)
 
 
 @pytest.mark.parametrize(
