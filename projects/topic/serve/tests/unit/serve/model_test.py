@@ -16,13 +16,13 @@ def test_served_model_init(served_model):
     assert not served_model.ready
 
 
-@patch.object(TrainedTopic, "load_trained")
-def test_served_model_load(mock_load_trained, served_model):
+@patch.object(TrainedTopic, "from_pretrained")
+def test_served_model_load(mock_from_pretrained, served_model):
     """Test served model load."""
     assert not served_model.ready
     served_model.load()
     assert served_model.ready
 
-    mock_load_trained.assert_called_with(
+    mock_from_pretrained.assert_called_with(
         served_model.served_model_artifacts.model_artifact_directory
     )

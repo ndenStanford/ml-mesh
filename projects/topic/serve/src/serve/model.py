@@ -59,7 +59,7 @@ class ServedTopicModel(ServedModel):
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledSent instance
-        self._model = TrainedTopic.load_trained(
+        self._model = TrainedTopic.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
