@@ -128,7 +128,7 @@ def test_model_server_readiness(test_client):
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    """Tests the predict endpoint of a ModelServer (not running) instance."""
     response = test_client.post(
         "/entity-linking/v1/predict",
         json=payload,
@@ -164,7 +164,7 @@ def test_model_server_prediction(test_client, payload, expected_response):
     ],
 )
 def test_model_server_prediction_invalid_language(test_client, payload):
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    """Tests the predict endpoint of a ModelServer (not running) instance."""
     with pytest.raises(LanguageDetectionException):
         test_client.post(
             "/entity-linking/v1/predict",

@@ -7,11 +7,16 @@ from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 import requests
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.constants import LanguageIso
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -33,10 +38,6 @@ class EntityLinkingServedModel(ServedModel):
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
-
-    def load(self) -> None:
-        """Load model."""
-        self.ready = True
 
     def bio(self) -> BioResponseSchema:
         """Model bio."""
@@ -67,11 +68,14 @@ class EntityLinkingServedModel(ServedModel):
 
         content = re.sub("\n+", " ", content)
 
-        # try:
-        output = self._predict(content=content, language=lang, entities=entities)
-        # except LanguageFilterException as lfe:
-        #     self.uvicorn_error_logger.error(lfe)
-        #     raise lfe
+        try:
+            output = self._predict(content=content, language=lang, entities=entities)
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            self.uvicorn_error_logger.error(language_exception)
+            raise HTTPException(status_code=422, detail=language_exception.message)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
