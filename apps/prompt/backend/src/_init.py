@@ -53,14 +53,14 @@ def fill_prompt_table() -> None:
     logger.info("Adding prompts to prompts table...")
     list_of_prompts = settings.LIST_OF_PROMPTS
     prompts = PromptTemplateSchema.get()
-    list_of_aliases = []
+    list_of_templates = []
     # make list of predefined aliases from database
     for x in prompts:
-        list_of_aliases.append(x.alias)
+        list_of_templates.append(x.template)
     # Saving predifined prompts into database
     # If prompt doesn't exist, then add prompt to table
     for prompt in list_of_prompts:
-        if prompt[1] in list_of_aliases:
+        if prompt[0] in list_of_templates:
             continue
         logger.debug("Adding prompt: {}".format(prompt[0]))
         prompt = PromptTemplateSchema(
