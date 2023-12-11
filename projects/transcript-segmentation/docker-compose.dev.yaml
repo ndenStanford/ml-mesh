@@ -1,0 +1,199 @@
+---
+version : '3.9'
+
+services:
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/transcript-segmentation/serve
+    build:
+      context: ../../
+      dockerfile: projects/transcript-segmentation/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: transcript-segmentation
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.model_server]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: transcript-segmentation-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ENVIRONMENT: dev
+      DOCS_URL: /transcript-segmentation/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    profiles: [serve, integration, functional]
+    ports:
+      - 8888:8888
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8888/transcript-segmentation/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # unit tests
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/transcript-segmentation/serve
+    profiles: [unit]
+    environment:
+      ENVIRONMENT: dev
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  serve-integration:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/transcript-segmentation/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/transcript-segmentation/serve
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  prompt-backend:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
+    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    profiles: [serve, integration, functional]
+    ports:
+      - 4000:4000
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DOCS_URL: /docs
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+      API_KEY: 1234
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DB_HOST: http://dynamodb:8000
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+      redisdb:
+        condition: service_healthy
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [CMD-SHELL, sleep 3s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+  dynamodb:
+    command: -jar DynamoDBLocal.jar -sharedDb
+    image: amazon/dynamodb-local:latest
+    restart: always
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+    profiles: [serve, integration, functional]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [CMD-SHELL, sleep 3s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+  redisdb:
+    image: redis:7.0
+    restart: always
+    expose:
+      - 6379
+    ports:
+      - 6379:6379
+    profiles: [serve, integration, functional]
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # databse is ready to receive requests.
+      test: [CMD-SHELL, sleep 3s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
+networks:
+  onclusive-net:

@@ -47,6 +47,7 @@ class OnclusiveService(OnclusiveEnum):
     SENTIMENT_COMPILE = "sentiment-compile"
     SENTIMENT_SERVE = "sentiment-serve"
 
+    # --- IPTC
     IPTC_TRAIN = "iptc-train"
     IPTC_COMPILE = "iptc-compile"
     IPTC_SERVE = "iptc-serve"
@@ -58,6 +59,9 @@ class OnclusiveService(OnclusiveEnum):
 
     # --- prompt backend
     PROMPT_BACKEND_SERVE = "prompt-backend-serve"
+
+    # --- Transcript Segmentation
+    TRANSCRIPT_SEGMENTATION = "transcript-segmentation-serve"
 
     @classmethod
     def validate(cls, service: str) -> None:
