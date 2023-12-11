@@ -8,6 +8,10 @@ services:
 
   # serving image
   serve:
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/entity-linking/serve/src
     build:
       context: ../../
       dockerfile: projects/entity-linking/serve/Dockerfile
@@ -31,7 +35,7 @@ services:
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
-    profiles: [serve]
+    profiles: [serve, functional]
     ports:
       - 9000:9000
     depends_on:
@@ -42,18 +46,14 @@ services:
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:9000/entity-linking/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   serve-download-model:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.download.__main__]
     profiles: [serve]
@@ -127,16 +127,6 @@ services:
 
   # functional tests
   serve-functional:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
@@ -154,9 +144,7 @@ services:
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
     hostname: onclusiveml
     depends_on:
-      entity-fishing-backend:
-        condition: service_healthy
-      ner-serve:
+      serve:
         condition: service_healthy
     networks:
       - onclusive-net
