@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 import requests
-from fastapi import HTTPException
 from pydantic import BaseModel
 
 # Internal libraries
@@ -17,7 +16,7 @@ from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
 )
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.helpers import entity_text_match
@@ -75,7 +74,9 @@ class EntityLinkingServedModel(ServedModel):
             LanguageFilterException,
         ) as language_exception:
             self.uvicorn_error_logger.error(language_exception)
-            raise HTTPException(status_code=422, detail=language_exception.message)
+            raise OnclusiveHTTPException(
+                status_code=422, detail=language_exception.message
+            )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
