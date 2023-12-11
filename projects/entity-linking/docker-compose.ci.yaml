@@ -33,11 +33,19 @@ services:
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
     depends_on:
-      - entity-fishing-backend
-      - ner-serve
+      entity-fishing-backend:
+        condition: service_healthy
+      ner-serve:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:9000/entity-linking/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   serve-download-model:
     build:
@@ -144,9 +152,7 @@ services:
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
     hostname: onclusiveml
     depends_on:
-      entity-fishing-backend:
-        condition: service_healthy
-      ner-serve:
+      serve:
         condition: service_healthy
     networks:
       - onclusive-net
