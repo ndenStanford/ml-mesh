@@ -76,7 +76,7 @@ def filter_language(
             if language_iso is None:
                 if raise_if_none:
                     raise LanguageDetectionException(
-                        language_iso_value=language,
+                        original_language=language,
                         supported_language_iso_values=supported_language_iso_values,
                         supported_language_isos=supported_languages,
                     )
@@ -88,6 +88,7 @@ def filter_language(
                     return func(*args, **kwargs)
                 else:
                     raise LanguageFilterException(
+                        original_language=language,
                         language_iso=language_iso,
                         supported_language_isos=supported_languages,
                     )

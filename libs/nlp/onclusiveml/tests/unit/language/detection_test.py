@@ -84,21 +84,21 @@ def test_detect_language_decorator(content, language, supported_languages, expec
             "fr",
             [LanguageIso.EN],
             LanguageFilterException,
-            "The language 'LanguageIso.FR', is currently not supported. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
+            "The language 'LanguageIso.FR' that was looked up from 'fr' or inferred from the content, is currently not supported. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
         ),
         (
             "Hola, cómo estás",
             None,
             [LanguageIso.EN],
             LanguageFilterException,
-            "The language 'LanguageIso.ES', is currently not supported. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
+            "The language 'LanguageIso.ES' that was looked up from 'None' or inferred from the content, is currently not supported. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
         ),
         (
             "Test string",
             "abc",
             [LanguageIso.EN],
             LanguageDetectionException,
-            "The language reference 'abc' could not be mapped. Supported references are ['en']. Supported languages are [<LanguageIso.EN: 'en'>].",  # noqa: E501
+            "The language reference 'abc' could not be mapped, or the language could not be inferred from the content. Supported references are: ['en']. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
         ),
     ],
 )
