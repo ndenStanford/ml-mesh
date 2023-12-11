@@ -146,12 +146,12 @@ def test_model_server_prediction(test_client, payload, expected_response):
                     "identifier": None,
                     "namespace": "entity-linking",
                     "attributes": {
-                        "content": "Irrelevant content because of invalid message value (nonsense)."  # noqa
+                        "content": "Irrelevant content because of invalid message value (nonsense)."
                     },
                     "parameters": {"lang": "invalid_language"},
                 }
             },
-            "The language reference 'invalid_language' could not be mapped.",
+            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
         ),
         (
             {
@@ -159,12 +159,12 @@ def test_model_server_prediction(test_client, payload, expected_response):
                     "identifier": None,
                     "namespace": "entity-linking",
                     "attributes": {
-                        "content": "Second example of irrelevant content because of invalid message value (empty string)."  # noqa
+                        "content": "Second example of irrelevant content because of invalid message value (empty string)."  # noqa: E501
                     },
                     "parameters": {"lang": ""},
                 }
             },
-            "The language reference '' could not be mapped.",
+            "The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
         ),
     ],
 )
