@@ -10,7 +10,6 @@ import pytest
 from locust import HttpUser, between, task
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import ServingParams
 from onclusiveml.serving.rest.testing.load_test import (
     Criterion,
     LoadTestingParams,
@@ -18,42 +17,33 @@ from onclusiveml.serving.rest.testing.load_test import (
 )
 
 # Source
-from src.serve.params import ServedModelArtifacts
-from src.serve.server_models import (
-    PredictConfiguration,
-    PredictInputContentModel,
-    PredictRequestModel,
-)
+from src.serve.artifacts import ServedModelArtifacts
+from src.serve.schemas import PredictRequestSchema
+from src.settings import get_settings
+
+
+@pytest.fixture(scope="function")
+def settings():
+    """Settings fixture."""
+    return get_settings()
 
 
 @pytest.fixture
-def test_serving_params():
-    """Serving params fixture."""
-    return ServingParams()
-
-
-@pytest.fixture
-def test_served_model_artifacts():
+def test_served_model_artifacts(settings):
     """Model artifacts fixture."""
-    return ServedModelArtifacts()
+    return ServedModelArtifacts(settings)
 
 
 @pytest.fixture
-def test_model_name(test_served_model_artifacts):
-    """Model name fixture."""
-    return test_served_model_artifacts.model_name
-
-
-@pytest.fixture
-def test_model_bio_endpoint_url(test_serving_params, test_model_name):
+def test_model_bio_endpoint_url():
     """Model bio endpoint URL fixture."""
-    return f"/{test_serving_params.api_version}/model/{test_model_name}/bio"
+    return "/sentiment/v1/bio"
 
 
 @pytest.fixture
-def test_model_predict_endpoint_url(test_serving_params, test_model_name):
+def test_model_predict_endpoint_url():
     """Model predict endpoint URL fixture."""
-    return f"/{test_serving_params.api_version}/model/{test_model_name}/predict"
+    return "/sentiment/v1/predict"
 
 
 @pytest.fixture
@@ -75,24 +65,6 @@ def test_inference_params(test_served_model_artifacts):
 
 
 @pytest.fixture
-def test_predictions(test_served_model_artifacts):
-    """Test predictions."""
-    with open(test_served_model_artifacts.predictions_test_file, "r") as json_file:
-        test_predictions = json.load(json_file)
-
-    return test_predictions
-
-
-@pytest.fixture
-def test_model_card(test_served_model_artifacts):
-    """Test model card."""
-    with open(test_served_model_artifacts.model_card_file, "r") as json_file:
-        test_model_card = json.load(json_file)
-
-    return test_model_card
-
-
-@pytest.fixture
 def test_model_bio_user(test_model_bio_endpoint_url):
     """Test model bio user."""
 
@@ -111,7 +83,7 @@ def test_model_bio_user(test_model_bio_endpoint_url):
 
 @pytest.fixture
 def test_model_predict_user(
-    test_inputs, test_inference_params, test_model_predict_endpoint_url
+    settings, test_inputs, test_inference_params, test_model_predict_endpoint_url
 ):
     """Test model predict user."""
 
@@ -119,14 +91,13 @@ def test_model_predict_user(
         """Model predict user."""
 
         # assemble & attach list of sample payloads for model predict endpoint requests
-        sample_payloads: List[PredictRequestModel] = []
-
+        sample_payloads: List[PredictRequestSchema] = []
         for test_record_index in range(len(test_inputs)):
-            sample_payload = input = PredictRequestModel(
-                configuration=PredictConfiguration(**test_inference_params),
-                inputs=PredictInputContentModel(content=test_inputs[test_record_index]),
+            sample_payload = PredictRequestSchema.from_data(
+                namespace=settings.model_name,
+                parameters=test_inference_params,
+                attributes={"content": test_inputs[test_record_index]},
             )
-
             sample_payloads.append(sample_payload)
 
         @task()

@@ -3,6 +3,7 @@
 # Standard Library
 import datetime
 import json
+from collections import namedtuple
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -375,6 +376,13 @@ def test_delete_prompt(
     [
         ("english-summarization", PromptEnum.EN.value[0]),
         ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
+        ("ml-short-summary-english", PromptEnum.ML_SHORT_SUMMARY_EN.value[0]),
+        ("ml-short-summary-french", PromptEnum.ML_SHORT_SUMMARY_FR.value[0]),
+        ("ml-short-summary-catalan", PromptEnum.ML_SHORT_SUMMARY_CA.value[0]),
+        ("ml-short-summary-spanish", PromptEnum.ML_SHORT_SUMMARY_ES.value[0]),
+        ("ml-short-summary-german", PromptEnum.ML_SHORT_SUMMARY_DE.value[0]),
+        ("ml-short-summary-italian", PromptEnum.ML_SHORT_SUMMARY_IT.value[0]),
+        ("ml-short-summary-japanese", PromptEnum.ML_SHORT_SUMMARY_JP.value[0]),
         ("ml-headline-generation-en", PromptEnum.ML_HEADLINE_EN.value[0]),
         ("ml-headline-generation-fr", PromptEnum.ML_HEADLINE_FR.value[0]),
         ("ml-headline-generation-ca", PromptEnum.ML_HEADLINE_CA.value[0]),
@@ -451,7 +459,7 @@ patch(
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.chat.completions.create")
 def test_generate_text(
     mock_openai_chat,
     mock_prompt_get,
@@ -465,7 +473,12 @@ def test_generate_text(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    Message = namedtuple("Message", "content")
+    Choice = namedtuple("Choice", "message")
+    Completion = namedtuple("Completion", "choices")
+    mock_openai_chat.return_value = Completion(
+        choices=[Choice(message=Message(content=generated))]
+    )
     mock_prompt_get.return_value = [
         PromptTemplateSchema(
             id=id, template=template, alias=alias, parameters=parameters
@@ -511,7 +524,7 @@ def test_generate_text(
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.chat.completions.create")
 def test_generate_text_override_parameters(
     mock_openai_chat,
     mock_prompt_get,
@@ -525,7 +538,12 @@ def test_generate_text_override_parameters(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    Message = namedtuple("Message", "content")
+    Choice = namedtuple("Choice", "message")
+    Completion = namedtuple("Completion", "choices")
+    mock_openai_chat.return_value = Completion(
+        choices=[Choice(message=Message(content=generated))]
+    )
     mock_prompt_get.return_value = [
         PromptTemplateSchema(
             id=id, template=template, alias=alias, parameters=parameters
@@ -578,7 +596,7 @@ def test_generate_text_override_parameters(
 )
 @patch.object(ModelSchema, "get")
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.chat.completions.create")
 def test_generate_text_with_diff_model(
     mock_openai_chat,
     mock_prompt_get,
@@ -594,7 +612,12 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    Message = namedtuple("Message", "content")
+    Choice = namedtuple("Choice", "message")
+    Completion = namedtuple("Completion", "choices")
+    mock_openai_chat.return_value = Completion(
+        choices=[Choice(message=Message(content=generated))]
+    )
     mock_prompt_get.return_value = [
         PromptTemplateSchema(id=id, template=template, alias=alias)
     ]

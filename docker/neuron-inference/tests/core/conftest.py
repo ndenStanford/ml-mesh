@@ -14,10 +14,13 @@ import pytest
 
 @pytest.fixture()
 def test_output_dir() -> str:
-    """Output dir fixture."""
+    """Output directory fixture."""
     output_dir = os.environ.get(
         "NEURON_COMPILE_OUTPUT_DIR", os.path.join(".", "tests", "output")
     )
+
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
 
     return output_dir
 
@@ -30,13 +33,13 @@ def torch_function_input() -> Tuple[torch.Tensor, torch.Tensor]:
 
 @pytest.fixture()
 def torch_graph_input() -> torch.Tensor:
-    """Torch grad input fixture."""
+    """Torch graph input fixture."""
     return torch.rand(1, 1, 3, 3)
 
 
 @pytest.fixture
 def torch_model_text_input() -> List[str]:
-    """Torch model input fixture."""
+    """Torch model text input fixture."""
     return [
         "This is a sentence record to generate sample inputs for the neuron compilation step",
         "This is the second record to generate tracing compilation inputs.",
@@ -46,13 +49,13 @@ def torch_model_text_input() -> List[str]:
 
 @pytest.fixture
 def torch_model_name() -> str:
-    """Torch model name."""
+    """Torch model name fixture."""
     return "prajjwal1/bert-tiny"
 
 
 @pytest.fixture
 def torch_model_input(torch_model_name, torch_model_text_input) -> torch.Tensor:
-    """Torch model input fixture."""
+    """Torch model input."""
     tokenizer = AutoTokenizer.from_pretrained(torch_model_name)
 
     tokens = tokenizer(

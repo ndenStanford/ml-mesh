@@ -12,7 +12,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: entity-fishing
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v2023.3.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
     command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes, -d]
     profiles: [backend]
@@ -41,7 +41,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         APP_NAME: entity-fishing
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: v2023.3.2
+        BASE_IMAGE_TAG: v23.3.2
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
     command: [./gradlew, test]
     profiles: [unit]
