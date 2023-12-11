@@ -14,7 +14,7 @@ _service = TranscriptSegmentationHandler()
 def test_handler_predict(
     mock_post, transcript_input, transcript_keyword, model_card, expected_output
 ):
-    """Test the inference function in topic handler."""
+    """Test the inference function in transcript segmentation handler."""
     mock_post.return_value = model_card
 
     transcript_segmentation_inference = _service.predict(

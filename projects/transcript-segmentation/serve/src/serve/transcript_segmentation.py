@@ -12,10 +12,10 @@ import requests
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.settings import get_settings
+from src.settings import get_api_settings
 
 
-settings = get_settings()
+settings = get_api_settings()
 logger = get_default_logger(__name__)
 
 

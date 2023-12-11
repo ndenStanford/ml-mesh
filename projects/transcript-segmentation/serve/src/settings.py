@@ -20,20 +20,18 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
-class HandlerSettings(BaseSettings):
+class ApiSettings(BaseSettings):
     """API configuration."""
 
     PROMPT_API: str = "http://prompt-backend:4000"
     prompt_alias: str = "ml-transcript-segmentation"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    BETTERSTACK_KEY: str = ""
 
 
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    HandlerSettings,
 ):
     """Global server settings."""
 
@@ -42,3 +40,9 @@ class GlobalSettings(
 def get_settings() -> BaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()
+
+
+@lru_cache
+def get_api_settings() -> BaseSettings:
+    """Returns API settings."""
+    return ApiSettings()
