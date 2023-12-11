@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [pre-commits]
     environment: ${{ inputs.environment }}
-    #if: ${{ !inputs.pull-request }}
+    if: ${{ !inputs.pull-request }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
