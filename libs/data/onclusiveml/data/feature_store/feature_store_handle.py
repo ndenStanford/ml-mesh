@@ -7,6 +7,7 @@ from typing import List, Optional
 # 3rd party libraries
 import boto3
 import botocore
+import pandas as pd
 from boto3_type_annotations.s3 import Client
 from feast import FeatureStore
 from feast.data_source import DataSource
@@ -133,7 +134,7 @@ class FeatureStoreHandle:
 
     def fetch_historical_features(
         self, features: List[str] = ["test_feature_view:feature_1"]
-    ) -> None:
+    ) -> pd.DataFrame:
         """Fetches Historical features from feast feature store.
 
         Returns: Pandas dataframe with historical features.

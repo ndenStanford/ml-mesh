@@ -18,7 +18,7 @@ from onclusiveml.tracking import (
 )
 
 
-class TrackedCompiledModelSpecs(TrackedModelSpecs):
+class TrackedTrainedModelSpecs(TrackedModelSpecs):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather
@@ -37,7 +37,7 @@ class ServerModelSettings(ServingParams):
 
 class GlobalSettings(
     ServerModelSettings,
-    TrackedCompiledModelSpecs,
+    TrackedTrainedModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
 ):

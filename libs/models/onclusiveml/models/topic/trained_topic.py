@@ -23,14 +23,10 @@ class TrainedTopic:
         self,
         trained_topic_model: BERTopic,
     ):
-        """Initalize the TrainedTopic object."""
-        self.embedding_model = (
-            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        )
         self.trained_topic_model = trained_topic_model
 
     @classmethod
-    def load_trained(cls, directory: Union[Path, str]) -> "TrainedTopic":
+    def from_pretrained(cls, directory: Union[Path, str]) -> "TrainedTopic":
         """Load TrainedTopic object from specfied directory.
 
         Args:

@@ -44,11 +44,6 @@ on  :
         default: false
         type: boolean
         description: Whether to upload load test results to the tested compiled model version once all tests have passed. Only sensible for 'serve' component.
-      pull-request:
-        required: true
-        default: true
-        type: boolean
-        description: Indicates whether this workflow is running for a Pull Request.
       release:
         required: true
         default: true
@@ -63,17 +58,16 @@ on  :
         required: false
         type: string
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
-      setup-neuron:
-        required: false
-        default: true
-        type: boolean
-        description: Whether to setup Neuron OS depedencies on the custom runner.
       self-hosted-runner-ami:
         required: false
         default: ami-07b4e00e2c69c3702
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
-
+      self-hosted-runner-neuron:
+        required: false
+        default: true
+        type: boolean
+        description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -123,14 +117,14 @@ jobs:
   provision-customized-runner:
     name: Provision self-hosted & customized runner
     needs: check-run-criteria
-    uses: ./.github/workflows/_provision_customized_runner.yaml
+    uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     with:
       environment: ${{ inputs.environment }}
       self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ inputs.self-hosted-runner-ami }}
       setup-docker-compose: true
-      setup-neuron: ${{ inputs.setup-neuron }}
+      setup-neuron: ${{ inputs.self-hosted-runner-neuron }}
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
