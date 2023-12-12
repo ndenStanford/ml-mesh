@@ -2,8 +2,6 @@
 
 # Standard Library
 from functools import lru_cache
-from pathlib import Path
-from typing import Union
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -17,7 +15,6 @@ class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "transcript-segmentation"
-    model_directory: Union[str, Path] = "."
 
 
 class ApiSettings(BaseSettings):

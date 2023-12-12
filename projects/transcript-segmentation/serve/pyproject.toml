@@ -7,10 +7,7 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-regex = "2022.10.31"
 
-core = {path = "../../../libs/core"}
-hashing = {path = "../../../libs/hashing"}
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 

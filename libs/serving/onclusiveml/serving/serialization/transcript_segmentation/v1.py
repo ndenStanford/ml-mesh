@@ -1,4 +1,4 @@
-"""Ner v1 data schemas."""
+"""Transcript Segmentation v1 data schemas."""
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema

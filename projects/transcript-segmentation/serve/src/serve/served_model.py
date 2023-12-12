@@ -33,8 +33,8 @@ class ServedTranscriptSegmentationModel(ServedModel):
         super().__init__(name="transcript-segmentation")
 
     def load(self) -> None:
-        """Load model."""
-        # load model artifacts into ready CompiledKeyBERT instance
+        """Load Handler."""
+        # Instantiate handler class
         self.model = TranscriptSegmentationHandler()
         self.ready = True
 
