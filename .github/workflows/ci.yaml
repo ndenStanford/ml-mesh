@@ -33,6 +33,10 @@ jobs       :
       environment: prod
       pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
       timeout: 10
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   # ===============================================
   # GET REPOSITORY STATE
@@ -906,9 +910,6 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: topic
-            sagemaker-runner-type: ml.g4dn.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
