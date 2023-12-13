@@ -3,10 +3,8 @@
 # Standard Library
 from functools import lru_cache
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveFrozenSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 
@@ -17,7 +15,7 @@ class ServerModelSettings(ServingParams):
     model_name: str = "transcript-segmentation"
 
 
-class ApiSettings(BaseSettings):
+class ApiSettings(OnclusiveFrozenSettings):
     """API configuration."""
 
     prompt_api: str = "http://prompt-backend:4000"
@@ -34,12 +32,12 @@ class GlobalSettings(
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveFrozenSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()
 
 
 @lru_cache
-def get_api_settings() -> BaseSettings:
+def get_api_settings() -> OnclusiveFrozenSettings:
     """Returns API settings."""
     return ApiSettings()
