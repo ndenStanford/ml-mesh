@@ -796,7 +796,7 @@ jobs       :
             download-model: true
             integration: false
             functional: true
-            load: false
+            load: true
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
