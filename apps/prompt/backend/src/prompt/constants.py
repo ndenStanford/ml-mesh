@@ -234,3 +234,35 @@ class PromptEnum(OnclusiveEnum):
             "response_format": {"type": "json_object"},
         },
     ]
+
+    ML_MULTIPLE_ARTICLES_SUMMARY = [
+        """
+        You are a summarization bot.
+
+        I will give you serveral articles and the articles are delimited by triple backticks.
+
+        I want you to generate a one-paragraph summary for all the articles I give. And you should based on your summary to give me a title for your summary.
+
+        You must use the following step to generate your result:
+        1. Read every article carefully and understand the main idea of each article.
+        2. Once you have the main point from each article, look for common themes, similarities, or overlapping ideas among them. Group these main points based on these commonalities.
+        3. For each group of main points, distill them into a single sentence that encapsulates the shared message or theme.
+        4. Order these distilled sentences in a logical or meaningful sequence that provides coherence and flow to the reader.
+        5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
+        6. Generate a title based on the one-paragraph summarization you generate.
+
+        Input articles: '''{input_articles}'''
+
+        Let's think step by step and show me your answer in following JSON format."[xxx]" is placeholder.
+        The main point of each input article: [mean point of each article]
+        Title: [The title you generate for these articles]
+        Summary: [The summary you generate for these articles]
+        """,  # noqa: E501
+        "ml-multiple-articles-summary",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
