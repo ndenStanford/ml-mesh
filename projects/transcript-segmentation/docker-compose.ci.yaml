@@ -19,7 +19,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
-    command: [python, -m, src.serve.ts_server]
+    command: [python, -m, src.serve.model_server]
     profiles: [serve, integration, functional]
     ports:
       - 8888:8888
@@ -29,7 +29,7 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ENVIRONMENT: dev
       DOCS_URL: /transcript-segmentation/docs
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.ts_server:ts_server
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1

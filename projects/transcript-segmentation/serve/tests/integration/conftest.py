@@ -11,8 +11,8 @@ from fastapi.testclient import TestClient
 from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
+from src.serve.model_server import model_server
 from src.serve.schemas import BioResponseSchema
-from src.serve.ts_server import model_server
 
 
 @pytest.fixture
