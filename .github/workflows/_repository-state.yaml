@@ -96,7 +96,7 @@ jobs:
           echo "workdir=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
 
       - name: Tag Pull Request
-        uses: srvaroa/labeler@v1.7.0
+        uses: srvaroa/labeler@v1.8.1
         if: ${{ inputs.pull-request }}
         with:
           config_path: .github/labeler.yaml
@@ -136,7 +136,7 @@ jobs:
       - name: Changelog
         id: changelog
         if: ${{ inputs.pull-request && inputs.base-ref == 'main' }}
-        uses: mikepenz/release-changelog-builder-action@v4.0.1
+        uses: mikepenz/release-changelog-builder-action@v4.1.0
         with:
           configuration: .github/changelog.json
           ignorePreReleases: false

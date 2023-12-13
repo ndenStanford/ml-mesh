@@ -16,6 +16,16 @@ on  :
         default: 30
         type: number
         description: Pre-commit checks timeout in minutes.
+    secrets:
+      AWS_DEFAULT_REGION:
+        required: true
+        description: AWS account region
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: AWS access key ID.
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: AWS secret access key
 
 jobs:
   pre-commits:
@@ -54,3 +64,22 @@ jobs:
         uses: pre-commit/action@v3.0.0
         with:
           extra_args: --verbose --all
+
+  upload-bootstrap:
+    runs-on: ubuntu-20.04
+    needs: [pre-commits]
+    environment: ${{ inputs.environment }}
+    if: ${{ !inputs.pull-request }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Upload bootstrap script to S3
+        run: aws s3 cp ./bin/bootstrap/linux s3://installation-script-dev/
