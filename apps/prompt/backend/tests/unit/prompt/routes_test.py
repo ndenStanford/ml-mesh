@@ -3,6 +3,7 @@
 # Standard Library
 import datetime
 import json
+from collections import namedtuple
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -64,6 +65,7 @@ def test_get_prompt(mock_prompt_get, alias, test_client):
             "max_tokens": 512,
             "model_name": "gpt-3.5-turbo",
             "temperature": 0.7,
+            "response_format": None,
         },
         "variables": [],
         "version": 0,
@@ -113,6 +115,7 @@ def test_create_prompt(mock_prompt_get, mock_table_save, template, alias, test_c
                 "model_name": "gpt-4",
                 "max_tokens": 123,
                 "temperature": 0.3,
+                "response_format": None,
             },
         ),
     ],
@@ -249,7 +252,12 @@ def test_create_prompt_same_alias(
             "alias1",
             {},
             "I would like a brief two-line summary of this text: {text}",
-            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+            {
+                "max_tokens": 512,
+                "model_name": "gpt-3.5-turbo",
+                "temperature": 0.7,
+                "response_format": None,
+            },
         ),
         (
             "874285",
@@ -257,7 +265,12 @@ def test_create_prompt_same_alias(
             "alias2",
             {},
             "What's the most popular {type} framework?",
-            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+            {
+                "max_tokens": 512,
+                "model_name": "gpt-3.5-turbo",
+                "temperature": 0.7,
+                "response_format": None,
+            },
         ),
     ],
 )
@@ -302,14 +315,24 @@ def test_update_prompt(
             "Quiero un breve resumen de dos líneas de este texto: {text}",
             "alias1",
             "I would like a brief two-line summary of this text: {text}",
-            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+            {
+                "max_tokens": 512,
+                "model_name": "gpt-3.5-turbo",
+                "temperature": 0.7,
+                "response_format": None,
+            },
         ),
         (
             "874285",
             "Quel est le framework {type} le plus populaire?",
             "alias2",
             "What's the most popular {type} framework?",
-            {"max_tokens": 512, "model_name": "gpt-3.5-turbo", "temperature": 0.7},
+            {
+                "max_tokens": 512,
+                "model_name": "gpt-3.5-turbo",
+                "temperature": 0.7,
+                "response_format": None,
+            },
         ),
     ],
 )
@@ -374,7 +397,7 @@ def test_delete_prompt(
     "alias, template",
     [
         ("english-summarization", PromptEnum.EN.value[0]),
-        ("ml-transcript-segmentation", PromptEnum.ML_SEG.value[0]),
+        ("ml-transcript-segmentation", PromptEnum.ML_TRANSCRIPT_SEGMENTATION.value[0]),
         ("ml-short-summary-english", PromptEnum.ML_SHORT_SUMMARY_EN.value[0]),
         ("ml-short-summary-french", PromptEnum.ML_SHORT_SUMMARY_FR.value[0]),
         ("ml-short-summary-catalan", PromptEnum.ML_SHORT_SUMMARY_CA.value[0]),
@@ -458,7 +481,7 @@ patch(
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.chat.completions.create")
 def test_generate_text(
     mock_openai_chat,
     mock_prompt_get,
@@ -472,7 +495,12 @@ def test_generate_text(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    Message = namedtuple("Message", "content")
+    Choice = namedtuple("Choice", "message")
+    Completion = namedtuple("Completion", "choices")
+    mock_openai_chat.return_value = Completion(
+        choices=[Choice(message=Message(content=generated))]
+    )
     mock_prompt_get.return_value = [
         PromptTemplateSchema(
             id=id, template=template, alias=alias, parameters=parameters
@@ -488,6 +516,7 @@ def test_generate_text(
         messages=[{"role": "user", "content": template.format(**values)}],
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
+        response_format=settings.RESPONSE_FORMAT,
     )
 
     assert mock_prompt_get.call_count == 1
@@ -518,7 +547,7 @@ def test_generate_text(
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.chat.completions.create")
 def test_generate_text_override_parameters(
     mock_openai_chat,
     mock_prompt_get,
@@ -532,7 +561,12 @@ def test_generate_text_override_parameters(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    Message = namedtuple("Message", "content")
+    Choice = namedtuple("Choice", "message")
+    Completion = namedtuple("Completion", "choices")
+    mock_openai_chat.return_value = Completion(
+        choices=[Choice(message=Message(content=generated))]
+    )
     mock_prompt_get.return_value = [
         PromptTemplateSchema(
             id=id, template=template, alias=alias, parameters=parameters
@@ -548,6 +582,7 @@ def test_generate_text_override_parameters(
         messages=[{"role": "user", "content": template.format(**values)}],
         max_tokens=100,
         temperature=0.2,
+        response_format=None,
     )
 
     assert mock_prompt_get.call_count == 1
@@ -585,7 +620,7 @@ def test_generate_text_override_parameters(
 )
 @patch.object(ModelSchema, "get")
 @patch.object(PromptTemplateSchema, "get")
-@patch("openai.ChatCompletion.create")
+@patch("openai.chat.completions.create")
 def test_generate_text_with_diff_model(
     mock_openai_chat,
     mock_prompt_get,
@@ -601,7 +636,12 @@ def test_generate_text_with_diff_model(
 ):
     """Test text generation endpoint."""
     # set mock return values
-    mock_openai_chat.return_value = {"choices": [{"message": {"content": generated}}]}
+    Message = namedtuple("Message", "content")
+    Choice = namedtuple("Choice", "message")
+    Completion = namedtuple("Completion", "choices")
+    mock_openai_chat.return_value = Completion(
+        choices=[Choice(message=Message(content=generated))]
+    )
     mock_prompt_get.return_value = [
         PromptTemplateSchema(id=id, template=template, alias=alias)
     ]
@@ -627,6 +667,7 @@ def test_generate_text_with_diff_model(
         messages=[{"role": "user", "content": template.format(**values)}],
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
+        response_format=settings.RESPONSE_FORMAT,
     )
 
     assert mock_model_get.call_count == 1

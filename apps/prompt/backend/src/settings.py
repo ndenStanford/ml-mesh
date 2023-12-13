@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 from pydantic import BaseSettings
 
 # Source
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnumChat, ModelEnumCompletions
 from src.prompt.constants import PromptEnum
 
 
@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
+    RESPONSE_FORMAT: Optional[Dict] = None
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
 
@@ -44,12 +45,16 @@ class Settings(BaseSettings):
         {
             "max_tokens": OPENAI_MAX_TOKENS,
             "temperature": OPENAI_TEMPERATURE,
+            "response_format": RESPONSE_FORMAT,
         }
     )
     # predefined models
-    LIST_OF_MODELS: Dict[str, List[str]] = {
-        "1": [ModelEnum.GPT3_5.value, OPENAI_PARAMETERS, 4098],
-        "2": [ModelEnum.GPT4.value, OPENAI_PARAMETERS, 8192],
+    LIST_OF_MODELS: Dict[str, List[Union[str, int]]] = {
+        "1": [ModelEnumChat.GPT3_5.value, OPENAI_PARAMETERS, 4098],
+        "2": [ModelEnumChat.GPT4.value, OPENAI_PARAMETERS, 8192],
+        "3": [ModelEnumChat.GPT3_5_turbo.value, OPENAI_PARAMETERS, 16385],
+        "4": [ModelEnumChat.GPT4_turbo.value, OPENAI_PARAMETERS, 128000],
+        "5": [ModelEnumCompletions.GPT3_5_instruct.value, OPENAI_PARAMETERS, 4096],
     }
 
     LIST_OF_PROMPTS: List[List[Union[str, Dict]]] = PromptEnum.list()

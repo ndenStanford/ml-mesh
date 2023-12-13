@@ -1,5 +1,5 @@
 ---
-name: Model Training
+name: Register Features
 on  :
   workflow_call:
     inputs:
@@ -15,15 +15,6 @@ on  :
         required: true
         type: string
         description: Version tag of image providing the compilation runtime context.
-      sagemaker-runner-type:
-        required: true
-        default: ml.m4.xlarge # non-gpu
-        type: string
-        description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
-      sagemaker-runner-count:
-        required: false
-        type: string
-        default: 1
       python-version:
         required: false
         type: string
@@ -37,6 +28,11 @@ on  :
         type: boolean
         default: true
         description: Release flag
+      pull-request:
+        required: true
+        default: true
+        type: boolean
+        description: Indicates whether this workflow is running for a Pull Request.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -53,9 +49,6 @@ on  :
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: Github PAT to allow EC2 instance to connect to Github repository content.
-      NEPTUNE_API_TOKEN:
-        required: true
-        description: The API token for the neptune service account managing the model registry.
 
 jobs:
   check-run-criteria:
@@ -75,9 +68,9 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'projects/${{ inputs.project }}/train/**'
-  train-model:
-    name: (Train and) register an uncompiled model
+              - added | modified: 'projects/${{ inputs.project }}/register/**'
+  register-features:
+    name: Register features to be used in the project
     needs: check-run-criteria
     runs-on: ubuntu-20.04
     if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
@@ -107,17 +100,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Run project train component on sagemaker
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-register
+        run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
+
+      - name: Run feature registration for the project
+        if: ${{ !inputs.pull-request }}
         run: |
-          python bin/sagemaker-run \
-            --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
-            --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
-            --aws-environment stage \
-            --instance-type ${{ inputs.sagemaker-runner-type}} \
-            --instance-count ${{ inputs.sagemaker-runner-count }} \
-            --project-name ${{ inputs.project }} \
-            --project-component train \
-            --image-tag ${{ inputs.tag }} \
-            --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
-            --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
-            python -m src.train_model
+          make projects.start/${{ inputs.project }} COMPONENT=register ENVIRONMENT=ci \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            IMAGE_TAG="${{ inputs.tag }}"

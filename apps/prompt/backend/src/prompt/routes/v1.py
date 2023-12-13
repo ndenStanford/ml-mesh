@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, status
 from slugify import slugify
 
 # Source
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnumChat
 from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelSchema
 from src.prompt.chat import PromptChat
@@ -202,14 +202,20 @@ def generate(alias: str, values: Dict[str, Any]):
     prompt_template: PromptTemplateSchema = PromptTemplateSchema.get(alias)[0]
     prompt = prompt_template.prompt(**values)
     # defaul parameters
-    model_name = ModelEnum.GPT3_5.value
+    model_name = ModelEnumChat.GPT3_5.value
     max_tokens = settings.OPENAI_MAX_TOKENS
     temperature = settings.OPENAI_TEMPERATURE
+    response_format = settings.RESPONSE_FORMAT
     # Override if parameters exist
     if prompt_template.parameters is not None:
         model_name = prompt_template.parameters.model_name
-        max_tokens = int(prompt_template.parameters.max_tokens)
+
+        if prompt_template.parameters.max_tokens is None:
+            max_tokens = None
+        else:
+            max_tokens = int(prompt_template.parameters.max_tokens)
         temperature = float(prompt_template.parameters.temperature)
+        response_format = prompt_template.parameters.response_format
     # if parameters field exists, replace model and parameter values
     return {
         "prompt": prompt,
@@ -218,6 +224,7 @@ def generate(alias: str, values: Dict[str, Any]):
             model_name,
             max_tokens,
             temperature,
+            response_format,
         ),
     }
 
@@ -254,6 +261,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
             model.model_name,
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
+            settings.RESPONSE_FORMAT,
         ),
     }
 
@@ -268,9 +276,10 @@ def generate_text_from_chat(values: PromptChat):
     return {
         "generated": generate_text(
             values.prompt,
-            ModelEnum.GPT3_5.value,
+            ModelEnumChat.GPT3_5.value,
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
+            settings.RESPONSE_FORMAT,
         ),
     }
 
@@ -296,5 +305,6 @@ def generate_text_from_chat_diff_model(model_name: str, values: PromptChat):
             model.model_name,
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
+            settings.RESPONSE_FORMAT,
         ),
     }

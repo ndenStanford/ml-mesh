@@ -9,7 +9,7 @@ from onclusiveml.core.retry import retry
 
 # Source
 from src.extensions.redis import cache
-from src.model.constants import ModelEnum
+from src.model.constants import ModelEnumChat, ModelEnumCompletions
 from src.settings import get_settings
 
 
@@ -21,32 +21,34 @@ logger = get_default_logger(__name__)
 @retry(tries=2)
 @cache.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_text(
-    prompt: str, model_name: str, max_tokens: int, temperature: float
+    prompt: str,
+    model_name: str,
+    max_tokens: int,
+    temperature: float,
+    response_format: dict,
 ) -> str:
     """Sends request to generate text."""
     logger.info("Calling openai API....")
 
     openai.api_key = settings.OPENAI_API_KEY
     # Response based on what model we use
-    if (
-        model_name == ModelEnum.GPT3_5.value
-        or model_name == ModelEnum.GPT4.value  # noqa: W503
-    ):
-        if model_name == "gpt-3.5-turbo" or model_name == "gpt-4":
-            response = openai.ChatCompletion.create(
+    if model_name in ModelEnumChat.list() or model_name in ModelEnumCompletions.list():
+        if model_name in ModelEnumChat.list():
+            response = openai.chat.completions.create(
                 model=model_name,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
                 temperature=temperature,
+                response_format=response_format,
             )
-            return response["choices"][0]["message"]["content"]
+            return response.choices[0].message.content
         else:
-            response = openai.Completion.create(
+            response = openai.completions.create(
                 model=model_name,
                 prompt=prompt,
                 max_tokens=max_tokens,
                 temperature=temperature,
             )
-            return response["choices"][0]["text"]
+            return response.choices[0].text
     else:
         return "Model is unknown or not supported"

@@ -8,11 +8,13 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
       day: monday
+
   # ====================================
   # DOCKER
   # ====================================
@@ -22,9 +24,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/fastapi-serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "10:00"
       timezone: Europe/London
       day: monday
 
@@ -38,9 +41,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-data-science
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "11:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -53,9 +57,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-torch-cpu
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "12:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -67,9 +72,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-jupyter
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "13:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -82,9 +88,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/neuron-compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "14:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -96,9 +103,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/neuron-inference
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "15:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -110,9 +118,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-torch-gpu
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "16:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -124,9 +133,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/kubeflow-torch-inf
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "17:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -138,9 +148,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/gpu-base
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "18:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -152,9 +163,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/gpu-train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "19:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -166,9 +178,10 @@ updates:
   - package-ecosystem: pip
     directory: /docker/dask-base
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "20:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -184,9 +197,10 @@ updates:
   - package-ecosystem: pip
     directory: /libs/core
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "21:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -198,9 +212,10 @@ updates:
   - package-ecosystem: pip
     directory: /libs/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "22:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -212,9 +227,10 @@ updates:
   - package-ecosystem: pip
     directory: /libs/models
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "23:00"
       timezone: Europe/London
       day: monday
     ignore:
@@ -226,11 +242,12 @@ updates:
   - package-ecosystem: pip
     directory: /libs/nlp
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "00:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -240,11 +257,12 @@ updates:
   - package-ecosystem: pip
     directory: /libs/serving
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "01:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -254,11 +272,12 @@ updates:
   - package-ecosystem: pip
     directory: /libs/hashing
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "02:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -268,11 +287,12 @@ updates:
   - package-ecosystem: pip
     directory: /libs/tracking
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "03:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -288,11 +308,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/keywords/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "04:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -301,11 +322,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/keywords/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "05:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -314,11 +336,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/keywords/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "06:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -330,11 +353,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/summarization/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "07:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -346,11 +370,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/gch-summarization/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "08:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -361,11 +386,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/entity-linking/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
       time: "09:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -377,11 +403,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/ner/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "10:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -390,11 +417,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/ner/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "11:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -403,11 +431,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/ner/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "12:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -419,11 +448,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/sentiment/compile
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "13:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -432,11 +462,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/sentiment/serve
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "14:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -445,11 +476,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/sentiment/train
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "15:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -460,11 +492,12 @@ updates:
   - package-ecosystem: pip
     directory: /projects/iptc/ingest
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "16:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -478,11 +511,12 @@ updates:
   - package-ecosystem: maven
     directory: /apps/entity-fishing/backend
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "17:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -494,11 +528,12 @@ updates:
   - package-ecosystem: pip
     directory: /apps/prompt/backend
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "18:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -508,11 +543,12 @@ updates:
   - package-ecosystem: npm
     directory: /apps/prompt/frontend
     target-branch: develop
+    open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: "19:00"
       timezone: Europe/London
-      day: monday
+      day: tuesday
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
