@@ -1,4 +1,4 @@
-# mypy: ignore-errors
+# type: ignore
 """Model server."""
 
 # Internal libraries
