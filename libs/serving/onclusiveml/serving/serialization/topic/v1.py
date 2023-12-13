@@ -11,11 +11,11 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data.
 
     Attributes:
-        text (str):
+        content (str):
                 Input text.
     """
 
-    text: str
+    content: str
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):

@@ -90,7 +90,7 @@ def test_model_predict_user(settings, test_inputs, test_model_predict_endpoint_u
                 namespace=settings.model_name,
                 parameters=PredictRequestParametersSchemaV1(language="en"),
                 attributes=PredictRequestAttributeSchemaV1(
-                    text=test_inputs[test_record_index]
+                    content=test_inputs[test_record_index]
                 ),
             )
             sample_payloads.append(sample_payload)
