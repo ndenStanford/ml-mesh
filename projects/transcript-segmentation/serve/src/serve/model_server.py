@@ -1,5 +1,5 @@
-"""Model server."""
 # mypy: ignore-errors
+"""Model server."""
 
 # Internal libraries
 from onclusiveml.serving.rest.observability import Instrumentator
