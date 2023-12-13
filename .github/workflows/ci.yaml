@@ -797,7 +797,7 @@ jobs       :
             integration: false
             functional: true
             load: true
-            upload-test-results: false
+            upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
