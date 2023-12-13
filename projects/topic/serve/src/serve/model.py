@@ -79,7 +79,7 @@ class ServedTopicModel(ServedModel):
         # content and configuration from payload
         attributes = payload.attributes
 
-        topic_prediction = self.model.inference(text=attributes.text)
+        topic_prediction = self.model(text=attributes.content)
 
         attributes = {
             "topic_id": str(topic_prediction[0][0]),

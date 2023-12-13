@@ -50,7 +50,7 @@ def test_model_server_bio():
                 "data": {
                     "namespace": "topic",
                     "attributes": {
-                        "text": "London is a wonderful city. John is a terrible man.",
+                        "content": "London is a wonderful city. John is a terrible man.",
                     },
                     "parameters": {
                         "language": "en",
