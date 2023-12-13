@@ -118,6 +118,8 @@ def test_load_test_settings(test_model_bio_user, test_model_predict_user):
 @pytest.fixture
 def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint_url):
     """Load test criteria features."""
+    # --- .../bio
+    # <= 10 ms latency
     model_bio_latency_crit = Criterion(
         name=ValidMeasurements.avg_response_time.value,
         threshold=10,
@@ -127,6 +129,7 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
         hard=True,
     )
 
+    # >= 100 requests sent
     model_bio_total_reqs_crit = Criterion(
         name=ValidMeasurements.requests_total.value,
         threshold=100,
@@ -136,6 +139,7 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
         hard=True,
     )
 
+    # no failures
     model_bio_failure_crit = Criterion(
         name=ValidMeasurements.failures_total.value,
         threshold=1,
@@ -145,15 +149,18 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
         hard=True,
     )
 
+    # --- .../predict
+    # <= 150 ms latency
     model_predict_latency_crit = Criterion(
         name=ValidMeasurements.avg_response_time.value,
-        threshold=400,
+        threshold=150,
         endpoint_type="POST",
         endpoint_url=test_model_predict_endpoint_url,
         ensure_lower=True,
         hard=True,
     )
 
+    # >= 100 requests sent
     model_predict_total_reqs_criterion = Criterion(
         name=ValidMeasurements.requests_total.value,
         threshold=100,
@@ -163,6 +170,7 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
         hard=True,
     )
 
+    # no failures
     model_predict_failure_crit = Criterion(
         name=ValidMeasurements.failures_total.value,
         threshold=1,
