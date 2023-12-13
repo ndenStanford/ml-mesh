@@ -20,9 +20,9 @@ class ServerModelSettings(ServingParams):
 class ApiSettings(BaseSettings):
     """API configuration."""
 
-    PROMPT_API: str = "http://prompt-backend:4000"
+    prompt_api: str = "http://prompt-backend:4000"
     prompt_alias: str = "ml-transcript-segmentation"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
+    internal_ml_endpoint_api_key: str = "1234"
 
 
 class GlobalSettings(

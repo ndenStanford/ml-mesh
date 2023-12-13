@@ -233,11 +233,11 @@ class TranscriptSegmentationHandler:
             preprocessed_sentence_transcript
         )
 
-        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+        headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {"transcript": truncated_sentence_transcript, "keyword": keyword}
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(
-                settings.PROMPT_API, settings.prompt_alias
+                settings.prompt_api, settings.prompt_alias
             ),
             headers=headers,
             json=payload,
