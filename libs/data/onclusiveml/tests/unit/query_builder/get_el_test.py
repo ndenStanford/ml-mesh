@@ -18,7 +18,7 @@ def test_predict_entity_linking_success(mock_post):
     mock_response.status_code = 200
     mock_response.json.return_value = {
         "data": {
-            "identifier": null,
+            "identifier": None,
             "namespace": "entity-linking",
             "attributes": {
                 "entities": [{"wiki_link": "https://www.wikidata.org/wiki/Q312"}]
