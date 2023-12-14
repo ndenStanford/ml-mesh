@@ -11,13 +11,13 @@ _service = TranscriptSegmentationHandler()
 
 
 @patch("requests.post")
-def test_handler_predict(
+def test_handler___call___(
     mock_post, transcript_input, transcript_keyword, model_card, expected_output
 ):
     """Test the inference function in transcript segmentation handler."""
     mock_post.return_value = model_card
 
-    transcript_segmentation_inference = _service.__call__(
+    transcript_segmentation_inference = _service(
         word_transcript=transcript_input,
         keyword=transcript_keyword,
     )

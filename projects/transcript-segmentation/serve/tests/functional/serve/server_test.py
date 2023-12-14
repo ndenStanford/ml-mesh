@@ -10,14 +10,14 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root():
+def test_server_root():
     """Tests the root endpoint of a ModelServer (not running) instance."""
     root_response = requests.get("http://serve:8888/transcript-segmentation/v1/")
 
     assert root_response.status_code == 200
 
 
-def test_model_server_liveness():
+def test_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get(
         "http://serve:8888/transcript-segmentation/v1/live"
@@ -27,7 +27,7 @@ def test_model_server_liveness():
     assert liveness_response.json() == LivenessProbeResponse().dict()
 
 
-def test_model_server_readiness():
+def test_server_readiness():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     readiness_response = requests.get(
         "http://serve:8888/transcript-segmentation/v1/ready"
@@ -37,7 +37,7 @@ def test_model_server_readiness():
     assert readiness_response.json() == ReadinessProbeResponse().dict()
 
 
-def test_model_server_bio():
+def test_server_bio():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     readiness_response = requests.get(
         "http://serve:8888/transcript-segmentation/v1/bio"
@@ -47,7 +47,7 @@ def test_model_server_bio():
     assert readiness_response.json()["data"]["attributes"].get("model_name") is not None
 
 
-def test_model_server_prediction(test_payload, expected_response):
+def test_server_prediction(test_payload, expected_response):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     response = requests.post(
         "http://serve:8888/transcript-segmentation/v1/predict",
