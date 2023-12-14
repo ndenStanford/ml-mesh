@@ -15,10 +15,10 @@ class ServerModelSettings(ServingParams):
     model_name: str = "transcript-segmentation"
 
 
-class ApiSettings(OnclusiveFrozenSettings):
+class PromptBackendAPISettings(OnclusiveFrozenSettings):
     """API configuration."""
 
-    prompt_api: str = "http://prompt-backend:4000"
+    prompt_api_url: str = "http://prompt-backend:4000"
     prompt_alias: str = "ml-transcript-segmentation"
     internal_ml_endpoint_api_key: str = "1234"
 
@@ -40,4 +40,4 @@ def get_settings() -> OnclusiveFrozenSettings:
 @lru_cache
 def get_api_settings() -> OnclusiveFrozenSettings:
     """Returns API settings."""
-    return ApiSettings()
+    return PromptBackendAPISettings()

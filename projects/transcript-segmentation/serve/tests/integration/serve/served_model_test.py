@@ -4,8 +4,8 @@
 import pytest
 
 # Source
+from src.serve.model import ServedTranscriptSegmentationModel
 from src.serve.schemas import PredictRequestSchema
-from src.serve.served_model import ServedTranscriptSegmentationModel
 from src.settings import get_settings
 
 

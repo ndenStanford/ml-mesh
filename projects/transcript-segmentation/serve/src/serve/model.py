@@ -10,12 +10,12 @@ from pydantic import BaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
+from src.serve.handler import TranscriptSegmentationHandler
 from src.serve.schemas import (
     BioResponseSchema,
     PredictRequestSchema,
     PredictResponseSchema,
 )
-from src.serve.transcript_segmentation import TranscriptSegmentationHandler
 from src.settings import get_settings
 
 
@@ -47,7 +47,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
 
-        segmented_transcripts, output_truncated, input_truncated = self.model.predict(
+        segmented_transcripts, output_truncated, input_truncated = self.model.__call__(
             word_transcript=inputs.transcript, keyword=inputs.keyword
         )
 

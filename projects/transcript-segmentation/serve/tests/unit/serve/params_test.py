@@ -5,7 +5,7 @@
 from unittest.mock import patch
 
 # Source
-from src.serve.transcript_segmentation import TranscriptSegmentationHandler
+from src.serve.handler import TranscriptSegmentationHandler
 
 _service = TranscriptSegmentationHandler()
 
@@ -17,7 +17,7 @@ def test_handler_predict(
     """Test the inference function in transcript segmentation handler."""
     mock_post.return_value = model_card
 
-    transcript_segmentation_inference = _service.predict(
+    transcript_segmentation_inference = _service.__call__(
         word_transcript=transcript_input,
         keyword=transcript_keyword,
     )

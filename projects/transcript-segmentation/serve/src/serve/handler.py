@@ -212,7 +212,7 @@ class TranscriptSegmentationHandler:
                     transcript_dict = {}
         return transcript_preprocessed
 
-    def predict(
+    def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
         keyword: str,
@@ -237,7 +237,7 @@ class TranscriptSegmentationHandler:
         payload = {"transcript": truncated_sentence_transcript, "keyword": keyword}
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(
-                settings.prompt_api, settings.prompt_alias
+                settings.prompt_api_url, settings.prompt_alias
             ),
             headers=headers,
             json=payload,
