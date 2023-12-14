@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "topic-train"
+version = "0.1.0"
+description = "Docker image for training a topic model."
+authors = ["Vishal Singh <vihal.singh@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+cubinlinker-cu11 = { version = "0.3.0.post1", source = "pipy-nvidia" }
+ucx-py-cu11 = { version = "0.30.0", source = "pipy-nvidia" }
+ptxcompiler-cu11 = { version = "0.7.0.post1", source = "pipy-nvidia" }
+rmm-cu11 = { version = "23.2.0", source = "pipy-nvidia" }
+raft-dask-cu11 = { version = "23.2.0", source = "pipy-nvidia" }
+dask-cudf-cu11 = { version = "23.2.0", source = "pipy-nvidia" }
+cudf-cu11 = { version = "23.2.0", source = "pipy-nvidia" }
+pylibraft-cu11 = { version = "23.2.0", source = "pipy-nvidia" }
+cuml-cu11 = { version = "23.2.0", source = "pipy-nvidia" }
+cuda-python = "11.8.2"
+bertopic = "0.15.0"
+torch = "1.12.1"
+typing-extensions = "4.5.0"
+numba = "0.56.2"
+core = {path = "../../../libs/core"}
+tracking = {path = "../../../libs/tracking"}
+data = {path = "../../../libs/data"}
+nlp = {path = "../../../libs/nlp"}
+sentence-transformers = "2.2.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[[tool.poetry.source]]
+name = "pipy-nvidia"
+url = "https://pypi.nvidia.com"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
