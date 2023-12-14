@@ -17,6 +17,12 @@ def build_query(
 ) -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
     """Builds queries based on stock information, keywords, and other parameters.
 
+    Will produce 3 queries:
+    - query_el: with entity-linking based solution with a mandatory entity with associated link
+    for the company name
+    - query_ner: with an entity based solution with a mandatory entity for the company name
+    - query_regex: with a text matching solution with a mandatory text match of the name
+
     Args:
         stock_name (str): Name of the stock/company.
         stock_ticker (str): Ticker symbol of the stock/company.
