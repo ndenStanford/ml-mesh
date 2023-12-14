@@ -5,9 +5,8 @@ import pytest  # noqa
 
 # Internal libraries
 from onclusiveml.query_builder import build_query
-from onclusiveml.query_builder import entity_linking as el
 from onclusiveml.query_builder import evaluate_query as query_evaluation
-from onclusiveml.query_builder import ner as named_entity_recognition
+from onclusiveml.query_builder import predict_entity_linking, predict_ner
 from onclusiveml.query_builder.settings import get_settings
 
 
@@ -41,7 +40,7 @@ def evaluate_query_test(build_query_test):
 def test_el():
     """EL."""
     content = "The company Apple is great."
-    return el(content)
+    return predict_entity_linking(content)
 
 
 @pytest.fixture
@@ -56,7 +55,7 @@ def test_ner():
         + stock
         + " by a huge 50%."
     )
-    return named_entity_recognition(content, [name, stock])
+    return predict_ner(content, [name, stock])
 
 
 @pytest.fixture

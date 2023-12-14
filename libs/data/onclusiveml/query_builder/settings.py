@@ -1,15 +1,17 @@
 """Settings."""
 
 # Standard Library
-import os
 from typing import Any, List
 
 # 3rd party libraries
 from elasticsearch import Elasticsearch
-from pydantic import BaseModel, HttpUrl, SecretStr
+from pydantic import Field, SecretStr
+
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 
-class ClusteringConfig(BaseModel):
+class ClusteringConfig(OnclusiveBaseSettings):
     """ClusteringConfig."""
 
     embedding_method: str = "pretrained"
@@ -27,7 +29,7 @@ class ClusteringConfig(BaseModel):
     umap_n_neighbors: int = 15
 
 
-class ScoringConfig(BaseModel):
+class ScoringConfig(OnclusiveBaseSettings):
     """ScoringConfig."""
 
     w_silhouette: float = 0.5
@@ -38,23 +40,61 @@ class ScoringConfig(BaseModel):
     penalty_scaling_power: float = 0.5
 
 
-class ApiCred(BaseModel):
+class ApiSettings(OnclusiveBaseSettings):
     """EL."""
 
-    api_key: SecretStr
-    url: HttpUrl
+    api_key: SecretStr = Field(default="api_token", exclude=True)
+    predict_url: str
 
 
-class Settings(BaseModel):
+class EntityLinkingProdSettings(ApiSettings):
+    """EL."""
+
+    predict_url = "https://internal.api.ml.prod.onclusive.com/entity-linking/v1/predict"
+
+    class Config:
+        env_prefix = "onclusiveml_data_entity_linking_prod_"
+
+
+class EntityLinkingStageSettings(ApiSettings):
+    """EL."""
+
+    predict_url = (
+        "https://internal.api.ml.stage.onclusive.com/entity-linking/v1/predict"
+    )
+
+    class Config:
+        env_prefix = "onclusiveml_data_entity_linking_stage_"
+
+
+class NERProdSettings(ApiSettings):
+    """NER Prod."""
+
+    predict_url = "https://internal.api.ml.prod.onclusive.com/ner/v1/predict"
+
+    class Config:
+        env_prefix = "onclusiveml_data_ner_prod_"
+
+
+class NERStageSettings(ApiSettings):
+    """NER Stage."""
+
+    predict_url = "https://internal.api.ml.stage.onclusive.com/ner/v1/predict"
+
+    class Config:
+        env_prefix = "onclusiveml_data_ner_stage_"
+
+
+class Settings(OnclusiveBaseSettings):
     """Settings."""
 
     es: Any
     clustering_config: ClusteringConfig
     scoring_config: ScoringConfig
-    entity_linking_prod: ApiCred
-    entity_linking_stage: ApiCred
-    NER_prod: ApiCred
-    NER_stage: ApiCred
+    entity_linking_prod: EntityLinkingProdSettings
+    entity_linking_stage: EntityLinkingStageSettings
+    NER_prod: NERProdSettings
+    NER_stage: NERStageSettings
     es_index: List[str]
 
 
@@ -72,25 +112,10 @@ def get_settings() -> Settings:
     clustering_config = ClusteringConfig()
     scoring_config = ScoringConfig()
 
-    entity_linking_prod = ApiCred(
-        api_key=os.getenv("INTERNAL_ML_PROD_API_KEY"),
-        url="https://internal.api.ml.prod.onclusive.com/entity-linking/v1/predict",
-    )
-
-    entity_linking_stage = ApiCred(
-        api_key=os.getenv("INTERNAL_ML_STAGE_API_KEY"),
-        url="https://internal.api.ml.stage.onclusive.com/entity-linking/v1/predict",
-    )
-
-    NER_prod = ApiCred(
-        api_key=os.getenv("INTERNAL_ML_PROD_API_KEY"),
-        url="https://internal.api.ml.prod.onclusive.com/ner/v1/predict",
-    )
-
-    NER_stage = ApiCred(
-        api_key=os.getenv("INTERNAL_ML_STAGE_API_KEY"),
-        url="https://internal.api.ml.stage.onclusive.com/ner/v1/predict",
-    )
+    entity_linking_prod = EntityLinkingProdSettings()
+    entity_linking_stage = EntityLinkingStageSettings()
+    NER_prod = NERProdSettings()
+    NER_stage = NERStageSettings()
 
     es_index = ["crawler", "crawler-2023.11", "crawler-2023.10", "crawler-2023.09"]
 

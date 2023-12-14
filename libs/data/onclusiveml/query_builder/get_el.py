@@ -42,7 +42,7 @@ def invoke_el(content: str, url: str, api_key: SecretStr, lang: str = "en") -> A
     return response
 
 
-def entity_linking(content: str, lang: str = "en") -> Optional[str]:
+def predict_entity_linking(content: str, lang: str = "en") -> Optional[str]:
     """Returns the eventual wiki_link associated to a given entity.
 
     Args:
@@ -53,7 +53,8 @@ def entity_linking(content: str, lang: str = "en") -> Optional[str]:
         String of the wiki_link or None.
     """
     api_key = settings.entity_linking_stage.api_key
-    url = settings.entity_linking_stage.url
+
+    url = settings.entity_linking_stage.predict_url
 
     response = invoke_el(content, url, api_key, lang)
 

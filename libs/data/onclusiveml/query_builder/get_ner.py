@@ -45,7 +45,9 @@ def invoke_ner(content: str, url: str, api_key: SecretStr, lang: str = "en") -> 
     return response
 
 
-def ner(content: str, candidates: List, lang: str = "en") -> List[Optional[str]]:
+def predict_ner(
+    content: str, candidates: List, lang: str = "en"
+) -> List[Optional[str]]:
     """Returns the eventual list of entities in a sentence.
 
     Args:
@@ -58,7 +60,7 @@ def ner(content: str, candidates: List, lang: str = "en") -> List[Optional[str]]
     """
     try:
         api_key = settings.NER_prod.api_key
-        url = settings.NER_prod.url
+        url = settings.NER_prod.predict_url
 
         response = invoke_ner(content, url, api_key, lang)
 
@@ -80,7 +82,7 @@ def ner(content: str, candidates: List, lang: str = "en") -> List[Optional[str]]
     except Exception as e:
         print(f"RequestException occurred: {e}")
         api_key = settings.NER_stage.api_key
-        url = settings.NER_stage.url
+        url = settings.NER_stage.predict_url
 
         response = invoke_ner(content, url, api_key, lang)
 
