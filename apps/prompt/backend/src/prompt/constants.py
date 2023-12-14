@@ -239,7 +239,7 @@ class PromptEnum(OnclusiveEnum):
         """
         You are a summarization bot.
 
-        I will give you serveral articles and the articles are delimited by triple backticks.
+        I will give you at most 5 articles which are delimited by triple backticks. Some of the articles might be None, and just ignore it.
 
         I want you to generate a one-paragraph summary for all the articles I give. And you should based on your summary to give me a title for your summary.
 
@@ -251,7 +251,11 @@ class PromptEnum(OnclusiveEnum):
         5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
         6. Generate a title based on the one-paragraph summarization you generate.
 
-        Input articles: '''{input_articles}'''
+        Input article 1: '''{article1}'''
+        Input article 2: '''{article2}'''
+        Input article 3: '''{article3}'''
+        Input article 4: '''{article4}'''
+        Input article 5: '''{article5}'''
 
         Let's think step by step and show me your answer in following JSON format."[xxx]" is placeholder.
         The main point of each input article: [mean point of each article]
