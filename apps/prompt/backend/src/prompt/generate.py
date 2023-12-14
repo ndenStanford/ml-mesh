@@ -21,7 +21,11 @@ logger = get_default_logger(__name__)
 @retry(tries=2)
 @cache.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_text(
-    prompt: str, model_name: str, max_tokens: int, temperature: float
+    prompt: str,
+    model_name: str,
+    max_tokens: int,
+    temperature: float,
+    response_format: dict,
 ) -> str:
     """Sends request to generate text."""
     logger.info("Calling openai API....")
@@ -35,6 +39,7 @@ def generate_text(
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
                 temperature=temperature,
+                response_format=response_format,
             )
             return response.choices[0].message.content
         else:
