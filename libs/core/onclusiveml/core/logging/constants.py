@@ -51,7 +51,7 @@ class OnclusiveService(OnclusiveEnum):
     TOPIC_TRAIN = "topic-train"
     TOPIC_SERVE = "topic-serve"
 
-    # --- IPTC
+    # # --- IPTC
     IPTC_TRAIN = "iptc-train"
     IPTC_COMPILE = "iptc-compile"
     IPTC_SERVE = "iptc-serve"
