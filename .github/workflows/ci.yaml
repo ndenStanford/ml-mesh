@@ -846,7 +846,7 @@ jobs       :
 
           # serve
           - name: serve
-            download-model: true
+            download-model: false
             integration: true
             functional: true
             load: false
