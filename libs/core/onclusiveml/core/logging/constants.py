@@ -47,6 +47,11 @@ class OnclusiveService(OnclusiveEnum):
     SENTIMENT_COMPILE = "sentiment-compile"
     SENTIMENT_SERVE = "sentiment-serve"
 
+    # # --- topic
+    TOPIC_TRAIN = "topic-train"
+    TOPIC_SERVE = "topic-serve"
+
+    # # --- IPTC
     IPTC_TRAIN = "iptc-train"
     IPTC_COMPILE = "iptc-compile"
     IPTC_SERVE = "iptc-serve"

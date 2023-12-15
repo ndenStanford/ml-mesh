@@ -33,6 +33,10 @@ jobs       :
       environment: prod
       pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
       timeout: 10
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   # ===============================================
   # GET REPOSITORY STATE
@@ -789,6 +793,18 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+
+          # serve
+          - name: serve
+            download-model: true
+            integration: false
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
 
     with:
       project: topic
@@ -803,6 +819,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -829,7 +846,9 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
       - run-get-core-dependencies-versions
+
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -871,6 +890,7 @@ jobs       :
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
+      - run-topic-project
       - run-register-pipelines
       - get-target-branch-name
       - run-get-core-dependencies-versions
