@@ -2,15 +2,12 @@
 
 # Standard Library
 import os
-import re
 from pathlib import Path
 from typing import List, NamedTuple, Optional, Union
 
-# 3rd party libraries
-from bs4 import BeautifulSoup
-
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
+from onclusiveml.nlp.clean import clean
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
@@ -84,28 +81,6 @@ class CompiledNER:
             compiled_ner_pipeline_kj=compiled_ner_pipeline_kj,
         )
 
-    def remove_html(self, text: str) -> str:
-        """Remove HTML tags from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with HTML tags removed
-        """
-        text = BeautifulSoup(text, "html.parser").text
-        return text
-
-    def remove_whitespace(self, text: str) -> str:
-        """Remove extra white spaces from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with extra whitespaces removed
-        """
-        text = re.sub(r"\s+", " ", text)
-        return text
-
     def sentence_tokenize(self, documents: List[str], language: str) -> List[List[str]]:
         """Sentence tokenization.
 
@@ -135,8 +110,8 @@ class CompiledNER:
         Return:
             List[List[str]]: Tokenized sentences, each sublist are tokenized strings for a document
         """
-        documents = [self.remove_html(doc) for doc in documents]
-        documents = [self.remove_whitespace(doc) for doc in documents]
+        documents = [clean.remove_html(doc) for doc in documents]
+        documents = [clean.remove_whitespace(doc) for doc in documents]
         return self.sentence_tokenize(documents, language)
 
     def inference(
@@ -162,7 +137,6 @@ class CompiledNER:
             res = list(map(self.compiled_ner_pipeline_kj, sent_tokenized_documents))
         else:
             res = list(map(self.compiled_ner_pipeline_base, sent_tokenized_documents))
-
         # results are in nested list of entities where each sublist represents a doc
         for doc in res:
             for entities_list in doc:
