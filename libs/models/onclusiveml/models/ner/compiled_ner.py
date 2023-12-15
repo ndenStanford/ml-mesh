@@ -32,7 +32,6 @@ class CompiledNER:
         self,
         compiled_ner_pipeline_base: CompiledPipeline,
         compiled_ner_pipeline_kj: CompiledPipeline,
-        preprocessor: TextPreprocessor = HTMLPreprocessor(),
     ):
         """Initalize the CompiledNER object.
 
@@ -44,7 +43,6 @@ class CompiledNER:
         """
         self.compiled_ner_pipeline_base = compiled_ner_pipeline_base
         self.compiled_ner_pipeline_kj = compiled_ner_pipeline_kj
-        self.preprocessor = preprocessor
         # Initialise sentence tokenizer
         self.sentence_tokenizer = SentenceTokenizer()
 
@@ -112,7 +110,8 @@ class CompiledNER:
         Return:
             List[List[str]]: Tokenized sentences, each sublist are tokenized strings for a document
         """
-        documents = [self.preprocessor(doc) for doc in documents]
+        documents = [clean.remove_html(doc) for doc in documents]
+        documents = [clean.remove_whitespace(doc) for doc in documents]
         return self.sentence_tokenize(documents, language)
 
     def inference(
