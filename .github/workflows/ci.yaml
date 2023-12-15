@@ -795,13 +795,13 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
 
-              # train
-          - name: train
-            download-model: false
+          # serve
+          - name: serve
+            download-model: true
             integration: false
-            functional: false
-            load: false
-            upload-test-results: false
+            functional: true
+            load: true
+            upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
