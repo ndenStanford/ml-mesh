@@ -113,6 +113,7 @@ jobs:
           filters: |
             this:
               - added | modified: 'projects/${{ inputs.project }}/${{ inputs.component }}/**'
+              - added | modified: 'projects/${{ inputs.project }}/docker-compose.ci.yaml'
 
   provision-customized-runner:
     name: Provision self-hosted & customized runner
