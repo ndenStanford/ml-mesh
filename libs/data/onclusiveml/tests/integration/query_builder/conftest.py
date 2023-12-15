@@ -32,13 +32,6 @@ def build_query_test(query_test):
 
 
 @pytest.fixture
-def evaluate_query_test(build_query_test):
-    """Get results."""
-    test_el, _, _ = build_query_test
-    return test_el, settings.clustering_config, settings.scoring_config
-
-
-@pytest.fixture
 def test_el():
     """EL."""
     content = "The company Apple is great."
