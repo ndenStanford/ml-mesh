@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import CLASS_DICT_FIRST
-from onclusiveml.nlp.clean import clean
+from onclusiveml.nlp import preprocess
 
 
 logger = get_default_logger(__name__, level=20)
@@ -93,8 +93,8 @@ class CompiledIPTC:
         Return:
             inputdata(str): input data
         """
-        input_data = clean.remove_html(input_data)
-        input_data = clean.remove_whitespace(input_data)
+        input_data = preprocess.remove_html(input_data)
+        input_data = preprocess.remove_whitespace(input_data)
         return input_data
 
     def inference(self, content: str) -> NDArray:

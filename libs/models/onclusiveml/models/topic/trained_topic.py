@@ -9,7 +9,7 @@ from bertopic import BERTopic
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.nlp.clean import clean
+from onclusiveml.nlp import preprocess
 
 
 logger = get_default_logger(__name__, level=20)
@@ -48,8 +48,8 @@ class TrainedTopic:
         Return:
             List[str]: Cleaned sentences
         """
-        sentences = clean.remove_html(sentences)
-        sentences = clean.remove_whitespace(sentences)
+        sentences = preprocess.remove_html(sentences)
+        sentences = preprocess.remove_whitespace(sentences)
 
         return sentences
 

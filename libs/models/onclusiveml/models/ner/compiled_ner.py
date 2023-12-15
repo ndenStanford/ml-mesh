@@ -7,7 +7,7 @@ from typing import List, NamedTuple, Optional, Union
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
-from onclusiveml.nlp.clean import clean
+from onclusiveml.nlp import preprocess
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
@@ -110,8 +110,8 @@ class CompiledNER:
         Return:
             List[List[str]]: Tokenized sentences, each sublist are tokenized strings for a document
         """
-        documents = [clean.remove_html(doc) for doc in documents]
-        documents = [clean.remove_whitespace(doc) for doc in documents]
+        documents = [preprocess.remove_html(doc) for doc in documents]
+        documents = [preprocess.remove_whitespace(doc) for doc in documents]
         return self.sentence_tokenize(documents, language)
 
     def inference(

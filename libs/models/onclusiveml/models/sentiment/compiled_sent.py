@@ -14,7 +14,7 @@ from nptyping import NDArray
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.nlp.clean import clean
+from onclusiveml.nlp import preprocess
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
@@ -85,8 +85,8 @@ class CompiledSent:
         Return:
             List[str]: Tokenized sentences
         """
-        sentences = clean.remove_html(sentences)
-        sentences = clean.remove_whitespace(sentences)
+        sentences = preprocess.remove_html(sentences)
+        sentences = preprocess.remove_whitespace(sentences)
         tokenizer = SentenceTokenizer()
         list_sentences = tokenizer.tokenize(content=sentences, language=language)[
             "sentences"

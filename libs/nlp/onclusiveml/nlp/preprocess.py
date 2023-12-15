@@ -1,4 +1,4 @@
-"""Clean."""
+"""Preprocess."""
 
 # Standard Library
 import re
@@ -21,7 +21,7 @@ def remove_html(text: str) -> str:
     return text
 
 
-def remove_whitespace(text: str, regex: str = r"\\s+") -> str:
+def remove_whitespace(text: str, regex: str = r"\s+") -> str:
     r"""Remove extra white spaces from input text.
 
     Args:
