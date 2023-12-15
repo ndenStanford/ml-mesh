@@ -55,15 +55,24 @@ class OnclusiveFormatter(logging.Formatter):
         self.service = service
 
     def _add_service_attribute(self, record: logging.LogRecord) -> logging.LogRecord:
-        """Updates/creates a LogRecord's "service" attribute.
+        """Updates/creates a LogRecord's "service" and "asctime" attribute.
+
+        Note: The latter is required as for the - logging.Formatter parent class - the addition of
+        the `asctime` log record attribute is conditional on the log format containing the field,
+        which is not desired in a production environment. Therefore we need to add this attribute
+        manually to ensure its existence independent of the log format being used.
 
         Args:
             record (logging.LogRecord): A logging.LogRecord instance
 
         Returns:
-            logging.LogRecord: A logging.LogRecord instance with an updated `service` attribute.
+            logging.LogRecord: A logging.LogRecord instance with an updated
+                    - `service` and
+                    - `asctime`
+                attribute.
         """
         setattr(record, "service", self.service)
+        setattr(record, "asctime", self.formatTime(record, self.datefmt))
 
         return record
 
