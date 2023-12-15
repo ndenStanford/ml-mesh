@@ -1,7 +1,7 @@
 """Settings."""
 
 # Standard Library
-from typing import Any
+from typing import Any, List
 
 # 3rd party libraries
 from elasticsearch import Elasticsearch
@@ -43,6 +43,7 @@ class Settings(OnclusiveBaseSettings):
     """Settings."""
 
     es: Any
+    es_index: List[str]
     clustering_config: ClusteringConfig
     scoring_config: ScoringConfig
 

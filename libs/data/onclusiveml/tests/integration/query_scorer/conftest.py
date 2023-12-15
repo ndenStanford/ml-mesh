@@ -22,7 +22,7 @@ def query_test():
 
 
 @pytest.fixture
-def evaluate_query_test(build_query_test):
+def evaluate_query_test(query_test):
     """Get results."""
     company, company_ticker, keywords = query_test
     test_el, _, _ = build_query(company, company_ticker, keywords, all_keywords=False)

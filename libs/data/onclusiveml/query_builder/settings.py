@@ -1,10 +1,11 @@
 """Settings."""
 
 # Standard Library
-from typing import Any
+from typing import Any, List
 
 # 3rd party libraries
 from elasticsearch import Elasticsearch
+from pydantic import Field, SecretStr
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
