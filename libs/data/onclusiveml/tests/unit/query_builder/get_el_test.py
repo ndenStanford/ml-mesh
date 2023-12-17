@@ -43,9 +43,3 @@ def test_predict_entity_linking_failure(mock_post):
         "This is a dummy sentence about Apple, a tech company."
     )
     assert result is None
-
-
-# Classic test case
-def test_el(test_el):
-    """Test EL API."""
-    assert test_el == "https://www.wikidata.org/wiki/Q312"

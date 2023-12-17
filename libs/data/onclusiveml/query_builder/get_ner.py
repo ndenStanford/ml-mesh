@@ -15,14 +15,14 @@ from onclusiveml.query_builder.settings import get_settings
 settings = get_settings()
 
 
-def invoke_ner(content: str, url: str, api_key: SecretStr, lang: str = "en") -> Any:
+def invoke_ner(content: str, url: str, api_key: SecretStr, language: str = "en") -> Any:
     """Invokes the API and returns the respons.
 
     Args:
         content (str): Sentence with the eventual entity.
         url (str): endpoint of the API
         api_key (str): key of the URL
-        lang (str): language.
+        language (str): language.
 
     Returns:
         response.
@@ -36,7 +36,7 @@ def invoke_ner(content: str, url: str, api_key: SecretStr, lang: str = "en") -> 
         "data": {
             "namespace": "ner",
             "attributes": {"content": content},
-            "parameters": {"language": lang},
+            "parameters": {"language": language},
         }
     }
 
@@ -46,14 +46,14 @@ def invoke_ner(content: str, url: str, api_key: SecretStr, lang: str = "en") -> 
 
 
 def predict_ner(
-    content: str, candidates: List, lang: str = "en"
+    content: str, candidates: List, language: str = "en"
 ) -> List[Optional[str]]:
     """Returns the eventual list of entities in a sentence.
 
     Args:
         content (str): Sentence with the eventual entity.
         candidates (List): A list of the expected entities.
-        lang (str): Language. Defaults to "en".
+        language (str): Language. Defaults to "en".
 
     Returns:
         List of string(s) of eventual entities or an empty list.
@@ -62,7 +62,7 @@ def predict_ner(
         api_key = settings.NER_prod.api_key
         url = settings.NER_prod.predict_url
 
-        response = invoke_ner(content, url, api_key, lang)
+        response = invoke_ner(content, url, api_key, language)
 
         if response.status_code == 200:
             result = response.json()
@@ -84,7 +84,7 @@ def predict_ner(
         api_key = settings.NER_stage.api_key
         url = settings.NER_stage.predict_url
 
-        response = invoke_ner(content, url, api_key, lang)
+        response = invoke_ner(content, url, api_key, language)
 
         if response.status_code == 200:
             result = response.json()

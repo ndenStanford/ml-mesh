@@ -15,14 +15,14 @@ from onclusiveml.query_builder.settings import get_settings
 settings = get_settings()
 
 
-def invoke_el(content: str, url: str, api_key: SecretStr, lang: str = "en") -> Any:
+def invoke_el(content: str, url: str, api_key: SecretStr, language: str = "en") -> Any:
     """Invokes the API and returns the respons.
 
     Args:
         content (str): Sentence with the eventual entity.
         url (str): endpoint of the API
         api_key (str): key of the URL
-        lang (str): language.
+        language (str): language.
 
     Returns:
         response.
@@ -35,19 +35,19 @@ def invoke_el(content: str, url: str, api_key: SecretStr, lang: str = "en") -> A
         "data": {
             "namespace": "entity-linking",
             "attributes": {"content": content},
-            "parameters": {"lang": lang},
+            "parameters": {"lang": language},
         }
     }
     response = requests.post(url, headers=headers, data=json.dumps(data))
     return response
 
 
-def predict_entity_linking(content: str, lang: str = "en") -> Optional[str]:
+def predict_entity_linking(content: str, language: str = "en") -> Optional[str]:
     """Returns the eventual wiki_link associated to a given entity.
 
     Args:
         content (str): Sentence with the eventual entity.
-        lang (str): language.
+        language (str): language.
 
     Returns:
         String of the wiki_link or None.
@@ -56,7 +56,7 @@ def predict_entity_linking(content: str, lang: str = "en") -> Optional[str]:
 
     url = settings.entity_linking_stage.predict_url
 
-    response = invoke_el(content, url, api_key, lang)
+    response = invoke_el(content, url, api_key, language)
 
     if response.status_code == 200:
         result = response.json()

@@ -34,7 +34,7 @@ def build_query(
         Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]: Tuple containing query results.
     """
     content_wiki_link: str = "The company " + stock_name + " is great."
-    wiki_link: str = predict_entity_linking(content_wiki_link, lang="en")
+    wiki_link: str = predict_entity_linking(content_wiki_link, language="en")
 
     content_NER: str = (
         "The company "

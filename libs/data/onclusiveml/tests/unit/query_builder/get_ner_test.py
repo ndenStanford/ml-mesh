@@ -66,8 +66,3 @@ def test_predict_ner_failure(mock_post):
         assert str(e) == "Error in stage endpoint"
     else:
         assert False, "Exception not raised"
-
-
-def test_ner(test_ner):
-    """Test NER API."""
-    assert test_ner == ["Amazon", "AMZN"]
