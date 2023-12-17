@@ -52,20 +52,41 @@ def predict_entity_linking(content: str, language: str = "en") -> Optional[str]:
     Returns:
         String of the wiki_link or None.
     """
-    api_key = settings.entity_linking_stage.api_key
+    try:
+        api_key = settings.entity_linking_prod.api_key
 
-    url = settings.entity_linking_stage.predict_url
+        url = settings.entity_linking_prod.predict_url
 
-    response = invoke_el(content, url, api_key, language)
+        response = invoke_el(content, url, api_key, language)
 
-    if response.status_code == 200:
-        result = response.json()
-        wiki_link = (
-            result.get("data", {})
-            .get("attributes", {})
-            .get("entities", [])[0]["wiki_link"]
-        )
-        return wiki_link
-    else:
-        print(f"Error with stage endpoint: {response.status_code}, {response.text}")
-        return None
+        if response.status_code == 200:
+            result = response.json()
+            wiki_link = (
+                result.get("data", {})
+                .get("attributes", {})
+                .get("entities", [])[0]["wiki_link"]
+            )
+            return wiki_link
+        else:
+            print(f"Error with prod endpoint: {response.status_code}, {response.text}")
+            return None
+
+    except Exception as e:
+        print(f"RequestException occurred: {e}")
+        api_key = settings.entity_linking_stage.api_key
+
+        url = settings.entity_linking_stage.predict_url
+
+        response = invoke_el(content, url, api_key, language)
+
+        if response.status_code == 200:
+            result = response.json()
+            wiki_link = (
+                result.get("data", {})
+                .get("attributes", {})
+                .get("entities", [])[0]["wiki_link"]
+            )
+            return wiki_link
+        else:
+            print(f"Error with stage endpoint: {response.status_code}, {response.text}")
+            return None
