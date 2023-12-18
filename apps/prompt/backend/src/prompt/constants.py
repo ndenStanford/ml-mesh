@@ -59,14 +59,7 @@ class PromptEnum(OnclusiveEnum):
         "ml-short-summary-japanese",
         {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
     ]
-    # this s the transcript segmentation prompt
-    ML_SEG = [
-        "Do a segmentation unifying the main stories of this text in their given language and "
-        + "output a json object where the key is the start time code and "  # noqa: W503
-        + "the value is the headline of the main stories: {transcript}",  # noqa: W503
-        "ml-transcript-segmentation",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 0},
-    ]
+
     # These are headline generation prompt3 in their given language
     ML_HEADLINE_EN = [
         "You are an expert in news writing."
@@ -207,4 +200,175 @@ class PromptEnum(OnclusiveEnum):
         + "\n",
         "ml-headline-generation-jp",
         {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+    ]
+
+    # Transcript segmentation prompt
+    ML_TRANSCRIPT_SEGMENTATION = [
+        """
+        Your task is detecting the segment of a transcript related to a certain keyword.
+        This task is really important to me.
+        The transcript is delimited by < and >, and keyword is delimited by * and *.
+
+        The transcript is a list of json objects. Each json object has 2 keys: "start_time" and "content". When you do the analysis, only focus on the value of "content" in each json object.
+
+        You must do the analysis using following steps:
+        1. Go through the whole transcript have a high level understanding for the relationship between the keyword and this transcript.
+        2. Check every json object to decide if its value of "content" direct or indirect related to the given keyword.
+        3. Copy and paste the json objects which relate to the keyword, and output to me.
+
+        Transcript: <{transcript}>
+        Keyword:*{keyword}*
+
+        Show me your answer in following Json format. Here [XXX] is placeholder:
+        [Relationship with keyword]:[The relationship between keyword and this transcript content]
+        [Related segment]:[The segments which you think are related to the keyword]
+        [Reason]:[The reason that why you think the segments are related to the keyword]
+        [Reason for not choose]:[Your reason for those segments that you think are irrelevent to the keyword]
+
+        """,  # noqa: E501
+        "ml-transcript-segmentation",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_5_ARTICLES_SUMMARY = [
+        """
+        You are a summarization bot.
+
+        I will give you 5 articles which are delimited by triple backticks.
+
+        I want you to generate a one-paragraph summary for all the articles I give. And you should based on your summary to give me a title for your summary.
+
+        You must use the following step to generate your result:
+        1. Read every article carefully and understand the main idea of each article.
+        2. Once you have the main point from each article, look for common themes, similarities, or overlapping ideas among them. Group these main points based on these commonalities.
+        3. For each group of main points, distill them into a single sentence that encapsulates the shared message or theme.
+        4. Order these distilled sentences in a logical or meaningful sequence that provides coherence and flow to the reader.
+        5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
+        6. Generate a title based on the one-paragraph summarization you generate.
+
+        Input article 1: '''{article1}'''
+        Input article 2: '''{article2}'''
+        Input article 3: '''{article3}'''
+        Input article 4: '''{article4}'''
+        Input article 5: '''{article5}'''
+
+        Let's think step by step and show me your answer in following JSON format."[xxx]" is placeholder.
+        The main point of each input article: [mean point of each article]
+        Title: [The title you generate for these articles]
+        Summary: [The summary you generate for these articles]
+        """,  # noqa: E501
+        "ml-multiple-articles-summary",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_4_ARTICLES_SUMMARY = [
+        """
+        You are a summarization bot.
+
+        I will give you 4 articles which are delimited by triple backticks.
+
+        I want you to generate a one-paragraph summary for all the articles I give. And you should based on your summary to give me a title for your summary.
+
+        You must use the following step to generate your result:
+        1. Read every article carefully and understand the main idea of each article.
+        2. Once you have the main point from each article, look for common themes, similarities, or overlapping ideas among them. Group these main points based on these commonalities.
+        3. For each group of main points, distill them into a single sentence that encapsulates the shared message or theme.
+        4. Order these distilled sentences in a logical or meaningful sequence that provides coherence and flow to the reader.
+        5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
+        6. Generate a title based on the one-paragraph summarization you generate.
+
+        Input article 1: '''{article1}'''
+        Input article 2: '''{article2}'''
+        Input article 3: '''{article3}'''
+        Input article 4: '''{article4}'''
+
+        Let's think step by step and show me your answer in following JSON format."[xxx]" is placeholder.
+        The main point of each input article: [mean point of each article]
+        Title: [The title you generate for these articles]
+        Summary: [The summary you generate for these articles]
+        """,  # noqa: E501
+        "ml-multiple-articles-summary",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_3_ARTICLES_SUMMARY = [
+        """
+        You are a summarization bot.
+
+        I will give you 3 articles which are delimited by triple backticks.
+
+        I want you to generate a one-paragraph summary for all the articles I give. And you should based on your summary to give me a title for your summary.
+
+        You must use the following step to generate your result:
+        1. Read every article carefully and understand the main idea of each article.
+        2. Once you have the main point from each article, look for common themes, similarities, or overlapping ideas among them. Group these main points based on these commonalities.
+        3. For each group of main points, distill them into a single sentence that encapsulates the shared message or theme.
+        4. Order these distilled sentences in a logical or meaningful sequence that provides coherence and flow to the reader.
+        5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
+        6. Generate a title based on the one-paragraph summarization you generate.
+
+        Input article 1: '''{article1}'''
+        Input article 2: '''{article2}'''
+        Input article 3: '''{article3}'''
+
+        Let's think step by step and show me your answer in following JSON format."[xxx]" is placeholder.
+        The main point of each input article: [mean point of each article]
+        Title: [The title you generate for these articles]
+        Summary: [The summary you generate for these articles]
+        """,  # noqa: E501
+        "ml-multiple-articles-summary",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_2_ARTICLES_SUMMARY = [
+        """
+        You are a summarization bot.
+
+        I will give you 2 articles which are delimited by triple backticks.
+
+        I want you to generate a one-paragraph summary for all the articles I give. And you should based on your summary to give me a title for your summary.
+
+        You must use the following step to generate your result:
+        1. Read every article carefully and understand the main idea of each article.
+        2. Once you have the main point from each article, look for common themes, similarities, or overlapping ideas among them. Group these main points based on these commonalities.
+        3. For each group of main points, distill them into a single sentence that encapsulates the shared message or theme.
+        4. Order these distilled sentences in a logical or meaningful sequence that provides coherence and flow to the reader.
+        5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
+        6. Generate a title based on the one-paragraph summarization you generate.
+
+        Input article 1: '''{article1}'''
+        Input article 2: '''{article2}'''
+
+        Let's think step by step and show me your answer in following JSON format."[xxx]" is placeholder.
+        The main point of each input article: [mean point of each article]
+        Title: [The title you generate for these articles]
+        Summary: [The summary you generate for these articles]
+        """,  # noqa: E501
+        "ml-multiple-articles-summary",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
     ]

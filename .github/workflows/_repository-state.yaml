@@ -1,40 +1,54 @@
 ---
-name: Repository state
+name: Retrieve repository state
 on  :
   workflow_call:
     inputs:
-      event-name:
+      environment:
         required: true
+        default: prod
         type: string
-        description: Can take the three values 'pull_request', 'push', or 'release_issue'.
-      push-target-branch:
-        required: false
-        type: string
-        default: ''
-        description: The branch that is being pushed to in case of a `push` github event, same as `github.ref_name`.
-      pull-request-target-branch:
+        description: Environment runtime for the development.
+      pull-request:
         required: true
-        type: string
-        description: The branch that is beinged pulled into in case of a `pull-request` github event, e.g same as `github.base_ref`.
-      verbose:
-        required: false
         default: true
         type: boolean
-        description: If true, this flow shows a relevant set of github action vars relevant to its logic. Useful for debugging.
+        description: Indicates whether this workflow is running for a Pull Request.
+      base-ref:
+        required: false
+        type: string
+        default: develop
+        description: Source branch.
+      head-ref:
+        required: false
+        type: string
+        default: develop
+        description: Release target branch.
+      pre-release:
+        required: false
+        type: boolean
+        default: false
+        description: If true a pre-release is created.
+      publish:
+        required: false
+        type: boolean
+        default: true
+        description: If true a pre-release is created.
+      include-pre-releases:
+        required: false
+        type: boolean
+        default: false
+        description: Include pre releases as "full" releases when drafting release notes.
     secrets:
       GITHUB_TOKEN_:
         required: true
         description: Github Token to interact with repo.
     outputs:
-      target-branch:
-        description: The generalized target branch for the pull request or push event.
-        value: ${{ jobs.get-repository-state.outputs.target-branch }}
       tag:
         description: Final tag to attach to images built within the workflow
-        value: ${{ jobs.get-repository-state.outputs.tag }}
-      release-notes:
-        description: (Pre-)release notes derived based on specified configuration
-        value: ${{ jobs.get-repository-state.outputs.release-notes}}
+        value: ${{ jobs.get-stage.outputs.tag }}
+      version:
+        description: Final tag to attach to images built within the workflow without the v prefix
+        value: ${{ jobs.get-stage.outputs.version }}
 
 jobs:
 
@@ -44,6 +58,7 @@ jobs:
     if: ${{ inputs.verbose }}
 
     steps:
+
       - name: Show all relevant github action context vars
         run: |
           echo github.actor: ${{ github.actor }}
@@ -57,35 +72,23 @@ jobs:
           echo github.run_id: ${{ github.run_id }}
           echo github.run_attempt: ${{ github.run_attempt }}
 
-  get-repository-state:
-    name: Get repository release state
+  get-stage:
+
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+      pull-requests: write
+    environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
     outputs:
-      target-branch: ${{ steps.toggle-target-branch.outputs.value }}
-      tag: ${{ steps.export-tag.outputs.value }}
-      release-notes: ${{ steps.release-drafter.outputs.body }}
+      tag: ${{ steps.export-tag.outputs.tag }}
+      version: ${{ steps.version-increment.outputs.version }}
+      release-notes: ${{ steps.changelog.outputs.changelog }}
 
     steps:
-
       - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Resolve generalized target branch
-        uses: haya14busa/action-cond@v1
-        id: toggle-target-branch
-        with:
-          cond: ${{ inputs.event-name != 'push' }}
-          if_true: ${{ inputs.pull-request-target-branch }}
-          if_false: ${{ inputs.push-target-branch }}
-
-      - name: Show target branch
-        run: |
-          echo Input event name: ${{ inputs.event-name }}
-          echo Push target branch: ${{ inputs.push-target-branch }}
-          echo Pull request target branch: ${{ inputs.pull-request-target-branch }}
-          echo Target branch: ${{ steps.toggle-target-branch.outputs.value }}
+        uses: actions/checkout@v4
 
       - name: Export current working directory
         id: export-working-dir
@@ -93,10 +96,12 @@ jobs:
           echo "workdir=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
 
       - name: Tag Pull Request
-        uses: TimonVS/pr-labeler-action@v4
-        if: ${{ inputs.event-name == 'pull_request' }}
+        uses: srvaroa/labeler@v1.8.1
+        if: ${{ inputs.pull-request }}
         with:
-          configuration-path: .github/pr-labeler.yaml
+          config_path: .github/labeler.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
 
       - name: Lookup current version
         id: version-lookup
@@ -105,29 +110,58 @@ jobs:
 
       - name: Get next version
         id: version-increment
+        if: ${{ !inputs.pull-request }}
         run: ${{ steps.export-working-dir.outputs.workdir }}/bin/actions/version-increment
         shell: bash
         env:
           current_version: ${{ steps.version-lookup.outputs.CURRENT_VERSION }}
-          is_pre_release: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
+          is_pre_release: ${{ inputs.pre-release }}
+
+      - name: Get short commit SHA
+        id: get-commit-sha
+        if: ${{ inputs.pull-request }}
+        run: |
+          sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})
+          echo "tag=ci-$sha" >> $GITHUB_OUTPUT
 
       - name: Export tag
         id: export-tag
-        uses: haya14busa/action-cond@v1
-        with:
-          cond: ${{ inputs.event-name == 'pull_request' }}
-          if_true: ci-${{ github.run_id }}-${{ github.run_attempt }}
-          if_false: ${{ steps.version-increment.outputs.V_VERSION }}
+        run: |
+          if [[ ${{ inputs.pull-request }} = true ]]; then
+              echo "tag=ci-${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+          else
+              echo "tag=v${{ steps.version-increment.outputs.version }}" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Generate Release
-        uses: release-drafter/release-drafter@v5.24.0
+      - name: Changelog
+        id: changelog
+        if: ${{ inputs.pull-request && inputs.base-ref == 'main' }}
+        uses: mikepenz/release-changelog-builder-action@v4.1.0
+        with:
+          configuration: .github/changelog.json
+          ignorePreReleases: false
+          fromTag: ${{ steps.version-lookup.outputs.CURRENT_V_VERSION }}
+          toTag: ${{ steps.version-increment.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update PR body
+        id: update-pr-body
+        if: ${{ inputs.pull-request && inputs.base-ref == 'main' }}
+        uses: Perdoo/pull-request-update-body-action@v1.0.1
+        with:
+          ghToken: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          override: true
+
+      - name: Generate Release Notes
+        uses: release-drafter/release-drafter@v5.25.0
         id: release-drafter
-        if: ${{ inputs.event-name == 'push' }}
+        if: ${{ !inputs.pull-request }}
         with:
           config-name: release-drafter.yaml
-          publish: true
-          commitish: ${{ steps.toggle-target-branch.outputs.value }}
-          prerelease: ${{ steps.toggle-target-branch.outputs.value == 'develop' }}
-          tag: ${{ steps.version-increment.outputs.V_VERSION }}
-          name: ${{ steps.version-increment.outputs.VERSION }}
-          version: ${{ steps.version-increment.outputs.VERSION }}
+          publish: ${{ inputs.publish }}
+          commitish: ${{ inputs.head-ref }}
+          prerelease: ${{ inputs.pre-release }}
+          tag: v${{ steps.version-increment.outputs.version }}
+          name: v${{ steps.version-increment.outputs.version }}
+          version: v${{ steps.version-increment.outputs.version }}

@@ -16,7 +16,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: topic
         COMPONENT: register
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.10.5}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     volumes:
       - type: bind
         source: register/src
@@ -42,5 +42,226 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              # that's the closest analogue to --gpus; provide
+              # an integer amount of devices or 'all'
+              count: 1
+              # Devices are reserved using a list of capabilities, making
+              # capabilities the only required field. A device MUST
+              # satisfy all the requested capabilities for a successful
+              # reservation.
+              capabilities: [gpu]
+    build:
+      context: ../../
+      dockerfile: projects/topic/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: topic
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [train, unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    volumes:
+      - serve-vol:/projects/topic/serve/models
+    build:
+      context: ../../
+      dockerfile: projects/topic/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: topic
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.2}
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/topic
+      NEPTUNE_MODEL_ID: TOPIC-TRAINED
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/topic/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # utility service: downloading the compiled model artifact that will be served
+  serve-download-model:
+    volumes:
+      - serve-vol:/projects/topic/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve, integration, functional, load]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+      NEPTUNE_PROJECT: onclusive/topic
+      NEPTUNE_MODEL_ID: TOPIC-TRAINED
+      NEPTUNE_MODEL_VERSION_ID: TOPIC-TRAINED-63
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/topic
+      NEPTUNE_MODEL_ID: TOPIC-TRAINED
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
+      NEPTUNE_PROJECT: onclusive/topic
+      NEPTUNE_MODEL_ID: TOPIC-TRAINED
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # load tests
+  # - include model artifact
+  # - include REST model server process
+  serve-load:
+    volumes:
+      - serve-vol:/projects/topic/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    command: [pytest, tests/load, -ra, -vv, --capture=no]
+    environment:
+      NEPTUNE_PROJECT: onclusive/topic
+      NEPTUNE_MODEL_ID: TOPIC-TRAINED
+      # serving params
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      # load test params
+      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
+      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
+      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
+      ONCLUSIVEML_SERVING_RESET_STATS: No
+      ONCLUSIVEML_SERVING_RUN_TIME: 45s
+      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+    profiles: [load]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+    # utility service: uploading the relevant test results to the model registry
+  serve-upload-results:
+    volumes:
+      - serve-vol:/projects/topic/serve/models
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    command: [python, -m, src.upload]
+    profiles: [serve]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: async
+      NEPTUNE_PROJECT: onclusive/topic
+      NEPTUNE_MODEL_ID: TRAINED-TOPIC
+      NEPTUNE_MODEL_VERSION_ID: TOPIC-TRAINED-63
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
+      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
+      ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+      ONCLUSIVEML_SERVING_DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve
+      ONCLUSIVEML_SERVING_DOCKER_IMAGE_TAG: ${IMAGE_TAG}
+      ONCLUSIVEML_SERVING_GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      ONCLUSIVEML_SERVING_GITHUB_ACTOR: ${GITHUB_ACTOR}
+      ONCLUSIVEML_SERVING_GITHUB_ENV: ${GITHUB_ENV}
+      ONCLUSIVEML_SERVING_GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
+      ONCLUSIVEML_SERVING_GITHUB_JOB: ${GITHUB_JOB}
+      ONCLUSIVEML_SERVING_GITHUB_REF: ${GITHUB_REF}
+      ONCLUSIVEML_SERVING_GITHUB_BASE_REF: ${GITHUB_BASE_REF}
+      ONCLUSIVEML_SERVING_GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
+      ONCLUSIVEML_SERVING_GITHUB_SHA: ${GITHUB_SHA}
+      ONCLUSIVEML_SERVING_GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+      ONCLUSIVEML_SERVING_GITHUB_RUN_ID: ${GITHUB_RUN_ID}
+      ONCLUSIVEML_SERVING_GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
+      ONCLUSIVEML_SERVING_RUNNER_ARCH: ${RUNNER_ARCH}
+      ONCLUSIVEML_SERVING_RUNNER_NAME: ${RUNNER_NAME}
+      ONCLUSIVEML_SERVING_RUNNER_OS: ${RUNNER_OS}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
 networks:
   onclusive-net:
+
+volumes :
+  serve-vol:

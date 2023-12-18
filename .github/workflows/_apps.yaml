@@ -24,11 +24,6 @@ on  :
         default: true
         type: boolean
         description: Whether to run integrations.
-      pull-request:
-        required: true
-        default: true
-        type: boolean
-        description: Indicates whether this workflow is running for a Pull Request.
       release:
         required: true
         default: true
