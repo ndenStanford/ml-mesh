@@ -4,8 +4,8 @@
 from typing import Any, Dict, List, Tuple, Union
 
 # Internal libraries
-from onclusiveml.query_builder.get_el import predict_entity_linking
-from onclusiveml.query_builder.get_ner import predict_ner
+from onclusiveml.data.query_builder.get_el import predict_entity_linking
+from onclusiveml.data.query_builder.get_ner import predict_ner
 
 
 def build_query(

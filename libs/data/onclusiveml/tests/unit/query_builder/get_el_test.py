@@ -7,11 +7,11 @@ from unittest.mock import Mock, patch
 import pytest  # noqa
 
 # Internal libraries
-from onclusiveml.query_builder import predict_entity_linking
+from onclusiveml.data.query_builder import predict_entity_linking
 
 
 # Mocking the API response for successful case
-@patch("onclusiveml.query_builder.get_el.requests.post")
+@patch("onclusiveml.data.query_builder.get_el.requests.post")
 def test_predict_entity_linking_success(mock_post):
     """Mock test Entity Linking."""
     mock_response = Mock()
@@ -32,7 +32,7 @@ def test_predict_entity_linking_success(mock_post):
 
 
 # Mocking the API response for failure case
-@patch("onclusiveml.query_builder.get_el.requests.post")
+@patch("onclusiveml.data.query_builder.get_el.requests.post")
 def test_predict_entity_linking_failure(mock_post):
     """Mock test Entity Linking."""
     mock_response = Mock()
