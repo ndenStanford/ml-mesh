@@ -1,7 +1,4 @@
-"""LSH v1 data schemas."""
-
-# Standard Library
-from typing import List, Optional
+"""Transcript Segmentation v1 data schemas."""
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -10,22 +7,20 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    content: str = ""
+    transcript: list
+    keyword: str
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
-    language: str = "en"
-    shingle_list: int = 5
-    threshold: float = 0.6
-    num_perm: int = 128
-
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    signature: Optional[List[str]]
+    segmented_transcript: list
+    output_truncated: bool
+    input_truncated: bool
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
@@ -36,4 +31,4 @@ class BioRequestAttributeSchemaV1(JsonApiSchema):
         model_card (Dict): Information about the model
     """
 
-    model_name: str = "lsh"
+    model_name: str = "transcript-segmentation"
