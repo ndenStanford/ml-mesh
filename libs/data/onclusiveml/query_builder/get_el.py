@@ -66,10 +66,13 @@ def predict_entity_linking(content: str, language: str = "en") -> Optional[str]:
                 .get("attributes", {})
                 .get("entities", [])[0]["wiki_link"]
             )
-            return wiki_link
+            if wiki_link is not None:
+                return wiki_link
+            else:
+                raise ValueError("Error in prod endpoint, switching to stage")
         else:
             print(f"Error with prod endpoint: {response.status_code}, {response.text}")
-            return None
+            raise ValueError("Error in prod endpoint, switching to stage")
 
     except Exception as e:
         print(f"RequestException occurred: {e}")
