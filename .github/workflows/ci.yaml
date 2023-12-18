@@ -448,6 +448,16 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: m6a.2xlarge
+
     with:
       project: gch-summarization
       environment: prod
