@@ -111,7 +111,6 @@ class TrainedSummarization:
         Returns:
             summary (str): summary
         """
-
         if language == "en":
             pipeline = self.compiled_summarization_pipeline_en
         elif language == "fr" or language == "de":
