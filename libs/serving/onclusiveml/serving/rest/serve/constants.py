@@ -28,7 +28,7 @@ class OnclusiveServingLogMessageFormat(OnclusiveEnum):
     # json string is uncoloured, so use default `levelname` and split status information into
     # `status_code` integer type and `status_phrase` string type
     DEFAULT_JSON = OnclusiveLogMessageFormat.DEFAULT.value
-    ACCESS_JSON = '%(service)s | %(asctime)s - [%(levelname)s] - %(client_addr)s - "%(request_line)s" %(status_code)d %(status_phrase)s'  # noqa: E501
+    ACCESS_JSON = '%(client_addr)s - "%(request_line)s" %(status_code)d %(status_phrase)s'  # noqa: E501
 
 
 LOG_LEVEL_MAP: Dict[int, str] = {
