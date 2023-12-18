@@ -9,7 +9,7 @@ import requests
 from pydantic import SecretStr
 
 # Internal libraries
-from onclusiveml.query_builder.settings import get_settings
+from onclusiveml.data.query_builder.settings import get_settings
 
 
 settings = get_settings()

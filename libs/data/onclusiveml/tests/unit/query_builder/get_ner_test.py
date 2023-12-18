@@ -7,11 +7,11 @@ from unittest.mock import Mock, patch
 import pytest  # noqa
 
 # Internal libraries
-from onclusiveml.query_builder import predict_ner
+from onclusiveml.data.query_builder import predict_ner
 
 
 # Mocking the API response for successful case
-@patch("onclusiveml.query_builder.get_ner.requests.post")
+@patch("onclusiveml.data.query_builder.get_ner.requests.post")
 def test_predict_ner_success(mock_post):
     """Mock test NER."""
     mock_response = Mock()
@@ -51,7 +51,7 @@ def test_predict_ner_success(mock_post):
 
 
 # Mocking the API response for failure case
-@patch("onclusiveml.query_builder.get_ner.requests.post")
+@patch("onclusiveml.data.query_builder.get_ner.requests.post")
 def test_predict_ner_failure(mock_post):
     """Mock test NER."""
     mock_response = Mock()
