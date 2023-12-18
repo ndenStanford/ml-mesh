@@ -26,3 +26,7 @@ from onclusiveml.serving.rest.serve.params import (  # noqa: F401
     ServingParams,
     BetterStackSettings,
 )
+
+from onclusiveml.serving.rest.serve.exceptions import (  # noqa: F401
+    OnclusiveHTTPException,
+)
