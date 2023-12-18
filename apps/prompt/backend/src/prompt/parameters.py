@@ -1,8 +1,7 @@
 """Parameters."""
 
-
 # Standard Library
-from typing import Optional
+from typing import Dict, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel, validator
@@ -36,6 +35,7 @@ class Parameters(BaseModel):
     model_name: Optional[str] = ModelEnumChat.GPT3_5.value
     max_tokens: Optional[int] = settings.OPENAI_MAX_TOKENS
     temperature: Optional[float] = settings.OPENAI_TEMPERATURE
+    response_format: Optional[Dict] = settings.RESPONSE_FORMAT
 
     @classmethod
     def from_dict(cls, params_dict):
@@ -82,14 +82,14 @@ class Parameters(BaseModel):
             values (dict): The values of the other fields in the model
 
         Raises:
-            PromptInvalidParameters: If the max tokens value is None or an empty string
+            PromptInvalidParameters: If the max tokens value is an empty string
             PromptTokenExceedModel: If the max tokens value exceeds the model's limit
 
         Returns:
             int: The validated max tokens value
         """
         # If max tokens is None then raise exception
-        if value is None or value in [""]:
+        if value in [""]:
             raise PromptInvalidParameters(param_name="max_tokens", param=value)
         # if max tokens is over the limit or less than 0 then raise exception
         elif values.get("model_name") == settings.LIST_OF_MODELS["1"][0] and (
@@ -117,7 +117,7 @@ class Parameters(BaseModel):
             value (float): The temperature value to be validated.
 
         Raises:
-            PromptInvalidParameters: If the temperature value is None or an empty string
+            PromptInvalidParameters: If the temperature value is an empty string
             PromptOutsideTempLimit: If the temperature value is outside the valid range
         """
         # Reject None

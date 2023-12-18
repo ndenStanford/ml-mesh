@@ -90,6 +90,7 @@ jobs:
           filters: |
             this:
               - added | modified: 'docker/**'
+              - added | modified: 'docker/docker-compose.ci.yaml'
 
   provision-customized-runner:
     name: Provision self-hosted & customized runner
