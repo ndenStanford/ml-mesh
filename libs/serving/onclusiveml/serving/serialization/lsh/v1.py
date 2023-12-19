@@ -1,4 +1,4 @@
-"""Ner v1 data schemas."""
+"""LSH v1 data schemas."""
 
 # Standard Library
 from typing import List, Optional

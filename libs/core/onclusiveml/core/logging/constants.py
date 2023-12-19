@@ -64,6 +64,9 @@ class OnclusiveService(OnclusiveEnum):
     # --- prompt backend
     PROMPT_BACKEND_SERVE = "prompt-backend-serve"
 
+    # --- Transcript Segmentation
+    TRANSCRIPT_SEGMENTATION = "transcript-segmentation-serve"
+
     @classmethod
     def validate(cls, service: str) -> None:
         """Validates a service name against the internal service range.
@@ -90,5 +93,7 @@ class OnclusiveLogMessageFormat(OnclusiveEnum):
     SIMPLE = "%(asctime)s - %(levelname)s - %(message)s"
     DETAILED = "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"  # noqa: E501
 
-    # requires OnclusiveFormatter (subclass)
-    DEFAULT = "%(service)s | %(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"  # noqa: E501
+    # requires OnclusiveFormatter (subclass) - meant for json log formatting
+    DEFAULT = (
+        "%(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"  # noqa: E501
+    )

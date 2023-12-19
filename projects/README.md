@@ -24,6 +24,8 @@ This folder contains the implementation of all our machine learning projects. Ea
 | [Entity linking](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3192815790/Entity+Linking)  | <rene-jean.corneille@onclusive.com>                | `entity-linking`         | Entity linking                               | Text      |       |          |       |         | x*    |
 | [Topic Detection](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3357311714/Topic+Trend+Detection) | <vishal.singh@onclusive.com>                | `topic`                  | In-house topic extraction                    | Text      |       |    x     |       |         | x    |
 | [Topic Detection](https://onclusive.atlassian.net/wiki/spaces/ML/pages/3357311714/Topic+Trend+Detection) | <yuzhou.gao@onclusive.com>                  | `topic-summarization`    | Topic Detection with OpenAI's GPT            | Text      |       |          |       |         | x     |
+| [Transcript Segmentation]                                                                          |<syed.reza@onclusive.
+com>      |'transcript-segmentation'  |Transcript Segmentation with GPT |     |          |       |         | x     |
 
 
 Note: x* - denotes a serving component that hasn't been migrated to the `serving` library yet
