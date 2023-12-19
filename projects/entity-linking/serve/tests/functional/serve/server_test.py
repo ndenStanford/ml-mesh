@@ -11,14 +11,14 @@ from onclusiveml.serving.rest.serve import (
 
 
 def test_model_server_root(test_client):
-    """Tests the root endpoint of a ModelServer (not running) instance."""
+    """Tests the root endpoint of a running ModelServer instance."""
     root_response = test_client.get("/entity-linking/v1/")
 
     assert root_response.status_code == 200
 
 
 def test_model_server_liveness(test_client):
-    """Tests the liveness endpoint of a ModelServer (not running) instance."""
+    """Tests the liveness endpoint of a running ModelServer instance."""
     liveness_response = test_client.get("/entity-linking/v1/live")
 
     assert liveness_response.status_code == 200
@@ -26,7 +26,7 @@ def test_model_server_liveness(test_client):
 
 
 def test_model_server_readiness(test_client):
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    """Tests the readiness endpoint of a running ModelServer instance."""
     readiness_response = test_client.get("/entity-linking/v1/ready")
 
     assert readiness_response.status_code == 200
@@ -127,7 +127,7 @@ def test_model_server_readiness(test_client):
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    """Tests the predict endpoint of a running ModelServer instance."""
     response = test_client.post(
         "/entity-linking/v1/predict",
         json=payload,
@@ -135,3 +135,47 @@ def test_model_server_prediction(test_client, payload, expected_response):
 
     assert response.status_code == 200
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload,expected_error_detail",
+    [
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Irrelevant content because of invalid message value (nonsense)."
+                    },
+                    "parameters": {"lang": "invalid_language"},
+                }
+            },
+            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Second example of irrelevant content because of invalid message value (empty string)."  # noqa: E501
+                    },
+                    "parameters": {"lang": ""},
+                }
+            },
+            "The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+    ],
+)
+def test_model_server_prediction_invalid_language(
+    test_client, payload, expected_error_detail
+):
+    """Tests the language validation of the predict endpoint of a running ModelServer instance."""
+    response = test_client.post(
+        "/entity-linking/v1/predict",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"].startswith(expected_error_detail)
