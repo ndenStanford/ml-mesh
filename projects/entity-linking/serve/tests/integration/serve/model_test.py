@@ -48,3 +48,17 @@ def test__get_entity_linking(entity_linking_model, content):
     result = entity_linking_model._get_entity_linking(content)
 
     assert isinstance(result, list)
+
+
+@pytest.mark.parametrize(
+    "content,language",
+    [
+        ("Meta AI has been announced, and it’s coming to Messenger.", "en"),
+        # "Google AI is a division of Google dedicated to artificial intelligence.","en"
+    ],
+)
+def test__predict(entity_linking_model, content, language):
+    """Test _predict method."""
+    result = entity_linking_model._predict(content=content, language=language)
+
+    assert isinstance(result, list)

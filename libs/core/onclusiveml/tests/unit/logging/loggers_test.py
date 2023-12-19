@@ -79,17 +79,17 @@ def test_get_default_logger_message_format_with_custom_handler():
         (
             OnclusiveLogMessageFormat.DEFAULT.name,
             False,
-            "test-service | dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format\n",  # noqa: E501
+            "test logger - (testfile.py).test_function(1) - testing logging format\n",  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
             True,
-            '{"service": "test-service", "asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.BASIC.name,
             True,
-            '{"service": "test-service", "asctime": null, "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing logging format"}\n',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing logging format"}\n',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.SIMPLE.name,
@@ -104,7 +104,7 @@ def test_get_default_logger_message_format_with_custom_handler():
         (
             OnclusiveLogMessageFormat.DEFAULT.name,
             True,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "test-service | dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
+            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
         ),
     ],
 )

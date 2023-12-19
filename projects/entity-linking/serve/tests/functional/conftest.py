@@ -2,10 +2,9 @@
 
 # 3rd party libraries
 import pytest
-from fastapi.testclient import TestClient
+from requests_toolbelt.sessions import BaseUrlSession
 
 # Source
-from src.serve.server import get_model_server
 from src.settings import get_settings
 
 
@@ -15,9 +14,13 @@ def settings():
     return get_settings()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def test_client(settings):
-    """Test client fixture."""
-    model_server = get_model_server(settings)
+    """Client-like session with base url to avoid duplication.
 
-    return TestClient(model_server)
+    Reference:
+        https://toolbelt.readthedocs.io/en/latest/sessions.html#baseurlsession
+    """
+    test_model_server_url = f"http://serve:{settings.uvicorn_settings.port}"
+
+    return BaseUrlSession(base_url=test_model_server_url)

@@ -8,6 +8,10 @@ services:
 
   # serving image
   serve:
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/entity-linking/serve/src
     build:
       context: ../../
       dockerfile: projects/entity-linking/serve/Dockerfile
@@ -23,26 +27,33 @@ services:
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-    profiles: [serve]
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+    profiles: [serve, functional]
+    ports:
+      - 9000:9000
+    depends_on:
+      entity-fishing-backend:
+        condition: service_healthy
+      ner-serve:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:9000/entity-linking/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   serve-download-model:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.download.__main__]
     profiles: [serve]
@@ -56,16 +67,12 @@ services:
         source: serve/src
         target: /projects/entity-linking/serve/src
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
-      INTERNAL_ML_API_KEY: ''
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
-      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     depends_on:
       - ner-serve-download-model
     hostname: onclusiveml
@@ -85,12 +92,9 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
-      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -108,12 +112,10 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
-      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
     depends_on:
       entity-fishing-backend:
@@ -125,16 +127,6 @@ services:
 
   # functional tests
   serve-functional:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: serve/src
@@ -146,17 +138,13 @@ services:
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
       ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
-      ONCLUSIVEML_SERVING_HTTP_PORT: 9000
     hostname: onclusiveml
     depends_on:
-      entity-fishing-backend:
-        condition: service_healthy
-      ner-serve:
+      serve:
         condition: service_healthy
     networks:
       - onclusive-net
@@ -178,11 +166,11 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_SETTINGS_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/ner
