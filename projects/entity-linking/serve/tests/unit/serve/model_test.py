@@ -157,7 +157,9 @@ def test_model_predict(
 
     entities = attributes.get("entities", None)
 
-    mock_predict.assert_called_with(attributes["content"], parameters["lang"], entities)
+    mock_predict.assert_called_with(
+        content=attributes["content"], language=parameters["lang"], entities=entities
+    )
 
     assert response == expected_response
 

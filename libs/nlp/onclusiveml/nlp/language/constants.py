@@ -19,9 +19,9 @@ class LanguageIso(Enum):
     AR = "ar"
     BG = "bg"
     BN = "bn"
-    CA = "ca"
+    CA = "ca"  # not in entity-fishing language detection
     CS = "cs"
-    CY = "cy"  # TODO: empty list
+    CY = "cy"  # TODO: empty list # not in entity-fishing language detection
     DA = "da"
     DE = "de"
     EL = "el"
@@ -63,11 +63,15 @@ class LanguageIso(Enum):
     TA = "ta"  # TODO: empty list
     TE = "te"
     TH = "th"
+    # missing: tl - included in entity-fishing language detection
     TR = "tr"
     UK = "uk"
     UR = "ur"
     VI = "vi"
-    ZH = "zh"
+    ZH = "zh"  # not in entity-fishing language detection; could also just be less granular here
+    # than in entity fishing - see below two comments
+    # missing: zh-cn - included in entity-fishing language detection
+    # missing: zh-tw - included in entity-fishing language detection
 
     @property
     def locales(self) -> Dict[str, Dict[str, str]]:

@@ -1,5 +1,8 @@
 """Sentence tokenizer test."""
 
+# Standard Library
+import re
+
 # 3rd party libraries
 import pytest
 
@@ -69,7 +72,7 @@ def test_detect_language_decorator(content, language, supported_languages, expec
     def some_func(content: str, language: str = None) -> str:
         return "Processing content: " + content
 
-    result = some_func(content, language)
+    result = some_func(content=content, language=language)
     assert result == expected
 
 
@@ -81,21 +84,21 @@ def test_detect_language_decorator(content, language, supported_languages, expec
             "fr",
             [LanguageIso.EN],
             LanguageFilterException,
-            "The language, 'LanguageIso.FR', is currently not supported.",
+            "The language 'LanguageIso.FR' that was looked up from 'fr' or inferred from the content, is currently not supported. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
         ),
         (
             "Hola, cómo estás",
             None,
             [LanguageIso.EN],
             LanguageFilterException,
-            "The language, 'LanguageIso.ES', is currently not supported.",
+            "The language 'LanguageIso.ES' that was looked up from 'None' or inferred from the content, is currently not supported. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
         ),
         (
             "Test string",
             "abc",
             [LanguageIso.EN],
             LanguageDetectionException,
-            "The language, 'abc', cannot be found",
+            "The language reference 'abc' could not be mapped, or the language could not be inferred from the content. Supported references are: ['en']. Supported languages are: [<LanguageIso.EN: 'en'>].",  # noqa: E501
         ),
     ],
 )
@@ -103,13 +106,13 @@ def test_detect_language_decorator_exceptions(
     content, language, supported_languages, exception, expected
 ):
     """Test language detection decorator exceptions."""
-    with pytest.raises(exception, match=expected):
+    with pytest.raises(exception, match=re.escape(expected)):
 
         @filter_language(supported_languages, raise_if_none=True)
         def some_func(content: str, language: str = None) -> str:
             return "Processing content: " + content
 
-        some_func(content, language)
+        some_func(content=content, language=language)
 
 
 @pytest.mark.parametrize(
@@ -132,5 +135,5 @@ def test_detect_language_decorator_return_None(
     def some_func(content: str, language: str = None) -> str:
         return "Processing content: " + content
 
-    result = some_func(content, language)
+    result = some_func(content=content, language=language)
     assert result == expected
