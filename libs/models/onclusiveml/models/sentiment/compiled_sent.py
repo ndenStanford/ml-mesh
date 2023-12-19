@@ -2,7 +2,6 @@
 
 # Standard Library
 import os
-import re
 import string
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -10,12 +9,12 @@ from typing import Any, Dict, List, Optional, Union
 # 3rd party libraries
 import numpy as np
 import regex
-from bs4 import BeautifulSoup
 from nptyping import NDArray
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp import preprocess
 from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 
@@ -77,28 +76,6 @@ class CompiledSent:
             compiled_sent_pipeline=compiled_sent_pipeline,
         )
 
-    def remove_html(self, text: str) -> str:
-        """Remove HTML tags from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with HTML tags removed
-        """
-        text = BeautifulSoup(text, "html.parser").text
-        return text
-
-    def remove_whitespace(self, text: str) -> str:
-        """Remove extra white spaces from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with extra whitespaces removed
-        """
-        text = re.sub(r"\s+", " ", text)
-        return text
-
     def preprocess(self, sentences: str, language: str) -> List[str]:
         """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
@@ -108,8 +85,8 @@ class CompiledSent:
         Return:
             List[str]: Tokenized sentences
         """
-        sentences = self.remove_html(sentences)
-        sentences = self.remove_whitespace(sentences)
+        sentences = preprocess.remove_html(sentences)
+        sentences = preprocess.remove_whitespace(sentences)
         tokenizer = SentenceTokenizer()
         list_sentences = tokenizer.tokenize(content=sentences, language=language)[
             "sentences"
@@ -144,7 +121,6 @@ class CompiledSent:
         sentiment_probs_arr: NDArray = (
             res["logits"].clone().detach().numpy().astype(float)
         )
-
         # assert sentiment_probs_arr.shape[0] == n_sentence
         assert sentiment_probs_arr.shape[0] == len(list_sentences)
         return sentiment_probs_arr
