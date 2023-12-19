@@ -140,11 +140,12 @@ class TrainedSummarization:
         """Topic detection of input text.
 
         Args:
-            text (str): The input text to detect topic.
+            text (str): The input text to summary
+            language (str): The input language
 
         Returns:
-            topic_id (str):
-                ID of the predicted topic.
+            summary (str):
+                summary of the input text
         """
         pre_processed_text = self.preprocess(text)
         summary = self.inference(pre_processed_text, language=language)
