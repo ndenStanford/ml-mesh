@@ -1,20 +1,22 @@
 """Query builder."""
 
 # Standard Library
-from typing import Any, List
+from typing import List, Tuple, Union
 
 # ML libs
 from transformers import AutoTokenizer
 
 # 3rd party libraries
 import hdbscan
+import numpy as np
 import umap.umap_ as umap
+from scipy.sparse import csr_matrix
 from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 # feature extraction with tfidf
-def get_tfidf_embedding(inputs: List[str], max_features: int = 1000) -> Any:
+def get_tfidf_embedding(inputs: List[str], max_features: int = 1000) -> csr_matrix:
     """Returns the tfidf embeddings.
 
     Args:
@@ -33,7 +35,7 @@ def get_tfidf_embedding(inputs: List[str], max_features: int = 1000) -> Any:
 # feature extraction with pretrained
 def get_pretrained_embedding(
     inputs: List[str], model_path: str = "xlm-roberta-base"
-) -> Any:
+) -> np.ndarray:
     """Returns the pretrained embeddings.
 
     Args:
@@ -51,8 +53,10 @@ def get_pretrained_embedding(
 
 
 def reduce_dimension_pca(
-    embeddings: Any, n_components: int = 10, random_state: int = 1
-) -> Any:
+    embeddings: Union[np.ndarray, csr_matrix],
+    n_components: int = 10,
+    random_state: int = 1,
+) -> np.ndarray:
     """Returns the truncatedSVD embeddings.
 
     Args:
@@ -70,8 +74,10 @@ def reduce_dimension_pca(
 
 
 def reduce_dimension_truncatedSVD(
-    embeddings: Any, n_components: int = 10, random_state: int = 1
-) -> Any:
+    embeddings: Union[np.ndarray, csr_matrix],
+    n_components: int = 10,
+    random_state: int = 1,
+) -> np.ndarray:
     """Returns the truncated truncatedSVD embeddings.
 
     Args:
@@ -90,13 +96,13 @@ def reduce_dimension_truncatedSVD(
 
 # dimension reduction with umap
 def reduce_dimension_umap(
-    embeddings: Any,
+    embeddings: Union[np.ndarray, csr_matrix],
     n_components: int = 2,
     n_neighbors: int = 15,
     min_dist: float = 0.1,
     metric: str = "cosine",
     random_state: int = 1,
-) -> Any:
+) -> np.ndarray:
     """Returns the umap embeddings.
 
     Args:
@@ -139,7 +145,7 @@ def hdbscan_clustering(
     hdbscan_cluster_selection_method: str = "eom",
     hdbscan_allow_single_cluster: bool = True,
     random_state: int = 1,
-) -> Any:
+) -> Tuple[np.ndarray, np.ndarray]:
     """Returns the final embeddings with cluster labels.
 
     Args:

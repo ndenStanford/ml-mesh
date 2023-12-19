@@ -1,19 +1,19 @@
 """Get articles."""
 
 # Standard Library
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 # 3rd party libraries
 from elasticsearch import Elasticsearch
 
 
 def get_query_results(
-    es: Elasticsearch, es_index: List[str], query: Any
+    es: Elasticsearch, es_index: Union[List[str], str], query: dict
 ) -> Tuple[List[Optional[str]], List[Optional[float]]]:
     """Returns a list of articles with their associated scores.
 
     Args:
-        es: the elasticsearch credentials
+        es: the elasticsearch client
         query: the query built by the query builder
 
     Returns:

@@ -21,7 +21,7 @@ settings = get_settings()
 
 
 def get_relevance_score(
-    scores: List[float], query: Any, init_max_score: int = 50
+    scores: List[float], query: dict, init_max_score: int = 50
 ) -> float:
     """Returns a scaled list of scores with upper limit.
 
@@ -40,9 +40,9 @@ def get_relevance_score(
     Score 50 scaled to 10.0
     """
 
-    def quantify_query_broadness(query: Any) -> float:
+    def quantify_query_broadness(query: dict) -> float:
         broadness_score: float = 0
-        elements_to_process: List[Tuple[Any, float]] = [
+        elements_to_process: List[Tuple[Union[dict, list], float]] = [
             (query, 1)
         ]  # Tuple of (element, depth_factor)
 
@@ -90,7 +90,7 @@ def get_relevance_score(
 
 
 def get_w_penalization(
-    cluster_labels: Any, option: str = "proportion", scaling_power: int = 1
+    cluster_labels: np.ndarray, option: str = "proportion", scaling_power: int = 1
 ) -> float:
     """Calculate a penalization factor for clustering evaluation.
 
@@ -124,7 +124,9 @@ def get_w_penalization(
     return w_penalization
 
 
-def get_silhouette_score(embeddings: Any, cluster_labels: Any) -> Union[float, None]:
+def get_silhouette_score(
+    embeddings: np.ndarray, cluster_labels: np.ndarray
+) -> Union[float, None]:
     """Calculate the normalized silhouette score for clustering evaluation.
 
     Args:
@@ -189,8 +191,8 @@ def get_intra_cluster_similarity(
 
 
 def get_homogeneity_score(
-    embeddings: Any,
-    cluster_labels: Any,
+    embeddings: np.ndarray,
+    cluster_labels: np.ndarray,
     w_silhouette: float,
     w_intra_cluster: float,
     option: str = "skewness",
@@ -248,10 +250,10 @@ def get_homogeneity_score(
 
 
 def get_overall_quality_score(
-    query: Any,
+    query: dict,
     list_scores: List[float],
-    embeddings: Any,
-    cluster_labels: Any,
+    embeddings: np.ndarray,
+    cluster_labels: np.ndarray,
     w_silhouette: float,
     w_intra_cluster: float,
     w_relevance: float,
@@ -305,10 +307,10 @@ def get_overall_quality_score(
 def evaluate_query(
     es: Elasticsearch,
     es_index: List[str],
-    query: Any,
+    query: dict,
     clustering_config: Any,
     scoring_config: Any,
-) -> Tuple[Dict[str, Union[float, None]], Any, Any, Any]:
+) -> Tuple[Dict[str, Union[float, None]], List[str], np.ndarray, np.ndarray]:
     """Evaluate the query and return quality scores, inputs, embeddings, and cluster labels.
 
     Args:
