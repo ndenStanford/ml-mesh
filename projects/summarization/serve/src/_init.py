@@ -7,7 +7,7 @@ import requests
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.settings import settings
+from src.settings import settings  # type: ignore[attr-defined]
 
 
 logger = get_default_logger(__name__)

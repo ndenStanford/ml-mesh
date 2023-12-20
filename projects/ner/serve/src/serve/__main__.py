@@ -6,7 +6,7 @@ from onclusiveml.serving.rest.serve import ModelServer
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
-from src.serve.model import ServedNERModel
+from src.serve.model import ServedNERModel  # type: ignore[attr-defined]
 from src.settings import get_settings
 
 

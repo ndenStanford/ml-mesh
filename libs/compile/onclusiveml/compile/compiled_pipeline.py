@@ -149,7 +149,6 @@ class CompiledPipeline(object):
         original_pipeline = pipeline(
             task=pipeline_task, model=os.path.join(directory, "pipeline")
         )
-
         compiled_pipeline = deepcopy(original_pipeline)
         # import and insert compiled tokenizer into designated attribute
         compiled_pipeline.tokenizer = CompiledTokenizer.from_pretrained(

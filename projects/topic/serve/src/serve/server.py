@@ -6,7 +6,7 @@ from onclusiveml.serving.rest.serve import ModelServer
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
-from src.serve.model import ServedTopicModel
+from src.serve.model import ServedTopicModel  # type: ignore[attr-defined]
 from src.settings import get_settings
 
 
