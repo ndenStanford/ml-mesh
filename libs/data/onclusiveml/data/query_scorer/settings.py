@@ -1,6 +1,7 @@
 """Settings."""
 
 # Standard Library
+import os
 from typing import Any, List
 
 # 3rd party libraries
@@ -50,10 +51,9 @@ class Settings(OnclusiveBaseSettings):
 
 def get_settings() -> Settings:
     """Get the settings."""
+    es_url = os.getenv("ELASTICSEARCH_URL")
     es = Elasticsearch(
-        [
-            "https://crawler-prod:GnVjrB5jXgGGzPZHWNRpwWGu4NqTWJsw@search5-client.airpr.com"
-        ],
+        [es_url],
         timeout=30,
         max_retries=10,
         retry_on_timeout=True,
