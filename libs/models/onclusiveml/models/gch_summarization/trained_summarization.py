@@ -6,11 +6,13 @@ import re
 from pathlib import Path
 from typing import Union
 
+# ML libs
+from transformers.pipelines import pipeline
+
 # 3rd party libraries
 from bs4 import BeautifulSoup
 
 # Internal libraries
-from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
 
 
@@ -22,11 +24,11 @@ class TrainedSummarization:
 
     def __init__(
         self,
-        compiled_summarization_pipeline_en: CompiledPipeline,
-        compiled_summarization_pipeline_frde: CompiledPipeline,
-        compiled_summarization_pipeline_es: CompiledPipeline,
-        compiled_summarization_pipeline_ca: CompiledPipeline,
-        compiled_summarization_pipeline_it: CompiledPipeline,
+        compiled_summarization_pipeline_en: pipeline,
+        compiled_summarization_pipeline_frde: pipeline,
+        compiled_summarization_pipeline_es: pipeline,
+        compiled_summarization_pipeline_ca: pipeline,
+        compiled_summarization_pipeline_it: pipeline,
     ):
         self.compiled_summarization_pipeline_en = compiled_summarization_pipeline_en
         self.compiled_summarization_pipeline_frde = compiled_summarization_pipeline_frde
@@ -44,20 +46,21 @@ class TrainedSummarization:
         Returns:
             CompiledSummarization: The loaded pre-trained CompiledSummarization object
         """
-        compiled_summarization_pipeline_en = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_summarizaton_pipeline_en")
+        compiled_summarization_pipeline_en = pipeline(
+            task="summarization", model=os.path.join(directory, "english_summarization")
         )
-        compiled_summarization_pipeline_frde = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_summarizaton_pipeline_frde")
+        compiled_summarization_pipeline_frde = pipeline(
+            task="summarization",
+            model=os.path.join(directory, "french_german_summarization"),
         )
-        compiled_summarization_pipeline_es = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_summarizaton_pipeline_es")
+        compiled_summarization_pipeline_es = pipeline(
+            task="summarization", model=os.path.join(directory, "spanish_summarization")
         )
-        compiled_summarization_pipeline_ca = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_summarizaton_pipeline_ca")
+        compiled_summarization_pipeline_ca = pipeline(
+            task="summarization", model=os.path.join(directory, "catalan_summarization")
         )
-        compiled_summarization_pipeline_it = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_summarizaton_pipeline_it")
+        compiled_summarization_pipeline_it = pipeline(
+            task="summarization", model=os.path.join(directory, "italian_summarization")
         )
         return cls(
             compiled_summarization_pipeline_en=compiled_summarization_pipeline_en,
@@ -148,5 +151,5 @@ class TrainedSummarization:
                 summary of the input text
         """
         pre_processed_text = self.preprocess(text)
-        summary = self.inference(pre_processed_text, language=language)
+        summary = self.inference(pre_processed_text, language)
         return summary

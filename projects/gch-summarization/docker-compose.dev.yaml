@@ -51,8 +51,6 @@ services:
 
   # serving image
   serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     build:
       context: ../../
       dockerfile: projects/gch-summarization/serve/Dockerfile
@@ -69,19 +67,19 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: gch-summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SUM-TRIAINED-60
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SUM-TRAINED-60
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8001
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/gch-summarization
       NEPTUNE_MODEL_ID: SUM-TRAINED
     profiles: [serve, functional, load]
     ports:
-      - 8000:8000
+      - 8001:8001
     volumes:
       - type: bind
         source: ${HOME}/data
@@ -93,7 +91,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/gch-summarization/v1/ready]
+      test: [CMD, curl, -f, http://serve:8001/gch-summarization/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -158,8 +156,6 @@ services:
   # - include model artifact
   # - do NOT include REST model server process
   serve-integration:
-    devices:
-      - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
     volumes:
       - type: bind
         source: ${HOME}/data

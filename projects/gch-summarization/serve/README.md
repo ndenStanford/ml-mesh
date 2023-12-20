@@ -29,7 +29,15 @@ To invoke the `predict` endpoint for inference, use:
 ```bash
 curl -X 'POST' 'http://0.0.0.0:8000/gch-summarization/v1/predict' \
     -H 'Content-Type: application/json' \
-    -d '{ "data": { "namespace": "gch-summarization", "attributes": { "text": "Sky News announces slate of special programming for the appointment of the UK's new Prime Minister.\nSky News' political programming will expand ahead of a momentous week in UK politics with the impending announcement of the new Prime Minister. Sky News' key political programmes will return to bring audiences in-depth discussion and analysis of all the latest news with live coverage from Downing Street and Westminster.\nHead of Sky News, John Ryley:\n'This is a momentous week in British politics, where a new Prime Minister will take on an in-tray bursting with crunch decisions.", }, "parameters": { "language": "en", }, } }'
+    -d '{ "data": {
+        "namespace": "gch-summarization",
+        "attributes": {
+        "content": "Sky News announces slate of special programming for the appointment of the UK's new Prime Minister.\nSky News' political programming will expand ahead of a momentous week in UK politics with the impending announcement of the new Prime Minister. Sky News' key political programmes will return to bring audiences in-depth discussion and analysis of all the latest news with live coverage from Downing Street and Westminster.\nHead of Sky News, John Ryley:\n'This is a momentous week in British politics, where a new Prime Minister will take on an in-tray bursting with crunch decisions.",
+                    },
+                    "parameters": {
+                        "language": "en",
+                    },
+                } }'
 ```
 
 This should return a response along the lines of
@@ -37,7 +45,7 @@ This should return a response along the lines of
 {
   "version": 1,
   "data": {
-    "identifier": null,
+    "identifier": None,
     "namespace": "gch-summarization",
     "attributes": {
       "summary": "Sky News to expand political programming ahead of the appointment of the new Prime Minister. Key political programmes will return to bring audiences in-depth discussion and analysis."}

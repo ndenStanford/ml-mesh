@@ -78,16 +78,12 @@ class ServedSummarizationModel(ServedModel):
         """
         # content and configuration from payload
         attributes = payload.attributes
+        parameters = payload.parameters
 
-        output = self.model(
-            text=attributes.content,
-            min_length=32,
-            max_length=128,
-            num_beams=1,
-        )
+        output = self.model(text=attributes.content, language=parameters.language)
 
         attributes = {
-            "summaries": output[0]["summary_text"],
+            "summary": output,
         }
 
         return PredictResponseSchema.from_data(
