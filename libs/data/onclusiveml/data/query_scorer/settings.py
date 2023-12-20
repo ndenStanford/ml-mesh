@@ -40,6 +40,12 @@ class ScoringConfig(OnclusiveBaseSettings):
     penalty_scaling_power: float = 0.5
 
 
+class Elasticsearchconfig(OnclusiveBaseSettings):
+    """Elasticsearchconfig."""
+
+    es_url: str = os.getenv("ELASTICSEARCH_URL")
+
+
 class Settings(OnclusiveBaseSettings):
     """Settings."""
 
@@ -51,9 +57,10 @@ class Settings(OnclusiveBaseSettings):
 
 def get_settings() -> Settings:
     """Get the settings."""
-    es_url = os.getenv("ELASTICSEARCH_URL")
+    elasticsearch_config = Elasticsearchconfig()
+
     es = Elasticsearch(
-        [es_url],
+        [elasticsearch_config.es_url],
         timeout=30,
         max_retries=10,
         retry_on_timeout=True,
