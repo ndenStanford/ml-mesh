@@ -1,16 +1,15 @@
 """Compiled topic."""
 
 # Standard Library
-import re
 from pathlib import Path
 from typing import Tuple, Union
 
 # 3rd party libraries
 from bertopic import BERTopic
-from bs4 import BeautifulSoup
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp import preprocess
 
 
 logger = get_default_logger(__name__, level=20)
@@ -41,28 +40,6 @@ class TrainedTopic:
             trained_topic_model=trained_topic_model,
         )
 
-    def remove_html(self, text: str) -> str:
-        """Remove HTML tags from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with HTML tags removed
-        """
-        text = BeautifulSoup(text, "html.parser").text
-        return text
-
-    def remove_whitespace(self, text: str) -> str:
-        """Remove extra white spaces from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with extra whitespaces removed
-        """
-        text = re.sub(r"\s+", " ", text)
-        return text
-
     def preprocess(self, sentences: str) -> str:
         """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
 
@@ -71,8 +48,8 @@ class TrainedTopic:
         Return:
             List[str]: Cleaned sentences
         """
-        sentences = self.remove_html(sentences)
-        sentences = self.remove_whitespace(sentences)
+        sentences = preprocess.remove_html(sentences)
+        sentences = preprocess.remove_whitespace(sentences)
 
         return sentences
 
