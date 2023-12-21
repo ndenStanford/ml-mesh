@@ -1,7 +1,6 @@
 """Settings."""
 
 # Standard Library
-import os
 from typing import Any, List
 
 # 3rd party libraries
@@ -43,7 +42,7 @@ class ScoringConfig(OnclusiveBaseSettings):
 class Elasticsearchconfig(OnclusiveBaseSettings):
     """Elasticsearchconfig."""
 
-    es_url: str = os.getenv("ELASTICSEARCH_URL")
+    es_url: str
 
 
 class Settings(OnclusiveBaseSettings):
