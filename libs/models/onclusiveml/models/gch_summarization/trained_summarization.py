@@ -2,18 +2,15 @@
 
 # Standard Library
 import os
-import re
 from pathlib import Path
 from typing import Union
 
 # ML libs
 from transformers.pipelines import pipeline
 
-# 3rd party libraries
-from bs4 import BeautifulSoup
-
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
 
 
 logger = get_default_logger(__name__, level=20)
@@ -47,20 +44,29 @@ class TrainedSummarization:
             TrainedSummarization: The loaded pre-trained TrainedSummarization object
         """
         trained_summarization_pipeline_en = pipeline(
-            task="summarization", model=os.path.join(directory, "english_summarization")
+            task="summarization",
+            model=os.path.join(directory, "english_summarization"),
+            device=0,
         )
         trained_summarization_pipeline_frde = pipeline(
             task="summarization",
             model=os.path.join(directory, "french_german_summarization"),
+            device=0,
         )
         trained_summarization_pipeline_es = pipeline(
-            task="summarization", model=os.path.join(directory, "spanish_summarization")
+            task="summarization",
+            model=os.path.join(directory, "spanish_summarization"),
+            device=0,
         )
         trained_summarization_pipeline_ca = pipeline(
-            task="summarization", model=os.path.join(directory, "catalan_summarization")
+            task="summarization",
+            model=os.path.join(directory, "catalan_summarization"),
+            device=0,
         )
         trained_summarization_pipeline_it = pipeline(
-            task="summarization", model=os.path.join(directory, "italian_summarization")
+            task="summarization",
+            model=os.path.join(directory, "italian_summarization"),
+            device=0,
         )
         return cls(
             trained_summarization_pipeline_en=trained_summarization_pipeline_en,
@@ -70,40 +76,18 @@ class TrainedSummarization:
             trained_summarization_pipeline_it=trained_summarization_pipeline_it,
         )
 
-    def remove_html(self, text: str) -> str:
-        """Remove HTML tags from input text.
+    def preprocess(self, text: str) -> str:
+        """Preprocess the input text by removing unwanted content inside text and tokenizing.
 
         Args:
-            text (str): Input text
-        Returns:
-            str: Text with HTML tags removed
-        """
-        text = BeautifulSoup(text, "html.parser").text
-        return text
-
-    def remove_whitespace(self, text: str) -> str:
-        """Remove extra white spaces from input text.
-
-        Args:
-            text (str): Input text
-        Returns:
-            str: Text with extra whitespaces removed
-        """
-        text = re.sub(r"\s+", " ", text)
-        return text
-
-    def preprocess(self, sentences: str) -> str:
-        """Preprocess the input sentences by removing unwanted content inside text and tokenizing.
-
-        Args:
-            sentences (str): Input sentences
+            text (str): Raw input text
         Return:
-            List[str]: Cleaned sentences
+            str: Cleaned text
         """
-        sentences = self.remove_html(sentences)
-        sentences = self.remove_whitespace(sentences)
+        text = remove_html(text)
+        text = remove_whitespace(text)
 
-        return sentences
+        return text
 
     def inference(self, inputs: str, language: str) -> str:
         """Generate summaries a document.
@@ -124,6 +108,11 @@ class TrainedSummarization:
             pipeline = self.trained_summarization_pipeline_ca
         elif language == "it":
             pipeline = self.trained_summarization_pipeline_it
+        else:
+            pipeline = self.trained_summarization_pipeline_frde
+            logger.info(
+                "The input language is not well supported yet, will use the MBART for now"
+            )
 
         output = pipeline(
             inputs,

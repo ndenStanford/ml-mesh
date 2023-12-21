@@ -453,10 +453,10 @@ jobs       :
             download-model: true
             integration: true
             functional: true
-            load: false
-            upload-test-results: false
+            load: true
+            upload-test-results: true
             runner-kind: custom
-            self-hosted-runner-type: m6a.2xlarge
+            self-hosted-runner-type: g4dn.xlarge
 
     with:
       project: gch-summarization
