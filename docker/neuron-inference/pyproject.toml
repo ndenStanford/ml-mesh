@@ -10,7 +10,7 @@ packages = [{include = "neuron_inference"}]
 python = "3.8.16"
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
-transformers = "^4.27.2"
+transformers = "^4.36.0"
 
 [[tool.poetry.source]]
 name = "aws-neuron"
@@ -21,7 +21,7 @@ secondary = true
 [tool.poetry.group.compilation.dependencies]
 pytest = "7.4.2"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
-transformers = "^4.27.2"
+transformers = "^4.36.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4.2"
