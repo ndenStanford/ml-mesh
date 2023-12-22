@@ -63,6 +63,13 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: gch-summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
@@ -194,6 +201,13 @@ services:
         target: /projects/gch-summarization/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SUM-TRAINED-60
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
@@ -224,6 +238,13 @@ services:
         target: /projects/gch-summarization/serve/tests
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     environment:
     # serving params
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SUM-TRAINED-60
