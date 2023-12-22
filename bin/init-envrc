@@ -4,6 +4,8 @@ import os
 import click
 import getpass
 import boto3
+from botocore import errorfactory
+#from botocore.errorfactory import ParameterNotFound
 
 
 ROOT_DIR = os.path.dirname(
@@ -43,9 +45,24 @@ def main(profile: str, no_export: bool):
     append_secrets_to_env_file("AWS_ACCOUNT_ID", boto3.client('sts').get_caller_identity().get('Account'))
     append_secrets_to_env_file("IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
     append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
-    append_secrets_to_env_file("API_KEY", boto3.client('ssm').get_parameter(Name='/mesh/dev/kong/ml-team/api-key')['Parameter']['Value'])
-    append_secrets_to_env_file("BETTERSTACK_KEY", boto3.client('ssm').get_parameter(Name='/admin/dev/summarization/betterstack/key')['Parameter']['Value'])
+    for env_var, parameter in (
+        ("API_KEY", '/mesh/dev/kong/ml-team/api-key'),
+        ("entity_linking_onclusiveml_serving_betterstack_api_token", '/admin/dev/entity-linking/betterstack/key'),
+        ("iptc_onclusiveml_serving_betterstack_api_token", '/admin/dev/iptc/betterstack/key'),
+        ("lsh_onclusiveml_serving_betterstack_api_token",'/admin/dev/lsh/betterstack/key'),
+        ("ner_onclusiveml_serving_betterstack_api_token",'/admin/dev/ner/betterstack/key'),
+        ("prompt_backend_onclusiveml_serving_betterstack_api_token",'/admin/dev/prompt-backend/betterstack/key'),
+        ("sentiment_onclusiveml_serving_betterstack_api_token",'/admin/dev/sentiment/betterstack/key'),
+        ("test_onclusiveml_serving_betterstack_api_token",'/admin/dev/test/betterstack/key'),
+        ("topic_summarization_onclusiveml_serving_betterstack_api_token",'/admin/dev/topic-summarization/betterstack/key'),
+        ("topic_onclusiveml_serving_betterstack_api_token",'/admin/dev/topic/betterstack/key'),
+        ("transcript_segmentation_onclusiveml_serving_betterstack_api_token",'/admin/dev/transcript-segmentation/betterstack/key'),
+    ):
 
+        try:
+            append_secrets_to_env_file(env_var, boto3.client('ssm').get_parameter(Name=parameter)['Parameter']['Value'])
+        except Exception:
+            print(f"WARNING: Could not retrieve the parameter {parameter}. Environment variable {env_var} remains unset.")
 
 if __name__ == "__main__":
     main()
