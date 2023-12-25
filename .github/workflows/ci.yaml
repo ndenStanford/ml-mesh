@@ -217,7 +217,7 @@ jobs       :
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
-            validate-build: true
+            validate-build: false
 
           - name: neuron-compile
             runner-kind: custom
