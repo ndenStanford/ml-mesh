@@ -171,12 +171,14 @@ jobs       :
 
           - name: python-base
             runner-kind: ubuntu-20.04
+            validate-build: false
 
           - name: gpu-base
             runner-kind: custom
-            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
+            validate-build: true
 
-        validate-build: [false]
         base-region: [us-east-1]
         region: [us-east-1]
         self-hosted-runner-neuron: [false]
@@ -187,10 +189,11 @@ jobs       :
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      validate-build: ${{ matrix.validate-build }}
+      validate-build: ${{ matrix.image.validate-build }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -208,20 +211,25 @@ jobs       :
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
+
           - name: gpu-train
-            runner-kind: ubuntu-20.04
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
-            validate-build: false
+            validate-build: true
 
           - name: neuron-compile
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-ami: ami-03e201058e36661a3
             self-hosted-runner-neuron: true
             validate-build: true
 
           - name: neuron-inference
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-ami: ami-03e201058e36661a3
             self-hosted-runner-neuron: true
             validate-build: true
 
@@ -243,6 +251,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -448,17 +457,6 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
-          # serve
-          - name: serve
-            download-model: true
-            integration: false
-            functional: true
-            load: true
-            upload-test-results: true
-            runner-kind: custom
-            self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-neuron: false
-
     with:
       project: gch-summarization
       environment: prod
@@ -472,7 +470,6 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

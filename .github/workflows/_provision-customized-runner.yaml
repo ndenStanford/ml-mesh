@@ -14,9 +14,10 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-07b4e00e2c69c3702
+        default: ami-03e201058e36661a3
         type: string
-        description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
+        description: The EC2 AMI of the self hosted runner. Choose ami-03e201058e36661a3 for inferentia, ami-0255b953a852e0cb5 for cpu, or ami-0af5c083127a8adce
+          for gpu.
       setup-docker-compose:
         required: true
         default: true

@@ -139,7 +139,7 @@ jobs:
     name: Build, test and deploy core docker component
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    timeout-minutes: 30
+    timeout-minutes: 15
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
