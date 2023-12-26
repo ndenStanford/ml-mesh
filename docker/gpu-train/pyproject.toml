@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "gpu-base"
+name = "gpu-train"
 version = "0.1.0"
 description = "PyTorch-flavoured GPU image for model training"
 authors = ["Sebastian sebastian.scherer@onclusive.com>"]

@@ -9,7 +9,7 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src._init import init
 from src.routes import health_router, v1_router  # type: ignore
-from src.settings import settings
+from src.settings import settings  # type: ignore[attr-defined]
 
 
 logger = get_default_logger(__name__)
