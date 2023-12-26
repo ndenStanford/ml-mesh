@@ -269,20 +269,20 @@ jobs       :
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
-          # # kubeflow-torch-gpu
-          # - name: kubeflow-torch-gpu
-          #   base-region: us-east-2
-          #   runner-kind: custom
-          #   self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+          # kubeflow-torch-gpu
+          - name: kubeflow-torch-gpu
+            base-region: us-east-1
+            runner-kind: custom
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
-            base-region: us-east-2
+            base-region: us-east-1
             runner-kind: ubuntu-20.04
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
-            base-region: us-east-2
+            base-region: us-east-1
             runner-kind: ubuntu-20.04
 
           # kubeflow-torch-cpu
@@ -297,7 +297,7 @@ jobs       :
 
           # dask-base
           - name: dask-base
-            base-region: us-east-2
+            base-region: us-east-1
             runner-kind: ubuntu-20.04
 
         validate-build: [false]
