@@ -45,14 +45,12 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-# =============================================
+  # =============================================
   # SERVE
   # =============================================
 
   # serving image
   serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     volumes:
       - serve-vol:/projects/gch/serve/models
     build:
@@ -142,8 +140,6 @@ services:
   # - include model artifact
   # - do NOT include REST model server process
   serve-integration:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     volumes:
       - serve-vol:/projects/gch-summarization/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
