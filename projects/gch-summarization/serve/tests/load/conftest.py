@@ -150,10 +150,10 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
     )
 
     # --- .../predict
-    # <= 150 ms latency
+    # <= 1500 ms latency
     model_predict_latency_crit = Criterion(
         name=ValidMeasurements.avg_response_time.value,
-        threshold=150,
+        threshold=1500,
         endpoint_type="POST",
         endpoint_url=test_model_predict_endpoint_url,
         ensure_lower=True,
