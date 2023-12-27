@@ -18,7 +18,7 @@ from src.serve.artifacts import ServedModelArtifacts
             False,
             "models/SUM-TRAINED-79/models/model_card",
             "models/SUM-TRAINED-79/model/some/other/dir",
-        ),  # TODO: add test case for remove_model_prefix=True
+        ),  # TODO: add a test case for remove_model_prefix=True
     ],
 )
 @patch("json.loads")

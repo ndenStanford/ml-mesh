@@ -45,7 +45,7 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-# =============================================
+  # =============================================
   # SERVE
   # =============================================
 
@@ -79,14 +79,14 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8001
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/gch-summarization
       NEPTUNE_MODEL_ID: SUM-TRAINED
     profiles: [serve, functional, load]
     ports:
-      - 8001:8001
+      - 8000:8000
     volumes:
       - type: bind
         source: ${HOME}/data
@@ -98,7 +98,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8001/gch-summarization/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/gch-summarization/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
