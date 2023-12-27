@@ -52,7 +52,7 @@ services:
   # serving image
   serve:
     volumes:
-      - serve-vol:/projects/gch/serve/models
+      - serve-vol:/projects/gch-summarization/serve/models
     build:
       context: ../../
       dockerfile: projects/gch-summarization/serve/Dockerfile
