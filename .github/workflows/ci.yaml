@@ -467,7 +467,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
-            setup-neuron: false
+            self-hosted-runner-neuron: false
 
     with:
       project: gch-summarization
