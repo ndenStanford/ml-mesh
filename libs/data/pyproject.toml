@@ -2,7 +2,8 @@
 name = "data"
 version = "0.1.0"
 description = "Data sources and dataset management tools"
-authors = ["Vishal Singh <vishal.singh@onclusive.com>"]
+authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>",
+            "Jian Tong <jian.tong@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
