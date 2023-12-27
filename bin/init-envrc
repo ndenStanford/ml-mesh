@@ -47,16 +47,7 @@ def main(profile: str, no_export: bool):
     append_secrets_to_env_file("BASE_IMAGE_TAG", boto3.client('sts').get_caller_identity().get('Arn').split("/")[-1])
     for env_var, parameter in (
         ("API_KEY", '/mesh/dev/kong/ml-team/api-key'),
-        ("entity_linking_onclusiveml_serving_betterstack_api_token", '/admin/dev/entity-linking/betterstack/key'),
-        ("iptc_onclusiveml_serving_betterstack_api_token", '/admin/dev/iptc/betterstack/key'),
-        ("lsh_onclusiveml_serving_betterstack_api_token",'/admin/dev/lsh/betterstack/key'),
-        ("ner_onclusiveml_serving_betterstack_api_token",'/admin/dev/ner/betterstack/key'),
-        ("prompt_backend_onclusiveml_serving_betterstack_api_token",'/admin/dev/prompt-backend/betterstack/key'),
-        ("sentiment_onclusiveml_serving_betterstack_api_token",'/admin/dev/sentiment/betterstack/key'),
-        ("test_onclusiveml_serving_betterstack_api_token",'/admin/dev/test/betterstack/key'),
-        ("topic_summarization_onclusiveml_serving_betterstack_api_token",'/admin/dev/topic-summarization/betterstack/key'),
-        ("topic_onclusiveml_serving_betterstack_api_token",'/admin/dev/topic/betterstack/key'),
-        ("transcript_segmentation_onclusiveml_serving_betterstack_api_token",'/admin/dev/transcript-segmentation/betterstack/key'),
+        ("ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN",'/admin/dev/test/betterstack/key'),
     ):
 
         try:
