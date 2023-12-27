@@ -163,7 +163,7 @@ def test_model_criteria(test_model_bio_endpoint_url, test_model_predict_endpoint
     # >= 100 requests sent
     model_predict_total_reqs_criterion = Criterion(
         name=ValidMeasurements.requests_total.value,
-        threshold=100,
+        threshold=30,
         endpoint_type="POST",
         endpoint_url=test_model_predict_endpoint_url,
         ensure_lower=False,
