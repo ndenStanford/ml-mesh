@@ -13,14 +13,14 @@ from onclusiveml.serving.rest.serve import (
 
 def test_model_server_root():
     """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8001/gch-summarization/v1/")
+    root_response = requests.get("http://serve:8000/gch-summarization/v1/")
 
     assert root_response.status_code == 200
 
 
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
-    liveness_response = requests.get("http://serve:8001/gch-summarization/v1/live")
+    liveness_response = requests.get("http://serve:8000/gch-summarization/v1/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
@@ -28,7 +28,7 @@ def test_model_server_liveness():
 
 def test_model_server_readiness():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8001/gch-summarization/v1/ready")
+    readiness_response = requests.get("http://serve:8000/gch-summarization/v1/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -36,7 +36,7 @@ def test_model_server_readiness():
 
 def test_model_server_bio():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8001/gch-summarization/v1/bio")
+    readiness_response = requests.get("http://serve:8000/gch-summarization/v1/bio")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
@@ -80,7 +80,7 @@ Minister. Key political programmes will return to bring audiences in-depth discu
 def test_model_server_prediction(payload, expected_response):
     """Tests predict endpoint of the gch summarization ModelServer."""
     response = requests.post(
-        "http://serve:8001/gch-summarization/v1/predict",
+        "http://serve:8000/gch-summarization/v1/predict",
         json=payload,
     )
 

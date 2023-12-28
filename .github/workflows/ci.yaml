@@ -456,6 +456,19 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+
+          # serve
+          - name: serve
+            download-model: true
+            integration: false
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-neuron: false
 
     with:
       project: gch-summarization
@@ -470,6 +483,8 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
