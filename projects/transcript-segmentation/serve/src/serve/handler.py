@@ -12,7 +12,7 @@ import requests
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.settings import get_api_settings
+from src.settings import get_api_settings  # type: ignore[attr-defined]
 
 
 settings = get_api_settings()

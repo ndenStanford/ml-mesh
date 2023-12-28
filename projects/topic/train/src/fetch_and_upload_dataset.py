@@ -12,7 +12,7 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.data.feature_store import FeatureStoreHandle
 
 # Source
-from src.settings import DataFetchParams
+from src.settings import DataFetchParams  # type: ignore[attr-defined]
 
 
 logger = get_default_logger(__name__)

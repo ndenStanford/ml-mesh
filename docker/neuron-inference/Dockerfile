@@ -120,7 +120,7 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
-COPY --from=builder-compilation --chown=$(USER):users "/${HOME}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
+COPY --from=builder-compilation --chown=${USER}:users "/${HOME}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
 
 # hadolint ignore=DL3002
 USER root

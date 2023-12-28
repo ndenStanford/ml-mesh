@@ -27,7 +27,8 @@ class OnclusiveService(OnclusiveEnum):
     ENTITY_LINKING = "entity-linking-serve"
 
     # --- gch summarization
-    GCH_SUMMARIZATION = "gch-summarization-serve"
+    GCH_SUMMARIZATION_TRAIN = "gch-summarization-train"
+    GCH_SUMMARIZATION_SERVE = "gch-summarization-serve"
 
     # --- lsh
     LSH = "lsh-serve"

@@ -9,7 +9,9 @@ from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer
 
 # Source
-from src.serve.model import EntityLinkingServedModel
+from src.serve.model import (  # type: ignore[attr-defined]
+    EntityLinkingServedModel,
+)
 
 
 def get_model_server(settings: BaseSettings) -> FastAPI:
