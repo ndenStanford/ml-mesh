@@ -16,7 +16,7 @@ tracking = {path = "../../libs/tracking"}
 neptune-notebooks = "^0.9.3"
 matplotlib = "^3.7.2"
 seaborn = "^0.12.2"
-pandas = "~1.3.0"
+pandas = "~1.4.3"
 dask = "~2023.3.1"
 kfp = "~1.8.22"
 dask-kubernetes = "~2023.3.1"
@@ -34,6 +34,7 @@ joblib = "~1.3.1"
 elasticsearch = "^7.0.0"
 elasticsearch-dsl = "^7.0.0"
 pandasticsearch = {extras = ["pandas"], version = "0.6.0"}
+data = {path = "../../libs/data"}
 
 [build-system]
 requires = ["poetry-core"]
