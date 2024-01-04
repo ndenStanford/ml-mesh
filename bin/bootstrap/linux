@@ -147,7 +147,8 @@ EOF
     sudo systemctl start docker
     echo "Relaxing docker.sock permissions"
     sudo chmod 666 /var/run/docker.sock
-    echo ls -l /var/run/docker.sock
+    echo "Updated docker.sock permissions:"
+    ls -l /var/run/docker.sock # read & write for owner,group and others
     echo "Docker installation file directory:"
     docker info -f '{{ .DockerRootDir}}'
     echo "Docker (compose) installation and configuration complete."
