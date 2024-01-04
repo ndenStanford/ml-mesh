@@ -46,26 +46,31 @@ class TrainedSummarization:
         trained_summarization_pipeline_en = pipeline(
             task="summarization",
             model=os.path.join(directory, "english_summarization"),
+            tokenizer=os.path.join(directory, "english_summarization"),
             device=0,
         )
         trained_summarization_pipeline_frde = pipeline(
             task="summarization",
             model=os.path.join(directory, "french_german_summarization"),
+            tokenizer=os.path.join(directory, "french_german_summarization"),
             device=0,
         )
         trained_summarization_pipeline_es = pipeline(
             task="summarization",
             model=os.path.join(directory, "spanish_summarization"),
+            tokenizer=os.path.join(directory, "spanish_summarization"),
             device=0,
         )
         trained_summarization_pipeline_ca = pipeline(
             task="summarization",
             model=os.path.join(directory, "catalan_summarization"),
+            tokenizer=os.path.join(directory, "catalan_summarization"),
             device=0,
         )
         trained_summarization_pipeline_it = pipeline(
             task="summarization",
             model=os.path.join(directory, "italian_summarization"),
+            tokenizer=os.path.join(directory, "italian_summarization"),
             device=0,
         )
         return cls(
@@ -116,6 +121,7 @@ class TrainedSummarization:
 
         output = pipeline(
             inputs,
+            truncation=True,
             min_length=32,
             max_length=128,
             num_beams=1,
