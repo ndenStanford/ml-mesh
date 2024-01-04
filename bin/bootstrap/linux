@@ -137,6 +137,7 @@ EOF
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
     sudo yum install -y docker-compose-plugin
+    sudo chmod 666 /var/run/docker.sock
 
     # configure docker storage directory & restart
     echo "Configuring docker dir to mounted EBS volume"
