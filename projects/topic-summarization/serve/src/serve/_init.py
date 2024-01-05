@@ -5,7 +5,6 @@
 from typing import Optional
 
 # 3rd party libraries
-# import requests
 from pydantic import BaseSettings
 
 # Internal libraries
