@@ -69,13 +69,6 @@ class TopicHandler:
         key = category if category in output_content else f"<{category}>"
         return output_content.get(key)
 
-        # if category in output_content.keys():
-        #     return output_content[category]
-        # elif f"<{category}>" in output_content.keys():
-        #     return output_content[f"<{category}>"]
-        # else:
-        #     return output_content
-
     # use gpt to generate summary for multiple articles together; will be called in aggregate.
     def summary(
         self,
@@ -100,7 +93,7 @@ class TopicHandler:
 
         input_dict = {
             "content": processed_article,
-        }  # input target category & articles
+        }  # input articles
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
