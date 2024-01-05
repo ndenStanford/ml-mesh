@@ -372,3 +372,127 @@ class PromptEnum(OnclusiveEnum):
             "response_format": {"type": "json_object"},
         },
     ]
+
+    ML_TOPIC_SUMMARIZATION_SINGLE_ANALYSIS = [
+        """
+        You are an expert in finding insight from a group of articles.
+
+        I want you to summarize the protential impact on a given category, based on all the input articles together.
+
+        I will give you a target category delimited by < and >,
+        and many articles related to this industry delimited by triple backticks.
+
+        Target category: <{target_category}>
+        Input articles: {content}
+
+        If none of the articles are related to the target category, output the category followed by 'null', the null value in JSON format. For example, if the category is 'Risk Detection' and no articles are relevant, output should be 'Risk Detection': null.
+
+        You must follow the steps below:
+        1. Go through every input article to understand its content.
+        2. For every article, think about what it talks about the target category.
+        3. Aggregate the insights from step 2 to generate a concise, narrative-style and easy-to-read paragraph to show the content mentioned by all the input articles about the target category.
+
+        Let's think step by step and generate your output in following JSON format. Here 'xxx' is placeholders:
+        Article's content about target category: [For each article, what it talks about the target category]
+        {target_category}: An overall summary for the content about target category, based on all the input articles
+        """,  # noqa: E501
+        "ml-topic-summarization-single-analysis",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_TOPIC_SUMMARIZATION_AGGREGATE = [
+        """
+        I want you to provide a concise summary that combines the main points of the following summaries.
+
+        Those summaries are from multiple articles, focusing on a given aspect of a target industry.
+
+        I will give you a target category delimited by < and >,
+        and many summaries from articles related to this industry delimited by triple backticks.
+
+        Target category: <{target_category}>
+        Input summaries: {Summary}
+
+        If none of the summaries are related to the target category, output the category followed by 'null', the null value in JSON format. For example, if the category is 'Risk Detection' and no summaries are relevant, output should be 'Risk Detection': null.
+
+        You must follow the steps below:
+        1. Carefully review every summary, ensuring a deep understanding of each one.
+        2. Extract the distinct information from each summary, ensuring no repetition but capturing the crux.
+        3. Using the extracted information, craft an in-depth, unified one-paragraph summary that elaborates on the main points.
+
+        Let's think step by step and generate your output in following JSON format. Here 'xxx' is placeholders:
+        The distinct information from each summary: [The distinct information in each summary]
+        {target_category}: An overall summary for the content about target category, based on all the input summaries
+        """,  # noqa: E501
+        "ml-topic-summarization-aggregate",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_MULTI_ARTICLES_SUMMARIZATION = [
+        """
+        You are a summarization bot.
+
+        I will give you serveral articles and the articles are delimited by triple backticks.
+
+        I want you to generate a one-paragraph summary for all the articles I give.
+
+        You must use the following step to generate your result:
+        1. Read every article carefully and understand the main idea of each article.
+        2. Once you have the main point from each article, look for common themes, similarities, or overlapping ideas among them. Group these main points based on these commonalities.
+        3. For each group of main points, distill them into a single sentence that encapsulates the shared message or theme.
+        4. Order these distilled sentences in a logical or meaningful sequence that provides coherence and flow to the reader.
+        5. Write a one-paragraph summarization that concisely represents the information from all the articles, using the ordered distilled sentences as your guide.
+
+        Input articles: {content}
+
+        Let's think step by step and show me your answer in following JSON format."xxx" is placeholder.
+        The main point of each input article: [mean point of each article]
+        Summary: The summary you generate for these articles
+        """,  # noqa: E501
+        "ml-multi-articles-summarization",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    ML_ARICLES_SUMMARY_AGGREGATION = [
+        """
+        You are an expert in extracting and consolidating insights from articles.
+
+        Your primary objective is to produce a comprehensive one-paragraph summary, that combines the insights from multiple article summaries. Each of those summaries will be provided to you, delimited by triple backticks.
+
+        Further, based on your consolidated summary, you are to generate a theme for all the input summaires.
+
+        The process you must follow is detailed below:
+        1. Carefully review every summary, ensuring a deep understanding of each one.
+        2. Extract the distinct information from each summary, ensuring no repetition but capturing the crux.
+        3. Using the extracted information, craft an in-depth, unified one-paragraph summary that elaborates on the main points.
+        4. Finally, formulate a single, overarching theme that captures the essence of all the summaries.
+
+        Input summaries: {Summary}
+
+        Let's proceed methodically. Present your response in the following JSON format, where "xxx" is a placeholder:
+        Distinct Information: [Distinct details from each summary]
+        Summary: Your synthesized summary based on all the summaries I provided
+        Theme: The theme for your consolidated summary
+        """,  # noqa: E501
+        "ml-articles-summary-aggregation",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]

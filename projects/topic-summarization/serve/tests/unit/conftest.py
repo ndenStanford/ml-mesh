@@ -8,13 +8,22 @@ from unittest.mock import MagicMock
 import pytest
 
 # Source
+from src.serve.prompt_storage import Category_list
 
 
 @pytest.fixture
 def model_card():
     """Mock response for request.post."""
     mock_response = MagicMock()
-    mock_response.content = '{"generated":"Not mentioned"}'
+
+    # build mock sample
+    keys = Category_list + ["Summary", "Theme"]
+    # Manually construct the inner JSON string
+    inner_json_parts = [f'\\"{key}\\": \\"Not mentioned\\"' for key in keys]
+    inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
+
+    # Create the final string
+    mock_response.content = f'{{"generated": "{inner_json_str}"}}'
     return mock_response
 
 

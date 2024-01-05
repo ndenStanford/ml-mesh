@@ -5,7 +5,7 @@ from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.serve._init import _setup_prompts
+# from src.serve._init import _setup_prompts
 from src.serve.served_model import ServedTopicModel
 
 
@@ -16,7 +16,7 @@ def get_model_server() -> ModelServer:
     # initialize model server
     serving_params = ServingParams()
     # set up prompt
-    _setup_prompts()
+    # _setup_prompts()
 
     model_server = ModelServer(configuration=serving_params, model=topic_served_model)
     Instrumentator.enable(model_server, app_name="topic-summarization")

@@ -56,7 +56,6 @@ def test_predict_input() -> str:
     """Test predict input."""
     # return "Call functions to detect topic for articles"
     return PredictInputDocumentModel(
-        industry="Science and technology",
         content=[
             """
             India's semiconductor component market will see its cumulative revenues climb to $300 billion during 2021-2026,

@@ -59,7 +59,6 @@ def test_model_server_predict(
     input = PredictRequestModel(
         configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
-            industry=test_predict_input.industry,
             content=test_predict_input.content,
         ),
     )

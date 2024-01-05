@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 
 # 3rd party libraries
 import requests
+import json
 
 # Internal libraries
 # Internal library
@@ -29,7 +30,6 @@ class TopicHandler:
         self,
         article: List[str],
         category: str,
-        industry: str,
     ) -> str:
         """Topic detection handler method.
 
@@ -39,12 +39,11 @@ class TopicHandler:
             'Threats for the brand','Company or spokespersons', 'Brand Reputation',
             'CEO Reputation', 'Customer Response', 'Stock Price Impact',
             'Industry trends']
-            industry: target industry
         """
         try:
-            alias = settings.PROMPT_DICT["analysis"]["alias"]
+            alias = "ml-topic-summarization-single-analysis"
         except KeyError:
-            logger.errror("Topic function not supported.")
+            logger.error("Topic function not supported.")
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -54,7 +53,6 @@ class TopicHandler:
             )
 
         input_dict = {
-            "target_industry": industry,
             "target_category": category,
             "content": processed_article,
         }  # input target category & articles
@@ -65,44 +63,100 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
-        return eval(q.content)["generated"]
 
-    def aggregate(self, article: list, industry: str) -> dict:
-        """Function for spliting the articles into groups, then aggregate together."""
+        output_content = json.loads(json.loads(q.content)["generated"])
+
+        key = category if category in output_content else f"<{category}>"
+        return output_content.get(key)
+
+        # if category in output_content.keys():
+        #     return output_content[category]
+        # elif f"<{category}>" in output_content.keys():
+        #     return output_content[f"<{category}>"]
+        # else:
+        #     return output_content
+
+    # use gpt to generate summary for multiple articles together; will be called in aggregate.
+    def summary(
+        self,
+        article: List[str],
+    ) -> str:
+        """Summarize multiple articles at same time.
+
+        Args:
+            article (list): list of str
+        """
+        try:
+            alias = "ml-multi-articles-summarization"
+        except KeyError:
+            logger.error("Topic function not supported.")
+        # transfer article to the format used in prompt
+        processed_article = ""
+        for i in range(len(article)):
+            text = article[i]
+            processed_article += (
+                "\n    Article " + str(i) + ": '''" + text + "''' " + "\n"
+            )
+
+        input_dict = {
+            "content": processed_article,
+        }  # input target category & articles
+        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
+            headers=headers,
+            json=input_dict,
+        )
+        return json.loads(json.loads(q.content)["generated"])["Summary"]
+
+    def aggregate(self, article: list) -> dict:
+        """Function for aggregating results together, both topic analysis and summarization."""
         num_article = len(article)
-        n = 3  # group size
-        art_index = 0
+        n = 10  # group size
         category_list = settings.CATEGORY_LIST
-        record = {cate: "" for cate in category_list}
+        record = {cate: None for cate in category_list + ["Summary"]}
         # do topic analysis for each category
-        for category in category_list:
+        for category in category_list + ["Summary"]:
             # print('current category : ', cate)
+            art_index = 0
             record_cate = []
             # divide the articles into groups and summarize each group
             while art_index < num_article:
                 end_index = min(art_index + n, num_article)
                 input_article = article[art_index:end_index]  # E203
-                res_now = self.inference(input_article, category, industry)
+                res_now = (
+                    self.inference(input_article, category)
+                    if category != "Summary"
+                    else self.summary(input_article)
+                )
                 record_cate.append(res_now)
                 art_index += n
 
-            processed_summary = ""
-            for i in range(len(record_cate)):
-                text = record_cate[i]
-                processed_summary += (
-                    "\n    Summary " + str(i) + ": '''" + text + "''' " + "\n"
-                )
+            processed_summary = "\n".join(
+                [
+                    f"Summary {index + 1}: '''{article}'''"
+                    for index, article in enumerate(record_cate)
+                ]
+            )
 
             try:
-                alias = settings.PROMPT_DICT["aggregate"]["alias"]
+                alias = (
+                    "ml-topic-summarization-aggregate"
+                    if category != "Summary"
+                    else "ml-articles-summary-aggregation"
+                )
             except KeyError:
                 logger.errror("Topic function not supported.")
 
-            input_dict = {
-                "target_industry": industry,
-                "target_category": category,
-                "Summary": processed_summary,
-            }  # input target category & articles
+            input_dict = (
+                {
+                    "target_category": category,
+                    "Summary": processed_summary,
+                }
+                if category != "Summary"
+                else {"Summary": processed_summary}
+            )  # input target category & articles
             headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
             q = requests.post(
@@ -111,7 +165,11 @@ class TopicHandler:
                 json=input_dict,
             )
 
-            record[category] = eval(q.content)["generated"]
+            output_content = json.loads(json.loads(q.content)["generated"])
+            record[category] = output_content[category]
+            if category == "Summary":
+                record["Theme"] = output_content["Theme"]
+
         return record
 
     def pre_process(self, article: list) -> list:
@@ -148,17 +206,16 @@ def handle(data: Any) -> Dict[str, dict]:
             data = eval(data)
 
         content = data["content"]
-        industry = data["industry"]  # ?
 
         if content is None or content == "":
             logger.warning(
                 "Content field is empty. This will result in no summary being returned"
             )
 
-        article = _service.pre_process(content)  # ?
+        article = _service.pre_process(content)
 
         starttime = datetime.datetime.utcnow()
-        topic = _service.aggregate(article, industry)
+        topic = _service.aggregate(article)
         endtime = datetime.datetime.utcnow()
 
         logger.debug(
@@ -167,7 +224,7 @@ def handle(data: Any) -> Dict[str, dict]:
             )
         )
 
-        topic = _service.postprocess(topic)  # ?
+        topic = _service.postprocess(topic)
         return {"topic": topic}
     except Exception as e:
         raise e

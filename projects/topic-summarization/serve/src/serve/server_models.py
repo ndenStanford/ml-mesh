@@ -14,14 +14,12 @@ class PredictConfiguration(BaseModel):
     Holds the required information to be provided in the payload and their type
     """
 
-    content: List[str] = [""]  # industry for first, article for second
-    industry: str = ""
     max_tokens: Optional[int] = 0
     temperature: Optional[float] = 1
     top_p: Optional[float] = 1
     presence_penalty: Optional[float] = 0
     frequency_penalty: Optional[float] = 0
-    model: Optional[str] = "gpt-4"
+    model: Optional[str] = "gpt-4-1106-preview"
 
 
 class PredictInputDocumentModel(BaseModel):
@@ -31,7 +29,6 @@ class PredictInputDocumentModel(BaseModel):
         content (str): Text to generate signature for. An empty string is needed (at least)
     """
 
-    industry: str
     content: List[str]
 
 

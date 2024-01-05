@@ -49,10 +49,9 @@ class ServedTopicModel(ServedModel):
         inputs = payload.inputs
         # configuration = payload.configuration
         content = inputs.content
-        industry = inputs.industry
 
         article = self.model.pre_process(content)
-        topic = self.model.aggregate(article, industry)
+        topic = self.model.aggregate(article)
 
         return PredictResponseModel(topic=topic)
 

@@ -5,14 +5,14 @@
 from typing import Optional
 
 # 3rd party libraries
-import requests
+# import requests
 from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.serve.prompt_storage import Category_list, Prompt_dict
+from src.serve.prompt_storage import Category_list
 
 logger = get_default_logger(__name__)
 
@@ -43,28 +43,6 @@ class Settings(BaseSettings):
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     # interested aspects/categories
     CATEGORY_LIST = Category_list
-    # prompt for iteratively input; each time one category only
-    PROMPT_DICT = Prompt_dict
 
 
 settings = Settings()
-
-
-def init() -> None:
-    """App initialization."""
-    logger.info("Setting up prompts...")
-    _setup_prompts()
-
-
-def _setup_prompts() -> None:
-    """Setup prompts."""
-    headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
-
-    for prompt_key in settings.PROMPT_DICT.keys():
-        alias = settings.PROMPT_DICT[prompt_key]["alias"]
-        template = settings.PROMPT_DICT[prompt_key]["template"]
-        requests.post(
-            f"{settings.PROMPT_API}/api/v1/prompts?template={template}&alias={alias}",  # noqa: E501
-            headers=headers,
-        )
-    return
