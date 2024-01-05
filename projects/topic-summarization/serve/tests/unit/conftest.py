@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 # Source
-from src.serve.prompt_storage import Category_list
+from src.serve.category_storage import Category_list
 
 
 @pytest.fixture

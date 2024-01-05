@@ -12,7 +12,7 @@ from pydantic import BaseSettings
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.serve.prompt_storage import Category_list
+from src.serve.category_storage import Category_list
 
 logger = get_default_logger(__name__)
 

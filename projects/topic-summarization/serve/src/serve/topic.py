@@ -40,10 +40,7 @@ class TopicHandler:
             'CEO Reputation', 'Customer Response', 'Stock Price Impact',
             'Industry trends']
         """
-        try:
-            alias = "ml-topic-summarization-single-analysis"
-        except KeyError:
-            logger.error("Topic function not supported.")
+        alias = "ml-topic-summarization-single-analysis"
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -79,10 +76,7 @@ class TopicHandler:
         Args:
             article (list): list of str
         """
-        try:
-            alias = "ml-multi-articles-summarization"
-        except KeyError:
-            logger.error("Topic function not supported.")
+        alias = "ml-multi-articles-summarization"
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -133,14 +127,11 @@ class TopicHandler:
                 ]
             )
 
-            try:
-                alias = (
-                    "ml-topic-summarization-aggregate"
-                    if category != "Summary"
-                    else "ml-articles-summary-aggregation"
-                )
-            except KeyError:
-                logger.errror("Topic function not supported.")
+            alias = (
+                "ml-topic-summarization-aggregate"
+                if category != "Summary"
+                else "ml-articles-summary-aggregation"
+            )
 
             input_dict = (
                 {
