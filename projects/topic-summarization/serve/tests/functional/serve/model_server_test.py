@@ -12,7 +12,6 @@ from onclusiveml.serving.rest.serve import (
 
 # Source
 from src.serve.server_models import (
-    PredictConfiguration,
     PredictInputDocumentModel,
     PredictRequestModel,
 )
@@ -57,7 +56,6 @@ def test_model_server_predict(
     artifact as ground truth for the regression test element.
     """
     input = PredictRequestModel(
-        configuration=PredictConfiguration(),
         inputs=PredictInputDocumentModel(
             content=test_predict_input.content,
         ),

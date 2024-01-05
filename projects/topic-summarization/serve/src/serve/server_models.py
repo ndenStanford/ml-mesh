@@ -1,25 +1,10 @@
 """Serving data models."""
 
 # Standard Library
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 # 3rd party libraries
 from pydantic import BaseModel
-
-
-# --- prediction request models
-class PredictConfiguration(BaseModel):
-    """GPT parameters.
-
-    Holds the required information to be provided in the payload and their type
-    """
-
-    max_tokens: Optional[int] = 0
-    temperature: Optional[float] = 1
-    top_p: Optional[float] = 1
-    presence_penalty: Optional[float] = 0
-    frequency_penalty: Optional[float] = 0
-    model: Optional[str] = "gpt-4-1106-preview"
 
 
 class PredictInputDocumentModel(BaseModel):
@@ -35,7 +20,7 @@ class PredictInputDocumentModel(BaseModel):
 class PredictRequestModel(BaseModel):
     """Predict Request Model."""
 
-    configuration: PredictConfiguration
+    # configuration: PredictConfiguration
     inputs: PredictInputDocumentModel
 
 
@@ -48,7 +33,6 @@ class PredictResponseModel(BaseModel):
         signature (Optional[str]): Signature text in string, can be None
     """
 
-    # signature: Optional[List[str]]
     topic: Dict
 
 

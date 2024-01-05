@@ -5,7 +5,7 @@ import pytest
 
 # Source
 from src.serve.served_model import ServedTopicModel
-from src.serve.server_models import PredictConfiguration, PredictRequestModel
+from src.serve.server_models import PredictRequestModel
 
 
 @pytest.mark.order(1)
@@ -32,7 +32,6 @@ def test_served_topic_model_predict(test_predict_input, test_expected_predict_ou
     served_topic_model.load()
 
     input = PredictRequestModel(
-        configuration=PredictConfiguration(),
         inputs=test_predict_input,
     )
 
