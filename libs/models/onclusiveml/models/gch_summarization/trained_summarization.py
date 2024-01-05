@@ -43,29 +43,41 @@ class TrainedSummarization:
         Returns:
             TrainedSummarization: The loaded pre-trained TrainedSummarization object
         """
+        task = "summarization"
+        model_path_en = os.path.join(directory, "english_summarization")
+        model_path_frde = os.path.join(directory, "french_german_summarization")
+        model_path_es = os.path.join(directory, "spanish_summarization")
+        model_path_ca = os.path.join(directory, "catalan_summarization")
+        model_path_it = os.path.join(directory, "italian_summarization")
+
         trained_summarization_pipeline_en = pipeline(
-            task="summarization",
-            model=os.path.join(directory, "english_summarization"),
+            task=task,
+            model=model_path_en,
+            tokenizer=model_path_en,
             device=0,
         )
         trained_summarization_pipeline_frde = pipeline(
-            task="summarization",
-            model=os.path.join(directory, "french_german_summarization"),
+            task=task,
+            model=model_path_frde,
+            tokenizer=model_path_frde,
             device=0,
         )
         trained_summarization_pipeline_es = pipeline(
-            task="summarization",
-            model=os.path.join(directory, "spanish_summarization"),
+            task=task,
+            model=model_path_es,
+            tokenizer=model_path_es,
             device=0,
         )
         trained_summarization_pipeline_ca = pipeline(
-            task="summarization",
-            model=os.path.join(directory, "catalan_summarization"),
+            task=task,
+            model=model_path_ca,
+            tokenizer=model_path_ca,
             device=0,
         )
         trained_summarization_pipeline_it = pipeline(
-            task="summarization",
-            model=os.path.join(directory, "italian_summarization"),
+            task=task,
+            model=model_path_it,
+            tokenizer=model_path_it,
             device=0,
         )
         return cls(
@@ -116,6 +128,7 @@ class TrainedSummarization:
 
         output = pipeline(
             inputs,
+            truncation=True,
             min_length=32,
             max_length=128,
             num_beams=1,
