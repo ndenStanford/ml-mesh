@@ -3,9 +3,8 @@
 # 3rd party libraries
 import pytest
 
-from src.serve.category_storage import Category_list
-
 # Source
+from src.serve.category_storage import Category_list
 from src.serve.served_model import ServedTopicModel
 from src.serve.server_models import PredictRequestModel
 
