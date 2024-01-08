@@ -3,6 +3,8 @@
 # 3rd party libraries
 import pytest
 
+from src.serve.category_storage import Category_list
+
 # Source
 from src.serve.served_model import ServedTopicModel
 from src.serve.server_models import PredictRequestModel
@@ -37,7 +39,10 @@ def test_served_topic_model_predict(test_predict_input, test_expected_predict_ou
 
     test_actual_predict_output = served_topic_model.predict(input)
 
-    assert test_actual_predict_output
+    assert list(test_actual_predict_output.topic.keys()) == Category_list + [
+        "Summary",
+        "Theme",
+    ]
 
 
 @pytest.mark.order(3)
