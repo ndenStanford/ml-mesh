@@ -4,6 +4,9 @@
 from pathlib import Path
 from typing import Tuple, Union
 
+# ML libs
+import torch
+
 # 3rd party libraries
 from bertopic import BERTopic
 
@@ -65,7 +68,9 @@ class TrainedTopic:
         self.inputs = text
 
         topic_id, prob = self.trained_topic_model.transform(text)
+        torch.cuda.empty_cache()
         topic_representation = self.trained_topic_model.get_topic(int(topic_id))
+        torch.cuda.empty_cache()
 
         return (topic_id, topic_representation)
 
