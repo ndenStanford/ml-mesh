@@ -405,13 +405,15 @@ class PromptEnum(OnclusiveEnum):
         },
     ]
 
-    ML_TOPIC_SUMMARIZATION_AGGREGATE = [
+    ML_TOPIC_SUMMARIZATION_AGGREGATION = [
         """
-        I want you to provide a concise summary that combines the main points of the following summaries.
+        You are an expert in news analyzing and summarization.
+
+        I want you to provide a concise summary that combines the main points of the following summaries. Then inference the impact level of this category, based on the summaries provided.
 
         Those summaries are from multiple articles, focusing on a given aspect of a target industry.
 
-        I will give you a target category delimited by < and >,
+        I will give you the target industry delimited by *, a target category delimited by < and >,
         and many summaries from articles related to this industry delimited by triple backticks.
 
         Target category: <{target_category}>
@@ -423,12 +425,21 @@ class PromptEnum(OnclusiveEnum):
         1. Carefully review every summary, ensuring a deep understanding of each one.
         2. Extract the distinct information from each summary, ensuring no repetition but capturing the crux.
         3. Using the extracted information, craft an in-depth, unified one-paragraph summary that elaborates on the main points.
+        4. Based on the one-paragraph summary generated in Step 3, generate a theme for {target_category}.
+        5. Assess the impact level of this target category based on the one-paragraph summary. To do this, follow these additional steps:
+            a. Evaluate if the content suggests a significant change or influence in the industry (High Impact), a moderate change (Medium Impact), or minimal to no change (Low Impact).
+            b. Consider the urgency, scope, and the evidence strength in the summaries. Is it urgent and widespread with strong evidence (High)? Noticeable but not urgent, with some evidence (Medium)? Or of low priority and relevance with weak evidence (Low)?
+            c. Use this chain-of-thought process to categorize the impact level into either 'Low', 'Medium', or 'High'.
 
-        Let's think step by step and generate your output in following JSON format. Here 'xxx' is placeholders:
+        Let's think step by step and generate your output in following JSON format. Here '[xxx]' is placeholders:
         The distinct information from each summary: [The distinct information in each summary]
-        {target_category}: An overall summary for the content about target category, based on all the input summaries
+        Overall summary: [An overall summary for the content about target category, based on all the input summaries]
+        Theme: [The theme for {target_category}, based on the one-paragraph summary]
+        Significant change: [if the content suggests a significant change in the {target_category}]
+        Impact level: [The impact level of this target category]
+        Reason for impact: [The reason for this impact level]
         """,  # noqa: E501
-        "ml-topic-summarization-aggregate",
+        "ml-topic-summarization-aggregation",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,

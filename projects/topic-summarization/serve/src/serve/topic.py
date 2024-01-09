@@ -3,7 +3,7 @@
 
 # Standard Library
 import re
-from typing import List
+from typing import List, Dict, Optional, Any
 
 # 3rd party libraries
 import requests
@@ -99,7 +99,7 @@ class TopicHandler:
     def summary_aggregate(self, article: list) -> dict:
         """Function for aggregating summary and generating theme."""
         num_article = len(article)
-        n = 10  # group size
+        n = 8  # group size
         record = {"Summary": None, "Theme": None}
         # do topic analysis for each category
         art_index = 0
@@ -138,9 +138,11 @@ class TopicHandler:
     def topic_aggregate(self, article: list) -> dict:
         """Function for aggregating topic analysis results together."""
         num_article = len(article)
-        n = 10  # group size
+        n = 8  # group size
         category_list = model_settings.CATEGORY_LIST
-        record = {cate: None for cate in category_list}
+        record: Dict[str, Optional[Dict[str, Any]]] = {
+            cate: None for cate in category_list
+        }
         # do topic analysis for each category
         for category in category_list:
             art_index = 0
@@ -160,7 +162,7 @@ class TopicHandler:
                 ]
             )
 
-            alias = "ml-topic-summarization-aggregate"
+            alias = "ml-topic-summarization-aggregation"
 
             input_dict = {
                 "target_category": category,
@@ -175,7 +177,16 @@ class TopicHandler:
             )
 
             output_content = json.loads(json.loads(q.content)["generated"])
-            record[category] = output_content[category]
+            agg_out_content, agg_out_impact, agg_out_theme = (
+                output_content["Overall summary"],
+                output_content["Impact level"],
+                output_content["Theme"],
+            )
+            record[category] = {
+                f"{category} analysis ": agg_out_content,
+                f"{category} theme ": agg_out_theme,
+                f"{category} impact ": agg_out_impact,
+            }
 
         return record
 

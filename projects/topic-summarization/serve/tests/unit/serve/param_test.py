@@ -19,7 +19,7 @@ def test_handler_inference(mock_post, article_input, model_card):
         article=article_input,
         category="Opportunities",
     )
-    assert isinstance(gpt_inference, str)
+    assert isinstance(gpt_inference, dict)
 
 
 @patch("requests.post")
@@ -34,9 +34,9 @@ def test_handler_summary(mock_post, article_input, model_card):
 
 
 @patch("requests.post")
-def test_handler_topic_aggregate(mock_post, article_input, model_card):
+def test_handler_topic_aggregate(mock_post, article_input, model_card_aggregate):
     """Test the aggregate function in handler."""
-    mock_post.return_value = model_card
+    mock_post.return_value = model_card_aggregate
     gpt_inference = _service.topic_aggregate(
         article=article_input,
     )
@@ -54,9 +54,9 @@ def test_handler_summary_aggregate(mock_post, article_input, model_card):
 
 
 @patch("requests.post")
-def test_handler_aggregate(mock_post, article_input, model_card):
+def test_handler_aggregate(mock_post, article_input, model_card_aggregate):
     """Test the aggregate function in handler."""
-    mock_post.return_value = model_card
+    mock_post.return_value = model_card_aggregate
     gpt_inference = _service.aggregate(
         article=article_input,
     )

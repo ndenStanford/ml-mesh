@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 
 # 3rd party libraries
 import pytest
+import json
 
 # Source
 from src.serve.category_storage import Category_list
@@ -17,9 +18,36 @@ def model_card():
     mock_response = MagicMock()
 
     # build mock sample
-    keys = Category_list + ["Summary", "Theme"]
+    keys = Category_list
+    # The value for each key in the inner JSON object
+    value_dict = {
+        "Overall summary": "Not mentioned",
+        "Theme": "Not mentioned",
+        "Impact level": "Not mentioned",
+    }
     # Manually construct the inner JSON string
-    inner_json_parts = [f'\\"{key}\\": \\"Not mentioned\\"' for key in keys]
+    value_str = json.dumps(value_dict).replace('"', '\\"')
+    inner_json_parts = inner_json_parts = [
+        f'\\"{key}\\": {value_str}' for key in keys
+    ] + [f'\\"{key}\\": \\"Not mentioned\\"' for key in ["Summary", "Theme"]]
+    inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
+
+    # Create the final string
+    mock_response.content = f'{{"generated": "{inner_json_str}"}}'
+    return mock_response
+
+
+@pytest.fixture
+def model_card_aggregate():
+    """Mock response for request.post."""
+    mock_response = MagicMock()
+
+    # build mock sample
+    keys = ["Overall summary", "Theme", "Impact level", "Summary"]
+    # Manually construct the inner JSON string
+    inner_json_parts = inner_json_parts = [
+        f'\\"{key}\\": \\"Not mentioned\\"' for key in keys
+    ]
     inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
 
     # Create the final string
