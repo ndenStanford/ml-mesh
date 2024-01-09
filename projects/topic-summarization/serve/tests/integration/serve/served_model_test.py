@@ -1,4 +1,5 @@
 """Prediction model tests."""
+# isort: skip_file
 
 # 3rd party libraries
 import pytest
