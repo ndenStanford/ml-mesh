@@ -13,13 +13,10 @@ from requests_toolbelt.sessions import BaseUrlSession
 from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
-from src.serve.server_models import (
-    BioResponseModel,
-    PredictInputDocumentModel,
-    PredictResponseModel,
+from src.serve.schemas import (
+    BioResponseSchema,
+    PredictResponseSchema,
 )
-
-# from typing import List
 
 
 @pytest.fixture
@@ -52,57 +49,63 @@ def test_inference_params(test_served_model_artifacts):
 
 
 @pytest.fixture
-def test_predict_input() -> str:
-    """Test predict input."""
-    # return "Call functions to detect topic for articles"
-    return PredictInputDocumentModel(
-        content=[
-            """
-            India's semiconductor component market will see its cumulative revenues climb to $300 billion during 2021-2026,
-            a report said Tuesday. The ‘India Semiconductor Market Report, 2019-2026',
-            a joint research by the India Electronics & Semiconductor Association (IESA) and Counterpoint Research,
-            observed that India is poised to be the second largest market in the world in terms of scale and growing demand for
-            semiconductor components across several industries and applications.
-            It added that this was being bolstered by the increasing pace of digital transformation and the adoption of
-            new technologies and covers smartphones, PCs, wearables, cloud data centers,
-            Industry 4.0 applications, IoT, smart mobility, and advanced telecom and public utility infrastructure.
-            “While the country is becoming one of the largest consumers of electronic and semiconductor components,
-            most components are imported, offering limited economic opportunities for the country.
-            Currently, only 9% of this semiconductor requirement is met locally,” the report said.
-            it noted that India's end equipment market in 2021 stood at $119 billion in terms of revenue and
-            is expected to grow at a CAGR of 19% from 2021 to 2026.
-            It said that the Electronic System Design and Manufacturing (ESDM) sector in India will play a major role in the
-            country's overall growth, from sourcing components to design manufacturing.
-            “Before the end of this decade, there will be nothing that will not be touched by electronics and the ubiquitous ‘chip,
-            '” IESA CEO Krishna Moorthy said. “Be it fighting carbon emissions, renewable energy, food safety, or healthcare,
-            the semiconductor chip will be all-pervasive.”
-            Counterpoint Research vice president Neil Shah added that consumption will not only come from the advanced
-            semiconductor-heavy 5G and fiber-to-the-home (FTTH) network infrastructure equipment,
-            which will contribute to more than 14% of the total semiconductor consumption in 2026,
-            but also from the highly capable AI-driven 5G endpoints,
-            from smartphones, tablets, PCs, connected cars, industrial robotics to private networks.
-            “The telecom sector with the advent of 5G and fiber network rollout will be a key catalyst in boosting
-            the semiconductor components consumption,” Shah said.
-            “Also, ongoing efforts to embrace cleaner and greener vehicles (electric vehicles) will provide an impetus for
-            the automobile industry to adopt advanced technologies,
-            which in turn will boost the demand for semiconductor components in India.”
-            He also believed that consumer electronics, industrial, and mobile and wearables will be the other key industries
-            for the growth of the semiconductor market in India.
-            Further, this semiconductor demand will not only be driven by domestic consumption but also by the growing share of exports.
-            Mobile and wearables,
-            IT and industrial sectors alone contributed to almost 80% of the semiconductor revenues in India in 2021, the research found.
-            Tarun Pathak, research director at Counterpoint Research, said the gradual shift from feature phones to smartphones
-            has been generating increased proportions of advanced logic processors, memory, integrated controllers, sensors and
-            other components. “This will continue to drive the value of the semiconductor content in smartphones, which is still an
-            under-penetrated segment in India, aided by the rise of wearables such as smartwatch and TWS,” he said.""",  # noqa: E501
-        ],
-    )
+def test_payload():
+    """Payload."""
+    return {
+        "data": {
+            "identifier": "string",
+            "namespace": "topic-summarization",
+            "attributes": {
+                "content": [
+                    """
+                    India's semiconductor component market will see its cumulative revenues climb to $300 billion during 2021-2026,
+                    a report said Tuesday. The ‘India Semiconductor Market Report, 2019-2026',
+                    a joint research by the India Electronics & Semiconductor Association (IESA) and Counterpoint Research,
+                    observed that India is poised to be the second largest market in the world in terms of scale and growing demand for
+                    semiconductor components across several industries and applications.
+                    It added that this was being bolstered by the increasing pace of digital transformation and the adoption of
+                    new technologies and covers smartphones, PCs, wearables, cloud data centers,
+                    Industry 4.0 applications, IoT, smart mobility, and advanced telecom and public utility infrastructure.
+                    “While the country is becoming one of the largest consumers of electronic and semiconductor components,
+                    most components are imported, offering limited economic opportunities for the country.
+                    Currently, only 9% of this semiconductor requirement is met locally,” the report said.
+                    it noted that India's end equipment market in 2021 stood at $119 billion in terms of revenue and
+                    is expected to grow at a CAGR of 19% from 2021 to 2026.
+                    It said that the Electronic System Design and Manufacturing (ESDM) sector in India will play a major role in the
+                    country's overall growth, from sourcing components to design manufacturing.
+                    “Before the end of this decade, there will be nothing that will not be touched by electronics and the ubiquitous ‘chip,
+                    '” IESA CEO Krishna Moorthy said. “Be it fighting carbon emissions, renewable energy, food safety, or healthcare,
+                    the semiconductor chip will be all-pervasive.”
+                    Counterpoint Research vice president Neil Shah added that consumption will not only come from the advanced
+                    semiconductor-heavy 5G and fiber-to-the-home (FTTH) network infrastructure equipment,
+                    which will contribute to more than 14% of the total semiconductor consumption in 2026,
+                    but also from the highly capable AI-driven 5G endpoints,
+                    from smartphones, tablets, PCs, connected cars, industrial robotics to private networks.
+                    “The telecom sector with the advent of 5G and fiber network rollout will be a key catalyst in boosting
+                    the semiconductor components consumption,” Shah said.
+                    “Also, ongoing efforts to embrace cleaner and greener vehicles (electric vehicles) will provide an impetus for
+                    the automobile industry to adopt advanced technologies,
+                    which in turn will boost the demand for semiconductor components in India.”
+                    He also believed that consumer electronics, industrial, and mobile and wearables will be the other key industries
+                    for the growth of the semiconductor market in India.
+                    Further, this semiconductor demand will not only be driven by domestic consumption but also by the growing share of exports.
+                    Mobile and wearables,
+                    IT and industrial sectors alone contributed to almost 80% of the semiconductor revenues in India in 2021, the research found.
+                    Tarun Pathak, research director at Counterpoint Research, said the gradual shift from feature phones to smartphones
+                    has been generating increased proportions of advanced logic processors, memory, integrated controllers, sensors and
+                    other components. “This will continue to drive the value of the semiconductor content in smartphones, which is still an
+                    under-penetrated segment in India, aided by the rise of wearables such as smartwatch and TWS,” he said.""",  # noqa: E501
+                ],
+            },
+            "parameters": {},
+        }
+    }
 
 
 @pytest.fixture
 def test_expected_predict_output() -> Dict[str, str]:
     """Predicted response model fixture."""
-    return PredictResponseModel(
+    return PredictResponseSchema(
         topic={
             "Risk detection": "Risk detection in the science and technology industry primarily pertains to the unpredictability and volatility of weather patterns, influenced by factors like climate change and global warming. This calls for advanced climate modeling and thorough interpretation of weather impacts for accurate risk anticipation and mitigation. Moreover, the sector's limited understanding of universal anomalies, including black holes, pose additional risks, emphasizing the need for improved cosmic investigation and decoding of extraterrestrial objects like Martian meteorites.",  # noqa:E501
             "Opportunities": "The science and technology industry holds vast potential in addressing climate change and health sector challenges. There are opportunities to develop technologies to manage and mitigate climate impacts like reducing carbon emissions and foreseeing volatile weather patterns. In the health sector, advancements in immunization technology, such as CodaVax-RSV and Moderna's ARNm-1273.214, suggest potential growth in vaccine development. The field of neuroscience and bio-communication, specifically studies in neurotransmitter activities and reflex system dynamics, also present untapped opportunities.",  # noqa:E501
@@ -120,4 +123,8 @@ def test_expected_predict_output() -> Dict[str, str]:
 @pytest.fixture
 def test_expected_bio_output(test_model_name):
     """Test bio output."""
-    return BioResponseModel(model_name=test_model_name)
+    return BioResponseSchema.from_data(
+        version=1,
+        namespace="topic-summarization",
+        attributes={"model_name": "topic-summarization"},
+    )

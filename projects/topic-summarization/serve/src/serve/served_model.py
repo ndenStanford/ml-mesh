@@ -12,22 +12,24 @@ from pydantic import BaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.server_models import (
-    BioResponseModel,
-    PredictRequestModel,
-    PredictResponseModel,
+from src.serve.schemas import (
+    BioResponseSchema,
+    PredictRequestSchema,
+    PredictResponseSchema,
 )
+from src.serve._init import get_settings
 
-# from onclusiveml.syndicate.datasketch.topic import TopicHandler#?
 from src.serve.topic import TopicHandler
+
+settings = get_settings()
 
 
 class ServedTopicModel(ServedModel):
     """Served Topic detection model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestModel
-    predict_response_model: Type[BaseModel] = PredictResponseModel
-    bio_response_model: Type[BaseModel] = BioResponseModel
+    predict_request_model: Type[BaseModel] = PredictRequestSchema
+    predict_response_model: Type[BaseModel] = PredictResponseSchema
+    bio_response_model: Type[BaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
         super().__init__(name="topic-summarization")
@@ -36,25 +38,32 @@ class ServedTopicModel(ServedModel):
         """Load model."""
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
-        self.model_card = BioResponseModel(model_name=self.name)
         self.ready = True
 
-    def predict(self, payload: PredictRequestModel) -> PredictResponseModel:
+    def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Topic-detection prediction.
 
         Args:
             payload (PredictRequestModel): prediction request payload.
         """
         # extract inputs data and inference specs from incoming payload
-        inputs = payload.inputs
-        # configuration = payload.configuration
+        inputs = payload.attributes
         content = inputs.content
 
-        article = self.model.pre_process(content)
-        topic = self.model.aggregate(article)
+        topic = self.model.aggregate(content)
 
-        return PredictResponseModel(topic=topic)
+        return PredictResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=settings.model_name,
+            attributes={
+                "topic": topic,
+            },
+        )
 
-    def bio(self) -> BioResponseModel:
+    def bio(self) -> BioResponseSchema:
         """Model bio endpoint."""
-        return self.model_card
+        return BioResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=settings.model_name,
+            attributes={"model_name": settings.model_name},
+        )

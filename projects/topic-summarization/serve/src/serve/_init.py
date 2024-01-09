@@ -2,46 +2,46 @@
 # isort: skip_file
 
 # Standard Library
-from typing import Optional
-
-# 3rd party libraries
-from pydantic import BaseSettings
+from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.base import OnclusiveFrozenSettings
+from onclusiveml.serving.rest.serve.params import ServingParams
+from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 
 # Source
 from src.serve.category_storage import Category_list
 
-logger = get_default_logger(__name__)
+
+class ServerModelSettings(ServingParams):
+    """Serve model parameters."""
+
+    model_name: str = "topic-summarization"
+    CATEGORY_LIST: list = Category_list
 
 
-class Settings(BaseSettings):
+class PromptBackendAPISettings(OnclusiveFrozenSettings):
     """API configuration."""
 
-    API_NAME: str = "Topic detection"
-    # API description
-    API_DESCRIPTION: str = ""
-    # API environment
-    ENVIRONMENT: str = "dev"
-    # Betterstack heartbeat key
-    BETTERSTACK_KEY: str = ""
-    # Debug level
-    DEBUG: bool = True
-    # API runtime
-    KUBERNETES_IN_POD: bool = False
-    # Logging level
-    LOGGING_LEVEL: str = "info"
-    # documentation endpoint
-    DOCS_URL: Optional[str] = "/topic-detection/docs"
-    OPENAPI_URL: Optional[str] = "/topic-detection/openapi.json"
-    # OpenAI api key
-    OPENAI_API_KEY: str = ""
-    # Prompt url
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    # interested aspects/categories
-    CATEGORY_LIST = Category_list
 
 
-settings = Settings()
+class GlobalSettings(
+    ServerModelSettings,
+    TrackedGithubActionsSpecs,
+    TrackedImageSpecs,
+):
+    """Global server settings."""
+
+
+@lru_cache
+def get_settings() -> OnclusiveFrozenSettings:
+    """Returns instanciated global settings class."""
+    return GlobalSettings()
+
+
+@lru_cache
+def get_api_settings() -> OnclusiveFrozenSettings:
+    """Returns API settings."""
+    return PromptBackendAPISettings()

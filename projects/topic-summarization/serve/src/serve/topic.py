@@ -14,11 +14,11 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
 
 # Source
-from src.serve._init import Settings
+from src.serve._init import get_api_settings, get_settings  # type: ignore[attr-defined]
 
 logger = get_default_logger(__name__)
-# setting class
-settings = Settings()
+settings = get_api_settings()
+model_settings = get_settings()
 
 
 class TopicHandler:
@@ -139,7 +139,7 @@ class TopicHandler:
         """Function for aggregating topic analysis results together."""
         num_article = len(article)
         n = 10  # group size
-        category_list = settings.CATEGORY_LIST
+        category_list = model_settings.CATEGORY_LIST
         record = {cate: None for cate in category_list}
         # do topic analysis for each category
         for category in category_list:

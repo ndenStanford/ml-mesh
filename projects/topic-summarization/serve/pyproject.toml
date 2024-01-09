@@ -12,6 +12,7 @@ regex = "2022.10.31"
 core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
 nlp = {path = "../../../libs/nlp"}
+tracking = {path = "../../../libs/tracking"}
 types-requests = "^2.31.0.2"
 requests = "^2.31.0"
 httpx = "^0.25.0"
