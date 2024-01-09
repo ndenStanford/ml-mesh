@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.schemas import (
+from src.serve.schema import (
     BioResponseSchema,
     PredictRequestSchema,
     PredictResponseSchema,

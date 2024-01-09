@@ -13,7 +13,7 @@ from requests_toolbelt.sessions import BaseUrlSession
 from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
-from src.serve.schemas import (
+from src.serve.schema import (
     BioResponseSchema,
     PredictResponseSchema,
 )

@@ -6,9 +6,8 @@ import pytest
 # Source
 from src.serve._init import get_settings
 from src.serve.category_storage import Category_list
-from src.serve.schemas import PredictRequestSchema
+from src.serve.schema import PredictRequestSchema
 from src.serve.served_model import ServedTopicModel
-
 
 settings = get_settings()
 

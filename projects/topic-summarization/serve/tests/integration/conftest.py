@@ -12,7 +12,7 @@ from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
 from src.serve.model_server import get_model_server
-from src.serve.schemas import BioResponseSchema
+from src.serve.schema import BioResponseSchema
 
 
 @pytest.fixture
