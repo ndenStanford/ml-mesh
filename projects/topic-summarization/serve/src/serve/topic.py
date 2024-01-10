@@ -14,7 +14,7 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
 
 # Source
-from src.serve._init import get_api_settings, get_settings  # type: ignore[attr-defined]
+from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
 
 logger = get_default_logger(__name__)
 settings = get_api_settings()

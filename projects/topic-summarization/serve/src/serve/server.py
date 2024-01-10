@@ -5,7 +5,7 @@ from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
 # Source
-from src.serve.served_model import ServedTopicModel
+from src.serve.model import ServedTopicModel
 
 
 def get_model_server() -> ModelServer:

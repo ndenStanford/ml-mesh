@@ -11,7 +11,7 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import (
 )
 
 # Source
-from src.serve._init import get_settings
+from src.settings import get_settings
 
 settings = get_settings()
 

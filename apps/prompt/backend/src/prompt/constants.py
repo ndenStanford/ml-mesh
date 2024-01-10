@@ -411,15 +411,18 @@ class PromptEnum(OnclusiveEnum):
 
         I want you to provide a concise summary that combines the main points of the following summaries. Then inference the impact level of this category, based on the summaries provided.
 
-        Those summaries are from multiple articles, focusing on a given aspect of a target industry.
+        Those summaries are from multiple articles, focusing on a given aspect of a target category.
 
-        I will give you the target industry delimited by *, a target category delimited by < and >,
+        I will give you the target category delimited by < and >,
         and many summaries from articles related to this industry delimited by triple backticks.
 
         Target category: <{target_category}>
         Input summaries: {Summary}
 
-        If none of the summaries are related to the target category, output the category followed by 'null', the null value in JSON format. For example, if the category is 'Risk Detection' and no summaries are relevant, output should be 'Risk Detection': null.
+        If none of the summaries are related to the target category, then output the following in JSON format. Note: Here, 'null' represents the absence of relevant information in JSON format.
+        Overall summary: null (indicating no summary can be provided)
+        Impact level: Low
+        Theme: null
 
         You must follow the steps below:
         1. Carefully review every summary, ensuring a deep understanding of each one.

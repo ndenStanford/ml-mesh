@@ -17,7 +17,7 @@ from src.serve.schema import (
     PredictRequestSchema,
     PredictResponseSchema,
 )
-from src.serve._init import get_settings
+from src.settings import get_settings
 
 from src.serve.topic import TopicHandler
 

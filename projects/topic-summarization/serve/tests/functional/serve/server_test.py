@@ -12,7 +12,7 @@ from onclusiveml.serving.rest.serve import (
 
 # Source
 from src.serve.category_storage import Category_list
-from src.serve._init import get_settings
+from src.settings import get_settings
 
 settings = get_settings()
 
