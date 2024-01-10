@@ -1,10 +1,9 @@
 """Settings."""
 
 # Standard Library
-from typing import Any, List
+from typing import List
 
 # 3rd party libraries
-from elasticsearch import Elasticsearch
 from pydantic import Field, SecretStr
 
 # Internal libraries
@@ -59,7 +58,6 @@ class NERStageSettings(ApiSettings):
 class Settings(OnclusiveBaseSettings):
     """Settings."""
 
-    es: Any
     entity_linking_prod: EntityLinkingProdSettings
     entity_linking_stage: EntityLinkingStageSettings
     NER_prod: NERProdSettings
@@ -69,15 +67,6 @@ class Settings(OnclusiveBaseSettings):
 
 def get_settings() -> Settings:
     """Get the settings."""
-    es = Elasticsearch(
-        [
-            "https://crawler-prod:GnVjrB5jXgGGzPZHWNRpwWGu4NqTWJsw@search5-client.airpr.com"
-        ],
-        timeout=30,
-        max_retries=10,
-        retry_on_timeout=True,
-    )
-
     entity_linking_prod = EntityLinkingProdSettings()
     entity_linking_stage = EntityLinkingStageSettings()
     NER_prod = NERProdSettings()
@@ -86,7 +75,6 @@ def get_settings() -> Settings:
     es_index = ["crawler", "crawler-2023.11", "crawler-2023.10", "crawler-2023.09"]
 
     return Settings(
-        es=es,
         es_index=es_index,
         entity_linking_prod=entity_linking_prod,
         entity_linking_stage=entity_linking_stage,
