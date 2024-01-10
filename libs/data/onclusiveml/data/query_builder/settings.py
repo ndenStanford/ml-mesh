@@ -1,8 +1,5 @@
 """Settings."""
 
-# Standard Library
-from typing import List
-
 # 3rd party libraries
 from pydantic import Field, SecretStr
 
@@ -62,7 +59,6 @@ class Settings(OnclusiveBaseSettings):
     entity_linking_stage: EntityLinkingStageSettings
     NER_prod: NERProdSettings
     NER_stage: NERStageSettings
-    es_index: List[str]
 
 
 def get_settings() -> Settings:
@@ -72,10 +68,7 @@ def get_settings() -> Settings:
     NER_prod = NERProdSettings()
     NER_stage = NERStageSettings()
 
-    es_index = ["crawler", "crawler-2023.11", "crawler-2023.10", "crawler-2023.09"]
-
     return Settings(
-        es_index=es_index,
         entity_linking_prod=entity_linking_prod,
         entity_linking_stage=entity_linking_stage,
         NER_prod=NER_prod,
