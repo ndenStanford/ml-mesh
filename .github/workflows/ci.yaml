@@ -222,14 +222,14 @@ jobs       :
           - name: neuron-compile
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-03e201058e36661a3
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
             self-hosted-runner-neuron: true
             validate-build: true
 
           - name: neuron-inference
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-03e201058e36661a3
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
             self-hosted-runner-neuron: true
             validate-build: true
 
