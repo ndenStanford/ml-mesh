@@ -205,26 +205,28 @@ class PromptEnum(OnclusiveEnum):
     # Transcript segmentation prompt
     ML_TRANSCRIPT_SEGMENTATION = [
         """
-        Your task is detecting the segment of a transcript related to a certain keyword.
+        Your task is to detect the most relevant segment of a transcript related to a list of keywords which are comma seperated and return a start and end timestamp of that segment.
         This task is really important to me.
-        The transcript is delimited by < and >, and keyword is delimited by * and *.
+        The transcript is delimited by < and >, and the list of keywords are delimited by * and *.
 
-        The transcript is a list of json objects. Each json object has 2 keys: "start_time" and "content". When you do the analysis, only focus on the value of "content" in each json object.
+        The transcript is a list of json objects. Each json object has 3 keys: "start_time", "end_time" and "content". When you do the analysis, focus on content.
 
         You must do the analysis using following steps:
-        1. Go through the whole transcript have a high level understanding for the relationship between the keyword and this transcript.
-        2. Check every json object to decide if its value of "content" direct or indirect related to the given keyword.
-        3. Copy and paste the json objects which relate to the keyword, and output to me.
+        1. Go through the whole transcript to get a high level understanding of segments of the transcript where the keywords are discussed.
+        2. Find the most relevant and informative segment about they keywords from the transcript. The segment should also contain the keywords.
+        3. You must only return the start timestamp of where the most relevant segment begins and the timestamp of where where the most relevant segment ends as a JSON object.
+        4. If the transcript holds no mention or relation to the keywords at all, set the value 0 for both start and end timestamp.
+        5. The start and end timestamp must both end exist in the transcript and must not be modified at all.
+        6. The key for start timestamp is "start_time" and the key for end timestamp is "end_time"
 
         Transcript: <{transcript}>
-        Keyword:*{keyword}*
+        Keyword: *{keywords}*
 
-        Show me your answer in following Json format. Here [XXX] is placeholder:
+        Show me your answer in following JSON format. Here [XXX] is placeholder:
         [Relationship with keyword]:[The relationship between keyword and this transcript content]
-        [Related segment]:[The segments which you think are related to the keyword]
-        [Reason]:[The reason that why you think the segments are related to the keyword]
-        [Reason for not choose]:[Your reason for those segments that you think are irrelevent to the keyword]
-
+        [Related segment]:[The start and end timestamps of the relevant segment as a JSON object]
+        [Reason]:[The reason you believe this segment relates to the keywords]
+        [Reason for not choose]:[Your reason for why no part of the transcript holds relevancy to the keywords]
         """,  # noqa: E501
         "ml-transcript-segmentation",
         {

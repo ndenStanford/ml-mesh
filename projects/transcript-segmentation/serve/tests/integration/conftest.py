@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
-from src.serve.schemas import BioResponseSchema
+from src.serve.schemas import BioResponseSchema, PredictResponseSchema
 from src.serve.server import model_server
 
 
@@ -146,7 +146,7 @@ def test_predict_input() -> str:
 @pytest.fixture
 def test_predict_keyword() -> str:
     """Predict keyword fixture."""
-    return "OpenAI"
+    return ["OpenAI"]
 
 
 @pytest.fixture
@@ -158,23 +158,15 @@ def test_inference_params() -> str:
 @pytest.fixture
 def test_expected_predict_output() -> List[str]:
     """Expected predict output fixture."""
-    return {
-        "version": 1,
-        "data": {
-            "identifier": None,
-            "namespace": "transcript-segmentation",
-            "attributes": {
-                "segmented_transcript": [
-                    {
-                        "start_time": 1701127839000.0,
-                        "content": "I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now.",  # noqa
-                    }
-                ],
-                "output_truncated": False,
-                "input_truncated": False,
-            },
+    return PredictResponseSchema.from_data(
+        version=1,
+        namespace="transcript-segmentation",
+        attributes={
+            "start_time": 1701127839000.0,
+            "end_time": 1701127849000.0,
+            "input_truncated": False,
         },
-    }
+    )
 
 
 @pytest.fixture
