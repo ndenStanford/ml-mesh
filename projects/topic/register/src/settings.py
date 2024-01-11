@@ -1,4 +1,8 @@
 """Feature registration inputs."""
+
+# Standard Library
+from typing import List, Tuple
+
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
 
@@ -16,6 +20,14 @@ class FeatureRegistrationParams(FeatureStoreParams):
     redshift_schema: str = "feast"
     redshift_table: str = "topic"
     redshift_timestamp_field: str = "event_timestamp"
+    fields: List[Tuple[str, str]] = [
+        ["topic_1", "String"],
+        ["topic_2", "String"],
+        ["title", "String"],
+        ["language", "String"],
+        ["content", "String"],
+    ]
+    should_register: bool = False
 
     class Config:
         env_file = "config/dev.env"
