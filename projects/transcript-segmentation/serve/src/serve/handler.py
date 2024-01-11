@@ -191,13 +191,6 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
-        print("======")
-        print("======")
-        print("======")
-        print(q.content)
-        print("======")
-        print("======")
-        print("======")
 
         # post process
         start_time, end_time = self.postprocess(

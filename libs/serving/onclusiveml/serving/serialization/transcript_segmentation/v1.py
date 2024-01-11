@@ -1,7 +1,7 @@
 """Transcript Segmentation v1 data schemas."""
 
 # Standard Library
-from typing import List, Union
+from typing import List, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -24,6 +24,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     start_time: Union[float, int]
     end_time: Union[float, int]
     input_truncated: bool
+    summary: Optional[str] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

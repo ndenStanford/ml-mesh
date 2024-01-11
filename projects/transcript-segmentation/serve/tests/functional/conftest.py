@@ -247,6 +247,7 @@ def expected_response():
                 "start_time": 1701127839000.0,
                 "end_time": 1701127849000.0,
                 "input_truncated": False,
+                "summary": None,
             },
         },
     }
