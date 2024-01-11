@@ -228,7 +228,7 @@ def test_payload():
                     {"ts": 1701127858857.1428, "w": "OpenAI's", "index": 107},
                     {"ts": 1701127859428.5715, "w": "ChatGPT-4,", "index": 108},
                 ],
-                "keywords": ["OpenAI"],
+                "keywords": ["Ai"],
             },
             "parameters": {},
         }
@@ -244,7 +244,7 @@ def expected_response():
             "identifier": None,
             "namespace": "transcript-segmentation",
             "attributes": {
-                "start_time": 1701127839000.0,
+                "start_time": 1701127820000.0,
                 "end_time": 1701127849000.0,
                 "input_truncated": False,
                 "summary": None,
