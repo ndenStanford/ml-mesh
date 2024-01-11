@@ -68,7 +68,6 @@ repos                   :
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
-          - --hide-error-codes
         additional_dependencies: [types-requests]
 
   # isort

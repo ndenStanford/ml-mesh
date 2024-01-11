@@ -1,3 +1,4 @@
+# type: ignore
 # isort: skip_file
 # black:skip_file
 """Prediction model."""

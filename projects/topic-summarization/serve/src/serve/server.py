@@ -1,3 +1,4 @@
+# type: ignore
 """Model server."""
 
 # Internal libraries
