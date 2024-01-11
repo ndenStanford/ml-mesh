@@ -137,7 +137,7 @@ class TranscriptSegmentationHandler:
         transcript_preprocessed = []
         transcript_dict: Dict[str, Any] = {}
 
-        # Iterate over each word from word-based transcript and merge into sentences
+        # Iterate over each word from word based transcript and merge into sentences
         for i in word_transcript:
             if i["w"] is not None:
                 if not transcript_dict:
