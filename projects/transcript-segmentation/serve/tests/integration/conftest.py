@@ -146,7 +146,7 @@ def test_predict_input() -> str:
 @pytest.fixture
 def test_predict_keyword() -> str:
     """Predict keyword fixture."""
-    return ["OpenAI"]
+    return ["Ai"]
 
 
 @pytest.fixture
@@ -162,7 +162,7 @@ def test_expected_predict_output() -> List[str]:
         version=1,
         namespace="transcript-segmentation",
         attributes={
-            "start_time": 1701127839000.0,
+            "start_time": 1701127820000.0,
             "end_time": 1701127849000.0,
             "input_truncated": False,
         },
