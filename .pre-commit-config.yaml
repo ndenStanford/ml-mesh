@@ -64,7 +64,7 @@ repos                   :
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude:
-          ^(libs/.*/tests/|projects/.*/tests|projects/.*/test_compiled_model|projects/.*/settings.py|projects/topic-summarization/serve/src/serve/model.py|projects/topic-summarization/serve/src/server.py)
+          ^(libs/.*/tests/|projects/.*/tests|projects/.*/test_compiled_model|projects/.*/settings.py|projects/topic-summarization/serve/src/serve/model.py|projects/topic-summarization/serve/src/serve/server.py)
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
