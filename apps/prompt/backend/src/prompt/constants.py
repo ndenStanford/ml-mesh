@@ -377,7 +377,7 @@ class PromptEnum(OnclusiveEnum):
         """
         You are an expert in finding insight from a group of articles.
 
-        I want you to summarize the protential impact on a given category, based on all the input articles together.
+        I want you to summarize the potential impact on a given category, based on all the input articles together.
 
         I will give you a target category delimited by < and >,
         and many articles related to this industry delimited by triple backticks.
@@ -455,7 +455,7 @@ class PromptEnum(OnclusiveEnum):
         """
         You are a summarization bot.
 
-        I will give you serveral articles and the articles are delimited by triple backticks.
+        I will give you several articles and the articles are delimited by triple backticks.
 
         I want you to generate a one-paragraph summary for all the articles I give.
 
@@ -487,7 +487,7 @@ class PromptEnum(OnclusiveEnum):
 
         Your primary objective is to produce a comprehensive one-paragraph summary, that combines the insights from multiple article summaries. Each of those summaries will be provided to you, delimited by triple backticks.
 
-        Further, based on your consolidated summary, you are to generate a theme for all the input summaires.
+        Further, based on your consolidated summary, you are to generate a theme for all the input summaries.
 
         The process you must follow is detailed below:
         1. Carefully review every summary, ensuring a deep understanding of each one.
