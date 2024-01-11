@@ -38,6 +38,8 @@ class TopicHandler:
             'Threats for the brand','Company or spokespersons', 'Brand Reputation',
             'CEO Reputation', 'Customer Response', 'Stock Price Impact',
             'Industry trends']
+        Output:
+            Category summary: str
         """
         alias = "ml-topic-summarization-single-analysis"
         # transfer article to the format used in prompt
@@ -74,6 +76,8 @@ class TopicHandler:
 
         Args:
             article (list): list of str
+        Output:
+            Summary: str
         """
         alias = "ml-multi-articles-summarization"
         # transfer article to the format used in prompt
@@ -97,7 +101,13 @@ class TopicHandler:
         return json.loads(json.loads(q.content)["generated"])["Summary"]
 
     def summary_aggregate(self, article: list) -> dict:
-        """Function for aggregating summary and generating theme."""
+        """Function for aggregating summary and generating theme.
+
+        Args:
+            article(list): list of str
+        Output:
+            summary & theme (dict): dict[str,str]
+        """
         num_article = len(article)
         n = 8  # group size
         record = {"Summary": None, "Theme": None}
@@ -136,7 +146,13 @@ class TopicHandler:
         return record
 
     def topic_aggregate(self, article: list) -> dict:
-        """Function for aggregating topic analysis results together."""
+        """Function for aggregating topic analysis results together.
+
+        Args:
+            article(list): list of str
+        Output:
+            topic analysis & topic theme & topic impact(dict): dict[str,str]
+        """
         num_article = len(article)
         n = 8  # group size
         category_list = model_settings.CATEGORY_LIST
@@ -191,13 +207,25 @@ class TopicHandler:
         return record
 
     def pre_process(self, article: list) -> list:
-        """Pre process function for articles."""
+        """Pre process function for articles.
+
+        Args:
+            article(list): list of str
+        Output:
+            processed_article(list): list of str
+        """
         article = [re.sub("\n+", " ", text) for text in article]
         processed_article = [remove_whitespace(remove_html(text)) for text in article]
         return processed_article
 
     def aggregate(self, article: list) -> dict:
-        """Aggregate topic & summary results together."""
+        """Aggregate topic & summary results together.
+
+        Args:
+            article(list): list of str
+        Output:
+            merged_result(dict): dict[str,str]
+        """
         article = self.pre_process(article)
         topic_result = self.topic_aggregate(article)
         summary_result = self.summary_aggregate(article)
