@@ -37,18 +37,18 @@ class TranscriptSegmentationHandler:
         position = transcript.rfind(phrase)
         return position
 
-    def remove_newlines(self, segmented_transcript: str) -> str:
+    def remove_newlines(self, response: str) -> str:
         """Remove new lines from the string.
 
         Args:
-            segmented_transcript (str): Stringified JSON from GPT
+            response (str): Stringified JSON from GPT
 
         Returns:
             str: Stringified JSON without new lines
         """
-        segmented_transcript = segmented_transcript.replace("\n    ", "")
-        segmented_transcript = segmented_transcript.replace("\n", "")
-        return segmented_transcript
+        response = response.replace("\n    ", "")
+        response = response.replace("\n", "")
+        return response
 
     def get_timestamps(
         self, json_response: Dict[str, Dict[str, Union[str, float]]]
@@ -172,7 +172,7 @@ class TranscriptSegmentationHandler:
             keyword (List[str]): List of keywords to query the transcript
 
         Returns:
-            Tuple[List[Dict[str, Any]], bool, bool]: Segmented transcript based on a keyword
+            Tuple[List[Dict[str, Any]], bool, bool]: Timestamps of the segment based on keywords
         """
         # preprocess
         preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
