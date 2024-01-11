@@ -4,14 +4,12 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.serving.rest.serve import (
-    LivenessProbeResponse,
-    ReadinessProbeResponse,
-)
+from onclusiveml.serving.rest.serve import LivenessProbeResponse, ReadinessProbeResponse
+
+from src.serve.__main__ import get_model_server
 
 # Source
 from src.serve.model import ServedTopicModel
-from src.serve.server import get_model_server
 
 
 @pytest.mark.order(4)
