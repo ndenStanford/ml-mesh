@@ -1,3 +1,4 @@
+# isort: skip_file
 """Conftest."""
 
 # Standard Library
@@ -10,10 +11,9 @@ from fastapi.testclient import TestClient
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServingParams
 
-from src.serve.__main__ import get_model_server
-
 # Source
 from src.serve.schema import BioResponseSchema
+from src.serve.__main__ import get_model_server
 
 
 @pytest.fixture
