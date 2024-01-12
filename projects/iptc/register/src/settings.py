@@ -21,7 +21,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
     redshift_table: str
     redshift_timestamp_field: str
     fields: List[Tuple[str, str]]
-    should_register: bool = False
+    register_features: bool = False
 
     class Config:
         env_file = "config/dev.env"

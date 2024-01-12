@@ -27,7 +27,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
         ["language", "String"],
         ["content", "String"],
     ]
-    should_register: bool = False
+    register_features: bool = False
 
     class Config:
         env_file = "config/dev.env"

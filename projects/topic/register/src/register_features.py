@@ -5,13 +5,14 @@ from typing import Any
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.logging.constants import OnclusiveService
 from onclusiveml.data.feature_store import FeastRepoBuilder
 
 # Source
 from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]
 
 
-logger = get_default_logger(__name__)
+logger = get_default_logger(name=__name__, service=OnclusiveService.TOPIC_REGISTER)
 
 
 def main() -> None:
@@ -32,7 +33,7 @@ def main() -> None:
 
     plan_repo_contents(feast_repo_builder)
 
-    if feature_registration_params.should_register:
+    if feature_registration_params.register_features:
         register_repo_contents(feast_repo_builder)
 
 
