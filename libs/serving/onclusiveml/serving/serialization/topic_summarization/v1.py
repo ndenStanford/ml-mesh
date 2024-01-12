@@ -1,5 +1,8 @@
 """Topic Summarization v1 data schemas."""
 
+# Standard Library
+from typing import Dict, List, Optional, Union
+
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
 
@@ -7,7 +10,7 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    content: list
+    content: List[str]
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
@@ -17,7 +20,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    topic: dict
+    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

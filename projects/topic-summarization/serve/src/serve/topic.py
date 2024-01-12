@@ -3,7 +3,7 @@
 
 # Standard Library
 import re
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union
 
 # 3rd party libraries
 import requests
@@ -22,22 +22,21 @@ model_settings = get_settings()
 
 
 class TopicHandler:
-    """Detect trends by GPT."""
+    """Topic summarization with prompt backend."""
 
-    # use gpt to generate summary on certain category; will be called in aggregate.
     def inference(
         self,
         article: List[str],
         category: str,
-    ) -> str:
-        """Topic detection handler method.
+    ) -> Optional[str]:
+        """Topic summarization for single category.
 
         Args:
             article (list): list of str
             category (str): target category, one of ['Risk detection', 'Opportunities',
             'Threats for the brand','Company or spokespersons', 'Brand Reputation',
             'CEO Reputation', 'Customer Response', 'Stock Price Impact',
-            'Industry trends']
+            'Industry trends', 'Environmental, social and governance']
         Output:
             Category summary: str
         """
@@ -67,12 +66,11 @@ class TopicHandler:
         key = category if category in output_content else f"<{category}>"
         return output_content.get(key)
 
-    # use gpt to generate summary for multiple articles together; will be called in aggregate.
     def summary(
         self,
         article: List[str],
     ) -> str:
-        """Summarize multiple articles at same time.
+        """Summarize multiple articles.
 
         Args:
             article (list): list of str
@@ -100,17 +98,18 @@ class TopicHandler:
         )
         return json.loads(json.loads(q.content)["generated"])["Summary"]
 
-    def summary_aggregate(self, article: list) -> dict:
-        """Function for aggregating summary and generating theme.
+    def summary_aggregate(self, article: List[str]) -> Dict[str, str]:
+        """Function for aggregating summaries and generating theme.
 
         Args:
             article(list): list of str
         Output:
-            summary & theme (dict): dict[str,str]
+            summary & theme (dict): Dict[str, str]
         """
         num_article = len(article)
         n = 8  # group size
-        record = {"Summary": None, "Theme": None}
+        # record = {"Summary": None, "Theme": None}
+        record = {}
         # do topic analysis for each category
         art_index = 0
         record_cate = []
@@ -145,8 +144,10 @@ class TopicHandler:
 
         return record
 
-    def topic_aggregate(self, article: list) -> dict:
-        """Function for aggregating topic analysis results together.
+    def topic_aggregate(
+        self, article: List[str]
+    ) -> Dict[str, Optional[Dict[str, str]]]:
+        """Function for aggregating topic analysis, and generate theme and impact level.
 
         Args:
             article(list): list of str
@@ -198,15 +199,16 @@ class TopicHandler:
                 output_content["Impact level"],
                 output_content["Theme"],
             )
-            record[category] = {
-                f"{category} analysis ": agg_out_content,
-                f"{category} theme ": agg_out_theme,
-                f"{category} impact ": agg_out_impact,
-            }
+            if agg_out_content:
+                record[category] = {
+                    f"{category} analysis ": agg_out_content,
+                    f"{category} theme ": agg_out_theme,
+                    f"{category} impact ": agg_out_impact,
+                }
 
         return record
 
-    def pre_process(self, article: list) -> list:
+    def pre_process(self, article: List[str]) -> List[str]:
         """Pre process function for articles.
 
         Args:
@@ -218,16 +220,21 @@ class TopicHandler:
         processed_article = [remove_whitespace(remove_html(text)) for text in article]
         return processed_article
 
-    def aggregate(self, article: list) -> dict:
+    def aggregate(
+        self, article: List[str]
+    ) -> Dict[str, Union[Dict[str, str], str, None]]:
         """Aggregate topic & summary results together.
 
         Args:
             article(list): list of str
         Output:
-            merged_result(dict): dict[str,str]
+            merged_result(dict): dict
         """
         article = self.pre_process(article)
         topic_result = self.topic_aggregate(article)
         summary_result = self.summary_aggregate(article)
-        merged_result = {**topic_result, **summary_result}
+        # merged_result = {**topic_result, **summary_result}
+        merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
+        merged_result.update(topic_result)
+        merged_result.update(summary_result)
         return merged_result
