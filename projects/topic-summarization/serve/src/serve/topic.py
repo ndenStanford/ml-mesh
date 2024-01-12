@@ -19,6 +19,7 @@ from src.settings import get_api_settings, get_settings  # type: ignore[attr-def
 logger = get_default_logger(__name__)
 settings = get_api_settings()
 model_settings = get_settings()
+alias_dict = settings.PROMPT_ALIAS
 
 
 class TopicHandler:
@@ -40,7 +41,7 @@ class TopicHandler:
         Output:
             Category summary: str
         """
-        alias = "ml-topic-summarization-single-analysis"
+        alias = alias_dict["single_topic"]
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -77,7 +78,7 @@ class TopicHandler:
         Output:
             Summary: str
         """
-        alias = "ml-multi-articles-summarization"
+        alias = alias_dict["single_summary"]
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -107,7 +108,7 @@ class TopicHandler:
             summary & theme (dict): Dict[str, str]
         """
         num_article = len(article)
-        n = 8  # group size
+        n = model_settings.ARTICLE_GROUP_SIZE  # group size
         # record = {"Summary": None, "Theme": None}
         record = {}
         # do topic analysis for each category
@@ -128,7 +129,7 @@ class TopicHandler:
             ]
         )
 
-        alias = "ml-articles-summary-aggregation"
+        alias = alias_dict["summary_aggregate"]
         input_dict = {"Summary": processed_summary}  # input target category & articles
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
@@ -155,7 +156,7 @@ class TopicHandler:
             topic analysis & topic theme & topic impact(dict): dict[str,str]
         """
         num_article = len(article)
-        n = 8  # group size
+        n = model_settings.ARTICLE_GROUP_SIZE  # group size
         category_list = model_settings.CATEGORY_LIST
         record: Dict[str, Optional[Dict[str, Any]]] = {
             cate: None for cate in category_list
@@ -179,7 +180,7 @@ class TopicHandler:
                 ]
             )
 
-            alias = "ml-topic-summarization-aggregation"
+            alias = alias_dict["topic_aggregate"]
 
             input_dict = {
                 "target_category": category,
@@ -233,7 +234,6 @@ class TopicHandler:
         article = self.pre_process(article)
         topic_result = self.topic_aggregate(article)
         summary_result = self.summary_aggregate(article)
-        # merged_result = {**topic_result, **summary_result}
         merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
         merged_result.update(topic_result)
         merged_result.update(summary_result)

@@ -25,6 +25,12 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
+    PROMPT_ALIAS: dict = {
+        "single_topic": "ml-topic-summarization-single-analysis",
+        "topic_aggregate": "ml-topic-summarization-aggregation",
+        "single_summary": "ml-multi-articles-summarization",
+        "summary_aggregate": "ml-articles-summary-aggregation",
+    }
 
 
 class GlobalSettings(
@@ -33,6 +39,8 @@ class GlobalSettings(
     TrackedImageSpecs,
 ):
     """Global server settings."""
+
+    ARTICLE_GROUP_SIZE = 8  # how many articles are handled together
 
 
 @lru_cache
