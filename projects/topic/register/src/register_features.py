@@ -12,7 +12,9 @@ from onclusiveml.data.feature_store import FeastRepoBuilder
 from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]
 
 
-logger = get_default_logger(name=__name__, service=OnclusiveService.TOPIC_REGISTER)
+logger = get_default_logger(
+    name=__name__, service=OnclusiveService.TOPIC_REGISTER.value
+)
 
 
 def main() -> None:
