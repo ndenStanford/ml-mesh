@@ -18,17 +18,46 @@ def test_handler_inference(mock_post, article_input, model_card):
     gpt_inference = _service.inference(
         article=article_input,
         category="Opportunities",
-        industry="Science and technology",
+    )
+    assert isinstance(gpt_inference, dict)
+
+
+@patch("requests.post")
+def test_handler_summary(mock_post, article_input, model_card):
+    """Test the summary function in topic handler."""
+    mock_post.return_value = model_card
+
+    gpt_inference = _service.summary(
+        article=article_input,
     )
     assert isinstance(gpt_inference, str)
 
 
 @patch("requests.post")
-def test_handler_aggregate(mock_post, article_input, model_card):
+def test_handler_topic_aggregate(mock_post, article_input, model_card_aggregate):
+    """Test the aggregate function in handler."""
+    mock_post.return_value = model_card_aggregate
+    gpt_inference = _service.topic_aggregate(
+        article=article_input,
+    )
+    assert isinstance(gpt_inference, dict)
+
+
+@patch("requests.post")
+def test_handler_summary_aggregate(mock_post, article_input, model_card):
     """Test the aggregate function in handler."""
     mock_post.return_value = model_card
+    gpt_inference = _service.summary_aggregate(
+        article=article_input,
+    )
+    assert isinstance(gpt_inference, dict)
+
+
+@patch("requests.post")
+def test_handler_aggregate(mock_post, article_input, model_card_aggregate):
+    """Test the aggregate function in handler."""
+    mock_post.return_value = model_card_aggregate
     gpt_inference = _service.aggregate(
         article=article_input,
-        industry="Science and technology",
     )
     assert isinstance(gpt_inference, dict)
