@@ -50,12 +50,15 @@ def test_model_server_predict(test_client, test_model_name, test_payload):
         f"/{test_model_name}/v1/predict", json=test_payload
     )
     assert test_response.status_code == 200
-    assert list(
-        test_response.json()["data"]["attributes"]["topic"].keys()
-    ) == Category_list + [
-        "Summary",
-        "Theme",
-    ]
+    assert set(test_response.json()["data"]["attributes"]["topic"].keys()).issubset(
+        set(
+            Category_list
+            + [
+                "Summary",
+                "Theme",
+            ]
+        )
+    )
 
 
 @pytest.mark.order(7)

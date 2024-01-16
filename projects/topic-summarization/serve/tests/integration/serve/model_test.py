@@ -46,10 +46,15 @@ def test_served_topic_model_predict(
 
     test_actual_predict_output = served_topic_model.predict(test_input)
 
-    assert list(test_actual_predict_output.attributes.topic.keys()) == Category_list + [
-        "Summary",
-        "Theme",
-    ]
+    assert set(test_actual_predict_output.attributes.topic.keys()).issubset(
+        set(
+            Category_list
+            + [
+                "Summary",
+                "Theme",
+            ]
+        )
+    )
 
 
 @pytest.mark.order(3)

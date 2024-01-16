@@ -158,9 +158,7 @@ class TopicHandler:
         num_article = len(article)
         n = model_settings.ARTICLE_GROUP_SIZE  # group size
         category_list = model_settings.CATEGORY_LIST
-        record: Dict[str, Optional[Dict[str, Any]]] = {
-            cate: None for cate in category_list
-        }
+        record: Dict[str, Optional[Dict[str, Any]]] = {}
         # do topic analysis for each category
         for category in category_list:
             art_index = 0
