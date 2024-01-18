@@ -1,5 +1,5 @@
 ---
-name: Libs
+name: Internal Library
 on  :
   workflow_call:
     inputs:
@@ -33,7 +33,7 @@ on  :
 
 jobs:
   deploy:
-    name: 'Internal library: ${{ inputs. lib }}'
+    name: 'Install & test library: ${{ inputs. lib }}'
     runs-on: ubuntu-20.04
 
     steps:

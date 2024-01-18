@@ -160,7 +160,7 @@ jobs       :
   # ===============================================
 
   run-us-east-1-base-docker:
-    name: Base Core Image
+    name: Core Image
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -203,7 +203,7 @@ jobs       :
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # run-us-east-1-docker:
-  #   name: Core Image
+  #   name: Adv. Core Image
   #   uses: ./.github/workflows/_docker.yaml
   #   needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
   #   strategy:
