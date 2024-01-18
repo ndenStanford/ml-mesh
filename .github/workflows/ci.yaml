@@ -170,14 +170,14 @@ jobs       :
         image:
 
           - name: python-base
-            runner-kind: ubuntu-20.04
             validate-build: false
+            runner-kind: ubuntu-20.04
 
-          # - name: gpu-base
-          #   runner-kind: custom
-          #   self-hosted-runner-type: g4dn.xlarge
-          #   self-hosted-runner-ami: ami-0af5c083127a8adce
-          #   validate-build: true
+          - name: gpu-base
+            validate-build: true
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
+            runner-kind: custom
 
         base-region: [us-east-1]
         region: [us-east-1]
@@ -212,31 +212,31 @@ jobs       :
       matrix:
         image:
 
-          # - name: gpu-train
-          #   runner-kind: custom
-          #   self-hosted-runner-type: g4dn.xlarge
-          #   self-hosted-runner-ami: ami-0af5c083127a8adce
-          #   self-hosted-runner-neuron: false
-          #   validate-build: false
+          - name: gpu-train
+            validate-build: false
+            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-neuron: false
+            runner-kind: custom
 
-          # - name: neuron-compile
-          #   runner-kind: custom
-          #   self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-          #   self-hosted-runner-ami: ami-07b4e00e2c69c3702
-          #   self-hosted-runner-neuron: true
-          #   validate-build: true
+          - name: neuron-compile
+            validate-build: true
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-neuron: true
+            runner-kind: custom
 
-          # - name: neuron-inference
-          #   runner-kind: custom
-          #   self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-          #   self-hosted-runner-ami: ami-07b4e00e2c69c3702
-          #   self-hosted-runner-neuron: true
-          #   validate-build: true
+          - name: neuron-inference
+            validate-build: true
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-neuron: true
+            runner-kind: custom
 
           - name: fastapi-serve
-            runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
             validate-build: false
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
 
         base-region: [us-east-1]
         region: [us-east-1]
@@ -260,67 +260,67 @@ jobs       :
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
-  # run-us-east-2-docker:
-  #   name: KF Core Image
-  #   uses: ./.github/workflows/_docker.yaml
-  #   needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
-  #   strategy:
-  #     max-parallel: 1
-  #     fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
-  #     matrix:
-  #       image:
-  #         # kubeflow-torch-gpu
-  #         - name: kubeflow-torch-gpu
-  #           base-region: us-east-1
-  #           runner-kind: custom
-  #           self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+  run-us-east-2-docker:
+    name: KF Core Image
+    uses: ./.github/workflows/_docker.yaml
+    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
+    strategy:
+      max-parallel: 1
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        image:
+          # kubeflow-torch-gpu
+          - name: kubeflow-torch-gpu
+            base-region: us-east-1
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            runner-kind: custom
 
-  #         # kubeflow-torch-inf
-  #         - name: kubeflow-torch-inf
-  #           base-region: us-east-1
-  #           runner-kind: ubuntu-20.04
+          # kubeflow-torch-inf
+          - name: kubeflow-torch-inf
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
 
-  #         # kubeflow-jupyter
-  #         - name: kubeflow-jupyter
-  #           base-region: us-east-1
-  #           runner-kind: ubuntu-20.04
+          # kubeflow-jupyter
+          - name: kubeflow-jupyter
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
 
-  #         # kubeflow-torch-cpu
-  #         - name: kubeflow-torch-cpu
-  #           base-region: us-east-2
-  #           runner-kind: ubuntu-20.04
+          # kubeflow-torch-cpu
+          - name: kubeflow-torch-cpu
+            base-region: us-east-2
+            runner-kind: ubuntu-20.04
 
-  #         # kubeflow-data-science
-  #         - name: kubeflow-data-science
-  #           base-region: us-east-2
-  #           runner-kind: ubuntu-20.04
+          # kubeflow-data-science
+          - name: kubeflow-data-science
+            base-region: us-east-2
+            runner-kind: ubuntu-20.04
 
-  #         # dask-base
-  #         - name: dask-base
-  #           base-region: us-east-1
-  #           runner-kind: ubuntu-20.04
+          # dask-base
+          - name: dask-base
+            base-region: us-east-1
+            runner-kind: ubuntu-20.04
 
-  #       validate-build: [false]
-  #       region: [us-east-2]
-  #       self-hosted-runner-neuron: [false]
+        validate-build: [false]
+        region: [us-east-2]
+        self-hosted-runner-neuron: [false]
 
-  #   with:
-  #     environment: prod
-  #     image: ${{ matrix.image.name }}
-  #     region: ${{ matrix.region }}
-  #     base-region: ${{ matrix.image.base-region }}
-  #     tag: ${{ needs.run-repository-state.outputs.tag }}
-  #     validate-build: ${{ matrix.validate-build }}
-  #     release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-  #     runner-kind: ${{ matrix.image.runner-kind }}
-  #     self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
-  #     self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
-  #   secrets:
-  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #     GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+    with:
+      environment: prod
+      image: ${{ matrix.image.name }}
+      region: ${{ matrix.region }}
+      base-region: ${{ matrix.image.base-region }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      validate-build: ${{ matrix.validate-build }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.image.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # ===============================================
   # PROJECTS
