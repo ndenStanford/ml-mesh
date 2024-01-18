@@ -106,7 +106,7 @@ jobs       :
   # ===============================================
 
   run-libs-tests:
-    name: Run libraries unit and integration tests.
+    name: Run ${{ inputs.lib }} library unit and integration tests.
     uses: ./.github/workflows/_libs.yaml
     needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
