@@ -64,7 +64,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: Check if the project's component flow needs to be run
+    name: 'Resolve run criteria: ${{ inputs.project }} training'
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     outputs:
@@ -82,7 +82,7 @@ jobs:
             this:
               - added | modified: 'projects/${{ inputs.project }}/train/**'
   train-model:
-    name: (Train and) register an uncompiled model
+    name: '(Train &) register model: ${{ inputs.project }}'
     needs: check-run-criteria
     runs-on: ubuntu-20.04
     if: ${{ needs.check-run-criteria.outputs.run == 'true' }}

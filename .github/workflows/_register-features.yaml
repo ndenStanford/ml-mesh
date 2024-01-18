@@ -52,7 +52,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: Check if the project's component flow needs to be run
+    name: 'Resolve run criteria: ${{ inputs.project }} features'
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     outputs:
@@ -70,7 +70,7 @@ jobs:
             this:
               - added | modified: 'projects/${{ inputs.project }}/register/**'
   register-features:
-    name: Register features to be used in the project
+    name: 'Register features: ${{ inputs.project }}'
     needs: check-run-criteria
     runs-on: ubuntu-20.04
     if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
