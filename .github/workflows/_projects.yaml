@@ -96,7 +96,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: Check if the project's component flow needs to be run
+    name: 'Resolve run criteria: ${{ inputs.project }}-${{ inputs.component }}'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
@@ -116,7 +116,7 @@ jobs:
               - added | modified: 'projects/${{ inputs.project }}/docker-compose.ci.yaml'
 
   provision-customized-runner:
-    name: Provision self-hosted & customized runner
+    name: 'Provision customized runner: ${{ inputs.project }}-${{ inputs.component }}'
     needs: check-run-criteria
     uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
@@ -133,7 +133,7 @@ jobs:
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   set-runner-specs:
-    name: Set runner specs conditional on hosting requirements
+    name: 'Resolve runner specs: ${{ inputs.project }}-${{ inputs.component }}'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
@@ -159,7 +159,7 @@ jobs:
           if_false: ''
 
   deploy:
-    name: Build, test and deploy project component
+    name: 'Build, test & deploy image: ${{ inputs.project }}-${{ inputs.component }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 20
@@ -278,8 +278,8 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"
 
-  stop-runner:
-    name: Stop self-hosted EC2 runner
+  stop-customized-runner:
+    name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]

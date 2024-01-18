@@ -93,7 +93,7 @@ jobs:
               - added | modified: 'docker/docker-compose.ci.yaml'
 
   provision-customized-runner:
-    name: 'Provision customized runner: : ${{ inputs.image }}'
+    name: 'Provision customized runner: ${{ inputs.image }}'
     needs: check-run-criteria
     uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
@@ -110,7 +110,7 @@ jobs:
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   set-runner-specs:
-    name: 'Resolve runner specs: : ${{ inputs.image }}'
+    name: 'Resolve runner specs: ${{ inputs.image }}'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
@@ -136,7 +136,7 @@ jobs:
           if_false: ''
 
   deploy:
-    name: 'Build, test & deploy image: : ${{ inputs.image }}'
+    name: 'Build, test & deploy image: ${{ inputs.image }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 30
@@ -202,7 +202,7 @@ jobs:
             ENVIRONMENT="ci"
 
   stop-customized-runner:
-    name: 'Stop runner: : ${{ inputs.image }}'
+    name: 'Stop runner: ${{ inputs.image }}'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
