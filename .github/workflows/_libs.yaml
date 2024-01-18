@@ -33,7 +33,7 @@ on  :
 
 jobs:
   deploy:
-    name: Internal library ${{ inputs. lib }}
+    name: 'Internal library: ${{ inputs. lib }}'
     runs-on: ubuntu-20.04
 
     steps:

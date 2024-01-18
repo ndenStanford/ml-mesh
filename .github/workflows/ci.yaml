@@ -106,7 +106,7 @@ jobs       :
   # ===============================================
 
   run-libs-tests:
-    name: Libs.
+    name: Library
     uses: ./.github/workflows/_libs.yaml
     needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
@@ -160,7 +160,7 @@ jobs       :
   # ===============================================
 
   run-us-east-1-base-docker:
-    name: Base Core Docker Images.
+    name: Base Core Image
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -203,7 +203,7 @@ jobs       :
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # run-us-east-1-docker:
-  #   name: Core Docker Images.
+  #   name: Core Image
   #   uses: ./.github/workflows/_docker.yaml
   #   needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
   #   strategy:
@@ -261,7 +261,7 @@ jobs       :
   #     GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # run-us-east-2-docker:
-  #   name: Core Kubeflow Docker Images.
+  #   name: KF Core Image
   #   uses: ./.github/workflows/_docker.yaml
   #   needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
   #   strategy:
@@ -329,7 +329,7 @@ jobs       :
   # # keywords
 
   # run-keywords-project:
-  #   name: Keywords Project components
+  #   name: Keywords Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -393,7 +393,7 @@ jobs       :
   # # summarization
 
   # run-summarization-project:
-  #   name: Summarization Project components
+  #   name: Summarization Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -438,7 +438,7 @@ jobs       :
   # # gch-summarization
 
   # run-gch-summarization-project:
-  #   name: GCH-Summarization Project components
+  #   name: GCH-Summarization Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -498,7 +498,7 @@ jobs       :
   # # entity-linking
 
   # run-entity-linking-project:
-  #   name: Entity Linking Project components
+  #   name: Entity Linking Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -545,7 +545,7 @@ jobs       :
   # # sentiment
 
   # run-sentiment-project:
-  #   name: Sentiment Project components
+  #   name: Sentiment Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -609,7 +609,7 @@ jobs       :
   # # iptc
 
   # run-iptc-project:
-  #   name: IPTC Project components
+  #   name: IPTC Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -691,7 +691,7 @@ jobs       :
   # # ner
 
   # run-ner-project:
-  #   name: NER Project components
+  #   name: NER Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -755,7 +755,7 @@ jobs       :
   # # lsh
 
   # run-lsh-project:
-  #   name: LSH Project components
+  #   name: LSH Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -799,7 +799,7 @@ jobs       :
 
 
   # run-topic-project:
-  #   name: TOPIC Project components
+  #   name: TOPIC Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -857,7 +857,7 @@ jobs       :
   # # transcript-segmentation
 
   # run-transcript-segmentation-project:
-  #   name: Transcript Segmentation Project components
+  #   name: Transcr. Segm. Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -903,7 +903,7 @@ jobs       :
   # # topic-summarization
 
   # run-topic-summarization-project:
-  #   name: TOPIC-SUMMARIZATION Project components
+  #   name: Topic Sum. Project
   #   uses: ./.github/workflows/_projects.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
@@ -994,7 +994,7 @@ jobs       :
   # # ===============================================
 
   # run-train-pipelines:
-  #   name: Train ML models
+  #   name: Train Model
   #   uses: ./.github/workflows/_train-model.yaml
   #   needs:
   #     - run-repository-state
@@ -1049,7 +1049,7 @@ jobs       :
   # # ===============================================
 
   # run-compilation-pipelines:
-  #   name: Compile ML models
+  #   name: Compile Model
   #   uses: ./.github/workflows/_compile-model.yaml
   #   needs:
   #     - run-repository-state
@@ -1108,7 +1108,7 @@ jobs       :
   # # ===============================================
 
   # run-apps:
-  #   name: Web Applications
+  #   name: Web Application
   #   uses: ./.github/workflows/_apps.yaml
   #   needs: [run-repository-state, run-libs-tests, get-target-branch-name]
   #   strategy:
