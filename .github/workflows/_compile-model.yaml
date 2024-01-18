@@ -98,7 +98,7 @@ jobs:
               - added | modified: 'projects/${{ inputs.project }}/compile/**'
 
   provision-customized-runner:
-    name: 'Provision customized runner: ${{ inputs.project }} compilation'
+    name: 'Start runner: ${{ inputs.project }} compilation'
     needs: check-run-criteria
     uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
