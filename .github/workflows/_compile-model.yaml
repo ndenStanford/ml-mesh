@@ -72,7 +72,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: 'Resolve run criteria: ${{ inputs.project }} compilation'
+    name: 'Run criteria: ${{ inputs.project }} compilation'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:

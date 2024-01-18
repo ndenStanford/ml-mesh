@@ -64,7 +64,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: 'Resolve run criteria: ${{ inputs.project }} training'
+    name: 'Run criteria: ${{ inputs.project }} training'
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     outputs:

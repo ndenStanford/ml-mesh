@@ -96,7 +96,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: 'Resolve run criteria: ${{ inputs.project }}-${{ inputs.component }}'
+    name: 'Run criteria: ${{ inputs.project }}-${{ inputs.component }}'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:

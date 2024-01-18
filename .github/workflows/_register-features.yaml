@@ -52,7 +52,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: 'Resolve run criteria: ${{ inputs.project }} features'
+    name: 'Run criteria: ${{ inputs.project }} features'
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     outputs:

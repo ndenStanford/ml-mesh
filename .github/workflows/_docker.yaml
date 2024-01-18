@@ -73,7 +73,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: 'Resolve run criteria: ${{ inputs.image }}'
+    name: 'Run criteria: ${{ inputs.image }}'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
