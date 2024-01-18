@@ -159,7 +159,7 @@ jobs:
           if_false: ''
 
   deploy:
-    name: 'Build, test & deploy image: ${{ inputs.project }}-${{ inputs.component }}'
+    name: 'Build, test & deploy: ${{ inputs.project }}-${{ inputs.component }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 20
