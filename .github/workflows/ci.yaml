@@ -393,7 +393,7 @@ jobs       :
   # summarization
 
   run-summarization-project:
-    name: Summarization Project
+    name: Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -438,7 +438,7 @@ jobs       :
   # gch-summarization
 
   run-gch-summarization-project:
-    name: GCH-Summarization Project
+    name: GCH-Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -799,7 +799,7 @@ jobs       :
 
 
   run-topic-project:
-    name: TOPIC Project
+    name: Topic Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -1066,24 +1066,24 @@ jobs       :
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         models:
-          - runner-kind: custom
+          - project: keywords
             self-hosted-runner-type: inf1.2xlarge
-            project: keywords
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - runner-kind: custom
+          - project: ner
             self-hosted-runner-type: inf1.2xlarge
-            project: ner
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - runner-kind: custom
+          - project: sentiment
             self-hosted-runner-type: inf1.2xlarge
-            project: sentiment
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - runner-kind: custom
+          - project: iptc
             self-hosted-runner-type: inf1.6xlarge
-            project: iptc
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
@@ -1108,7 +1108,7 @@ jobs       :
   # ===============================================
 
   run-apps:
-    name: Web Application
+    name: Web App
     uses: ./.github/workflows/_apps.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
