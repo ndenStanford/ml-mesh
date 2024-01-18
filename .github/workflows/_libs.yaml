@@ -1,7 +1,6 @@
 ---
-name    : Libs
-run-name: Internal library ${{ inputs. lib }}
-on      :
+name: Libs
+on  :
   workflow_call:
     inputs:
       lib:
@@ -32,8 +31,9 @@ on      :
         type: boolean
         description: If false, only the libs that have been changed are ran, otherwise every lib is ran.
 
-jobs    :
+jobs:
   deploy:
+    name: Internal library ${{ inputs. lib }}
     runs-on: ubuntu-20.04
 
     steps:
