@@ -124,7 +124,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - docker-vol:/docker/neuron-compile/tests/output_compile
+      - neuron-vol:/docker/neuron-compile/tests/output_compile
     environment:
       NEURON_COMPILE_OUTPUT_DIR: tests/output_compile # must match the "neuron-compile/{...}" suffix of the volume bind
     command: [pytest, tests/core, -ra, -vv, --capture=no]
@@ -258,4 +258,4 @@ services:
     entrypoint: [pwd]
 
 volumes :
-  docker-vol:
+  neuron-vol:
