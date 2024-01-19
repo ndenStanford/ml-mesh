@@ -14,14 +14,14 @@ import pytest
 def model_card():
     """Mock response for request.post."""
     mock_response = MagicMock()
-    mock_response.content = """{"generated":"{\\n  \\"Relationship with keyword\\": \\"Indirect\\",\\n  \\"Related segment\\": [\\n    {\\n      \\"start_time\\": 1701127839000.0,\\n      \\"content\\": \\"I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now.\\"\\n    }\\n  ],\\n  \\"Reason\\": [\\n    \\"The segment mentions \'ChatGPT,\' which is a well-known product of OpenAI. Although OpenAI is not directly mentioned, the reference to ChatGPT implies an indirect relationship to the keyword \'OpenAI\' because ChatGPT is developed and maintained by OpenAI.\\"\\n  ],\\n  \\"Reason for not choose\\": [\\n    \\"The other segments in the transcript do not mention \'OpenAI\' or its products directly or indirectly. They discuss artificial intelligence in a general context without specific reference to OpenAI or its initiatives.\\"\\n  ]\\n}"}"""  # noqa
+    mock_response.content = """{"generated":"{\\n  \\"Relationship with keyword\\": \\"The transcript contains multiple mentions of \'AI\', which stands for artificial intelligence, and discusses aspects of generative AI and its applications.\\",\\n  \\"Related segment\\": {\\"start_time\\": 1701127820000.0, \\"end_time\\": 1701127849000.0},\\n  \\"Reason\\": \\"The selected segment is the most relevant because it discusses the versatility and reliability of AI techniques, introduces the topic of generative AI, and mentions specific examples of AI applications like ChatGPT and its ability to create content rapidly.\\",\\n  \\"Reason for not choose\\": \\"N/A as the transcript does contain relevant content related to the keyword \'Ai\'.\\"\\n}"}"""  # noqa
     return mock_response
 
 
 @pytest.fixture
-def transcript_keyword():
+def transcript_keywords():
     """Input keyword."""
-    return "OpenAI"
+    return ["OpenAI"]
 
 
 @pytest.fixture
@@ -144,12 +144,7 @@ def transcript_input():
 def expected_output():
     """Expect output from predict."""
     return {
-        "segmented_transcript": [
-            {
-                "content": "I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now.",  # noqa
-                "start_time": 1701127839000.0,
-            }
-        ],
-        "output_truncated": False,
+        "start_time": 1701127820000,
+        "end_time": 1701127849000,
         "input_truncated": False,
     }

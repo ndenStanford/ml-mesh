@@ -38,11 +38,11 @@ def ingest(settings: BaseSettings) -> None:
         _ = (
             pcoll_df
             | "Fill NaN" >> beam.Map(lambda x: x.fillna("nan"))
-            | "Add id and timestamp columns"
+            | "Add iptc_id and event_timestamp columns"
             >> beam.Map(
                 lambda x: x.assign(
-                    id=x.apply(lambda y: int(hash(tuple(y))), axis=1),
-                    timestamp=datetime.now(),
+                    iptc_id=x.apply(lambda y: int(hash(tuple(y))), axis=1),
+                    event_timestamp=datetime.now(),
                 )
             )
             | "Transform to tables"

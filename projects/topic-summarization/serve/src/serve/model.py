@@ -1,3 +1,6 @@
+# type: ignore
+# isort: skip_file
+# black:skip_file
 """Prediction model."""
 
 # Standard Library
@@ -10,63 +13,56 @@ from pydantic import BaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.handler import TranscriptSegmentationHandler
-from src.serve.schemas import (
+from src.serve.schema import (
     BioResponseSchema,
     PredictRequestSchema,
     PredictResponseSchema,
 )
 from src.settings import get_settings
 
+from src.serve.topic import TopicHandler
 
 settings = get_settings()
 
 
-class ServedTranscriptSegmentationModel(ServedModel):
-    """Served Transcript Segmentation model."""
+class ServedTopicModel(ServedModel):
+    """Served Topic detection model."""
 
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
-        super().__init__(name="transcript-segmentation")
+        super().__init__(name="topic-summarization")
 
     def load(self) -> None:
-        """Load Handler."""
-        # Instantiate handler class
-        self.model = TranscriptSegmentationHandler()
+        """Load model."""
+        # load model artifacts into ready CompiledKeyBERT instance
+        self.model = TopicHandler()
         self.ready = True
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
-        """Transcript Segmentation prediction.
+        """Topic-detection prediction.
 
         Args:
             payload (PredictRequestModel): prediction request payload.
         """
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
+        content = inputs.content
 
-        start_time, end_time, input_truncated = self.model.__call__(
-            word_transcript=inputs.transcript, keywords=inputs.keywords
-        )
+        topic = self.model.aggregate(content)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={
-                "start_time": start_time,
-                "end_time": end_time,
-                "input_truncated": input_truncated,
+                "topic": topic,
             },
         )
 
     def bio(self) -> BioResponseSchema:
-        """Get bio information about the served Sentiment model.
-
-        Returns:
-            BioResponseSchema: Bio information about the model
-        """
+        """Model bio endpoint."""
         return BioResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
