@@ -79,7 +79,7 @@ class IngestionSettings(BaseSettings):
         """Ouput schema property."""
         return pa.schema(
             [(k, pa.string()) for k in self.schema]
-            + [("id", pa.int64()), ("timestamp", pa.timestamp("ns"))]
+            + [("iptc_id", pa.int64()), ("event_timestamp", pa.timestamp("ns"))]
         )
 
     class Config:

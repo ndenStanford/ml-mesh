@@ -12,17 +12,15 @@ _service = TranscriptSegmentationHandler()
 
 @patch("requests.post")
 def test_handler___call___(
-    mock_post, transcript_input, transcript_keyword, model_card, expected_output
+    mock_post, transcript_input, transcript_keywords, model_card, expected_output
 ):
     """Test the inference function in transcript segmentation handler."""
     mock_post.return_value = model_card
 
     transcript_segmentation_inference = _service(
         word_transcript=transcript_input,
-        keyword=transcript_keyword,
+        keywords=transcript_keywords,
     )
-    assert (
-        transcript_segmentation_inference[0] == expected_output["segmented_transcript"]
-    )
-    assert transcript_segmentation_inference[1] == expected_output["output_truncated"]
+    transcript_segmentation_inference[0] == expected_output["start_time"]
+    assert transcript_segmentation_inference[1] == expected_output["end_time"]
     assert transcript_segmentation_inference[2] == expected_output["input_truncated"]
