@@ -31,6 +31,22 @@ def test_client():
 def test_predict_input() -> str:
     """Predict input fixture."""
     return [
+        {"hl": False, "index": 0, "textId": None, "w": None, "ts": 1701127800000},
+        {"hl": False, "index": 1, "textId": None, "w": None, "ts": 1701127801000},
+        {"hl": False, "index": 2, "textId": None, "w": None, "ts": 1701127802000},
+        {"hl": False, "index": 3, "textId": None, "w": None, "ts": 1701127803000},
+        {"hl": False, "index": 4, "textId": None, "w": None, "ts": 1701127804000},
+        {"hl": False, "index": 5, "textId": None, "w": None, "ts": 1701127805000},
+        {"hl": False, "index": 6, "textId": None, "w": None, "ts": 1701127806000},
+        {"hl": False, "index": 7, "textId": None, "w": None, "ts": 1701127807000},
+        {"hl": False, "index": 8, "textId": None, "w": None, "ts": 1701127808000},
+        {"hl": False, "index": 9, "textId": None, "w": None, "ts": 1701127809000},
+        {"hl": False, "index": 10, "textId": None, "w": None, "ts": 1701127810000},
+        {"hl": False, "index": 11, "textId": None, "w": None, "ts": 1701127811000},
+        {"hl": False, "index": 12, "textId": None, "w": None, "ts": 1701127812000},
+        {"hl": False, "index": 13, "textId": None, "w": None, "ts": 1701127813000},
+        {"hl": False, "index": 14, "textId": None, "w": None, "ts": 1701127814000},
+        {"hl": False, "index": 15, "textId": None, "w": None, "ts": 1701127815000},
         {"ts": 1701127816000.0, "w": "Watch", "index": 16},
         {"ts": 1701127816500.0, "w": "'a", "index": 17},
         {"ts": 1701127817000.0, "w": "Day's", "index": 18},
