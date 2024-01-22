@@ -72,7 +72,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: Check if the project's component flow needs to be run
+    name: 'Run criteria: ${{ inputs.project }} compilation'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
@@ -98,7 +98,7 @@ jobs:
               - added | modified: 'projects/${{ inputs.project }}/compile/**'
 
   provision-customized-runner:
-    name: Provision self-hosted & customized runner
+    name: 'Start runner: ${{ inputs.project }} compilation'
     needs: check-run-criteria
     uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
@@ -115,7 +115,7 @@ jobs:
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   set-runner-specs:
-    name: Set runner specs conditional on hosting requirements
+    name: 'Resolve runner specs: ${{ inputs.project }} compilation'
     needs: provision-customized-runner
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -141,7 +141,7 @@ jobs:
           if_false: ''
 
   compile-model:
-    name: Compile a base or trained model and register
+    name: 'Compile & register model: ${{ inputs.project }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 30
@@ -213,8 +213,8 @@ jobs:
             NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
-  stop-runner:
-    name: Stop self-hosted EC2 runner
+  stop-customized-runner:
+    name: 'Stop runner: ${{ inputs.project }} compilation'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, compile-model]
