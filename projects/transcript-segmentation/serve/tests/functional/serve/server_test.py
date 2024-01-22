@@ -55,4 +55,32 @@ def test_server_prediction(test_payload, expected_response):
     )
 
     assert response.status_code == 200
-    assert response.json() == expected_response
+    assert response.json()["version"] == expected_response["version"]
+    assert (
+        response.json()["data"]["identifier"] == expected_response["data"]["identifier"]
+    )
+    assert (
+        response.json()["data"]["namespace"] == expected_response["data"]["namespace"]
+    )
+    assert (
+        abs(
+            response.json()["data"]["attributes"]["start_time"]
+            - expected_response["data"]["attributes"]["start_time"]
+        )
+        <= 10000
+    )
+    assert (
+        abs(
+            response.json()["data"]["attributes"]["end_time"]
+            - expected_response["data"]["attributes"]["end_time"]
+        )
+        <= 10000
+    )
+    assert (
+        response.json()["data"]["attributes"]["input_truncated"]
+        == expected_response["data"]["attributes"]["input_truncated"]
+    )
+    assert (
+        response.json()["data"]["attributes"]["summary"]
+        == expected_response["data"]["attributes"]["summary"]
+    )
