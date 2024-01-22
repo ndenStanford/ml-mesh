@@ -875,7 +875,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: c5.large
+            self-hosted-runner-type: c5.xlarge
             self-hosted-runner-neuron: false
 
     with:
