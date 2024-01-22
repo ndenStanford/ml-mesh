@@ -1,5 +1,5 @@
 ---
-name: Core Docker Images
+name: Core Docker Image
 on  :
   workflow_call:
     inputs:
@@ -73,7 +73,7 @@ on  :
 
 jobs:
   check-run-criteria:
-    name: Check if the docker flow needs to be run
+    name: 'Run criteria: ${{ inputs.image }}'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
@@ -93,7 +93,7 @@ jobs:
               - added | modified: 'docker/docker-compose.ci.yaml'
 
   provision-customized-runner:
-    name: Provision self-hosted & customized runner
+    name: 'Start runner: ${{ inputs.image }}'
     needs: check-run-criteria
     uses: ./.github/workflows/_provision-customized-runner.yaml
     if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
@@ -110,7 +110,7 @@ jobs:
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   set-runner-specs:
-    name: Set runner specs conditional on hosting requirements
+    name: 'Resolve runner specs: ${{ inputs.image }}'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
@@ -136,7 +136,7 @@ jobs:
           if_false: ''
 
   deploy:
-    name: Build, test and deploy core docker component
+    name: 'Build, test & deploy image: ${{ inputs.image }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 30
@@ -201,8 +201,8 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}" \
             ENVIRONMENT="ci"
 
-  stop-runner:
-    name: Stop self-hosted EC2 runner
+  stop-customized-runner:
+    name: 'Stop runner: ${{ inputs.image }}'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
