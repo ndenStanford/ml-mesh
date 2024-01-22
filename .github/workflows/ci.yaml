@@ -876,6 +876,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c5.large
+            self-hosted-runner-neuron: false
 
     with:
       project: transcript-segmentation
@@ -890,6 +891,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
