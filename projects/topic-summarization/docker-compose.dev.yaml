@@ -17,7 +17,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [python, -m, src.serve.model_server]
+    command: [python, -m, src.serve.__main__]
     profiles: [serve, integration, functional]
     ports:
       - 8888:8888
@@ -32,7 +32,7 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       OPENAI_API_KEY: ${OPENAI_API_KEY}

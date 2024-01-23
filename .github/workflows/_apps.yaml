@@ -45,6 +45,7 @@ on  :
 
 jobs:
   deploy:
+    name: 'Build, test & deploy: ${{ inputs.app }}-${{ inputs.component }}'
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     env:
