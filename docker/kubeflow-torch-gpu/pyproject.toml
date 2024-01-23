@@ -20,6 +20,7 @@ torch = "1.12.1"
 elasticsearch = "^7.0.0"
 elasticsearch-dsl = "^7.0.0"
 pandasticsearch = {extras = ["pandas"], version = "0.6.0"}
+data = {path = "../../libs/data"}
 
 [build-system]
 requires = ["poetry-core"]

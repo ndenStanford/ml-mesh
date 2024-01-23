@@ -16,16 +16,16 @@ class ClusteringConfig(OnclusiveBaseSettings):
     embedding_method: str = "pretrained"
     model_path: str = "xlm-roberta-base"
     tfidf_max_features: int = 4000
-    dimension_reduction_method: str = "tumap'"
+    dimension_reduction_method: str = "umap"
     n_components: int = 20
     hdbscan_cluster_selection_method: str = "eom"
     gen_min_span_tree: bool = True
     hdbscan_algorithm: str = "best"
-    hdbscan_metric: str = "euclidean"
-    hdbscan_min_cluster_size: int = 15
+    hdbscan_metric: str = "manhattan"
+    hdbscan_min_cluster_size_weight: int = 0.015
     hdbscan_allow_single_cluster: bool = True
-    umap_min_dist: float = 0.1
-    umap_n_neighbors: int = 15
+    umap_min_dist: float = 0.4
+    umap_n_neighbors_weight: float = 0.005
 
 
 class ScoringConfig(OnclusiveBaseSettings):
@@ -68,7 +68,7 @@ def get_settings() -> Settings:
     clustering_config = ClusteringConfig()
     scoring_config = ScoringConfig()
 
-    es_index = ["crawler", "crawler-2023.11", "crawler-2023.10", "crawler-2023.09"]
+    es_index = ["crawler", "crawler-2023.12", "crawler-2023.11", "crawler-2023.10"]
 
     return Settings(
         es=es,

@@ -60,6 +60,7 @@ class ModelServer(FastAPI):
             on_startup=on_startup,
             docs_url=self.model_server_urls.docs,
             redoc_url=self.model_server_urls.redoc,
+            openapi_url=self.model_server_urls.openapi,
             **{**configuration.fastapi_settings.dict(), **kwargs},
         )
         # add root endpoint with API meta data
