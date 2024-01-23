@@ -47,7 +47,7 @@ services:
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
-        CUDA_VERSION: 11.6.2
+        CUDA_VERSION: 11.7.1
         PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: gpu-base
         IMAGE_TAG: ${IMAGE_TAG}

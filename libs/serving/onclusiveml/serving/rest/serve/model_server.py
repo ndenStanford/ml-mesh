@@ -78,13 +78,16 @@ class ModelServer(FastAPI):
                     model=self.model,
                     api_version=configuration.api_version,
                     betterstack_settings=configuration.betterstack_settings,
+                    test_inference=configuration.liveness_sample_inference,
                 )
             )
         # add default K8s readiness probe endpoint if desired
         if configuration.add_readiness:
             self.include_router(
                 get_readiness_router(
-                    model=self.model, api_version=configuration.api_version
+                    model=self.model,
+                    api_version=configuration.api_version,
+                    test_inference=configuration.readiness_sample_inference,
                 )
             )
         # ML services should expose the following additional routes implemented in the ServedModel:
