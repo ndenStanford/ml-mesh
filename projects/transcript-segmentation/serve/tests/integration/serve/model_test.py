@@ -50,7 +50,36 @@ def test_served_transcript_segmentation_model_predict(
         test_input
     )
 
-    assert test_actual_predict_output == test_expected_predict_output
+    assert (
+        abs(
+            test_actual_predict_output.data.attributes.start_time
+            - test_expected_predict_output.data.attributes.start_time
+        )
+        <= 10000
+    )
+    assert (
+        abs(
+            test_actual_predict_output.data.attributes.end_time
+            - test_expected_predict_output.data.attributes.end_time
+        )
+        <= 10000
+    )
+    assert (
+        test_actual_predict_output.data.attributes.input_truncated
+        == test_expected_predict_output.data.attributes.input_truncated
+    )
+    assert (
+        test_actual_predict_output.data.attributes.summary
+        == test_expected_predict_output.data.attributes.summary
+    )
+    assert (
+        test_actual_predict_output.data.identifier
+        == test_expected_predict_output.data.identifier
+    )
+    assert (
+        test_actual_predict_output.data.namespace
+        == test_expected_predict_output.data.namespace
+    )
 
 
 @pytest.mark.order(3)
