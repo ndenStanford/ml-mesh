@@ -60,6 +60,14 @@ def test_served_model_predict(test_model_name):
     served_model.predict(payload=test_payload)
 
 
+def test_served_model_sample_inference(test_model_name):
+    """Tests the predict method stump of the ServedModel base class."""
+    # get loaded model
+    served_model = ServedModel(name=test_model_name)
+    served_model.load()
+    served_model.sample_inference()
+
+
 def test_served_model_bio(test_model_name):
     """Tests the bio method stump of the ServedModel base class."""
     served_model = ServedModel(name=test_model_name)
