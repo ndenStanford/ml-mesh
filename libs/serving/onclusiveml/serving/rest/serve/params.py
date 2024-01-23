@@ -178,3 +178,6 @@ class ServingParams(ServingBaseParams):
     uvicorn_settings: UvicornSettings = UvicornSettings()
     # betterstack settings
     betterstack_settings = BetterStackSettings()
+    # test inference for readiness/liveness probe
+    sample_inference_during_readiness: bool = False
+    sample_inference_during_liveness: bool = False
