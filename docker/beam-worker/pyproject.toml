@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "beam-worker"
+version = "0.1.0"
+description = "Apache Beam worker dependencies"
+authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+data = {path = "../../libs/data"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
