@@ -179,5 +179,5 @@ class ServingParams(ServingBaseParams):
     # betterstack settings
     betterstack_settings = BetterStackSettings()
     # test inference for readiness/liveness probe
-    sample_inference_during_readiness: bool = False
-    sample_inference_during_liveness: bool = False
+    readiness_sample_inference: bool = False
+    liveness_sample_inference: bool = False

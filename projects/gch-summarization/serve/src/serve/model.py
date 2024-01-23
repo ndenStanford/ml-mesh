@@ -109,5 +109,4 @@ class ServedSummarizationModel(ServedModel):
     def sample_inference(self) -> None:
         """Make inference after model loading."""
         for lang, sample in SAMPLE_INFERENCE.items():
-            output = self.model(text=sample, language=lang)
-            print(output)
+            self.model(text=sample, language=lang)
