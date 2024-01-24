@@ -92,7 +92,11 @@ class _ConsumeKafkaTopic(DoFn):
         )
 
         try:
-            for msg in consumer:
+            for (
+                msg
+            ) in (
+                consumer
+            ):  # NOTE: this will never really run as a streaming job for convenience
                 if msg is None:
                     raise EmptyConsumerException(topics=consumer_args["topics"])
                 elif msg.error():

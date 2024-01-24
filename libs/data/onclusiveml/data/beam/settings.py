@@ -34,6 +34,7 @@ class PipelineSettings(OnclusiveBaseSettings):
             options += ["--streaming"]
         if self.environment_type == "EXTERNAL":
             options += ["--environment_config=localhost:50000"]
+        print(options)
         return PipelineOptions(options)
 
 

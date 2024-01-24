@@ -51,7 +51,7 @@ services:
 
   compile:
     volumes:
-      - compile-vol:/projects/ner/compile/outputs
+      - compile-volume:/projects/ner/compile/outputs
     devices:
       - /dev/neuron0:/dev/neuron0
     build:
@@ -82,7 +82,7 @@ services:
 
   compile-download-model:
     volumes:
-      - compile-vol:/projects/ner/compile/outputs
+      - compile-volume:/projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
@@ -96,7 +96,7 @@ services:
 
   compile-validate-model:
     volumes:
-      - compile-vol:/projects/ner/compile/outputs
+      - compile-volume:/projects/ner/compile/outputs
     devices:
       - /dev/neuron0:/dev/neuron0
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
@@ -110,7 +110,7 @@ services:
 
   compile-upload-model:
     volumes:
-      - compile-vol:/projects/ner/compile/outputs
+      - compile-volume:/projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -146,7 +146,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/ner/serve/models
+      - serve-volume:/projects/ner/serve/models
     build:
       context: ../../
       dockerfile: projects/ner/serve/Dockerfile
@@ -185,7 +185,7 @@ services:
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
     volumes:
-      - serve-vol:/projects/ner/serve/models
+      - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
@@ -230,7 +230,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/ner/serve/models
+      - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
@@ -249,7 +249,7 @@ services:
   # - include REST model server process
   serve-functional:
     volumes:
-      - serve-vol:/projects/ner/serve/models
+      - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
@@ -271,7 +271,7 @@ services:
   # - include REST model server process
   serve-load:
     volumes:
-      - serve-vol:/projects/ner/serve/models
+      - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
@@ -299,7 +299,7 @@ services:
   # utility service: uploading the relevant test results to the model registry
   serve-upload-results:
     volumes:
-      - serve-vol:/projects/ner/serve/models
+      - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [serve]
@@ -336,9 +336,138 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  # =============================================
+  # BACKFILL
+  # =============================================
+
+  backfill:
+    build:
+      context: ../../
+      dockerfile: projects/ner/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        PROJECT: ner
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-}
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+      - type: bind
+        source: backfill/src
+        target: /projects/ner/backfill/src
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+    entrypoint: [python, -m, src.backfill.__main__]
+    profiles: [backfill]
+    network_mode: service:taskmanager
+    environment:
+      HOST: internal.api.ml.stage.onclusive.com
+      NAMESPACE: ner
+      VERSION: 1
+      API_KEY: sk-fS9sLj7vjCu4hlz6ADbnV1DhRpdufXrE
+      SECURE: true
+      JOB_NAME: ner-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: beam-input
+      TARGET_TOPIC: beam-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+      # SECURITY_PROTOCOL: "SASL_SSL"
+      # SASL_MECHANISM: "SCRAM-SHA-512"
+      # SASL_USERNAME: "onclusive"
+      # SASL_PASSWORD: "xx45VsQ75WqgVatykHUw8Xze"
+    depends_on:
+      - jobserver
+      - kafka
+      - zookeeper
+
+  jobmanager:
+    image: apache/flink:1.16-scala_2.12-java11
+    command: [jobmanager]
+    ports:
+      - 8081:8081
+    profiles: [backfill]
+    networks: [onclusive-net]
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 1
+
+  taskmanager:
+    image: apache/flink:1.16-scala_2.12-java11
+    scale: 1
+    depends_on:
+      - jobmanager
+    command: [taskmanager]
+    ports:
+      - 8100-8200:8100-8200
+    profiles: [backfill]
+    networks: [onclusive-net]
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        parallelism.default: 1
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+
+  jobserver:
+    image: apache/beam_flink1.16_job_server:2.49.0
+    command:
+      - --flink-master=jobmanager:8081
+    ports:
+      - 8097:8097
+      - 8098:8098
+      - 8099:8099
+    depends_on:
+      - jobmanager
+    profiles: [backfill]
+    networks: [onclusive-net]
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    profiles: [backfill]
+    networks: [onclusive-net]
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+  kafka:
+    image: confluentinc/cp-kafka:6.1.13
+    profiles: [backfill]
+    networks: [onclusive-net]
+    ports:
+      - 9092:9092
+      - 9094:9094
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      LAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CREATE_TOPICS: beam-input:1:1,beam-output:1:1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      TOPIC_AUTO_CREATE: true
+
 networks:
   onclusive-net:
 
 volumes :
-  compile-vol:
-  serve-vol:
+  compile-volume:
+  serve-volume:
+  backfill-volume:

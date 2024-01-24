@@ -32,7 +32,7 @@ class KafkaBaseSettings(OnclusiveBaseSettings):
 class KafkaProducerSettings(KafkaBaseSettings):
     """Kafka producer settings."""
 
-    compression_type: KafkaProducerCompressionType = Field(
+    compression_type: str = Field(
         KafkaProducerCompressionType.NONE, alias="compression.type"
     )
     socket_timeout_ms: Optional[int] = Field(None, alias="socket.timeout.ms")

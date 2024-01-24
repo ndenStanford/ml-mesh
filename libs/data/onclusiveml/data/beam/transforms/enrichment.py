@@ -87,6 +87,19 @@ class _OnclusiveApiCall(DoFn):
         """Process transform."""
         # get request schema instance from element
         try:
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print(self._predict(element))
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
+            print("*" * 128)
             yield self._predict(element)
         except Exception:
             raise BeamPipelineException()
