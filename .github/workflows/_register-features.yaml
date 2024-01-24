@@ -104,10 +104,10 @@ jobs:
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Run feature registration for the project
-        if: ${{ !inputs.pull-request }}
         run: |
           make projects.start/${{ inputs.project }} COMPONENT=register ENVIRONMENT=ci \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            IMAGE_TAG="${{ inputs.tag }}"
+            IMAGE_TAG="${{ inputs.tag }}" \
+            REGISTER_FEATURES="${{ !inputs.pull-request }}"

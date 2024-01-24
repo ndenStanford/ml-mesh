@@ -80,6 +80,8 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_READINESS_SAMPLE_INFERENCE: false
+      ONCLUSIVEML_SERVING_LIVENESS_SAMPLE_INFERENCE: false
       NEPTUNE_PROJECT: onclusive/gch-summarization
       NEPTUNE_MODEL_ID: SUM-TRIANED
     profiles: [serve, functional, load]
