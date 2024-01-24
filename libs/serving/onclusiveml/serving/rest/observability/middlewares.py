@@ -50,7 +50,8 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.app_name = app_name
         self.pod_name = os.getenv("HOSTNAME", "unknown_pod")
-        INFO.labels(app_name=self.app_name, pod_name=self.pod_name).inc()
+        self.pid = os.getpid()
+        INFO.labels(app_name=self.app_name, pod_name=self.pod_name, pid=self.pid).inc()
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -75,10 +76,18 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         REQUESTS_IN_PROGRESS.labels(
-            method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+            method=method,
+            path=path,
+            app_name=self.app_name,
+            pod_name=self.pod_name,
+            pid=self.pid,
         ).inc()
         REQUESTS.labels(
-            method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+            method=method,
+            path=path,
+            app_name=self.app_name,
+            pod_name=self.pod_name,
+            pid=self.pid,
         ).inc()
         before_time = time.perf_counter()
         try:
@@ -91,6 +100,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 exception_type=type(e).__name__,
                 app_name=self.app_name,
                 pod_name=self.pod_name,
+                pid=self.pid,
             ).inc()
             raise e from None
         else:
@@ -101,7 +111,11 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             trace_id = trace.format_trace_id(span.get_span_context().trace_id)
 
             REQUESTS_PROCESSING_TIME.labels(
-                method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+                method=method,
+                path=path,
+                app_name=self.app_name,
+                pod_name=self.pod_name,
+                pid=self.pid,
             ).observe(after_time - before_time, exemplar={"TraceID": trace_id})
         finally:
             RESPONSES.labels(
@@ -112,7 +126,11 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 pod_name=self.pod_name,
             ).inc()
             REQUESTS_IN_PROGRESS.labels(
-                method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+                method=method,
+                path=path,
+                app_name=self.app_name,
+                pod_name=self.pod_name,
+                pid=self.pid,
             ).dec()
 
         return response
