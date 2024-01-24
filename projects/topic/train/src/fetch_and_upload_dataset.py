@@ -97,6 +97,6 @@ def fetch_and_upload(file_name: str) -> Any:
         f"{feature_view.name}:{feature.name}" for feature in feature_view.features
     ]
     dataset_df = fs_handle.fetch_historical_features(features)
-    file_key = upload(dataset_df, file_name)
+    # file_key = upload(dataset_df, file_name)
     logger.info(f"{dataset_df.shape[0]} samples pulled from feature store.")
-    return dataset_df, file_key
+    return dataset_df, "_"
