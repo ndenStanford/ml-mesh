@@ -142,5 +142,5 @@ jobs:
             --image-tag ${{ inputs.tag }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
-            --num-samples 5000000 \
+            --num-samples 2000000 \
             python -m src.train_model
