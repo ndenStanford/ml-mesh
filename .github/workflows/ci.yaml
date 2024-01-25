@@ -1039,7 +1039,7 @@ jobs       :
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: topic
-            sagemaker-runner-type: ml.p3.16xlarge
+            sagemaker-runner-type: ml.p3dn.24xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
