@@ -72,7 +72,6 @@ class TranscriptSegmentationHandler:
             st_str = "start"
             end_str = "end"
 
-        print()
         return (int(timestamps[st_str]), int(timestamps[end_str]))
 
     def postprocess(
@@ -153,11 +152,12 @@ class TranscriptSegmentationHandler:
                         transcript_preprocessed.append(transcript_dict)
                         transcript_dict = {}
 
+        # append left over transcript at the end
         if transcript_dict:
             if len(transcript_dict["content"]) > 0:
-                if transcript_dict["content"][-1] in [".", "!", "?"]:
-                    transcript_preprocessed.append(transcript_dict)
-                    transcript_dict = {}
+                transcript_dict["end_time"] = i["ts"]
+                transcript_preprocessed.append(transcript_dict)
+                transcript_dict = {}
         return transcript_preprocessed
 
     def __call__(

@@ -245,7 +245,7 @@ def expected_response():
             "namespace": "transcript-segmentation",
             "attributes": {
                 "start_time": 1701127820000.0,
-                "end_time": 1701127849000.0,
+                "end_time": 1701127859428.0,
                 "input_truncated": False,
                 "summary": None,
             },
