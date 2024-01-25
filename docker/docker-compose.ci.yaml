@@ -257,5 +257,40 @@ services:
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     entrypoint: [pwd]
 
+  # ===========================================================
+  # BEAM BACKFILL
+  # ===========================================================
+
+  beam-backfill:
+    build:
+      context: ..
+      dockerfile: ./docker/beam-backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: beam-backfill
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/beam-backfill:${IMAGE_TAG}
+
+  # ===========================================================
+  # BEAM WORKER
+  # ===========================================================
+
+  beam-worker:
+    stdin_open: true
+    tty: true
+    entrypoint: [/bin/bash]
+    build:
+      context: ..
+      dockerfile: ./docker/beam-worker/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: beam-worker
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/beam-worker:${IMAGE_TAG}
+
 volumes :
   neuron-vol:
