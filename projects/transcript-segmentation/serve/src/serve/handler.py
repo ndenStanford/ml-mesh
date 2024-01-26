@@ -149,6 +149,7 @@ class TranscriptSegmentationHandler:
                 if len(transcript_dict["content"]) > 0:
                     # If contain certain punctuation, complete the sentence and start new sentence
                     if transcript_dict["content"][-1] in [".", "!", "?"]:
+                        transcript_dict["end_time"] = i["ts"]
                         transcript_preprocessed.append(transcript_dict)
                         transcript_dict = {}
 
