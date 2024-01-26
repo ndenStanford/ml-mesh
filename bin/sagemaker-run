@@ -91,7 +91,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 @click.option(
     '--num-samples',
     type=str,
-    default='500',
+    default='1000',
     show_default=True,
     help="""[Optional]: The number of samples to be fetched from feature store for training. Will be injected into the container at runtime."""
 )
