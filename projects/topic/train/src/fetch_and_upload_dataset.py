@@ -30,17 +30,9 @@ def upload(object_to_upload: Any, file_name: str) -> str:
     data_fetch_params = DataFetchParams()
     client = boto3.client("s3")
     parquet_buffer = io.BytesIO()
-    try:
-        object_to_upload.to_parquet(parquet_buffer, index=False)
-        file_key = f"{data_fetch_params.dataset_upload_dir}/{file_name}.parquet"
-        full_file_key = s3_put(client, file_key, parquet_buffer)
-    except Exception as e:
-        logger.info(
-            f"Unable to upload full dataset. Uploading a sample. Cause: {str(e)}"
-        )
-        object_to_upload.sample(500).to_parquet(parquet_buffer, index=False)
-        file_key = f"{data_fetch_params.dataset_upload_dir}/{file_name}_sample.parquet"
-        full_file_key = s3_put(client, file_key, parquet_buffer)
+    object_to_upload.to_parquet(parquet_buffer, index=False)
+    file_key = f"{data_fetch_params.dataset_upload_dir}/{file_name}.parquet"
+    full_file_key = s3_put(client, file_key, parquet_buffer)
     return full_file_key
 
 
@@ -97,6 +89,6 @@ def fetch_and_upload(file_name: str) -> Any:
         f"{feature_view.name}:{feature.name}" for feature in feature_view.features
     ]
     dataset_df = fs_handle.fetch_historical_features(features)
-    # file_key = upload(dataset_df, file_name)
+    file_key = upload(dataset_df, file_name)
     logger.info(f"{dataset_df.shape[0]} samples pulled from feature store.")
-    return dataset_df, "_"
+    return dataset_df, file_key
