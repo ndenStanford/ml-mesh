@@ -156,6 +156,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: neuron-inference
+        NEURON_COMPILE_OUTPUT_DIR: tests/input_inference
     image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
     depends_on:
       - python-base
