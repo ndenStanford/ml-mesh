@@ -341,7 +341,7 @@ jobs       :
   run-keywords-project:
     name: Keywords Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, get-target-branch-name]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 5
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -703,7 +703,7 @@ jobs       :
   run-ner-project:
     name: NER Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, get-target-branch-name]
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events

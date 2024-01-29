@@ -9,5 +9,3 @@ using
 
 - `PROJECT_NAME=ner`, and
 - `COMPONENT=compile`
-
-dummy change
