@@ -349,14 +349,14 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # train
-          - name: train
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-20.04
+          # # train
+          # - name: train
+          #   download-model: false
+          #   integration: false
+          #   functional: false
+          #   load: false
+          #   upload-test-results: false
+          #   runner-kind: ubuntu-20.04
 
           # compile
           - name: compile
@@ -367,15 +367,15 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
-          # serve
-          - name: serve
-            download-model: true
-            integration: true
-            functional: true
-            load: true
-            upload-test-results: true
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+          # # serve
+          # - name: serve
+          #   download-model: true
+          #   integration: true
+          #   functional: true
+          #   load: true
+          #   upload-test-results: true
+          #   runner-kind: custom
+          #   self-hosted-runner-type: inf1.xlarge
 
     with:
       project: keywords
