@@ -72,7 +72,6 @@ class TranscriptSegmentationHandler:
             st_str = "start"
             end_str = "end"
 
-        print()
         return (int(timestamps[st_str]), int(timestamps[end_str]))
 
     def postprocess(
