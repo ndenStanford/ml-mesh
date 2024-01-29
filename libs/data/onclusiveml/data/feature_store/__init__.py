@@ -8,4 +8,5 @@ from onclusiveml.data.feature_store.redshift_source import (  # noqa: F401
 )
 from onclusiveml.data.feature_store.feature_store_utils import (  # noqa: F401
     FeatureStoreParams,
+    FeastRepoBuilder,
 )

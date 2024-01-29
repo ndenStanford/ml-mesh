@@ -238,6 +238,16 @@ jobs       :
             self-hosted-runner-neuron: false
             runner-kind: ubuntu-20.04
 
+          - name: beam-backfill
+            validate-build: false
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
+
+          - name: beam-worker
+            validate-build: false
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
+
         base-region: [us-east-1]
         region: [us-east-1]
 
