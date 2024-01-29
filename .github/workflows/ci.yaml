@@ -1073,7 +1073,6 @@ jobs       :
       - get-target-branch-name
 
     strategy:
-      max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         models:
