@@ -199,9 +199,6 @@ class TranscriptSegmentationHandler:
             preprocessed_sentence_transcript
         )
 
-        for i in truncated_sentence_transcript:
-            print(i)
-
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {"transcript": truncated_sentence_transcript, "keywords": keywords}
         q = requests.post(
