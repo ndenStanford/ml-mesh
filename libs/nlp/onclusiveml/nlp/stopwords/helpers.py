@@ -40,8 +40,10 @@ def load_stop_words_file(lang: str) -> List[str]:
     """
     content = []
     if lang == "all":
-        for stopwords_file in os.listdir(os.path.join(directory, "data")):
-            with open(stopwords_file) as f:
+        directory = os.path.dirname(os.path.abspath(__file__))
+        base_dir = os.path.join(directory, "data")
+        for stopwords_file in os.listdir(base_dir):
+            with open(os.path.join(base_dir, stopwords_file)) as f:
                 content = content + json.loads(f.read())
     else:
         try:

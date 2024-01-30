@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "train"
+version = "0.1.0"
+description = "Training module for OnclusiveML models."
+authors = ["vishal.singh <vishal.singh@onclusive.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+
+tracking = {path = "../tracking"}
+bertopic = "0.15.0"
+data = {path = "../data"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

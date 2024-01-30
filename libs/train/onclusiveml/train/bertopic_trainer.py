@@ -11,6 +11,12 @@ from onclusiveml.tracking import (
     TrackedParams,
 )
 
+from bertopic import BERTopic
+from bertopic.representation import MaximalMarginalRelevance
+from cuml.cluster import HDBSCAN
+from cuml.manifold import UMAP
+from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import CountVectorizer
 
 class BertopicTrainer(OnclusiveModelTrainer):
     def __init__(
@@ -42,6 +48,31 @@ class BertopicTrainer(OnclusiveModelTrainer):
         )
 
     def initialize_model(self):
+        vectorizer_model = CountVectorizer(
+        stop_words=stopwords,
+        min_df=model_card.model_params.min_df,
+        ngram_range=model_card.model_params.ngram_range,
+        )
+
+        cluster_model = HDBSCAN(
+            min_cluster_size=model_card.model_params.min_cluster_size,
+            metric=model_card.model_params.hdbscan_metric,
+            cluster_selection_method=model_card.model_params.cluster_selection_method,
+            prediction_data=model_card.model_params.prediction_data,
+        )
+
+        umap_model = UMAP(
+            n_neighbors=model_card.model_params.n_neighbors,
+            n_components=model_card.model_params.n_components,
+            min_dist=model_card.model_params.min_dist,
+            metric=model_card.model_params.umap_metric,
+            random_state=0,
+        )
+
+        representation_model = MaximalMarginalRelevance(
+            diversity=model_card.model_params.diversity
+        )
+
         self.topic_model = BERTopic(
             umap_model=self.umap_model,
             hdbscan_model=self.cluster_model,

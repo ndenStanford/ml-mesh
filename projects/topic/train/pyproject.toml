@@ -25,6 +25,7 @@ core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
 data = {path = "../../../libs/data"}
 nlp = {path = "../../../libs/nlp"}
+train = {path = "../../../libs/train"}
 sentence-transformers = "2.2.2"
 
 [tool.poetry.group.dev.dependencies]

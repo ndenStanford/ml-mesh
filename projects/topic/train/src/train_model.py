@@ -21,7 +21,7 @@ from src.settings import (  # type: ignore[attr-defined]
     TrackedTopicBaseModelCard,
     TrackedTopicModelSpecs,
 )
-
+from src.settings import DataFetchParams
 
 def main() -> None:
     """Register trained model."""
@@ -34,30 +34,7 @@ def main() -> None:
 
     stopwords = load_stop_words_file(lang=model_card.model_params.stop_words_lang)
 
-    vectorizer_model = CountVectorizer(
-        stop_words=english_stopwords,
-        min_df=model_card.model_params.min_df,
-        ngram_range=model_card.model_params.ngram_range,
-    )
-
-    cluster_model = HDBSCAN(
-        min_cluster_size=model_card.model_params.min_cluster_size,
-        metric=model_card.model_params.hdbscan_metric,
-        cluster_selection_method=model_card.model_params.cluster_selection_method,
-        prediction_data=model_card.model_params.prediction_data,
-    )
-
-    umap_model = UMAP(
-        n_neighbors=model_card.model_params.n_neighbors,
-        n_components=model_card.model_params.n_components,
-        min_dist=model_card.model_params.min_dist,
-        metric=model_card.model_params.umap_metric,
-        random_state=0,
-    )
-
-    representation_model = MaximalMarginalRelevance(
-        diversity=model_card.model_params.diversity
-    )
+    
 
     bertopic_trainer = BertopicTrainer(
         tracked_model_specs=model_specs,
