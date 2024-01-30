@@ -137,26 +137,42 @@ class TranscriptSegmentationHandler:
         transcript_dict: Dict[str, Any] = {}
 
         # Iterate over each word from word based transcript and merge into sentences
-        for i in word_transcript:
-            if i["w"] is not None:
+        for i in range(len(word_transcript)):
+            if word_transcript[i]["w"] is not None:
                 if not transcript_dict:
-                    transcript_dict["start_time"] = i["ts"]
-
+                    transcript_dict["start_time"] = word_transcript[i]["ts"]
                 if "content" not in transcript_dict:
-                    transcript_dict["content"] = str(i["w"])  # Convert to string
+                    transcript_dict["content"] = str(
+                        word_transcript[i]["w"]
+                    )  # Convert to string
                 else:
-                    transcript_dict["content"] += " " + str(i["w"])  # Convert to string
-                if len(transcript_dict["content"]) > 0:
+                    # merge abreviations without spaces
+                    if (
+                        len(word_transcript[i]["w"]) == 2
+                        and word_transcript[i]["w"][-1] == "."
+                        and len(word_transcript[i - 1]["w"]) == 2
+                        and word_transcript[i - 1]["w"][-1] == "."
+                    ):
+                        transcript_dict["content"] += str(
+                            word_transcript[i]["w"]
+                        )  # Convert to string
+                    else:
+                        transcript_dict["content"] += " " + str(
+                            word_transcript[i]["w"]
+                        )  # Convert to string
+                if len(transcript_dict["content"]) > 0 and i > 0:
                     # If contain certain punctuation, complete the sentence and start new sentence
-                    if transcript_dict["content"][-1] in [".", "!", "?"]:
-                        transcript_dict["end_time"] = i["ts"]
+                    if len(str(word_transcript[i]["w"])) != 2 and transcript_dict[
+                        "content"
+                    ][-1] in [".", "!", "?"]:
+                        transcript_dict["end_time"] = word_transcript[i]["ts"]
                         transcript_preprocessed.append(transcript_dict)
                         transcript_dict = {}
 
         # append left over transcript at the end
         if transcript_dict:
             if len(transcript_dict["content"]) > 0:
-                transcript_dict["end_time"] = i["ts"]
+                transcript_dict["end_time"] = word_transcript[i]["ts"]
                 transcript_preprocessed.append(transcript_dict)
                 transcript_dict = {}
         return transcript_preprocessed
@@ -182,6 +198,9 @@ class TranscriptSegmentationHandler:
         truncated_sentence_transcript = self.truncate_transcript(
             preprocessed_sentence_transcript
         )
+
+        for i in truncated_sentence_transcript:
+            print(i)
 
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {"transcript": truncated_sentence_transcript, "keywords": keywords}
