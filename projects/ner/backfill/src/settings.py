@@ -11,7 +11,7 @@ from onclusiveml.data.beam.settings import (
     EnrichmentPipelineSettings,
     PipelineSettings,
 )
-from onclusiveml.data.kafka.settings import (
+from onclusiveml.data.beam.transforms.io.kafka.settings import (
     KafkaConsumerSettings,
     KafkaProducerSettings,
 )

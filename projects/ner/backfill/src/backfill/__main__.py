@@ -13,7 +13,7 @@ from onclusiveml.core.base.pydantic import cast
 from onclusiveml.data.beam.settings import PipelineSettings
 from onclusiveml.data.beam.transforms import MachineLearningEnrichment
 from onclusiveml.data.beam.transforms.io.kafka import KafkaConsume, KafkaProduce
-from onclusiveml.data.kafka.settings import (
+from onclusiveml.data.beam.transforms.io.kafka.settings import (
     KafkaConsumerSettings,
     KafkaProducerSettings,
 )
@@ -36,10 +36,8 @@ def run_beam_pipeline(settings: OnclusiveBaseSettings) -> None:
             p
             | "Read From Kafka"
             >> KafkaConsume(
+                topic=settings.source_topic,
                 consumer_config=consumer.config,
-                topics=[settings.source_topic],
-                timeout=settings.timeout,
-                test=settings.test,
             )
             | "Decode" >> beam.Map(lambda x: (x[0], json.loads(x[1])))
             | f"Enrichment: {settings.namespace}"
