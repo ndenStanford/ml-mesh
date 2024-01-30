@@ -14,7 +14,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: ingest
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
@@ -22,7 +22,7 @@ services:
       - type: bind
         source: ingest/src
         target: /home/projects/iptc/ingest/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
     command: [python, -m, src.ingest]
     profiles: [ingest]
     environment:
@@ -37,7 +37,7 @@ services:
       - type: bind
         source: ingest/
         target: /home/projects/iptc/ingest/
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -58,11 +58,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -74,7 +74,7 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -95,7 +95,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: register
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
@@ -103,7 +103,7 @@ services:
       - type: bind
         source: register/src
         target: /projects/iptc/register/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_features]
     profiles: [register]
     environment:
@@ -118,7 +118,7 @@ services:
       - type: bind
         source: register/
         target: /projects/iptc/register/
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     hostname: onclusive-ml
@@ -138,11 +138,11 @@ services:
       dockerfile: projects/iptc/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.1} #should have been v23.8.4?
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -152,7 +152,7 @@ services:
     networks: [onclusive-net]
 
   compile-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusive-ml
@@ -161,7 +161,7 @@ services:
   compile-download-model:
     volumes:
       - compile-vol:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
     environment:
@@ -177,7 +177,7 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - compile-vol:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
@@ -189,7 +189,7 @@ services:
   compile-upload-model:
     volumes:
       - compile-vol:/projects/iptc/compile/outputs # must be same as `IO_OUTPATH` env var
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
     environment:
@@ -231,11 +231,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
@@ -264,7 +264,7 @@ services:
   serve-download-model:
     volumes:
       - serve-vol:/projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
@@ -286,7 +286,7 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -309,7 +309,7 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - serve-vol:/projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-11
@@ -328,7 +328,7 @@ services:
   serve-functional:
     volumes:
       - serve-vol:/projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-11
@@ -350,7 +350,7 @@ services:
   serve-load:
     volumes:
       - serve-vol:/projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
     # serving params
@@ -378,7 +378,7 @@ services:
   serve-upload-results:
     volumes:
       - serve-vol:/projects/iptc/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [serve]
     environment:
@@ -393,7 +393,7 @@ services:
       ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-11
-      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve
+      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}

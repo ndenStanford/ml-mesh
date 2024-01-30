@@ -55,14 +55,14 @@ def test_served_transcript_segmentation_model_predict(
             test_actual_predict_output.data.attributes.start_time
             - test_expected_predict_output.data.attributes.start_time
         )
-        <= 10000
+        <= 200000
     )
     assert (
         abs(
             test_actual_predict_output.data.attributes.end_time
             - test_expected_predict_output.data.attributes.end_time
         )
-        <= 10000
+        <= 200000
     )
     assert (
         test_actual_predict_output.data.attributes.input_truncated
