@@ -36,27 +36,6 @@ def upload(object_to_upload: Any, file_name: str) -> str:
     return full_file_key
 
 
-def s3_put(client: BaseClient, file_key: str, parquet_buffer: BytesIO) -> str:
-    """Put object to S3 bucket.
-
-    Args:
-        client (BaseClient): Boto3 S3 client.
-        file_key (str): Path of the uploaded file.
-        parquet_buffer (BytesIO): Buffer containing Parquet data.
-
-    Returns:
-        str: The key of the uploaded file.
-    """
-    data_fetch_params = DataFetchParams()
-    parquet_buffer.seek(0)
-    client.put_object(
-        Body=parquet_buffer.getvalue(),
-        Bucket=data_fetch_params.dataset_upload_bucket,
-        Key=file_key,
-    )
-    return file_key
-
-
 def fetch_and_upload(file_name: str) -> Any:
     """Fetch from feature store and upload to s3."""
     data_fetch_params = DataFetchParams()
