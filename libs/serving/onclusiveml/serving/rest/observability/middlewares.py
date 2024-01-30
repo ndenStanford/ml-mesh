@@ -50,8 +50,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.app_name = app_name
         self.pod_name = os.getenv("HOSTNAME", "unknown_pod")
-        self.pid = os.getpid()
-        INFO.labels(app_name=self.app_name, pod_name=self.pod_name, pid=self.pid).inc()
+        INFO.labels(app_name=self.app_name, pod_name=self.pod_name).inc()
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -80,14 +79,12 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             path=path,
             app_name=self.app_name,
             pod_name=self.pod_name,
-            pid=self.pid,
         ).inc()
         REQUESTS.labels(
             method=method,
             path=path,
             app_name=self.app_name,
             pod_name=self.pod_name,
-            pid=self.pid,
         ).inc()
         before_time = time.perf_counter()
         try:
@@ -100,7 +97,6 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 exception_type=type(e).__name__,
                 app_name=self.app_name,
                 pod_name=self.pod_name,
-                pid=self.pid,
             ).inc()
             raise e from None
         else:
@@ -115,7 +111,6 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 path=path,
                 app_name=self.app_name,
                 pod_name=self.pod_name,
-                pid=self.pid,
             ).observe(after_time - before_time, exemplar={"TraceID": trace_id})
         finally:
             RESPONSES.labels(
@@ -130,7 +125,6 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 path=path,
                 app_name=self.app_name,
                 pod_name=self.pod_name,
-                pid=self.pid,
             ).dec()
 
         return response
