@@ -160,7 +160,7 @@ class TranscriptSegmentationHandler:
                         transcript_dict["content"] += " " + str(
                             word_transcript[i]["w"]
                         )  # Convert to string
-                if len(transcript_dict["content"]) > 0 and i > 0:
+                if len(transcript_dict["content"]) > 0:
                     # If contain certain punctuation, complete the sentence and start new sentence
                     if len(str(word_transcript[i]["w"])) != 2 and transcript_dict[
                         "content"
