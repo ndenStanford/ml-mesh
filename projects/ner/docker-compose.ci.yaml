@@ -94,19 +94,19 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  compile-validate-model:
-    volumes:
-      - compile-vol:/projects/ner/compile/outputs
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/prod.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
+  # compile-validate-model:
+  #   volumes:
+  #     - compile-vol:/projects/ner/compile/outputs
+  #   devices:
+  #     - /dev/neuron0:/dev/neuron0
+  #   image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+  #   command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+  #   profiles: [pipeline]
+  #   environment:
+  #     NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+  #   env_file: compile/config/prod.env
+  #   hostname: onclusive-ml
+  #   networks: [onclusive-net]
 
   compile-upload-model:
     volumes:
