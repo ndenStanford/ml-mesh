@@ -13,7 +13,7 @@ docker.deploy/%: docker.set ## Deploy project IMAGE docker image to ECR.
 	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml push $(notdir $@)
 
 docker.validate/%: docker.set ## Validate core docker image build
-	docker compose -f docker/docker-compose.$(ENVIRONMENT).yaml up $(notdir $@)-tests
+	docker compose -f docker/docker-compose.$(ENVIRONMENT).yaml up $(notdir $@)-tests --exit-code-from $(notdir $@)-tests --force-recreate
 
 docker.lock/%:
 	poetry lock --directory=docker/$(notdir $@)
