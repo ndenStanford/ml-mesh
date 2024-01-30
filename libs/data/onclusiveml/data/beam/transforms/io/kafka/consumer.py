@@ -1,25 +1,21 @@
-"""Consumer"""
+"""Consumer."""
 
 # Standard Library
-import json
-import logging
-from typing import Any, Dict, Iterable, List, Mapping
+from typing import Callable, Dict, Mapping, Optional
 
 # 3rd party libraries
 from apache_beam import Create, DoFn, ParDo, PCollection, PTransform
 from kafka import KafkaConsumer
 
 # Internal libraries
-from onclusiveml.data.beam.exceptions import (
-    EmptyConsumerException,
-    KafkaConsumerException,
-)
+from onclusiveml.data.beam.exceptions import KafkaConsumerException
 
 
 class KafkaConsume(PTransform):
-    """A :class:`~apache_beam.transforms.ptransform.PTransform` for reading from an Apache Kafka topic. This is a streaming
-    Transform that never returns. The transform uses `KafkaConsumer` from the
-    `kafka` python library.
+    """A :class:`~apache_beam.transforms.ptransform.PTransform` for reading from an Apache Kafka topic.
+
+    This is a streaming Transform that never returns.
+    The transform uses `KafkaConsumer` from the `kafka` python library.
 
     It outputs a :class:`~apache_beam.pvalue.PCollection` of
     ``key-values:s``, each object is a Kafka message in the form (msg-key, msg)
@@ -56,13 +52,18 @@ class KafkaConsume(PTransform):
             ("device 1", {"status": "healthy"})
             ("job #2647", {"status": "failed"})
 
-        Where the first element of the tuple is the Kafka message key and the second element is the Kafka message being passed through the topic
+        Where the first element of the tuple is the Kafka message key and the second element
+        is the Kafka message being passed through the topic.
     """
 
     def __init__(
-        self, topic: str, consumer_config: Dict, value_decoder=None, **kwargs: Mapping
+        self,
+        topic: str,
+        consumer_config: Dict,
+        value_decoder: Optional[Callable] = None,
+        **kwargs: Mapping
     ):
-        """Initializes ``KafkaConsume``"""
+        """Initializes ``KafkaConsume``."""
         super(KafkaConsume, self).__init__()
         self._consumer_args = dict(
             topic=topic,
@@ -71,11 +72,12 @@ class KafkaConsume(PTransform):
         )
 
     def expand(self, pcoll: PCollection) -> PCollection:
+        """Execute transform."""
         return pcoll | Create([self._consumer_args]) | ParDo(_ConsumeKafkaTopic())
 
 
 class _ConsumeKafkaTopic(DoFn):
-    """Internal ``DoFn`` to read from Kafka topic and return messages"""
+    """Internal ``DoFn`` to read from Kafka topic and return messages."""
 
     def process(self, consumer_args: Dict):  # type: ignore
         """Process beam do fn."""
@@ -85,14 +87,7 @@ class _ConsumeKafkaTopic(DoFn):
         consumer = KafkaConsumer(topic, **consumer_config)
 
         for msg in consumer:
-            print("*******")
-            print("*******")
-            print("*******")
-            print(msg)
-            print("*******")
-            print("*******")
-            print("*******")
             try:
                 yield msg.key, value_decoder(msg.value)
-            except Exception as e:
+            except Exception:
                 raise KafkaConsumerException(topics=[topic], message=msg.error())

@@ -10,7 +10,6 @@ from pydantic import Field, SecretStr
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.data.beam.transforms.io.kafka.constants import (
     KafkaConsumerOffset,
-    KafkaProducerCompressionType,
 )
 
 
