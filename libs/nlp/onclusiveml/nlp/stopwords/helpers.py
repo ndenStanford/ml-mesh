@@ -39,7 +39,7 @@ def load_stop_words_file(lang: str) -> List[str]:
         StopwordsFileException: If the stopword file for the specified language is not found
     """
     content = []
-    if lang == 'all':
+    if lang == "all":
         for stopwords_file in os.listdir(os.path.join(directory, "data")):
             with open(stopwords_file) as f:
                 content = content + json.loads(f.read())

@@ -32,9 +32,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
 
-    stopwords = load_stop_words_file(
-        lang=model_card.model_params.stop_words_lang
-    )
+    stopwords = load_stop_words_file(lang=model_card.model_params.stop_words_lang)
 
     vectorizer_model = CountVectorizer(
         stop_words=english_stopwords,
@@ -61,14 +59,16 @@ def main() -> None:
         diversity=model_card.model_params.diversity
     )
 
-    bertopic_trainer = BertopicTrainer(tracked_model_specs = model_specs,
-                                       model_card = model_card,
-                                       data_fetch_params = data_fetch_params,
-                                       stopwords = stopwords,
-                                       vectorizer_model = vectorizer_model,
-                                       cluster_model = cluster_model,
-                                       umap_model = umap_model,
-                                       representation_model = representation_model)
+    bertopic_trainer = BertopicTrainer(
+        tracked_model_specs=model_specs,
+        model_card=model_card,
+        data_fetch_params=data_fetch_params,
+        stopwords=stopwords,
+        vectorizer_model=vectorizer_model,
+        cluster_model=cluster_model,
+        umap_model=umap_model,
+        representation_model=representation_model,
+    )
 
     bertopic_trainer.initialize_embedding_model()
 
@@ -81,6 +81,7 @@ def main() -> None:
     bertopic_trainer.train()
 
     bertopic_trainer.upload_model_version()
+
 
 if __name__ == "__main__":
     main()

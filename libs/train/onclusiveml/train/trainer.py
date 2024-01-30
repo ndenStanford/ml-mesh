@@ -1,18 +1,23 @@
+
+# Standard Library
+from typing import List, Optional
+
+# Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSpecs,
+    TrackedModelVersion,
     TrackedParams,
-    TrackedModelVersion
 )
-from typing import List, Optional
+
 
 class OnclusiveModelTrainer:
-
     def __init__(
-            self,
-            tracked_model_specs : TrackedModelSpecs,
-            model_card: TrackedModelCard,
-            data_fetch_params: FeatureStoreParams)-> None:
+        self,
+        tracked_model_specs: TrackedModelSpecs,
+        model_card: TrackedModelCard,
+        data_fetch_params: FeatureStoreParams,
+    ) -> None:
 
         self.tracked_model_specs = tracked_model_specs
         self.model_card = model_card
@@ -49,7 +54,8 @@ class OnclusiveModelTrainer:
             if feature_view.name == self.data_fetch_params.feature_view_name
         ][0]
         features = [
-            f"{self.feature_view.name}:{feature.name}" for feature in self.feature_view.features
+            f"{self.feature_view.name}:{feature.name}"
+            for feature in self.feature_view.features
         ]
         self.dataset_df = self.fs_handle.fetch_historical_features(features)
         self.docs = docs_df["content"].apply(str).values.tolist()
@@ -64,14 +70,16 @@ class OnclusiveModelTrainer:
         self.client = boto3.client("s3")
         parquet_buffer = io.BytesIO()
         self.dataset_df.to_parquet(parquet_buffer, index=False)
-        file_name  =self.tracked_model_version.get_url().split("/")[-1]
+        file_name = self.tracked_model_version.get_url().split("/")[-1]
 
         file_key = f"{self.data_fetch_params.dataset_upload_dir}/{file_name}.parquet"
         s3_parquet_upload(client, file_key, parquet_buffer)
         self.full_file_key = full_file_key
 
     @staticmethod
-    def s3_parquet_upload(client: BaseClient, file_key: str, parquet_buffer: BytesIO) -> str:
+    def s3_parquet_upload(
+        client: BaseClient, file_key: str, parquet_buffer: BytesIO
+    ) -> str:
         """Put object to S3 bucket.
 
         Args:
@@ -92,9 +100,13 @@ class OnclusiveModelTrainer:
     def train(self):
         pass
 
-    def upload_model_version(self, test_files, test_file_attribute_paths, topic_model_local_dir):
+    def upload_model_version(
+        self, test_files, test_file_attribute_paths, topic_model_local_dir
+    ):
 
-        for (test_file, test_file_attribute_path) in zip(test_files, test_file_attribute_paths):
+        for (test_file, test_file_attribute_path) in zip(
+            test_files, test_file_attribute_paths
+        ):
             model_version.upload_config_to_model_version(
                 config=test_file, neptune_attribute_path=test_file_attribute_path
             )
