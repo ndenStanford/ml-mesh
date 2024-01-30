@@ -95,6 +95,88 @@ class TranscriptSegmentationHandler:
 
         return (start_time, end_time)
 
+    def truncate_transcript(
+        self,
+        preprocessed_sentence_transcript: List[Dict[str, Any]],
+        threshold: int = 300000,
+    ) -> List[Dict[str, Any]]:
+        """Truncate transcript to fit into the model.
+
+        Args:
+            transcript (List[Dict[str, Any]]): Sentence-based transcript
+            threshold (int): Max character length of transcript
+
+        Returns:
+            List[Dict[str, Any]]: Truncated transcript
+        """
+        str_sentence_transcript = str(preprocessed_sentence_transcript)
+        self.input_truncated = False
+        if len(str_sentence_transcript) > threshold:
+            # Find last complete json object from the truncated transcript and close the list
+            str_sentence_transcript = str_sentence_transcript[:threshold]
+            position = self.find_last_occurrence(
+                """, {\'start_time\':""", str_sentence_transcript
+            )
+            str_sentence_transcript = str_sentence_transcript[:position] + "]"
+            self.input_truncated = True
+        truncated_sentence_transcript = eval(str_sentence_transcript)
+        return truncated_sentence_transcript
+
+    def preprocess_transcript(
+        self, word_transcript: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Convert word-based transcript into sentence-based.
+
+        Args:
+            word_transcript (List[Dict[str, Any]): Word-based transcript
+
+        Returns:
+            List[Dict[str, Any]: Transcript converted into sentences
+        """
+        transcript_preprocessed = []
+        transcript_dict: Dict[str, Any] = {}
+
+        # Iterate over each word from word based transcript and merge into sentences
+        for i in range(len(word_transcript)):
+            if word_transcript[i]["w"] is not None:
+                if not transcript_dict:
+                    transcript_dict["start_time"] = word_transcript[i]["ts"]
+                if "content" not in transcript_dict:
+                    transcript_dict["content"] = str(
+                        word_transcript[i]["w"]
+                    )  # Convert to string
+                else:
+                    # merge abreviations without spaces
+                    if (
+                        len(word_transcript[i]["w"]) == 2
+                        and word_transcript[i]["w"][-1] == "."
+                        and len(word_transcript[i - 1]["w"]) == 2
+                        and word_transcript[i - 1]["w"][-1] == "."
+                    ):
+                        transcript_dict["content"] += str(
+                            word_transcript[i]["w"]
+                        )  # Convert to string
+                    else:
+                        transcript_dict["content"] += " " + str(
+                            word_transcript[i]["w"]
+                        )  # Convert to string
+                if len(transcript_dict["content"]) > 0:
+                    # If contain certain punctuation, complete the sentence and start new sentence
+                    if len(str(word_transcript[i]["w"])) != 2 and transcript_dict[
+                        "content"
+                    ][-1] in [".", "!", "?"]:
+                        transcript_dict["end_time"] = word_transcript[i]["ts"]
+                        transcript_preprocessed.append(transcript_dict)
+                        transcript_dict = {}
+
+        # append left over transcript at the end
+        if transcript_dict:
+            if len(transcript_dict["content"]) > 0:
+                transcript_dict["end_time"] = word_transcript[i]["ts"]
+                transcript_preprocessed.append(transcript_dict)
+                transcript_dict = {}
+        return transcript_preprocessed
+
     def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
@@ -109,8 +191,16 @@ class TranscriptSegmentationHandler:
         Returns:
             Tuple[List[Dict[str, Any]], bool, bool]: Timestamps of the segment based on keywords
         """
+        # preprocess
+        preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
+
+        # truncate
+        truncated_sentence_transcript = self.truncate_transcript(
+            preprocessed_sentence_transcript
+        )
+
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
-        payload = {"transcript": word_transcript, "keywords": keywords}
+        payload = {"transcript": truncated_sentence_transcript, "keywords": keywords}
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(
                 settings.prompt_api_url, settings.prompt_alias
