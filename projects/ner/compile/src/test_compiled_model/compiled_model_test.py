@@ -106,9 +106,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     assert compiled_predictions_list_copy == test_sample_list_copy
 
     compiled_predictions_df = to_dataframe(compiled_predictions_dict)
-    expected_predictions_df = to_dataframe(
-        test_files_predictions[lang_index][test_sample_index]
-    )
+    expected_predictions_df = to_dataframe(test_sample_list)
     # assert ner are identical and scores are within 0.01 absolute deviation
     pd.testing.assert_frame_equal(
         compiled_predictions_df,
