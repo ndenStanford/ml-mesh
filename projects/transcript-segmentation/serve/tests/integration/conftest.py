@@ -162,8 +162,8 @@ def test_expected_predict_output() -> List[str]:
         version=1,
         namespace="transcript-segmentation",
         attributes={
-            "start_time": 1701127839000.0,
-            "end_time": 1701127859428.0,
+            "start_time": 1701127816000.0,
+            "end_time": 1701127858714.0,
             "input_truncated": False,
         },
     )
