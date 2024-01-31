@@ -38,7 +38,7 @@ def load_stop_words_file(lang: str) -> List[str]:
     Raises:
         StopwordsFileException: If the stopword file for the specified language is not found
     """
-    content = []
+    content: List[str] = []
     if lang == "all":
         directory = os.path.dirname(os.path.abspath(__file__))
         base_dir = os.path.join(directory, "data")
