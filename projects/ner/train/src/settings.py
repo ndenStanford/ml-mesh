@@ -27,24 +27,20 @@ class TrackedNERModelSpecs(TrackedModelSpecs):
 class Inputs(TrackedParams):
     """Inputs."""
 
-    sample_documents: List[List[List[str]]] = [
+    sample_documents: List[List[str]] = [
         [
-            ["Google HQ is in Mountain View, CA"],
-            [
-                "Hitchhiking onto the Gulf Stream, adult sea turtles often end up as far north as "
-                + "Cape Cod in their migratory travels."
-            ],
-            [
-                "Nesting season started March 1, so female loggerhead, green and leatherback sea "
-                + "turtles will be visiting Jupiter beaches to lay their eggs."
-            ],
-            ["Check out Loggerhead Marinelife Center for a close look at sea turtles."],
+            "Google HQ is in Mountain View, CA",
+            "Hitchhiking onto the Gulf Stream, adult sea turtles often end up as far north as "
+            + "Cape Cod in their migratory travels.",
+            "Nesting season started March 1, so female loggerhead, green and leatherback sea "
+            + "turtles will be visiting Jupiter beaches to lay their eggs.",
+            "Check out Loggerhead Marinelife Center for a close look at sea turtles.",
         ],
         [
-            ["Google 本社はカリフォルニア州マウンテンビューにあります"],
-            ["メキシコ湾流でヒッチハイクをする大人のウミガメは、回遊の旅の途中で北のケープコッドまで到達することがよくあります。"],
-            ["런던과 샌프란시스코에 가족이 있어요"],
-            ["바다거북을 가까이서 관찰하려면 Loggerhead Marinelife Center를 확인하세요."],
+            "Google 本社はカリフォルニア州マウンテンビューにあります",
+            "メキシコ湾流でヒッチハイクをする大人のウミガメは、回遊の旅の途中で北のケープコッドまで到達することがよくあります。",
+            "런던과 샌프란시스코에 가족이 있어요",
+            "바다거북을 가까이서 관찰하려면 Loggerhead Marinelife Center를 확인하세요.",
         ],
     ]
 
