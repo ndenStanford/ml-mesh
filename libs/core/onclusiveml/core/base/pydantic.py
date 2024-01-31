@@ -68,10 +68,6 @@ def cast(
     if t not in type(obj).__bases__:
         raise BaseClassNotFound(base=str(t), derived=type(obj))
 
-    attributes = list(
-        map(lambda x: x["env_names"].pop(), list(t.schema().get("properties").values()))
-    )
-
-    data = {k: getattr(obj, k) for k in attributes}
+    data = {k: getattr(obj, k) for k in t.schema().get("properties").keys()}
 
     return t(**data)
