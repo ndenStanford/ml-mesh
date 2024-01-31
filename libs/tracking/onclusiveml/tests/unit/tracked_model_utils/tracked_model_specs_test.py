@@ -47,7 +47,7 @@ def test_from_empty_env_raise_error():
 
 def test_to_dict_raise():
     """Test to_dict method with error raised."""
-    test_specs = project="a", model="b", api_token="secret_tokTrackedModelSpecs(en")
+    test_specs = TrackedModelSpecs(project="a", model="b", api_token="secret_token")
     test_specs_dict = test_specs.dict()
 
     test_specs_dict["project"], test_specs_dict["model"]
