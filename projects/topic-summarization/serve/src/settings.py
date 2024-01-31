@@ -41,6 +41,7 @@ class GlobalSettings(
     """Global server settings."""
 
     ARTICLE_GROUP_SIZE = 8  # how many articles are handled together
+    MULTIPROCESS_WORKER = 5
 
 
 @lru_cache
