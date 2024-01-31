@@ -3,23 +3,21 @@
 # Standard Library
 import os
 
-# 3rd party libraries
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
 from onclusiveml.train import BertopicTrainer
 
-# Internal libraries
-from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
-
 # Source
-from src.fetch_and_upload_dataset import fetch_and_upload
 from src.settings import (  # type: ignore[attr-defined]
+    DataFetchParams,
     TrackedTopicBaseModelCard,
     TrackedTopicModelSpecs,
 )
-from src.settings import DataFetchParams
 
-from onclusiveml.core.logging import get_default_logger
 
 logger = get_default_logger(__name__)
+
 
 def main() -> None:
     """Register trained model."""
@@ -43,13 +41,30 @@ def main() -> None:
 
     bertopic_trainer.upload_training_data_to_s3()
 
-    logger.info(f'Training data uploaded to s3 location : {bertopic_trainer.full_file_key}')
+    logger.info(
+        f"Training data uploaded to s3 location : {bertopic_trainer.full_file_key}"
+    )
 
     bertopic_trainer.initialize_model()
 
     bertopic_trainer.train()
 
-    bertopic_trainer.upload_model_version()
+    bertopic_trainer.save()
+
+    sample_docs = bertopic_trainer.docs[:15]
+    sample_embeddings = bertopic_trainer.doc_embeddings[:15]
+
+    sample_topics = bertopic_trainer.predict(sample_docs, sample_embeddings)
+
+    bertopic_trainer.upload_model_to_neptune(
+        [sample_docs, model_card.model_params.dict(), sample_topics],
+        [
+            model_card.model_test_files.inputs,
+            model_card.model_test_files.inference_params,
+            model_card.model_test_files.predictions,
+        ],
+        bertopic_trainer.topic_model_local_dir,
+    )
 
 
 if __name__ == "__main__":
