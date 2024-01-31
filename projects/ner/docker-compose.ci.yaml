@@ -364,7 +364,7 @@ services:
       HOST: internal.api.ml.stage.onclusive.com
       NAMESPACE: ner
       VERSION: 1
-      API_KEY: sk-fS9sLj7vjCu4hlz6ADbnV1DhRpdufXrE
+      API_KEY: test
       SECURE: true
       JOB_NAME: ner-backfill
       RUNNER: PortableRunner
@@ -377,14 +377,38 @@ services:
       BOOTSTRAP_SERVERS: kafka:9092
       GROUP_ID: notification_consumer_group
       AUTO_OFFSET_RESET: earliest
-      # SECURITY_PROTOCOL: "SASL_SSL"
-      # SASL_MECHANISM: "SCRAM-SHA-512"
-      # SASL_USERNAME: "onclusive"
-      # SASL_PASSWORD: "xx45VsQ75WqgVatykHUw8Xze"
     depends_on:
       - jobserver
       - kafka
       - zookeeper
+
+  backfill-unit:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/ner/compile
+    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
+    environment:
+      HOST: test.onclusive.com
+      NAMESPACE: ner
+      VERSION: 1
+      API_KEY: test
+      SECURE: true
+      JOB_NAME: ner-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: test-input
+      TARGET_TOPIC: test-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    hostname: onclusive-ml
+    networks: [onclusive-net]
 
   jobmanager:
     image: apache/flink:1.16-scala_2.12-java11
