@@ -17,7 +17,6 @@ class OnclusiveBaseSettings(BaseSettings):
         extra = "forbid"
         strict = True
         arbitrary_types_allowed = False
-        allow_population_by_field_name = True
 
 
 class OnclusiveFrozenSettings(OnclusiveBaseSettings):
