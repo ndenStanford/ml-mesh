@@ -80,16 +80,20 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
     # Create copies of the lists of dictionaries
     compiled_predictions_list_copy = [dict(d) for d in compiled_predictions_dict]
-    test_sample_list_copy = [
+    test_sample_list = [
         dict(d) for d in test_files_predictions[lang_index][test_sample_index]
     ]
+    test_sample_list_copy = [dict(d) for d in test_sample_list]
 
     # Function to remove '##' from entity_text
     def clean_entity_text(d):
         if "entity_text" in d:
-            d["entity_text"] = d["entity_text"].replace("#", "")
+            d["entity_text"] = d["entity_text"].replace("##", "")
 
     # Apply the function to each dictionary in both lists
+    for d in test_sample_list:
+        clean_entity_text(d)
+
     for d in compiled_predictions_list_copy:
         d.pop("score", None)
         clean_entity_text(d)
