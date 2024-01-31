@@ -91,7 +91,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
             d["entity_text"] = d["entity_text"].replace("##", "")
 
     # Apply the function to each dictionary in both lists
-    for d in test_sample_list:
+    for d in compiled_predictions:
         clean_entity_text(d)
 
     for d in compiled_predictions_list_copy:
@@ -100,13 +100,13 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
     for d in test_sample_list_copy:
         d.pop("score", None)
-        clean_entity_text(d)
 
     # Now assert the equality of the modified lists of dictionaries
     assert compiled_predictions_list_copy == test_sample_list_copy
 
     compiled_predictions_df = to_dataframe(compiled_predictions_dict)
     expected_predictions_df = to_dataframe(test_sample_list)
+
     # assert ner are identical and scores are within 0.01 absolute deviation
     pd.testing.assert_frame_equal(
         compiled_predictions_df,
