@@ -76,7 +76,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     )
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler
-    compiled_predictions_dict = [obj.__dict__ for obj in compiled_predictions]
+    compiled_predictions_dict = [obj._asdict() for obj in compiled_predictions[0]]
     assert (
         compiled_predictions_dict
         == test_files_predictions[lang_index][test_sample_index]
