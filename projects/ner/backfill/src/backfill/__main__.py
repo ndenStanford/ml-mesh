@@ -65,5 +65,4 @@ def run_beam_pipeline(settings: OnclusiveBaseSettings) -> None:
 
 
 if __name__ == "__main__":
-    print(get_settings())
     run_beam_pipeline(get_settings())
