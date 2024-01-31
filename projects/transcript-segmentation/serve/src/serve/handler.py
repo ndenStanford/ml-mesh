@@ -74,6 +74,38 @@ class TranscriptSegmentationHandler:
 
         return (int(timestamps[st_str]), int(timestamps[end_str]))
 
+    def offset_timestamps(
+        self, start_time: int, end_time: int, transcript: List[Dict[str, Any]]
+    ) -> Tuple[int, int]:
+        """Add offset to start and end time stamps.
+
+        Args:
+            start_time (int): start time of segment
+            end_time (int): end time of segment
+            transcript (List[Dict[str, Any]]): Sentence level transcript
+        Returns:
+            Tuple[int, int]: the ofsetted start and end timestamp of the segment
+        """
+        # check if start_time is larger than 0 to then do offsetting
+        if start_time > 0:
+            start_time_offset = start_time - settings.BUFFER
+            # If the timestamp is beyond the clip, then set start_time stamp to beginning
+            if start_time_offset < transcript[0]["start_time"]:
+                start_time_offset = transcript[0]["start_time"]
+        else:
+            start_time_offset = start_time
+
+        # check if end_time is larger than 0 to do offsetting
+        if end_time > 0:
+            end_time_offset = end_time + settings.BUFFER
+            # If the timestamp is beyondf the clip, then set end_time stamp to end
+            if end_time_offset > transcript[-1]["end_time"]:
+                end_time_offset = transcript[-1]["end_time"]
+        else:
+            end_time_offset = end_time
+
+        return (start_time_offset, end_time_offset)
+
     def postprocess(
         self,
         response: Union[str, Dict[str, Any]],
@@ -214,4 +246,8 @@ class TranscriptSegmentationHandler:
             response=json.loads(q.content)["generated"],
         )
 
-        return start_time, end_time, self.input_truncated
+        start_time_offset, end_time_offset = self.offset_timestamps(
+            start_time, end_time, truncated_sentence_transcript
+        )
+
+        return start_time_offset, end_time_offset, self.input_truncated
