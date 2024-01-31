@@ -410,7 +410,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
         PROJECT: ner
         COMPONENT: backfill
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
     volumes:
       - type: bind
         source: backfill/src
