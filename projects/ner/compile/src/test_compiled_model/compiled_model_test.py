@@ -91,7 +91,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
             d["entity_text"] = d["entity_text"].replace("##", "")
 
     # Apply the function to each dictionary in both lists
-    for d in compiled_predictions:
+    for d in compiled_predictions_dict:
         clean_entity_text(d)
 
     for d in compiled_predictions_list_copy:
