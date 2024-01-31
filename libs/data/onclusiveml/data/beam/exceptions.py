@@ -23,6 +23,6 @@ class KafkaConsumerException(BeamPipelineException):
 
 
 class EmptyConsumerException(BeamPipelineException):
-    """Exception raised by kakfa producer."""
+    """Exception raised by kakfa consumer."""
 
     message_format = "No message in topics: {topics}."
