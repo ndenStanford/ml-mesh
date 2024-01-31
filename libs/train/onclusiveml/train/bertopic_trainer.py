@@ -10,7 +10,7 @@ from onclusiveml.tracking import (
     TrackedModelVersion,
     TrackedParams,
 )
-
+from onclusiveml.train.onclusive_model_trainer import OnclusiveModelTrainer
 from bertopic import BERTopic
 from bertopic.representation import MaximalMarginalRelevance
 from cuml.cluster import HDBSCAN
@@ -25,22 +25,15 @@ class BertopicTrainer(OnclusiveModelTrainer):
         model_card: TrackedModelCard,
         data_fetch_params: FeatureStoreParams,
         stopwords: List[str],
-        vectorizer_model: CountVectorizer,
-        cluster_model: HDBSCAN,
-        umap_model: UMAP,
-        representation_model: MaximalMarginalRelevance,
     ) -> None:
 
-        super.__init__(
+        self.stopwords = stopwords
+        
+        super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
             data_fetch_params=data_fetch_params,
         )
-        self.stopwords = stopwords
-        self.vectorizer_model = vectorizer_model
-        self.cluster_model = cluster_model
-        self.umap_model = umap_model
-        self.representation_model = representation_model
 
     def initialize_embedding_model(self):
         self.sentence_model = SentenceTransformer(
@@ -48,35 +41,37 @@ class BertopicTrainer(OnclusiveModelTrainer):
         )
 
     def initialize_model(self):
+        self.initialize_embedding_model()
+
         vectorizer_model = CountVectorizer(
-        stop_words=stopwords,
-        min_df=model_card.model_params.min_df,
-        ngram_range=model_card.model_params.ngram_range,
+        stop_words=self.stopwords,
+        min_df=self.model_card.model_params.min_df,
+        ngram_range=self.model_card.model_params.ngram_range,
         )
 
         cluster_model = HDBSCAN(
-            min_cluster_size=model_card.model_params.min_cluster_size,
-            metric=model_card.model_params.hdbscan_metric,
-            cluster_selection_method=model_card.model_params.cluster_selection_method,
-            prediction_data=model_card.model_params.prediction_data,
+            min_cluster_size=self.model_card.model_params.min_cluster_size,
+            metric=self.model_card.model_params.hdbscan_metric,
+            cluster_selection_method=self.model_card.model_params.cluster_selection_method,
+            prediction_data=self.model_card.model_params.prediction_data,
         )
 
         umap_model = UMAP(
-            n_neighbors=model_card.model_params.n_neighbors,
-            n_components=model_card.model_params.n_components,
-            min_dist=model_card.model_params.min_dist,
-            metric=model_card.model_params.umap_metric,
+            n_neighbors=self.model_card.model_params.n_neighbors,
+            n_components=self.model_card.model_params.n_components,
+            min_dist=self.model_card.model_params.min_dist,
+            metric=self.model_card.model_params.umap_metric,
             random_state=0,
         )
 
         representation_model = MaximalMarginalRelevance(
-            diversity=model_card.model_params.diversity
+            diversity=self.model_card.model_params.diversity
         )
 
         self.topic_model = BERTopic(
-            umap_model=self.umap_model,
-            hdbscan_model=self.cluster_model,
-            vectorizer_model=self.vectorizer_model,
+            umap_model=umap_model,
+            hdbscan_model=cluster_model,
+            vectorizer_model=vectorizer_model,
             verbose=self.model_card.model_params.verbose,
             language=self.model_card.model_params.language,
             n_gram_range=self.model_card.model_params.n_gram_range,
@@ -89,4 +84,5 @@ class BertopicTrainer(OnclusiveModelTrainer):
         )
 
     def train(self):
+        self.embed_training_docs()
         self.topic_model.fit(documents=self.docs, embeddings=self.doc_embeddings)

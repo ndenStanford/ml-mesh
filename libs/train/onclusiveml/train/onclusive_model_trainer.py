@@ -19,7 +19,8 @@ from io import BytesIO
 from onclusiveml.data.feature_store import FeatureStoreParams
 import pandas as pd
 
-logger = get_default_logger(__name__)
+import boto3
+import io
 
 class OnclusiveModelTrainer:
     def __init__(
@@ -31,30 +32,32 @@ class OnclusiveModelTrainer:
 
         self.tracked_model_specs = tracked_model_specs
         self.model_card = model_card
-        self.tracked_model_version = TrackedModelVersion(**model_specs.dict())
+        self.tracked_model_version = TrackedModelVersion(**self.tracked_model_specs.dict())
         self.data_fetch_params = data_fetch_params
+
+        self.logger = get_default_logger(__name__)
 
     def initialize_model(self):
         pass
 
     def get_training_data(self):
-        logger.info("initializing feature-store handle...")
+        self.logger.info("initializing feature-store handle...")
         self.fs_handle = FeatureStoreHandle(
-            feast_config_bucket=data_fetch_params.feast_config_bucket,
-            config_file=data_fetch_params.config_file,
-            local_config_dir=data_fetch_params.local_config_dir,
-            data_source=data_fetch_params.redshift_table,
-            data_id_key=data_fetch_params.entity_join_key,
-            limit=data_fetch_params.limit,
+            feast_config_bucket=self.data_fetch_params.feast_config_bucket,
+            config_file=self.data_fetch_params.config_file,
+            local_config_dir=self.data_fetch_params.local_config_dir,
+            data_source=self.data_fetch_params.redshift_table,
+            data_id_key=self.data_fetch_params.entity_join_key,
+            limit=self.data_fetch_params.limit,
         )
-        logger.info(
+        self.logger.info(
             f"Registered entities: {[entity.name for entity in self.fs_handle.list_entities()]}"
         )
-        logger.info(
+        self.logger.info(
             f"Registered datasources: "
             f"{[datasource.name for datasource in self.fs_handle.list_data_sources()]}"
         )
-        logger.info(
+        self.logger.info(
             f"Registered feature views: "
             f"{[feature_view.projection.name for feature_view in self.fs_handle.list_feature_views()]}"
         )
@@ -67,8 +70,14 @@ class OnclusiveModelTrainer:
             f"{self.feature_view.name}:{feature.name}"
             for feature in self.feature_view.features
         ]
+        
+        self.logger.info(f"fetching {self.data_fetch_params.limit} samples from feature-store")
+
         self.dataset_df = self.fs_handle.fetch_historical_features(features)
-        self.docs = docs_df["content"].apply(str).values.tolist()
+
+        self.logger.info(f"fetched dataset from feature-store : \n {self.dataset_df.head()}")
+
+        self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
     def upload_training_data_to_s3(self) -> str:
         """Upload a dataset version.
@@ -83,13 +92,13 @@ class OnclusiveModelTrainer:
         file_name = self.tracked_model_version.get_url().split("/")[-1]
 
         file_key = f"{self.data_fetch_params.dataset_upload_dir}/{file_name}.parquet"
-        s3_parquet_upload(client, file_key, parquet_buffer)
-        self.full_file_key = full_file_key
+        self.s3_parquet_upload(self.client, file_key, parquet_buffer, self.data_fetch_params.dataset_upload_bucket)
+        self.full_file_key = file_key
 
     @staticmethod
     def s3_parquet_upload(
-        client: BaseClient, file_key: str, parquet_buffer: BytesIO
-    ) -> str:
+        client: BaseClient, file_key: str, parquet_buffer: BytesIO, s3_bucket: str
+    ) -> None:
         """Put object to S3 bucket.
 
         Args:
@@ -103,7 +112,7 @@ class OnclusiveModelTrainer:
         parquet_buffer.seek(0)
         client.put_object(
             Body=parquet_buffer.getvalue(),
-            Bucket=data_fetch_params.dataset_upload_bucket,
+            Bucket=s3_bucket,
             Key=file_key,
         )
 

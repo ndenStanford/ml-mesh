@@ -4,16 +4,10 @@
 import os
 
 # 3rd party libraries
-from bertopic import BERTopic
-from bertopic.representation import MaximalMarginalRelevance
-from cuml.cluster import HDBSCAN
-from cuml.manifold import UMAP
-from sentence_transformers import SentenceTransformer
-from sklearn.feature_extraction.text import CountVectorizer
+from onclusiveml.train import BertopicTrainer
 
 # Internal libraries
 from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
-from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.fetch_and_upload_dataset import fetch_and_upload
@@ -22,6 +16,10 @@ from src.settings import (  # type: ignore[attr-defined]
     TrackedTopicModelSpecs,
 )
 from src.settings import DataFetchParams
+
+from onclusiveml.core.logging import get_default_logger
+
+logger = get_default_logger(__name__)
 
 def main() -> None:
     """Register trained model."""
@@ -34,26 +32,20 @@ def main() -> None:
 
     stopwords = load_stop_words_file(lang=model_card.model_params.stop_words_lang)
 
-    
-
     bertopic_trainer = BertopicTrainer(
         tracked_model_specs=model_specs,
         model_card=model_card,
         data_fetch_params=data_fetch_params,
         stopwords=stopwords,
-        vectorizer_model=vectorizer_model,
-        cluster_model=cluster_model,
-        umap_model=umap_model,
-        representation_model=representation_model,
     )
-
-    bertopic_trainer.initialize_embedding_model()
-
-    bertopic_trainer.initialize_model()
 
     bertopic_trainer.get_training_data()
 
     bertopic_trainer.upload_training_data_to_s3()
+
+    logger.info(f'Training data uploaded to s3 location : {bertopic_trainer.full_file_key}')
+
+    bertopic_trainer.initialize_model()
 
     bertopic_trainer.train()
 
