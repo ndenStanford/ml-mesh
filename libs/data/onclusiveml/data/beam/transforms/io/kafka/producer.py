@@ -25,7 +25,6 @@ class KafkaProduce(PTransform):
         servers: list of Kafka servers to listen to
 
     Examples:
-        Examples:
         Pushing message to a Kafka Topic `notifications` ::
 
             from __future__ import print_function

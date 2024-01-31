@@ -1,27 +1,38 @@
-"""Kafka io test."""
+"""Producer test."""
+
+# Standard Library
+from unittest.mock import patch
 
 # 3rd party libraries
 import apache_beam as beam
 import pytest
 from apache_beam.testing.test_pipeline import TestPipeline
 from apache_beam.testing.util import assert_that, equal_to
+from kafka import KafkaProducer
+from kafka.client_async import KafkaClient
 
 # Internal libraries
-from onclusiveml.data.beam.transforms.io.kafka import KafkaConsume, KafkaProduce
+from onclusiveml.data.beam.transforms.io.kafka import KafkaProduce
 
 
 @pytest.mark.parametrize(
     "topic, producer_config, data",
     [
         (
-            "test",
-            {"socket.timeout.ms": 10, "message.timeout.ms": 10},
+            "foo",
+            {},
             [("id", {"key": "data"})],
         )
     ],
 )
-def test_kafka_produce_without_broker(topic, producer_config, data):
+@patch.object(KafkaProducer, "send")
+@patch.object(KafkaClient, "check_version")
+def test_kafka_produce_without_broker(
+    kafka_client, kafka_send, topic, producer_config, data
+):
     """Test kafka produce."""
+    kafka_client.return_value = (0, 11)
+
     with TestPipeline() as pipeline:
         result = (
             pipeline
@@ -29,14 +40,3 @@ def test_kafka_produce_without_broker(topic, producer_config, data):
             | "Do" >> KafkaProduce(topic=topic, producer_config=producer_config)
         )
         assert_that(result, equal_to([("id", {"key": "data"})]))
-
-
-@pytest.mark.parametrize(
-    "topic, consumer_config", [("test", {"group.id": "notification_consumer_group"})]
-)
-def test_kafka_consumer(topic, consumer_config):
-    """Test kafka comsume."""
-    with TestPipeline() as pipeline:
-        _ = pipeline | "Do" >> KafkaConsume(
-            consumer_config=consumer_config, topics=["beam"], timeout=0.01, test=True
-        )
