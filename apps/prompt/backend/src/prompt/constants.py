@@ -205,28 +205,24 @@ class PromptEnum(OnclusiveEnum):
     # Transcript segmentation prompt
     ML_TRANSCRIPT_SEGMENTATION = [
         """
-        Your task is to detect the most relevant segment of a transcript related to a list of keywords which are comma seperated and return a start and end timestamp of that segment.
-        This task is really important to me.
-        The transcript is delimited by < and >, and the list of keywords are delimited by * and *.
+        Your task is to extract a contiguous list of sentences (segment) from the provided content that are related to a list of keywords.
 
-        The transcript is a list of json objects. Each json object has 3 keys: "start_time", "end_time" and "content". When you do the analysis, focus on content.
+        This task is really important to me.
+        The content is delimited by < and >, and the list of keywords are delimited by * and *.
 
         You must do the analysis using following steps:
-        1. Go through the whole transcript to get a high level understanding of segments of the transcript where the keywords are discussed.
-        2. Find the most relevant and informative segment about they keywords from the transcript. The segment should also contain the keywords.
-        3. You must only return the start timestamp of where the most relevant segment begins and the timestamp of where where the most relevant segment ends as a JSON object.
-        4. If the transcript holds no mention or relation to the keywords at all, set the value 0 for both start and end timestamp.
-        5. The start and end timestamp must both end exist in the transcript and must not be modified at all.
-        6. The key for start timestamp is "start_time" and the key for end timestamp is "end_time"
+        1. Extract the most informative segment such that it represents a full dialogue and contains the keywords from the content.
+        2. The segment must also contain the surrounding context, regardless of whether the keywords are the main discussion topic or not.
+        3. If the content holds no mention of the keywords at all, return N/A
+        4. The relevant segment that you return MUST not be changed at all. The segment must be the exact copy that is found in the content.
 
-        Transcript: <{transcript}>
-        Keyword: *{keywords}*
+        Keywords: *{keywords}*
+        Content: <{paragraph}>
 
         Show me your answer in following JSON format. Here [XXX] is placeholder:
-        [Relationship with keyword]:[The relationship between keyword and this transcript content]
-        [Related segment]:[The start and end timestamps of the relevant segment as a JSON object]
-        [Reason]:[The reason you believe this segment relates to the keywords]
-        [Reason for not choose]:[Your reason for why no part of the transcript holds relevancy to the keywords]
+        [Related segment]:[The relevant segment about the keywords that was extracted from the content]
+        [Reason for segment]:[The reason you believe this segment relates to the keywords]
+        [Reason for no segment]:[The reason for why no part of the content holds relevancy to the keywords]
         """,  # noqa: E501
         "ml-transcript-segmentation",
         {

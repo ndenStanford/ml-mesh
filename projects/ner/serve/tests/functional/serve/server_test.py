@@ -86,7 +86,7 @@ def test_model_server_bio():
                             {
                                 "entity_text": "에어비앤비",
                                 "entity_type": "ORG",
-                                "score": 0.9979469299316406,
+                                "score": 0.9980051755905152,
                                 "sentence_index": 0,
                                 "start": 0,
                                 "end": 5,
@@ -94,7 +94,7 @@ def test_model_server_bio():
                             {
                                 "entity_text": "제공마우이 신속대응",
                                 "entity_type": "ORG",
-                                "score": 0.7619035475783877,
+                                "score": 0.7580916749106513,
                                 "sentence_index": 0,
                                 "start": 17,
                                 "end": 27,
@@ -125,7 +125,7 @@ def test_model_server_bio():
                             {
                                 "entity_text": "Amazon",
                                 "entity_type": "LOC",
-                                "score": 0.9350188970565796,
+                                "score": 0.9364089369773865,
                                 "sentence_index": 0,
                                 "start": 0,
                                 "end": 6,
@@ -133,7 +133,7 @@ def test_model_server_bio():
                             {
                                 "entity_text": "AI",
                                 "entity_type": "MISC",
-                                "score": 0.9877899885177612,
+                                "score": 0.9874637126922607,
                                 "sentence_index": 0,
                                 "start": 16,
                                 "end": 18,
@@ -141,7 +141,7 @@ def test_model_server_bio():
                             {
                                 "entity_text": "Anthropic",
                                 "entity_type": "MISC",
-                                "score": 0.8427480657895406,
+                                "score": 0.8394989768664042,
                                 "sentence_index": 0,
                                 "start": 63,
                                 "end": 72,
