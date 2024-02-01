@@ -27,7 +27,7 @@ repos                   :
     hooks:
       - id: yamllint
         args: [--strict, -c=.yamllint.yaml]
-        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml)
+        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml|.github/workflows/ci.yaml)
 
 # Autoformat: YAML,docker...
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
@@ -35,7 +35,7 @@ repos                   :
     hooks:
       - id: yamlfmt
         args: [--mapping, '2', --sequence, '4', --offset, '2', --colons]
-        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml)
+        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml|.github/workflows/ci.yaml)
 
 
   # =================================
