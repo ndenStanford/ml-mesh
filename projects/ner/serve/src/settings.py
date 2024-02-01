@@ -44,6 +44,7 @@ class DownloadSettings(ServingBaseParams):
 
 class GlobalSettings(
     ServerModelSettings,
+    DownloadSettings,
     TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
