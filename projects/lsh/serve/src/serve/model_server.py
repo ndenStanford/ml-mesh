@@ -20,7 +20,7 @@ def get_model_server() -> ModelServer:
     serving_params = ServingParams()
 
     model_server = ModelServer(configuration=serving_params, model=lsh_served_model)
-    Instrumentator.enable(model_server, app_name="lsh", multiprocess=True)
+    Instrumentator.enable(model_server, app_name="lsh")
 
     return model_server
 
