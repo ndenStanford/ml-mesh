@@ -21,7 +21,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     prompt_api_url: str = "http://prompt-backend:4000"
     prompt_alias: str = "ml-transcript-segmentation"
     internal_ml_endpoint_api_key: str = "1234"
-    OFFSET_BUFFER: int = 10000
+    OFFSET_INDEX_BUFFER: int = 3
     CHARACTER_BUFFER: int = 2500
 
 

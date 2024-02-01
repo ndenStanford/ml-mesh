@@ -25,6 +25,8 @@ class TranscriptSegmentationHandler:
 
     sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
 
+    related_segment_key: str
+
     def remove_newlines(self, response: str) -> str:
         """Remove new lines from the string.
 
@@ -51,10 +53,10 @@ class TranscriptSegmentationHandler:
             Tuple[int,int]: start and end index of sentence level transcript
         """
         start_string = self.sentence_tokenizer.tokenize(
-            content=json_response["Related segment"]
+            content=json_response[self.related_segment_key]
         )["sentences"][0]
         end_string = self.sentence_tokenizer.tokenize(
-            content=json_response["Related segment"]
+            content=json_response[self.related_segment_key]
         )["sentences"][-1]
         max_similarity_start = 0
         max_similarity_end = 0
@@ -78,42 +80,17 @@ class TranscriptSegmentationHandler:
                 max_similarity_end = similarity
                 end_index = idx
 
+        # expand timestamp range
+        start_index -= settings.OFFSET_INDEX_BUFFER
+        end_index += settings.OFFSET_INDEX_BUFFER
+
+        # ensure the indexes are within range
+        if start_index < 0:
+            start_index = 0
+        if end_index > len(sentence_transcript) - 1:
+            end_index = len(sentence_transcript) - 1
+
         return start_index, end_index
-
-    def offset_timestamps(
-        self,
-        start_time: Union[int, float],
-        end_time: Union[int, float],
-        transcript: List[Dict[str, Any]],
-    ) -> Tuple[Union[int, float], Union[int, float]]:
-        """Add offset to start and end time stamps.
-
-        Args:
-            start_time (Union[int, float]): start time of segment
-            end_time (Union[int, float]): end time of segment
-            transcript (List[Dict[str, Any]]): Sentence level transcript
-
-        Returns:
-            Tuple[Union[int, float], Union[int, float]]: ofsetted start/end timestamp of segment
-        """
-        # check if start_time is larger than 0 to then do offsetting
-        if start_time > 0:
-            start_time_offset = start_time - settings.OFFSET_BUFFER
-            # If the timestamp is beyond the clip, then set start_time stamp to beginning
-            if start_time_offset < transcript[0]["start_time"]:
-                start_time_offset = transcript[0]["start_time"]
-        else:
-            start_time_offset = start_time
-        # check if end_time is larger than 0 to do offsetting
-        if end_time > 0:
-            end_time_offset = end_time + settings.OFFSET_BUFFER
-            # If the timestamp is beyondf the clip, then set end_time stamp to end
-            if end_time_offset > transcript[-1]["end_time"]:
-                end_time_offset = transcript[-1]["end_time"]
-        else:
-            end_time_offset = end_time
-
-        return (start_time_offset, end_time_offset)
 
     def postprocess(
         self,
@@ -135,12 +112,31 @@ class TranscriptSegmentationHandler:
         elif isinstance(response, dict):
             json_response = response
 
-        if json_response["Related segment"] in ["N/A", "", "nothing", "n/a", "Nothing"]:
+        # potential keys the gpt model could return
+        if "Related segment" in json_response.keys():
+            self.related_segment_key = "Related segment"
+        elif "Related Segment" in json_response.keys():
+            self.related_segment_key = "Related Segment"
+        elif "related_segment" in json_response.keys():
+            self.related_segment_key = "related_segment"
+        elif "segment" in json_response.keys():
+            self.related_segment_key = "segment"
+        elif "Segment" in json_response.keys():
+            self.related_segment_key = "Segment"
+
+        if json_response[self.related_segment_key] in [
+            "N/A",
+            "",
+            "nothing",
+            "n/a",
+            "Nothing",
+        ]:
             start_time, end_time = 0, 0
         else:
             start_time_index, end_time_index = self.get_timestamps_index(
                 json_response, sentence_transcript
             )
+            # find timestamp from sentence level transcript
             start_time = sentence_transcript[start_time_index]["start_time"]
             end_time = sentence_transcript[end_time_index]["end_time"]
         return (start_time, end_time)
@@ -214,7 +210,7 @@ class TranscriptSegmentationHandler:
 
         Args:
             paragraph: combined content from sentence transcript
-            keyword (List[str]): List of keywords
+            keywords (List[str]): List of keywords
 
         Returns:
             str: trimmeded paragraph
@@ -255,8 +251,10 @@ class TranscriptSegmentationHandler:
         """
         # preprocess
         preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
+
         # preprocess paragraph
         paragraph = self.create_paragraph(preprocessed_sentence_transcript)
+
         # Truncate paragraph
         trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
 
@@ -275,8 +273,4 @@ class TranscriptSegmentationHandler:
             sentence_transcript=preprocessed_sentence_transcript,
         )
 
-        start_time_offset, end_time_offset = self.offset_timestamps(
-            start_time, end_time, preprocessed_sentence_transcript
-        )
-
-        return start_time_offset, end_time_offset
+        return start_time, end_time
