@@ -11,6 +11,7 @@ from botocore.client import BaseClient
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.optimization import OnclusiveModelOptimizer
 from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     FeatureStoreParams,
@@ -22,7 +23,7 @@ from onclusiveml.tracking import (
 )
 
 
-class OnclusiveModelTrainer:
+class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     """Class for training and managing Onclusive models."""
 
     def __init__(
@@ -40,14 +41,13 @@ class OnclusiveModelTrainer:
 
         Returns: None
         """
-        self.tracked_model_specs = tracked_model_specs
-        self.model_card = model_card
-        self.tracked_model_version = TrackedModelVersion(
-            **self.tracked_model_specs.dict()
-        )
         self.data_fetch_params = data_fetch_params
-
         self.logger = get_default_logger(__name__)
+
+        super().__init__(
+            tracked_model_specs=tracked_model_specs,
+            model_card=model_card,
+        )
 
     def initialize_model(self) -> None:
         """Initialize the model.
@@ -160,35 +160,3 @@ class OnclusiveModelTrainer:
         Returns: None
         """
         pass
-
-    def upload_model_to_neptune(
-        self,
-        test_files: List,
-        test_file_attribute_paths: List,
-        model_local_directory: str,
-    ) -> None:
-        """Upload model-related information to Neptune.
-
-        Args:
-            test_files (List): List of test files.
-            test_file_attribute_paths (List): List of attribute paths for test files.
-            model_local_directory (str): Local directory path with the saved model.
-
-        Returns: None
-        """
-        for (test_file, test_file_attribute_path) in zip(
-            test_files, test_file_attribute_paths
-        ):
-            self.tracked_model_version.upload_config_to_model_version(
-                config=test_file, neptune_attribute_path=test_file_attribute_path
-            )
-
-        self.tracked_model_version.upload_directory_to_model_version(
-            local_directory_path=model_local_directory,
-            neptune_attribute_path=self.model_card.model_artifact_attribute_path,
-        )
-        # # model card
-        self.tracked_model_version.upload_config_to_model_version(
-            config=self.model_card.dict(), neptune_attribute_path="model/model_card"
-        )
-        self.tracked_model_version.stop()
