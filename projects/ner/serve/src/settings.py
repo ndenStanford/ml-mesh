@@ -10,7 +10,7 @@ from neptune.types.mode import Mode
 from pydantic import BaseSettings, Field
 
 # Internal libraries
-from onclusiveml.serving.rest import ServingBaseParams
+from onclusiveml.serving.params import ServingBaseParams
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
