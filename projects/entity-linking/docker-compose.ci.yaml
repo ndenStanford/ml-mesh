@@ -213,7 +213,7 @@ services:
     volumes:
       - ner-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [bash, ./src/download_and_wait.sh]
+    command: [python, -m, src.download]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -227,6 +227,7 @@ services:
       ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-39
+      ONCLUSIVEML_SERVING_WAIT_SECONDS_AFTER_DOWNLOAD: 600 # 10 minutes
     hostname: onclusiveml
     networks: [onclusive-net]
 
