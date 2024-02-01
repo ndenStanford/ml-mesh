@@ -31,7 +31,7 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
-      MULTIPROCESS_WORKER: 4
+      MULTIPROCESS_WORKER: 5
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s

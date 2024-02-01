@@ -2,7 +2,6 @@
 # isort: skip_file
 
 # Standard Library
-import os
 import re
 from typing import List, Dict, Optional, Any, Union
 
@@ -18,11 +17,11 @@ from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
 # Source
 from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
 
-num_process = int(os.getenv("MULTIPROCESS_WORKER", cpu_count()))
 logger = get_default_logger(__name__)
 settings = get_api_settings()
 model_settings = get_settings()
 alias_dict = settings.PROMPT_ALIAS
+num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
 
 
 class TopicHandler:
