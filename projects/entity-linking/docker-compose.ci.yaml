@@ -72,8 +72,8 @@ services:
       ONCLUSIVEML_SERVING_SOURCE_BUCKET: onclusive-model-store-prod
       ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
     depends_on:
-      ner-serve-download-model:
-        condition: service_completed_successfully
+      depends_on:
+        - ner-serve-download-model
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -214,7 +214,7 @@ services:
     volumes:
       - ner-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.download]
+    command: [python, -m, src.download, ;, tail, -f, /dev/null]
     profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
