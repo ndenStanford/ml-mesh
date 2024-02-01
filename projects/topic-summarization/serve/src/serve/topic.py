@@ -184,7 +184,7 @@ class TopicHandler:
             output_content["Impact level"],
             output_content["Theme"],
         )
-        return agg_out_content, agg_out_impact, agg_out_theme
+        return str(agg_out_content), agg_out_impact, agg_out_theme
 
     def topic_aggregate(
         self, grouped_article: List[List]
@@ -271,6 +271,4 @@ class TopicHandler:
         merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
         merged_result.update(topic_result)
         merged_result.update(summary_result)
-        print("*******")
-        print(merged_result)
         return merged_result
