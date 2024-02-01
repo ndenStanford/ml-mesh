@@ -184,7 +184,7 @@ class TopicHandler:
             output_content["Impact level"],
             output_content["Theme"],
         )
-        return str(agg_out_content), agg_out_impact, agg_out_theme
+        return agg_out_content, agg_out_impact, agg_out_theme
 
     def topic_aggregate(
         self, grouped_article: List[List]
