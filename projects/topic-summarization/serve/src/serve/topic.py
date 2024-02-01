@@ -2,6 +2,7 @@
 # isort: skip_file
 
 # Standard Library
+import os
 import re
 from typing import List, Dict, Optional, Any, Union
 
@@ -17,6 +18,7 @@ from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
 # Source
 from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
 
+num_process = int(os.getenv("MULTIPROCESS_WORKER", cpu_count()))
 logger = get_default_logger(__name__)
 settings = get_api_settings()
 model_settings = get_settings()
@@ -108,19 +110,17 @@ class TopicHandler:
         Output:
             summary & theme (dict): Dict[str, str]
         """
-        num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
-        # record = {"Summary": None, "Theme": None}
         record = {}
         combined_input = [(item) for item in grouped_article]
 
         # parallel based on grouped article
         with Pool(processes=num_process) as p:
-            res = p.map(self.summary, combined_input)  # list of tupel
+            group_summary = p.map(self.summary, combined_input)  # list of tupel
 
         processed_summary = "\n".join(
             [
                 f"Summary {index + 1}: '''{article}'''"
-                for index, article in enumerate(res)
+                for index, article in enumerate(group_summary)
             ]
         )
 
@@ -197,21 +197,22 @@ class TopicHandler:
             topic analysis & topic theme & topic impact(dict): dict[str,str]
         """
         category_list = model_settings.CATEGORY_LIST
-        num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
         record: Dict[str, Optional[Dict[str, Any]]] = {}  # record for final output
 
         combined_input = [(grouped_article, category) for category in category_list]
         # parallel based on category
         with Pool(processes=num_process) as p:
-            res = p.starmap(self.process_category, combined_input)  # list of tupel
+            category_summary = p.starmap(
+                self.process_category, combined_input
+            )  # list of tupel
 
         # combine the final result
         for i in range(len(category_list)):
             category = category_list[i]
             agg_out_content, agg_out_impact, agg_out_theme = (
-                res[i][0],
-                res[i][1],
-                res[i][2],
+                category_summary[i][0],
+                category_summary[i][1],
+                category_summary[i][2],
             )
             if not agg_out_content:
                 continue
@@ -270,4 +271,6 @@ class TopicHandler:
         merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
         merged_result.update(topic_result)
         merged_result.update(summary_result)
+        print("*******")
+        print(merged_result)
         return merged_result
