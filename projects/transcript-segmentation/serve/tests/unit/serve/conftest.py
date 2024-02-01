@@ -145,7 +145,7 @@ def expected_output():
     """Expect output from predict."""
     return {
         "start_time": 1701127820000,
-        "end_time": 1701127849000,
+        "end_time": 1701127859000,
         "input_truncated": False,
     }
 
