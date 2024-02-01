@@ -74,7 +74,8 @@ services:
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
       ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
     depends_on:
-      - ner-serve-download-model
+      ner-serve-download-model:
+        condition: service_completed_successfully
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -194,8 +195,6 @@ services:
 
   # ner serve download model
   ner-serve-download-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     build:
       context: ../../
       dockerfile: projects/ner/serve/Dockerfile

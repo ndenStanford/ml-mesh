@@ -72,7 +72,8 @@ services:
       ONCLUSIVEML_SERVING_SOURCE_BUCKET: onclusive-model-store-prod
       ONCLUSIVEML_SERVING_KNOWLEDGE_BASES: '["kb", "en", "fr"]'
     depends_on:
-      - ner-serve-download-model
+      ner-serve-download-model:
+        condition: service_completed_successfully
     hostname: onclusiveml
     networks:
       - onclusive-net
