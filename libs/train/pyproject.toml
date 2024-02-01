@@ -10,6 +10,7 @@ python = "3.8.16"
 
 tracking = {path = "../tracking"}
 data = {path = "../data"}
+core = {path = "../core"}
 sentence-transformers = "2.2.2"
 cubinlinker-cu11 = { version = "0.3.0.post1", source = "pipy-nvidia" }
 ucx-py-cu11 = { version = "0.30.0", source = "pipy-nvidia" }
