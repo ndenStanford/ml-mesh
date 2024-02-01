@@ -205,13 +205,13 @@ class PromptEnum(OnclusiveEnum):
     # Transcript segmentation prompt
     ML_TRANSCRIPT_SEGMENTATION = [
         """
-        Your task is to extract the most informative segment from the provided content that mentions the words from a list of keywords that are comma seperated.
+        Your task is to extract a contiguous list of sentences (segment) from the provided content that are related to a list of keywords.
 
         This task is really important to me.
         The content is delimited by < and >, and the list of keywords are delimited by * and *.
 
         You must do the analysis using following steps:
-        1. Extract the most informative segment that contains the keywords from the content.
+        1. Extract the most informative segment such that it represents a full dialogue and contains the keywords from the content.
         2. The segment must also contain the surrounding context, regardless of whether the keywords are the main discussion topic or not.
         3. If the content holds no mention of the keywords at all, return N/A
         4. The relevant segment that you return MUST not be changed at all. The segment must be the exact copy that is found in the content.
