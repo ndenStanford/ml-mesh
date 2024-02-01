@@ -76,28 +76,6 @@ tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
 tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist[psutil]"]
 
 [[package]]
-name = "beautifulsoup4"
-version = "4.12.3"
-description = "Screen-scraping library"
-category = "main"
-optional = false
-python-versions = ">=3.6.0"
-files = [
-    {file = "beautifulsoup4-4.12.3-py3-none-any.whl", hash = "sha256:b80878c9f40111313e55da8ba20bdba06d8fa3969fc68304167741bbf9e082ed"},
-    {file = "beautifulsoup4-4.12.3.tar.gz", hash = "sha256:74e3d1928edc070d21748185c46e3fb33490f22f52a3addee9aee0f4f7781051"},
-]
-
-[package.dependencies]
-soupsieve = ">1.2"
-
-[package.extras]
-cchardet = ["cchardet"]
-chardet = ["chardet"]
-charset-normalizer = ["charset-normalizer"]
-html5lib = ["html5lib"]
-lxml = ["lxml"]
-
-[[package]]
 name = "bertopic"
 version = "0.15.0"
 description = "BERTopic performs topic Modeling with state-of-the-art transformer models."
@@ -501,7 +479,7 @@ typing-extensions = "^4.5.0"
 
 [package.source]
 type = "directory"
-url = "../../../libs/core"
+url = "../core"
 
 [[package]]
 name = "cubinlinker-cu11"
@@ -825,7 +803,7 @@ feast = {version = "0.33.1", extras = ["aws"]}
 
 [package.source]
 type = "directory"
-url = "../../../libs/data"
+url = "../data"
 
 [[package]]
 name = "dill"
@@ -1960,21 +1938,6 @@ files = [
 ]
 
 [[package]]
-name = "langdetect"
-version = "1.0.8"
-description = "Language detection library ported from Google's language-detection."
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "langdetect-1.0.8-py2-none-any.whl", hash = "sha256:f37495e63607865e47deed08d78f7f8e58172658216ff954b2f14671bcd87740"},
-    {file = "langdetect-1.0.8.tar.gz", hash = "sha256:363795ea005f1243c958e953245dac5d814fabdc025c9afa91588c5fa6b2fa83"},
-]
-
-[package.dependencies]
-six = "*"
-
-[[package]]
 name = "llvmlite"
 version = "0.39.1"
 description = "lightweight wrapper around basic LLVM functionality"
@@ -2457,28 +2420,6 @@ tensorflow-keras = ["neptune-tensorflow-keras"]
 transformers = ["transformers"]
 xgboost = ["neptune-xgboost"]
 zenml = ["zenml"]
-
-[[package]]
-name = "nlp"
-version = "0.1.0"
-description = "NLP library with various utilities"
-category = "main"
-optional = false
-python-versions = "3.8.16"
-files = []
-develop = false
-
-[package.dependencies]
-beautifulsoup4 = "^4.12.2"
-core = {path = "../core"}
-langdetect = "1.0.8"
-nltk = "^3.8.1"
-pydantic = "1.10.4"
-typing-extensions = "^4.5.0"
-
-[package.source]
-type = "directory"
-url = "../../../libs/nlp"
 
 [[package]]
 name = "nltk"
@@ -3138,18 +3079,17 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytest"
-version = "7.2.0"
+version = "7.3.2"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.2.0-py3-none-any.whl", hash = "sha256:892f933d339f068883b6fd5a459f03d85bfcb355e4981e146d2c7616c21fef71"},
-    {file = "pytest-7.2.0.tar.gz", hash = "sha256:c4014eb40e10f11f355ad4e3c2fb2c6c6d1919c73f3b5a433de4708202cade59"},
+    {file = "pytest-7.3.2-py3-none-any.whl", hash = "sha256:cdcbd012c9312258922f8cd3f1b62a6580fdced17db6014896053d47cddf9295"},
+    {file = "pytest-7.3.2.tar.gz", hash = "sha256:ee990a3cc55ba808b80795a79944756f315c67c12b56abd3ac993a7b8c17030b"},
 ]
 
 [package.dependencies]
-attrs = ">=19.2.0"
 colorama = {version = "*", markers = "sys_platform == \"win32\""}
 exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
 iniconfig = "*"
@@ -3158,7 +3098,7 @@ pluggy = ">=0.12,<2.0"
 tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
-testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
+testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
 name = "python-dateutil"
@@ -4155,18 +4095,6 @@ files = [
 ]
 
 [[package]]
-name = "soupsieve"
-version = "2.5"
-description = "A modern CSS selector implementation for Beautiful Soup."
-category = "main"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "soupsieve-2.5-py3-none-any.whl", hash = "sha256:eaa337ff55a1579b6549dc679565eac1e3d000563bcb1c8ab0d0fefbc0c2cdc7"},
-    {file = "soupsieve-2.5.tar.gz", hash = "sha256:5663d5a7b3bfaeee0bc4372e7fc48f9cff4940b3eec54a6451cc5299f1097690"},
-]
-
-[[package]]
 name = "sqlalchemy"
 version = "1.4.51"
 description = "Database Abstraction Library"
@@ -4651,40 +4579,7 @@ typing-extensions = "^4.5.0"
 
 [package.source]
 type = "directory"
-url = "../../../libs/tracking"
-
-[[package]]
-name = "train"
-version = "0.1.0"
-description = "Training module for OnclusiveML models."
-category = "main"
-optional = false
-python-versions = "3.8.16"
-files = []
-develop = false
-
-[package.dependencies]
-bertopic = "0.15.0"
-cubinlinker-cu11 = "0.3.0.post1"
-cuda-python = "11.8.2"
-cudf-cu11 = "23.2.0"
-cuml-cu11 = "23.2.0"
-dask-cudf-cu11 = "23.2.0"
-data = {path = "../data"}
-numba = "0.56.2"
-ptxcompiler-cu11 = "0.7.0.post1"
-pylibraft-cu11 = "23.2.0"
-raft-dask-cu11 = "23.2.0"
-rmm-cu11 = "23.2.0"
-sentence-transformers = "2.2.2"
-torch = "1.12.1"
-tracking = {path = "../tracking"}
-typing-extensions = "4.5.0"
-ucx-py-cu11 = "0.30.0"
-
-[package.source]
-type = "directory"
-url = "../../../libs/train"
+url = "../tracking"
 
 [[package]]
 name = "transformers"
@@ -5236,4 +5131,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "2bdad11ef630a23ca72cb4c32fc2f29b43cb51abe7b4915e215220f14f42de17"
+content-hash = "bb078f9dcac3c6597f1c47056aa2adac96d94ee8eda3d57838be517f75cef3fe"
