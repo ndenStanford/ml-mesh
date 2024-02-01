@@ -21,9 +21,8 @@ def test_handler___call___(
         word_transcript=transcript_input,
         keywords=transcript_keywords,
     )
-    transcript_segmentation_inference[0] == expected_output["start_time"]
+    assert transcript_segmentation_inference[0] == expected_output["start_time"]
     assert transcript_segmentation_inference[1] == expected_output["end_time"]
-    assert transcript_segmentation_inference[2] == expected_output["input_truncated"]
 
 
 def test_handler_preprocessing(transcript_input, expected_preprocessing_output):

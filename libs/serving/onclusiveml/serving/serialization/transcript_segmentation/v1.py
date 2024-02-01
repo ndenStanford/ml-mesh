@@ -23,7 +23,6 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
 
     start_time: Union[float, int]
     end_time: Union[float, int]
-    input_truncated: bool
     summary: Optional[str] = None
 
 

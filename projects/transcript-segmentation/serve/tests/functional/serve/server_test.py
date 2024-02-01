@@ -77,10 +77,6 @@ def test_server_prediction(test_payload, expected_response):
         <= 20000
     )
     assert (
-        response.json()["data"]["attributes"]["input_truncated"]
-        == expected_response["data"]["attributes"]["input_truncated"]
-    )
-    assert (
         response.json()["data"]["attributes"]["summary"]
         == expected_response["data"]["attributes"]["summary"]
     )
