@@ -7,7 +7,9 @@ from onclusiveml.data.exceptions import DataException
 class BeamPipelineException(DataException):
     """Enrichment pipeline exception."""
 
-    message_format = "Unknown error thrown while running a beam pipeline."
+    message_format = (
+        "Unknown error thrown while running a beam pipeline. Message: {message}"
+    )
 
 
 class KafkaProducerException(BeamPipelineException):

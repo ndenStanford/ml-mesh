@@ -88,8 +88,8 @@ class _OnclusiveApiCall(DoFn):
         # get request schema instance from element
         try:
             yield self._predict(element)
-        except Exception:
-            raise BeamPipelineException()
+        except Exception as e:
+            raise BeamPipelineException(message=str(e))
 
 
 class MachineLearningEnrichment(PTransform):
