@@ -164,7 +164,6 @@ def test_expected_predict_output() -> List[str]:
         attributes={
             "start_time": 1701127816000.0,
             "end_time": 1701127858714.0,
-            "input_truncated": False,
         },
     )
 

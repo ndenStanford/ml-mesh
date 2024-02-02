@@ -40,7 +40,8 @@ class GlobalSettings(
 ):
     """Global server settings."""
 
-    ARTICLE_GROUP_SIZE = 8  # how many articles are handled together
+    ARTICLE_GROUP_SIZE: int = 8  # how many articles are handled together
+    MULTIPROCESS_WORKER: int = 5
 
 
 @lru_cache
