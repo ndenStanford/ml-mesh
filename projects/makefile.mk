@@ -1,9 +1,9 @@
 ## PROJECTS TARGETS
 
 ifeq ($(WITH_DOCKER),true)
-	START_CMD +=docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate --attach-dependencies
+	START_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate --attach-dependencies
 else
-	START_CMD +=cd ./projects/$(notdir $@)/$(COMPONENT)/ && python -m src.$(COMPONENT)
+	START_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ & python -m src.$(COMPONENT)
 	ifeq ($(COMPONENT),serve)
 		ifeq ($(notdir $@), keywords)
 			START_CMD +=.model_server
