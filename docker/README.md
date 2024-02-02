@@ -68,7 +68,7 @@ To (re-)build your core image locally
 - using the [`docker-compose.dev.yaml`](./docker-compose.dev.yaml)
 - using the ${BASE_IMAGE_TAG} version of its base image,
 - using the `development` build stage,
-- tagged as `063759612765.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}`,
+- tagged as `690763002009.dkr.ecr.us-east-1.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}`,
 
 ```bash
 make docker.build/${IMAGE_NAME}

@@ -47,7 +47,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
 
-        start_time, end_time, input_truncated = self.model.__call__(
+        start_time, end_time = self.model.__call__(
             word_transcript=inputs.transcript, keywords=inputs.keywords
         )
 
@@ -57,7 +57,6 @@ class ServedTranscriptSegmentationModel(ServedModel):
             attributes={
                 "start_time": start_time,
                 "end_time": end_time,
-                "input_truncated": input_truncated,
             },
         )
 

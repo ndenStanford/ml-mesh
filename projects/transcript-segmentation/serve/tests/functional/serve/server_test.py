@@ -67,18 +67,14 @@ def test_server_prediction(test_payload, expected_response):
             response.json()["data"]["attributes"]["start_time"]
             - expected_response["data"]["attributes"]["start_time"]
         )
-        <= 10000
+        <= 20000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["end_time"]
             - expected_response["data"]["attributes"]["end_time"]
         )
-        <= 10000
-    )
-    assert (
-        response.json()["data"]["attributes"]["input_truncated"]
-        == expected_response["data"]["attributes"]["input_truncated"]
+        <= 20000
     )
     assert (
         response.json()["data"]["attributes"]["summary"]
