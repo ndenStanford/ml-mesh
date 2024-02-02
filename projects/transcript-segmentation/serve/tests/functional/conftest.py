@@ -246,7 +246,6 @@ def expected_response():
             "attributes": {
                 "start_time": 1701127816000.0,
                 "end_time": 1701127859428.5715,
-                "input_truncated": False,
                 "summary": None,
             },
         },

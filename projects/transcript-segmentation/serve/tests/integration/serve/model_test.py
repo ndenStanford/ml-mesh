@@ -65,10 +65,6 @@ def test_served_transcript_segmentation_model_predict(
         <= 200000
     )
     assert (
-        test_actual_predict_output.data.attributes.input_truncated
-        == test_expected_predict_output.data.attributes.input_truncated
-    )
-    assert (
         test_actual_predict_output.data.attributes.summary
         == test_expected_predict_output.data.attributes.summary
     )
