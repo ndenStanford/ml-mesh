@@ -1,5 +1,22 @@
 ## PROJECTS TARGETS
 
+ifeq ($(WITH_DOCKER),true)
+	START_CMD +=docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate --attach-dependencies
+else
+	START_CMD +=cd ./projects/$(notdir $@)/$(COMPONENT)/ && python -m src.$(COMPONENT)
+	ifeq ($(COMPONENT),serve)
+		ifeq ($(notdir $@), keywords)
+			START_CMD +=.model_server
+		else ifeq ($(notdir $@), lsh)
+			START_CMD +=.model_server
+		else ifeq ($(notdir $@), transcript-segmentation)
+			START_CMD +=.server
+		else
+			START_CMD +=.__main__
+		endif
+	endif
+endif
+
 projects.build/%: projects.set ## Build app
 	@echo "::group::Build $(notdir projects/$@)-$(COMPONENT) (system architecture)"
 	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) $(DOCKER_FLAGS)
@@ -12,7 +29,7 @@ projects.deploy/%: ## Deploy project component docker image to ECR.
 	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml push $(COMPONENT)
 
 projects.start/%: # Run main task of component in container
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate --attach-dependencies
+	$(START_CMD)
 
 projects.run/%: # Run auxiliary task of component in container
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT)-$(TASK) --exit-code-from $(COMPONENT)-$(TASK) --attach-dependencies
