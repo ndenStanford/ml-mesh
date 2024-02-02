@@ -14,14 +14,14 @@ import pytest
 def model_card():
     """Mock response for request.post."""
     mock_response = MagicMock()
-    mock_response.content = """{"generated":"{\\n  \\"Relationship with keyword\\": \\"The transcript contains multiple mentions of \'AI\', which stands for artificial intelligence, and discusses aspects of generative AI and its applications.\\",\\n  \\"Related segment\\": {\\"start_time\\": 1701127820000.0, \\"end_time\\": 1701127849000.0},\\n  \\"Reason\\": \\"The selected segment is the most relevant because it discusses the versatility and reliability of AI techniques, introduces the topic of generative AI, and mentions specific examples of AI applications like ChatGPT and its ability to create content rapidly.\\",\\n  \\"Reason for not choose\\": \\"N/A as the transcript does contain relevant content related to the keyword \'Ai\'.\\"\\n}"}"""  # noqa
+    mock_response.content = """{"generated": "{\\n    \\"Related segment\\": \\"They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to \\\\\\"gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,\\",\\n    \\"Reason for segment\\": \\"This segment is directly related to the keyword \'Ai\' as it discusses the versatility and reliability of ai techniques, mentions artificial intelligence, generative ai, and specifically refers to ChatGPT, which is an example of an Ai application.\\",\\n    \\"Reason for no segment\\": \\"N/A\\"\\n}"}"""  # noqa
     return mock_response
 
 
 @pytest.fixture
 def transcript_keywords():
     """Input keyword."""
-    return ["OpenAI"]
+    return ["Ai"]
 
 
 @pytest.fixture
@@ -144,7 +144,161 @@ def transcript_input():
 def expected_output():
     """Expect output from predict."""
     return {
-        "start_time": 1701127820000,
-        "end_time": 1701127849000,
-        "input_truncated": False,
+        "start_time": 1701127816000.0,
+        "end_time": 1701127859428.5715,
     }
+
+
+@pytest.fixture
+def expected_preprocessing_output():
+    """Expected preprocessing output."""
+    return [
+        {
+            "content": "Watch 'a Day's Work,' in their unreliability.",
+            "end_time": 1701127819333.3333,
+            "start_time": 1701127816000.0,
+        },
+        {
+            "content": "They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream.",  # noqa: E501
+            "end_time": 1701127827500.0,
+            "start_time": 1701127820000.0,
+        },
+        {
+            "content": '[bright music] [logo whooshes] - Hello and welcome to "gzero World.',
+            "end_time": 1701127838714.2856,
+            "start_time": 1701127828000.0,
+        },
+        {
+            "content": "I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now.",  # noqa: E501
+            "end_time": 1701127848714.2856,
+            "start_time": 1701127839000.0,
+        },
+        {
+            "content": "You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant.",  # noqa: E501
+            "end_time": 1701127855250.0,
+            "start_time": 1701127849000.0,
+        },
+        {
+            "content": "With the recent rollout of OpenAI's ChatGPT-4,",
+            "end_time": 1701127859428.5715,
+            "start_time": 1701127856000.0,
+        },
+    ]
+
+
+@pytest.fixture
+def transcript_input_abbrv():
+    """Input transcript with abbreviation."""
+    return [
+        {"ts": 1706450460000.0, "w": "A", "index": 0, "textId": ""},
+        {"ts": 1706450460200.0, "w": "judge", "index": 1, "textId": ""},
+        {"ts": 1706450460400.0, "w": "in", "index": 2, "textId": ""},
+        {"ts": 1706450460600.0, "w": "Los", "index": 3, "textId": ""},
+        {"ts": 1706450460800.0, "w": "Angeles", "index": 4, "textId": ""},
+        {"ts": 1706450461000.0, "w": "has", "index": 5, "textId": ""},
+        {"ts": 1706450461166.6667, "w": "ordered", "index": 6, "textId": ""},
+        {"ts": 1706450461333.3333, "w": "police", "index": 7, "textId": ""},
+        {"ts": 1706450461500.0, "w": "not", "index": 8, "textId": ""},
+        {"ts": 1706450461666.6667, "w": "to", "index": 9, "textId": ""},
+        {"ts": 1706450461833.3333, "w": "reveal", "index": 10, "textId": ""},
+        {"ts": 1706450462000.0, "w": "what", "index": 11, "textId": ""},
+        {"ts": 1706450462250.0, "w": "they", "index": 12, "textId": ""},
+        {"ts": 1706450462500.0, "w": "found", "index": 13, "textId": ""},
+        {"ts": 1706450462750.0, "w": "when", "index": 14, "textId": ""},
+        {"ts": 1706450463000.0, "w": "they", "index": 15, "textId": ""},
+        {"ts": 1706450463333.3333, "w": "raided", "index": 16, "textId": ""},
+        {"ts": 1706450463666.6667, "w": "the", "index": 17, "textId": ""},
+        {"ts": 1706450464000.0, "w": "home", "index": 18, "textId": ""},
+        {"ts": 1706450464200.0, "w": "of", "index": 19, "textId": ""},
+        {"ts": 1706450464400.0, "w": "an", "index": 20, "textId": ""},
+        {"ts": 1706450464600.0, "w": "attorney", "index": 21, "textId": ""},
+        {"ts": 1706450464800.0, "w": "representing", "index": 22, "textId": ""},
+        {"ts": 1706450465000.0, "w": "Black", "index": 23, "textId": ""},
+        {"ts": 1706450465166.6667, "w": "Lives", "index": 24, "textId": ""},
+        {"ts": 1706450465333.3333, "w": "Matter.", "index": 25, "textId": ""},
+        {"ts": 1706450465500.0, "w": "Officers", "index": 26, "textId": ""},
+        {"ts": 1706450465666.6667, "w": "from", "index": 27, "textId": ""},
+        {"ts": 1706450465833.3333, "w": "L.", "index": 28, "textId": ""},
+        {"ts": 1706450466000.0, "w": "A.", "index": 29, "textId": ""},
+        {"ts": 1706450466142.8572, "w": "P.", "index": 30, "textId": ""},
+        {"ts": 1706450466285.7144, "w": "D.", "index": 31, "textId": ""},
+        {"ts": 1706450466428.5715, "w": "took", "index": 32, "textId": ""},
+        {"ts": 1706450466571.4285, "w": "photos", "index": 33, "textId": ""},
+        {"ts": 1706450466714.2856, "w": "in", "index": 34, "textId": ""},
+        {"ts": 1706450466857.1428, "w": "the", "index": 35, "textId": ""},
+        {"ts": 1706450467000.0, "w": "house", "index": 36, "textId": ""},
+        {"ts": 1706450467200.0, "w": "of", "index": 37, "textId": ""},
+        {"ts": 1706450467400.0, "w": "Dermot", "index": 38, "textId": ""},
+        {"ts": 1706450467600.0, "w": "Givens", "index": 39, "textId": ""},
+        {"ts": 1706450467800.0, "w": "on", "index": 40, "textId": ""},
+        {"ts": 1706450468000.0, "w": "Tuesday", "index": 41, "textId": ""},
+        {"ts": 1706450468333.3333, "w": "as", "index": 42, "textId": ""},
+        {"ts": 1706450468666.6667, "w": "they", "index": 43, "textId": ""},
+        {"ts": 1706450469000.0, "w": "hunted", "index": 44, "textId": ""},
+        {"ts": 1706450469166.6667, "w": "for", "index": 45, "textId": ""},
+        {"ts": 1706450469333.3333, "w": "a", "index": 46, "textId": ""},
+        {"ts": 1706450469500.0, "w": "suspect", "index": 47, "textId": ""},
+        {"ts": 1706450469666.6667, "w": "they", "index": 48, "textId": ""},
+        {"ts": 1706450469833.3333, "w": "were", "index": 49, "textId": ""},
+        {"ts": 1706450470000.0, "w": "following", "index": 50, "textId": ""},
+        {"ts": 1706450470250.0, "w": "via", "index": 51, "textId": ""},
+        {"ts": 1706450470500.0, "w": "an", "index": 52, "textId": ""},
+        {"ts": 1706450470750.0, "w": "AirTag", "index": 53, "textId": ""},
+        {"ts": 1706450471000.0, "w": "tracking", "index": 54, "textId": ""},
+        {"ts": 1706450471200.0, "w": "device.", "index": 55, "textId": ""},
+        {"ts": 1706450471400.0, "w": "Givens", "index": 56, "textId": ""},
+        {"ts": 1706450471600.0, "w": "claimed", "index": 57, "textId": ""},
+        {"ts": 1706450471800.0, "w": "the", "index": 58, "textId": ""},
+        {"ts": 1706450472000.0, "w": "snaps", "index": 59, "textId": ""},
+        {"ts": 1706450472200.0, "w": "included", "index": 60, "textId": ""},
+        {"ts": 1706450472400.0, "w": "legal", "index": 61, "textId": ""},
+        {"ts": 1706450472600.0, "w": "documents", "index": 62, "textId": ""},
+        {"ts": 1706450472800.0, "w": "concerning", "index": 63, "textId": ""},
+        {"ts": 1706450473000.0, "w": "BLM", "index": 64, "textId": ""},
+        {"ts": 1706450473200.0, "w": "leader", "index": 65, "textId": ""},
+        {"ts": 1706450473400.0, "w": "Melina", "index": 66, "textId": ""},
+        {"ts": 1706450473600.0, "w": "Abdullah,", "index": 67, "textId": ""},
+        {"ts": 1706450473800.0, "w": "who", "index": 68, "textId": ""},
+        {"ts": 1706450474000.0, "w": "is", "index": 69, "textId": ""},
+        {"ts": 1706450474200.0, "w": "suing", "index": 70, "textId": ""},
+        {"ts": 1706450474400.0, "w": "the", "index": 71, "textId": ""},
+        {"ts": 1706450474600.0, "w": "department", "index": 72, "textId": ""},
+        {"ts": 1706450474800.0, "w": "after", "index": 73, "textId": ""},
+        {"ts": 1706450475000.0, "w": "they", "index": 74, "textId": ""},
+        {"ts": 1706450475200.0, "w": "descended", "index": 75, "textId": ""},
+        {"ts": 1706450475400.0, "w": "on", "index": 76, "textId": ""},
+        {"ts": 1706450475600.0, "w": "her", "index": 77, "textId": ""},
+        {"ts": 1706450475800.0, "w": "$1.6million", "index": 78, "textId": ""},
+        {"ts": 1706450476000.0, "w": "home", "index": 79, "textId": ""},
+        {"ts": 1706450476500.0, "w": "in", "index": 80, "textId": ""},
+        {"ts": 1706450477000.0, "w": "2020", "index": 81, "textId": ""},
+        {"ts": 1706450477333.3333, "w": "in", "index": 82, "textId": ""},
+        {"ts": 1706450477666.6667, "w": "response", "index": 83, "textId": ""},
+        {"ts": 1706450478000.0, "w": "to", "index": 84, "textId": ""},
+        {"ts": 1706450478166.6667, "w": "a", "index": 85, "textId": ""},
+        {"ts": 1706450478333.3333, "w": "reported", "index": 86, "textId": ""},
+        {"ts": 1706450478500.0, "w": "swatting", "index": 87, "textId": ""},
+        {"ts": 1706450478666.6667, "w": "incident.", "index": 88, "textId": ""},
+    ]
+
+
+@pytest.fixture
+def expected_preprocessing_output_abbrv():
+    """Expected preprocessing output with abbreviation."""
+    return [
+        {
+            "content": "A judge in Los Angeles has ordered police not to reveal what they found when they raided the home of an attorney representing Black Lives Matter.",  # noqa: E501
+            "end_time": 1706450465333.3333,
+            "start_time": 1706450460000.0,
+        },
+        {
+            "content": "Officers from L.A.P.D. took photos in the house of Dermot Givens on Tuesday as they hunted for a suspect they were following via an AirTag tracking device.",  # noqa: E501
+            "end_time": 1706450471200.0,
+            "start_time": 1706450465500.0,
+        },
+        {
+            "content": "Givens claimed the snaps included legal documents concerning BLM leader Melina Abdullah, who is suing the department after they descended on her $1.6million home in 2020 in response to a reported swatting incident.",  # noqa: E501
+            "end_time": 1706450478666.6667,
+            "start_time": 1706450471400.0,
+        },
+    ]

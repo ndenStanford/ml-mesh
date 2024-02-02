@@ -12,11 +12,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: [npm, start]
     profiles: [frontend]
     ports:
@@ -33,11 +33,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: frontend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: [/bin/sh, -c, sleep 3s]
     profiles: [frontend, unit]
     environment:
@@ -55,11 +55,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [backend]
     ports:
@@ -86,11 +86,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
@@ -111,11 +111,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
 
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:

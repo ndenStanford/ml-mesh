@@ -884,8 +884,7 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            runner-kind: ubuntu-20.04
 
     with:
       project: transcript-segmentation
