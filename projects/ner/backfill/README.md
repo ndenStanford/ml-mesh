@@ -13,7 +13,7 @@ At its core, beam allows to write pipeline in a language selected among Java, Py
 - a `PTransform` represents a data processing operation and a step in a pipeline. Some PTransforms only read inputs. They are refered to as I/O connectors.
 - a `Pipeline` is a succession of `PTransform`s passing `PCollection`s to one another. This defines an entire data processing job.
 
-![Alt text](beam-programming-model.png)
+![Alt text](./images/beam-programming-model.png)
 
 From our point of view, most of our work in Beam is to write data processing jobs subclassing `PTransform`.
 
@@ -38,7 +38,7 @@ Our dev environment is designed to replicate closely the production enviromment.
 - zookeeper: backend for Kafka.
 
 
-![Alt text](beam-portable-runner.png)
+![Alt text](./images/beam-portable-runner.png)
 
 #### Prerequisites
 
