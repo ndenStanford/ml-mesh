@@ -364,7 +364,7 @@ services:
       HOST: internal.api.ml.stage.onclusive.com
       NAMESPACE: ner
       VERSION: 1
-      API_KEY: test
+      API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
       SECURE: true
       JOB_NAME: ner-backfill
       RUNNER: PortableRunner
