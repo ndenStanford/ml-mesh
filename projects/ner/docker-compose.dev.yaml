@@ -66,7 +66,7 @@ services:
         PROJECT: ner
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
     environment:
@@ -167,7 +167,7 @@ services:
         PROJECT: ner
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: ner-serve
@@ -407,7 +407,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: backfill
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
@@ -415,7 +415,7 @@ services:
       - type: bind
         source: backfill/src
         target: /projects/ner/backfill/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
     entrypoint: [python, -m, src.backfill.__main__]
     profiles: [backfill]
     network_mode: service:taskmanager
@@ -446,7 +446,7 @@ services:
       - type: bind
         source: backfill
         target: /projects/ner/backfill
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
