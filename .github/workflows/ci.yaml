@@ -1040,7 +1040,6 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: topic
             sagemaker-runner-type: ml.p3.2xlarge
-            num-samples: ${{ github.event_name == 'pull_request' ? 1000 : 2500000 }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
