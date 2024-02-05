@@ -61,13 +61,17 @@ def fetch_and_upload(file_name: str) -> Any:
     """Fetch from feature store and upload to s3."""
     data_fetch_params = DataFetchParams()
     logger.info("initializing feature-store handle...")
+    if data_fetch_params.full_training:
+        num_samples = data_fetch_params.n_records_full
+    else:
+        num_samples = data_fetch_params.n_records_sample
     fs_handle = FeatureStoreHandle(
         feast_config_bucket=data_fetch_params.feast_config_bucket,
         config_file=data_fetch_params.config_file,
         local_config_dir=data_fetch_params.local_config_dir,
         data_source=data_fetch_params.redshift_table,
         data_id_key=data_fetch_params.entity_join_key,
-        limit=data_fetch_params.limit,
+        limit=num_samples,
     )
     logger.info(
         f"Registered entities: {[entity.name for entity in fs_handle.list_entities()]}"
