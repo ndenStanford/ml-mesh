@@ -30,11 +30,14 @@ class OnclusiveModelOptimizer:
         """
         self.tracked_model_specs = tracked_model_specs
         self.model_card = model_card
+        self.set_tracked_model_version()
+
+        self.logger = get_default_logger(__name__)
+
+    def set_tracked_model_version(self):
         self.tracked_model_version = TrackedModelVersion(
             **self.tracked_model_specs.dict()
         )
-
-        self.logger = get_default_logger(__name__)
 
     def upload_model_to_neptune(
         self,
