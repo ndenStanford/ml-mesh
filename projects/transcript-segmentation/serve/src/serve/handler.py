@@ -2,7 +2,7 @@
 
 # Standard Library
 import json
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
 import requests
@@ -96,7 +96,7 @@ class TranscriptSegmentationHandler:
         self,
         response: Union[str, Dict[str, str]],
         sentence_transcript: List[Dict[str, Any]],
-    ) -> Tuple[Union[int, float], Union[int, float]]:
+    ) -> Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]:
         """Find timestamp by tracing content back to sentence transcript.
 
         Args:
@@ -104,7 +104,8 @@ class TranscriptSegmentationHandler:
             sentence_transcript (List[Dict[str, Any]]): Sentence-level transcript
 
         Returns:
-            Tuple[Union[int, float], Union[int, float]]: he start and end timestamp of the segment
+            Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]: The start
+                and end timestamp of the segment and the segment summary.
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
@@ -139,7 +140,7 @@ class TranscriptSegmentationHandler:
             # find timestamp from sentence level transcript
             start_time = sentence_transcript[start_time_index]["start_time"]
             end_time = sentence_transcript[end_time_index]["end_time"]
-        return (start_time, end_time)
+        return (start_time, end_time), json_response.get("Segment summary")
 
     def preprocess_transcript(
         self, word_transcript: List[Dict[str, Any]]
@@ -239,7 +240,7 @@ class TranscriptSegmentationHandler:
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
-    ) -> Tuple[Union[int, float], Union[int, float]]:
+    ) -> Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]:
         """Prediction method for transcript segmentation.
 
         Args:
@@ -247,7 +248,8 @@ class TranscriptSegmentationHandler:
             keyword (List[str]): List of keywords to query the transcript
 
         Returns:
-            Tuple[Union[int, float], Union[int, float]]: Timestamps of the segment based on keywords
+            Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]: Timestamps of the
+                segment based on keywords and segment summary.
         """
         # preprocess
         preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
@@ -267,10 +269,11 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
+
         # post process
-        start_time, end_time = self.postprocess(
+        (start_time, end_time), summary = self.postprocess(
             response=json.loads(q.content)["generated"],
             sentence_transcript=preprocessed_sentence_transcript,
         )
 
-        return start_time, end_time
+        return (start_time, end_time), summary
