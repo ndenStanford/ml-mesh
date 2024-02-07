@@ -15,9 +15,9 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
     '--aws-account-id',
-    default='063759612765',
+    default='690763002009',
     show_default=True,
-    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `063759612765`."""
+    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `690763002009`."""
 )
 @click.option(
     '--aws-region',

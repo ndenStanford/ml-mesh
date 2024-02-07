@@ -2,7 +2,7 @@
 
 PWD=$(shell pwd)
 AWS_REGION?=us-east-1
-AWS_ACCOUNT_ID?=063759612765
+AWS_ACCOUNT_ID?=690763002009
 OWNER?=onclusiveml
 PLATFORM?=linux/amd64
 COMPONENT?=serve

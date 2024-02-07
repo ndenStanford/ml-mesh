@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ner-backfill"
+version = "0.1.0"
+description = ""
+authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+data = {path = "../../../libs/data"}
+core = {path = "../../../libs/core"}
+serving = {path = "../../../libs/serving"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
