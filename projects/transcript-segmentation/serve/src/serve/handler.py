@@ -42,7 +42,7 @@ class TranscriptSegmentationHandler:
 
     def get_timestamps_index(
         self, json_response: Dict[str, str], sentence_transcript: List[Dict[str, Any]]
-    ) -> Tuple[int, int]:
+    ) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         """Find start and end index of sentence-level transcript.
 
         Args:
@@ -50,7 +50,8 @@ class TranscriptSegmentationHandler:
             sentence_transcript (List[Dict[str, Any]]): sentence-level transcript
 
         Returns:
-            Tuple[int,int]: start and end index of sentence level transcript
+            Tuple[Tuple[int,int],Tuple[int,int]]: return original and offsetted start and end index
+                of segment
         """
         start_string = self.sentence_tokenizer.tokenize(
             content=json_response[self.related_segment_key]
@@ -80,23 +81,27 @@ class TranscriptSegmentationHandler:
                 max_similarity_end = similarity
                 end_index = idx
 
-        # expand timestamp range
-        start_index -= settings.OFFSET_INDEX_BUFFER
-        end_index += settings.OFFSET_INDEX_BUFFER
+        # expand segment by adding extra sentences on both sides of segment
+        start_index_offsetted = start_index - settings.OFFSET_INDEX_BUFFER
+        end_index_offsetted = end_index + settings.OFFSET_INDEX_BUFFER
 
-        # ensure the indexes are within range
-        if start_index < 0:
-            start_index = 0
-        if end_index > len(sentence_transcript) - 1:
-            end_index = len(sentence_transcript) - 1
+        # ensure the offsetted indexes do not go out of range
+        if start_index_offsetted < 0:
+            start_index_offsetted = 0
+        if end_index_offsetted > len(sentence_transcript) - 1:
+            end_index_offsetted = len(sentence_transcript) - 1
 
-        return start_index, end_index
+        return ((start_index_offsetted, end_index_offsetted), (start_index, end_index))
 
     def postprocess(
         self,
         response: Union[str, Dict[str, str]],
         sentence_transcript: List[Dict[str, Any]],
-    ) -> Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]:
+    ) -> Tuple[
+        Tuple[Union[int, float], Union[int, float]],
+        Tuple[Union[int, float], Union[int, float]],
+        Optional[str],
+    ]:
         """Find timestamp by tracing content back to sentence transcript.
 
         Args:
@@ -104,8 +109,11 @@ class TranscriptSegmentationHandler:
             sentence_transcript (List[Dict[str, Any]]): Sentence-level transcript
 
         Returns:
-            Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]: The start
-                and end timestamp of the segment and the segment summary.
+            Tuple[
+                Tuple[Union[int, float], Union[int, float]],
+                Tuple[Union[int, float], Union[int, float]],
+                Optional[str],
+            ]:The start and end timestamp of the segment and the segment summary.
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
@@ -134,13 +142,22 @@ class TranscriptSegmentationHandler:
         ]:
             start_time, end_time = 0, 0
         else:
-            start_time_index, end_time_index = self.get_timestamps_index(
-                json_response, sentence_transcript
-            )
+            (
+                (start_index_offsetted, end_index_offsetted),
+                (start_index, end_index),
+            ) = self.get_timestamps_index(json_response, sentence_transcript)
             # find timestamp from sentence level transcript
-            start_time = sentence_transcript[start_time_index]["start_time"]
-            end_time = sentence_transcript[end_time_index]["end_time"]
-        return (start_time, end_time), json_response.get("Segment summary")
+            start_time_offsetted = sentence_transcript[start_index_offsetted][
+                "start_time"
+            ]
+            end_time_offsetted = sentence_transcript[end_index_offsetted]["end_time"]
+            start_time = sentence_transcript[start_index]["start_time"]
+            end_time = sentence_transcript[end_index]["end_time"]
+        return (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            json_response.get("Segment summary"),
+        )
 
     def preprocess_transcript(
         self, word_transcript: List[Dict[str, Any]]
@@ -240,7 +257,11 @@ class TranscriptSegmentationHandler:
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
-    ) -> Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]:
+    ) -> Tuple[
+        Tuple[Union[int, float], Union[int, float]],
+        Tuple[Union[int, float], Union[int, float]],
+        Optional[str],
+    ]:
         """Prediction method for transcript segmentation.
 
         Args:
@@ -248,8 +269,11 @@ class TranscriptSegmentationHandler:
             keyword (List[str]): List of keywords to query the transcript
 
         Returns:
-            Tuple[Tuple[Union[int, float], Union[int, float]], Optional[str]]: Timestamps of the
-                segment based on keywords and segment summary.
+            Tuple[
+                Tuple[Union[int, float], Union[int, float]],
+                Tuple[Union[int, float], Union[int, float]],
+                Optional[str],
+            ]: Timestamps of the segment based on keywords and segment summary.
         """
         # preprocess
         preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
@@ -271,9 +295,17 @@ class TranscriptSegmentationHandler:
         )
 
         # post process
-        (start_time, end_time), summary = self.postprocess(
+        (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            summary,
+        ) = self.postprocess(
             response=json.loads(q.content)["generated"],
             sentence_transcript=preprocessed_sentence_transcript,
         )
 
-        return (start_time, end_time), summary
+        return (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            summary,
+        )
