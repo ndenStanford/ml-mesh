@@ -28,6 +28,7 @@ class ModelServerURLs(BaseModel):
     model_bio: Optional[str] = ""
     docs: Optional[str] = ""
     redoc: Optional[str] = ""
+    openapi: Optional[str] = ""
 
     @root_validator
     def check_non_root_urls(cls, values: Dict) -> Dict:

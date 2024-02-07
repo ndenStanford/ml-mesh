@@ -2,49 +2,48 @@
 # isort: skip_file
 
 # Standard Library
-import datetime
 import re
-from typing import Any, Dict, List
+from typing import List, Dict, Optional, Any, Union
 
 # 3rd party libraries
 import requests
+import json
+from multiprocessing import Pool, cpu_count
 
 # Internal libraries
-# Internal library
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
 
 # Source
-from src.serve._init import Settings
+from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
 
 logger = get_default_logger(__name__)
-# setting class
-settings = Settings()
+settings = get_api_settings()
+model_settings = get_settings()
+alias_dict = settings.PROMPT_ALIAS
+num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
 
 
 class TopicHandler:
-    """Detect trends by GPT."""
+    """Topic summarization with prompt backend."""
 
-    # use gpt to generate summary on certain category; will be called in aggregate.
     def inference(
         self,
         article: List[str],
         category: str,
-        industry: str,
-    ) -> str:
-        """Topic detection handler method.
+    ) -> Optional[str]:
+        """Topic summarization for single category.
 
         Args:
             article (list): list of str
             category (str): target category, one of ['Risk detection', 'Opportunities',
             'Threats for the brand','Company or spokespersons', 'Brand Reputation',
             'CEO Reputation', 'Customer Response', 'Stock Price Impact',
-            'Industry trends']
-            industry: target industry
+            'Industry trends', 'Environmental, social and governance']
+        Output:
+            Category summary: str
         """
-        try:
-            alias = settings.PROMPT_DICT["analysis"]["alias"]
-        except KeyError:
-            logger.errror("Topic function not supported.")
+        alias = alias_dict["single_topic"]
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -54,7 +53,6 @@ class TopicHandler:
             )
 
         input_dict = {
-            "target_industry": industry,
             "target_category": category,
             "content": processed_article,
         }  # input target category & articles
@@ -65,109 +63,211 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
-        return eval(q.content)["generated"]
 
-    def aggregate(self, article: list, industry: str) -> dict:
-        """Function for spliting the articles into groups, then aggregate together."""
-        num_article = len(article)
-        n = 3  # group size
-        art_index = 0
-        category_list = settings.CATEGORY_LIST
-        record = {cate: "" for cate in category_list}
-        # do topic analysis for each category
-        for category in category_list:
-            # print('current category : ', cate)
-            record_cate = []
-            # divide the articles into groups and summarize each group
-            while art_index < num_article:
-                end_index = min(art_index + n, num_article)
-                input_article = article[art_index:end_index]  # E203
-                res_now = self.inference(input_article, category, industry)
-                record_cate.append(res_now)
-                art_index += n
+        output_content = json.loads(json.loads(q.content)["generated"])
 
-            processed_summary = ""
-            for i in range(len(record_cate)):
-                text = record_cate[i]
-                processed_summary += (
-                    "\n    Summary " + str(i) + ": '''" + text + "''' " + "\n"
-                )
+        key = category if category in output_content else f"<{category}>"
+        return output_content.get(key)
 
-            try:
-                alias = settings.PROMPT_DICT["aggregate"]["alias"]
-            except KeyError:
-                logger.errror("Topic function not supported.")
+    def summary(
+        self,
+        article: List[str],
+    ) -> str:
+        """Summarize multiple articles.
 
-            input_dict = {
-                "target_industry": industry,
-                "target_category": category,
-                "Summary": processed_summary,
-            }  # input target category & articles
-            headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
-
-            q = requests.post(
-                "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
-                headers=headers,
-                json=input_dict,
+        Args:
+            article (list): list of str
+        Output:
+            Summary: str
+        """
+        alias = alias_dict["single_summary"]
+        # transfer article to the format used in prompt
+        processed_article = ""
+        for i in range(len(article)):
+            text = article[i]
+            processed_article += (
+                "\n    Article " + str(i) + ": '''" + text + "''' " + "\n"
             )
 
-            record[category] = eval(q.content)["generated"]
-        return record
+        input_dict = {
+            "content": processed_article,
+        }  # input articles
+        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
-    def pre_process(self, article: list) -> list:
-        """Pre process function for articles."""
-        article = [re.sub("\n+", " ", text) for text in article]
-        return article
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
+            headers=headers,
+            json=input_dict,
+        )
+        return json.loads(json.loads(q.content)["generated"])["Summary"]
 
-    def postprocess(self, article: dict) -> dict:
-        """Post process function for generated outputs."""
-        for k in article.keys():
-            article[k] = re.sub("\n+", " ", article[k])
-        return article
+    def summary_aggregate(self, grouped_article: List[List]) -> Dict[str, str]:
+        """Function for aggregating summaries and generating theme.
 
+        Args:
+            grouped_article (list): list of list
+        Output:
+            summary & theme (dict): Dict[str, str]
+        """
+        record = {}
+        combined_input = [(item) for item in grouped_article]
 
-_service = TopicHandler()
+        # parallel based on grouped article
+        with Pool(processes=num_process) as p:
+            group_summary = p.map(self.summary, combined_input)  # list of tupel
 
-
-def handle(data: Any) -> Dict[str, dict]:
-    """The handler."""
-    try:
-        if data is None:
-            return {}
-
-        if "body" not in data[0]:
-            logger.warning(
-                "Malformed request, content does not contain a body key."
-                "Is your request properly formatted as json?"
-            )
-            return {}
-
-        data = data[0]["body"]
-
-        if type(data) == bytearray:
-            data = eval(data)
-
-        content = data["content"]
-        industry = data["industry"]  # ?
-
-        if content is None or content == "":
-            logger.warning(
-                "Content field is empty. This will result in no summary being returned"
-            )
-
-        article = _service.pre_process(content)  # ?
-
-        starttime = datetime.datetime.utcnow()
-        topic = _service.aggregate(article, industry)
-        endtime = datetime.datetime.utcnow()
-
-        logger.debug(
-            "Total Time in milliseconds = {}".format(
-                (endtime - starttime).total_seconds() * 1000
-            )
+        processed_summary = "\n".join(
+            [
+                f"Summary {index + 1}: '''{article}'''"
+                for index, article in enumerate(group_summary)
+            ]
         )
 
-        topic = _service.postprocess(topic)  # ?
-        return {"topic": topic}
-    except Exception as e:
-        raise e
+        alias = alias_dict["summary_aggregate"]
+        input_dict = {"Summary": processed_summary}  # input target category & articles
+        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
+            headers=headers,
+            json=input_dict,
+        )
+
+        output_content = json.loads(json.loads(q.content)["generated"])
+        record["Summary"] = output_content["Summary"]
+        record["Theme"] = output_content["Theme"]
+
+        return record
+
+    def process_category(self, grouped_article: List[List], category: str) -> tuple:
+        """Function to prepare parallel based on category.
+
+        From all input articles to final analyze for the category
+
+        Args:
+            grouped_article: list of list of str, all articles
+            category: str
+        Output:
+            a tuple with summary, impact and theme.
+        """
+        record_cate = []
+        for input_article in grouped_article:
+            res_now = self.inference(input_article, category)
+            record_cate.append(res_now)
+
+        # combine the output of each group together
+        processed_summary = "\n".join(
+            [
+                f"Summary {index + 1}: '''{article}'''"
+                for index, article in enumerate(record_cate)
+            ]
+        )
+
+        alias = alias_dict["topic_aggregate"]
+
+        input_dict = {
+            "target_category": category,
+            "Summary": processed_summary,
+        }  # input target category & articles
+        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
+            headers=headers,
+            json=input_dict,
+        )
+
+        output_content = json.loads(json.loads(q.content)["generated"])
+        agg_out_content, agg_out_impact, agg_out_theme = (
+            output_content["Overall summary"],
+            output_content["Impact level"],
+            output_content["Theme"],
+        )
+        return agg_out_content, agg_out_impact, agg_out_theme
+
+    def topic_aggregate(
+        self, grouped_article: List[List]
+    ) -> Dict[str, Optional[Dict[str, str]]]:
+        """Function for aggregating topic analysis, and generate theme and impact level.
+
+        Args:
+            grouped_article(list): list of str
+        Output:
+            topic analysis & topic theme & topic impact(dict): dict[str,str]
+        """
+        category_list = model_settings.CATEGORY_LIST
+        record: Dict[str, Optional[Dict[str, Any]]] = {}  # record for final output
+
+        combined_input = [(grouped_article, category) for category in category_list]
+        # parallel based on category
+        with Pool(processes=num_process) as p:
+            category_summary = p.starmap(
+                self.process_category, combined_input
+            )  # list of tupel
+
+        # combine the final result
+        for i in range(len(category_list)):
+            category = category_list[i]
+            agg_out_content, agg_out_impact, agg_out_theme = (
+                category_summary[i][0],
+                category_summary[i][1],
+                category_summary[i][2],
+            )
+            if not agg_out_content:
+                continue
+            record[category] = {
+                f"{category} analysis ": agg_out_content,
+                f"{category} theme ": agg_out_theme,
+                f"{category} impact ": agg_out_impact,
+            }
+
+        return record
+
+    def pre_process(self, article: List[str]) -> List[str]:
+        """Pre process function for articles.
+
+        Args:
+            article(list): list of str
+        Output:
+            processed_article(list): list of str
+        """
+        article = [re.sub("\n+", " ", text) for text in article]
+        processed_article = [remove_whitespace(remove_html(text)) for text in article]
+        return processed_article
+
+    def group(self, article: List[str]) -> List[List]:
+        """Divide articles into groups.
+
+        Args:
+            article(list): list of str
+        Output:
+            grouped articles: List[List[str]]
+        """
+        num_article = len(article)
+        n = model_settings.ARTICLE_GROUP_SIZE  # group size
+        art_index = 0
+        grouped = []
+        while art_index < num_article:
+            end_index = min(art_index + n, num_article)
+            grouped.append(article[art_index:end_index])  # E203
+            art_index += n
+        return grouped
+
+    def aggregate(
+        self, article: List[str]
+    ) -> Dict[str, Union[Dict[str, str], str, None]]:
+        """Aggregate topic & summary results together.
+
+        Args:
+            article(list): list of str
+        Output:
+            merged_result(dict): dict
+        """
+        article = self.pre_process(article)
+        grouped_article = self.group(article)
+        topic_result = self.topic_aggregate(grouped_article)
+        summary_result = self.summary_aggregate(grouped_article)
+        merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
+        merged_result.update(topic_result)
+        merged_result.update(summary_result)
+        return merged_result
