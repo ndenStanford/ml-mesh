@@ -89,11 +89,11 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
         registry interaction. Will be injected into the container at runtime."""
 )
 @click.option(
-    '--save-model-to-neptune',
+    '--save_artifact',
     type=str,
     default=False,
     show_default=True,
-    help="""[Optional]: Whether training should be run with the full intended size of dataset. Will be injected into the container at runtime."""
+    help="""[Optional]: Whether training should be run with the full intended size of dataset and artifact be saved to neptune. Will be injected into the container at runtime."""
 )
 @click.argument(
     'container-entry-point',
@@ -111,7 +111,7 @@ def project_train(
     image_tag: str,
     run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
-    save_model_to_neptune: bool,
+    save_artifact: bool,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
@@ -190,7 +190,7 @@ def project_train(
     all_env_vars = {**run_configuration_env_vars,
                     **github_action_env_vars,
                     **{'NEPTUNE_API_TOKEN':neptune_api_token},
-                    **{'SAVE_MODEL_TO_NEPTUNE':save_model_to_neptune}}
+                    **{'SAVE_ARTIFACT':save_artifact}}
 
     click.echo(f"Using run configuration environment variables {all_env_vars}")
 

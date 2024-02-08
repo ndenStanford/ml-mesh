@@ -85,7 +85,7 @@ def main() -> None:
     sample_topics = [str(i) for i in sample_topics]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
-    if data_fetch_params.save_model_to_neptune:
+    if data_fetch_params.save_artifact:
         for (test_file, test_file_attribute_path) in [
             (sample_docs, model_card.model_test_files.inputs),
             (
