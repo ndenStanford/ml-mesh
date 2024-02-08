@@ -55,7 +55,6 @@ jobs:
   check-github-state:
     name: Check github refs
     runs-on: ubuntu-latest
-    if: ${{ inputs.verbose }}
 
     steps:
 

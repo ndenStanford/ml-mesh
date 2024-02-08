@@ -81,6 +81,7 @@ jobs:
           filters: |
             this:
               - added | modified: 'projects/${{ inputs.project }}/train/**'
+
   train-model:
     name: '(Train &) register model: ${{ inputs.project }}'
     needs: check-run-criteria
@@ -113,23 +114,6 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Run project train component on sagemaker
-        if: ${{ !inputs.pull-request }}
-        run: |
-          python bin/sagemaker-run \
-            --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
-            --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
-            --aws-environment stage \
-            --instance-type ${{ inputs.sagemaker-runner-type}} \
-            --instance-count ${{ inputs.sagemaker-runner-count }} \
-            --project-name ${{ inputs.project }} \
-            --project-component train \
-            --image-tag ${{ inputs.tag }} \
-            --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
-            --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
-            python -m src.train_model
-
-      - name: Run topic-train component with sample data on sagemaker
-        if: ${{ inputs.pull-request && inputs.project=='topic' }}
         run: |
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
@@ -142,5 +126,5 @@ jobs:
             --image-tag ${{ inputs.tag }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
-            --num-samples 1000 \
+            --save_artifact ${{ !inputs.pull-request }} \
             python -m src.train_model

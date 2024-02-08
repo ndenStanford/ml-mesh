@@ -50,21 +50,21 @@ def main() -> None:
     bertopic_trainer.train()
 
     bertopic_trainer.save()
+    if data_fetch_params.save_artifact:
+        sample_docs = bertopic_trainer.docs[:15]
+        sample_embeddings = bertopic_trainer.doc_embeddings[:15]
 
-    sample_docs = bertopic_trainer.docs[:15]
-    sample_embeddings = bertopic_trainer.doc_embeddings[:15]
+        sample_topics = bertopic_trainer.predict(sample_docs, sample_embeddings)
 
-    sample_topics = bertopic_trainer.predict(sample_docs, sample_embeddings)
-
-    bertopic_trainer.upload_model_to_neptune(
-        [sample_docs, model_card.model_params.dict(), sample_topics],
-        [
-            model_card.model_test_files.inputs,
-            model_card.model_test_files.inference_params,
-            model_card.model_test_files.predictions,
-        ],
-        bertopic_trainer.topic_model_local_dir,
-    )
+        bertopic_trainer.upload_model_to_neptune(
+            [sample_docs, model_card.model_params.dict(), sample_topics],
+            [
+                model_card.model_test_files.inputs,
+                model_card.model_test_files.inference_params,
+                model_card.model_test_files.predictions,
+            ],
+            bertopic_trainer.topic_model_local_dir,
+        )
 
 
 if __name__ == "__main__":

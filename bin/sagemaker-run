@@ -15,9 +15,9 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
     '--aws-account-id',
-    default='063759612765',
+    default='690763002009',
     show_default=True,
-    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `063759612765`."""
+    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `690763002009`."""
 )
 @click.option(
     '--aws-region',
@@ -89,11 +89,11 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
         registry interaction. Will be injected into the container at runtime."""
 )
 @click.option(
-    '--num-samples',
+    '--save_artifact',
     type=str,
-    default='1000',
+    default=False,
     show_default=True,
-    help="""[Optional]: The number of samples to be fetched from feature store for training. Will be injected into the container at runtime."""
+    help="""[Optional]: Whether training should be run with the full intended size of dataset and artifact be saved to neptune. Will be injected into the container at runtime."""
 )
 @click.argument(
     'container-entry-point',
@@ -111,7 +111,7 @@ def project_train(
     image_tag: str,
     run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
-    num_samples: str,
+    save_artifact: bool,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
@@ -190,7 +190,7 @@ def project_train(
     all_env_vars = {**run_configuration_env_vars,
                     **github_action_env_vars,
                     **{'NEPTUNE_API_TOKEN':neptune_api_token},
-                    **{'LIMIT':num_samples}}
+                    **{'SAVE_ARTIFACT':save_artifact}}
 
     click.echo(f"Using run configuration environment variables {all_env_vars}")
 
