@@ -34,7 +34,11 @@ class OnclusiveModelOptimizer:
 
         self.logger = get_default_logger(__name__)
 
-    def set_tracked_model_version(self):
+    def set_tracked_model_version(self) -> None:
+        """Create tracked model version object for optimizer class.
+
+        Returns: None
+        """
         self.tracked_model_version = TrackedModelVersion(
             **self.tracked_model_specs.dict()
         )
