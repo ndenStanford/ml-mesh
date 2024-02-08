@@ -3,7 +3,6 @@
 # Standard Library
 import io
 from io import BytesIO
-from typing import List
 
 # 3rd party libraries
 import boto3
@@ -16,11 +15,7 @@ from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     FeatureStoreParams,
 )
-from onclusiveml.tracking import (
-    TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedModelVersion,
-)
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 
 
 class OnclusiveModelTrainer(OnclusiveModelOptimizer):
@@ -62,14 +57,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         Returns: None
         """
         self.logger.info("initializing feature-store handle...")
-        self.fs_handle = FeatureStoreHandle(
-            feast_config_bucket=self.data_fetch_params.feast_config_bucket,
-            config_file=self.data_fetch_params.config_file,
-            local_config_dir=self.data_fetch_params.local_config_dir,
-            data_source=self.data_fetch_params.redshift_table,
-            data_id_key=self.data_fetch_params.entity_join_key,
-            limit=self.data_fetch_params.limit,
-        )
+        self.get_featurestore_handle()
         self.logger.info(
             f"Registered entities: {[entity.name for entity in self.fs_handle.list_entities()]}"
         )
@@ -103,6 +91,20 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
 
         self.docs = self.dataset_df["content"].apply(str).values.tolist()
+
+    def get_featurestore_handle(self) -> None:
+        """Initialize feature store handle for the trainer class.
+
+        Returns: None
+        """
+        self.fs_handle = FeatureStoreHandle(
+            feast_config_bucket=self.data_fetch_params.feast_config_bucket,
+            config_file=self.data_fetch_params.config_file,
+            local_config_dir=self.data_fetch_params.local_config_dir,
+            data_source=self.data_fetch_params.redshift_table,
+            data_id_key=self.data_fetch_params.entity_join_key,
+            limit=self.data_fetch_params.limit,
+        )
 
     def upload_training_data_to_s3(self) -> None:
         """Upload the training dataset to S3.

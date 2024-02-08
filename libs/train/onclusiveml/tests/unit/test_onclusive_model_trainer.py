@@ -1,12 +1,18 @@
+# Standard Library
+from unittest.mock import patch
+
+# 3rd party libraries
 import pytest
-from unittest.mock import MagicMock, patch, call
+
+# Internal libraries
+from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSpecs,
     TrackedModelTestFiles,
 )
 from onclusiveml.train.onclusive_model_trainer import OnclusiveModelTrainer
-from onclusiveml.data.feature_store import FeatureStoreParams
+
 
 @pytest.fixture
 def tracked_model_specs():
@@ -40,18 +46,22 @@ def feature_store_params():
     )  # Provide appropriate parameters
 
 
-
-@patch('onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version')
-def test_onclusive_model_optimizer_initialize(mock_set_tracked_model_version, tracked_model_specs, tracked_model_card, feature_store_params):
-    mock_set_tracked_model_version.return_value = None  # Prevent the original method from being called
-    trainer = OnclusiveModelTrainer(tracked_model_specs, tracked_model_card, feature_store_params)
+@patch(
+    "onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version"
+)
+def test_onclusive_model_trainer_initialize(
+    mock_set_tracked_model_version,
+    tracked_model_specs,
+    tracked_model_card,
+    feature_store_params,
+):
+    mock_set_tracked_model_version.return_value = (
+        None  # Prevent the original method from being called
+    )
+    trainer = OnclusiveModelTrainer(
+        tracked_model_specs, tracked_model_card, feature_store_params
+    )
     assert trainer.tracked_model_specs == tracked_model_specs
     assert trainer.model_card == tracked_model_card
-    assert trainer.feature_store_params == feature_store_params
+    assert trainer.data_fetch_params == feature_store_params
     mock_set_tracked_model_version.assert_called_once()
-
-@patch('onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version')
-def test_get_training_data(mock_set_tracked_model_version, tracked_model_specs, tracked_model_card, feature_store_params):
-    mock_set_tracked_model_version.return_value = None  # Prevent the original method from being called
-    trainer = OnclusiveModelTrainer(tracked_model_specs, tracked_model_card, feature_store_params)
-    trainer.get_training_data()
