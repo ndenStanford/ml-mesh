@@ -140,7 +140,7 @@ class TranscriptSegmentationHandler:
             "n/a",
             "Nothing",
         ]:
-            start_time, end_time = 0, 0
+            start_time, end_time, start_time_offsetted, end_time_offsetted = 0, 0, 0, 0
         else:
             (
                 (start_index_offsetted, end_index_offsetted),
