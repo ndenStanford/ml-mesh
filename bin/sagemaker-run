@@ -89,7 +89,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
         registry interaction. Will be injected into the container at runtime."""
 )
 @click.option(
-    '--full-training',
+    '--save-model-to-neptune',
     type=str,
     default=False,
     show_default=True,
@@ -111,7 +111,7 @@ def project_train(
     image_tag: str,
     run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
-    full_training: bool,
+    save_model_to_neptune: bool,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 

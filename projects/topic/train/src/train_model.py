@@ -17,6 +17,7 @@ from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.fetch_and_upload_dataset import fetch_and_upload
+from src.settings import DataFetchParams  # type: ignore[attr-defined]
 from src.settings import (  # type: ignore[attr-defined]
     TrackedTopicBaseModelCard,
     TrackedTopicModelSpecs,
@@ -27,6 +28,7 @@ def main() -> None:
     """Register trained model."""
     model_specs = TrackedTopicModelSpecs()
     model_card = TrackedTopicBaseModelCard()
+    data_fetch_params = DataFetchParams()
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
@@ -83,29 +85,37 @@ def main() -> None:
     sample_topics = [str(i) for i in sample_topics]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
-    for (test_file, test_file_attribute_path) in [
-        (sample_docs, model_card.model_test_files.inputs),
-        (model_card.model_params.dict(), model_card.model_test_files.inference_params),
-        (sample_topics, model_card.model_test_files.predictions),
-    ]:
-        model_version.upload_config_to_model_version(
-            config=test_file, neptune_attribute_path=test_file_attribute_path
+    if data_fetch_params.save_model_to_neptune:
+        for (test_file, test_file_attribute_path) in [
+            (sample_docs, model_card.model_test_files.inputs),
+            (
+                model_card.model_params.dict(),
+                model_card.model_test_files.inference_params,
+            ),
+            (sample_topics, model_card.model_test_files.predictions),
+        ]:
+            model_version.upload_config_to_model_version(
+                config=test_file, neptune_attribute_path=test_file_attribute_path
+            )
+        # model artifact
+        topic_model_local_dir = os.path.join(
+            model_card.local_output_dir, "topic_model/"
         )
-    # model artifact
-    topic_model_local_dir = os.path.join(model_card.local_output_dir, "topic_model/")
-    topic_model.save(topic_model_local_dir, serialization="pytorch", save_ctfidf=True)
-    topic_model.get_topic_info().sort_values("Count", ascending=False).to_csv(
-        f"{topic_model_local_dir}topic_info.csv"
-    )
+        topic_model.save(
+            topic_model_local_dir, serialization="pytorch", save_ctfidf=True
+        )
+        topic_model.get_topic_info().sort_values("Count", ascending=False).to_csv(
+            f"{topic_model_local_dir}topic_info.csv"
+        )
 
-    model_version.upload_directory_to_model_version(
-        local_directory_path=topic_model_local_dir,
-        neptune_attribute_path=model_card.model_artifact_attribute_path,
-    )
-    # # model card
-    model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
-    )
+        model_version.upload_directory_to_model_version(
+            local_directory_path=topic_model_local_dir,
+            neptune_attribute_path=model_card.model_artifact_attribute_path,
+        )
+        # # model card
+        model_version.upload_config_to_model_version(
+            config=model_card.dict(), neptune_attribute_path="model/model_card"
+        )
 
     model_version.stop()
 

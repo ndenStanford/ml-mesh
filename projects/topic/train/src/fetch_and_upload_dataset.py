@@ -60,10 +60,10 @@ def s3_put(client: BaseClient, file_key: str, parquet_buffer: BytesIO) -> str:
 def fetch_and_upload(file_name: str) -> Any:
     """Fetch from feature store and upload to s3."""
     data_fetch_params = DataFetchParams()
-    if data_fetch_params.full_training:
-        num_samples = data_fetch_params.n_records_full
+    if data_fetch_params.save_model_to_neptune:
+        num_samples = str(data_fetch_params.n_records_full)
     else:
-        num_samples = data_fetch_params.n_records_sample
+        num_samples = str(data_fetch_params.n_records_sample)
 
     logger.info(f"initializing feature-store handle to pull {num_samples} samples")
 
