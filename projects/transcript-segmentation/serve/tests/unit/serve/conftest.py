@@ -14,14 +14,14 @@ import pytest
 def model_card():
     """Mock response for request.post."""
     mock_response = MagicMock()
-    mock_response.content = """{"generated":"{\\n  \\"Relationship with keyword\\": \\"The transcript contains multiple mentions of \'AI\', which stands for artificial intelligence, and discusses aspects of generative AI and its applications.\\",\\n  \\"Related segment\\": {\\"start_time\\": 1701127820000.0, \\"end_time\\": 1701127849000.0},\\n  \\"Reason\\": \\"The selected segment is the most relevant because it discusses the versatility and reliability of AI techniques, introduces the topic of generative AI, and mentions specific examples of AI applications like ChatGPT and its ability to create content rapidly.\\",\\n  \\"Reason for not choose\\": \\"N/A as the transcript does contain relevant content related to the keyword \'Ai\'.\\"\\n}"}"""  # noqa
+    mock_response.content = """{"generated": "{\\n    \\"Related segment\\": \\"They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to \\\\\\"gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,\\",\\n    \\"Reason for segment\\": \\"This segment is directly related to the keyword \'Ai\' as it discusses the versatility and reliability of ai techniques, mentions artificial intelligence, generative ai, and specifically refers to ChatGPT, which is an example of an Ai application.\\",\\n    \\"Reason for no segment\\": \\"N/A\\"\\n}"}"""  # noqa
     return mock_response
 
 
 @pytest.fixture
 def transcript_keywords():
     """Input keyword."""
-    return ["OpenAI"]
+    return ["Ai"]
 
 
 @pytest.fixture
@@ -144,9 +144,10 @@ def transcript_input():
 def expected_output():
     """Expect output from predict."""
     return {
-        "start_time": 1701127820000,
-        "end_time": 1701127849000,
-        "input_truncated": False,
+        "start_time": 1701127816000.0,
+        "end_time": 1701127859428.5715,
+        "transcript_start_time": 1701127820000,
+        "transcript_end_time": 1701127859428.5715,
     }
 
 
