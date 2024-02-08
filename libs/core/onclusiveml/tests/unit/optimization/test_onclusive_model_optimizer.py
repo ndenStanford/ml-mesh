@@ -1,17 +1,17 @@
 # Standard Library
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import patch
 
 # 3rd party libraries
 import pytest
 
 # Internal libraries
+from onclusiveml.core.optimization import OnclusiveModelOptimizer
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSpecs,
     TrackedModelTestFiles,
 )
-import os
-from onclusiveml.core.optimization import OnclusiveModelOptimizer
+
 
 @pytest.fixture
 def tracked_model_specs():
@@ -31,9 +31,16 @@ def tracked_model_card():
         model_test_files=tracked_model_test_files,
     )  # Provide appropriate parameters
 
-@patch('onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version')
-def test_onclusive_model_optimizer_initialize(mock_set_tracked_model_version, tracked_model_specs, tracked_model_card):
-    mock_set_tracked_model_version.return_value = None  # Prevent the original method from being called
+
+@patch(
+    "onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version"
+)
+def test_onclusive_model_optimizer_initialize(
+    mock_set_tracked_model_version, tracked_model_specs, tracked_model_card
+):
+    mock_set_tracked_model_version.return_value = (
+        None  # Prevent the original method from being called
+    )
     optimizer = OnclusiveModelOptimizer(tracked_model_specs, tracked_model_card)
     assert optimizer.tracked_model_specs == tracked_model_specs
     assert optimizer.model_card == tracked_model_card
