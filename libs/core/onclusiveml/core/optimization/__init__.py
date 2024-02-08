@@ -1,3 +1,4 @@
-from onclusiveml.core.optimization.onclusive_model_optimizer import (
+"""Init."""
+from onclusiveml.core.optimization.onclusive_model_optimizer import (  # noqa: F401
     OnclusiveModelOptimizer,
-)  # noqa: F401
+)
