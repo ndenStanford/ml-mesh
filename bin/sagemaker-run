@@ -190,7 +190,7 @@ def project_train(
     all_env_vars = {**run_configuration_env_vars,
                     **github_action_env_vars,
                     **{'NEPTUNE_API_TOKEN':neptune_api_token},
-                    **{'FULL_TRAINING':full_training}}
+                    **{'SAVE_MODEL_TO_NEPTUNE':save_model_to_neptune}}
 
     click.echo(f"Using run configuration environment variables {all_env_vars}")
 
