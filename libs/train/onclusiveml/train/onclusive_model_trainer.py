@@ -2,6 +2,7 @@
 
 # Standard Library
 import io
+from abc import ABC, abstractmethod
 from io import BytesIO
 
 # 3rd party libraries
@@ -18,7 +19,7 @@ from onclusiveml.data.feature_store import (
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 
 
-class OnclusiveModelTrainer(OnclusiveModelOptimizer):
+class OnclusiveModelTrainer(ABC, OnclusiveModelOptimizer):
     """Class for training and managing Onclusive models."""
 
     def __init__(
@@ -44,6 +45,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             model_card=model_card,
         )
 
+    @abstractmethod
     def initialize_model(self) -> None:
         """Initialize the model.
 
@@ -81,7 +83,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         ]
 
         self.logger.info(
-            f"fetching {self.data_fetch_params.limit} samples from feature-store"
+            f"fetching {self.data_fetch_params.num_samples} samples from feature-store"
         )
 
         self.dataset_df = self.fs_handle.fetch_historical_features(features)
@@ -98,9 +100,13 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         Returns: None
         """
         if self.data_fetch_params.save_artifact:
-            num_samples = str(self.data_fetch_params.n_records_full)
+            self.data_fetch_params.num_samples = str(
+                self.data_fetch_params.n_records_full
+            )
         else:
-            num_samples = str(self.data_fetch_params.n_records_sample)
+            self.data_fetch_params.num_samples = str(
+                self.data_fetch_params.n_records_sample
+            )
 
         self.fs_handle = FeatureStoreHandle(
             feast_config_bucket=self.data_fetch_params.feast_config_bucket,
@@ -108,7 +114,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             local_config_dir=self.data_fetch_params.local_config_dir,
             data_source=self.data_fetch_params.redshift_table,
             data_id_key=self.data_fetch_params.entity_join_key,
-            limit=num_samples,
+            limit=self.data_fetch_params.num_samples,
         )
 
     def upload_training_data_to_s3(self) -> None:
@@ -154,6 +160,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
 
         return f"{s3_bucket}/{file_key}"
 
+    @abstractmethod
     def train(self) -> None:
         """Train the model.
 
@@ -161,9 +168,15 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         """
         pass
 
+    @abstractmethod
     def predict(self) -> None:
         """Make predictions using the trained model.
 
         Returns: None
         """
         pass
+
+    def __call__(self) -> None:
+        """Call Method."""
+        self.get_training_data()
+        self.upload_training_data_to_s3()

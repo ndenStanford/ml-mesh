@@ -74,3 +74,14 @@ class OnclusiveModelOptimizer:
             config=self.model_card.dict(), neptune_attribute_path="model/model_card"
         )
         self.tracked_model_version.stop()
+
+    def __call__(
+        self,
+        test_files: List,
+        test_file_attribute_paths: List,
+        model_local_directory: str,
+    ) -> None:
+        """Call Method."""
+        self.upload_model_to_neptune(
+            test_files, test_file_attribute_paths, model_local_directory
+        )

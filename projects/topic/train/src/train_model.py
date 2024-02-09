@@ -37,34 +37,7 @@ def main() -> None:
         stopwords=stopwords,
     )
 
-    bertopic_trainer.get_training_data()
-
-    bertopic_trainer.upload_training_data_to_s3()
-
-    logger.info(
-        f"Training data uploaded to s3 location : {bertopic_trainer.full_file_key}"
-    )
-
-    bertopic_trainer.initialize_model()
-
-    bertopic_trainer.train()
-
-    bertopic_trainer.save()
-    if data_fetch_params.save_artifact:
-        sample_docs = bertopic_trainer.docs[:15]
-        sample_embeddings = bertopic_trainer.doc_embeddings[:15]
-
-        sample_topics = bertopic_trainer.predict(sample_docs, sample_embeddings)
-
-        bertopic_trainer.upload_model_to_neptune(
-            [sample_docs, model_card.model_params.dict(), sample_topics],
-            [
-                model_card.model_test_files.inputs,
-                model_card.model_test_files.inference_params,
-                model_card.model_test_files.predictions,
-            ],
-            bertopic_trainer.topic_model_local_dir,
-        )
+    bertopic_trainer()
 
 
 if __name__ == "__main__":

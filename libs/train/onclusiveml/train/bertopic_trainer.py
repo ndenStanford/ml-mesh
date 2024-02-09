@@ -14,6 +14,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Internal libraries
+from onclusiveml.core.optimization import OnclusiveModelOptimizer
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 from onclusiveml.train.onclusive_model_trainer import OnclusiveModelTrainer
@@ -142,3 +143,28 @@ class BertopicTrainer(OnclusiveModelTrainer):
         self.topic_model.get_topic_info().sort_values("Count", ascending=False).to_csv(
             f"{self.topic_model_local_dir}topic_info.csv"
         )
+
+    def __call__(self) -> None:
+        """Call Method."""
+        super(OnclusiveModelTrainer, self).__call__()
+        self.logger.info(
+            f"Training data uploaded to s3 location : {self.full_file_key}"
+        )
+        self.initialize_model()
+        self.train()
+        self.save()
+        if self.data_fetch_params.save_artifact:
+            sample_docs = self.docs[:15]
+            sample_embeddings = self.doc_embeddings[:15]
+
+            sample_topics = self.predict(sample_docs, sample_embeddings)
+
+            super(OnclusiveModelOptimizer, self).__call__(
+                [sample_docs, self.model_card.model_params.dict(), sample_topics],
+                [
+                    self.model_card.model_test_files.inputs,
+                    self.model_card.model_test_files.inference_params,
+                    self.model_card.model_test_files.predictions,
+                ],
+                self.topic_model_local_dir,
+            )
