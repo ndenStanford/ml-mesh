@@ -729,6 +729,16 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+
           # serve
           - name: serve
             download-model: true
@@ -828,6 +838,18 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+
 
           # serve
           - name: serve
@@ -1034,6 +1056,9 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: topic
+            sagemaker-runner-type: ml.p3.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
