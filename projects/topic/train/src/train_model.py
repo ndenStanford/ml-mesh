@@ -6,7 +6,7 @@ import os
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.stopwords.helpers import load_stop_words_file
-from onclusiveml.train import BertopicTrainer
+from onclusiveml.training import BertopicTrainer
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
