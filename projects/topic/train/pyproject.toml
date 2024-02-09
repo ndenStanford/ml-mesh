@@ -11,7 +11,7 @@ core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
 data = {path = "../../../libs/data"}
 nlp = {path = "../../../libs/nlp"}
-train = {path = "../../../libs/train"}
+train = {path = "../../../libs/training"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

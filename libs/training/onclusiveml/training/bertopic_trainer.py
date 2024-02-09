@@ -16,7 +16,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
-from onclusiveml.train.onclusive_model_trainer import OnclusiveModelTrainer
+from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 
 class BertopicTrainer(OnclusiveModelTrainer):

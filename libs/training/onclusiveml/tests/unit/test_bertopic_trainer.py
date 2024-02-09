@@ -12,7 +12,7 @@ from onclusiveml.tracking import (
     TrackedModelTestFiles,
     TrackedParams,
 )
-from onclusiveml.train import BertopicTrainer
+from onclusiveml.training import BertopicTrainer
 
 
 class TopicModelParams(TrackedParams):
@@ -69,11 +69,11 @@ def feature_store_params():
 
 @pytest.fixture
 @patch(
-    "onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version",
+    "onclusiveml.core.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
     return_value=None,
 )
 def bertopic_trainer(
-    mock_set_tracked_model_version,
+    mock_create_tracked_model_version,
     tracked_model_specs,
     tracked_model_card,
     feature_store_params,
@@ -85,7 +85,7 @@ def bertopic_trainer(
         data_fetch_params=feature_store_params,
         stopwords=stopwords,
     )
-    mock_set_tracked_model_version.assert_called_once()
+    mock_create_tracked_model_version.assert_called_once()
     return bertopic_trainer
 
 
