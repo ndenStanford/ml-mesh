@@ -82,10 +82,6 @@ class OnclusiveModelTrainer(ABC, OnclusiveModelOptimizer):
             for feature in self.feature_view.features
         ]
 
-        self.logger.info(
-            f"fetching {self.data_fetch_params.num_samples} samples from feature-store"
-        )
-
         self.dataset_df = self.fs_handle.fetch_historical_features(features)
 
         self.logger.info(
@@ -100,13 +96,11 @@ class OnclusiveModelTrainer(ABC, OnclusiveModelOptimizer):
         Returns: None
         """
         if self.data_fetch_params.save_artifact:
-            self.data_fetch_params.num_samples = str(
-                self.data_fetch_params.n_records_full
-            )
+            num_samples = str(self.data_fetch_params.n_records_full)
         else:
-            self.data_fetch_params.num_samples = str(
-                self.data_fetch_params.n_records_sample
-            )
+            num_samples = str(self.data_fetch_params.n_records_sample)
+
+        self.logger.info(f"fetching {num_samples} samples from feature-store")
 
         self.fs_handle = FeatureStoreHandle(
             feast_config_bucket=self.data_fetch_params.feast_config_bucket,
@@ -114,7 +108,7 @@ class OnclusiveModelTrainer(ABC, OnclusiveModelOptimizer):
             local_config_dir=self.data_fetch_params.local_config_dir,
             data_source=self.data_fetch_params.redshift_table,
             data_id_key=self.data_fetch_params.entity_join_key,
-            limit=self.data_fetch_params.num_samples,
+            limit=num_samples,
         )
 
     def upload_training_data_to_s3(self) -> None:

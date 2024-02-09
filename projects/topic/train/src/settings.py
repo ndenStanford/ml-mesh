@@ -84,7 +84,7 @@ class DataFetchParams(FeatureStoreParams):
     feature_view_name: str
     dataset_upload_bucket: str
     dataset_upload_dir: str
-    save_artifact: bool
+    save_artifact: bool = False
     n_records_sample: int
     n_records_full: int
 
