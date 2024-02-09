@@ -10,8 +10,27 @@ from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSpecs,
     TrackedModelTestFiles,
+    TrackedParams,
 )
-from onclusiveml.train.onclusive_model_trainer import OnclusiveModelTrainer
+from onclusiveml.train import BertopicTrainer
+
+
+class TopicModelParams(TrackedParams):
+    """Ground truth specification for model inference mode.
+
+    Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
+    `serve`) during testing
+    """
+
+    # SentenceTransformer
+    embedding_model: str = "embedding_model"
+
+
+class TrackedTopicBaseModelCard(TrackedModelCard):
+    """The model card for the base model of the keywords ML project."""
+
+    model_params: TopicModelParams
+    model_params: TopicModelParams
 
 
 @pytest.fixture
@@ -26,10 +45,12 @@ def tracked_model_card():
     tracked_model_test_files = TrackedModelTestFiles(
         inputs="inputs", inference_params="inference_params", predictions="predictions"
     )
-    return TrackedModelCard(
+
+    return TrackedTopicBaseModelCard(
         model_type="trained",
         model_artifact_attribute_path="model_artifact_attribute_path",
         model_test_files=tracked_model_test_files,
+        model_params=TopicModelParams(),
     )  # Provide appropriate parameters
 
 
@@ -46,22 +67,32 @@ def feature_store_params():
     )  # Provide appropriate parameters
 
 
+@pytest.fixture
 @patch(
-    "onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version"
+    "onclusiveml.core.optimization.OnclusiveModelOptimizer.set_tracked_model_version",
+    return_value=None,
 )
-def test_onclusive_model_trainer_initialize(
+def bertopic_trainer(
     mock_set_tracked_model_version,
     tracked_model_specs,
     tracked_model_card,
     feature_store_params,
 ):
-    mock_set_tracked_model_version.return_value = (
-        None  # Prevent the original method from being called
+    stopwords = ["a", "an", "the"]
+    bertopic_trainer = BertopicTrainer(
+        tracked_model_specs=tracked_model_specs,
+        model_card=tracked_model_card,
+        data_fetch_params=feature_store_params,
+        stopwords=stopwords,
     )
-    trainer = OnclusiveModelTrainer(
-        tracked_model_specs, tracked_model_card, feature_store_params
-    )
-    assert trainer.tracked_model_specs == tracked_model_specs
-    assert trainer.model_card == tracked_model_card
-    assert trainer.data_fetch_params == feature_store_params
     mock_set_tracked_model_version.assert_called_once()
+    return bertopic_trainer
+
+
+def test_bertopic_trainer_init(
+    bertopic_trainer, tracked_model_specs, tracked_model_card, feature_store_params
+):
+    assert bertopic_trainer.tracked_model_specs == tracked_model_specs
+    assert bertopic_trainer.model_card == tracked_model_card
+    assert bertopic_trainer.data_fetch_params == feature_store_params
+    assert bertopic_trainer.stopwords == ["a", "an", "the"]
