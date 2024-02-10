@@ -61,7 +61,7 @@ def bind(**kwargs: Dict[str, Any]) -> Callable:
             self.request_kwargs = kwargs
 
         @property
-        def uri(self) -> str:
+        def url(self) -> str:
             return os.path.join(self.path, f"v{self.version}", self.endpoint)
 
         @property
@@ -109,8 +109,13 @@ def bind(**kwargs: Dict[str, Any]) -> Callable:
 
         def execute(self) -> ResponseSchema:
             """Execute API query."""
+            print("+" * 30)
+            print(self.method)
+            print(self.url)
+            print(self.headers)
+            print(self.request.dict())
             response = requests.request(
-                self.method, self.uri, headers=self.headers, json=self.request.dict()
+                self.method, self.url, headers=self.headers, json=self.request.dict()
             )
             _, Response = self.schemas
             if response.status_code >= 300:
