@@ -91,6 +91,9 @@ class DataFetchParams(FeatureStoreParams):
     redshift_timestamp_field: str
     dataset_upload_bucket: str
     dataset_upload_dir: str
+    save_artifact: bool
+    n_records_sample: int
+    n_records_full: int
 
     class Config:
         env_file = "config/dev.env"

@@ -23,6 +23,14 @@ def test_handler___call___(
     )
     assert transcript_segmentation_inference[0][0] == expected_output["start_time"]
     assert transcript_segmentation_inference[0][1] == expected_output["end_time"]
+    assert (
+        transcript_segmentation_inference[1][0]
+        == expected_output["transcript_start_time"]
+    )
+    assert (
+        transcript_segmentation_inference[1][1]
+        == expected_output["transcript_end_time"]
+    )
 
 
 def test_handler_preprocessing(transcript_input, expected_preprocessing_output):
