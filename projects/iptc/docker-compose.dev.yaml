@@ -73,7 +73,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: train/config/${ENV_FILE_FOLDER}/dev.env
+    env_file: train/config/${MODEL_ID}/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
