@@ -23,7 +23,10 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
 
     start_time: Union[float, int]
     end_time: Union[float, int]
+    transcript_start_time: Union[float, int]
+    transcript_end_time: Union[float, int]
     summary: Optional[str] = None
+    ad: Optional[str] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
