@@ -1045,6 +1045,9 @@ jobs       :
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+        include:
+          - project: iptc
+            model-id: IPTC-00
 
     with:
       environment: prod

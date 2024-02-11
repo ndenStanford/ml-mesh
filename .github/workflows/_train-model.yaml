@@ -123,7 +123,7 @@ jobs:
             --instance-count ${{ inputs.sagemaker-runner-count }} \
             --project-name ${{ inputs.project }} \
             --project-component train \
+            --model-id ${{ inputs.model-id }} \
             --image-tag ${{ inputs.tag }} \
-            --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             python -m src.train_model
