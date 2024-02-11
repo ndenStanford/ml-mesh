@@ -649,11 +649,11 @@ jobs       :
 
           # train
           - name: train
-            download-model: false
+            download-model: true
             integration: false
             functional: false
             load: false
-            upload-test-results: false
+            upload-test-results: true
             runner-kind: ubuntu-20.04
 
           # compile
