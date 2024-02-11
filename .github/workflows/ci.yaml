@@ -1037,9 +1037,9 @@ jobs       :
       - run-lsh-project
       - run-iptc-project
       - run-topic-project
-      - run-register-pipelines
-      - get-target-branch-name
-      - run-get-core-dependencies-versions
+      # - run-register-pipelines
+      # - get-target-branch-name
+      # - run-get-core-dependencies-versions
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
