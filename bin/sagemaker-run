@@ -65,6 +65,13 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     help="""The name of the project component the image is implementing."""
 )
 @click.option(
+    '--model-id',
+    type=str,
+    default=None,
+    show_default=True,
+    help="Model-id for iptc multi model"
+)
+@click.option(
     '--image-tag',
     required=True,
     type=str,
@@ -95,13 +102,6 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     show_default=True,
     help="""[Optional]: Whether training should be run with the full intended size of dataset and artifact be saved to neptune. Will be injected into the container at runtime."""
 )
-@click.option(
-    '--model-id',
-    type=str,
-    default=None,
-    show_default=True,
-    help="Model-id for iptc multi model"
-)
 @click.argument(
     'container-entry-point',
     nargs=-1,
@@ -119,7 +119,7 @@ def project_train(
     run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
     save_artifact: bool,
-    model_id: Optional[str] = None,
+    model_id: Optional[str],
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
