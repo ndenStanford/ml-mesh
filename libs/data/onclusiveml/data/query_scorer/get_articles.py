@@ -42,13 +42,6 @@ def remove_duplicates(doc_list: List[Optional[str]]) -> List[Optional[str]]:
         doc.lower().strip() if doc is not None else None for doc in doc_list
     ]
 
-    unique_docs = set()
-    duplicate_count = 0
+    unique_docs = list(set(processed_docs))
 
-    for doc in processed_docs:
-        if doc in unique_docs:
-            duplicate_count += 1
-        else:
-            unique_docs.add(doc)
-
-    return list(unique_docs)
+    return unique_docs
