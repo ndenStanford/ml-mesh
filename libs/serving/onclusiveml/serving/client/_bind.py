@@ -109,11 +109,6 @@ def bind(**kwargs: Dict[str, Any]) -> Callable:
 
         def execute(self) -> ResponseSchema:
             """Execute API query."""
-            print("+" * 30)
-            print(self.method)
-            print(self.url)
-            print(self.headers)
-            print(self.request.dict())
             response = requests.request(
                 self.method, self.url, headers=self.headers, json=self.request.dict()
             )
