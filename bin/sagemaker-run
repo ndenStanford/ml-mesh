@@ -110,9 +110,9 @@ def project_train(
     project_component: str,
     image_tag: str,
     run_configuration_dotenv: Optional[str],
-    model_id: Optional[str] = None,
     neptune_api_token: str,
     save_artifact: bool,
+    model_id: Optional[str] = None,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
@@ -162,28 +162,57 @@ def project_train(
     if run_configuration_dotenv is not None:
         run_configuration_env_vars = dotenv_values(run_configuration_dotenv)
     else:
-        probable_dotenv = os.path.join(
-            'projects',
-            project_name,
-            project_component,
-            model_id,
-            'config',
-            'prod.env'
-        )
-
-        if os.path.isfile(probable_dotenv):
-            click.echo(
-                "No dotenv configuration provided. Falling back on likely candidate "
-                f"{probable_dotenv}"
+        if not model_id:
+            probable_dotenv = os.path.join(
+                'projects',
+                project_name,
+                project_component,
+                'config',
+                'prod.env'
             )
-            run_configuration_env_vars = dotenv_values(probable_dotenv)
 
+            if os.path.isfile(probable_dotenv):
+                click.echo(
+                    "No dotenv configuration provided. Falling back on likely candidate "
+                    f"{probable_dotenv}"
+                )
+                run_configuration_env_vars = dotenv_values(probable_dotenv)
+
+            else:
+                click.echo(
+                    f"Could not locate likely candidate {probable_dotenv}. Defaulting "
+                    "to container configuration (if it exists)."
+                )
+                run_configuration_env_vars = {}
         else:
-            click.echo(
-                f"Could not locate likely candidate {probable_dotenv}. Defaulting "
-                "to container configuration (if it exists)."
-            )
             run_configuration_env_vars = {}
+            # Split model_ids into a list if multiple IDs are provided, else wrap it in a list
+            model_id_list = model_ids.split(',') if ',' in model_ids else [model_ids]
+
+            for mid in model_id_list:
+                mid = mid.strip()  # Strip to remove any leading/trailing whitespace
+                if mid:  # Check if the model-id is not just whitespace
+                    probable_dotenv = os.path.join(
+                        'projects',
+                        project_name,
+                        project_component,
+                        mid,
+                        'config',
+                        'prod.env'
+                    )
+
+                    if os.path.isfile(probable_dotenv):
+                        click.echo(
+                            f"No dotenv configuration provided. Falling back on likely candidate {probable_dotenv}"
+                        )
+                        # If dotenv file exists, load its values
+                        run_configuration_env_vars.update(dotenv_values(probable_dotenv))
+                    else:
+                        click.echo(
+                            f"Could not locate likely candidate {probable_dotenv}. Defaulting to container configuration (if it exists)."
+                        )
+                else:
+                    click.echo("Model ID is empty after stripping whitespace; skipping dotenv loading for this ID.")
 
     # env var based ci spec
     github_action_env_vars = TrackedGithubActionsSpecs().dict()
