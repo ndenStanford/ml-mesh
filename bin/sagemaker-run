@@ -107,10 +107,10 @@ def project_train(
     instance_type: str,
     instance_count: int,
     project_name: str,
-    model_id: Optional[str] = None,
     project_component: str,
     image_tag: str,
     run_configuration_dotenv: Optional[str],
+    model_id: Optional[str] = None,
     neptune_api_token: str,
     save_artifact: bool,
     container_entry_point: List[str]) -> None:

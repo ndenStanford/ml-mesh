@@ -123,8 +123,8 @@ jobs:
             --instance-count ${{ inputs.sagemaker-runner-count }} \
             --project-name ${{ inputs.project }} \
             --project-component train \
-            --model-id ${{ inputs.model-id }} \
             --image-tag ${{ inputs.tag }} \
+            --model-id ${{ inputs.model-id }} \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
             python -m src.train_model
