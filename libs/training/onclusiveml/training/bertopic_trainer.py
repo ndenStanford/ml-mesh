@@ -150,7 +150,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
             f"Training data uploaded to s3 location : {self.full_file_key}"
         )
         self.initialize_model()
-        self.train()
+        self.optimize_model()
         self.save()
         if self.data_fetch_params.save_artifact:
             sample_docs = self.docs[:15]

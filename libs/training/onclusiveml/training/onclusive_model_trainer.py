@@ -2,7 +2,7 @@
 
 # Standard Library
 import io
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from io import BytesIO
 
 # 3rd party libraries
@@ -19,7 +19,7 @@ from onclusiveml.data.feature_store import (
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 
 
-class OnclusiveModelTrainer(ABC, OnclusiveModelOptimizer):
+class OnclusiveModelTrainer(OnclusiveModelOptimizer):
     """Class for training and managing Onclusive models."""
 
     def __init__(
@@ -169,6 +169,13 @@ class OnclusiveModelTrainer(ABC, OnclusiveModelOptimizer):
         Returns: None
         """
         pass
+
+    def optimize_model(self) -> None:
+        """Optimize the model.
+
+        Returns: None
+        """
+        self.train()
 
     def __call__(self) -> None:
         """Call Method."""

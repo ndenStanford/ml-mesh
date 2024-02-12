@@ -1,6 +1,7 @@
 """Baseclass for optimizing Onclusive models. Inherited by training and compiling modules."""
 
 # Standard Library
+from abc import abstractmethod
 from typing import List
 
 # Internal libraries
@@ -33,6 +34,14 @@ class OnclusiveModelOptimizer:
         self.create_tracked_model_version()
 
         self.logger = get_default_logger(__name__)
+
+    @abstractmethod
+    def optimize_model(self) -> None:
+        """Optimize the model.
+
+        Returns: None
+        """
+        pass
 
     def create_tracked_model_version(self) -> None:
         """Create tracked model version object for optimizer class.
