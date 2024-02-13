@@ -976,49 +976,49 @@ jobs       :
   #     NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
   #     INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
-  # ===============================================
-  # REGISTER FEATURES
-  # ===============================================
+  # # ===============================================
+  # # REGISTER FEATURES
+  # # ===============================================
 
-  run-register-pipelines:
-    name: Register features
-    uses: ./.github/workflows/_register-features.yaml
-    needs:
-      - run-repository-state
-      - run-keywords-project
-      - run-summarization-project
-      - run-gch-summarization-project
-      - run-sentiment-project
-      - run-ner-project
-      - run-lsh-project
-      - run-iptc-project
-      - run-topic-project
-      - run-get-core-dependencies-versions
+  # run-register-pipelines:
+  #   name: Register features
+  #   uses: ./.github/workflows/_register-features.yaml
+  #   needs:
+  #     - run-repository-state
+  #     - run-keywords-project
+  #     - run-summarization-project
+  #     - run-gch-summarization-project
+  #     - run-sentiment-project
+  #     - run-ner-project
+  #     - run-lsh-project
+  #     - run-iptc-project
+  #     - run-topic-project
+  #     - run-get-core-dependencies-versions
 
 
-    strategy:
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      matrix:
-        models:
-          - project: iptc
-            tag: ${{ needs.run-repository-state.outputs.tag }}
+  #   strategy:
+  #     fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+  #     matrix:
+  #       models:
+  #         - project: iptc
+  #           tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - project: topic
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-    with:
-      environment: prod
-      project: ${{ matrix.models.project }}
-      tag: ${{ matrix.models.tag }}
-      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
-      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main'}}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+  #         - project: topic
+  #           tag: ${{ needs.run-repository-state.outputs.tag }}
+  #   with:
+  #     environment: prod
+  #     project: ${{ matrix.models.project }}
+  #     tag: ${{ matrix.models.tag }}
+  #     python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+  #     poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+  #     release: ${{ needs.get-target-branch-name.outputs.name == 'main'}}
+  #     pull-request: ${{ github.event_name == 'pull_request' }}
+  #   secrets:
+  #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  #     AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # ===============================================
   # TRAIN MODELS
