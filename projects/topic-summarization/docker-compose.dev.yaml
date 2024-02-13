@@ -250,7 +250,7 @@ services:
     profiles: [unit]
     environment:
       HOST: test.onclusive.com
-      NAMESPACE: topic-summarization
+      NAMESPACE: topic_summarization
       VERSION: 1
       API_KEY: test
       SECURE: true
