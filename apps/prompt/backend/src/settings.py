@@ -8,12 +8,25 @@ from typing import Dict, List, Optional, Union
 # 3rd party libraries
 from pydantic import BaseSettings
 
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
+
 # Source
 from src.model.constants import ModelEnumChat, ModelEnumCompletions
 from src.prompt.constants import PromptEnum
 
 
-class Settings(BaseSettings):
+class GithubSettings(OnclusiveBaseSettings):
+    """Credentials for Github reposotory."""
+
+    github_token: SecretStr = Field(default="github_token", exclude=True)
+    github_url: str = "AirPR/ml-prompt-registry"
+
+    class Config:
+        env_prefix = "onclusiveml_prompt_repo_"
+
+
+class Settings(OnclusiveBaseSettings):
     """API configuration."""
 
     # Generic settings
@@ -67,8 +80,11 @@ class Settings(BaseSettings):
     DB_HOST: Optional[str] = None
     CORS_ORIGIN: List[str] = ["*"]
 
+    github_credentials: GithubSettings
+
 
 @lru_cache
 def get_settings() -> BaseSettings:
     """Returns instanciated Settings class."""
-    return Settings()
+    github_credentials = GithubSettings()
+    return Settings(github_credentials=github_credentials)
