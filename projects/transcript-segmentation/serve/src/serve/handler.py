@@ -73,6 +73,9 @@ class TranscriptSegmentationHandler:
             if segment_split[counter] in (word_text, temp):
                 matching_dicts.append(word)
                 counter += 1
+            else:
+                counter = 0
+                matching_dicts = []
 
         start_time = matching_dicts[0]["ts"]
         end_time = matching_dicts[-1]["ts"]
