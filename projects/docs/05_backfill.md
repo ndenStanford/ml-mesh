@@ -1,6 +1,6 @@
-# NER backfill
+# The `backfill` component
 
-Implementation of the NER model backfill container.
+This document outlines how to run your project's `backfill` component.
 
 
 ## Apache beam
@@ -53,14 +53,14 @@ make docker.build/beam-backfill
 to start the dev environment:
 
 ```
-make projects.start/ner COMPONENT=backfill
+make projects.start/${PROJECT_NAME} COMPONENT=backfill
 ```
 
 NOTE: the Flink task manager has a limited amount of resources, so it's also good practice to stop and restart the services periodically.
 
 
 ```
-make projects.stop/ner COMPONENT=backfill && make projects.start/ner COMPONENT=backfill
+make projects.stop/${PROJECT_NAME} COMPONENT=backfill && make projects.start/${PROJECT_NAME} COMPONENT=backfill
 ```
 
 #### Sending Kafka events

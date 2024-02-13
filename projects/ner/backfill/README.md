@@ -2,6 +2,10 @@
 
 Implementation of the NER model backfill container.
 
+For details on how to run and maintain the `ner` project, please refer
+to the
+- [the project README](../README.md)
+
 
 ## Apache beam
 

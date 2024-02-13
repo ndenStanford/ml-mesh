@@ -2,7 +2,13 @@
 
 projects.build/%: projects.set ## Build app
 	@echo "::group::Build $(notdir projects/$@)-$(COMPONENT) (system architecture)"
-	docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) $(DOCKER_FLAGS)
+	@if [ "$(COMPONENT)" = "backfill" ]; then \
+		$(MAKE) -f /home/ec2-user/ml-mesh/docker/makefile.mk docker.build/beam-backfill ENVIRONMENT=$(ENVIRONMENT); \
+		$(MAKE) projects.stop/$@ COMPONENT=backfill; \
+		$(MAKE) projects.start/$@ COMPONENT=backfill; \
+	else \
+		docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) $(DOCKER_FLAGS); \
+	fi
 	@echo "::endgroup::"
 
 projects.install/%:
@@ -48,8 +54,3 @@ projects.set:
 	export IMAGE_TAG=$(IMAGE_TAG)
 	export TARGET_BUILD_STAGE=$(TARGET_BUILD_STAGE)
 	export AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
-
-docker.build/%-backfill: ## Build project backfill
-	$(MAKE) -f /home/ec2-user/ml-mesh/docker/makefile.mk docker.build/beam-backfill ENVIRONMENT=$(ENVIRONMENT)
-	$(MAKE) projects.stop/$* COMPONENT=backfill
-	$(MAKE) projects.start/$* COMPONENT=backfill
