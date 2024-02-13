@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
 import requests
-from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -40,63 +39,58 @@ class TranscriptSegmentationHandler:
         response = response.replace("\n", "")
         return response
 
-    def get_timestamps_index(
-        self, json_response: Dict[str, str], sentence_transcript: List[Dict[str, Any]]
-    ) -> Tuple[Tuple[int, int], Tuple[int, int]]:
-        """Find start and end index of sentence-level transcript.
+    def find_timestamps_from_word_transcript(
+        self, segment: str, word_transcript: List[Dict[str, Any]]
+    ) -> Tuple[
+        Tuple[Union[int, float], Union[int, float]],
+        Tuple[Union[int, float], Union[int, float]],
+    ]:
+        """Find timestamps by comparing segment to word-level transcript.
 
         Args:
-            json_response (str): GPT response containing the  segment
-            sentence_transcript (List[Dict[str, Any]]): sentence-level transcript
+            segment (str): segment from GPT
+            word_transcript (List[Dict[str, Any]): Word-based transcript
 
         Returns:
-            Tuple[Tuple[int,int],Tuple[int,int]]: return original and offsetted start and end index
-                of segment
+            Tuple[
+                Tuple[Union[int, float], Union[int, float]],
+                Tuple[Union[int, float], Union[int, float]],
+            ]:The start and end timestamp of the segment and offsetted timestamps
         """
-        start_string = self.sentence_tokenizer.tokenize(
-            content=json_response[self.related_segment_key]
-        )["sentences"][0]
-        end_string = self.sentence_tokenizer.tokenize(
-            content=json_response[self.related_segment_key]
-        )["sentences"][-1]
-        max_similarity_start = 0
-        max_similarity_end = 0
-        start_index = 0
-        end_index = 0
-        for idx, item in enumerate(sentence_transcript):
-            sentence = item.get("content", "")
-            similarity = fuzz.ratio(start_string, sentence)
-            if similarity > max_similarity_start:
-                max_similarity_start = similarity
-                start_index = idx
+        matching_dicts = []
+        segment_split = segment.split()
+        counter = 0
 
-        for idx, item in enumerate(sentence_transcript):
-            sentence = item.get("content", "")
-            similarity = fuzz.ratio(end_string, sentence)
-            # in order to avoid capturing end time
-            if similarity > max_similarity_end and (
-                (idx > start_index)
-                or (start_string == end_string and idx == start_index)
-            ):
-                max_similarity_end = similarity
-                end_index = idx
+        for word in word_transcript:
+            if counter == len(segment_split):
+                break
 
-        # expand segment by adding extra sentences on both sides of segment
-        start_index_offsetted = start_index - settings.OFFSET_INDEX_BUFFER
-        end_index_offsetted = end_index + settings.OFFSET_INDEX_BUFFER
+            word_text = (
+                word["w"] or ""
+            )  # If word['w'] is None, replace with an empty string
 
-        # ensure the offsetted indexes do not go out of range
-        if start_index_offsetted < 0:
-            start_index_offsetted = 0
-        if end_index_offsetted > len(sentence_transcript) - 1:
-            end_index_offsetted = len(sentence_transcript) - 1
+            temp = word_text.lstrip(">")
+            if segment_split[counter] in (word_text, temp):
+                matching_dicts.append(word)
+                counter += 1
 
-        return ((start_index_offsetted, end_index_offsetted), (start_index, end_index))
+        start_time = matching_dicts[0]["ts"]
+        end_time = matching_dicts[-1]["ts"]
+        start_time_offsetted = start_time - 7000.0
+        end_time_offsetted = end_time + 5000.0
+
+        if start_time_offsetted < word_transcript[0]["ts"]:
+            start_time_offsetted = word_transcript[0]["ts"]
+
+        if end_time_offsetted > word_transcript[-1]["ts"]:
+            end_time_offsetted = word_transcript[-1]["ts"]
+
+        return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
     def postprocess(
         self,
         response: Union[str, Dict[str, str]],
-        sentence_transcript: List[Dict[str, Any]],
+        word_transcript: List[Dict[str, Any]],
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -106,7 +100,7 @@ class TranscriptSegmentationHandler:
 
         Args:
             response Union[str, Dict[str, str]]: Response from GPT model
-            sentence_transcript (List[Dict[str, Any]]): Sentence-level transcript
+            word_transcript (List[Dict[str, Any]): Word-based transcript
 
         Returns:
             Tuple[
@@ -140,19 +134,20 @@ class TranscriptSegmentationHandler:
             "n/a",
             "Nothing",
         ]:
-            start_time, end_time, start_time_offsetted, end_time_offsetted = 0, 0, 0, 0
+            start_time, end_time, start_time_offsetted, end_time_offsetted = (
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            )
         else:
             (
-                (start_index_offsetted, end_index_offsetted),
-                (start_index, end_index),
-            ) = self.get_timestamps_index(json_response, sentence_transcript)
-            # find timestamp from sentence level transcript
-            start_time_offsetted = sentence_transcript[start_index_offsetted][
-                "start_time"
-            ]
-            end_time_offsetted = sentence_transcript[end_index_offsetted]["end_time"]
-            start_time = sentence_transcript[start_index]["start_time"]
-            end_time = sentence_transcript[end_index]["end_time"]
+                (start_time, end_time),
+                (start_time_offsetted, end_time_offsetted),
+            ) = self.find_timestamps_from_word_transcript(
+                json_response[self.related_segment_key], word_transcript
+            )
+
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
@@ -301,7 +296,7 @@ class TranscriptSegmentationHandler:
             summary,
         ) = self.postprocess(
             response=json.loads(q.content)["generated"],
-            sentence_transcript=preprocessed_sentence_transcript,
+            word_transcript=word_transcript,
         )
 
         return (
