@@ -1051,16 +1051,24 @@ jobs       :
           # - project: ner
           #   sagemaker-runner-type: ml.m4.xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
-            model-id: [IPTC-00, IPTC-02, IPTC-03]
-            tag: ${{ needs.run-repository-state.outputs.tag }}
+          project: [iptc]
+
+
           # - project: gch-summarization
           #   sagemaker-runner-type: ml.m4.xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
           # - project: topic
           #   sagemaker-runner-type: ml.p3.2xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
+        include:
+          - project: iptc
+            model-id: IPTC-00
+          - project: iptc
+            model-id: IPTC-02
+          - project: iptc
+            model-id: IPTC-03
+          - tag: ${{ needs.run-repository-state.outputs.tag }}
+          - sagemaker-runner-type: ml.m4.xlarge
 
     with:
       environment: prod
