@@ -101,59 +101,59 @@ jobs       :
           if_false: ${{ github.ref_name }}
 
 
-  # # ===============================================
-  # # TEST LIBS
-  # # ===============================================
+  # ===============================================
+  # TEST LIBS
+  # ===============================================
 
-  # run-libs-tests:
-  #   name: Library
-  #   uses: ./.github/workflows/_libs.yaml
-  #   needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
+  run-libs-tests:
+    name: Library
+    uses: ./.github/workflows/_libs.yaml
+    needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
-  #   strategy:
-  #     max-parallel: 10
-  #     fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
-  #     matrix:
-  #       libs:
-  #         - name: core
-  #           integration: false
-  #           functional: false
+    strategy:
+      max-parallel: 10
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        libs:
+          - name: core
+            integration: false
+            functional: false
 
-  #         - name: compile
-  #           integration: false
-  #           functional: false
+          - name: compile
+            integration: false
+            functional: false
 
-  #         - name: models
-  #           integration: false
-  #           functional: false
+          - name: models
+            integration: false
+            functional: false
 
-  #         - name: serving
-  #           integration: false
-  #           functional: false
+          - name: serving
+            integration: false
+            functional: false
 
-  #         - name: tracking
-  #           integration: false
-  #           functional: false # TODO: turn this to true when self hosted runners are available.
+          - name: tracking
+            integration: false
+            functional: false # TODO: turn this to true when self hosted runners are available.
 
-  #         - name: nlp
-  #           integration: false
-  #           functional: false
+          - name: nlp
+            integration: false
+            functional: false
 
-  #         - name: hashing
-  #           integration: false
-  #           functional: false
+          - name: hashing
+            integration: false
+            functional: false
 
-  #         - name: data
-  #           integration: false
-  #           functional: false
+          - name: data
+            integration: false
+            functional: false
 
-  #   with:
-  #     lib: ${{ matrix.libs.name }}
-  #     integration: ${{ matrix.libs.integration }}
-  #     functional: ${{ matrix.libs.functional }}
-  #     python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
-  #     poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-  #     release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+    with:
+      lib: ${{ matrix.libs.name }}
+      integration: ${{ matrix.libs.integration }}
+      functional: ${{ matrix.libs.functional }}
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
   # ===============================================
   # DOCKER
