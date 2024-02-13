@@ -27,3 +27,21 @@ def get_query_results(
         texts.append(results["hits"]["hits"][k]["_source"]["content"])
         list_scores.append(results["hits"]["hits"][k]["_score"])
     return (texts, list_scores)
+
+
+def remove_duplicates(doc_list: List[Optional[str]]) -> List[Optional[str]]:
+    """Returns duplicate documents from a list of documents.
+
+    Args:
+        doc_list (list): A list of documents.
+
+    Returns:
+        list: A list of unique documents.
+    """
+    processed_docs = [
+        doc.lower().strip() if doc is not None else None for doc in doc_list
+    ]
+
+    unique_docs = list(set(processed_docs))
+
+    return unique_docs

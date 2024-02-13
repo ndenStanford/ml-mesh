@@ -12,6 +12,7 @@ from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
+from src.serve.constants import SAMPLE_INFERENCE
 from src.serve.schemas import (
     BioResponseSchema,
     PredictRequestSchema,
@@ -66,6 +67,7 @@ class ServedSummarizationModel(ServedModel):
         self.model_card = self.served_model_artifacts.model_card
 
         self.ready = True
+        self.sample_inference()
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded summarization model.
@@ -103,3 +105,8 @@ class ServedSummarizationModel(ServedModel):
             namespace=self.name,
             attributes={"model_name": self.name, "model_card": self.model_card},
         )
+
+    def sample_inference(self) -> None:
+        """Make inference after model loading."""
+        for lang, sample in SAMPLE_INFERENCE.items():
+            self.model(text=sample, language=lang)
