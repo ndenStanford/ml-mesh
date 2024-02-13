@@ -14,7 +14,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 router = APIRouter(
-    prefix="/v2/projects",
+    prefix="/v2/prompts",
 )
 
 access_token = settings.github_credentials.github_token
