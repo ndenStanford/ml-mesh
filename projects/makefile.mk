@@ -4,8 +4,6 @@ projects.build/%: projects.set ## Build app
 	@echo "::group::Build $(notdir projects/$@)-$(COMPONENT) (system architecture)"
 	@if [ "$(COMPONENT)" = "backfill" ]; then \
 		$(MAKE) -f /home/ec2-user/ml-mesh/docker/makefile.mk docker.build/beam-backfill ENVIRONMENT=$(ENVIRONMENT); \
-		$(MAKE) projects.stop/$@ COMPONENT=backfill; \
-		$(MAKE) projects.start/$@ COMPONENT=backfill; \
 	else \
 		docker compose -f ./projects/$(notdir projects/$@)/docker-compose.$(ENVIRONMENT).yaml build $(COMPONENT) $(DOCKER_FLAGS); \
 	fi

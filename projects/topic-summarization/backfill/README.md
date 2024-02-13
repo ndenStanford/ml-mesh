@@ -1,7 +1,10 @@
-# NER backfill
+# Topic-summarization backfill
 
-Implementation of the NER model backfill container.
+Implementation of the Topic-summarization model backfill container.
 
+For details on how to run and maintain the `topic-summarization` project, please refer
+to the
+- [the project README](../README.md)
 
 ## Apache beam
 
