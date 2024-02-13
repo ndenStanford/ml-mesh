@@ -13,7 +13,7 @@ openai = "1.3.4"
 python-slugify = "8.0.1"
 redis = "4.5.5"
 python-redis-cache = "2.1.2"
-PyGithub = 2.2.0
+PyGithub = "2.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
