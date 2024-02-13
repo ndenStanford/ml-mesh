@@ -122,7 +122,7 @@ jobs:
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
             --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
-            --aws-environment prod \
+            --aws-environment stage \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
             --project-name ${{ inputs.project }} \
