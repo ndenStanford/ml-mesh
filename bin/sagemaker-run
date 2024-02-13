@@ -196,8 +196,8 @@ def project_train(
                 'projects',
                 project_name,
                 project_component,
-                model_id,
                 'config',
+                model_id,
                 'prod.env'
             )
 
