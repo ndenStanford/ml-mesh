@@ -23,6 +23,7 @@ import json
 
 p = Producer({"bootstrap.servers": "localhost:9094"})
 p.produce("beam-input", key="identifier", value=json.dumps({"content": "Google is a tech company", "language": "en"}))
+p.flush()
 ```
 
 and check if the enriched document is available in the target topic as follows:
