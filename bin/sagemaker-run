@@ -180,7 +180,7 @@ def project_train(
 
             if os.path.isfile(probable_dotenv):
                 click.echo(
-                    "No dotenv configuration provided. Falling back on likely candidate "
+                    "No dotenv configuration provided. Combine the input to get env file path "
                     f"{probable_dotenv}"
                 )
                 run_configuration_env_vars = dotenv_values(probable_dotenv)
@@ -203,7 +203,7 @@ def project_train(
 
             if os.path.isfile(probable_dotenv):
                 click.echo(
-                    "No dotenv configuration provided. Falling back on likely candidate "
+                    "No dotenv configuration provided. Combine the input to get env file path "
                     f"{probable_dotenv}"
                 )
                 run_configuration_env_vars = dotenv_values(probable_dotenv)
