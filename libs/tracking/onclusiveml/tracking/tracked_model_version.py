@@ -545,7 +545,7 @@ class TrackedModelVersion(ModelVersion):
         s3_client = self.get_s3_bucket_client(s3_bucket)
 
         logger.debug(
-            f"Downloading file {tracked_file_s3_prefix} to local path {local_file_path}"
+            f"Downloading {tracked_file_s3_prefix} to local {local_file_path} bucket {s3_bucket}"
         )
 
         s3_client.download_file(tracked_file_s3_prefix, local_file_path)
