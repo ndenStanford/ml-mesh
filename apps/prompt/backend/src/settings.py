@@ -6,7 +6,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic import Field, SecretStr
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -84,7 +84,7 @@ class Settings(OnclusiveBaseSettings):
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> Settings:
     """Returns instanciated Settings class."""
     github_credentials = GithubSettings()
     return Settings(github_credentials=github_credentials)
