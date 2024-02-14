@@ -39,7 +39,6 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # download model artifact
-
     base_model_version.download_directory_from_model_version(
         local_directory_path=model_card.local_output_dir,
         neptune_attribute_path=base_model_card["model_artifact_attribute_path"],
