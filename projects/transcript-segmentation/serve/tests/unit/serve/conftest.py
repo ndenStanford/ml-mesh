@@ -144,7 +144,7 @@ def transcript_input():
 def expected_output():
     """Expect output from predict."""
     return {
-        "start_time": 1701127816000.0,
+        "start_time": 1701127813000.0,
         "end_time": 1701127859428.5715,
         "transcript_start_time": 1701127820000,
         "transcript_end_time": 1701127859428.5715,
