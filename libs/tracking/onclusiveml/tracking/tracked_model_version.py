@@ -539,9 +539,7 @@ class TrackedModelVersion(ModelVersion):
         neptune_artifact = neptune_attribute.fetch_files_list()[0]
         tracked_file_s3_uri = neptune_artifact.metadata["location"]
         tracked_file_s3_prefix = tracked_file_s3_uri.replace(f"s3://{s3_bucket}/", "")
-        logger.info(
-            f"Downloading {tracked_file_s3_prefix} to local {local_file_path} bucket {s3_bucket}"
-        )
+
         s3_client = self.get_s3_bucket_client(s3_bucket)
 
         logger.debug(

@@ -1044,37 +1044,38 @@ jobs       :
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
-
+        models:
           # - project: keywords
           #   sagemaker-runner-type: ml.m4.xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
           # - project: ner
           #   sagemaker-runner-type: ml.m4.xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
-        project: [iptc]
-
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            model-id: IPTC-00
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            model-id: IPTC-02
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            model-id: IPTC-03
           # - project: gch-summarization
           #   sagemaker-runner-type: ml.m4.xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
           # - project: topic
           #   sagemaker-runner-type: ml.p3.2xlarge
           #   tag: ${{ needs.run-repository-state.outputs.tag }}
-        include:
-          - project: iptc
-            model-id: IPTC-00
-          - project: iptc
-            model-id: IPTC-02
-          - project: iptc
-            model-id: IPTC-03
-          - sagemaker-runner-type: ml.m4.xlarge
-          - tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
       environment: prod
-      project: ${{ matrix.project }}
-      sagemaker-runner-type: ${{ matrix.sagemaker-runner-type }}
-      tag: ${{ matrix.tag }}
-      model-id: ${{ matrix.model-id || ''}}
+      project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+      tag: ${{ matrix.models.tag }}
+      model-id: ${{ matrix.models.model-id || ''}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
