@@ -39,6 +39,7 @@ class FeatureStoreHandle:
         data_source: DataSource = None,
         data_id_key: str = "entity_key",
         data_ids: List[str] = ["1", "2"],
+        limit: str = "1000",
     ):
 
         self.feast_config_bucket = feast_config_bucket
@@ -57,6 +58,7 @@ class FeatureStoreHandle:
         self.data_source = data_source
         self.data_id_key = data_id_key
         self.data_ids = data_ids
+        self.limit = limit
 
     def initialize(self) -> None:
         """Initializes feature store registry.
@@ -184,6 +186,9 @@ class FeatureStoreHandle:
                         FROM {self.fs.get_data_source(self.data_source).get_table_query_string()}
                         WHERE event_timestamp < CURRENT_TIMESTAMP
                     """
+
+        if self.limit != "-1":
+            self.entity_sql += f" LIMIT {self.limit}"
 
         return self.fs.get_historical_features(
             entity_df=self.entity_sql,
