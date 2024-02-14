@@ -192,7 +192,7 @@ services:
     network_mode: service:taskmanager
     environment:
       HOST: internal.api.ml.stage.onclusive.com
-      NAMESPACE: topic_summarization
+      NAMESPACE: topic-summarization
       VERSION: 1
       API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
       SECURE: true
@@ -222,7 +222,7 @@ services:
     profiles: [unit]
     environment:
       HOST: test.onclusive.com
-      NAMESPACE: topic_summarization
+      NAMESPACE: topic-summarization
       VERSION: 1
       API_KEY: test
       SECURE: true

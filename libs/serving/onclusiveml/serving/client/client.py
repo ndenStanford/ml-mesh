@@ -69,7 +69,6 @@ class OnclusiveApiClient:
 
     def __getitem__(self, model: str) -> Any:
         """Dictionary like behaviour to access specific API."""
+        model = model.replace("-", "_")
         model_attr = getattr(self, model)
-        if hasattr(model_attr, "namespace"):
-            model_attr.namespace = model_attr.namespace.replace("-", "_")
         return model_attr
