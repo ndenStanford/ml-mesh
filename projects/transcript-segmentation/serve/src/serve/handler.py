@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
 import requests
+from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -57,28 +58,46 @@ class TranscriptSegmentationHandler:
                 Tuple[Union[int, float], Union[int, float]],
             ]:The start and end timestamp of the segment and offsetted timestamps
         """
-        matching_dicts = []
+        # Filter out entries with None values
+        word_transcript_filtered = [i for i in word_transcript if i["w"] is not None]
+
+        # Extract first and last portions of the segment
         segment_split = segment.split()
-        counter = 0
 
-        for word in word_transcript:
-            if counter == len(segment_split):
-                break
+        THRESHOLD = 20
 
-            word_text = (
-                word["w"] or ""
-            )  # If word['w'] is None, replace with an empty string
+        first_portion = " ".join(segment_split[:THRESHOLD]).lstrip(">")
+        last_portion = " ".join(segment_split[-THRESHOLD:]).lstrip(">")
 
-            temp = word_text.lstrip(">")
-            if segment_split[counter] in (word_text, temp):
-                matching_dicts.append(word)
-                counter += 1
-            else:
-                counter = 0
-                matching_dicts = []
+        # Find the most compatible sublists that matches the portions from the segment
+        max_similarity_start = 0
+        max_similarity_end = 0
+        best_portion_start = []
+        best_portion_end: List[Dict[str, Any]] = []
 
-        start_time = matching_dicts[0]["ts"]
-        end_time = matching_dicts[-1]["ts"]
+        for i in range(len(word_transcript_filtered) - (THRESHOLD - 1)):
+            candidate_list = word_transcript_filtered[i : i + THRESHOLD]  # noqa: E203
+            candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
+
+            similarity_start = fuzz.ratio(candidate, first_portion)
+            similarity_end = fuzz.ratio(candidate, last_portion)
+
+            if (
+                similarity_start > max_similarity_start
+                and best_portion_end != candidate_list
+            ):
+                max_similarity_start = similarity_start
+                best_portion_start = candidate_list
+
+            if (
+                similarity_end > max_similarity_end
+                and best_portion_start != candidate_list
+            ):
+                max_similarity_end = similarity_end
+                best_portion_end = candidate_list
+
+        start_time = best_portion_start[0]["ts"]
+        end_time = best_portion_end[-1]["ts"]
         start_time_offsetted = start_time - 7000.0
         end_time_offsetted = end_time + 5000.0
 
