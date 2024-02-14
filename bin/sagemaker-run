@@ -69,7 +69,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     type=str,
     default=None,
     show_default=True,
-    help="Model-id for iptc multi model"
+    help="Model-id for projects with multiple sub models"
 )
 @click.option(
     '--image-tag',

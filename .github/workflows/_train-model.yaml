@@ -18,7 +18,7 @@ on  :
       model-id:
         required: false
         type: string
-        description: Model-id for iptc multi model
+        description: Model-id for projects with multiple sub models
       sagemaker-runner-type:
         required: true
         default: ml.m4.xlarge # non-gpu
