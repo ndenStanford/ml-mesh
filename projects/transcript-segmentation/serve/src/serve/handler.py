@@ -101,11 +101,11 @@ class TranscriptSegmentationHandler:
         start_time_offsetted = start_time - 7000.0
         end_time_offsetted = end_time + 5000.0
 
-        if start_time_offsetted < word_transcript[0]["ts"]:
-            start_time_offsetted = word_transcript[0]["ts"]
+        if start_time_offsetted < word_transcript_filtered[0]["ts"]:
+            start_time_offsetted = word_transcript_filtered[0]["ts"]
 
-        if end_time_offsetted > word_transcript[-1]["ts"]:
-            end_time_offsetted = word_transcript[-1]["ts"]
+        if end_time_offsetted > word_transcript_filtered[-1]["ts"]:
+            end_time_offsetted = word_transcript_filtered[-1]["ts"]
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
