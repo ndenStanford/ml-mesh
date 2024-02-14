@@ -1,20 +1,29 @@
 ## PROJECTS TARGETS
 
-ifeq ($(WITH_DOCKER),true)
-	START_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate --attach-dependencies
-else
-	START_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ & python -m src.$(COMPONENT)
-	ifeq ($(COMPONENT),serve)
-		ifeq ($(notdir $@), keywords)
-			START_CMD +=.model_server
-		else ifeq ($(notdir $@), lsh)
-			START_CMD +=.model_server
-		else ifeq ($(notdir $@), transcript-segmentation)
-			START_CMD +=.server
-		else
-			START_CMD +=.__main__
-		endif
+# Build start and test commands
+ifeq ($(WITHOUT_DOCKER),true)
+	BASE_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ && python3 -m src
+	ifeq ($(COMPONENT),ingest)
+		START_CMD = $(BASE_CMD).$(COMPONENT)
+	else ifeq ($(COMPONENT),register)
+		START_CMD = $(BASE_CMD).$(COMPONENT)_features
+	else ifneq (,$(filter $(COMPONENT), compile train)) # OR condition
+		START_CMD = $(BASE_CMD).$(COMPONENT)_model
+	else ifeq ($(COMPONENT),serve)
+		START_CMD = $(BASE_CMD).$(COMPONENT).__main__
 	endif
+	UNIT_TEST_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ && python3 -m pytest tests/unit -ra -vv --capture=no
+	INTEGRATION_TEST_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ && python3 -m pytest tests/integration -ra -vv --capture=no
+	FUNCTIONAL_TEST_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ && python3 -m pytest tests/functional -ra -vv --capture=no
+	LOAD_TEST_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ && python3 -m pytest tests/load -ra -vv --capture=no
+else
+	START_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT) --exit-code-from $(COMPONENT) --force-recreate --attach-dependencies
+	UNIT_TEST_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit --force-recreate --attach-dependencies
+	INTEGRATION_TEST_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up $(COMPONENT)-integration --exit-code-from $(COMPONENT)-integration --force-recreate --attach-dependencies
+	FUNCTIONAL_TEST_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile functional up $(COMPONENT)-functional --exit-code-from $(COMPONENT)-functional --force-recreate --attach-dependencies\
+		&& docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
+	LOAD_TEST_CMD = docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile load up $(COMPONENT)-load --exit-code-from $(COMPONENT)-load --force-recreate\
+		&& docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 endif
 
 projects.build/%: projects.set ## Build app
@@ -34,32 +43,32 @@ projects.start/%: # Run main task of component in container
 projects.run/%: # Run auxiliary task of component in container
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up $(COMPONENT)-$(TASK) --exit-code-from $(COMPONENT)-$(TASK) --attach-dependencies
 
-projects.stop/%: # Start development container of component
+projects.stop/%: # Stop development container of component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 
 projects.test/%: projects.unit/% projects.integration/% ## Run all tests for project component
 	echo "Running all tests."
 
 projects.unit/%: projects.set ## Run unit tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit --force-recreate --attach-dependencies
+	$(UNIT_TEST_CMD)
 
 projects.integration/%: ## Run integration tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up $(COMPONENT)-integration --exit-code-from $(COMPONENT)-integration --force-recreate --attach-dependencies
+	$(INTEGRATION_TEST_CMD)
 
 projects.functional/%: ## Run functional tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile functional up $(COMPONENT)-functional --exit-code-from $(COMPONENT)-functional --force-recreate --attach-dependencies
-
-	# ensure dependency service(s) shuts down
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
+	$(FUNCTIONAL_TEST_CMD)
 
 projects.load/%: ## Run load tests for project component
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile load up $(COMPONENT)-load --exit-code-from $(COMPONENT)-load --force-recreate
-
-	# ensure dependency service(s) shuts down
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
+	$(LOAD_TEST_CMD)
 
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)
+
+projects.env/%:
+	poetry env info --directory=projects/$(notdir $@)/$(COMPONENT)
+
+projects.activate/%:
+	poetry shell --directory=projects/$(notdir $@)/$(COMPONENT)
 
 projects.set:
 	export IMAGE_TAG=$(IMAGE_TAG)
