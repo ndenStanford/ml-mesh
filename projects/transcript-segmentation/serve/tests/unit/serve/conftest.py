@@ -146,6 +146,8 @@ def expected_output():
     return {
         "start_time": 1701127816000.0,
         "end_time": 1701127859428.5715,
+        "transcript_start_time": 1701127820000,
+        "transcript_end_time": 1701127859428.5715,
     }
 
 
