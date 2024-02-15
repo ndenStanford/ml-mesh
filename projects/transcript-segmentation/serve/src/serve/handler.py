@@ -113,7 +113,7 @@ class TranscriptSegmentationHandler:
                 Tuple[Union[int, float], Union[int, float]],
                 Tuple[Union[int, float], Union[int, float]],
                 Optional[str],
-            ]:The start and end timestamp of the segment and the segment summary.
+            ]:The start and end timestamp of the segment and the segment title.
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
@@ -156,7 +156,7 @@ class TranscriptSegmentationHandler:
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
-            json_response.get("Segment summary"),
+            json_response.get("Segment title"),
         )
 
     def preprocess_transcript(
@@ -273,7 +273,7 @@ class TranscriptSegmentationHandler:
                 Tuple[Union[int, float], Union[int, float]],
                 Tuple[Union[int, float], Union[int, float]],
                 Optional[str],
-            ]: Timestamps of the segment based on keywords and segment summary.
+            ]: Timestamps of the segment based on keywords and segment title.
         """
         # preprocess
         preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
@@ -298,7 +298,7 @@ class TranscriptSegmentationHandler:
         (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
-            summary,
+            title,
         ) = self.postprocess(
             response=json.loads(q.content)["generated"],
             sentence_transcript=preprocessed_sentence_transcript,
@@ -307,5 +307,5 @@ class TranscriptSegmentationHandler:
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
-            summary,
+            title,
         )
