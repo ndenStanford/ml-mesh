@@ -19,6 +19,14 @@ on  :
         required: true
         type: string
         description: Version tag of image.
+      model-id:
+        required: false
+        type: string
+        description: Model-id for projects with multiple sub models
+      model-version:
+        required: false
+        type: string
+        description: Model-version for projects with multiple sub models
       download-model:
         required: false
         default: false
@@ -184,6 +192,8 @@ jobs:
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
+            MODEL_ID="${{ inputs.model-id }}"
+            MODEL_VERSION="${{ inputs.model-version }}"
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"

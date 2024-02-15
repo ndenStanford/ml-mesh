@@ -38,13 +38,16 @@ CLASS_DICT_FIRST = {
     }
 }
 
+MODEL_ID = os.environ["MODEL_ID"]
+MODEL_VERSION = os.environ["MODEL_VERSION"]
+
 
 # --- settings classes
 class TrackedIPTCModelSpecs(TrackedModelSpecs):
     """Tracked iptc model settings."""
 
-    project: str = os.environ["PROJECT_NAME"]
-    model = os.environ["MODEL"]
+    project: str = f"onclusive/iptc-{MODEL_ID}"
+    model = f"IP{MODEL_ID}-TRAINED"
 
     class Config:
         env_file = "config/dev.env"
@@ -54,11 +57,11 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
 class BaseTrackedModelSpecs(TrackedModelSpecs):
     """Trained model settings."""
 
-    project: str = os.environ["PROJECT_NAME"]
-    model: str = os.environ["BASE_MODEL"]
+    project: str = f"onclusive/iptc-{MODEL_ID}"
+    model: str = f"IP{MODEL_ID}-BASE"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = os.environ["BASE_MODEL_ID"]
+    with_id: str = f"onclusive/iptc-{MODEL_ID}-{MODEL_VERSION}"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 

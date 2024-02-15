@@ -19,6 +19,10 @@ on  :
         required: false
         type: string
         description: Model-id for projects with multiple sub models
+      model-version:
+        required: false
+        type: string
+        description: Model-version for projects with multiple sub models
       sagemaker-runner-type:
         required: true
         default: ml.m4.xlarge # non-gpu
@@ -128,7 +132,7 @@ jobs:
             --project-name ${{ inputs.project }} \
             --project-component train \
             --image-tag ${{ inputs.tag }} \
-            --model-id ${{ inputs.model-id }} \
+            --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
             python -m src.train_model

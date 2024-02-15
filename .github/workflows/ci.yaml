@@ -655,6 +655,8 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            model-id: 00000000
+            model-version: 1
 
           # compile
           - name: compile
@@ -680,6 +682,8 @@ jobs       :
       environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
+      model-id: ${{ matrix.components.model-id || ''}}
+      model-version: ${{ matrix.components.model-version || ''}}
       download-model: ${{ matrix.components.download-model }}
       integration: ${{ matrix.components.integration }}
       functional: ${{ matrix.components.functional }}
@@ -1054,15 +1058,18 @@ jobs       :
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            model-id: IPTC-00
+            model-id: 00000000
+            model-version: 1
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            model-id: IPTC-02
+            model-id: 02000000
+            model-version: 1
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            model-id: IPTC-03
+            model-id: 03000000
+            model-version: 1
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1076,6 +1083,7 @@ jobs       :
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
       model-id: ${{ matrix.models.model-id || ''}}
+      model-version: ${{ matrix.models.model-version || ''}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
