@@ -248,7 +248,7 @@ def expected_response():
                 "end_time": 1701127859428.5715,
                 "transcript_start_time": 1701127820000.0,
                 "transcript_end_time": 1701127859428.5715,
-                "summary": None,
+                "title": None,
             },
         },
     }
