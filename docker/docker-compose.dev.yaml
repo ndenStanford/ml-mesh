@@ -12,11 +12,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: python-base
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG}
 
   # ===========================================================
   # FASTAPI SERVE
@@ -29,10 +29,10 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: fastapi-serve
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
     depends_on:
       - python-base
 
@@ -46,12 +46,12 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         CUDA_VERSION: 11.7.1
         PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: gpu-base
         IMAGE_TAG: ${IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
 
   gpu-base-tests:
     deploy:
@@ -72,7 +72,7 @@ services:
         source: gpu-base/tests
         target: /docker/gpu-base/tests
     command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
 
   # ===========================================================
   # GPU TRAIN
@@ -84,10 +84,10 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: gpu-train
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
 
   gpu-train-tests:
     deploy:
@@ -108,7 +108,7 @@ services:
         source: gpu-train/tests
         target: /docker/gpu-train/tests
     command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
 
   # ===========================================================
   # NEURON COMPILE
@@ -121,27 +121,34 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: neuron-compile
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
+    depends_on:
+      - python-base
 
   neuron-compile-tests:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: neuron-compile/tests/core
-        target: /docker/neuron-compile/tests/core
+        source: neuron-compile/tests
+        target: /docker/neuron-compile/tests
     environment:
-      NEURON_COMPILE_OUTPUT_DIR: tests/output_compile # must match the "neuron-compile/{...}" suffix of the volume bind
+      NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile #  ~ /docker/neuron-compile/tests/output_compile in container
     command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
+    depends_on:
+      - neuron-compile
 
   # ===========================================================
   # NEURON INFERENCE
   # ===========================================================
 
+  # NOTE: The neuron-inference image generates its own neuron compiled artifacts during the build
+  # stage, which it picks up when running the tests. The /docker/neuron-inference/tests/input_inference
+  # container directory must not be overriden by bind mounts.
   neuron-inference:
     build:
       context: ..
@@ -149,11 +156,13 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: neuron-inference
-        NEURON_COMPILE_OUTPUT_DIR: tests/input_inference
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
+        NEURON_COMPILE_OUTPUT_DIR: tests/input_inference # /docker/neuron-inference/tests/input_inference in container
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
+    depends_on:
+      - python-base
 
   neuron-inference-tests:
     devices:
@@ -163,9 +172,11 @@ services:
         source: neuron-inference/tests/core
         target: /docker/neuron-inference/tests/core
     environment:
-      NEURON_COMPILE_OUTPUT_DIR: tests/input_inference/ # must match the "neuron-inference/{...}" suffix of volume bind
+      NEURON_COMPILE_OUTPUT_DIR: ./tests/input_inference # must match the "NEURON_COMPILE_OUTPUT_DIR" build argument, i.e. /docker/neuron-inference/tests/input_inference in container
     command: [pytest, tests/core, -ra, -vv, --capture=no, -m, inference]
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
+    depends_on:
+      - neuron-inference
 
   # ===========================================================
   # KUBEFLOW JUPYTER
@@ -178,12 +189,14 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-jupyter
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
     ports:
       - 8888:8888
+    depends_on:
+      - python-base
 
   # ===========================================================
   # KUBEFLOW TORCH CPU
@@ -196,12 +209,14 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-cpu
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
     ports:
       - 8888:8888
+    depends_on:
+      - kubeflow-jupyter
 
   # ===========================================================
   # KUBEFLOW DATA SCIENCE
@@ -214,12 +229,14 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-data-science
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     ports:
       - 8888:8888
+    depends_on:
+      - kubeflow-torch-cpu
 
   # ===========================================================
   # KUBEFLOW TORCH GPU
@@ -232,10 +249,10 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-gpu
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     ports:
       - 8888:8888
 
@@ -250,13 +267,13 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: dask-base
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
 
   dask-scheduler:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
     ports:
       - 8786:8786
       - 8787:8787
@@ -265,7 +282,7 @@ services:
       - dask-base
 
   dask-worker:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/dask-base:${IMAGE_TAG}
     hostname: dask-worker
     command: [dask-worker, tcp://scheduler:8786]
     depends_on:
@@ -282,9 +299,44 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-inf
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     ports:
       - 8888:8888
+
+  # ===========================================================
+  # BEAM BACKFILL
+  # ===========================================================
+
+  beam-backfill:
+    build:
+      context: ..
+      dockerfile: ./docker/beam-backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: beam-backfill
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/beam-backfill:${IMAGE_TAG}
+
+  # ===========================================================
+  # BEAM WORKER
+  # ===========================================================
+
+  beam-worker:
+    stdin_open: true
+    tty: true
+    entrypoint: [/bin/bash]
+    build:
+      context: ..
+      dockerfile: ./docker/beam-worker/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        IMAGE_TAG: ${IMAGE_TAG}
+        IMAGE_NAME: beam-worker
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/beam-worker:${IMAGE_TAG}

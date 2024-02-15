@@ -15,9 +15,9 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.option(
     '--aws-account-id',
-    default='063759612765',
+    default='690763002009',
     show_default=True,
-    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `063759612765`."""
+    help="""The ID of the context AWS account. Defaults to `dev` AWS account id `690763002009`."""
 )
 @click.option(
     '--aws-region',
@@ -88,6 +88,13 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     help="""[Optional]: The neptune AI model registry authentication token required for every model
         registry interaction. Will be injected into the container at runtime."""
 )
+@click.option(
+    '--save_artifact',
+    type=str,
+    default=False,
+    show_default=True,
+    help="""[Optional]: Whether training should be run with the full intended size of dataset and artifact be saved to neptune. Will be injected into the container at runtime."""
+)
 @click.argument(
     'container-entry-point',
     nargs=-1,
@@ -104,6 +111,7 @@ def project_train(
     image_tag: str,
     run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
+    save_artifact: bool,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
@@ -175,15 +183,16 @@ def project_train(
             )
             run_configuration_env_vars = {}
 
-    click.echo(f"Using run configuration environment variables {run_configuration_env_vars}")
-
     # env var based ci spec
     github_action_env_vars = TrackedGithubActionsSpecs().dict()
 
     # add neptune api token and github action specs to run spec to create env var spec
     all_env_vars = {**run_configuration_env_vars,
                     **github_action_env_vars,
-                    **{'NEPTUNE_API_TOKEN':neptune_api_token}}
+                    **{'NEPTUNE_API_TOKEN':neptune_api_token},
+                    **{'SAVE_ARTIFACT':save_artifact}}
+
+    click.echo(f"Using run configuration environment variables {all_env_vars}")
 
     click.echo(f"Using container entry point: {container_entry_point}")
 

@@ -228,7 +228,7 @@ def test_payload():
                     {"ts": 1701127858857.1428, "w": "OpenAI's", "index": 107},
                     {"ts": 1701127859428.5715, "w": "ChatGPT-4,", "index": 108},
                 ],
-                "keyword": "OpenAI",
+                "keywords": ["Ai"],
             },
             "parameters": {},
         }
@@ -244,14 +244,11 @@ def expected_response():
             "identifier": None,
             "namespace": "transcript-segmentation",
             "attributes": {
-                "segmented_transcript": [
-                    {
-                        "start_time": 1701127839000.0,
-                        "content": "I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now.",  # noqa
-                    }
-                ],
-                "output_truncated": False,
-                "input_truncated": False,
+                "start_time": 1701127816000.0,
+                "end_time": 1701127859428.5715,
+                "transcript_start_time": 1701127820000.0,
+                "transcript_end_time": 1701127859428.5715,
+                "summary": None,
             },
         },
     }

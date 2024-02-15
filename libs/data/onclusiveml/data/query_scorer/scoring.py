@@ -13,7 +13,10 @@ from sklearn.metrics.pairwise import pairwise_distances  # noqa
 
 # Internal libraries
 from onclusiveml.data.query_scorer.clustering import hdbscan_clustering
-from onclusiveml.data.query_scorer.get_articles import get_query_results
+from onclusiveml.data.query_scorer.get_articles import (
+    get_query_results,
+    remove_duplicates,
+)
 from onclusiveml.data.query_scorer.settings import get_settings
 
 
@@ -323,6 +326,7 @@ def evaluate_query(
          Quality scores, inputs, embeddings, and cluster labels.
     """
     inputs, list_scores = get_query_results(es, es_index, query)
+    inputs = remove_duplicates(inputs)
 
     embeddings, cluster_labels = hdbscan_clustering(
         inputs=inputs,
@@ -331,9 +335,9 @@ def evaluate_query(
         tfidf_max_features=clustering_config.tfidf_max_features,
         dimension_reduction_method=clustering_config.dimension_reduction_method,
         n_components=clustering_config.n_components,
-        umap_n_neighbors=clustering_config.umap_n_neighbors,
+        umap_n_neighbors_weight=clustering_config.umap_n_neighbors_weight,
         umap_min_dist=clustering_config.umap_min_dist,
-        hdbscan_min_cluster_size=clustering_config.hdbscan_min_cluster_size,
+        hdbscan_min_cluster_size_weight=clustering_config.hdbscan_min_cluster_size_weight,
         gen_min_span_tree=clustering_config.gen_min_span_tree,
         hdbscan_algorithm=clustering_config.hdbscan_algorithm,
         hdbscan_metric=clustering_config.hdbscan_metric,

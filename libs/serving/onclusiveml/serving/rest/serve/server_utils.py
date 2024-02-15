@@ -63,6 +63,7 @@ def get_model_server_urls(
     model_bio_url = os.path.join(root_url, served_model_methods.bio)
     docs_url = os.path.join(root_url, "docs")
     redoc_url = os.path.join(root_url, "redoc")
+    openapi_url = os.path.join(root_url, "openapi.json")
     # dump into url data model with auto validation
     model_server_urls = ModelServerURLs(
         root=root_url,
@@ -72,6 +73,7 @@ def get_model_server_urls(
         model_bio=model_bio_url,
         docs=docs_url,
         redoc=redoc_url,
+        openapi=openapi_url,
     )
 
     return model_server_urls
@@ -100,6 +102,7 @@ def get_liveness_router(
     model: ServedModel,
     betterstack_settings: BetterStackSettings,
     api_version: str = "v1",
+    test_inference: bool = False,
 ) -> Callable:
     """Utility for a consistent liveness probe endpoint.
 
@@ -132,6 +135,9 @@ def get_liveness_router(
         status_code=status.HTTP_200_OK,
     )
     async def live() -> LivenessProbeResponse:
+        if test_inference:
+            model.sample_inference()
+
         if betterstack_settings.enable:
 
             requests.post(betterstack_settings.full_url)
@@ -141,7 +147,9 @@ def get_liveness_router(
     return liveness_router
 
 
-def get_readiness_router(model: ServedModel, api_version: str = "v1") -> Callable:
+def get_readiness_router(
+    model: ServedModel, api_version: str = "v1", test_inference: bool = False
+) -> Callable:
     """Utility for a consistent readiness probe endpoint.
 
     For more information on how K8s uses these, see:
@@ -159,6 +167,9 @@ def get_readiness_router(model: ServedModel, api_version: str = "v1") -> Callabl
         status_code=status.HTTP_200_OK,
     )
     async def ready() -> ReadinessProbeResponse:
+        if test_inference:
+            model.sample_inference()
+
         return ReadinessProbeResponse()
 
     return readiness_router

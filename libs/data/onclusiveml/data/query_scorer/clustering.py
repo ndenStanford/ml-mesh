@@ -135,13 +135,13 @@ def hdbscan_clustering(
     model_path: str = "xlm-roberta-base",
     tfidf_max_features: int = 4000,
     dimension_reduction_method: str = "umap",
-    n_components: int = 10,
-    umap_n_neighbors: int = 15,
-    umap_min_dist: float = 0.1,
-    hdbscan_min_cluster_size: int = 5,
+    n_components: int = 20,
+    umap_n_neighbors_weight: float = 0.005,
+    umap_min_dist: float = 0.4,
+    hdbscan_min_cluster_size_weight: float = 0.015,
     gen_min_span_tree: bool = True,
     hdbscan_algorithm: str = "generic",
-    hdbscan_metric: str = "euclidean",
+    hdbscan_metric: str = "manhattan",
     hdbscan_cluster_selection_method: str = "eom",
     hdbscan_allow_single_cluster: bool = True,
     random_state: int = 1,
@@ -167,6 +167,11 @@ def hdbscan_clustering(
     Returns:
         Returns the final embeddings with cluster labels.
     """
+    umap_n_neighbors = max(int(len(inputs) * umap_n_neighbors_weight), 2)
+    hdbscan_min_cluster_size = max(
+        int(len(inputs) * hdbscan_min_cluster_size_weight), 2
+    )
+
     if embedding_method == "pretrained":
         embeddings = get_pretrained_embedding(inputs, model_path)
     elif embedding_method == "tfidf":
