@@ -118,7 +118,7 @@ class TranscriptSegmentationHandler:
         Tuple[Union[int, float], Union[int, float]],
         Optional[str],
     ]:
-        """Find timestamp by tracing content back to sentence transcript.
+        """Find timestamp by tracing content back to word transcript.
 
         Args:
             response Union[str, Dict[str, str]]: Response from GPT model
@@ -176,69 +176,21 @@ class TranscriptSegmentationHandler:
             json_response.get("Segment summary"),
         )
 
-    def preprocess_transcript(
-        self, word_transcript: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Convert word-based transcript into sentence-based.
+    def preprocess_transcript(self, word_transcript: List[Dict[str, Any]]) -> str:
+        """Convert word-based transcript into paragraph.
 
         Args:
             word_transcript (List[Dict[str, Any]): Word-based transcript
 
         Returns:
-            List[Dict[str, Any]: Transcript converted into sentences
+            str: paragraph made out of word transcript
         """
-        transcript_preprocessed = []
-        transcript_dict: Dict[str, Any] = {}
-        # Iterate over each word from word based transcript and merge into sentences
-        for i in range(len(word_transcript)):
-            if word_transcript[i]["w"] is not None:
-                if not transcript_dict:
-                    transcript_dict["start_time"] = word_transcript[i]["ts"]
-                if "content" not in transcript_dict:
-                    transcript_dict["content"] = str(
-                        word_transcript[i]["w"]
-                    )  # Convert to string
-                else:
-                    # merge abreviations without spaces
-                    if (
-                        len(word_transcript[i]["w"]) == 2
-                        and word_transcript[i]["w"][-1] == "."
-                        and len(word_transcript[i - 1]["w"]) == 2
-                        and word_transcript[i - 1]["w"][-1] == "."
-                    ):
-                        transcript_dict["content"] += str(
-                            word_transcript[i]["w"]
-                        )  # Convert to string
-                    else:
-                        transcript_dict["content"] += " " + str(
-                            word_transcript[i]["w"]
-                        )  # Convert to string
-                if len(transcript_dict["content"]) > 0:
-                    # If contain certain punctuation, complete the sentence and start new sentence
-                    if len(str(word_transcript[i]["w"])) != 2 and transcript_dict[
-                        "content"
-                    ][-1] in [".", "!", "?"]:
-                        transcript_dict["end_time"] = word_transcript[i]["ts"]
-                        transcript_preprocessed.append(transcript_dict)
-                        transcript_dict = {}
-        # append left over transcript at the end
-        if transcript_dict:
-            if len(transcript_dict["content"]) > 0:
-                transcript_dict["end_time"] = word_transcript[i]["ts"]
-                transcript_preprocessed.append(transcript_dict)
-                transcript_dict = {}
-        return transcript_preprocessed
-
-    def create_paragraph(self, sentence_transcript: List[Dict[str, Any]]) -> str:
-        """Merge sentences into paragraphs which will be fed to gpt model, excludes timestamps.
-
-        Args:
-            sentence_transcript List[Dict[str, Any]]: sentence-level transcript
-
-        Returns:
-            str: string extract of transcript
-        """
-        return " ".join(list(map(lambda x: x["content"], sentence_transcript)))
+        paragraph = " ".join(
+            word["w"] for word in word_transcript if word.get("w") is not None
+        ).strip()
+        # merge abbreviations without spaces
+        paragraph = paragraph.replace(" .", ".")
+        return paragraph
 
     def trim_paragraph(self, paragraph: str, keywords: List[str]) -> str:
         """Trime paragraph to focus on keywords.
@@ -293,10 +245,7 @@ class TranscriptSegmentationHandler:
             ]: Timestamps of the segment based on keywords and segment summary.
         """
         # preprocess
-        preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
-
-        # preprocess paragraph
-        paragraph = self.create_paragraph(preprocessed_sentence_transcript)
+        paragraph = self.preprocess_transcript(word_transcript)
 
         # Truncate paragraph
         trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
