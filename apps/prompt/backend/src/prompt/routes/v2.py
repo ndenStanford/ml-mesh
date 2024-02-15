@@ -17,7 +17,7 @@ router = APIRouter(
     prefix="/v2/prompts",
 )
 
-access_token = settings.github_credentials.github_token
+access_token = settings.github_credentials.github_token.get_secret_value()
 
 g = Github(access_token)
 
