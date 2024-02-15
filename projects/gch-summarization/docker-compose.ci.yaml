@@ -1,7 +1,7 @@
 ---
-version : '3.9'
+version      : '3.9'
 
-services:
+services     :
   # =============================================
   # TRAIN
   # =============================================
@@ -267,7 +267,7 @@ services:
 # BACKFILL
 # =============================================
 
-backfill:
+backfill     :
   build:
     context: ../../
     dockerfile: projects/gch-summarization/backfill/Dockerfile
@@ -337,7 +337,7 @@ backfill-unit:
   hostname: onclusive-ml
   networks: [onclusive-net]
 
-jobmanager:
+jobmanager   :
   image: apache/flink:1.16-scala_2.12-java11
   command: [jobmanager]
   ports:
@@ -349,7 +349,7 @@ jobmanager:
       jobmanager.rpc.address: jobmanager
       parallelism.default: 1
 
-taskmanager:
+taskmanager  :
   image: apache/flink:1.16-scala_2.12-java11
   scale: 1
   depends_on:
@@ -367,7 +367,7 @@ taskmanager:
   volumes:
     - backfill-vol:/tmp/beam-artifact-staging
 
-jobserver:
+jobserver    :
   image: apache/beam_flink1.16_job_server:2.49.0
   command:
     - --flink-master=jobmanager:8081
@@ -382,7 +382,7 @@ jobserver:
   volumes:
     - backfill-vol:/tmp/beam-artifact-staging
 
-zookeeper:
+zookeeper    :
   image: confluentinc/cp-zookeeper
   profiles: [backfill]
   networks: [onclusive-net]
@@ -393,7 +393,7 @@ zookeeper:
     ZOOKEEPER_TICK_TIME: 2000
     ZOOKEEPER_SYNC_LIMIT: 2
 
-kafka:
+kafka        :
   image: confluentinc/cp-kafka:6.1.13
   profiles: [backfill]
   networks: [onclusive-net]
@@ -415,10 +415,10 @@ kafka:
     KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
     TOPIC_AUTO_CREATE: true
 
-networks:
+networks     :
   onclusive-net:
 
-volumes :
+volumes      :
   compile-vol:
   serve-vol:
   backfill-vol:

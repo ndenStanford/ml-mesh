@@ -5,9 +5,9 @@ from typing import Any
 
 # Internal libraries
 import onclusiveml.serving.serialization.entity_linking.v1 as entity_linking_v1
+import onclusiveml.serving.serialization.gch_summarization.v1 as gch_summarization_v1
 import onclusiveml.serving.serialization.ner.v1 as ner_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
-import onclusiveml.serving.serialization.gch_summarization.v1 as gch_summarization_v1
 from onclusiveml.serving.client._bind import bind
 
 
