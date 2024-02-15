@@ -14,7 +14,7 @@ import pytest
 def model_card():
     """Mock response for request.post."""
     mock_response = MagicMock()
-    mock_response.content = """{"generated": "{\\n    \\"Related segment\\": \\"They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to \\\\\\"gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,\\",\\n    \\"Reason for segment\\": \\"This segment is directly related to the keyword \'Ai\' as it discusses the versatility and reliability of ai techniques, mentions artificial intelligence, generative ai, and specifically refers to ChatGPT, which is an example of an Ai application.\\",\\n    \\"Reason for no segment\\": \\"N/A\\"\\n}"}"""  # noqa
+    mock_response.content = """{"generated": "{\\n    \\"Related segment\\": \\"They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to \\\\\\"gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,\\",\\n    \\"Reason for segment\\": \\"This segment is directly related to the keyword \'Ai\' as it discusses the versatility and reliability of ai techniques, mentions artificial intelligence, generative ai, and specifically refers to ChatGPT, which is an example of an Ai application.\\",\\n    \\"Reason for no segment\\": \\"N/A\\"\\n}"}"""  # noqa:E501
     return mock_response
 
 
@@ -154,38 +154,7 @@ def expected_output():
 @pytest.fixture
 def expected_preprocessing_output():
     """Expected preprocessing output."""
-    return [
-        {
-            "content": "Watch 'a Day's Work,' in their unreliability.",
-            "end_time": 1701127819333.3333,
-            "start_time": 1701127816000.0,
-        },
-        {
-            "content": "They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream.",  # noqa: E501
-            "end_time": 1701127827500.0,
-            "start_time": 1701127820000.0,
-        },
-        {
-            "content": '[bright music] [logo whooshes] - Hello and welcome to "gzero World.',
-            "end_time": 1701127838714.2856,
-            "start_time": 1701127828000.0,
-        },
-        {
-            "content": "I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now.",  # noqa: E501
-            "end_time": 1701127848714.2856,
-            "start_time": 1701127839000.0,
-        },
-        {
-            "content": "You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant.",  # noqa: E501
-            "end_time": 1701127855250.0,
-            "start_time": 1701127849000.0,
-        },
-        {
-            "content": "With the recent rollout of OpenAI's ChatGPT-4,",
-            "end_time": 1701127859428.5715,
-            "start_time": 1701127856000.0,
-        },
-    ]
+    return """Watch \'a Day\'s Work,\' in their unreliability. They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to "gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,"""  # noqa:E501
 
 
 @pytest.fixture
@@ -287,20 +256,4 @@ def transcript_input_abbrv():
 @pytest.fixture
 def expected_preprocessing_output_abbrv():
     """Expected preprocessing output with abbreviation."""
-    return [
-        {
-            "content": "A judge in Los Angeles has ordered police not to reveal what they found when they raided the home of an attorney representing Black Lives Matter.",  # noqa: E501
-            "end_time": 1706450465333.3333,
-            "start_time": 1706450460000.0,
-        },
-        {
-            "content": "Officers from L.A.P.D. took photos in the house of Dermot Givens on Tuesday as they hunted for a suspect they were following via an AirTag tracking device.",  # noqa: E501
-            "end_time": 1706450471200.0,
-            "start_time": 1706450465500.0,
-        },
-        {
-            "content": "Givens claimed the snaps included legal documents concerning BLM leader Melina Abdullah, who is suing the department after they descended on her $1.6million home in 2020 in response to a reported swatting incident.",  # noqa: E501
-            "end_time": 1706450478666.6667,
-            "start_time": 1706450471400.0,
-        },
-    ]
+    return """A judge in Los Angeles has ordered police not to reveal what they found when they raided the home of an attorney representing Black Lives Matter. Officers from L. A. P. D. took photos in the house of Dermot Givens on Tuesday as they hunted for a suspect they were following via an AirTag tracking device. Givens claimed the snaps included legal documents concerning BLM leader Melina Abdullah, who is suing the department after they descended on her $1.6million home in 2020 in response to a reported swatting incident."""  # noqa:E501
