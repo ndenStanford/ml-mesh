@@ -6,12 +6,6 @@ import pytest
 
 
 @pytest.fixture
-def test_keyword_input():
-    """Input keyword."""
-    return "Alibaba"
-
-
-@pytest.fixture
 def test_all_topic_count_input():
     """Input all_topic_count dataframe."""
     data = {
@@ -51,7 +45,7 @@ def test_all_topic_count_input():
 
 
 @pytest.fixture
-def test_df_all_count_dict_input():
+def test_df_all_count_list_input():
     """Input df_all_count dataframes."""
     data0 = {
         "key_as_string": [
@@ -100,4 +94,4 @@ def test_df_all_count_dict_input():
         "doc_count": [2, 41, 19, 3, 1, 3, 1, 2],
     }
     data2 = {}
-    return {0: pd.DataFrame(data0), 1: pd.DataFrame(data1), 2: pd.DataFrame(data2)}
+    return [pd.DataFrame(data0), pd.DataFrame(data1), pd.DataFrame(data2)]
