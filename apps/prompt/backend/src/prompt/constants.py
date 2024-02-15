@@ -222,7 +222,7 @@ class PromptEnum(OnclusiveEnum):
         Show me your answer in following JSON format. Here [XXX] is placeholder:
         [Related segment]:[The relevant segment about the keywords that was extracted from the content]
         [Reason for segment]:[The reason you believe this segment relates to the keywords]
-        [Segment summary]:[A one sentence summary of the segment extracted]
+        [Segment title]:[A title that represents the segment extracted]
         [Reason for no segment]:[The reason for why no part of the content holds relevancy to the keywords]
         """,  # noqa: E501
         "ml-transcript-segmentation",
