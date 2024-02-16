@@ -132,6 +132,8 @@ jobs:
             --project-name ${{ inputs.project }} \
             --project-component train \
             --image-tag ${{ inputs.tag }} \
+            --model-id ${{ inputs.model-id }} \
+            --model-version ${{ inputs.model-version }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
