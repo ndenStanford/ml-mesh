@@ -334,7 +334,6 @@ services:
         COMPONENT: backfill
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG:-latest}
-    command: [python, -m, src.generate_trend]
     profiles: [backfill, unit]
     volumes:
       - type: bind

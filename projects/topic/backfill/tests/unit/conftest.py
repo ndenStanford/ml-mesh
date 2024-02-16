@@ -6,8 +6,8 @@ import pytest
 
 
 @pytest.fixture
-def test_all_topic_count_input():
-    """Input all_topic_count dataframe."""
+def test_df_all_topic_input():
+    """Input df_all_topic dataframe."""
     data = {
         "key_as_string": [
             "2024-02-07T12:00:00.000Z",
@@ -45,7 +45,7 @@ def test_all_topic_count_input():
 
 
 @pytest.fixture
-def test_df_all_count_list_input():
+def test_df_single_topic_list_input():
     """Input df_all_count dataframes."""
     data0 = {
         "key_as_string": [
