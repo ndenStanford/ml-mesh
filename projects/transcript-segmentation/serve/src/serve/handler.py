@@ -78,6 +78,8 @@ class TranscriptSegmentationHandler:
         for i in range(len(word_transcript_filtered) - (THRESHOLD - 1)):
             candidate_list = word_transcript_filtered[i : i + THRESHOLD]  # noqa: E203
             candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
+            # fix abbreviations
+            candidate = candidate.replace(" .", ".")
 
             similarity_start = fuzz.ratio(candidate, first_portion)
             similarity_end = fuzz.ratio(candidate, last_portion)
