@@ -655,7 +655,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            model-id: 00000000
+            model-id: '00000000'
             model-version: 1
 
           # # compile
@@ -1058,17 +1058,17 @@ jobs       :
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            model-id: 00000000
+            model-id: '00000000'
             model-version: 1
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            model-id: 02000000
+            model-id: '02000000'
             model-version: 1
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            model-id: 03000000
+            model-id: '03000000'
             model-version: 1
           # - project: gch-summarization
           #   sagemaker-runner-type: ml.m4.xlarge
