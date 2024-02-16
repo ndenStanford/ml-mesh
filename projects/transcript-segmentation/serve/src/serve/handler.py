@@ -101,6 +101,7 @@ class TranscriptSegmentationHandler:
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
         Optional[str],
+        Optional[str],
     ]:
         """Find timestamp by tracing content back to sentence transcript.
 
@@ -113,7 +114,8 @@ class TranscriptSegmentationHandler:
                 Tuple[Union[int, float], Union[int, float]],
                 Tuple[Union[int, float], Union[int, float]],
                 Optional[str],
-            ]:The start and end timestamp of the segment and the segment title.
+                Optional[str],
+            ]:The start and end timestamp of the segment, the segment title, the segment summary.
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
@@ -157,6 +159,7 @@ class TranscriptSegmentationHandler:
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             json_response.get("Segment title"),
+            json_response.get("Segment summary"),
         )
 
     def preprocess_transcript(
@@ -261,6 +264,7 @@ class TranscriptSegmentationHandler:
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
         Optional[str],
+        Optional[str],
     ]:
         """Prediction method for transcript segmentation.
 
@@ -272,6 +276,7 @@ class TranscriptSegmentationHandler:
             Tuple[
                 Tuple[Union[int, float], Union[int, float]],
                 Tuple[Union[int, float], Union[int, float]],
+                Optional[str],
                 Optional[str],
             ]: Timestamps of the segment based on keywords and segment title.
         """
@@ -299,6 +304,7 @@ class TranscriptSegmentationHandler:
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             title,
+            summary,
         ) = self.postprocess(
             response=json.loads(q.content)["generated"],
             sentence_transcript=preprocessed_sentence_transcript,
@@ -308,4 +314,5 @@ class TranscriptSegmentationHandler:
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             title,
+            summary,
         )

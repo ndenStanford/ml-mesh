@@ -79,6 +79,7 @@ def test_served_transcript_segmentation_model_predict(
         <= 200000
     )
     assert isinstance(test_actual_predict_output.data.attributes.title, str)
+    assert isinstance(test_actual_predict_output.data.attributes.summary, str)
     assert (
         test_actual_predict_output.data.identifier
         == test_expected_predict_output.data.identifier
