@@ -7,10 +7,17 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
+ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-RUN mkdir -p "${HOME}" && \
-    chown -R "${USER}:users" "${HOME}"
+# hadolint ignore=DL3002
+USER root
+RUN mkdir -p "${HOME}" \
+ && mkdir -p "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users /usr/local/share
+
 
 WORKDIR "/"
 
@@ -26,11 +33,13 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
+
+
+RUN MINIMAL_KATS=1 pip install --no-cache-dir holidays==0.24 kats==0.2.0 &&\
+    poetry install --without dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
+    poetry cache clear pypi --all -q
 
 
 # --- production stage
@@ -46,3 +55,5 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction
+
+USER ${USER}

@@ -5,7 +5,9 @@
 import pytest
 
 # Source
-from src.generate_trend import single_topic_trend
+from src.generate_trend import TrendDetection
+
+trend = TrendDetection()
 
 
 @pytest.mark.order(1)
@@ -14,8 +16,7 @@ def test_generate_trendy_predict(
 ):
     """Test get_trendy function."""
     test_actual_predict_output = [
-        single_topic_trend(test_all_topic_count_input, df_all_count)
+        trend.single_topic_trend(df_all_count, test_all_topic_count_input)
         for df_all_count in test_df_all_count_list_input
     ]
-    print(test_actual_predict_output)
     assert test_actual_predict_output == [True, False, False]
