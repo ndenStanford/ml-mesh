@@ -192,8 +192,6 @@ jobs:
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
-            MODEL_ID="${{ inputs.model-id }}" \
-            MODEL_VERSION="${{ inputs.model-version }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"

@@ -16,7 +16,9 @@ logger = get_default_logger(__name__)
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    CLASS_DICT_FIRST,
+    CLASS_DICT,
+    ID_TO_TOPIC,
+    MODEL_ID,
     BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
     TrackedIPTCModelSpecs,
@@ -67,9 +69,10 @@ def main() -> None:
     )
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
+
     for dictionary in iptc_predictions:
         dictionary["score"] = float(dictionary["score"])
-        dictionary["label"] = CLASS_DICT_FIRST["root"][dictionary["label"]]
+        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[MODEL_ID]][dictionary["label"]]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
