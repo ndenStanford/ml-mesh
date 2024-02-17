@@ -38,7 +38,7 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
 
     @abstractmethod
     def initialize_model(self) -> None:
-        """Initialize modell and tokenizer.
+        """Initialize model and tokenizer.
 
         Example implementation
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels)
