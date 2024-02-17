@@ -33,10 +33,6 @@ services:
     networks: [onclusive-net]
 
   train-debug:
-    volumes:
-      - type: bind
-        source: train/src
-        target: /projects/keywords/train/src
     build:
       context: ../../
       dockerfile: projects/keywords/train/Dockerfile
@@ -48,7 +44,9 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG:-latest}
-    command: [python3, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
+    ports:
+      - 5678:5678
     profiles: [train, debug]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
