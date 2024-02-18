@@ -147,6 +147,10 @@ jobs       :
             integration: false
             functional: false
 
+          - name: training
+            integration: false
+            functional: false
+
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
