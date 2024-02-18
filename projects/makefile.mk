@@ -1,6 +1,6 @@
 ## PROJECTS TARGETS
 
-# Build start and test commands
+# Build start and unit test commands
 ifeq ($(WITHOUT_DOCKER),true)
 	BASE_CMD = cd ./projects/$(notdir $@)/$(COMPONENT)/ && python3 -m src
 	ifeq ($(COMPONENT),ingest)
