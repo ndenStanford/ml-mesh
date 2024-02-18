@@ -2,7 +2,7 @@
 from unittest.mock import patch
 
 # Internal libraries
-from onclusiveml.training.onclusive_huggingface_model_trainer import (
+from libs.training.onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
 )
 
