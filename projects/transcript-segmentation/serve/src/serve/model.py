@@ -50,6 +50,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
         (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
+            title,
             summary,
         ) = self.model.__call__(
             word_transcript=inputs.transcript, keywords=inputs.keywords
@@ -63,6 +64,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
                 "end_time": end_time_offsetted,
                 "transcript_start_time": start_time,
                 "transcript_end_time": end_time,
+                "title": title,
                 "summary": summary,
                 "ad": None,
             },
