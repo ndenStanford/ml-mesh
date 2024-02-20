@@ -32,6 +32,7 @@ services:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234
       REACT_APP_API_URI: http://localhost:4000/api/v1
+      ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN: ${ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN}
 
   frontend-unit:
     build:
@@ -58,6 +59,7 @@ services:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234
       REACT_APP_API_URI: http://localhost:4000/api/v1
+      ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN: ${ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN}
 
   # =====================================================
   # BACKEND
@@ -88,6 +90,7 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN: ${ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
@@ -124,6 +127,7 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN: ${ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
@@ -156,6 +160,7 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN: ${ONCLUSIVEML_PROMPT_REPO_GITHUB_TOKEN}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
