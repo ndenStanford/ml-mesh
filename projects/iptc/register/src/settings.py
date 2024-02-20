@@ -15,9 +15,9 @@ class FeatureRegistrationParams(FeatureStoreParams):
 
     feast_config_bucket: str
     redshift_database: str
-    redshift_table: Optional[str]
-    entity_name: Optional[str]
-    feature_view_name: Optional[str]
+    redshift_table: str = "iptc"
+    entity_name: str = "iptc"
+    feature_view_name: str = "iptc_feature_view"
     fields: Optional[List[Tuple[str, str]]]
     entity_join_key: str
     register_features: bool = False
