@@ -148,6 +148,7 @@ def expected_output():
         "end_time": 1701127859428.5715,
         "transcript_start_time": 1701127820000,
         "transcript_end_time": 1701127859428.5715,
+        "segment": """They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to "gzero World. I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI's ChatGPT-4,""",  # noqa:E501
     }
 
 

@@ -120,6 +120,7 @@ class TranscriptSegmentationHandler:
         Tuple[Union[int, float], Union[int, float]],
         Optional[str],
         Optional[str],
+        Optional[str],
     ]:
         """Find timestamp by tracing content back to word transcript.
 
@@ -160,11 +161,12 @@ class TranscriptSegmentationHandler:
             "n/a",
             "Nothing",
         ]:
-            start_time, end_time, start_time_offsetted, end_time_offsetted = (
+            start_time, end_time, start_time_offsetted, end_time_offsetted, segment = (
                 0.0,
                 0.0,
                 0.0,
                 0.0,
+                "",
             )
         else:
             (
@@ -173,12 +175,14 @@ class TranscriptSegmentationHandler:
             ) = self.find_timestamps_from_word_transcript(
                 json_response[self.related_segment_key], word_transcript
             )
+            segment = json_response.get(self.related_segment_key)
 
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             json_response.get("Segment title"),
             json_response.get("Segment summary"),
+            segment,
         )
 
     def preprocess_transcript(self, word_transcript: List[Dict[str, Any]]) -> str:
@@ -236,6 +240,7 @@ class TranscriptSegmentationHandler:
         Tuple[Union[int, float], Union[int, float]],
         Optional[str],
         Optional[str],
+        Optional[str],
     ]:
         """Prediction method for transcript segmentation.
 
@@ -273,6 +278,7 @@ class TranscriptSegmentationHandler:
             (start_time, end_time),
             title,
             summary,
+            segment,
         ) = self.postprocess(
             response=json.loads(q.content)["generated"],
             word_transcript=word_transcript,
@@ -283,4 +289,5 @@ class TranscriptSegmentationHandler:
             (start_time, end_time),
             title,
             summary,
+            segment,
         )

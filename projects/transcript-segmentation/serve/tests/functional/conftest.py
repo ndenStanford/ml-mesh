@@ -230,7 +230,7 @@ def test_payload():
                 ],
                 "keywords": ["Ai"],
             },
-            "parameters": {},
+            "parameters": {"country": "FRA", "channel": "channel", "query": {}},
         }
     }
 
@@ -250,6 +250,7 @@ def expected_response():
                 "transcript_end_time": 1701127859428.5715,
                 "title": None,
                 "summary": None,
+                "segment": "example segment",
             },
         },
     }
