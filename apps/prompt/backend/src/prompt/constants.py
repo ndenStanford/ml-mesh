@@ -223,6 +223,7 @@ class PromptEnum(OnclusiveEnum):
         [Related segment]:[The relevant segment about the keywords that was extracted from the content]
         [Reason for segment]:[The reason you believe this segment relates to the keywords]
         [Segment summary]:[A one sentence summary of the segment extracted]
+        [Segment title]:[A title that represents the segment extracted]
         [Reason for no segment]:[The reason for why no part of the content holds relevancy to the keywords]
         """,  # noqa: E501
         "ml-transcript-segmentation",
@@ -261,7 +262,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-5-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -296,7 +297,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-4-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -330,7 +331,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-3-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -363,7 +364,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-2-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,

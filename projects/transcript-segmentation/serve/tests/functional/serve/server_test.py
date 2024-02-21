@@ -90,4 +90,5 @@ def test_server_prediction(test_payload, expected_response):
         )
         <= 20000
     )
+    assert isinstance(response.json()["data"]["attributes"]["title"], str)
     assert isinstance(response.json()["data"]["attributes"]["summary"], str)
