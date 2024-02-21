@@ -1059,7 +1059,7 @@ jobs       :
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             model-id: '00000000'
-            model-version: 1
+            model-version: 8
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
