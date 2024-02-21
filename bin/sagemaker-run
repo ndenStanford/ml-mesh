@@ -177,7 +177,6 @@ def project_train(
     if run_configuration_dotenv is not None:
         run_configuration_env_vars = dotenv_values(run_configuration_dotenv)
     else:
-
         probable_dotenv = os.path.join(
             'projects',
             project_name,
@@ -188,7 +187,7 @@ def project_train(
 
         if os.path.isfile(probable_dotenv):
             click.echo(
-                "No dotenv configuration provided. Falling back on likely candidate"
+                "No dotenv configuration provided. Falling back on likely candidate "
                 f"{probable_dotenv}"
             )
             run_configuration_env_vars = dotenv_values(probable_dotenv)
