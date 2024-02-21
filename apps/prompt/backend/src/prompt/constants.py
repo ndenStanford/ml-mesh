@@ -262,7 +262,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-5-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -297,7 +297,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-4-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -331,7 +331,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-3-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -364,7 +364,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-2-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
