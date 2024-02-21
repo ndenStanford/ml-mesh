@@ -165,7 +165,7 @@ class BaseTrackedModelSpecs(TrackedModelSpecs):
     model: str = f"IP{MODEL_ID}-BASE"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = f"onclusive/iptc-{MODEL_ID}-{MODEL_VERSION}"
+    with_id: str = f"IP{MODEL_ID}-{MODEL_VERSION}"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
