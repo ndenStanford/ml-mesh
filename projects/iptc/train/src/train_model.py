@@ -30,7 +30,6 @@ def main() -> None:
     """Download and Register main method."""
     # get read-only base model version
     base_model_specs = BaseTrackedModelSpecs()
-    logger.info(msg=str(base_model_specs.dict()))
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
     # get base model version assets to local disk
     base_model_card: Dict = base_model_version.download_config_from_model_version(
