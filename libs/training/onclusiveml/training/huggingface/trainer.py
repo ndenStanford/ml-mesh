@@ -52,8 +52,8 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
 
         Example implementation
         self.training_args = TrainingArguments(
-          output_dir=self.model_cardoutput_dir,
-          num_train_epochs=self.model_cardepochs,
+          output_dir=self.model_card.output_dir,
+          num_train_epochs=self.model_card.epochs,
           learning_rate=self.model_card.learning_rate
         )
         """
