@@ -1112,7 +1112,7 @@ jobs       :
       matrix:
         models:
           - project: iptc
-            sagemaker-runner-type: g4dn.xlarge
+            sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             base-project: onclusive/iptc-00000000
             base-model: IP00000000-BASE
@@ -1120,7 +1120,7 @@ jobs       :
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
           - project: iptc
-            sagemaker-runner-type: g4dn.xlarge
+            sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             base-project: onclusive/iptc-02000000
             base-model: IP02000000-BASE
@@ -1128,7 +1128,7 @@ jobs       :
             trained-project: onclusive/iptc-02000000
             trained-model: IP02000000-TRAINED
           - project: iptc
-            sagemaker-runner-type: g4dn.xlarge
+            sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             base-project: onclusive/iptc-03000000
             base-model: IP03000000-BASE
