@@ -1,7 +1,7 @@
 """Transcript Segmentation v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -19,7 +19,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 
     country: str
     channel: str
-    query: Dict[str, str]
+    query: str
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):

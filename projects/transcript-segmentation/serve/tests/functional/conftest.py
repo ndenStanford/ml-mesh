@@ -230,7 +230,11 @@ def test_payload():
                 ],
                 "keywords": ["Ai"],
             },
-            "parameters": {"country": "FRA", "channel": "channel", "query": {}},
+            "parameters": {
+                "country": "FRA",
+                "channel": "channel",
+                "query": "sample query",
+            },
         }
     }
 

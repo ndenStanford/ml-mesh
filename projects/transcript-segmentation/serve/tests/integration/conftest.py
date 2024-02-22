@@ -152,7 +152,7 @@ def test_predict_keyword() -> str:
 @pytest.fixture
 def test_inference_params() -> str:
     """Predict parameter fixture."""
-    return {"country": "FRA", "channel": "channel", "query": {}}
+    return {"country": "FRA", "channel": "channel", "query": "sample query"}
 
 
 @pytest.fixture
