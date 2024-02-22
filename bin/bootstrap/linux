@@ -60,15 +60,6 @@ _setup_package_manager(){
     separator
 }
 
-_setup_pyenv() {
-    if [ -d "$HOME/.pyenv" ]; then
-        if [ ! -d "$HOME/data/.pyenv" ]; then
-            cp -r "$HOME/.pyenv" "$HOME/data/.pyenv"
-        fi
-    ln -s "$HOME/data/.pyenv" "$HOME/.pyenv"
-    fi
-}
-
 _mount_ebs_volume() {
 
     info "🌕  Setup EBS volume ..."
@@ -170,6 +161,13 @@ EOF
     # extra global deps (pyenv, direnv)
     export bin_path=/usr/local/bin # whhere to install direnv
     curl -sfL https://direnv.net/install.sh | sudo bash
+    if [ -d "$HOME/.pyenv" ]; then
+        if [ ! -d "$HOME/data/.pyenv" ]; then
+            sudo mkdir "$HOME/data/.pyenv"
+            cp -r "$HOME/.pyenv" "$HOME/data/.pyenv"
+        fi
+        ln -s "$HOME/data/.pyenv" "$HOME/.pyenv"
+    fi
     if [ ! -d "$HOME/data/.pyenv" ]; then
         curl https://pyenv.run | bash
     else
@@ -184,15 +182,9 @@ EOF
     echo 'export PYENV_ROOT="$HOME/data/.pyenv"' >> .bashrc
     # shellcheck disable=SC2016
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> .bashrc
-    # shellcheck disable=SC2016,SC2129
+    # shellcheck disable=SC2016
     echo 'eval "$(pyenv init -)"' >> .bashrc
-    # shellcheck disable=SC2016,SC2129
-    echo 'export PYENV_ROOT="$HOME/data/.pyenv"' >> ~/.bash_profile
     # shellcheck disable=SC2016
-    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
-    # shellcheck disable=SC2016
-    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-    # shellcheck disable=SC2016,SC2129
     echo 'eval "$(direnv hook bash)"' >> .bashrc
     # shellcheck disable=SC2016
     echo 'export PIP_CACHE_DIR="$HOME/data/.cache"' >> .bashrc
@@ -402,8 +394,7 @@ main(){
     info "  ⚙️  Kustomize: https://onclusive.atlassian.net/l/cp/76YvsoFG"
     info
     info " 📋 If you have any questions don't hesitate to reach out:"
-    info "  ⚙️  MLOPs slack channel: #ml_infra"
-    info "  ⚙️  ML slack channel: #ml_team"
+    info "  ⚙️  Machine learning team slack channel: #machine-learning-main"
     info
     info " Start a new bash command and you're ready to go !"
     info
