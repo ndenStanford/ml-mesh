@@ -1108,8 +1108,8 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      max-parallel: 5
       matrix:
-        max-parallel: 5
         models:
           - project: iptc
             sagemaker-runner-type: g4dn.xlarge
