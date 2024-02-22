@@ -9,7 +9,7 @@ python = "^3.8"
 nvidia-ml-py3 = "^7.352.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "7.4.2"
+pytest = "8.0.0"
 
 [build-system]
 requires = ["poetry-core"]

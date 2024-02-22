@@ -1,15 +1,16 @@
 """Transcript Segmentation."""
 
 # Standard Library
-import bisect
 import json
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
 import requests
+from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 
 # Source
 from src.settings import get_api_settings  # type: ignore[attr-defined]
@@ -22,219 +23,242 @@ logger = get_default_logger(__name__)
 class TranscriptSegmentationHandler:
     """Transcript Segmentation using prompt backend."""
 
-    output_truncated: bool = False
-    input_truncated: bool = False
+    sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
 
-    def find_last_occurrence(self, phrase: str, transcript: str) -> int:
-        """Find index of the last mention of phrase.
+    related_segment_key: str
 
-        Args:
-            phrase (str): Given phrase
-            transcript (str): Stringified transcript
-
-        Returns:
-            int: Index of the last mentioned phrase
-        """
-        position = transcript.rfind(phrase)
-        return position
-
-    def remove_newlines(self, segmented_transcript: str) -> str:
+    def remove_newlines(self, response: str) -> str:
         """Remove new lines from the string.
 
         Args:
-            segmented_transcript (str): Stringified JSON from GPT
+            response (str): Stringified JSON from GPT
 
         Returns:
             str: Stringified JSON without new lines
         """
-        segmented_transcript = segmented_transcript.replace("\n    ", "")
-        segmented_transcript = segmented_transcript.replace("\n", "")
-        return segmented_transcript
+        response = response.replace("\n    ", "")
+        response = response.replace("\n", "")
+        return response
 
-    def related_segment(self, json_segmented_transcript: Dict[str, Any]) -> Any:
-        """Find the related segment key in the dictionary holding timestamps and content.
-
-        Args:
-            json_segmented_transcript (Dict[str, Any]): JSON from GPT
-
-        Returns:
-            Dict[str, Any]: Dictionary of timestamp and content
-        """
-        if "Related segment" in json_segmented_transcript:
-            return json_segmented_transcript["Related segment"]
-
-    def insert_sorted(
-        self,
-        lst: List[Dict[str, Any]],
-        item: Dict[str, Any],
-    ) -> List[Dict[str, Any]]:
-        """Insert content into the right position in the list based on timestamp.
+    def find_timestamps_from_word_transcript(
+        self, segment: str, word_transcript: List[Dict[str, Any]]
+    ) -> Tuple[
+        Tuple[Union[int, float], Union[int, float]],
+        Tuple[Union[int, float], Union[int, float]],
+    ]:
+        """Find timestamps by comparing segment to word-level transcript.
 
         Args:
-            lst (List[Dict[str, Any]]): List of timestamps and content
-            item (Dict[str, Any]): A singular timestamp and content as a dictionary
+            segment (str): segment from GPT
+            word_transcript (List[Dict[str, Any]): Word-based transcript
 
         Returns:
-            List[Dict[str, Any]]: List of timestamps and content with correctly inserted item
+            Tuple[
+                Tuple[Union[int, float], Union[int, float]],
+                Tuple[Union[int, float], Union[int, float]],
+            ]:The start and end timestamp of the segment and offsetted timestamps
         """
-        # Finds location to place item in list and maintain start_time order
-        start_time_values = [i["start_time"] for i in lst]
-        bisect.insort(start_time_values, item["start_time"])
-        index = start_time_values.index(item["start_time"])
-        lst.insert(index, item)
-        return lst
+        # Filter out entries with None values
+        word_transcript_filtered = [i for i in word_transcript if i["w"] is not None]
 
-    def content_search(
-        self,
-        json_segmented_transcript: List[Dict[str, Any]],
-        keyword: str,
-        truncated_sentence_transcript: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
-        """Find content from the input transcript using string match and merge with GPT output.
+        # Extract first and last portions of the segment
+        segment_split = segment.split()
 
-        Args:
-            json_segmented_transcript (List[Dict[str, Any]]): Transcript from GPT output
-            keyword (str): Keyword
-            truncated_sentence_transcript (List[Dict[str, Any]]): truncated sentence transcript
+        THRESHOLD = 20
 
-        Returns:
-            List[Dict[str, Any]]: Transcript merged from both string search and GPT output
-        """
-        for i in truncated_sentence_transcript:
-            if keyword in i["content"] or keyword.lower() in i["content"]:
-                # If item from transcript from string match doesn't exist, add to final output
-                if i not in json_segmented_transcript:
-                    json_segmented_transcript = self.insert_sorted(
-                        json_segmented_transcript, i
-                    )
-        return json_segmented_transcript
+        first_portion = " ".join(segment_split[:THRESHOLD]).lstrip(">")
+        last_portion = " ".join(segment_split[-THRESHOLD:]).lstrip(">")
+
+        # Find the most compatible sublists that matches the portions from the segment
+        max_similarity_start = 0
+        max_similarity_end = 0
+        best_portion_start = []
+        best_portion_end: List[Dict[str, Any]] = []
+
+        for i in range(len(word_transcript_filtered) - (THRESHOLD - 1)):
+            candidate_list = word_transcript_filtered[i : i + THRESHOLD]  # noqa: E203
+            candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
+            # fix abbreviations
+            candidate = candidate.replace(" .", ".")
+
+            similarity_start = fuzz.ratio(candidate, first_portion)
+            similarity_end = fuzz.ratio(candidate, last_portion)
+
+            if (
+                similarity_start > max_similarity_start
+                and best_portion_end != candidate_list
+            ):
+                max_similarity_start = similarity_start
+                best_portion_start = candidate_list
+
+            if (
+                similarity_end > max_similarity_end
+                and best_portion_start != candidate_list
+            ):
+                max_similarity_end = similarity_end
+                best_portion_end = candidate_list
+
+        start_time = best_portion_start[0]["ts"]
+        end_time = best_portion_end[-1]["ts"]
+        start_time_offsetted = start_time - settings.OFFSET_START_BUFFER
+        end_time_offsetted = end_time + settings.OFFSET_END_BUFFER
+
+        if start_time_offsetted < word_transcript_filtered[0]["ts"]:
+            start_time_offsetted = word_transcript_filtered[0]["ts"]
+
+        if end_time_offsetted > word_transcript_filtered[-1]["ts"]:
+            end_time_offsetted = word_transcript_filtered[-1]["ts"]
+
+        return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
     def postprocess(
         self,
-        segmented_transcript: str,
-        keyword: str,
-        truncated_sentence_transcript: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
-        """Post-process GPT output by removing new lines and adding content found by string match.
+        response: Union[str, Dict[str, str]],
+        word_transcript: List[Dict[str, Any]],
+    ) -> Tuple[
+        Tuple[Union[int, float], Union[int, float]],
+        Tuple[Union[int, float], Union[int, float]],
+        Optional[str],
+        Optional[str],
+    ]:
+        """Find timestamp by tracing content back to word transcript.
 
         Args:
-            segmented_transcript (str): Transcript generated by GPT
-            keyword (str): Keyword used to query the transcript
-            truncated_sentence_transcript (List[Dict[str, Any]]): sentence-based transcript
+            response Union[str, Dict[str, str]]: Response from GPT model
+            word_transcript (List[Dict[str, Any]): Word-based transcript
 
         Returns:
-            List[Dict[str, Any]]: Transcript merged from both string search and GPT output
+            Tuple[
+                Tuple[Union[int, float], Union[int, float]],
+                Tuple[Union[int, float], Union[int, float]],
+                Optional[str],
+                Optional[str],
+            ]:The start and end timestamp of the segment, the segment title, the segment summary.
         """
-        str_segmented_transcript = self.remove_newlines(segmented_transcript)
-        self.output_truncated = False
+        if isinstance(response, str):
+            str_response = self.remove_newlines(response)
+            json_response = eval(str_response)
+        elif isinstance(response, dict):
+            json_response = response
 
-        # if list of json objects is incomplete, trim it and then complete object
-        try:
-            json_segmented_transcript = eval(str_segmented_transcript)
-        except SyntaxError:
-            # Find last complete json object and close the list
-            position = self.find_last_occurrence(
-                """,{  "start_time":""", str_segmented_transcript
+        # potential keys the gpt model could return
+        if "Related segment" in json_response.keys():
+            self.related_segment_key = "Related segment"
+        elif "Related Segment" in json_response.keys():
+            self.related_segment_key = "Related Segment"
+        elif "related_segment" in json_response.keys():
+            self.related_segment_key = "related_segment"
+        elif "segment" in json_response.keys():
+            self.related_segment_key = "segment"
+        elif "Segment" in json_response.keys():
+            self.related_segment_key = "Segment"
+
+        if json_response[self.related_segment_key] in [
+            "N/A",
+            "",
+            "nothing",
+            "n/a",
+            "Nothing",
+        ]:
+            start_time, end_time, start_time_offsetted, end_time_offsetted = (
+                0.0,
+                0.0,
+                0.0,
+                0.0,
             )
-            str_segmented_transcript = str_segmented_transcript[:position] + "]}"
-            self.output_truncated = True
-            json_segmented_transcript = eval(str_segmented_transcript)
+        else:
+            (
+                (start_time, end_time),
+                (start_time_offsetted, end_time_offsetted),
+            ) = self.find_timestamps_from_word_transcript(
+                json_response[self.related_segment_key], word_transcript
+            )
 
-        json_segmented_transcript = self.related_segment(json_segmented_transcript)
-
-        # Use string search to find any parts of transcript that gpt may have missed
-        result_segmented_transcript = self.content_search(
-            json_segmented_transcript, keyword, truncated_sentence_transcript
+        return (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            json_response.get("Segment title"),
+            json_response.get("Segment summary"),
         )
-        return result_segmented_transcript
 
-    def truncate_transcript(
-        self,
-        preprocessed_sentence_transcript: List[Dict[str, Any]],
-        threshold: int = 300000,
-    ) -> List[Dict[str, Any]]:
-        """Truncate transcript to fit into the model.
-
-        Args:
-            transcript (List[Dict[str, Any]]): Sentence-based transcript
-            threshold (int): Max character length of transcript
-
-        Returns:
-            List[Dict[str, Any]]: Truncated transcript
-        """
-        str_sentence_transcript = str(preprocessed_sentence_transcript)
-        self.input_truncated = False
-        if len(str_sentence_transcript) > threshold:
-            # Find last complete json object from the truncated transcript and close the list
-            str_sentence_transcript = str_sentence_transcript[:threshold]
-            position = self.find_last_occurrence(
-                """, {\'start_time\':""", str_sentence_transcript
-            )
-            str_sentence_transcript = str_sentence_transcript[:position] + "]"
-            self.input_truncated = True
-        truncated_sentence_transcript = eval(str_sentence_transcript)
-        return truncated_sentence_transcript
-
-    def preprocess_transcript(
-        self, word_transcript: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Convert word-based transcript into sentence-based.
+    def preprocess_transcript(self, word_transcript: List[Dict[str, Any]]) -> str:
+        """Convert word-based transcript into paragraph.
 
         Args:
             word_transcript (List[Dict[str, Any]): Word-based transcript
 
         Returns:
-            List[Dict[str, Any]: Transcript converted into sentences
+            str: paragraph made out of word transcript
         """
-        transcript_preprocessed = []
-        transcript_dict: Dict[str, Any] = {}
+        paragraph = " ".join(
+            word["w"] for word in word_transcript if word.get("w") is not None
+        ).strip()
+        # merge abbreviations without spaces
+        paragraph = paragraph.replace(" .", ".")
+        return paragraph
 
-        # Iterate over each word from word-based transcript and merge into sentences
-        for i in word_transcript:
-            if i["w"] is not None:
-                if not transcript_dict:
-                    transcript_dict["start_time"] = i["ts"]
+    def trim_paragraph(self, paragraph: str, keywords: List[str]) -> str:
+        """Trime paragraph to focus on keywords.
 
-                if "content" not in transcript_dict:
-                    transcript_dict["content"] = str(i["w"])  # Convert to string
-                else:
-                    transcript_dict["content"] += " " + str(i["w"])  # Convert to string
-                if len(transcript_dict["content"]) > 0:
-                    # If contain certain punctuation, complete the sentence and start new sentence
-                    if transcript_dict["content"][-1] in [".", "!", "?"]:
-                        transcript_preprocessed.append(transcript_dict)
-                        transcript_dict = {}
+        Args:
+            paragraph: combined content from sentence transcript
+            keywords (List[str]): List of keywords
 
-        if transcript_dict:
-            if len(transcript_dict["content"]) > 0:
-                if transcript_dict["content"][-1] in [".", "!", "?"]:
-                    transcript_preprocessed.append(transcript_dict)
-                    transcript_dict = {}
-        return transcript_preprocessed
+        Returns:
+            str: trimmeded paragraph
+
+        note:
+        """
+        # truncates the paragraph such that it focuses more on the keywords
+        # This is to avoid "lost in the middle" phenomena which is a big problem with LLMs
+        beg, end = len(paragraph), 0
+        lowercase_paragraph = paragraph.lower()
+        indices = [
+            (lowercase_paragraph.find(k.lower()), lowercase_paragraph.rfind(k.lower()))
+            for k in keywords
+        ]
+        beg = min(
+            filter(lambda x: 0 < x[0] < beg or (x[0] > 0 and beg == -1), indices),
+            default=(len(paragraph), 0),
+        )[0]
+        end = max((e_temp for _, e_temp in indices), default=0)
+
+        beg = max(0, beg - settings.CHARACTER_BUFFER)
+        end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
+        return paragraph[beg:end]
 
     def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
-        keyword: str,
-    ) -> Tuple[List[Dict[str, Any]], bool, bool]:
+        keywords: List[str],
+    ) -> Tuple[
+        Tuple[Union[int, float], Union[int, float]],
+        Tuple[Union[int, float], Union[int, float]],
+        Optional[str],
+        Optional[str],
+    ]:
         """Prediction method for transcript segmentation.
 
         Args:
             transcript (List[Dict[str, Any]]): Inputted word-based transcript
-            keyword (str): Keyword to query the transcript
+            keyword (List[str]): List of keywords to query the transcript
 
         Returns:
-            Tuple[List[Dict[str, Any]], bool, bool]: Segmented transcript based on a keyword
+            Tuple[
+                Tuple[Union[int, float], Union[int, float]],
+                Tuple[Union[int, float], Union[int, float]],
+                Optional[str],
+                Optional[str],
+            ]: Timestamps of the segment based on keywords and segment title.
         """
         # preprocess
-        preprocessed_sentence_transcript = self.preprocess_transcript(word_transcript)
-        # truncate
-        truncated_sentence_transcript = self.truncate_transcript(
-            preprocessed_sentence_transcript
-        )
+        paragraph = self.preprocess_transcript(word_transcript)
+
+        # Truncate paragraph
+        trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
 
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
-        payload = {"transcript": truncated_sentence_transcript, "keyword": keyword}
+        payload = {"paragraph": trimmed_paragraph, "keywords": keywords}
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(
                 settings.prompt_api_url, settings.prompt_alias
@@ -244,10 +268,19 @@ class TranscriptSegmentationHandler:
         )
 
         # post process
-        post_process_transcript = self.postprocess(
-            segmented_transcript=json.loads(q.content)["generated"],
-            keyword=keyword,
-            truncated_sentence_transcript=truncated_sentence_transcript,
+        (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            title,
+            summary,
+        ) = self.postprocess(
+            response=json.loads(q.content)["generated"],
+            word_transcript=word_transcript,
         )
 
-        return post_process_transcript, self.output_truncated, self.input_truncated
+        return (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            title,
+            summary,
+        )

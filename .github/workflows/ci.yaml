@@ -106,7 +106,7 @@ jobs       :
   # ===============================================
 
   run-libs-tests:
-    name: Run libraries unit and integration tests.
+    name: Library
     uses: ./.github/workflows/_libs.yaml
     needs: [run-repository-state, get-target-branch-name, run-get-core-dependencies-versions]
 
@@ -160,7 +160,7 @@ jobs       :
   # ===============================================
 
   run-us-east-1-base-docker:
-    name: Base Core Docker Images.
+    name: Core Image
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -170,14 +170,14 @@ jobs       :
         image:
 
           - name: python-base
-            runner-kind: ubuntu-20.04
             validate-build: false
+            runner-kind: ubuntu-20.04
 
           - name: gpu-base
-            runner-kind: custom
+            validate-build: true
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
-            validate-build: true
+            runner-kind: custom
 
         base-region: [us-east-1]
         region: [us-east-1]
@@ -203,7 +203,7 @@ jobs       :
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   run-us-east-1-docker:
-    name: Core Docker Images.
+    name: Adv. Core Image
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
@@ -213,30 +213,40 @@ jobs       :
         image:
 
           - name: gpu-train
-            runner-kind: custom
+            validate-build: false
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
-            validate-build: false
+            runner-kind: custom
 
           - name: neuron-compile
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-03e201058e36661a3
-            self-hosted-runner-neuron: true
             validate-build: true
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-neuron: true
+            runner-kind: custom
 
           - name: neuron-inference
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-03e201058e36661a3
-            self-hosted-runner-neuron: true
             validate-build: true
+            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-neuron: true
+            runner-kind: custom
 
           - name: fastapi-serve
-            runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
             validate-build: false
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
+
+          - name: beam-backfill
+            validate-build: false
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
+
+          - name: beam-worker
+            validate-build: false
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
 
         base-region: [us-east-1]
         region: [us-east-1]
@@ -261,7 +271,7 @@ jobs       :
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   run-us-east-2-docker:
-    name: Core Kubeflow Docker Images.
+    name: KF Core Image
     uses: ./.github/workflows/_docker.yaml
     needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
@@ -272,8 +282,8 @@ jobs       :
           # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
             base-region: us-east-1
-            runner-kind: custom
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            runner-kind: custom
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -329,7 +339,7 @@ jobs       :
   # keywords
 
   run-keywords-project:
-    name: Keywords Project components
+    name: Keywords Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -393,7 +403,7 @@ jobs       :
   # summarization
 
   run-summarization-project:
-    name: Summarization Project components
+    name: Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -438,7 +448,7 @@ jobs       :
   # gch-summarization
 
   run-gch-summarization-project:
-    name: GCH-Summarization Project components
+    name: GCH-Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -498,7 +508,7 @@ jobs       :
   # entity-linking
 
   run-entity-linking-project:
-    name: Entity Linking Project components
+    name: Entity Linking Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -545,7 +555,7 @@ jobs       :
   # sentiment
 
   run-sentiment-project:
-    name: Sentiment Project components
+    name: Sentiment Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -609,7 +619,7 @@ jobs       :
   # iptc
 
   run-iptc-project:
-    name: IPTC Project components
+    name: IPTC Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -691,7 +701,7 @@ jobs       :
   # ner
 
   run-ner-project:
-    name: NER Project components
+    name: NER Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -718,6 +728,16 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
 
           # serve
           - name: serve
@@ -755,7 +775,7 @@ jobs       :
   # lsh
 
   run-lsh-project:
-    name: LSH Project components
+    name: LSH Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -799,7 +819,7 @@ jobs       :
 
 
   run-topic-project:
-    name: TOPIC Project components
+    name: Topic Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -818,6 +838,18 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+
 
           # serve
           - name: serve
@@ -857,7 +889,7 @@ jobs       :
   # transcript-segmentation
 
   run-transcript-segmentation-project:
-    name: Transcript Segmentation Project components
+    name: Transcr. Segm. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -874,8 +906,7 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            runner-kind: ubuntu-20.04
 
     with:
       project: transcript-segmentation
@@ -903,7 +934,7 @@ jobs       :
   # topic-summarization
 
   run-topic-summarization-project:
-    name: TOPIC-SUMMARIZATION Project components
+    name: Topic Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -994,7 +1025,7 @@ jobs       :
   # ===============================================
 
   run-train-pipelines:
-    name: Train ML models
+    name: Train Model
     uses: ./.github/workflows/_train-model.yaml
     needs:
       - run-repository-state
@@ -1026,6 +1057,9 @@ jobs       :
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: topic
+            sagemaker-runner-type: ml.p3.2xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
       environment: prod
@@ -1049,7 +1083,7 @@ jobs       :
   # ===============================================
 
   run-compilation-pipelines:
-    name: Compile ML models
+    name: Compile Model
     uses: ./.github/workflows/_compile-model.yaml
     needs:
       - run-repository-state
@@ -1066,24 +1100,24 @@ jobs       :
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         models:
-          - runner-kind: custom
+          - project: keywords
             self-hosted-runner-type: inf1.2xlarge
-            project: keywords
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - runner-kind: custom
+          - project: ner
             self-hosted-runner-type: inf1.2xlarge
-            project: ner
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - runner-kind: custom
+          - project: sentiment
             self-hosted-runner-type: inf1.2xlarge
-            project: sentiment
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
-          - runner-kind: custom
+          - project: iptc
             self-hosted-runner-type: inf1.6xlarge
-            project: iptc
+            runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
@@ -1108,7 +1142,7 @@ jobs       :
   # ===============================================
 
   run-apps:
-    name: Web Applications
+    name: Web App
     uses: ./.github/workflows/_apps.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:

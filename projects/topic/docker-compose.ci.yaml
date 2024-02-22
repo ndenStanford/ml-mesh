@@ -13,7 +13,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
         COMPONENT: register
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
@@ -21,12 +21,13 @@ services:
       - type: bind
         source: register/src
         target: /projects/topic/register/src
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG:-latest}
     command: [python, -m, src.register_features]
     profiles: [register]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      REGISTER_FEATURES: ${REGISTER_FEATURES}
     env_file: register/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -36,7 +37,7 @@ services:
       - type: bind
         source: register/
         target: /projects/topic/register/
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     hostname: onclusive-ml
@@ -66,11 +67,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -82,7 +83,7 @@ services:
     networks: [onclusive-net]
 
   train-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
@@ -104,11 +105,11 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-063759612765}
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.2}
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-serve
@@ -137,7 +138,7 @@ services:
   serve-download-model:
     volumes:
       - serve-vol:/projects/topic/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
@@ -159,7 +160,7 @@ services:
   # - do NOT include model artifact
   # - do NOT include REST model server process
   serve-unit:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
       ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
@@ -177,7 +178,7 @@ services:
   # - include model artifact
   # - include REST model server process
   serve-functional:
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/TOPIC-TRAINED-63
@@ -197,7 +198,7 @@ services:
   serve-load:
     volumes:
       - serve-vol:/projects/topic/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
       NEPTUNE_PROJECT: onclusive/topic
@@ -225,7 +226,7 @@ services:
   serve-upload-results:
     volumes:
       - serve-vol:/projects/topic/serve/models
-    image: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [serve]
     environment:
@@ -240,7 +241,7 @@ services:
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_BACKEND_S3_BACKEND_BUCKET: onclusive-model-store-stage
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
-      ONCLUSIVEML_SERVING_DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-063759612765}.dkr.ecr.us-east-1.amazonaws.com/topic-serve
+      ONCLUSIVEML_SERVING_DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve
       ONCLUSIVEML_SERVING_DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       ONCLUSIVEML_SERVING_GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
       ONCLUSIVEML_SERVING_GITHUB_ACTOR: ${GITHUB_ACTOR}
@@ -259,6 +260,44 @@ services:
       ONCLUSIVEML_SERVING_RUNNER_OS: ${RUNNER_OS}
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+  # =============================================
+  # BACKFILL
+  # =============================================
+  backfill:
+    build:
+      context: ../../
+      dockerfile: projects/topic/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: topic
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG:-latest}
+    profiles: [backfill, unit]
+    volumes:
+      - type: bind
+        source: backfill/src
+        target: /projects/topic/backfill/src
+      - type: bind
+        source: backfill/tests
+        target: /projects/topic/backfill/tests
+    hostname: onclusiveml
+
+  backfill-unit:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG:-latest}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    volumes:
+      - type: bind
+        source: backfill/src
+        target: /projects/topic/backfill/src
+      - type: bind
+        source: backfill/tests
+        target: /projects/topic/backfill/tests
+    hostname: onclusiveml
+
 
 networks:
   onclusive-net:

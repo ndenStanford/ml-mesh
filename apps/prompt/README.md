@@ -12,14 +12,14 @@ Code for the frontend can be found in `ml-mesh/apps/prompt/frontend` (Typescript
 ## 2 Building the containers
 
 To locally build the prompt-backend image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:$IMAGE_TAG`, run the following command:
+`690763002009.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:$IMAGE_TAG`, run the following command:
 
 ```
 make apps.build/prompt COMPONENT=backend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG
 ```
 
 To locally build the prompt-frontend image tagged as
-`063759612765.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:$IMAGE_TAG`, run the following command:
+`690763002009.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:$IMAGE_TAG`, run the following command:
 
 ```
 make apps.build/prompt COMPONENT=frontend ENVIRONMENT=dev IMAGE_TAG=$IMAGE_TAG

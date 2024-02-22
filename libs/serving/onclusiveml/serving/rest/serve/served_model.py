@@ -46,6 +46,10 @@ class ServedModel(object):
         """Customizable readyness probe backend."""
         return self.ready
 
+    def sample_inference(self) -> None:
+        """Customizable sample inference."""
+        pass
+
     def predict(
         self, payload: predict_request_model
     ) -> Union[Dict, predict_response_model]:
