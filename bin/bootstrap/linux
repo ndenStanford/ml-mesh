@@ -61,10 +61,12 @@ _setup_package_manager(){
 }
 
 _setup_pyenv() {
-    if [ ! -d "$HOME/data/.pyenv" ]; then
-        cp -r "$HOME/.pyenv" "$HOME/data/.pyenv"
-    fi
+    if [ -d "$HOME/.pyenv" ]; then
+        if [ ! -d "$HOME/data/.pyenv" ]; then
+            cp -r "$HOME/.pyenv" "$HOME/data/.pyenv"
+        fi
     ln -s "$HOME/data/.pyenv" "$HOME/.pyenv"
+    fi
 }
 
 _mount_ebs_volume() {
@@ -168,23 +170,29 @@ EOF
     # extra global deps (pyenv, direnv)
     export bin_path=/usr/local/bin # whhere to install direnv
     curl -sfL https://direnv.net/install.sh | sudo bash
-    if [ ! -d "$HOME/.pyenv" ]; then
+    if [ ! -d "$HOME/data/.pyenv" ]; then
         curl https://pyenv.run | bash
     else
         info "Found pyenv, skipping installation..."
     fi
 
     # shellcheck disable=SC2129
-    export PYENV_ROOT="$HOME/.pyenv"
+    export PYENV_ROOT="$HOME/data/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
 
     # shellcheck disable=SC2016,SC2129
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> .bashrc
+    echo 'export PYENV_ROOT="$HOME/data/.pyenv"' >> .bashrc
     # shellcheck disable=SC2016
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> .bashrc
-    # shellcheck disable=SC2016
+    # shellcheck disable=SC2016,SC2129
     echo 'eval "$(pyenv init -)"' >> .bashrc
+    # shellcheck disable=SC2016,SC2129
+    echo 'export PYENV_ROOT="$HOME/data/.pyenv"' >> ~/.bash_profile
     # shellcheck disable=SC2016
+    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
+    # shellcheck disable=SC2016
+    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+    # shellcheck disable=SC2016,SC2129
     echo 'eval "$(direnv hook bash)"' >> .bashrc
     # shellcheck disable=SC2016
     echo 'export PIP_CACHE_DIR="$HOME/data/.cache"' >> .bashrc
@@ -235,7 +243,7 @@ _setup_git(){
 
     git config --global user.name "$NAME"
     git config --global user.email "$EMAIL"
-    git config --global merge.ff false
+    git config --global merge.ff true
     git config --global pull.rebase false
     separator
 }
