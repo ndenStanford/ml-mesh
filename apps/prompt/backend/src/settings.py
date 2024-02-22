@@ -82,6 +82,8 @@ class Settings(OnclusiveBaseSettings):
 
     github_credentials: GithubSettings
 
+    forbidden_characters: str = r'\/:*?"<>|'
+
 
 @lru_cache
 def get_settings() -> Settings:
