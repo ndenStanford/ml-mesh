@@ -15,7 +15,7 @@ from onclusiveml.tracking import TrackedModelVersion
 logger = get_default_logger(__name__)
 
 # Source
-from src.CLASS_DICT import CLASS_DICT, ID_TO_TOPIC
+from src.class_dict import CLASS_DICT, ID_TO_TOPIC
 from src.settings import (  # type: ignore[attr-defined]
     BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
