@@ -73,8 +73,11 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      MODEL_ID: ${MODEL_ID}
-      MODEL_VERSION: ${MODEL_VERSION}
+      BASE_PROJECT: ${BASE_PROJECT}
+      BASE_MODEL: ${BASE_MODEL}
+      BASE_WITH_ID: ${BASE_WITH_ID}
+      TRAINED_PROJECT: ${TRAINED_PROJECT}
+      TRAINED_MODEL: ${TRAINED_MODEL}
     env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -91,8 +94,11 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      MODEL_ID: ${MODEL_ID}
-      MODEL_VERSION: ${MODEL_VERSION}
+      BASE_PROJECT: ${BASE_PROJECT}
+      BASE_MODEL: ${BASE_MODEL}
+      BASE_WITH_ID: ${BASE_WITH_ID}
+      TRAINED_PROJECT: ${TRAINED_PROJECT}
+      TRAINED_MODEL: ${TRAINED_MODEL}
     hostname: onclusive-ml
     networks: [onclusive-net]
 

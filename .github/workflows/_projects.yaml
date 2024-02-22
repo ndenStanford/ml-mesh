@@ -19,14 +19,26 @@ on  :
         required: true
         type: string
         description: Version tag of image.
-      model-id:
+      base-project:
         required: false
         type: string
-        description: Model-id for projects with multiple sub models
-      model-version:
+        description: Base project identifier
+      base-model:
         required: false
         type: string
-        description: Model-version for projects with multiple sub models
+        description: Base model identifier
+      base-with-id:
+        required: false
+        type: string
+        description: Base model with specific ID
+      trained-project:
+        required: false
+        type: string
+        description: Project identifier
+      trained-model:
+        required: false
+        type: string
+        description: Model identifier for the project
       download-model:
         required: false
         default: false
@@ -201,8 +213,11 @@ jobs:
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
-            MODEL_ID="${{ inputs.model-id }}" \
-            MODEL_VERSION="${{ inputs.model-version }}" \
+            BASE_PROJECT="${{ inputs.base-project }}" \
+            BASE_MODEL="${{ inputs.base-model }}" \
+            BASE_WITH_ID="${{ inputs.base-with-id }}" \
+            TRAINED_PROJECT="${{ inputs.trained-project }}" \
+            TRAINED_MODEL="${{ inputs.trained-model }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"
