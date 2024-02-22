@@ -1141,11 +1141,11 @@ jobs       :
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
-      base-project: ${{ matrix.components.base-project || ''}}
-      base-model: ${{ matrix.components.base-model || ''}}
-      base-with-id: ${{ matrix.components.base-with-id || ''}}
-      trained-project: ${{ matrix.components.trained-project || ''}}
-      trained-model: ${{ matrix.components.trained-model || ''}}
+      base-project: ${{ matrix.models.base-project || ''}}
+      base-model: ${{ matrix.models.base-model || ''}}
+      base-with-id: ${{ matrix.models.base-with-id || ''}}
+      trained-project: ${{ matrix.models.trained-project || ''}}
+      trained-model: ${{ matrix.models.trained-model || ''}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
