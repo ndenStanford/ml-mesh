@@ -213,11 +213,6 @@ jobs:
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
-            BASE_PROJECT="${{ inputs.base-project }}" \
-            BASE_MODEL="${{ inputs.base-model }}" \
-            BASE_WITH_ID="${{ inputs.base-with-id }}" \
-            TRAINED_PROJECT="${{ inputs.trained-project }}" \
-            TRAINED_MODEL="${{ inputs.trained-model }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"

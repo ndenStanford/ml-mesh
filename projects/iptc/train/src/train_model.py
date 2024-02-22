@@ -69,7 +69,7 @@ def main() -> None:
     # Reason for this is because float32 types are not JSON serializable
     for dictionary in iptc_predictions:
         dictionary["score"] = float(dictionary["score"])
-        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_specs.project[-1:-9]]][
+        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_specs.project[-8:]]][
             dictionary["label"]
         ]
     # --- add assets to registered model version on neptune ai
