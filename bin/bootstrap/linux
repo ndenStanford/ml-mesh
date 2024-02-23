@@ -60,6 +60,13 @@ _setup_package_manager(){
     separator
 }
 
+_setup_pyenv() {
+    if [ ! -d "$HOME/data/.pyenv" ]; then
+        cp -r "$HOME/.pyenv" "$HOME/data/.pyenv"
+    fi
+    ln -s "$HOME/data/.pyenv" "$HOME/.pyenv"
+}
+
 _mount_ebs_volume() {
 
     info "🌕  Setup EBS volume ..."
@@ -67,11 +74,12 @@ _mount_ebs_volume() {
     if [ ! -d "$HOME/data" ]; then
         sudo mkfs -t xfs /dev/nvme1n1
         sudo mkdir "$HOME/data"
-        sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
-        sudo chown ec2-user: "$HOME/data"
     else
         warn "Mount target exists. This step will be skipped"
     fi
+
+    sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
+    sudo chown ec2-user: "$HOME/data"
 
     separator
 }
@@ -311,6 +319,7 @@ _setup(){
     EMAIL=$2
     NEURON=$3
 
+    _setup_pyenv
     _mount_ebs_volume
     _install_global_deps "$NEURON"
     _setup_ssh_key "$EMAIL"
