@@ -41,7 +41,11 @@ class TranscriptSegmentationHandler:
         return response
 
     def find_timestamps_from_word_transcript(
-        self, segment: str, word_transcript: List[Dict[str, Any]]
+        self,
+        segment: str,
+        word_transcript: List[Dict[str, Any]],
+        offset_start_buffer: float,
+        offset_end_buffer: float,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -100,8 +104,8 @@ class TranscriptSegmentationHandler:
 
         start_time = best_portion_start[0]["ts"]
         end_time = best_portion_end[-1]["ts"]
-        start_time_offsetted = start_time - settings.OFFSET_START_BUFFER
-        end_time_offsetted = end_time + settings.OFFSET_END_BUFFER
+        start_time_offsetted = start_time - offset_start_buffer
+        end_time_offsetted = end_time + offset_end_buffer
 
         if start_time_offsetted < word_transcript_filtered[0]["ts"]:
             start_time_offsetted = word_transcript_filtered[0]["ts"]
@@ -115,6 +119,8 @@ class TranscriptSegmentationHandler:
         self,
         response: Union[str, Dict[str, str]],
         word_transcript: List[Dict[str, Any]],
+        offset_start_buffer: float,
+        offset_end_buffer: float,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -173,7 +179,10 @@ class TranscriptSegmentationHandler:
                 (start_time, end_time),
                 (start_time_offsetted, end_time_offsetted),
             ) = self.find_timestamps_from_word_transcript(
-                json_response[self.related_segment_key], word_transcript
+                json_response[self.related_segment_key],
+                word_transcript,
+                offset_start_buffer,
+                offset_end_buffer,
             )
             segment = json_response.get(self.related_segment_key)
 
@@ -235,6 +244,8 @@ class TranscriptSegmentationHandler:
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
+        offset_start_buffer: float = 7000.0,
+        offset_end_buffer: float = 5000.0,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -282,6 +293,8 @@ class TranscriptSegmentationHandler:
         ) = self.postprocess(
             response=json.loads(q.content)["generated"],
             word_transcript=word_transcript,
+            offset_start_buffer=offset_start_buffer,
+            offset_end_buffer=offset_end_buffer,
         )
 
         return (
