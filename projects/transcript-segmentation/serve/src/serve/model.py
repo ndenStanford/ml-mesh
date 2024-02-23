@@ -52,6 +52,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
             (start_time, end_time),
             title,
             summary,
+            segment,
         ) = self.model.__call__(
             word_transcript=inputs.transcript, keywords=inputs.keywords
         )
@@ -67,6 +68,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
                 "title": title,
                 "summary": summary,
                 "ad": None,
+                "segment": segment,
             },
         )
 
