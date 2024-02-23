@@ -655,11 +655,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            base-project: onclusive/iptc-00000000
-            base-model: IP00000000-BASE
-            base-with-id: IP00000000-BASE-8
-            trained-project: onclusive/iptc-00000000
-            trained-model: IP00000000-TRAINED
+
 
           # compile
           - name: compile
@@ -685,11 +681,6 @@ jobs       :
       environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      base-project: ${{ matrix.components.base-project || ''}}
-      base-model: ${{ matrix.components.base-model || ''}}
-      base-with-id: ${{ matrix.components.base-with-id || ''}}
-      trained-project: ${{ matrix.components.trained-project || ''}}
-      trained-model: ${{ matrix.components.trained-model || ''}}
       download-model: ${{ matrix.components.download-model }}
       integration: ${{ matrix.components.integration }}
       functional: ${{ matrix.components.functional }}
@@ -1086,7 +1077,7 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
 
   # ===============================================
-  # TRAIN MODELS
+  # TRAIN MULTI MODELS
   # ===============================================
 
   run-multi-train-pipelines:

@@ -19,26 +19,6 @@ on  :
         required: true
         type: string
         description: Version tag of image.
-      base-project:
-        required: false
-        type: string
-        description: Base project identifier
-      base-model:
-        required: false
-        type: string
-        description: Base model identifier
-      base-with-id:
-        required: false
-        type: string
-        description: Base model with specific ID
-      trained-project:
-        required: false
-        type: string
-        description: Project identifier
-      trained-model:
-        required: false
-        type: string
-        description: Model identifier for the project
       download-model:
         required: false
         default: false
