@@ -68,11 +68,13 @@ _mount_ebs_volume() {
         sudo mkfs -t xfs /dev/nvme1n1
         sudo mkdir "$HOME/data"
     else
-        warn "Mount target exists. This step will be skipped"
+        warn "Filesystem exists."
     fi
 
-    sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
-    sudo chown ec2-user: "$HOME/data"
+    # shellcheck disable=SC2016
+    echo 'sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"' >> .bashrc
+    # shellcheck disable=SC2016
+    echo 'sudo chown ec2-user: "$HOME/data"'  >> .bashrc
 
     separator
 }
