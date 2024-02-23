@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+import re
 from typing import Dict, List, Union
 
 # ML libs
@@ -21,6 +22,23 @@ from src.settings import (  # type: ignore[attr-defined]
     TrackedIPTCBaseModelCard,
     TrackedIPTCModelSpecs,
 )
+
+
+def extract_model_id(project: str) -> str:
+    """Extracts the model ID from a project string.
+
+    Args:
+        project (str): The project string, e.g., 'onclusive/iptc-00000000'.
+
+    Returns:
+        str: The extracted model ID or an empty string if not found.
+    """
+    # Regex to match the pattern 'onclusive/iptc-xxx'
+    match = re.search(r"onclusive/iptc-(.+)", project)
+    if match:
+        return match.group(1)  # Return the matched group, which is the model ID
+    else:
+        return ""  # Return an empty string if no match is found
 
 
 # def upload_single_model(model_path):
@@ -67,11 +85,10 @@ def main() -> None:
     )
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
+    model_id = extract_model_id(model_specs.project)
     for dictionary in iptc_predictions:
         dictionary["score"] = float(dictionary["score"])
-        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_specs.project[-8:]]][
-            dictionary["label"]
-        ]
+        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_id]][dictionary["label"]]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
