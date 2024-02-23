@@ -164,11 +164,11 @@ EOF
     export bin_path=/usr/local/bin # where to install direnv
     curl -sfL https://direnv.net/install.sh | sudo bash
     # shellcheck disable=SC2129
-    export PYENV_ROOT="$HOME/data/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
     if [ -d "$HOME/.pyenv" ]; then
         rm -rf "$HOME/.pyenv"
     fi
+    export PYENV_ROOT="$HOME/data/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
     if [ ! -d "$HOME/data/.pyenv" ]; then
         sudo curl https://pyenv.run | bash
     else
