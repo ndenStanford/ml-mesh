@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+import re
 from pathlib import Path
 from typing import List, Union
 
@@ -16,11 +17,31 @@ from pydantic import BaseModel
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.iptc.class_dict import CLASS_DICT_FIRST
+from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
 from onclusiveml.nlp import preprocess
 
 
 logger = get_default_logger(__name__, level=20)
+
+
+def extract_model_id(project: str) -> str:
+    """Extracts the model ID from a project string.
+
+    Args:
+        project (str): The project string, e.g., 'onclusive/iptc-00000000'.
+
+    Returns:
+        str: The extracted model ID or an empty string if not found.
+    """
+    # Regex to match the pattern 'onclusive/iptc-xxx'
+    match = re.search(r"onclusive/iptc-(.+)", project)
+    if match:
+        return match.group(1)  # Return the matched group, which is the model ID
+    else:
+        return ""  # Return an empty string if no match is found
+
+
+MODEL_ID = extract_model_id(os.environ.get("UNCOMPILED_PROJECT", "00000000"))
 
 
 class PostProcessOutput(BaseModel):
@@ -44,7 +65,7 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.id2label = CLASS_DICT_FIRST["root"]
+        self.id2label = CLASS_DICT[ID_TO_TOPIC[MODEL_ID]]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
             compiled_iptc_pipeline.compiled_pipeline.model.compilation_specs[
