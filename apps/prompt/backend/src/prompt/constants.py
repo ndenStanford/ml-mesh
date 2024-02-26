@@ -280,26 +280,34 @@ class PromptEnum(OnclusiveEnum):
     # Transcript segmentation prompt
     ML_TRANSCRIPT_SEGMENTATION = [
         """
-        Your task is to extract a contiguous list of sentences (segment) from the provided content that are related to a list of keywords.
+        You are an expert in news analysis.
+        You will be given a paragraph which consists of several different news pieces, and a list of keywords.
+        The paragraph is delimited by < and >, and the keywords list is delimited by * and *.
 
-        This task is really important to me.
-        The content is delimited by < and >, and the list of keywords are delimited by * and *.
+        Your task is: Identify each new piece, then figure out which news piece is related to the given keywords.
+        Note: each sentence in the paragraph mush be in one new piece.
 
-        You must do the analysis using following steps:
-        1. Extract the most informative segment such that it represents a full dialogue and contains the keywords from the content.
-        2. The segment must also contain the surrounding context, regardless of whether the keywords are the main discussion topic or not.
-        3. If the content holds no mention of the keywords at all, return N/A
-        4. The relevant segment that you return MUST not be changed at all. The segment must be the exact copy that is found in the content.
+        You must do the analysis following the steps below:
+        1. Go through the whole paragraph to understand the content.
+        2. Divide the whole paragraph into several segments. Make sure that each segment focuses on a single news topic.
+        3. Analyze the content of each segment, then decide if the given keywords is related to any segment.
+        4. In step 3 if a segment is chosen, you need look at the piece before and the piece after the chosen segment. If any of these pieces mention something that's also talked about in the chosen segment, even just a little bit, consider them related. This includes any small reference or mention related to the segment's topics.
+        5. If the answer in step 4 is yes, add the related sentence into the choosen segment. And output the new segment.
+        6. If the content holds no mention of the keywords at all, return N/A
 
         Keywords: *{keywords}*
         Content: <{paragraph}>
 
         Show me your answer in following JSON format. Here [XXX] is placeholder:
-        [Related segment]:[The relevant segment about the keywords that was extracted from the content]
-        [Reason for segment]:[The reason you believe this segment relates to the keywords]
+        [Related segment]:[The relevant new segment about the keywords]
+        [Reason for segment]:[The reason you believe this story relates to the keywords]
         [Segment summary]:[A one sentence summary of the segment extracted]
         [Segment title]:[A title that represents the segment extracted]
-        [Reason for no segment]:[The reason for why no part of the content holds relevancy to the keywords]
+        [segment amount]: [How many news segment in total]
+        [Piece before]:[The piece before the chosen segment]
+        [Piece after]: [The piece after the chosen segment]
+        [Piece before accept]: [Does the piece before the segment hold any relevance to the segment and keywords? You must answer with just Yes or No]
+        [Piece after accept]: [Does the piece after the segment hold any relevance to the segment and keywords? You must answer with just Yes or No]
         """,  # noqa: E501
         "ml-transcript-segmentation",
         {
