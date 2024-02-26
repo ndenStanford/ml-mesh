@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+import re
 from pathlib import Path
 from typing import List, Union
 
@@ -21,6 +22,25 @@ from onclusiveml.nlp import preprocess
 
 
 logger = get_default_logger(__name__, level=20)
+
+
+def extract_model_id(project: str) -> str:
+    """Extracts the model ID from a project string.
+
+    Args:
+        project (str): The project string, e.g., 'onclusive/iptc-00000000'.
+
+    Returns:
+        str: The extracted model ID.
+
+    Raises:
+        ValueError: If the model ID cannot be found in the project string.
+    """
+    match = re.search(r"onclusive/iptc-(.+)", project)
+    if match:
+        return match.group(1)  # Return the matched group, which is the model ID
+    else:
+        raise ValueError(f"Model ID not found in project string: '{project}'")
 
 
 class PostProcessOutput(BaseModel):
