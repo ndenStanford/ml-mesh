@@ -15,28 +15,53 @@ class PromptEnum(OnclusiveEnum):
         + "{text}"  # noqa: W503
         + "\n",  # noqa: W503
         "english-summarization",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     # These are prompts for generating short summaries for each language
     ML_SHORT_SUMMARY_EN = [
         "Give me a short summary for this text in english: " + "\n" + "{text}" + "\n",
         "ml-short-summary-english",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     ML_SHORT_SUMMARY_FR = [
         "Donnez-moi un petit résumé de ce texte en français: " + "\n" + "{text}" + "\n",
         "ml-short-summary-french",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     ML_SHORT_SUMMARY_CA = [
         "Dóna'm un breu resum d'aquest text en català: " + "\n" + "{text}" + "\n",
         "ml-short-summary-catalan",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     ML_SHORT_SUMMARY_ES = [
         "Dame un breve resumen de este texto en español: " + "\n" + "{text}" + "\n",
         "ml-short-summary-spanish",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     ML_SHORT_SUMMARY_DE = [
         "Geben Sie mir eine kurze Zusammenfassung für diesen Text auf Deutsch: "
@@ -44,7 +69,12 @@ class PromptEnum(OnclusiveEnum):
         + "{text}"
         + "\n",
         "ml-short-summary-german",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     ML_SHORT_SUMMARY_IT = [
         "Datemi un breve riassunto di questo testo in italiano: "
@@ -52,12 +82,22 @@ class PromptEnum(OnclusiveEnum):
         + "{text}"
         + "\n",
         "ml-short-summary-italian",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
     ML_SHORT_SUMMARY_JP = [
         "この文章の要約を日本語で教えてください。: " + "\n" + "{text}" + "\n",
         "ml-short-summary-japanese",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": {"type": None},
+        },
     ]
 
     # These are headline generation prompt3 in their given language
@@ -79,7 +119,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-en",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
     ML_HEADLINE_FR = [
         "Vous êtes un expert dans la rédaction d'articles d'actualité."
@@ -99,7 +144,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-fr",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
     ML_HEADLINE_CA = [
         "Ets un expert en redacció de notícies."
@@ -119,7 +169,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-ca",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
     ML_HEADLINE_ES = [
         "Eres un experto en escribir noticias."
@@ -139,7 +194,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-es",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
     ML_HEADLINE_IT = [
         "Sei un esperto nella scrittura di notizie."
@@ -159,7 +219,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-it",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
     ML_HEADLINE_DE = [
         "Sie sind ein Experte im Nachrichtenschreiben."
@@ -179,7 +244,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-de",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
     ML_HEADLINE_JP = [
         "あなたはニュース作成の専門家です。"
@@ -199,7 +269,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-jp",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": {"type": None},
+        },
     ]
 
     # Transcript segmentation prompt
@@ -262,7 +337,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-5-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -297,7 +372,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-4-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -331,7 +406,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-3-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -364,7 +439,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-2-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
