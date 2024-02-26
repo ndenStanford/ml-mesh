@@ -9,18 +9,16 @@ from transformers import pipeline
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
+from onclusiveml.models.iptc.compiled_iptc import (
+    extract_model_id,
+    extract_number_from_label,
+)
+from onclusiveml.models.iptc.test_samples import TEST_SAMPLES
 from onclusiveml.tracking import TrackedModelVersion
 
 
 logger = get_default_logger(__name__)
-
-# Internal libraries
-from libs.models.onclusiveml.models.iptc.class_dict import (
-    CLASS_DICT,
-    ID_TO_TOPIC,
-)
-from libs.models.onclusiveml.models.iptc.compiled_iptc import extract_model_id
-from libs.models.onclusiveml.models.iptc.test_samples import TEST_SAMPLES
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
@@ -79,6 +77,7 @@ def main() -> None:
     for dictionary in iptc_predictions:
         dictionary["score"] = float(dictionary["score"])
         label_key = str(dictionary["label"])
+        label_key = extract_number_from_label(label_key)
         dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_id]][label_key]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs

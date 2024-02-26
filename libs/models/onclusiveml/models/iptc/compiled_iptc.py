@@ -43,6 +43,22 @@ def extract_model_id(project: str) -> str:
         raise ValueError(f"Model ID not found in project string: '{project}'")
 
 
+def extract_number_from_label(label: str) -> int:
+    """Extracts the numeric part from a label string.
+
+    Args:
+        label (str): The label string, e.g., 'LABEL_0'.
+
+    Returns:
+        int: The extracted number as an integer.
+    """
+    match = re.search(r"\d+$", label)
+    if match:
+        return int(match.group())
+    else:
+        raise ValueError(f"Invalid label format: {label}")
+
+
 class PostProcessOutput(BaseModel):
     """output data structure."""
 
