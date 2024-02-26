@@ -1,3 +1,5 @@
+"""Test Huggingface trainer."""
+
 # Standard Library
 from unittest.mock import patch
 
@@ -17,6 +19,7 @@ def test_onclusive_huggingface_model_trainer_initialize(
     tracked_model_card,
     feature_store_params,
 ):
+    """Test Huggingface trainer initialization."""
     trainer = OnclusiveHuggingfaceModelTrainer(
         tracked_model_specs, tracked_model_card, feature_store_params
     )
