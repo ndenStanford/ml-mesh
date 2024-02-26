@@ -152,7 +152,7 @@ def test_predict_keyword() -> str:
 @pytest.fixture
 def test_inference_params() -> str:
     """Predict parameter fixture."""
-    return {}
+    return {"country": "FRA", "channel": "channel", "query": "sample query"}
 
 
 @pytest.fixture
@@ -167,6 +167,8 @@ def test_expected_predict_output() -> List[str]:
             "transcript_start_time": 1701127820000.0,
             "transcript_end_time": 1701127859428.5715,
             "title": "example title",
+            "summary": "example summary",
+            "segment": "example segment",
         },
     )
 

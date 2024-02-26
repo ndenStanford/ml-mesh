@@ -17,6 +17,10 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
+    country: str
+    channel: str
+    query: str
+
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction response data."""
@@ -26,7 +30,9 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     transcript_start_time: Union[float, int]
     transcript_end_time: Union[float, int]
     title: Optional[str] = None
+    summary: Optional[str] = None
     ad: Optional[str] = None
+    segment: Optional[str] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
