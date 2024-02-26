@@ -19,7 +19,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     # These are prompts for generating short summaries for each language
@@ -30,7 +30,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_SHORT_SUMMARY_FR = [
@@ -40,7 +40,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_SHORT_SUMMARY_CA = [
@@ -50,7 +50,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_SHORT_SUMMARY_ES = [
@@ -60,7 +60,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_SHORT_SUMMARY_DE = [
@@ -73,7 +73,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_SHORT_SUMMARY_IT = [
@@ -86,7 +86,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_SHORT_SUMMARY_JP = [
@@ -96,7 +96,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-3.5-turbo",
             "max_tokens": 512,
             "temperature": 0.7,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
 
@@ -123,7 +123,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_HEADLINE_FR = [
@@ -148,7 +148,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_HEADLINE_CA = [
@@ -173,7 +173,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_HEADLINE_ES = [
@@ -198,7 +198,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_HEADLINE_IT = [
@@ -223,7 +223,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_HEADLINE_DE = [
@@ -248,7 +248,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
     ML_HEADLINE_JP = [
@@ -273,7 +273,7 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": 2048,
             "temperature": 1,
-            "response_format": {"type": None},
+            "response_format": None,
         },
     ]
 
