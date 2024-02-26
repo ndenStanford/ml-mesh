@@ -285,14 +285,14 @@ class PromptEnum(OnclusiveEnum):
         The paragraph is delimited by < and >, and the keywords list is delimited by * and *.
 
         Your task is: Identify each news piece, then figure out which news piece is related to the given keywords.
-        Note: each sentence in the paragraph mush be in one news piece.
+        Note: each sentence in the paragraph must be in one news piece.
 
         You must do the analysis following the steps below:
         1. Go through the whole paragraph to understand the content.
         2. Divide the whole paragraph into several segments. Make sure that each segment focuses on a single news topic.
-        3. Analyze the content of each segment, then decide if the given keywords is related to any segment.
+        3. Analyze the content of each segment, then decide if the given keywords are related to any segment.
         4. In step 3 if a segment is chosen, you need look at the piece before and the piece after the chosen segment. If any of these pieces mention something that's also talked about in the chosen segment, even just a little bit, consider them related. This includes any small reference or mention related to the segment's topics.
-        5. If the answer in step 4 is yes, add the related sentence into the choosen segment. And output the news segment.
+        5. If the answer in step 4 is yes, add the related sentence into the chosen segment. And output the news segment.
         6. If the content holds no mention of the keywords at all, return N/A
 
         Keywords: *{keywords}*
