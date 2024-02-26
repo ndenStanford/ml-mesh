@@ -19,6 +19,7 @@ from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
 from onclusiveml.nlp import preprocess
+from onclusiveml.tracking import TrackedModelSpecs
 
 
 logger = get_default_logger(__name__, level=20)
@@ -31,17 +32,26 @@ def extract_model_id(project: str) -> str:
         project (str): The project string, e.g., 'onclusive/iptc-00000000'.
 
     Returns:
-        str: The extracted model ID or an empty string if not found.
+        str: The extracted model ID.
+
+    Raises:
+        ValueError: If the model ID cannot be found in the project string.
     """
-    # Regex to match the pattern 'onclusive/iptc-xxx'
     match = re.search(r"onclusive/iptc-(.+)", project)
     if match:
         return match.group(1)  # Return the matched group, which is the model ID
     else:
-        return ""  # Return an empty string if no match is found
+        raise ValueError(f"Model ID not found in project string: '{project}'")
 
 
-MODEL_ID = extract_model_id(os.environ.get("UNCOMPILED_PROJECT", "00000000"))
+class CompiledTrackedModelSpecs(TrackedModelSpecs):
+    """Compiled model settings."""
+
+    project: str = "onclusive/iptc-00000000"
+
+    class Config:
+        env_prefix = "compiled_"
+        env_file_encoding = "utf-8"
 
 
 class PostProcessOutput(BaseModel):
@@ -65,7 +75,9 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.id2label = CLASS_DICT[ID_TO_TOPIC[MODEL_ID]]
+        self.model_spec = CompiledTrackedModelSpecs()
+        self.model_id = extract_model_id(self.model_spec.project)
+        self.id2label = CLASS_DICT[ID_TO_TOPIC[self.model_id]]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
             compiled_iptc_pipeline.compiled_pipeline.model.compilation_specs[

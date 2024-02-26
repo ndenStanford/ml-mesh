@@ -2,7 +2,6 @@
 
 # Standard Library
 import os
-import re
 from typing import Dict, List, Union
 
 # ML libs
@@ -15,30 +14,20 @@ from onclusiveml.tracking import TrackedModelVersion
 
 logger = get_default_logger(__name__)
 
+# Internal libraries
+from libs.models.onclusiveml.models.iptc.class_dict import (
+    CLASS_DICT,
+    ID_TO_TOPIC,
+)
+from libs.models.onclusiveml.models.iptc.compiled_iptc import extract_model_id
+from libs.models.onclusiveml.models.iptc.test_samples import TEST_SAMPLES
+
 # Source
-from src.class_dict import CLASS_DICT, ID_TO_TOPIC
 from src.settings import (  # type: ignore[attr-defined]
     BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
     TrackedIPTCModelSpecs,
 )
-
-
-def extract_model_id(project: str) -> str:
-    """Extracts the model ID from a project string.
-
-    Args:
-        project (str): The project string, e.g., 'onclusive/iptc-00000000'.
-
-    Returns:
-        str: The extracted model ID or an empty string if not found.
-    """
-    # Regex to match the pattern 'onclusive/iptc-xxx'
-    match = re.search(r"onclusive/iptc-(.+)", project)
-    if match:
-        return match.group(1)  # Return the matched group, which is the model ID
-    else:
-        return ""  # Return an empty string if no match is found
 
 
 # def upload_single_model(model_path):
@@ -54,6 +43,8 @@ def main() -> None:
 
     model_specs = TrackedIPTCModelSpecs()
     model_card = TrackedIPTCBaseModelCard()
+    model_id = extract_model_id(model_specs.project)
+    sample_documents = [TEST_SAMPLES[model_id][0]]
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # download model artifact
@@ -81,19 +72,19 @@ def main() -> None:
     # --- create prediction files
     logger.info("Making predictions from example inputs")
     iptc_predictions: List[Dict[str, Union[str, float, int]]] = base_model_pipeline(
-        model_card.model_inputs.sample_documents
+        sample_documents
     )
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
-    model_id = extract_model_id(model_specs.project)
     for dictionary in iptc_predictions:
         dictionary["score"] = float(dictionary["score"])
-        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_id]][dictionary["label"]]
+        label_key = str(dictionary["label"])
+        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_id]][label_key]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
-        (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
+        (sample_documents, model_card.model_test_files.inputs),
         (iptc_settings, model_card.model_test_files.inference_params),
         (iptc_predictions, model_card.model_test_files.predictions),
     ]:
