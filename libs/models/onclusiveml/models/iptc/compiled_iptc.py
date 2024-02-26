@@ -41,7 +41,12 @@ def extract_model_id(project: str) -> str:
         return ""  # Return an empty string if no match is found
 
 
+print("+" * 10)
+uncompiled_project = os.environ.get("UNCOMPILED_PROJECT", "00000000")
+print("uncompile project {}".format(uncompiled_project))
 MODEL_ID = extract_model_id(os.environ.get("UNCOMPILED_PROJECT", "00000000"))
+print("model id {}".format(MODEL_ID))
+print("&" * 10)
 
 
 class PostProcessOutput(BaseModel):
