@@ -104,7 +104,7 @@ class TranscriptSegmentationHandler:
 
         start_time = best_portion_start[0]["ts"]
         end_time = best_portion_end[-1]["ts"]
-        start_time_offsetted = start_time - offset_start_buffer
+        start_time_offsetted = start_time + offset_start_buffer
         end_time_offsetted = end_time + offset_end_buffer
 
         if start_time_offsetted < word_transcript_filtered[0]["ts"]:
@@ -244,7 +244,7 @@ class TranscriptSegmentationHandler:
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
-        offset_start_buffer: float = 7000.0,
+        offset_start_buffer: float = -7000.0,
         offset_end_buffer: float = 5000.0,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],

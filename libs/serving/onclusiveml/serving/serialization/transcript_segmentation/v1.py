@@ -20,7 +20,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     country: str
     channel: str
     query: str
-    offset_start_buffer: Optional[float] = 7000.0
+    offset_start_buffer: Optional[float] = -7000.0
     offset_end_buffer: Optional[float] = 5000.0
 
 

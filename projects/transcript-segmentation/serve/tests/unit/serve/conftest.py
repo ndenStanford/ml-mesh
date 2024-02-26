@@ -27,7 +27,7 @@ def transcript_keywords():
 @pytest.fixture
 def transcript_offset():
     """Begin and end offset."""
-    return [7000.0, 5000.0]
+    return [-7000.0, 5000.0]
 
 
 @pytest.fixture
