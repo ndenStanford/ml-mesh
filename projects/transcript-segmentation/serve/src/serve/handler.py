@@ -169,13 +169,20 @@ class TranscriptSegmentationHandler:
                 "",
             )
         else:
+
+            segment = json_response.get(self.related_segment_key)
+            piece_before = json_response.get("Piece before")
+            piece_after = json_response.get("Piece after")
+            if json_response.get("Piece before accept") == "Yes":
+                segment = piece_before + " " + segment
+
+            if json_response.get("Piece after accept") == "Yes":
+                segment = segment + piece_after
+
             (
                 (start_time, end_time),
                 (start_time_offsetted, end_time_offsetted),
-            ) = self.find_timestamps_from_word_transcript(
-                json_response[self.related_segment_key], word_transcript
-            )
-            segment = json_response.get(self.related_segment_key)
+            ) = self.find_timestamps_from_word_transcript(segment, word_transcript)
 
         return (
             (start_time_offsetted, end_time_offsetted),
