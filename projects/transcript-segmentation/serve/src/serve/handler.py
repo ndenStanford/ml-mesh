@@ -55,6 +55,8 @@ class TranscriptSegmentationHandler:
         Args:
             segment (str): segment from GPT
             word_transcript (List[Dict[str, Any]): Word-based transcript
+            offset_start_buffer (float): start offset, float
+            offset_end_buffer (float): end offset, float
 
         Returns:
             Tuple[
@@ -133,6 +135,8 @@ class TranscriptSegmentationHandler:
         Args:
             response Union[str, Dict[str, str]]: Response from GPT model
             word_transcript (List[Dict[str, Any]): Word-based transcript
+            offset_start_buffer (float): start offset, float
+            offset_end_buffer (float): end offset, float
 
         Returns:
             Tuple[
@@ -258,6 +262,8 @@ class TranscriptSegmentationHandler:
         Args:
             transcript (List[Dict[str, Any]]): Inputted word-based transcript
             keyword (List[str]): List of keywords to query the transcript
+            offset_start_buffer (float): start offset, float
+            offset_end_buffer (float): end offset, float
 
         Returns:
             Tuple[
