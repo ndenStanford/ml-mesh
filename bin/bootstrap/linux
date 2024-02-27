@@ -75,6 +75,7 @@ _mount_ebs_volume() {
     echo 'sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"' >> ~/.bash_profile
     # shellcheck disable=SC2016
     echo 'sudo chown ec2-user: "$HOME/data"'  >> ~/.bash_profile
+    sudo chown ec2-user: "$HOME/data"
 
     separator
 }
