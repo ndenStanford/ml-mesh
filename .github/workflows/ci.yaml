@@ -1120,11 +1120,11 @@ jobs       :
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            base-project: onclusive/iptc-03000000
-            base-model: IP03000000-BASE
-            base-with-id: IP03000000-BASE-1
-            trained-project: onclusive/iptc-03000000
-            trained-model: IP03000000-TRAINED
+            base-project: onclusive/iptc-04000000
+            base-model: IP04000000-BASE
+            base-with-id: IP04000000-BASE-1
+            trained-project: onclusive/iptc-04000000
+            trained-model: IP04000000-TRAINED
 
     with:
       environment: prod
