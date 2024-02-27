@@ -230,7 +230,13 @@ def test_payload():
                 ],
                 "keywords": ["Ai"],
             },
-            "parameters": {},
+            "parameters": {
+                "country": "FRA",
+                "channel": "channel",
+                "query": "sample query",
+                "offset_start_buffer": -7000.0,
+                "offset_end_buffer": 5000.0,
+            },
         }
     }
 
@@ -249,6 +255,8 @@ def expected_response():
                 "transcript_start_time": 1701127820000.0,
                 "transcript_end_time": 1701127859428.5715,
                 "title": None,
+                "summary": None,
+                "segment": "example segment",
             },
         },
     }
