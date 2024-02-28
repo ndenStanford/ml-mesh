@@ -256,7 +256,7 @@ services:
       - /bin/sh
       - -c
       - |
-        python -m src.download
+        python -m src.util.download_compiled_model
         python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.model_server
     ports:
       - 5678:5678
