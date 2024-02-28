@@ -64,6 +64,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
     """Compiled model settings."""
 
     project: str = "onclusive/iptc-00000000"
+    model: str = "IP00000000-COMPILED"
 
     class Config:
         env_prefix = "compiled_"
