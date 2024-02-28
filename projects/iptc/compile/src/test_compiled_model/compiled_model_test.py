@@ -2,7 +2,6 @@
 
 # Standard Library
 import json
-import os
 
 # ML libs
 import torch
@@ -10,8 +9,10 @@ import torch
 # Internal libraries
 from onclusiveml.models.iptc.compiled_iptc import extract_model_id
 
-
-MODEL_ID = extract_model_id(os.environ["UNCOMPILED_PROJECT"])
+# Source
+from src.settings import (
+    UncompiledTrackedModelSpecs,  # type: ignore[attr-defined]
+)
 
 
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
@@ -68,7 +69,9 @@ def compiled_model_entity_iptc_test(  # type: ignore[no-untyped-def]
                             and each value is a tuple containing the sample content to be tested
                             and the expected sample response.
     """
-    test_sample_content, test_sample_response = test_samples[MODEL_ID]
+    model_specs = UncompiledTrackedModelSpecs()
+    model_id = extract_model_id(model_specs.project)
+    test_sample_content, test_sample_response = test_samples[model_id]
     compiled_pred = compiled_iptc(test_sample_content)
     compiled_predictions = [iptc.dict() for iptc in compiled_pred][0]
     assert compiled_predictions["label"] == test_sample_response["label"]

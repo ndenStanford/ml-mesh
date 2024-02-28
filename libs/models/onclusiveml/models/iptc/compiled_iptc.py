@@ -44,16 +44,6 @@ def extract_model_id(project: str) -> str:
         raise ValueError(f"Model ID not found in project string: '{project}'")
 
 
-class CompiledTrackedModelSpecs(TrackedModelSpecs):
-    """Compiled model settings."""
-
-    project: str = "onclusive/iptc-00000000"
-
-    class Config:
-        env_prefix = "compiled_"
-        env_file_encoding = "utf-8"
-
-
 def extract_number_from_label(label: str) -> int:
     """Extracts the numeric part from a label string.
 
@@ -68,6 +58,16 @@ def extract_number_from_label(label: str) -> int:
         return int(match.group())
     else:
         raise ValueError(f"Invalid label format: {label}")
+
+
+class CompiledTrackedModelSpecs(TrackedModelSpecs):
+    """Compiled model settings."""
+
+    project: str = "onclusive/iptc-00000000"
+
+    class Config:
+        env_prefix = "compiled_"
+        env_file_encoding = "utf-8"
 
 
 class PostProcessOutput(BaseModel):

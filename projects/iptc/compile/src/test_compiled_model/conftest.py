@@ -13,6 +13,7 @@ from onclusiveml.core.logging import (
     get_default_logger,
 )
 from onclusiveml.models.iptc import CompiledIPTC
+from onclusiveml.models.iptc.test_samples import TEST_SAMPLES
 
 # Source
 from src.settings import CompilationTestSettings, IOSettings
@@ -67,22 +68,4 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
 @pytest.fixture(scope="module")
 def test_samples():
     """Test samples fixtures."""
-    return {
-        "00000000": (
-            """Stocks reversed earlier losses to close higher despite rising oil prices
-            that followed the attack by Hamas on Israel over the weekend. Dovish comments by
-            Federal Reserve officials boosted the three major indexes. The Dow Jones Industrial
-            Average added nearly 200 points.""",
-            {"label": "economy, business and finance"},
-        ),
-        "02000000": (
-            """Depuis plusieurs années, les tribunaux sont sous les feux de la rampe dans leur traitement
-            des crimes à caractère sexuel, alors que plusieurs causes…""",
-            {"label": "judiciary"},
-        ),
-        "03000000": (
-            """Four people were seriously injured after a collision involving an SUV and a car occurred
-            on a highway south of Edmonton on Sunday night....""",
-            {"label": "accident and emergency incident"},
-        ),
-    }
+    return TEST_SAMPLES
