@@ -4,6 +4,7 @@
 # Standard Library
 import re
 from typing import List, Dict, Optional, Any, Union
+from retrying import retry
 
 # 3rd party libraries
 import requests
@@ -27,6 +28,7 @@ num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
 class TopicHandler:
     """Topic summarization with prompt backend."""
 
+    @retry(wait_fixed=2000, stop_max_attempt_number=3)
     def inference(
         self,
         article: List[str],
@@ -101,6 +103,7 @@ class TopicHandler:
         )
         return json.loads(json.loads(q.content)["generated"])["Summary"]
 
+    @retry(wait_fixed=2000, stop_max_attempt_number=3)
     def summary_aggregate(self, grouped_article: List[List]) -> Dict[str, str]:
         """Function for aggregating summaries and generating theme.
 
@@ -139,6 +142,7 @@ class TopicHandler:
 
         return record
 
+    @retry(wait_fixed=2000, stop_max_attempt_number=3)
     def process_category(self, grouped_article: List[List], category: str) -> tuple:
         """Function to prepare parallel based on category.
 
@@ -152,7 +156,11 @@ class TopicHandler:
         """
         record_cate = []
         for input_article in grouped_article:
-            res_now = self.inference(input_article, category)
+            try:
+                res_now = self.inference(input_article, category)
+            except Exception as e:
+                logger.error(f"Failed inference request. Reason: {str(e)}")
+                raise e
             record_cate.append(res_now)
 
         # combine the output of each group together
@@ -265,8 +273,12 @@ class TopicHandler:
         """
         article = self.pre_process(article)
         grouped_article = self.group(article)
-        topic_result = self.topic_aggregate(grouped_article)
-        summary_result = self.summary_aggregate(grouped_article)
+        try:
+            topic_result = self.topic_aggregate(grouped_article)
+            summary_result = self.summary_aggregate(grouped_article)
+        except Exception as e:
+            logger.error(f"Failed inference request. Reason: {str(e)}")
+            raise e
         merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
         merged_result.update(topic_result)
         merged_result.update(summary_result)
