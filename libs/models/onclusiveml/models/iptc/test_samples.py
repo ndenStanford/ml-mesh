@@ -12,9 +12,9 @@ TEST_SAMPLES = {
                 des crimes à caractère sexuel, alors que plusieurs causes…""",
         {"label": "judiciary"},
     ),
-    "03000000": (
-        """Four people were seriously injured after a collision involving an SUV and a car occurred
-                on a highway south of Edmonton on Sunday night....""",
-        {"label": "accident and emergency incident"},
+    "04000000": (
+        """Liberal Party members met with transport and freight stakeholders in Narrogin this month
+        to share their concern over the future of infrastructure project funding in the region.""",
+        {"label": "economic sector"},
     ),
 }
