@@ -61,3 +61,8 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debugger

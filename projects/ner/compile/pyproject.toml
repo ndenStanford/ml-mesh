@@ -9,8 +9,8 @@ packages = [{include = "src"}]
 python = "3.8.16"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
-[tool.poetry.group.dev.dependencies]
 
+[tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 
@@ -21,6 +21,8 @@ url = "https://pip.repos.neuron.amazonaws.com/"
 default = false
 secondary = true
 
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
 
 [build-system]
 requires = ["poetry-core"]
