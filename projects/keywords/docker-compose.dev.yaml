@@ -113,7 +113,12 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG:-latest}
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.compile_model]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download_uncompiled_model
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile_model
     ports:
       - 5678:5678
     profiles: [compile, debug]
