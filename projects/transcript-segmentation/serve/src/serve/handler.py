@@ -27,17 +27,17 @@ class TranscriptSegmentationHandler:
 
     related_segment_key: str
 
-    def find_last_occurrence(self, phrase: str, transcript: str) -> int:
+    def find_last_occurrence(self, phrase: str, response: str) -> int:
         """Find index of the last mention of phrase.
 
         Args:
             phrase (str): Given phrase
-            transcript (str): Stringified transcript
+            response (str): Stringified json
 
         Returns:
             int: Index of the last mentioned phrase
         """
-        position = transcript.rfind(phrase)
+        position = response.rfind(phrase)
         return position
 
     def remove_newlines(self, response: str) -> str:
@@ -247,7 +247,7 @@ class TranscriptSegmentationHandler:
         """Trime paragraph to focus on keywords.
 
         Args:
-            paragraph: combined content from sentence transcript
+            paragraph: combined content from transcript
             keywords (List[str]): List of keywords
 
         Returns:
