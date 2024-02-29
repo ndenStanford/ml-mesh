@@ -131,7 +131,7 @@ class TranscriptSegmentationHandler:
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
     def trim_response(self, str_response: str) -> str:
-        """Find index of the last mention of phrase.
+        """Fix incomplete json by remove field that is incomplete.
 
         Args:
             str_response (str): incomplete json string response
