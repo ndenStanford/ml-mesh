@@ -53,6 +53,8 @@ class ServedTopicModel(ServedModel):
 
         topic = self.model.aggregate(content)
 
+        print("XXXXXXXXXXXXXXXXXXXXXXXXXXX  topic obtained: ", topic)
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
