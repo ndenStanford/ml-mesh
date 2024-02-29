@@ -4,7 +4,7 @@
 # Standard Library
 import re
 from typing import List, Dict, Optional, Any, Union
-from retrying import retry
+from onclusiveml.core.retry import retry
 
 # 3rd party libraries
 import requests
@@ -28,7 +28,7 @@ num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
 class TopicHandler:
     """Topic summarization with prompt backend."""
 
-    @retry(wait_fixed=2000, stop_max_attempt_number=3)
+    @retry(tries=3)
     def inference(
         self,
         article: List[str],
@@ -103,7 +103,7 @@ class TopicHandler:
         )
         return json.loads(json.loads(q.content)["generated"])["Summary"]
 
-    @retry(wait_fixed=2000, stop_max_attempt_number=3)
+    @retry(tries=3)
     def summary_aggregate(self, grouped_article: List[List]) -> Dict[str, str]:
         """Function for aggregating summaries and generating theme.
 
@@ -142,7 +142,7 @@ class TopicHandler:
 
         return record
 
-    @retry(wait_fixed=2000, stop_max_attempt_number=3)
+    @retry(tries=3)
     def process_category(self, grouped_article: List[List], category: str) -> tuple:
         """Function to prepare parallel based on category.
 
