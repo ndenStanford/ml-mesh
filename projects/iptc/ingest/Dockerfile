@@ -70,3 +70,9 @@ RUN poetry install \
     poetry cache clear pypi --all -q
 
 USER app
+
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debugger
