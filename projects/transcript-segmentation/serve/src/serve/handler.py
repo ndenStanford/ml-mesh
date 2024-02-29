@@ -27,6 +27,19 @@ class TranscriptSegmentationHandler:
 
     related_segment_key: str
 
+    def find_last_occurrence(self, phrase: str, transcript: str) -> int:
+        """Find index of the last mention of phrase.
+
+        Args:
+            phrase (str): Given phrase
+            transcript (str): Stringified transcript
+
+        Returns:
+            int: Index of the last mentioned phrase
+        """
+        position = transcript.rfind(phrase)
+        return position
+
     def remove_newlines(self, response: str) -> str:
         """Remove new lines from the string.
 
@@ -148,7 +161,17 @@ class TranscriptSegmentationHandler:
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
-            json_response = eval(str_response)
+            try:
+                json_response = eval(str_response)
+
+            # Deal with issue where response is cutoff (finish_reason = length|content_filter)
+            except SyntaxError:
+                position = self.find_last_occurrence(
+                    """,  "Piece before":""", str_response
+                )
+                str_response = str_response[:position] + "}"
+                json_response = eval(str_response)
+
         elif isinstance(response, dict):
             json_response = response
 
