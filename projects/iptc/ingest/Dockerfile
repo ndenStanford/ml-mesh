@@ -71,7 +71,6 @@ RUN poetry install \
 
 USER app
 
-
 # --- debugger stage
 FROM builder as debugger
 

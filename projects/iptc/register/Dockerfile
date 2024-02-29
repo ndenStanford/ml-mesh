@@ -63,3 +63,8 @@ WORKDIR "${HOME}"
 RUN poetry install --no-interaction
 
 USER app
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debugger
