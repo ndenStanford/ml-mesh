@@ -166,6 +166,7 @@ class TranscriptSegmentationHandler:
 
             # Deal with issue where response is cutoff (finish_reason = length|content_filter)
             except SyntaxError:
+                # reverse order of the json response
                 fields_list = [
                     """,  "Piece after accept":""",
                     """,  "Piece before accept":""",
