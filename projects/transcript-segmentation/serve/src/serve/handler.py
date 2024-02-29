@@ -130,6 +130,33 @@ class TranscriptSegmentationHandler:
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
+    def trim_response(self, str_response: str) -> str:
+        """Find index of the last mention of phrase.
+
+        Args:
+            str_response (str): incomplete json string response
+
+        Returns:
+            str: complete json string response
+        """
+        # reverse order of the json response
+        fields_list = [
+            '",  "Piece after accept":"',
+            '",  "Piece before accept":"',
+            '",  "Piece after":"',
+            '",  "Piece before":"',
+            '",  "segment amount":"',
+        ]
+        for field in fields_list:
+            position = self.find_last_occurrence(field, str_response)
+            if position != -1:
+                break
+        return (
+            str_response[:position] + "}"
+            if position != -1
+            else str_response[:position] + '"}'
+        )
+
     def postprocess(
         self,
         response: Union[str, Dict[str, str]],
@@ -166,19 +193,7 @@ class TranscriptSegmentationHandler:
 
             # Deal with issue where response is cutoff (finish_reason = length|content_filter)
             except SyntaxError:
-                # reverse order of the json response
-                fields_list = [
-                    """,  "Piece after accept":""",
-                    """,  "Piece before accept":""",
-                    """,  "Piece after":""",
-                    """,  "Piece before":""",
-                    """,  "segment amount":""",
-                ]
-                for field in fields_list:
-                    position = self.find_last_occurrence(field, str_response)
-                    if position != -1:
-                        break
-                str_response = str_response[:position] + "}"
+                str_response = self.trim_response(str_response)
                 json_response = eval(str_response)
 
         elif isinstance(response, dict):
