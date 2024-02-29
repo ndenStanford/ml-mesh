@@ -142,10 +142,15 @@ class TranscriptSegmentationHandler:
         # reverse order of the json response
         fields_list = [
             '",  "Piece after accept":"',
+            '",  ["Piece after accept"]:"',
             '",  "Piece before accept":"',
+            '",  ["Piece before accept"]:"',
             '",  "Piece after":"',
+            '",  ["Piece after"]:"',
             '",  "Piece before":"',
+            '",  ["Piece before"]:"',
             '",  "segment amount":"',
+            '",  ["segment amount"]:"',
         ]
         for field in fields_list:
             position = self.find_last_occurrence(field, str_response)
