@@ -166,9 +166,17 @@ class TranscriptSegmentationHandler:
 
             # Deal with issue where response is cutoff (finish_reason = length|content_filter)
             except SyntaxError:
-                position = self.find_last_occurrence(
-                    """,  "Piece before":""", str_response
-                )
+                fields_list = [
+                    """,  "Piece after accept":""",
+                    """,  "Piece before accept":""",
+                    """,  "Piece after":""",
+                    """,  "Piece before":""",
+                    """,  "segment amount":""",
+                ]
+                for field in fields_list:
+                    position = self.find_last_occurrence(field, str_response)
+                    if position != -1:
+                        break
                 str_response = str_response[:position] + "}"
                 json_response = eval(str_response)
 
