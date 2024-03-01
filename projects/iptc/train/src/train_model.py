@@ -9,6 +9,12 @@ from transformers import pipeline
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
+from onclusiveml.models.iptc.compiled_iptc import (
+    extract_model_id,
+    extract_number_from_label,
+)
+from onclusiveml.models.iptc.test_samples import TEST_SAMPLES
 from onclusiveml.tracking import TrackedModelVersion
 
 
@@ -16,7 +22,6 @@ logger = get_default_logger(__name__)
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    CLASS_DICT_FIRST,
     BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
     TrackedIPTCModelSpecs,
@@ -36,6 +41,8 @@ def main() -> None:
 
     model_specs = TrackedIPTCModelSpecs()
     model_card = TrackedIPTCBaseModelCard()
+    model_id = extract_model_id(model_specs.project)
+    sample_documents = [TEST_SAMPLES[model_id][0]]
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # download model artifact
@@ -63,18 +70,20 @@ def main() -> None:
     # --- create prediction files
     logger.info("Making predictions from example inputs")
     iptc_predictions: List[Dict[str, Union[str, float, int]]] = base_model_pipeline(
-        model_card.model_inputs.sample_documents
+        sample_documents
     )
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
     for dictionary in iptc_predictions:
         dictionary["score"] = float(dictionary["score"])
-        dictionary["label"] = CLASS_DICT_FIRST["root"][dictionary["label"]]
+        label_key = str(dictionary["label"])
+        label_key = extract_number_from_label(label_key)
+        dictionary["label"] = CLASS_DICT[ID_TO_TOPIC[model_id]][label_key]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
-        (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
+        (sample_documents, model_card.model_test_files.inputs),
         (iptc_settings, model_card.model_test_files.inference_params),
         (iptc_predictions, model_card.model_test_files.predictions),
     ]:
