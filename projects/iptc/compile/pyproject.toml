@@ -7,11 +7,15 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
+transformers = "4.31.0"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
 
 [[tool.poetry.source]]
 name = "aws-neuron"
