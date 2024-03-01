@@ -67,6 +67,7 @@ _mount_ebs_volume() {
     if [ ! -d "$HOME/data" ]; then
         sudo mkfs -t xfs /dev/nvme1n1
         sudo mkdir "$HOME/data"
+        sudo chown ec2-user: "$HOME/data"
     else
         warn "Filesystem exists."
     fi
