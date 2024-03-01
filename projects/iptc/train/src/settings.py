@@ -9,6 +9,7 @@ from neptune.types.mode import Mode
 from pydantic import Field
 
 # Internal libraries
+from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSpecs,
@@ -21,7 +22,7 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
     """Tracked iptc model settings."""
 
     project: str = "onclusive/iptc"
-    model = "IPTC-TRAINED"
+    model: str = "IP00000000-TRAIN"
 
     class Config:
         env_file = "config/dev.env"
@@ -91,10 +92,27 @@ class IPTCModelParams(TrackedParams):
     report_to: str = "neptune"
 
     level: int = 1
-    first_level_root: int
-    second_level_root: int
+    first_level_root_id: int
+    second_level_root_id: int
     selected_text: str = "content"
     temperature: float = 5
+
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class DataFetchParams(FeatureStoreParams):
+    """Feature registration inputs."""
+
+    entity_name: str
+    entity_join_key: str
+    feature_view_name: str
+    dataset_upload_bucket: str
+    dataset_upload_dir: str
+    save_artifact: bool = False
+    n_records_sample: int
+    n_records_full: int
 
     class Config:
         env_file = "config/dev.env"
@@ -110,11 +128,6 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     model_params: IPTCModelParams = IPTCModelParams()
     model_inputs: Inputs = Inputs()
     # admin
-    remote_data_bucket: str = "document-classification-dataset"
-    train_data_prefix: str = "/processed_iptc/first_level_multi/train_all.csv"
-    eval_data_prefix: str = "/processed_iptc/first_level_multi/test_all.csv"
-    local_train_data_path: str = os.path.join(".", "iptc_data/train.csv")
-    local_eval_data_path: str = os.path.join(".", "iptc_data/eval.csv")
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
 

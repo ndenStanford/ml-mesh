@@ -4,7 +4,7 @@
 import torch
 
 # Source
-from src.class_dict import CLASS_DICT
+from src.class_dict import CLASS_DICT_FIRST, CLASS_DICT_SECOND, CLASS_DICT_THIRD
 
 
 # Dataset class
@@ -26,8 +26,8 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         tokenizer,
         level,
         selected_text="content",
-        first_level_root=None,
-        second_level_root=None,
+        first_level_root="arts, culture, entertainment and media",
+        second_level_root="arts and entertainment",
     ):
         self.df = df
         self.level = level
@@ -52,16 +52,16 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
             Exception: If the classification level is undefined.
         """
         if self.level == 1:
-            return list(CLASS_DICT).index(self.df.loc[idx]["topic_1"])
+            return list(CLASS_DICT_FIRST).index(self.df.loc[idx]["topic_1"])
         elif self.level == 2:
-            return list(CLASS_DICT[self.first_level_root]).index(
+            return list(CLASS_DICT_SECOND[self.first_level_root]).index(
                 self.df.loc[idx]["topic_2"]
             )
         elif self.level == 3:
             return int(
-                list(CLASS_DICT[self.first_level_root][self.second_level_root]).index(
-                    self.df.loc[idx]["topic_3"]
-                )
+                list(
+                    CLASS_DICT_THIRD[self.first_level_root][self.second_level_root]
+                ).index(self.df.loc[idx]["topic_3"])
             )
         else:
             raise ("undefined level")  # type: ignore[misc]

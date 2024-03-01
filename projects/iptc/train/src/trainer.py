@@ -12,11 +12,14 @@ from transformers import (
 )
 
 # Internal libraries
+from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
 )
 
 # Source
+from src.dataset import IPTCDataset
 from src.settings import (  # type: ignore[attr-defined]
     BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
@@ -33,11 +36,26 @@ model_card = TrackedIPTCBaseModelCard()
 class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     """Class for training and managing Onclusive models."""
 
-    def __init__(  # type: ignore[no-untyped-def]
-        self, train_dataset, eval_dataset, tracked_model_specs, model_card
-    ):
-        super().__init__(train_dataset, eval_dataset, tracked_model_specs, model_card)
-        # Implement any additional initialization if needed
+    def __init__(
+        self,
+        tracked_model_specs: TrackedModelSpecs,
+        model_card: TrackedModelCard,
+        data_fetch_params: FeatureStoreParams,
+    ) -> None:
+        """Initialize the OnclusiveModelTrainer.
+
+        Args:
+            tracked_model_specs (TrackedModelSpecs): Specifications for tracked model on neptune.
+            model_card (TrackedModelCard): Model card with specifications of the model.
+            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+
+        Returns: None
+        """
+        super().__init__(
+            tracked_model_specs=tracked_model_specs,
+            model_card=model_card,
+            data_fetch_params=data_fetch_params,
+        )
 
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
@@ -53,11 +71,28 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             report_to=self.model_card.report_to,
             compute_metrics=compute_metrics,
             model_name=self.model_card.model_name,
-            training_filename=self.model_card.training_filename,
-            test_filename=self.model_card.test_filename,
             save_steps=self.model_card.save_steps,
             save_total_limit=self.model_card.save_total_limit,
             early_stopping_patience=self.model_card.early_stopping_patience,
+        )
+
+    def data_preprocessing(self) -> None:
+        """Process the IPTC dataset to be accepted by the Huggingface trainer."""
+        self.train_dataset = IPTCDataset(
+            self.dataset_df,
+            self.model_card.tokenizer,
+            self.model_card.level,
+            self.model_card.selected_text,
+            self.model_card.first_level_root,
+            self.model_card.second_level_root,
+        )
+        self.eval_dataset = IPTCDataset(
+            self.dataset_df,
+            self.model_card.tokenizer,
+            self.model_card.level,
+            self.model_card.selected_text,
+            self.model_card.first_level_root,
+            self.model_card.second_level_root,
         )
 
     def train(self) -> None:
@@ -78,12 +113,10 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         )
         self.trainer.train()
 
-    def predict(self):  # type: ignore[no-untyped-def]
+    def predict(self, inputs: str):  # type: ignore[no-untyped-def]
         """Implement prediction logic."""
-        sample_prediction = self.trainer.predict(
-            self.model_card.model_inputs.sample_documents
-        )
-        return sample_prediction
+        prediction = self.trainer.predict(inputs)
+        return prediction
 
     def save(self) -> None:
         """Save the model."""
@@ -103,3 +136,16 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.initialize_model()
         self.optimize_model()
         self.save()
+        if self.data_fetch_params.save_artifact:
+            sample_docs = self.model_card.sample_documents
+            sample_predictions = self.predict(sample_docs)
+
+        super(OnclusiveHuggingfaceModelTrainer, self).__call__(
+            [sample_docs, self.model_card.model_params.dict(), sample_predictions],
+            [
+                self.model_card.model_test_files.inputs,
+                self.model_card.model_test_files.inference_params,
+                self.model_card.model_test_files.predictions,
+            ],
+            self.iptc_model_local_dir,
+        )
