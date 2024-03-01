@@ -63,6 +63,7 @@ class ServedTopicModel(ServedModel):
             },
         )
 
+    @retry(tries=3)
     def bio(self) -> BioResponseSchema:
         """Model bio endpoint."""
         return BioResponseSchema.from_data(
