@@ -52,6 +52,40 @@ services:
     networks:
       - onclusive-net
 
+  serve-debug:
+    build:
+      context: ../../
+      dockerfile: projects/topic-summarization/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: topic-summarization
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
+    profiles: [serve, debug]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
+    ports:
+      - 5678:5678
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-summarization-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MULTIPROCESS_WORKER: 5
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
@@ -127,7 +161,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [serve, integration, functional]
+    profiles: [serve, integration, functional, debug]
     ports:
       - 4000:4000
     environment:
@@ -164,7 +198,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [serve, integration, functional]
+    profiles: [serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -183,7 +217,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [serve, integration, functional]
+    profiles: [serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
