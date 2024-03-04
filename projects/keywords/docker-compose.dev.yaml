@@ -213,13 +213,13 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
     profiles: [serve, functional, load]
-    command: [python, -m, src.serve.model_server]
+    command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: keywords-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-162
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
@@ -257,7 +257,7 @@ services:
       - -c
       - |
         python -m src.util.download_compiled_model
-        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.model_server
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
     ports:
       - 5678:5678
       - 8000:8000
@@ -266,7 +266,7 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/KEYWORDS-COMPILED-162
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
