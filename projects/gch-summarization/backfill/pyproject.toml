@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ner-backfill"
+name = "gch-summarization-backfill"
 version = "0.1.0"
 description = ""
 authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
