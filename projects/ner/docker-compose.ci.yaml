@@ -385,8 +385,8 @@ services:
   backfill-unit:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/ner/compile
+        source: backfill
+        target: /projects/ner/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]

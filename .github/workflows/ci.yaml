@@ -738,7 +738,6 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
-
           # serve
           - name: serve
             download-model: true
@@ -949,6 +948,15 @@ jobs       :
             download-model: false
             integration: true
             functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
