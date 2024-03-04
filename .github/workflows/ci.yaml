@@ -1068,9 +1068,6 @@ jobs       :
           - project: ner
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1083,6 +1080,79 @@ jobs       :
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
+  # TRAIN MULTI MODELS
+  # ===============================================
+
+  run-multi-train-pipelines:
+    name: Train Model
+    uses: ./.github/workflows/_train-multi-model.yaml
+    needs:
+      - run-repository-state
+      - run-keywords-project
+      - run-summarization-project
+      - run-gch-summarization-project
+      - run-sentiment-project
+      - run-ner-project
+      - run-lsh-project
+      - run-iptc-project
+      - run-topic-project
+      - run-register-pipelines
+      - get-target-branch-name
+      - run-get-core-dependencies-versions
+
+    strategy:
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      max-parallel: 5
+      matrix:
+        models:
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            base-project: onclusive/iptc-00000000
+            base-model: IP00000000-BASE
+            base-with-id: IP00000000-BASE-8
+            trained-project: onclusive/iptc-00000000
+            trained-model: IP00000000-TRAINED
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            base-project: onclusive/iptc-02000000
+            base-model: IP02000000-BASE
+            base-with-id: IP02000000-BASE-1
+            trained-project: onclusive/iptc-02000000
+            trained-model: IP02000000-TRAINED
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            base-project: onclusive/iptc-04000000
+            base-model: IP04000000-BASE
+            base-with-id: IP04000000-BASE-1
+            trained-project: onclusive/iptc-04000000
+            trained-model: IP04000000-TRAINED
+
+    with:
+      environment: prod
+      project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+      tag: ${{ matrix.models.tag }}
+      base-project: ${{ matrix.models.base-project || ''}}
+      base-model: ${{ matrix.models.base-model || ''}}
+      base-with-id: ${{ matrix.models.base-with-id || ''}}
+      trained-project: ${{ matrix.models.trained-project || ''}}
+      trained-model: ${{ matrix.models.trained-model || ''}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
