@@ -16,6 +16,9 @@ train = {path = "../../../libs/training"}
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
 
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
+
 [[tool.poetry.source]]
 name = "pipy-nvidia"
 url = "https://pypi.nvidia.com"
