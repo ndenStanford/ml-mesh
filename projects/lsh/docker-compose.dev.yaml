@@ -23,14 +23,14 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
-    command: [python, -m, src.serve.model_server]
+    command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: lsh-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ENVIRONMENT: dev
       DOCS_URL: /lsh/docs
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.model_server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
@@ -50,6 +50,47 @@ services:
       retries: 5
       start_period: 5s
       timeout: 10s
+
+  serve-debug:
+    build:
+      context: ../../
+      dockerfile: projects/lsh/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: lsh
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: lsh-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ENVIRONMENT: dev
+      DOCS_URL: /lsh/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+    profiles: [serve, debug]
+    # command:
+    #   - /bin/sh
+    #   - -c
+    #   - |
+    #     python -m src.util.download_compiled_model
+    #     python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
+    ports:
+      - 5678:5678
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
 
   # unit tests
   serve-unit:

@@ -9,9 +9,9 @@ from fastapi.testclient import TestClient
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServingParams
+from projects.lsh.serve.src.serve.__main__ import model_server
 
 # Source
-from src.serve.model_server import model_server
 from src.serve.schemas import BioResponseSchema
 
 
