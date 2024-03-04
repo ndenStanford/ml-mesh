@@ -558,7 +558,6 @@ services:
     ports:
       - 5678:5678
     profiles: [backfill, debug]
-    network_mode: service:taskmanager
     environment:
       HOST: internal.api.ml.stage.onclusive.com
       NAMESPACE: ner
@@ -614,7 +613,7 @@ services:
     command: [jobmanager]
     ports:
       - 8081:8081
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     environment:
       FLINK_PROPERTIES: |
@@ -629,7 +628,7 @@ services:
     command: [taskmanager]
     ports:
       - 8100-8200:8100-8200
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     environment:
       FLINK_PROPERTIES: |
@@ -649,14 +648,14 @@ services:
       - 8099:8099
     depends_on:
       - jobmanager
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     volumes:
       - backfill-volume:/tmp/beam-artifact-staging
 
   zookeeper:
     image: confluentinc/cp-zookeeper
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     ports:
       - 2181:2181
@@ -667,7 +666,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:6.1.13
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     ports:
       - 9092:9092
@@ -689,6 +688,7 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui
+    profiles: [backfill, debug]
     ports:
       - 9000:9000
     environment:
