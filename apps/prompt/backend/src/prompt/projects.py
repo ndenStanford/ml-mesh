@@ -29,7 +29,7 @@ def project_creation(alias: str) -> int:
 
 
 def project_deletion(alias: str) -> int:
-    """Creates project and sub-prompts in Github repository."""
+    """Deletes project and sub-prompts in Github repository."""
     try:
         contents = repo.get_contents(alias)
     except UnknownObjectException:
@@ -48,7 +48,7 @@ def project_deletion(alias: str) -> int:
 
 
 def get_project(alias: str) -> str:
-    """Get project in Github repository."""
+    """Get project (path) in Github repository."""
     contents = repo.get_contents("")
     for content_file in contents:
         if content_file.type == "dir" and content_file.name == alias:
@@ -56,7 +56,7 @@ def get_project(alias: str) -> str:
 
 
 def list_projects() -> List[str]:
-    """Retrieves a list of projects."""
+    """Retrieves a list of projects (list of folder)."""
     try:
         contents = repo.get_contents("")
         projects = list_folders_recursive(contents)
