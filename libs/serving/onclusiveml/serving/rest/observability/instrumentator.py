@@ -3,6 +3,9 @@
 # Standard Library
 import os
 
+# 3rd party libraries
+from fastapi import FastAPI
+
 # Internal libraries
 from onclusiveml.serving.rest.observability.handlers import (
     metrics,
@@ -11,7 +14,6 @@ from onclusiveml.serving.rest.observability.handlers import (
 from onclusiveml.serving.rest.observability.middlewares import (
     PrometheusMiddleware,
 )
-from onclusiveml.serving.rest.serve.model_server import ModelServer
 
 
 class Instrumentator:
@@ -19,23 +21,21 @@ class Instrumentator:
 
     def __init__(
         self,
-        app: ModelServer,
+        app: FastAPI,
         app_name: str = "FastAPI App",
         metrics_endpoint: str = "/metrics",
     ):
         """An entry point to metrics instrumentation.
 
         Args:
-            app (ModelServer): The FastAPI app.
+            app (FastAPI): The FastAPI app.
             app_name (str, optional): The name of the app. Defaults to "FastAPI App".
             metrics_endpoint (str, optional): The endpoint for metrics. Defaults to "/metrics".
         """
         self.app = app
         self.app_name = app_name
         self.metrics_endpoint = metrics_endpoint
-        self.multiprocess = (
-            True if app.configuration.uvicorn_settings.workers > 1 else False
-        )
+        self.multiprocess = int(os.getenv("ONCLUSIVEML_SERVING_UVICORN_WORKERS", 0)) > 1
 
     def setup(self) -> "Instrumentator":
         """Set up Instrumentator with Prometheus Middlewares and routes.
@@ -59,11 +59,11 @@ class Instrumentator:
         return self
 
     @staticmethod
-    def enable(app: ModelServer, app_name: str) -> "Instrumentator":
+    def enable(app: FastAPI, app_name: str) -> "Instrumentator":
         """Class Method to conveniently enable Instrumentator on a FastAPI app.
 
         Args:
-            app (ModelServer): The FastAPI app.
+            app (FastAPI): The FastAPI app.
             app_name (str): The name of the app.
 
         Returns:
