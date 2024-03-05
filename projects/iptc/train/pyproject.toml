@@ -7,15 +7,20 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-torch = "1.9.1"
-transformers = "4.17.0"
+torch = "1.12.1"
+transformers = "4.31.0"
 tracking = {path = "../../../libs/tracking"}
-core = {path = "../../../libs/core"}
 models = {path = "../../../libs/models"}
-training = {path = "../../../libs/training"}
+train = {path = "../../../libs/training"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true
 
 [build-system]
 requires = ["poetry-core"]

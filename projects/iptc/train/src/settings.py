@@ -21,10 +21,11 @@ from onclusiveml.tracking import (
 class TrackedIPTCModelSpecs(TrackedModelSpecs):
     """Tracked iptc model settings."""
 
-    project: str = "onclusive/iptc"
-    model: str = "IP00000000-TRAIN"
+    project: str = "onclusive/iptc-00000000"
+    model = "IP00000000-TRAINED"
 
     class Config:
+        env_prefix = "trained_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
@@ -32,7 +33,7 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
 class BaseTrackedModelSpecs(TrackedModelSpecs):
     """Trained model settings."""
 
-    project: str = "onclusive/iptc"
+    project: str = "onclusive/iptc-00000000"
     model: str = "IP00000000-BASE"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
