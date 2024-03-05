@@ -31,7 +31,7 @@ class TrackedCompiledModelSpecs(TrackedModelSpecs):
 class ServerModelSettings(ServingParams):
     """Prediction model settings."""
 
-    model_name: str = "iptc"
+    model_name: str = "iptc-00000000"
     model_directory: Union[str, Path] = "."
 
 
