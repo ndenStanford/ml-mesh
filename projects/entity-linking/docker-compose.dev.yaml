@@ -53,6 +53,59 @@ services:
       start_period: 5s
       timeout: 10s
 
+  serve-debug:
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
+      ONCLUSIVEML_SERVING_ENTITY_FISHING_ENDPOINT: http://entity-fishing-backend:8090/service/disambiguate
+      ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
+      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+    user: root
+    profiles: [serve, debug]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download.__main__
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
+    ports:
+      - 5678:5678
+      - 9000:9000
+    # depends_on:
+    #   entity-fishing-backend:
+    #     condition: service_healthy
+    #   ner-serve:
+    #     condition: service_healthy
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /opt/entity-fishing/data/db
+      - type: bind
+        source: serve/src
+        target: /projects/entity-linking/serve/src
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
   serve-download-model:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.download.__main__]
@@ -175,7 +228,7 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional, load, debug]
     volumes:
       - type: bind
         source: ${HOME}/data
@@ -210,7 +263,7 @@ services:
         target: /projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
-    profiles: [serve]
+    profiles: [serve, debug]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -240,7 +293,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
     command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes, -d]
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional, load, debug]
     volumes:
       - type: bind
         source: ${HOME}/data

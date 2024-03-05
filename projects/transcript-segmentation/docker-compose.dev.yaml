@@ -58,7 +58,7 @@ services:
     build:
       context: ../../
       dockerfile: projects/transcript-segmentation/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
+      target: ${TARGET_BUILD_STAGE:-debugger}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
