@@ -477,6 +477,4 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-vol:
-  serve-vol:
   backfill-vol:
