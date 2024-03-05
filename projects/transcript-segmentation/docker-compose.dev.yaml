@@ -23,12 +23,12 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
-    command: [python, -m, src.serve.server]
+    command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: transcript-segmentation-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.server:model_server
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
@@ -53,6 +53,44 @@ services:
       retries: 5
       start_period: 5s
       timeout: 10s
+
+  serve-debug:
+    build:
+      context: ../../
+      dockerfile: projects/transcript-segmentation/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: transcript-segmentation
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/transcript-segmentation-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: transcript-segmentation-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+      PROMPT_API: http://prompt-backend:4000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    profiles: [serve, debug]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
+    ports:
+      - 5678:5678
+      - 8888:8888
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
 
   # unit tests
   serve-unit:
@@ -125,7 +163,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [serve, integration, functional]
+    profiles: [serve, integration, functional, debug]
     ports:
       - 4000:4000
     environment:
@@ -162,7 +200,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [serve, integration, functional]
+    profiles: [serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -181,7 +219,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [serve, integration, functional]
+    profiles: [serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
