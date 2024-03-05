@@ -467,6 +467,23 @@ services:
         target: /projects/topic/backfill/tests
     hostname: onclusiveml
 
+  backfill-debug:
+    build:
+      context: ../../
+      dockerfile: projects/topic/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: topic
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG:-latest}
+    profiles: [backfill, debug]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.__main__]
+    ports:
+      - 5678:5678
+    hostname: onclusiveml
+
   backfill-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
