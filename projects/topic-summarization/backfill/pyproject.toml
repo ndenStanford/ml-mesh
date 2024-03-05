@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "ner-backfill"
+name = "topic-summarization-backfill"
 version = "0.1.0"
 description = ""
-authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
+authors = ["Nutchapol Dendumrongsup <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]

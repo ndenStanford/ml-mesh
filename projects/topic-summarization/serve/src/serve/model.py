@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.core.retry import retry
 
 # Source
 from src.serve.schema import (
@@ -41,6 +42,7 @@ class ServedTopicModel(ServedModel):
         self.model = TopicHandler()
         self.ready = True
 
+    @retry(tries=3)
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Topic-detection prediction.
 
@@ -61,6 +63,7 @@ class ServedTopicModel(ServedModel):
             },
         )
 
+    @retry(tries=3)
     def bio(self) -> BioResponseSchema:
         """Model bio endpoint."""
         return BioResponseSchema.from_data(
