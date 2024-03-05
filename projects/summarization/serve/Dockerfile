@@ -46,3 +46,8 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debugger

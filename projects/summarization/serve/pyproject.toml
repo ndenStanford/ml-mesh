@@ -21,6 +21,9 @@ fastapi = {version = "0.92.0", extras = ["all"]}
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
