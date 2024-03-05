@@ -289,7 +289,7 @@ backfill     :
   network_mode: service:taskmanager
   environment:
     HOST: internal.api.ml.stage.onclusive.com
-    NAMESPACE: ner
+    NAMESPACE: gch-summarization
     VERSION: 1
     API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
     SECURE: true
