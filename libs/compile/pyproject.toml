@@ -8,12 +8,12 @@ packages = [{include = "onclusiveml"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 numpy = "1.22.0"
-protobuf = "3.20.1"
+protobuf = "4.21"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.5.8.0", source = "aws-neuron"}
 transformers = "^4.27.2"
-pandas = "1.3.1"
+pandas = "^1.3.1"
 core = {path = "../core"}
 urllib3 = "<2.0.0"
 
