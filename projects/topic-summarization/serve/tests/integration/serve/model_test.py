@@ -30,7 +30,7 @@ def test_served_topic_model_load():
     assert served_topic_model.is_ready()
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(4)
 def test_served_topic_model_predict(
     test_predict_input, test_inference_params, test_expected_predict_output
 ):
