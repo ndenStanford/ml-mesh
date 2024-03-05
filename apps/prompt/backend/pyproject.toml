@@ -14,12 +14,14 @@ python-slugify = "8.0.1"
 redis = "4.5.5"
 python-redis-cache = "2.1.2"
 
-
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
 httpx = "0.23.3"
 freezegun = "1.2.2"
 fakeredis = {version = "2.14.1", extras = ["lua"]}
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
 
 [build-system]
 requires = ["poetry-core"]

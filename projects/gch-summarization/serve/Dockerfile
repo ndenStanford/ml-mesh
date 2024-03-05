@@ -55,4 +55,4 @@ USER root
 # --- debugger stage
 FROM builder as debugger
 
-RUN poetry install --no-interaction --with debugger
+RUN poetry install --no-interaction --with debug
