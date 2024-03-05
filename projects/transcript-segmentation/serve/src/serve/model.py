@@ -46,18 +46,33 @@ class ServedTranscriptSegmentationModel(ServedModel):
         """
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
+        parameter_input = payload.parameters
 
-        start_time, end_time, input_truncated = self.model.__call__(
-            word_transcript=inputs.transcript, keywords=inputs.keywords
+        (
+            (start_time_offsetted, end_time_offsetted),
+            (start_time, end_time),
+            title,
+            summary,
+            segment,
+        ) = self.model.__call__(
+            word_transcript=inputs.transcript,
+            keywords=inputs.keywords,
+            offset_start_buffer=parameter_input.offset_start_buffer,
+            offset_end_buffer=parameter_input.offset_end_buffer,
         )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={
-                "start_time": start_time,
-                "end_time": end_time,
-                "input_truncated": input_truncated,
+                "start_time": start_time_offsetted,
+                "end_time": end_time_offsetted,
+                "transcript_start_time": start_time,
+                "transcript_end_time": end_time,
+                "title": title,
+                "summary": summary,
+                "ad": None,
+                "segment": segment,
             },
         )
 

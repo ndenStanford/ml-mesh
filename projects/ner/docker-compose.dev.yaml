@@ -16,7 +16,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
     volumes:
       - type: bind
         source: train/src
@@ -65,7 +65,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG:-latest}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
@@ -166,14 +166,14 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: ner-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
@@ -224,8 +224,8 @@ services:
       NEPTUNE_CLIENT_MODE: read-only
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-38
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-133
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
     hostname: onclusiveml
     networks: [onclusive-net]
 
@@ -245,7 +245,7 @@ services:
         target: /projects/ner/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
       ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
@@ -276,7 +276,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
@@ -303,7 +303,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/ner
@@ -334,7 +334,7 @@ services:
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
     # serving params
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       # load test params
@@ -373,10 +373,10 @@ services:
       NEPTUNE_CLIENT_MODE: async
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-38
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-133
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-133
       DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
@@ -397,6 +397,170 @@ services:
       RUNNER_OS: development-os
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+  # =============================================
+  # BACKFILL
+  # =============================================
+
+  backfill:
+    build:
+      context: ../../
+      dockerfile: projects/ner/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: ner
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+    volumes:
+      - type: bind
+        source: backfill/src
+        target: /projects/ner/backfill/src
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+    entrypoint: [python, -m, src.backfill.__main__]
+    profiles: [backfill]
+    network_mode: service:taskmanager
+    environment:
+      HOST: internal.api.ml.stage.onclusive.com
+      NAMESPACE: ner
+      VERSION: 1
+      API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+      SECURE: true
+      JOB_NAME: ner-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: beam-input
+      TARGET_TOPIC: beam-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    depends_on:
+      - jobserver
+      - kafka
+      - zookeeper
+
+  backfill-unit:
+    volumes:
+      - type: bind
+        source: backfill
+        target: /projects/ner/backfill
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
+    environment:
+      HOST: test.onclusive.com
+      NAMESPACE: ner
+      VERSION: 1
+      API_KEY: test
+      SECURE: true
+      JOB_NAME: ner-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: test-input
+      TARGET_TOPIC: test-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  jobmanager:
+    image: apache/flink:1.16-scala_2.12-java11
+    command: [jobmanager]
+    ports:
+      - 8081:8081
+    profiles: [backfill]
+    networks: [onclusive-net]
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 1
+
+  taskmanager:
+    image: apache/flink:1.16-scala_2.12-java11
+    scale: 1
+    depends_on:
+      - jobmanager
+    command: [taskmanager]
+    ports:
+      - 8100-8200:8100-8200
+    profiles: [backfill]
+    networks: [onclusive-net]
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        parallelism.default: 1
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+
+  jobserver:
+    image: apache/beam_flink1.16_job_server:2.49.0
+    command:
+      - --flink-master=jobmanager:8081
+    ports:
+      - 8097:8097
+      - 8098:8098
+      - 8099:8099
+    depends_on:
+      - jobmanager
+    profiles: [backfill]
+    networks: [onclusive-net]
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    profiles: [backfill]
+    networks: [onclusive-net]
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+  kafka:
+    image: confluentinc/cp-kafka:6.1.13
+    profiles: [backfill]
+    networks: [onclusive-net]
+    ports:
+      - 9092:9092
+      - 9094:9094
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      LAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CREATE_TOPICS: beam-output:1:1,beam-input:1:1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      TOPIC_AUTO_CREATE: true
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    ports:
+      - 9000:9000
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
+
+volumes :
+  backfill-volume:
 
 networks:
   onclusive-net:

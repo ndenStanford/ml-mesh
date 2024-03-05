@@ -15,28 +15,53 @@ class PromptEnum(OnclusiveEnum):
         + "{text}"  # noqa: W503
         + "\n",  # noqa: W503
         "english-summarization",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     # These are prompts for generating short summaries for each language
     ML_SHORT_SUMMARY_EN = [
         "Give me a short summary for this text in english: " + "\n" + "{text}" + "\n",
         "ml-short-summary-english",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     ML_SHORT_SUMMARY_FR = [
         "Donnez-moi un petit résumé de ce texte en français: " + "\n" + "{text}" + "\n",
         "ml-short-summary-french",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     ML_SHORT_SUMMARY_CA = [
         "Dóna'm un breu resum d'aquest text en català: " + "\n" + "{text}" + "\n",
         "ml-short-summary-catalan",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     ML_SHORT_SUMMARY_ES = [
         "Dame un breve resumen de este texto en español: " + "\n" + "{text}" + "\n",
         "ml-short-summary-spanish",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     ML_SHORT_SUMMARY_DE = [
         "Geben Sie mir eine kurze Zusammenfassung für diesen Text auf Deutsch: "
@@ -44,7 +69,12 @@ class PromptEnum(OnclusiveEnum):
         + "{text}"
         + "\n",
         "ml-short-summary-german",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     ML_SHORT_SUMMARY_IT = [
         "Datemi un breve riassunto di questo testo in italiano: "
@@ -52,12 +82,22 @@ class PromptEnum(OnclusiveEnum):
         + "{text}"
         + "\n",
         "ml-short-summary-italian",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
     ML_SHORT_SUMMARY_JP = [
         "この文章の要約を日本語で教えてください。: " + "\n" + "{text}" + "\n",
         "ml-short-summary-japanese",
-        {"model_name": "gpt-3.5-turbo", "max_tokens": 512, "temperature": 0.7},
+        {
+            "model_name": "gpt-3.5-turbo",
+            "max_tokens": 512,
+            "temperature": 0.7,
+            "response_format": None,
+        },
     ]
 
     # These are headline generation prompt3 in their given language
@@ -79,7 +119,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-en",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
     ML_HEADLINE_FR = [
         "Vous êtes un expert dans la rédaction d'articles d'actualité."
@@ -99,7 +144,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-fr",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
     ML_HEADLINE_CA = [
         "Ets un expert en redacció de notícies."
@@ -119,7 +169,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-ca",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
     ML_HEADLINE_ES = [
         "Eres un experto en escribir noticias."
@@ -139,7 +194,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-es",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
     ML_HEADLINE_IT = [
         "Sei un esperto nella scrittura di notizie."
@@ -159,7 +219,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-it",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
     ML_HEADLINE_DE = [
         "Sie sind ein Experte im Nachrichtenschreiben."
@@ -179,7 +244,12 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-de",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
     ML_HEADLINE_JP = [
         "あなたはニュース作成の専門家です。"
@@ -199,34 +269,45 @@ class PromptEnum(OnclusiveEnum):
         + "<{text}>"
         + "\n",
         "ml-headline-generation-jp",
-        {"model_name": "gpt-4", "max_tokens": 2048, "temperature": 1},
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": 2048,
+            "temperature": 1,
+            "response_format": None,
+        },
     ]
 
     # Transcript segmentation prompt
     ML_TRANSCRIPT_SEGMENTATION = [
         """
-        Your task is to detect the most relevant segment of a transcript related to a list of keywords which are comma seperated and return a start and end timestamp of that segment.
-        This task is really important to me.
-        The transcript is delimited by < and >, and the list of keywords are delimited by * and *.
+        You are an expert in news analysis.
+        You will be given a paragraph which consists of several different news pieces, and a list of keywords.
+        The paragraph is delimited by < and >, and the keywords list is delimited by * and *.
 
-        The transcript is a list of json objects. Each json object has 3 keys: "start_time", "end_time" and "content". When you do the analysis, focus on content.
+        Your task is: Identify each news piece, then figure out which news piece is related to the given keywords.
+        Note: each sentence in the paragraph must be in one news piece.
 
-        You must do the analysis using following steps:
-        1. Go through the whole transcript to get a high level understanding of segments of the transcript where the keywords are discussed.
-        2. Find the most relevant and informative segment about they keywords from the transcript. The segment should also contain the keywords.
-        3. You must only return the start timestamp of where the most relevant segment begins and the timestamp of where where the most relevant segment ends as a JSON object.
-        4. If the transcript holds no mention or relation to the keywords at all, set the value 0 for both start and end timestamp.
-        5. The start and end timestamp must both end exist in the transcript and must not be modified at all.
-        6. The key for start timestamp is "start_time" and the key for end timestamp is "end_time"
+        You must do the analysis following the steps below:
+        1. Go through the whole paragraph to understand the content.
+        2. Divide the whole paragraph into several segments. Make sure that each segment focuses on a single news topic.
+        3. Analyze the content of each segment, then decide if the given keywords are related to any segment.
+        4. In step 3 if a segment is chosen, you need look at the piece before and the piece after the chosen segment. If any of these pieces mention something that's also talked about in the chosen segment, even just a little bit, consider them related. This includes any small reference or mention related to the segment's topics.
+        5. If the answer in step 4 is yes, add the related sentence into the chosen segment. And output the news segment.
+        6. If the content holds no mention of the keywords at all, return N/A
 
-        Transcript: <{transcript}>
-        Keyword: *{keywords}*
+        Keywords: *{keywords}*
+        Content: <{paragraph}>
 
         Show me your answer in following JSON format. Here [XXX] is placeholder:
-        [Relationship with keyword]:[The relationship between keyword and this transcript content]
-        [Related segment]:[The start and end timestamps of the relevant segment as a JSON object]
-        [Reason]:[The reason you believe this segment relates to the keywords]
-        [Reason for not choose]:[Your reason for why no part of the transcript holds relevancy to the keywords]
+        [Related segment]:[The relevant news segment about the keywords]
+        [Reason for segment]:[The reason you believe this story relates to the keywords]
+        [Segment summary]:[A one sentence summary of the segment extracted]
+        [Segment title]:[A title that represents the segment extracted]
+        [segment amount]: [How many news segment in total]
+        [Piece before]:[The piece before the chosen segment]
+        [Piece after]: [The piece after the chosen segment]
+        [Piece before accept]: [Does the piece before the segment hold any relevance to the segment and keywords? You must answer with just Yes or No]
+        [Piece after accept]: [Does the piece after the segment hold any relevance to the segment and keywords? You must answer with just Yes or No]
         """,  # noqa: E501
         "ml-transcript-segmentation",
         {
@@ -264,7 +345,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-5-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -299,7 +380,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-4-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -333,7 +414,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-3-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -366,7 +447,7 @@ class PromptEnum(OnclusiveEnum):
         Title: [The title you generate for these articles]
         Summary: [The summary you generate for these articles]
         """,  # noqa: E501
-        "ml-multiple-articles-summary",
+        "ml-2-articles-summary",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,

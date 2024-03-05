@@ -194,8 +194,6 @@ services:
 
   # ner serve download model
   ner-serve-download-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     build:
       context: ../../
       dockerfile: projects/ner/serve/Dockerfile
@@ -220,10 +218,11 @@ services:
       NEPTUNE_CLIENT_MODE: read-only
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-39
+      NEPTUNE_MODEL_VERSION_ID: NER-COMPILED-38
       ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/NER-COMPILED-38
+      ONCLUSIVEML_SERVING_WAIT_SECONDS_AFTER_DOWNLOAD: 600 # 10 minutes
     hostname: onclusiveml
     networks: [onclusive-net]
 

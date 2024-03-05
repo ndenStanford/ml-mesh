@@ -38,6 +38,7 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MULTIPROCESS_WORKER: 5
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s
@@ -193,6 +194,170 @@ services:
       timeout: 10s
     networks:
       - onclusive-net
+
+  # =============================================
+  # BACKFILL
+  # =============================================
+
+  backfill:
+    build:
+      context: ../../
+      dockerfile: projects/topic-summarization/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: topic-summarization
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+    volumes:
+      - type: bind
+        source: backfill/src
+        target: /projects/topic-summarization/backfill/src
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
+    entrypoint: [python, -m, src.backfill.__main__]
+    profiles: [backfill]
+    network_mode: service:taskmanager
+    environment:
+      HOST: internal.api.ml.stage.onclusive.com
+      NAMESPACE: topic-summarization
+      VERSION: 1
+      API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+      SECURE: true
+      JOB_NAME: topic-summarization-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: beam-input
+      TARGET_TOPIC: beam-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    depends_on:
+      - jobserver
+      - kafka
+      - zookeeper
+
+  backfill-unit:
+    volumes:
+      - type: bind
+        source: backfill
+        target: /projects/topic-summarization/backfill
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
+    environment:
+      HOST: test.onclusive.com
+      NAMESPACE: topic-summarization
+      VERSION: 1
+      API_KEY: test
+      SECURE: true
+      JOB_NAME: topic-summarization-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: test-input
+      TARGET_TOPIC: test-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  jobmanager:
+    image: apache/flink:1.16-scala_2.12-java11
+    command: [jobmanager]
+    ports:
+      - 8081:8081
+    profiles: [backfill]
+    networks: [onclusive-net]
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 1
+
+  taskmanager:
+    image: apache/flink:1.16-scala_2.12-java11
+    scale: 1
+    depends_on:
+      - jobmanager
+    command: [taskmanager]
+    ports:
+      - 8100-8200:8100-8200
+    profiles: [backfill]
+    networks: [onclusive-net]
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        parallelism.default: 1
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+
+  jobserver:
+    image: apache/beam_flink1.16_job_server:2.49.0
+    command:
+      - --flink-master=jobmanager:8081
+    ports:
+      - 8097:8097
+      - 8098:8098
+      - 8099:8099
+    depends_on:
+      - jobmanager
+    profiles: [backfill]
+    networks: [onclusive-net]
+    volumes:
+      - backfill-volume:/tmp/beam-artifact-staging
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    profiles: [backfill]
+    networks: [onclusive-net]
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+  kafka:
+    image: confluentinc/cp-kafka:6.1.13
+    profiles: [backfill]
+    networks: [onclusive-net]
+    ports:
+      - 9092:9092
+      - 9094:9094
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      LAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CREATE_TOPICS: beam-output:1:1,beam-input:1:1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      TOPIC_AUTO_CREATE: true
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    ports:
+      - 9000:9000
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
+
+volumes :
+  backfill-volume:
 
 networks:
   onclusive-net:

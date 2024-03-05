@@ -65,13 +65,22 @@ def test_served_transcript_segmentation_model_predict(
         <= 200000
     )
     assert (
-        test_actual_predict_output.data.attributes.input_truncated
-        == test_expected_predict_output.data.attributes.input_truncated
+        abs(
+            test_actual_predict_output.data.attributes.transcript_start_time
+            - test_expected_predict_output.data.attributes.transcript_start_time
+        )
+        <= 200000
     )
     assert (
-        test_actual_predict_output.data.attributes.summary
-        == test_expected_predict_output.data.attributes.summary
+        abs(
+            test_actual_predict_output.data.attributes.transcript_end_time
+            - test_expected_predict_output.data.attributes.transcript_end_time
+        )
+        <= 200000
     )
+    assert isinstance(test_actual_predict_output.data.attributes.title, str)
+    assert isinstance(test_actual_predict_output.data.attributes.summary, str)
+    assert isinstance(test_actual_predict_output.data.attributes.segment, str)
     assert (
         test_actual_predict_output.data.identifier
         == test_expected_predict_output.data.identifier

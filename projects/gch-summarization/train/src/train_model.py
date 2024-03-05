@@ -105,6 +105,7 @@ def main() -> None:
         model_card.model_params_it.huggingface_model_reference_it,
         max_length=512,
         truncate=True,
+        model_max_length=1024,
     )
     model_it = BartForConditionalGeneration.from_pretrained(
         model_card.model_params_it.huggingface_model_reference_it
