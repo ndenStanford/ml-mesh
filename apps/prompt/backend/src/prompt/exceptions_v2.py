@@ -29,13 +29,13 @@ class ProjectInvalidAlias(BasePromptException):
 
 
 class CreationProjectImpossible(BasePromptException):
-    """Project not created."""
+    """Project not created (if project_creation function did not return 200)."""
 
     message_format = "Project '{alias}' cannot be created at the moment."
 
 
 class DeletionProtectedProject(BasePromptException):
-    """Attempt to delete deletion Protected Project."""
+    """Delete impossible (if project_deletion function did not return 200)."""
 
     message_format = "Project '{alias}' cannot be deleted."
 
