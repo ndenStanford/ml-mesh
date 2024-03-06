@@ -36,7 +36,7 @@ WORKDIR "${HOME}"
 
 
 RUN MINIMAL_KATS=1 pip install --no-cache-dir holidays==0.24 kats==0.2.0 &&\
-    poetry install --without dev --no-root --no-interaction --no-ansi && \
+    poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
