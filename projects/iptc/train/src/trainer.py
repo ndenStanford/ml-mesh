@@ -11,6 +11,9 @@ from transformers import (
     Trainer,
 )
 
+# 3rd party libraries
+from sklearn.model_selection import train_test_split
+
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
@@ -76,10 +79,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             early_stopping_patience=self.model_card.early_stopping_patience,
         )
 
-    def data_preprocessing(self) -> None:
-        """Process the IPTC dataset to be accepted by the Huggingface trainer."""
-        self.train_dataset = IPTCDataset(
+    def data_preprocess(self) -> None:
+        """Preprocess to torch dataset and split for train and evaluation."""
+        self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
+            test_size=0.20,
+            stratify=self.dataset_df[f"topic_{self.model_card.level}"],
+        )
+        self.train_dataset = IPTCDataset(
+            self.train_df,
             self.model_card.tokenizer,
             self.model_card.level,
             self.model_card.selected_text,
@@ -87,7 +95,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.second_level_root,
         )
         self.eval_dataset = IPTCDataset(
-            self.dataset_df,
+            self.eval_df,
             self.model_card.tokenizer,
             self.model_card.level,
             self.model_card.selected_text,

@@ -93,8 +93,8 @@ class IPTCModelParams(TrackedParams):
     report_to: str = "neptune"
 
     level: int = 1
-    first_level_root_id: int
-    second_level_root_id: int
+    first_level_root: str
+    second_level_root: str
     selected_text: str = "content"
     temperature: float = 5
 
