@@ -14,9 +14,6 @@ from onclusiveml.core.logging.constants import (
     OnclusiveLogMessageFormat,
     OnclusiveService,
 )
-from onclusiveml.serving.rest.observability import (  # noqa: F401
-    OnclusiveServingJSONAccessFormatter,
-)
 
 
 class OnclusiveServingLogMessageFormat(OnclusiveEnum):
