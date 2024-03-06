@@ -45,7 +45,7 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --with dev
 
 # TODO: switching user to root is security risk. Instead extend the permission of the app user
 # required to access mounted docker volume with write permission

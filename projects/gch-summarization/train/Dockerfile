@@ -37,7 +37,7 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction --no-ansi && \
+RUN poetry install --only main --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
@@ -50,7 +50,7 @@ FROM builder as development
 
 # install development dependencies
 RUN poetry install \
-    --only dev \
+    --with dev \
     --no-root \
     --no-interaction \
     --no-ansi \

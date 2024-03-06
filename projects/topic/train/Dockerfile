@@ -38,7 +38,7 @@ WORKDIR "${HOME}"
 # hadolint ignore=DL3002
 USER root
 
-RUN poetry install --no-interaction --no-ansi && \
+RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
@@ -66,7 +66,7 @@ FROM builder as development
 
 # install development dependencies
 RUN poetry install \
-    --only dev \
+    --with dev \
     --no-root \
     --no-interaction \
     --no-ansi \
