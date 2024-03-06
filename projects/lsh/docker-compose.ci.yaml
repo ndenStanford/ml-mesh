@@ -33,6 +33,7 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
+      PROMETHEUS_MULTIPROC_DIR: /tmp
     hostname: onclusiveml
     networks:
       - onclusive-net
