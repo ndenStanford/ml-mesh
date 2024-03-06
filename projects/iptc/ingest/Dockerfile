@@ -68,8 +68,6 @@ RUN poetry install \
     --no-interaction \
     --no-ansi \
     -v && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
 USER app
