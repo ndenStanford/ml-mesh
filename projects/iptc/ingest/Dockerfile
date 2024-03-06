@@ -62,13 +62,7 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
 WORKDIR "${PROJECT_DIR}"
 
-RUN poetry install \
-    --with dev \
-    --no-root \
-    --no-interaction \
-    --no-ansi \
-    -v && \
-    poetry cache clear pypi --all -q
+RUN poetry install --with dev --no-root --no-interaction --no-ansi -v
 
 USER app
 
