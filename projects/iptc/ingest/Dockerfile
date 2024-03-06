@@ -51,8 +51,6 @@ USER "${USER}"
 # --- production stage
 FROM builder as production
 
-USER app
-
 # --- test build stage
 FROM builder as development
 
@@ -62,9 +60,12 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
 WORKDIR "${PROJECT_DIR}"
 
+# hadolint ignore=DL3002
+USER root
+
 RUN poetry install --with dev --no-root --no-interaction --no-ansi -v
 
-USER app
+USER "${USER}"
 
 # --- debugger stage
 FROM builder as debugger
