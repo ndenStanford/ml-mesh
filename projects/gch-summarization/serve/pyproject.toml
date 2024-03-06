@@ -12,6 +12,7 @@ models = {path = "../../../libs/models"}
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 torch = {url = "https://download.pytorch.org/whl/cu113/torch-1.12.1%2Bcu113-cp38-cp38-linux_x86_64.whl"}
+sentencepiece = "^0.1.99"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

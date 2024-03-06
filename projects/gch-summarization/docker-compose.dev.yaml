@@ -128,7 +128,7 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
-      timeout: 10s
+      timeout: 15s
 
   serve-debug:
     build:
