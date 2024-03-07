@@ -323,25 +323,26 @@ class TranscriptSegmentationHandler:
             json=payload,
         )
         response = json.loads(q.content)["generated"]
-        try:
-            json_response = json.loads(response)
-        except json.JSONDecodeError:
-            return None
+        json_response = json.loads(response)
         # get the time stamp with ads
 
-        if isinstance(json_response.get("Advertisement detect"), str):
-            advertisement_detect = json_response.get("Advertisement detect").lower()
-        elif isinstance(json_response.get("[Advertisement detect]"), str):
-            advertisement_detect = json_response.get("[Advertisement detect]").lower()
-        else:
-            return None
+        candidate_keys = [
+            "Advertisement detect",
+            "[Advertisement detect]",
+            "advertisement detect",
+            "[advertisement detect]",
+        ]
+
+        advertisement_detect = "no"
+        for key in candidate_keys:
+            if isinstance(json_response.get(key), str):
+                advertisement_detect = json_response.get(key).lower()
+                break
 
         if advertisement_detect == "yes":
             return True
-        elif advertisement_detect == "no":
-            return False
         else:
-            return None
+            return False
 
     def __call__(
         self,
