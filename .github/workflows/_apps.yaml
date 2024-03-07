@@ -42,6 +42,9 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: AWS secret access key
+      PROMPT_REPO_GITHUB_TOKEN:
+        required: true
+        description: GitHub token for the prompt repository.
 
 jobs:
   deploy:
