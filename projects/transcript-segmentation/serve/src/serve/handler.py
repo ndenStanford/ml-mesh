@@ -309,7 +309,7 @@ class TranscriptSegmentationHandler:
             paragraph (str): transcript after postprocessing
 
         Return:
-            bool: True or False
+            Optional[bool]: True or False or None
         """
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {
@@ -328,15 +328,17 @@ class TranscriptSegmentationHandler:
         except json.JSONDecodeError:
             return None
         # get the time stamp with ads
-        if (
-            json_response.get("Advertisement detect") == "yes"
-            or json_response.get("[Advertisement detect]") == "yes"
-        ):
+
+        if isinstance(json_response.get("Advertisement detect"), str):
+            advertisement_detect = json_response.get("Advertisement detect").lower()
+        elif isinstance(json_response.get("[Advertisement detect]"), str):
+            advertisement_detect = json_response.get("[Advertisement detect]").lower()
+        else:
+            return None
+
+        if advertisement_detect == "yes":
             return True
-        elif (
-            json_response.get("Advertisement detect") == "no"
-            or json_response.get("[Advertisement detect]") == "no"
-        ):
+        elif advertisement_detect == "no":
             return False
         else:
             return None
