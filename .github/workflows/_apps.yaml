@@ -99,7 +99,8 @@ jobs:
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
-          ENVIRONMENT="ci"
+          ENVIRONMENT="ci" \
+          PROMPT_REPO_GITHUB_TOKEN="${{ secrets.PROMPT_REPO_GITHUB_TOKEN }}
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
