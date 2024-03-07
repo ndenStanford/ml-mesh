@@ -21,8 +21,16 @@ from onclusiveml.tracking import (
 class TrackedIPTCModelSpecs(TrackedModelSpecs):
     """Tracked iptc model settings."""
 
-    project: str = "onclusive/iptc-00000000"
-    model = "IP00000000-TRAINED"
+    projects: List[str] = [
+        "onclusive/iptc-00000000",
+        "onclusive/iptc-02000000",
+        "onclusive/iptc-04000000",
+    ]
+    models: List[str] = [
+        "IP00000000-TRAINED",
+        "IP02000000-TRAINED",
+        "IP04000000-TRAINED",
+    ]
 
     class Config:
         env_prefix = "trained_"
@@ -85,7 +93,7 @@ class IPTCModelParams(TrackedParams):
     train_batch_size: int = 32
     eval_batch_size: int = 64
     warmup_steps: int = 500
-    model_name: "xlm-roberta-base"
+    model_name: str = "xlm-roberta-base"
     learning_rate: str = "5e-5"
     save_steps: int = 5000
     save_total_limit: int = 10

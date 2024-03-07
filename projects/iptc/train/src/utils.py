@@ -1,4 +1,8 @@
 """Utility functions."""
+
+# Standard Library
+import re
+
 # 3rd party libraries
 from class_dict import CLASS_DICT
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
@@ -25,3 +29,31 @@ def find_num_labels(  # type: ignore[no-untyped-def]
         return len(CLASS_DICT[first_level_root])
     elif level == 3:
         return len(CLASS_DICT[first_level_root][second_level_root])
+
+
+def extract_model_id(project: str) -> str:
+    """Extracts the model ID from a project string.
+
+    Args:
+        project (str): The project string, e.g., 'onclusive/iptc-00000000'.
+
+    Returns:
+        str: The extracted model ID.
+
+    Raises:
+        ValueError: If the model ID cannot be found in the project string.
+    """
+    match = re.search(r"onclusive/iptc-(.+)", project)
+    if match:
+        return match.group(1)  # Return the matched group, which is the model ID
+    else:
+        raise ValueError(f"Model ID not found in project string: '{project}'")
+
+
+def find_category_for_subcategory(  # type: ignore[no-untyped-def]
+    class_dict, target_subcategory
+):
+    """Function to find the top-level category for a given sub-category."""
+    for top_category, subcategories in class_dict.items():
+        if target_subcategory in subcategories.values():
+            return top_category

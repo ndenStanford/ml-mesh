@@ -22,12 +22,17 @@ from onclusiveml.training.huggingface.trainer import (
 )
 
 # Source
+from src.class_dict import CLASS_DICT_SECOND, ID_TO_TOPIC
 from src.dataset import IPTCDataset
 from src.settings import (  # type: ignore[attr-defined]
     BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
 )
-from src.utils import compute_metrics
+from src.utils import (
+    compute_metrics,
+    extract_model_id,
+    find_category_for_subcategory,
+)
 
 
 # define the IPTC
@@ -78,6 +83,19 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             save_total_limit=self.model_card.save_total_limit,
             early_stopping_patience=self.model_card.early_stopping_patience,
         )
+        if self.model_card.level == 2:
+            self.first_level_root_id = extract_model_id(
+                self.tracked_model_specs.project
+            )
+            self.first_level_root = ID_TO_TOPIC[self.first_level_root_id]
+        elif self.model_card.level == 3:
+            self.second_level_root_id = extract_model_id(
+                self.tracked_model_specs.project
+            )
+            self.second_level_root = ID_TO_TOPIC[self.second_level_root_id]
+            self.first_level_root = find_category_for_subcategory(
+                CLASS_DICT_SECOND, self.second_level_root
+            )
 
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
@@ -91,16 +109,16 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.tokenizer,
             self.model_card.level,
             self.model_card.selected_text,
-            self.model_card.first_level_root,
-            self.model_card.second_level_root,
+            self.first_level_root,
+            self.second_level_root,
         )
         self.eval_dataset = IPTCDataset(
             self.eval_df,
             self.model_card.tokenizer,
             self.model_card.level,
             self.model_card.selected_text,
-            self.model_card.first_level_root,
-            self.model_card.second_level_root,
+            self.first_level_root,
+            self.second_level_root,
         )
 
     def train(self) -> None:
