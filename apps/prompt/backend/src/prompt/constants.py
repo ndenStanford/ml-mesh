@@ -318,6 +318,41 @@ class PromptEnum(OnclusiveEnum):
         },
     ]
 
+    # Transcript segmentation prompt
+    ML_TRANSCRIPT_SEGMENTATION_AD_DETECTION = [
+        """
+        You are an AI trained to distinguish between main content and advertisements in a paragraph.
+
+        The paragraph is delimited by < and >.
+
+        Use the following criteria to guide your analysis:
+        1. Content Relevance and Integration: Determine whether the content is closely related to the main theme or appears to be promotional or unrelated to the topic.
+        2. Tone and Language: Assess whether the language used is informational, educational, or entertaining consistent with the paragraph's overall tone, or if it uses persuasive language aimed at provoking action (such as 'Buy now', 'Subscribe', or 'Sign up').
+        3. Linking Patterns: Examine if the links within the paragraph aim to provide additional information or references, or if they direct readers to a product page, subscription form, or another platform for purchasing or engaging with a service or product.
+        4. Placement Within the Paragraph: Consider how each section contributes to the paragraph's narrative or informational structure, or if it seems inserted without contributing to the narrative flow, particularly noting sections that might be placed strategically to capture attention without adding to the content's value.
+        5. Disclosure Labels: Look for any labels that might indicate a section is sponsored or an advertisement, such as 'Sponsored', 'Ad', 'Promotion', or similar indicators.
+        6. Contextual Evaluation of Calls to Action: Specifically for sentences or sections calling for reader support or action, critically assess these in the context of the paragraph’s overall theme. Such content should not be classified as an advertisement if it directly relates to and supports the paragraph’s main argument or purpose.
+
+        You should follow the steps below:
+        1. Read the entire paragraph carefully.
+        2. Identify any segment that are advertisements, with the criterias provided above.
+        3. Use a 'yes' or 'no' to indicate if any advertisement inside the paragraph and output to me.
+
+        Paragraph: <{paragraph}>
+
+        Show me your result in following JSON format. Here [XXX] is placeholder:
+        [Advertisement detect]: [Answer 'yes' or 'no' to indicate if there is any advertisement in the paragraph]
+        [Advertisement content]:[The reason for why you think there is advertisement]
+        """,  # noqa: E501
+        "ml-transcript-segmentation-ad-detection",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
     ML_5_ARTICLES_SUMMARY = [
         """
         You are a summarization bot.
