@@ -329,13 +329,13 @@ class TranscriptSegmentationHandler:
             return None
         # get the time stamp with ads
         if (
-            json_response.get("Advertisement detect") == "Yes"
-            or json_response.get("[Advertisement detect]") == "Yes"
+            json_response.get("Advertisement detect") == "yes"
+            or json_response.get("[Advertisement detect]") == "yes"
         ):
             return True
         elif (
-            json_response.get("Advertisement detect") == "No"
-            or json_response.get("[Advertisement detect]") == "No"
+            json_response.get("Advertisement detect") == "no"
+            or json_response.get("[Advertisement detect]") == "no"
         ):
             return False
         else:

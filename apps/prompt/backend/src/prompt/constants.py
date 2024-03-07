@@ -336,15 +336,15 @@ class PromptEnum(OnclusiveEnum):
         You should follow the steps below:
         1. Read the entire paragraph carefully.
         2. Identify any segment that are advertisements, with the criterias provided above.
-        3. Use a 'Yes' or 'No' to indicate if any advertisement inside the paragraph and output to me.
+        3. Use a 'yes' or 'no' to indicate if any advertisement inside the paragraph and output to me.
 
         Paragraph: <{paragraph}>
 
         Show me your result in following JSON format. Here [XXX] is placeholder:
-        [Advertisement detect]: [Answer 'Yes' or 'No' to indicate if there is any advertisement in the paragraph]
+        [Advertisement detect]: [Answer 'yes' or 'no' to indicate if there is any advertisement in the paragraph]
         [Advertisement content]:[The reason for why you think there is advertisement]
         """,  # noqa: E501
-        "ml-transcript-segmentation_ad_detection",
+        "ml-transcript-segmentation-ad-detection",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
