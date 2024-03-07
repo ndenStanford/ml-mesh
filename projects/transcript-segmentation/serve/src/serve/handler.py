@@ -302,6 +302,45 @@ class TranscriptSegmentationHandler:
         end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
         return paragraph[beg:end]
 
+    def ad_detect(self, paragraph: Optional[str]) -> Optional[bool]:
+        """Detect the advertisement inside the selected transcript.
+
+        Args:
+            paragraph (str): transcript after postprocessing
+
+        Return:
+            bool: True or False
+        """
+        headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
+        payload = {
+            "paragraph": paragraph,
+        }
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(
+                settings.prompt_api_url, settings.prompt_ad_alias
+            ),
+            headers=headers,
+            json=payload,
+        )
+        response = json.loads(q.content)["generated"]
+        try:
+            json_response = json.loads(response)
+        except json.JSONDecodeError:
+            return None
+        # get the time stamp with ads
+        if (
+            json_response.get("Advertisement detect") == "Yes"
+            or json_response.get("[Advertisement detect]") == "Yes"
+        ):
+            return True
+        elif (
+            json_response.get("Advertisement detect") == "No"
+            or json_response.get("[Advertisement detect]") == "No"
+        ):
+            return False
+        else:
+            return None
+
     def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
@@ -314,6 +353,7 @@ class TranscriptSegmentationHandler:
         Optional[str],
         Optional[str],
         Optional[str],
+        Optional[bool],
     ]:
         """Prediction method for transcript segmentation.
 
@@ -361,10 +401,13 @@ class TranscriptSegmentationHandler:
             offset_end_buffer=offset_end_buffer,
         )
 
+        ad_detect_output = self.ad_detect(segment)
+
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             title,
             summary,
             segment,
+            ad_detect_output,
         )
