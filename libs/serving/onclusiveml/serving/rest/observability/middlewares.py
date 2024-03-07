@@ -75,10 +75,16 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         REQUESTS_IN_PROGRESS.labels(
-            method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+            method=method,
+            path=path,
+            app_name=self.app_name,
+            pod_name=self.pod_name,
         ).inc()
         REQUESTS.labels(
-            method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+            method=method,
+            path=path,
+            app_name=self.app_name,
+            pod_name=self.pod_name,
         ).inc()
         before_time = time.perf_counter()
         try:
@@ -101,7 +107,10 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
             trace_id = trace.format_trace_id(span.get_span_context().trace_id)
 
             REQUESTS_PROCESSING_TIME.labels(
-                method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+                method=method,
+                path=path,
+                app_name=self.app_name,
+                pod_name=self.pod_name,
             ).observe(after_time - before_time, exemplar={"TraceID": trace_id})
         finally:
             RESPONSES.labels(
@@ -112,7 +121,10 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
                 pod_name=self.pod_name,
             ).inc()
             REQUESTS_IN_PROGRESS.labels(
-                method=method, path=path, app_name=self.app_name, pod_name=self.pod_name
+                method=method,
+                path=path,
+                app_name=self.app_name,
+                pod_name=self.pod_name,
             ).dec()
 
         return response

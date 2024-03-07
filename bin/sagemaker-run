@@ -53,7 +53,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 )
 @click.option(
     '--project-name',
-    default='keywords',
+    default='iptc',
     show_default=True,
     help="""The name of the ml-mesh project the component belongs to."""
 )
@@ -67,35 +67,35 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 @click.option(
     '--base-project',
     type=str,
-    default=None,
+    default='onclusive/iptc-00000000',
     show_default=True,
     help="Base project identifier"
 )
 @click.option(
     '--base-model',
     type=str,
-    default=None,
+    default='IP00000000-BASE',
     show_default=True,
     help="Base model identifier"
 )
 @click.option(
     '--base-with-id',
     type=str,
-    default=None,
+    default='IP00000000-BASE-8',
     show_default=True,
     help="Base model with specific ID"
 )
 @click.option(
     '--trained-project',
     type=str,
-    default=None,
+    default='onclusive/iptc-00000000',
     show_default=True,
     help="Project identifier"
 )
 @click.option(
     '--trained-model',
     type=str,
-    default=None,
+    default='IP00000000-TRAINED',
     show_default=True,
     help="Model identifier for the project"
 )
