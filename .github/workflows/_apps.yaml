@@ -86,6 +86,7 @@ jobs:
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REPO_GITHUB_TOKEN="${{ secrets.PROMPT_REPO_GITHUB_TOKEN }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
@@ -107,6 +108,7 @@ jobs:
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REPO_GITHUB_TOKEN="${{ secrets.PROMPT_REPO_GITHUB_TOKEN }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
@@ -117,6 +119,7 @@ jobs:
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REPO_GITHUB_TOKEN="${{ secrets.PROMPT_REPO_GITHUB_TOKEN }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \
