@@ -43,7 +43,7 @@ def test_model_server_readiness(test_client, test_model_name):
     assert readiness_response.json() == ReadinessProbeResponse().dict()
 
 
-@pytest.mark.order(7)
+@pytest.mark.order(8)
 def test_model_server_predict(test_client, test_model_name, test_payload):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     test_response = test_client.post(
