@@ -96,11 +96,11 @@ jobs:
         run: |
           make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REPO_GITHUB_TOKEN="${{ secrets.PROMPT_REPO_GITHUB_TOKEN }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
-          ENVIRONMENT="ci" \
-          PROMPT_REPO_GITHUB_TOKEN="${{ secrets.PROMPT_REPO_GITHUB_TOKEN }}"
+          ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
