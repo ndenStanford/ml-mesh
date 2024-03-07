@@ -23,7 +23,7 @@ class GithubSettings(OnclusiveBaseSettings):
     github_url: str = "AirPR/ml-prompt-registry"
 
     class Config:
-        env_prefix = "onclusiveml_prompt_repo_"
+        env_prefix = "prompt_repo_"
 
 
 class Settings(OnclusiveBaseSettings):
