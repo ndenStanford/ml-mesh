@@ -23,6 +23,7 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
 
     project: str = "onclusive/iptc-00000000"
     model: str = "IP00000000-TRAINED"
+    with_id: str = "IP00000000-TRAINED-1"
 
     class Config:
         env_prefix = "trained_"

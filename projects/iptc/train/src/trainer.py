@@ -67,28 +67,27 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
-        model_name = model_card.model_name
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model_name = self.model_card.model_params.model_name
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
     def create_training_argument(self) -> None:
         """Create training argument object for Huggingface trainer."""
         self.training_args = TrackedIPTCBaseModelCard(
-            num_train_epochs=self.model_card.epochs,
-            learning_rate=self.model_card.learning_rate,
-            report_to=self.model_card.report_to,
+            num_train_epochs=self.model_card.model_params.epochs,
+            learning_rate=self.model_card.model_params.learning_rate,
+            report_to=self.model_card.model_params.report_to,
             compute_metrics=compute_metrics,
-            model_name=self.model_card.model_name,
-            save_steps=self.model_card.save_steps,
-            save_total_limit=self.model_card.save_total_limit,
-            early_stopping_patience=self.model_card.early_stopping_patience,
+            model_name=self.model_card.model_params.model_name,
+            save_steps=self.model_card.model_params.save_steps,
+            save_total_limit=self.model_card.model_params.save_total_limit,
         )
-        if self.model_card.level == 2:
+        if self.model_card.model_params.level == 2:
             self.first_level_root_id = extract_model_id(
                 self.tracked_model_specs.project
             )
             self.first_level_root = ID_TO_TOPIC[self.first_level_root_id]
-        elif self.model_card.level == 3:
+        elif self.model_card.model_params.level == 3:
             self.second_level_root_id = extract_model_id(
                 self.tracked_model_specs.project
             )
@@ -102,21 +101,21 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=0.20,
-            stratify=self.dataset_df[f"topic_{self.model_card.level}"],
+            stratify=self.dataset_df[f"topic_{self.model_card.model_params.level}"],
         )
         self.train_dataset = IPTCDataset(
             self.train_df,
-            self.model_card.tokenizer,
-            self.model_card.level,
-            self.model_card.selected_text,
+            self.tokenizer,
+            self.model_card.model_params.level,
+            self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
         )
         self.eval_dataset = IPTCDataset(
             self.eval_df,
-            self.model_card.tokenizer,
-            self.model_card.level,
-            self.model_card.selected_text,
+            self.tokenizer,
+            self.model_card.model_params.level,
+            self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
         )
@@ -125,6 +124,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         """Train the model."""
         # using this class directly should give us tracking capability
         # https://docs.neptune.ai/integrations/transformers/
+        self.create_training_argument()
+        self.data_preprocess()
+
         self.trainer = Trainer(
             model=self.model,
             args=self.training_args,
@@ -133,7 +135,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             tokenizer=self.tokenizer,
             callbacks=[
                 EarlyStoppingCallback(
-                    early_stopping_patience=self.model_card.early_stopping_patience
+                    early_stopping_patience=self.model_card.model_params.early_stopping_patience
                 )
             ],
         )
@@ -147,7 +149,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def save(self) -> None:
         """Save the model."""
         self.iptc_model_local_dir = os.path.join(
-            self.model_card.local_output_dir, f"{self.model_card.model_params.with_id}"
+            self.model_card.local_output_dir, f"{self.tracked_model_specs.with_id}"
         )
         self.trainer.save_model(
             self.iptc_model_local_dir, serialization="pytorch", save_ctfidf=True
@@ -163,7 +165,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.optimize_model()
         self.save()
         if self.data_fetch_params.save_artifact:
-            sample_docs = self.model_card.sample_documents
+            sample_docs = self.model_card.model_inputs.sample_documents
             sample_predictions = self.predict(sample_docs)
 
         super(OnclusiveHuggingfaceModelTrainer, self).__call__(
