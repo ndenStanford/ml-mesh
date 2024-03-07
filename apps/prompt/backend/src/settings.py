@@ -19,11 +19,10 @@ from src.prompt.constants import PromptEnum
 class GithubSettings(OnclusiveBaseSettings):
     """Credentials for Github reposotory."""
 
-    github_token: SecretStr = Field(default="github_token", exclude=True)
+    github_token: SecretStr = Field(
+        default="github_token", env="PROMPT_REPO_GITHUB_TOKEN"
+    )
     github_url: str = "AirPR/ml-prompt-registry"
-
-    class Config:
-        env_prefix = "prompt_repo_"
 
 
 class Settings(OnclusiveBaseSettings):
