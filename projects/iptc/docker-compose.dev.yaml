@@ -67,7 +67,7 @@ services:
         source: train
         target: /projects/iptc/train
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
-    command: [python, -m, src.train]
+    command: [python, -m, src.train_multimodel]
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}

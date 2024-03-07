@@ -25,8 +25,8 @@ from onclusiveml.training.huggingface.trainer import (
 from src.class_dict import CLASS_DICT_SECOND, ID_TO_TOPIC
 from src.dataset import IPTCDataset
 from src.settings import (  # type: ignore[attr-defined]
-    BaseTrackedModelSpecs,
     TrackedIPTCBaseModelCard,
+    TrackedIPTCModelSpecs,
 )
 from src.utils import (
     compute_metrics,
@@ -36,7 +36,7 @@ from src.utils import (
 
 
 # define the IPTC
-tracked_model_specs = BaseTrackedModelSpecs()
+tracked_model_specs = TrackedIPTCModelSpecs()
 model_card = TrackedIPTCBaseModelCard()
 
 
