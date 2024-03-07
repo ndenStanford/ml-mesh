@@ -27,7 +27,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # Start the training and register models to neptune
-    trainer = IPTCTrainer(data_fetch_params, model_card, model_specs)
+    trainer = IPTCTrainer(model_specs, model_card, data_fetch_params)
     trainer()
 
 

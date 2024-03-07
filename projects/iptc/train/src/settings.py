@@ -30,26 +30,6 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class TrackedIPTCMultiModelSpecs(TrackedModelSpecs):
-    """Tracked iptc model settings."""
-
-    project: List[str] = [
-        "onclusive/iptc-00000000",
-        "onclusive/iptc-02000000",
-        "onclusive/iptc-04000000",
-    ]
-    model: List[str] = [
-        "IP00000000-TRAINED",
-        "IP02000000-TRAINED",
-        "IP04000000-TRAINED",
-    ]
-
-    class Config:
-        env_prefix = "trained_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
 class BaseTrackedModelSpecs(TrackedModelSpecs):
     """Trained model settings."""
 

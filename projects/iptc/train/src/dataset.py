@@ -52,15 +52,19 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
             Exception: If the classification level is undefined.
         """
         if self.level == 1:
-            return list(CLASS_DICT_FIRST).index(self.df.loc[idx]["topic_1"])
+            return list(CLASS_DICT_FIRST["root"].values()).index(
+                self.df.loc[idx]["topic_1"]
+            )
         elif self.level == 2:
-            return list(CLASS_DICT_SECOND[self.first_level_root]).index(
+            return list(CLASS_DICT_SECOND[self.first_level_root].values()).index(
                 self.df.loc[idx]["topic_2"]
             )
         elif self.level == 3:
             return int(
                 list(
-                    CLASS_DICT_THIRD[self.first_level_root][self.second_level_root]
+                    CLASS_DICT_THIRD[self.first_level_root][
+                        self.second_level_root
+                    ].values()
                 ).index(self.df.loc[idx]["topic_3"])
             )
         else:
