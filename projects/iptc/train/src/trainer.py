@@ -17,6 +17,7 @@ from sklearn.model_selection import train_test_split
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
 )
@@ -24,10 +25,6 @@ from onclusiveml.training.huggingface.trainer import (
 # Source
 from src.class_dict import CLASS_DICT_SECOND, ID_TO_TOPIC
 from src.dataset import IPTCDataset
-from src.settings import (  # type: ignore[attr-defined]
-    TrackedIPTCBaseModelCard,
-    TrackedIPTCModelSpecs,
-)
 from src.utils import (
     compute_metrics,
     extract_model_id,
@@ -42,8 +39,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def __init__(
         self,
-        tracked_model_specs: TrackedIPTCModelSpecs,
-        model_card: TrackedIPTCBaseModelCard,
+        tracked_model_specs: TrackedModelSpecs,
+        model_card: TrackedModelCard,
         data_fetch_params: FeatureStoreParams,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
@@ -137,6 +134,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         # https://docs.neptune.ai/integrations/transformers/
         self.create_training_argument()
         self.data_preprocess()
+        self.logger.info(f"Training arguments : {self.training_args}")
 
         self.trainer = Trainer(
             model=self.model,
@@ -169,7 +167,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def __call__(self) -> None:
         """Call Method."""
-        super(OnclusiveHuggingfaceModelTrainer, self).__call__()
+        super(IPTCTrainer, self).__call__()
         self.logger.info(
             f"Training data uploaded to s3 location : {self.full_file_key}"
         )

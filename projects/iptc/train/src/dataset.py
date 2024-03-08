@@ -25,9 +25,9 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         df,
         tokenizer,
         level,
-        selected_text="content",
-        first_level_root="arts, culture, entertainment and media",
-        second_level_root="arts and entertainment",
+        selected_text,
+        first_level_root,
+        second_level_root,
     ):
         self.df = df
         self.level = level
@@ -35,6 +35,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         self.first_level_root = first_level_root
         self.second_level_root = second_level_root
         self.tokenizer = tokenizer
+        self.max_length = 128
 
     def __len__(self):  # type: ignore[no-untyped-def]
         return len(self.df)
@@ -53,11 +54,11 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         """
         if self.level == 1:
             return list(CLASS_DICT_FIRST["root"].values()).index(
-                self.df.loc[idx]["topic_1"]
+                self.df.iloc[idx]["topic_1"]
             )
         elif self.level == 2:
             return list(CLASS_DICT_SECOND[self.first_level_root].values()).index(
-                self.df.loc[idx]["topic_2"]
+                self.df.iloc[idx]["topic_2"]
             )
         elif self.level == 3:
             return int(
@@ -65,15 +66,15 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                     CLASS_DICT_THIRD[self.first_level_root][
                         self.second_level_root
                     ].values()
-                ).index(self.df.loc[idx]["topic_3"])
+                ).index(self.df.iloc[idx]["topic_3"])
             )
         else:
             raise ("undefined level")  # type: ignore[misc]
 
     def __getitem__(self, idx):  # type: ignore[no-untyped-def]
-        text = self.df.loc[idx][self.selected_text]
+        text = self.df.iloc[idx][self.selected_text]
         inputs = self.tokenizer(
-            text, padding="max_length", max_length=self.MAX_SEQ_LENGTH, truncation=True
+            text, padding="max_length", max_length=self.max_length, truncation=True
         )
         labels = self.get_label(idx)
         inputs["labels"] = labels
