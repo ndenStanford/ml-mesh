@@ -27,6 +27,19 @@ class TranscriptSegmentationHandler:
 
     related_segment_key: str
 
+    def find_last_occurrence(self, phrase: str, response: str) -> int:
+        """Find index of the last mention of phrase.
+
+        Args:
+            phrase (str): Given phrase
+            response (str): Stringified json
+
+        Returns:
+            int: Index of the last mentioned phrase
+        """
+        position = response.rfind(phrase)
+        return position
+
     def remove_newlines(self, response: str) -> str:
         """Remove new lines from the string.
 
@@ -41,7 +54,11 @@ class TranscriptSegmentationHandler:
         return response
 
     def find_timestamps_from_word_transcript(
-        self, segment: str, word_transcript: List[Dict[str, Any]]
+        self,
+        segment: str,
+        word_transcript: List[Dict[str, Any]],
+        offset_start_buffer: float,
+        offset_end_buffer: float,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -51,6 +68,8 @@ class TranscriptSegmentationHandler:
         Args:
             segment (str): segment from GPT
             word_transcript (List[Dict[str, Any]): Word-based transcript
+            offset_start_buffer (float): start offset, float
+            offset_end_buffer (float): end offset, float
 
         Returns:
             Tuple[
@@ -100,8 +119,8 @@ class TranscriptSegmentationHandler:
 
         start_time = best_portion_start[0]["ts"]
         end_time = best_portion_end[-1]["ts"]
-        start_time_offsetted = start_time - settings.OFFSET_START_BUFFER
-        end_time_offsetted = end_time + settings.OFFSET_END_BUFFER
+        start_time_offsetted = start_time + offset_start_buffer
+        end_time_offsetted = end_time + offset_end_buffer
 
         if start_time_offsetted < word_transcript_filtered[0]["ts"]:
             start_time_offsetted = word_transcript_filtered[0]["ts"]
@@ -111,13 +130,48 @@ class TranscriptSegmentationHandler:
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
+    def trim_response(self, str_response: str) -> str:
+        """Fix incomplete json by remove field that is incomplete.
+
+        Args:
+            str_response (str): incomplete json string response
+
+        Returns:
+            str: complete json string response
+        """
+        # reverse order of the json response
+        fields_list = [
+            '",  "Piece after accept":"',
+            '",  ["Piece after accept"]:"',
+            '",  "Piece before accept":"',
+            '",  ["Piece before accept"]:"',
+            '",  "Piece after":"',
+            '",  ["Piece after"]:"',
+            '",  "Piece before":"',
+            '",  ["Piece before"]:"',
+            '",  "segment amount":"',
+            '",  ["segment amount"]:"',
+        ]
+        for field in fields_list:
+            position = self.find_last_occurrence(field, str_response)
+            if position != -1:
+                break
+        return (
+            str_response[:position] + "}"
+            if position != -1
+            else str_response[:position] + '"}'
+        )
+
     def postprocess(
         self,
         response: Union[str, Dict[str, str]],
         word_transcript: List[Dict[str, Any]],
+        offset_start_buffer: float,
+        offset_end_buffer: float,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
+        Optional[str],
         Optional[str],
         Optional[str],
     ]:
@@ -126,6 +180,8 @@ class TranscriptSegmentationHandler:
         Args:
             response Union[str, Dict[str, str]]: Response from GPT model
             word_transcript (List[Dict[str, Any]): Word-based transcript
+            offset_start_buffer (float): start offset, float
+            offset_end_buffer (float): end offset, float
 
         Returns:
             Tuple[
@@ -137,7 +193,14 @@ class TranscriptSegmentationHandler:
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
-            json_response = eval(str_response)
+            try:
+                json_response = eval(str_response)
+
+            # Deal with issue where response is cutoff (finish_reason = length|content_filter)
+            except SyntaxError:
+                str_response = self.trim_response(str_response)
+                json_response = eval(str_response)
+
         elif isinstance(response, dict):
             json_response = response
 
@@ -160,18 +223,29 @@ class TranscriptSegmentationHandler:
             "n/a",
             "Nothing",
         ]:
-            start_time, end_time, start_time_offsetted, end_time_offsetted = (
+            start_time, end_time, start_time_offsetted, end_time_offsetted, segment = (
                 0.0,
                 0.0,
                 0.0,
                 0.0,
+                "",
             )
         else:
+
+            segment = json_response.get(self.related_segment_key)
+            piece_before = json_response.get("Piece before")
+            piece_after = json_response.get("Piece after")
+            if json_response.get("Piece before accept") == "Yes":
+                segment = piece_before + " " + segment
+
+            if json_response.get("Piece after accept") == "Yes":
+                segment = segment + piece_after
+
             (
                 (start_time, end_time),
                 (start_time_offsetted, end_time_offsetted),
             ) = self.find_timestamps_from_word_transcript(
-                json_response[self.related_segment_key], word_transcript
+                segment, word_transcript, offset_start_buffer, offset_end_buffer
             )
 
         return (
@@ -179,6 +253,7 @@ class TranscriptSegmentationHandler:
             (start_time, end_time),
             json_response.get("Segment title"),
             json_response.get("Segment summary"),
+            segment,
         )
 
     def preprocess_transcript(self, word_transcript: List[Dict[str, Any]]) -> str:
@@ -201,7 +276,7 @@ class TranscriptSegmentationHandler:
         """Trime paragraph to focus on keywords.
 
         Args:
-            paragraph: combined content from sentence transcript
+            paragraph: combined content from transcript
             keywords (List[str]): List of keywords
 
         Returns:
@@ -227,21 +302,69 @@ class TranscriptSegmentationHandler:
         end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
         return paragraph[beg:end]
 
+    def ad_detect(self, paragraph: Optional[str]) -> Optional[bool]:
+        """Detect the advertisement inside the selected transcript.
+
+        Args:
+            paragraph (str): transcript after postprocessing
+
+        Return:
+            Optional[bool]: True or False or None
+        """
+        headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
+        payload = {
+            "paragraph": paragraph,
+        }
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(
+                settings.prompt_api_url, settings.prompt_ad_alias
+            ),
+            headers=headers,
+            json=payload,
+        )
+        response = json.loads(q.content)["generated"]
+        json_response = json.loads(response)
+        # get the time stamp with ads
+
+        candidate_keys = [
+            "Advertisement detect",
+            "[Advertisement detect]",
+            "advertisement detect",
+            "[advertisement detect]",
+        ]
+
+        advertisement_detect = "no"
+        for key in candidate_keys:
+            if isinstance(json_response.get(key), str):
+                advertisement_detect = json_response.get(key).lower()
+                break
+
+        if advertisement_detect == "yes":
+            return True
+        else:
+            return False
+
     def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
+        offset_start_buffer: float = -7000.0,
+        offset_end_buffer: float = 5000.0,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
         Optional[str],
         Optional[str],
+        Optional[str],
+        Optional[bool],
     ]:
         """Prediction method for transcript segmentation.
 
         Args:
             transcript (List[Dict[str, Any]]): Inputted word-based transcript
             keyword (List[str]): List of keywords to query the transcript
+            offset_start_buffer (float): start offset, float
+            offset_end_buffer (float): end offset, float
 
         Returns:
             Tuple[
@@ -273,14 +396,21 @@ class TranscriptSegmentationHandler:
             (start_time, end_time),
             title,
             summary,
+            segment,
         ) = self.postprocess(
             response=json.loads(q.content)["generated"],
             word_transcript=word_transcript,
+            offset_start_buffer=offset_start_buffer,
+            offset_end_buffer=offset_end_buffer,
         )
+
+        ad_detect_output = self.ad_detect(segment)
 
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             title,
             summary,
+            segment,
+            ad_detect_output,
         )

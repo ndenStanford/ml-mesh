@@ -30,3 +30,7 @@ from onclusiveml.serving.rest.serve.params import (  # noqa: F401
 from onclusiveml.serving.rest.serve.exceptions import (  # noqa: F401
     OnclusiveHTTPException,
 )
+
+from onclusiveml.serving.rest.observability.formatters import (  # noqa: F401
+    OnclusiveServingJSONAccessFormatter,
+)

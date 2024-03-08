@@ -16,37 +16,15 @@ from onclusiveml.tracking import (
 )
 
 
-# --- atomic settings and models
-CLASS_DICT_FIRST = {
-    "root": {
-        "LABEL_0": "arts, culture, entertainment and media",
-        "LABEL_1": "conflict, war and peace",
-        "LABEL_2": "crime, law and justice",
-        "LABEL_3": "disaster, accident and emergency incident",
-        "LABEL_4": "economy, business and finance",
-        "LABEL_5": "education",
-        "LABEL_6": "environment",
-        "LABEL_7": "health",
-        "LABEL_8": "labour",
-        "LABEL_9": "lifestyle and leisure",
-        "LABEL_10": "politics",
-        "LABEL_11": "religion",
-        "LABEL_12": "science and technology",
-        "LABEL_13": "society",
-        "LABEL_14": "sport",
-        "LABEL_15": "weather",
-    }
-}
-
-
 # --- settings classes
 class TrackedIPTCModelSpecs(TrackedModelSpecs):
     """Tracked iptc model settings."""
 
-    project: str = "onclusive/iptc"
-    model = "IPTC-TRAINED"
+    project: str = "onclusive/iptc-00000000"
+    model = "IP00000000-TRAINED"
 
     class Config:
+        env_prefix = "trained_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
@@ -54,11 +32,11 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
 class BaseTrackedModelSpecs(TrackedModelSpecs):
     """Trained model settings."""
 
-    project: str = "onclusive/iptc"
-    model: str = "IPTC-BASE"
+    project: str = "onclusive/iptc-00000000"
+    model: str = "IP00000000-BASE"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "IPTC-BASE-14"
+    with_id: str = "IP00000000-BASE-1"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 

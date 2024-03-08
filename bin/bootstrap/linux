@@ -67,11 +67,15 @@ _mount_ebs_volume() {
     if [ ! -d "$HOME/data" ]; then
         sudo mkfs -t xfs /dev/nvme1n1
         sudo mkdir "$HOME/data"
-        sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
         sudo chown ec2-user: "$HOME/data"
     else
-        warn "Mount target exists. This step will be skipped"
+        warn "Filesystem exists."
     fi
+
+    # shellcheck disable=SC2016
+    echo 'sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"' >> ~/.bash_profile
+    # shellcheck disable=SC2016
+    echo 'sudo chown ec2-user: "$HOME/data"'  >> ~/.bash_profile
 
     separator
 }
@@ -158,31 +162,32 @@ EOF
     docker compose version
 
     # extra global deps (pyenv, direnv)
-    export bin_path=/usr/local/bin # whhere to install direnv
+    export bin_path=/usr/local/bin # where to install direnv
     curl -sfL https://direnv.net/install.sh | sudo bash
-    if [ ! -d "$HOME/.pyenv" ]; then
-        curl https://pyenv.run | bash
+    # shellcheck disable=SC2016
+    echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
+    if [ -d "$HOME/.pyenv" ]; then
+        rm -rf "$HOME/.pyenv"
+        sed -i -E "/PYENV|pyenv/d" ~/.bashrc
+    fi
+    export PYENV_ROOT=$HOME/data/.pyenv
+    export PATH=$PYENV_ROOT/bin:$PATH
+    if [ ! -d "$HOME/data/.pyenv" ]; then
+        sudo curl https://pyenv.run | bash
     else
         info "Found pyenv, skipping installation..."
     fi
-
-    # shellcheck disable=SC2129
-    export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
-
     # shellcheck disable=SC2016,SC2129
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> .bashrc
+    echo 'export PYENV_ROOT="$HOME/data/.pyenv"' >> ~/.bashrc
     # shellcheck disable=SC2016
-    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> .bashrc
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
     # shellcheck disable=SC2016
-    echo 'eval "$(pyenv init -)"' >> .bashrc
+    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+    sed -i -E "/PIP_CACHE|POETRY_CACHE/d" ~/.bashrc
     # shellcheck disable=SC2016
-    echo 'eval "$(direnv hook bash)"' >> .bashrc
+    echo 'export PIP_CACHE_DIR="$HOME/data/.cache"' >> ~/.bashrc
     # shellcheck disable=SC2016
-    echo 'export PIP_CACHE_DIR="$HOME/data/.cache"' >> .bashrc
-    # shellcheck disable=SC2016
-    echo 'export POETRY_CACHE_DIR="$HOME/data/.cache/pypoetry"' >> .bashrc
-
+    echo 'export POETRY_CACHE_DIR="$HOME/data/.cache/pypoetry"' >> ~/.bashrc
     eval "$(pyenv init --path)"
     # shellcheck disable=SC1091
     source "$HOME/.bashrc"
@@ -227,7 +232,7 @@ _setup_git(){
 
     git config --global user.name "$NAME"
     git config --global user.email "$EMAIL"
-    git config --global merge.ff false
+    git config --global merge.ff true
     git config --global pull.rebase false
     separator
 }
@@ -262,7 +267,7 @@ _install_python(){
     pyenv install "${PYTHON_VERSION}" -f
     pyenv shell "${PYTHON_VERSION}"
     # shellcheck disable=SC2016
-    echo pyenv global "${PYTHON_VERSION}" >> "$HOME/.bashrc"
+    echo pyenv global "${PYTHON_VERSION}" >> ~/.bashrc
 }
 
 # Installing poetry
@@ -385,8 +390,7 @@ main(){
     info "  ⚙️  Kustomize: https://onclusive.atlassian.net/l/cp/76YvsoFG"
     info
     info " 📋 If you have any questions don't hesitate to reach out:"
-    info "  ⚙️  MLOPs slack channel: #ml_infra"
-    info "  ⚙️  ML slack channel: #ml_team"
+    info "  ⚙️  Machine learning team slack channel: #machine-learning-main"
     info
     info " Start a new bash command and you're ready to go !"
     info

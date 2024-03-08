@@ -139,7 +139,32 @@ def test_predict_input() -> str:
         {"ts": 1701127857714.2856, "w": "rollout", "index": 105},
         {"ts": 1701127858285.7144, "w": "of", "index": 106},
         {"ts": 1701127858857.1428, "w": "OpenAI's", "index": 107},
-        {"ts": 1701127859428.5715, "w": "ChatGPT-4,", "index": 108},
+        {"ts": 1701127859428.5715, "w": "ChatGPT-4.", "index": 108},
+        {"ts": 1701127859428.9715, "w": "GPT-4", "index": 109},
+        {"ts": 1701127859728.9715, "w": "supports", "index": 110},
+        {"ts": 1701127859928.9715, "w": "Covered", "index": 111},
+        {"ts": 1701127860428.9715, "w": "California", "index": 112},
+        {"ts": 1701127860828.9715, "w": "to", "index": 113},
+        {"ts": 1701127861428.9715, "w": "provide", "index": 114},
+        {"ts": 1701127861828.9715, "w": "free", "index": 115},
+        {"ts": 1701127862428.9715, "w": "service", "index": 116},
+        {"ts": 1701127862828.9715, "w": "from", "index": 117},
+        {"ts": 1701127863228.9715, "w": "the", "index": 118},
+        {"ts": 1701127863828.9715, "w": "state", "index": 119},
+        {"ts": 1701127864228.9715, "w": "that's", "index": 120},
+        {"ts": 1701127864628.9715, "w": "already", "index": 121},
+        {"ts": 1701127865028.9715, "w": "helped", "index": 122},
+        {"ts": 1701127865428.9715, "w": "millions", "index": 123},
+        {"ts": 1701127865828.9715, "w": "of", "index": 124},
+        {"ts": 1701127866228.9715, "w": "people", "index": 125},
+        {"ts": 1701127870228.9715, "w": "by", "index": 126},
+        {"ts": 1701127874228.9715, "w": "AI", "index": 127},
+        {"ts": 1701127878228.9715, "w": "to", "index": 128},
+        {"ts": 1701127882228.9715, "w": "help", "index": 129},
+        {"ts": 1701127886228.9715, "w": "pay", "index": 130},
+        {"ts": 1701127890228.9715, "w": "for", "index": 131},
+        {"ts": 1701127894228.9715, "w": "health", "index": 132},
+        {"ts": 1701127898228.9715, "w": "insurance.", "index": 133},
     ]  # noqa: E501
 
 
@@ -152,7 +177,13 @@ def test_predict_keyword() -> str:
 @pytest.fixture
 def test_inference_params() -> str:
     """Predict parameter fixture."""
-    return {}
+    return {
+        "country": "FRA",
+        "channel": "channel",
+        "query": "sample query",
+        "offset_start_buffer": -7000.0,
+        "offset_end_buffer": 5000.0,
+    }
 
 
 @pytest.fixture
@@ -168,6 +199,8 @@ def test_expected_predict_output() -> List[str]:
             "transcript_end_time": 1701127859428.5715,
             "title": "example title",
             "summary": "example summary",
+            "segment": "example segment",
+            "ad": True,
         },
     )
 

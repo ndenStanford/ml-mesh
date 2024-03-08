@@ -92,3 +92,8 @@ def test_server_prediction(test_payload, expected_response):
     )
     assert isinstance(response.json()["data"]["attributes"]["title"], str)
     assert isinstance(response.json()["data"]["attributes"]["summary"], str)
+    assert isinstance(response.json()["data"]["attributes"]["segment"], str)
+    assert (
+        response.json()["data"]["attributes"]["ad"]
+        == expected_response["data"]["attributes"]["ad"]
+    )
