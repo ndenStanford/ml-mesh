@@ -656,6 +656,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-type: g4dn.4xlarge
+            self-hosted-runner-neuron: false
 
           # compile
           - name: compile
