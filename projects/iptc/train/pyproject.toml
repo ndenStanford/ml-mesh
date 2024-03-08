@@ -9,6 +9,7 @@ packages = [{include = "src"}]
 python = "3.8.16"
 torch = "1.12.1"
 transformers = "4.33.1"
+accelerate="0.20.3"
 tracking = {path = "../../../libs/tracking"}
 data = {path = "../../../libs/data"}
 train = {path = "../../../libs/training"}

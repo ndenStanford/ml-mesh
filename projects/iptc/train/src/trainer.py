@@ -9,6 +9,7 @@ from transformers import (
     AutoTokenizer,
     EarlyStoppingCallback,
     Trainer,
+    TrainingArguments,
 )
 
 # 3rd party libraries
@@ -16,7 +17,6 @@ from sklearn.model_selection import train_test_split
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
-from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
 )
@@ -32,12 +32,8 @@ from src.utils import (
     compute_metrics,
     extract_model_id,
     find_category_for_subcategory,
+    find_num_labels,
 )
-
-
-# define the IPTC
-tracked_model_specs = TrackedIPTCModelSpecs()
-model_card = TrackedIPTCBaseModelCard()
 
 
 # define the IPTC model trainer as a subclass of the OnclusiveHuggingfaceModelTrainer
@@ -46,8 +42,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def __init__(
         self,
-        tracked_model_specs: TrackedModelSpecs,
-        model_card: TrackedModelCard,
+        tracked_model_specs: TrackedIPTCModelSpecs,
+        model_card: TrackedIPTCBaseModelCard,
         data_fetch_params: FeatureStoreParams,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
@@ -67,26 +63,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
-        self.model_name = self.model_card.model_params.model_name
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-
-    def create_training_argument(self) -> None:
-        """Create training argument object for Huggingface trainer."""
-        self.training_args = TrackedIPTCBaseModelCard(
-            num_train_epochs=self.model_card.model_params.epochs,
-            learning_rate=self.model_card.model_params.learning_rate,
-            report_to=self.model_card.model_params.report_to,
-            compute_metrics=compute_metrics,
-            model_name=self.model_card.model_params.model_name,
-            save_steps=self.model_card.model_params.save_steps,
-            save_total_limit=self.model_card.model_params.save_total_limit,
-        )
-        if self.model_card.model_params.level == 2:
+        if self.model_card.model_params.level == 1:
+            self.first_level_root = None
+            self.second_level_root = None
+        elif self.model_card.model_params.level == 2:
             self.first_level_root_id = extract_model_id(
                 self.tracked_model_specs.project
             )
             self.first_level_root = ID_TO_TOPIC[self.first_level_root_id]
+            self.second_level_root = None
         elif self.model_card.model_params.level == 3:
             self.second_level_root_id = extract_model_id(
                 self.tracked_model_specs.project
@@ -95,13 +80,39 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.first_level_root = find_category_for_subcategory(
                 CLASS_DICT_SECOND, self.second_level_root
             )
+        self.model_name = self.model_card.model_params.model_name
+        self.num_labels = find_num_labels(
+            self.model_card.model_params.level,
+            self.first_level_root,
+            self.second_level_root,
+        )
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            self.model_name, num_labels=self.num_labels
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
+    def create_training_argument(self) -> None:
+        """Create training argument object for Huggingface trainer."""
+        self.training_args = TrainingArguments(
+            output_dir=self.model_card.local_output_dir,
+            num_train_epochs=self.model_card.model_params.epochs,
+            learning_rate=self.model_card.model_params.learning_rate,
+            per_device_train_batch_size=self.model_card.model_params.train_batch_size,
+            per_device_eval_batch_size=self.model_card.model_params.eval_batch_size,
+            warmup_steps=self.model_card.model_params.warmup_steps,
+            report_to=self.model_card.model_params.report_to,
+            evaluation_strategy=self.model_card.model_params.evaluation_strategy,
+            save_strategy=self.model_card.model_params.save_strategy,
+            save_steps=self.model_card.model_params.save_steps,
+            save_total_limit=self.model_card.model_params.save_total_limit,
+            load_best_model_at_end=self.model_card.model_params.load_best_model_at_end,
+        )
 
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=0.20,
-            stratify=self.dataset_df[f"topic_{self.model_card.model_params.level}"],
         )
         self.train_dataset = IPTCDataset(
             self.train_df,
@@ -130,6 +141,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.trainer = Trainer(
             model=self.model,
             args=self.training_args,
+            compute_metrics=compute_metrics,
             train_dataset=self.train_dataset,
             eval_dataset=self.eval_dataset,
             tokenizer=self.tokenizer,
@@ -149,7 +161,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def save(self) -> None:
         """Save the model."""
         self.iptc_model_local_dir = os.path.join(
-            self.model_card.local_output_dir, f"{self.tracked_model_specs.with_id}"
+            self.model_card.local_output_dir, f"{self.tracked_model_specs.model}"
         )
         self.trainer.save_model(
             self.iptc_model_local_dir, serialization="pytorch", save_ctfidf=True

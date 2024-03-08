@@ -23,7 +23,6 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
 
     project: str = "onclusive/iptc-00000000"
     model: str = "IP00000000-TRAINED"
-    with_id: str = "IP00000000-TRAINED-1"
 
     class Config:
         env_prefix = "trained_"
@@ -66,30 +65,20 @@ class Inputs(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class IPTCSettings(TrackedParams):
-    """IPTC settings."""
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
 class IPTCModelParams(TrackedParams):
-    """IPTC Model parameters."""
+    """the training argument for huggingface trainer."""
 
-    huggingface_pipeline_task: str = "text-classification"
-    base_model_reference: BaseTrackedModelSpecs = BaseTrackedModelSpecs()
-    iptc_settings: IPTCSettings = IPTCSettings()
-
-    """the training argument for huggingface trainer"""
     epochs: int = 3
     train_batch_size: int = 32
     eval_batch_size: int = 64
     warmup_steps: int = 500
     model_name: str = "xlm-roberta-base"
-    learning_rate: str = "5e-5"
+    learning_rate: float = 5e-5
+    evaluation_strategy: str = "epoch"
+    save_strategy: str = "epoch"
     save_steps: int = 5000
     save_total_limit: int = 10
+    load_best_model_at_end: bool = True
     early_stopping_patience: int = 1
     report_to: str = "neptune"
 
