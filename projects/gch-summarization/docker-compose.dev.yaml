@@ -423,6 +423,44 @@ services:
       - kafka
       - zookeeper
 
+  backfill-debug:
+    build:
+      context: ../../
+      dockerfile: projects/gch-summarization/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: gch-summarization
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-backfill:${IMAGE_TAG}
+    entrypoint: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.backfill.__main__]
+    profiles: [backfill, debug]
+    ports:
+      - 5678:5678
+    environment:
+      HOST: internal.api.ml.stage.onclusive.com
+      NAMESPACE: gch-summarization
+      VERSION: 1
+      API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+      SECURE: true
+      JOB_NAME: gch-summarization-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: beam-input
+      TARGET_TOPIC: beam-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    depends_on:
+      - jobserver
+      - kafka
+      - zookeeper
+
   backfill-unit:
     volumes:
       - type: bind
@@ -456,7 +494,7 @@ services:
     command: [jobmanager]
     ports:
       - 8081:8081
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     environment:
       FLINK_PROPERTIES: |
@@ -471,7 +509,7 @@ services:
     command: [taskmanager]
     ports:
       - 8100-8200:8100-8200
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     environment:
       FLINK_PROPERTIES: |
@@ -491,14 +529,14 @@ services:
       - 8099:8099
     depends_on:
       - jobmanager
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     volumes:
       - backfill-vol:/tmp/beam-artifact-staging
 
   zookeeper:
     image: confluentinc/cp-zookeeper
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     ports:
       - 2181:2181
@@ -509,7 +547,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:6.1.13
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     ports:
       - 9092:9092
