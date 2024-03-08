@@ -6,8 +6,13 @@ import json
 # ML libs
 import torch
 
-# 3rd party libraries
-import pytest
+# Internal libraries
+from onclusiveml.models.iptc.compiled_iptc import extract_model_id
+
+# Source
+from src.settings import (
+    UncompiledTrackedModelSpecs,  # type: ignore[attr-defined]
+)
 
 
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
@@ -53,28 +58,20 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
             json.dump(all_compiled_predictions, compiled_predictions_file)
 
 
-@pytest.mark.parametrize(
-    "test_sample_content, test_sample_response",
-    [
-        (
-            """Stocks reversed earlier losses to close higher despite rising oil prices
-            that followed the attack by Hamas on Israel over the weekend. Dovish comments by
-            Federal Reserve officials boosted the three major indexes. The Dow Jones Industrial
-            Average added nearly 200 points.""",
-            {"label": "economy, business and finance", "score": 0.9870237112045288},
-        )
-    ],
-)
 def compiled_model_entity_iptc_test(  # type: ignore[no-untyped-def]
-    compiled_iptc, test_sample_content, test_sample_response
+    compiled_iptc, test_samples
 ):
     """Perform iptc label testing with input for the compiled iptc model.
 
     Args:
         compiled_iptc: Compiled IPTC model instance
-        test_sample_content (str): Sample content to be tested
-        test_sample_response (str): Sample response to be compared with
+        test_samples (dict): A dictionary where each key is a unique identifier for a test sample,
+                            and each value is a tuple containing the sample content to be tested
+                            and the expected sample response.
     """
+    model_specs = UncompiledTrackedModelSpecs()
+    model_id = extract_model_id(model_specs.project)
+    test_sample_content, test_sample_response = test_samples[model_id]
     compiled_pred = compiled_iptc(test_sample_content)
     compiled_predictions = [iptc.dict() for iptc in compiled_pred][0]
-    assert (compiled_predictions["label"]) == (test_sample_response["label"])
+    assert compiled_predictions["label"] == test_sample_response["label"]
