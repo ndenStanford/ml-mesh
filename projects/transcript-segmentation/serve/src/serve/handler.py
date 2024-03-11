@@ -27,6 +27,19 @@ class TranscriptSegmentationHandler:
 
     related_segment_key: str
 
+    def find_last_occurrence(self, phrase: str, response: str) -> int:
+        """Find index of the last mention of phrase.
+
+        Args:
+            phrase (str): Given phrase
+            response (str): Stringified json
+
+        Returns:
+            int: Index of the last mentioned phrase
+        """
+        position = response.rfind(phrase)
+        return position
+
     def remove_newlines(self, response: str) -> str:
         """Remove new lines from the string.
 
@@ -117,6 +130,38 @@ class TranscriptSegmentationHandler:
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
+    def trim_response(self, str_response: str) -> str:
+        """Fix incomplete json by remove field that is incomplete.
+
+        Args:
+            str_response (str): incomplete json string response
+
+        Returns:
+            str: complete json string response
+        """
+        # reverse order of the json response
+        fields_list = [
+            '",  "Piece after accept":"',
+            '",  ["Piece after accept"]:"',
+            '",  "Piece before accept":"',
+            '",  ["Piece before accept"]:"',
+            '",  "Piece after":"',
+            '",  ["Piece after"]:"',
+            '",  "Piece before":"',
+            '",  ["Piece before"]:"',
+            '",  "segment amount":"',
+            '",  ["segment amount"]:"',
+        ]
+        for field in fields_list:
+            position = self.find_last_occurrence(field, str_response)
+            if position != -1:
+                break
+        return (
+            str_response[:position] + "}"
+            if position != -1
+            else str_response[:position] + '"}'
+        )
+
     def postprocess(
         self,
         response: Union[str, Dict[str, str]],
@@ -148,7 +193,14 @@ class TranscriptSegmentationHandler:
         """
         if isinstance(response, str):
             str_response = self.remove_newlines(response)
-            json_response = eval(str_response)
+            try:
+                json_response = eval(str_response)
+
+            # Deal with issue where response is cutoff (finish_reason = length|content_filter)
+            except SyntaxError:
+                str_response = self.trim_response(str_response)
+                json_response = eval(str_response)
+
         elif isinstance(response, dict):
             json_response = response
 
@@ -224,7 +276,7 @@ class TranscriptSegmentationHandler:
         """Trime paragraph to focus on keywords.
 
         Args:
-            paragraph: combined content from sentence transcript
+            paragraph: combined content from transcript
             keywords (List[str]): List of keywords
 
         Returns:
@@ -250,6 +302,48 @@ class TranscriptSegmentationHandler:
         end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
         return paragraph[beg:end]
 
+    def ad_detect(self, paragraph: Optional[str]) -> Optional[bool]:
+        """Detect the advertisement inside the selected transcript.
+
+        Args:
+            paragraph (str): transcript after postprocessing
+
+        Return:
+            Optional[bool]: True or False or None
+        """
+        headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
+        payload = {
+            "paragraph": paragraph,
+        }
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(
+                settings.prompt_api_url, settings.prompt_ad_alias
+            ),
+            headers=headers,
+            json=payload,
+        )
+        response = json.loads(q.content)["generated"]
+        json_response = json.loads(response)
+        # get the time stamp with ads
+
+        candidate_keys = [
+            "Advertisement detect",
+            "[Advertisement detect]",
+            "advertisement detect",
+            "[advertisement detect]",
+        ]
+
+        advertisement_detect = "no"
+        for key in candidate_keys:
+            if isinstance(json_response.get(key), str):
+                advertisement_detect = json_response.get(key).lower()
+                break
+
+        if advertisement_detect == "yes":
+            return True
+        else:
+            return False
+
     def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
@@ -262,6 +356,7 @@ class TranscriptSegmentationHandler:
         Optional[str],
         Optional[str],
         Optional[str],
+        Optional[bool],
     ]:
         """Prediction method for transcript segmentation.
 
@@ -309,10 +404,13 @@ class TranscriptSegmentationHandler:
             offset_end_buffer=offset_end_buffer,
         )
 
+        ad_detect_output = self.ad_detect(segment)
+
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             title,
             summary,
             segment,
+            ad_detect_output,
         )
