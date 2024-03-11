@@ -40,6 +40,8 @@ class FeatureStoreHandle:
         data_id_key: str = "entity_key",
         data_ids: List[str] = ["1", "2"],
         limit: str = "1000",
+        filter_column: str = "",
+        filter_value: str = "",
     ):
 
         self.feast_config_bucket = feast_config_bucket
@@ -59,6 +61,8 @@ class FeatureStoreHandle:
         self.data_id_key = data_id_key
         self.data_ids = data_ids
         self.limit = limit
+        self.filter_column = filter_column
+        self.filter_value = filter_value
 
     def initialize(self) -> None:
         """Initializes feature store registry.
@@ -184,8 +188,12 @@ class FeatureStoreHandle:
                         SELECT
                             {self.data_id_key}, event_timestamp
                         FROM {self.fs.get_data_source(self.data_source).get_table_query_string()}
-                        WHERE event_timestamp < CURRENT_TIMESTAMP
                     """
+
+        if len(self.filter_column) and len(self.filter_value):
+            self.entity_sql += f" WHERE (event_timestamp < CURRENT_TIMESTAMP AND {self.filter_column} = '{self.filter_value}' AND {self.filter_column} is NOT NULL)"  # noqa: E501
+        else:
+            self.entity_sql += " WHERE event_timestamp < CURRENT_TIMESTAMP"
 
         if self.limit != "-1":
             self.entity_sql += f" LIMIT {self.limit}"
