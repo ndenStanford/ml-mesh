@@ -70,9 +70,9 @@ _mount_ebs_volume() {
         sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"
         sudo chown ec2-user: "$HOME/data"
         # shellcheck disable=SC2016
-        echo 'sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data" 2>/dev/null' >> ~/.bash_profile
+        echo 'sudo mount -t xfs -o nouuid /dev/nvme1n1 "$HOME/data"' >> ~/.bash_profile
         # shellcheck disable=SC2016
-        echo 'sudo chown ec2-user: "$HOME/data" 2>/dev/null' >> ~/.bash_profile
+        echo 'sudo chown ec2-user: "$HOME/data"' >> ~/.bash_profile
     else
         warn "Filesystem exists."
     fi
