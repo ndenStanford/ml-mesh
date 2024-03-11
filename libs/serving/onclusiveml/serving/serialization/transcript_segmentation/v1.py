@@ -33,7 +33,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     transcript_end_time: Union[float, int]
     title: Optional[str] = None
     summary: Optional[str] = None
-    ad: Optional[str] = None
+    ad: Optional[bool] = None
     segment: Optional[str] = None
 
 
