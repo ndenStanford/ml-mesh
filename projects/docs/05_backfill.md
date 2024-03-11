@@ -69,3 +69,4 @@ When your service is running, you can experiment with the pipeline by sending a 
 Details are shown in
 - [NER backfill README](../ner/backfill/README.md)
 - [Topic-summarization backfill README](../topic-summarization/backfill/README.md)
+- [gch-summarization backfill README](../gch-summarization/backfill/README.md)
