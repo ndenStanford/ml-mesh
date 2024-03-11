@@ -302,6 +302,48 @@ class TranscriptSegmentationHandler:
         end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
         return paragraph[beg:end]
 
+    def ad_detect(self, paragraph: Optional[str]) -> Optional[bool]:
+        """Detect the advertisement inside the selected transcript.
+
+        Args:
+            paragraph (str): transcript after postprocessing
+
+        Return:
+            Optional[bool]: True or False or None
+        """
+        headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
+        payload = {
+            "paragraph": paragraph,
+        }
+        q = requests.post(
+            "{}/api/v1/prompts/{}/generate".format(
+                settings.prompt_api_url, settings.prompt_ad_alias
+            ),
+            headers=headers,
+            json=payload,
+        )
+        response = json.loads(q.content)["generated"]
+        json_response = json.loads(response)
+        # get the time stamp with ads
+
+        candidate_keys = [
+            "Advertisement detect",
+            "[Advertisement detect]",
+            "advertisement detect",
+            "[advertisement detect]",
+        ]
+
+        advertisement_detect = "no"
+        for key in candidate_keys:
+            if isinstance(json_response.get(key), str):
+                advertisement_detect = json_response.get(key).lower()
+                break
+
+        if advertisement_detect == "yes":
+            return True
+        else:
+            return False
+
     def __call__(
         self,
         word_transcript: List[Dict[str, Any]],
@@ -314,6 +356,7 @@ class TranscriptSegmentationHandler:
         Optional[str],
         Optional[str],
         Optional[str],
+        Optional[bool],
     ]:
         """Prediction method for transcript segmentation.
 
@@ -361,10 +404,13 @@ class TranscriptSegmentationHandler:
             offset_end_buffer=offset_end_buffer,
         )
 
+        ad_detect_output = self.ad_detect(segment)
+
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
             title,
             summary,
             segment,
+            ad_detect_output,
         )

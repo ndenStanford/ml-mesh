@@ -480,6 +480,16 @@ jobs       :
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
 
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+
     with:
       project: gch-summarization
       environment: prod
@@ -665,16 +675,6 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
-          # serve
-          - name: serve
-            download-model: true
-            integration: true
-            functional: true
-            load: true
-            upload-test-results: true
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
-
     with:
       project: iptc
       environment: prod
@@ -737,7 +737,6 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-
 
           # serve
           - name: serve
@@ -953,6 +952,15 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
     with:
       project: topic-summarization
       environment: prod
@@ -1084,14 +1092,7 @@ jobs       :
     uses: ./.github/workflows/_train-multi-model.yaml
     needs:
       - run-repository-state
-      - run-keywords-project
-      - run-summarization-project
-      - run-gch-summarization-project
-      - run-sentiment-project
-      - run-ner-project
-      - run-lsh-project
       - run-iptc-project
-      - run-topic-project
       - run-register-pipelines
       - get-target-branch-name
       - run-get-core-dependencies-versions
@@ -1131,11 +1132,11 @@ jobs       :
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
-      base-project: ${{ matrix.models.base-project || ''}}
-      base-model: ${{ matrix.models.base-model || ''}}
-      base-with-id: ${{ matrix.models.base-with-id || ''}}
-      trained-project: ${{ matrix.models.trained-project || ''}}
-      trained-model: ${{ matrix.models.trained-model || ''}}
+      base-project: ${{ matrix.models.base-project}}
+      base-model: ${{ matrix.models.base-model}}
+      base-with-id: ${{ matrix.models.base-with-id}}
+      trained-project: ${{ matrix.models.trained-project}}
+      trained-model: ${{ matrix.models.trained-model}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
@@ -1185,10 +1186,68 @@ jobs       :
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
+    with:
+      environment: prod
+      runner-kind: ${{ matrix.models.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
+      project: ${{ matrix.models.project }}
+      tag: ${{ matrix.models.tag }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
+      upload-compiled-model: true
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
+  # COMPILE MULTI MODELS
+  # ===============================================
+
+  run-multi-compilation-pipelines:
+    name: Compile Model
+    uses: ./.github/workflows/_compile-multi-model.yaml
+    needs:
+      - run-repository-state
+      - run-iptc-project
+      - run-multi-train-pipelines
+      - get-target-branch-name
+
+    strategy:
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      max-parallel: 5
+      matrix:
+        models:
           - project: iptc
             self-hosted-runner-type: inf1.6xlarge
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            uncompiled-project: onclusive/iptc-00000000
+            uncompiled-model: IP00000000-TRAINED
+            uncompiled-with-id: IP00000000-TRAINED-12
+            compiled-project: onclusive/iptc-00000000
+            compiled-model: IP00000000-COMPILED
+          - project: iptc
+            self-hosted-runner-type: inf1.6xlarge
+            runner-kind: custom
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            uncompiled-project: onclusive/iptc-02000000
+            uncompiled-model: IP02000000-TRAINED
+            uncompiled-with-id: IP02000000-TRAINED-7
+            compiled-project: onclusive/iptc-02000000
+            compiled-model: IP02000000-COMPILED
+          - project: iptc
+            self-hosted-runner-type: inf1.6xlarge
+            runner-kind: custom
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            uncompiled-project: onclusive/iptc-04000000
+            uncompiled-model: IP04000000-TRAINED
+            uncompiled-with-id: IP04000000-TRAINED-2
+            compiled-project: onclusive/iptc-04000000
+            compiled-model: IP04000000-COMPILED
 
     with:
       environment: prod
@@ -1196,6 +1255,11 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
+      uncompiled-project: ${{ matrix.models.uncompiled-project}}
+      uncompiled-model: ${{ matrix.models.uncompiled-model}}
+      uncompiled-with-id: ${{ matrix.models.uncompiled-with-id}}
+      compiled-project: ${{ matrix.models.compiled-project}}
+      compiled-model: ${{ matrix.models.compiled-model}}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       pull-request: ${{ github.event_name == 'pull_request' }}
       upload-compiled-model: true
