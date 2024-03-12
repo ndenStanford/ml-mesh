@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "topic-backfill"
 version = "0.1.0"
-description = ""
+description = "BERTopic enrichment"
 authors = ["Nutchapol Dendumrongsup <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
