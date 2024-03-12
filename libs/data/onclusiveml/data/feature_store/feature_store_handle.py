@@ -61,6 +61,13 @@ class FeatureStoreHandle:
         self.data_ids = data_ids
         self.limit = limit
         self.timestamp_key = timestamp_key
+        self.operator_dict = {
+            "equal": "=",
+            "less_than": "<",
+            "greater_than": ">",
+            "less_than_equal_to": "<=",
+            "greater_than_equal_to": ">=",
+        }  # noqa: E501
 
     def initialize(self) -> None:
         """Initializes feature store registry.
@@ -205,16 +212,8 @@ class FeatureStoreHandle:
             for column, value, operator in zip(
                 filter_columns, filter_values, comparison_operators
             ):
-                if operator.lower() == "equal":
-                    filters.append(f"{column} = '{value}'")
-                elif operator.lower() == "less_than":
-                    filters.append(f"{column} < '{value}'")
-                elif operator.lower() == "greater_than":
-                    filters.append(f"{column} > '{value}'")
-                elif operator.lower() == "less_than_equal_to":
-                    filters.append(f"{column} <= '{value}'")
-                elif operator.lower() == "greater_than_equal_to":
-                    filters.append(f"{column} >= '{value}'")
+                if operator in self.operator_dict.keys():
+                    filters.append(f"{column} {self.operator_dict[operator]} '{value}'")
                 else:
                     raise ValueError(
                         "Comparison operator is not valid. Should be one of the following: \
