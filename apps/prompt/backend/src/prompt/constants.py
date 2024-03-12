@@ -628,3 +628,46 @@ class PromptEnum(OnclusiveEnum):
             "response_format": {"type": "json_object"},
         },
     ]
+
+    # Summarization prompt template for german team
+    # input args:
+    # text (str): target article
+    # role (str): like finacial expert, which part the summary focuses on
+    # formatting (str): output format requirement, like US English
+    # length (int): output length
+    # sentiment (str): positive or negative
+    # quote_handle (str): how to handle quote, like 'remove them'.
+    # tone: the tone for the output, like 'formal'.
+    ML_GERMAN_CUSTOMER_SUMMARY_TEMPLATE = [
+        """
+        You are an experienced {role}.
+        You will be given an article and you need to show me the summarization of it as a {role}.
+        The article is delimited by < and >. And there are some formatting requirements delimited by * and *.
+
+        You must follow the formatting requirements in your output as below.
+        Formatting requirements: *{formatting}*
+
+        You must follow the steps below:
+        1. Go through the whole article, understand its content and find out all the quoted text.
+        2. Remember the content in the article you are intereseted in, as a {role}.
+        3. Generate a summary which captures all the main idea and key details in step 2, within {length} words, in {sentiment} sentiment. Meanwhile for the quotes, {quote_handle} in the final summary.
+        4. Rewrite your summary into the required format, with {tone} tone.
+
+        Here is the input article:
+        Article:<{text}>
+
+        You must output your answer in following JSON format. Here [XXX] is placeholders.
+        [Summary]:[The summary you generated]
+        [Interested content]:[The content you are intested in as a {role}]
+        [Summary length]:[How many words inside the summary]
+        [Quoted text]:[Any quoted text inside the whole article? If yes, show me. If no, output None]
+        [Summary tones]:[The tone that the summary sounds like]
+        """,  # noqa: E501
+        "ml-german-customer-summary-template",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 0.5,
+            "response_format": {"type": "json_object"},
+        },
+    ]
