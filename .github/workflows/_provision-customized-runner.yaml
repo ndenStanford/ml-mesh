@@ -159,6 +159,8 @@ jobs:
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
           echo "Restarting docker"
+          export PIP_CACHE_DIR=${{ env.ebs-mount-point }}/.cache
+          export POETRY_CACHE_DIR=${{ env.ebs-mount-point }}//.cache/pypoetry
           sudo systemctl enable docker
           sudo systemctl start docker
           echo "Docker installation file directory:"
