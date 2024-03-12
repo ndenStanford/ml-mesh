@@ -25,8 +25,9 @@ class IngestionSettings(BaseSettings):
     @property
     def target_path(self):
         """Target path property."""
-        return f"s3://{self.target_bucket}/iptc/{self.data_state}/{self.iptc_level}/\
-            {self.files.replace('*','')}"
+        path = f"s3://{self.target_bucket}/iptc/{self.data_state}/"
+        path += f"{self.iptc_level}/{self.files.replace('*','')}"
+        return path
 
     @property
     def schema(self):
