@@ -67,7 +67,7 @@ class FeatureStoreHandle:
             "greater_than": ">",
             "less_than_equal_to": "<=",
             "greater_than_equal_to": ">=",
-        }  # noqa: E501
+        }
 
     def initialize(self) -> None:
         """Initializes feature store registry.
