@@ -19,12 +19,12 @@ default = false
 secondary = true
 
 [tool.poetry.group.compilation.dependencies]
-pytest = "7.4.2"
+pytest = "8.0.2"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 transformers = "^4.37.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "7.4.2"
+pytest = "8.0.2"
 
 [build-system]
 requires = ["poetry-core"]
