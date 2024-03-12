@@ -25,7 +25,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
         language (Optional[str]): Language used for prediction. Defaults to "en"
     """
 
-    language: str = "en"
+    language: str = "en" #NOT NEEDED??
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
