@@ -143,7 +143,6 @@ dmypy.json
 server/static/*
 #mISC
 .DS_Store
-.vscode/
 # Logs
 logs
 *.log
