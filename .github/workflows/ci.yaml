@@ -665,7 +665,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: g4dn.4xlarge
+            self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-neuron: false
 
           # compile
