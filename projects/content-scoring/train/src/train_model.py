@@ -8,12 +8,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
 
 # Source
-from src.settings import DocumentEvaluatorParams
+from src.settings import DocumentContentScoringParams
 
 
 def main() -> None:
     """Train and evaluate the model."""
-    params = DocumentEvaluatorParams()
+    params = DocumentContentScoringParams()
 
     data_file_path = params.data_file_path
     df = pd.read_parquet(data_file_path)

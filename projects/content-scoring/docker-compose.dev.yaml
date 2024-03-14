@@ -9,22 +9,22 @@ services:
   train:
     build:
       context: ../../
-      dockerfile: projects/evaluator/train/Dockerfile
+      dockerfile: projects/content-scoring/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: evaluator
+        PROJECT: content-scoring
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
     volumes:
       - type: bind
         source: train/src
-        target: /projects/evaluator/train/src
+        target: /projects/content-scoring/train/src
       - type: bind
         source: train/data
-        target: /projects/evaluator/train/data
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/evaluator-train:${IMAGE_TAG:-latest}
+        target: /projects/content-scoring/train/data
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
@@ -39,8 +39,8 @@ services:
     volumes:
       - type: bind
         source: train/
-        target: /projects/evaluator/train/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/evaluator-train:${IMAGE_TAG}
+        target: /projects/content-scoring/train/
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:

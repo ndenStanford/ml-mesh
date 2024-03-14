@@ -13,19 +13,19 @@ from onclusiveml.tracking import (
 
 
 # Settings classes
-class TrackedDocumentEvaluatorSpecs(TrackedModelSpecs):
+class TrackedDocumentContentScoringSpecs(TrackedModelSpecs):
     """Params class for specifying the neptune project and model suite."""
 
-    project: str = "onclusive/document-evaluator"
-    model: str = "DOCUMENT-EVALUATOR"
+    project: str = "onclusive/document-content-scoring"
+    model: str = "DOCUMENT-content-scoring"
 
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
 
-class DocumentEvaluatorParams(TrackedParams):
-    """Ground truth specification for document evaluator model."""
+class DocumentContentScoringParams(TrackedParams):
+    """Ground truth specification for document content-scoring model."""
 
     # LightGBM parameters
     lgb_params: dict = {"objective": "binary", "verbose": -1, "is_unbalance": True}
@@ -49,15 +49,15 @@ class DocumentEvaluatorParams(TrackedParams):
     num_boost_rounds: int = 10000
 
 
-class TrackedDocumentEvaluatorModelCard(TrackedModelCard):
-    """The model card for the document evaluator ML project."""
+class TrackedDocumentContentScoringModelCard(TrackedModelCard):
+    """The model card for the document content-scoring ML project."""
 
     model_type: str = "trained"
     # --- custom fields
     # model params
-    model_params: DocumentEvaluatorParams = DocumentEvaluatorParams()
+    model_params: Documentcontent - scoringParams = Documentcontent - scoringParams()
     # admin
-    local_output_dir: str = os.path.join(".", "document_evaluator_artifacts")
+    local_output_dir: str = os.path.join(".", "document_content-scoring_artifacts")
     logging_level: str = "INFO"
 
     class Config:

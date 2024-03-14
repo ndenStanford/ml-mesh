@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "evaluator-train"
+name = "content-scoring-train"
 version = "0.1.0"
-description = "Docker image for registering model for document evaluator"
+description = "Docker image for registering model for document content-scoring"
 authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
 packages = [{include = "src"}]
 
