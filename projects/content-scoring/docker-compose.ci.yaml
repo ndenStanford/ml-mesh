@@ -33,12 +33,6 @@ services:
       - type: bind
         source: train/src
         target: /projects/content-scoring/train/src
-      - type: bind
-        source: train/data
-        target: /projects/content-scoring/train/data
-      - type: bind
-        source: train/tests
-        target: /projects/content-scoring/train/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
