@@ -161,9 +161,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.iptc_model_local_dir = os.path.join(
             self.model_card.local_output_dir, f"{self.tracked_model_specs.model}"
         )
-        self.trainer.save_model(
-            self.iptc_model_local_dir, serialization="pytorch", save_ctfidf=True
-        )
+        self.trainer.save_model(self.iptc_model_local_dir)
 
     def __call__(self) -> None:
         """Call Method."""
@@ -175,15 +173,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.optimize_model()
         self.save()
         if self.data_fetch_params.save_artifact:
-            sample_docs = self.model_card.model_inputs.sample_documents
+            sample_docs = self.dataset_df["content"].values.tolist()[:15]
             sample_predictions = self.predict(sample_docs)
 
-        super(OnclusiveHuggingfaceModelTrainer, self).__call__(
-            [sample_docs, self.model_card.model_params.dict(), sample_predictions],
-            [
-                self.model_card.model_test_files.inputs,
-                self.model_card.model_test_files.inference_params,
-                self.model_card.model_test_files.predictions,
-            ],
-            self.iptc_model_local_dir,
-        )
+            super(OnclusiveHuggingfaceModelTrainer, self).__call__(
+                [sample_docs, self.model_card.model_params.dict(), sample_predictions],
+                [
+                    self.model_card.model_test_files.inputs,
+                    self.model_card.model_test_files.inference_params,
+                    self.model_card.model_test_files.predictions,
+                ],
+                self.iptc_model_local_dir,
+            )

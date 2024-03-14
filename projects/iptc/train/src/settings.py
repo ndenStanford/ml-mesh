@@ -2,7 +2,6 @@
 
 # Standard Library
 import os
-from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
@@ -39,24 +38,6 @@ class BaseTrackedModelSpecs(TrackedModelSpecs):
     with_id: str = "IP00000000-BASE-1"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
-class Inputs(TrackedParams):
-    """iptc input parameters."""
-
-    sample_documents: List[str] = [
-        "Stocks reversed earlier losses to close higher despite rising oil prices that followed \
-        the attack by Hamas on Israel over the weekend. Dovish comments by \
-        Federal Reserve officials boosted the three major indexes. \
-        The Dow Jones Industrial Average added nearly 200 points.",
-        "Art is a diverse range of human activity, and resulting product,\
-        that involves creative or imaginative talent expressive of technical \
-        proficiency, beauty, emotional power, or conceptual ideas",
-    ]
 
     class Config:
         env_file = "config/dev.env"
@@ -113,7 +94,6 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     # --- custom fields
     # model params
     model_params: IPTCModelParams = IPTCModelParams()
-    model_inputs: Inputs = Inputs()
     # admin
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
