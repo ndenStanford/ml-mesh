@@ -1,8 +1,5 @@
 """Register trained model."""
 
-# Standard Library
-import os
-
 # 3rd party libraries
 import lightgbm as lgb
 import pandas as pd
@@ -15,12 +12,10 @@ from src.settings import DocumentEvaluatorParams
 
 def main() -> None:
     """Train and evaluate the model."""
-    current_directory = os.getcwd()
-    print("Current directory:", current_directory)
     params = DocumentEvaluatorParams()
 
     data_file_path = params.data_file_path
-    df = pd.read_csv(data_file_path).drop(columns=["Unnamed: 0"])
+    df = pd.read_parquet(data_file_path)
 
     df["y"] = 1
     df.loc[

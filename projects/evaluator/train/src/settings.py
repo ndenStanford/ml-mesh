@@ -41,7 +41,7 @@ class DocumentEvaluatorParams(TrackedParams):
         "type_of_summary",
     ]
     # File paths
-    data_file_path: str = "data/processed_data.csv"
+    data_file_path: str = "data/processed_data.parquet"
     config_file_path: str = "config/dev.env"
     # Training settings
     test_size: float = 0.2

@@ -21,6 +21,9 @@ services:
       - type: bind
         source: train/src
         target: /projects/evaluator/train/src
+      - type: bind
+        source: train/data
+        target: /projects/evaluator/train/data
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/evaluator-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]

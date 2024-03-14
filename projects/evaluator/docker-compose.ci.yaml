@@ -34,6 +34,9 @@ services:
         source: train/src
         target: /projects/evaluator/train/src
       - type: bind
+        source: train/data
+        target: /projects/evaluator/train/data
+      - type: bind
         source: train/tests
         target: /projects/evaluator/train/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/evaluator-train:${IMAGE_TAG}
