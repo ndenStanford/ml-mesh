@@ -1,6 +1,7 @@
 """Register trained model."""
 
 # 3rd party libraries
+import joblib
 import lightgbm as lgb
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -49,7 +50,8 @@ def main() -> None:
     num_boost_rounds = params.num_boost_rounds
 
     model = lgb.train(lgb_params, d_train, num_boost_rounds, valid_sets=[d_test])
-    model.save_model("data/model")
+    model_file_path = "data/model.joblib"
+    joblib.dump(model, model_file_path)
 
 
 if __name__ == "__main__":
