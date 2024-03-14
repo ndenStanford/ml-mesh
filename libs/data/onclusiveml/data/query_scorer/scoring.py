@@ -13,7 +13,10 @@ from sklearn.metrics.pairwise import pairwise_distances  # noqa
 
 # Internal libraries
 from onclusiveml.data.query_scorer.clustering import hdbscan_clustering
-from onclusiveml.data.query_scorer.get_articles import get_query_results
+from onclusiveml.data.query_scorer.get_articles import (
+    get_query_results,
+    remove_duplicates,
+)
 from onclusiveml.data.query_scorer.settings import get_settings
 
 
@@ -323,6 +326,7 @@ def evaluate_query(
          Quality scores, inputs, embeddings, and cluster labels.
     """
     inputs, list_scores = get_query_results(es, es_index, query)
+    inputs = remove_duplicates(inputs)
 
     embeddings, cluster_labels = hdbscan_clustering(
         inputs=inputs,

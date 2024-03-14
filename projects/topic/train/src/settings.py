@@ -79,19 +79,12 @@ class TrackedTopicBaseModelCard(TrackedModelCard):
 class DataFetchParams(FeatureStoreParams):
     """Feature registration inputs."""
 
-    feast_config_bucket: str
-    config_file: str
-    local_config_dir: str
     entity_name: str
     entity_join_key: str
     feature_view_name: str
-    redshift_database: str
-    redshift_schema: str
-    redshift_table: str
-    redshift_timestamp_field: str
     dataset_upload_bucket: str
     dataset_upload_dir: str
-    save_artifact: bool
+    save_artifact: bool = False
     n_records_sample: int
     n_records_full: int
 
