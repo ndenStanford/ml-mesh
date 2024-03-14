@@ -21,7 +21,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 )
 @click.option(
     '--aws-region',
-    default='us-east-1',
+    default='us-east-2',
     show_default=True,
     type=click.Choice(['us-east-1','us-east-2']),
     help="""The AWS region of the docker image. Options are `us-east-1` (default) , and
