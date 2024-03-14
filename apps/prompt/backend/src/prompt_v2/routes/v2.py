@@ -6,12 +6,12 @@ from github import Github
 from slugify import slugify
 
 # Source
-from src.prompt.exceptions_v2 import (
+from src.prompt_v2.exceptions_v2 import (
     DeletionProtectedProject,
     ProjectNotFound,
     ProjectsExisting,
 )
-from src.prompt.schemas_v2 import ProjectTemplateSchema
+from src.prompt_v2.schemas_v2 import ProjectTemplateSchema
 from src.settings import get_settings
 
 
@@ -127,52 +127,3 @@ def get_projects(alias: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         )
-
-
-"""
-@router.get("", status_code=status.HTTP_200_OK, response_model=List[str])
-def list_projects():
-    try:
-        contents = repo.get_contents("")
-        projects = list_folders_recursive(contents)
-        return projects
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
-
-@router.post("", status_code=status.HTTP_201_CREATED)
-def create_project(folder_path: str):
-    try:
-        repo.create_file(folder_path + "/.gitkeep", "Creating empty folder", "")
-        return {"message": "Project created successfully"}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
-
-
-@router.delete("/{folder_path}", status_code=status.HTTP_200_OK)
-def delete_project(folder_path: str):
-    try:
-        contents = repo.get_contents(folder_path)
-
-        for content_file in contents:
-            if content_file.type == "dir":
-                sub_contents = repo.get_contents(content_file.path)
-                for sub_content_file in sub_contents:
-                    repo.delete_file(
-                        sub_content_file.path, "Delete file", sub_content_file.sha
-                    )
-            else:
-                repo.delete_file(content_file.path, "Delete file", content_file.sha)
-
-        return {"message": "Project deleted successfully"}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
-"""
