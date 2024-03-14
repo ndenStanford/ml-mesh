@@ -134,7 +134,6 @@ CLASS_DICT_SECOND = {
 
 CLASS_DICT = {**CLASS_DICT_FIRST, **CLASS_DICT_SECOND}
 
-
 ID_TO_TOPIC = {
     "00000000": "root",
     "01000000": "arts, culture, entertainment and media",
