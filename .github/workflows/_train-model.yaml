@@ -46,7 +46,7 @@ on  :
         required: false
         default: true
         type: boolean
-        description: Indicates whether the call should wait until the job completes.
+        description: Indicates whether to wait for the job to complete before continuing.
     secrets:
       AWS_ACCOUNT_ID:
         required: true

@@ -265,7 +265,7 @@ def project_train(
         container_entry_point=container_entry_point,
     )
 
-    estimator.fit(wait={wait}, job_name=f"{base_job_name}-{dt.now().strftime('%Y-%m-%d--%H-%M-%S')}")
+    estimator.fit(wait=wait, job_name=f"{base_job_name}-{dt.now().strftime('%Y-%m-%d--%H-%M-%S')}")
 
 if __name__ == "__main__":
     project_train()
