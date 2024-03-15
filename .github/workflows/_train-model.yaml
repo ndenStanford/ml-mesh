@@ -46,7 +46,7 @@ on  :
         required: false
         default: true
         type: boolean
-        ddescription: Indicates whether the call should wait until the job completes.
+        description: Indicates whether the call should wait until the job completes.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -132,5 +132,5 @@ jobs:
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
-            --wait ${{ !inputs.wait }} \
+            --wait ${{ inputs.wait }} \
             python -m src.train_model
