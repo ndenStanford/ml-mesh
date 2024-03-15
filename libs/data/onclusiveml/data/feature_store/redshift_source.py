@@ -54,6 +54,7 @@ class RedshiftSourceCustom(RedshiftSource):
             "int2": ValueType.INT32,
             "int4": ValueType.INT32,
             "int8": ValueType.INT64,
+            "bigint": ValueType.INT64,
             "numeric": ValueType.DOUBLE,
             "float4": ValueType.FLOAT,
             "float8": ValueType.DOUBLE,
