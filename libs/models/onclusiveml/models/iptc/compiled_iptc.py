@@ -93,7 +93,10 @@ class CompiledIPTC:
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
         self.model_spec = CompiledTrackedModelSpecs()
-        self.model_id = extract_model_id(self.model_spec.project)
+        if self.model_spec.project == "onclusive/iptc":
+            self.model_id = "00000000"
+        else:
+            self.model_id = extract_model_id(self.model_spec.project)
         self.id2label = CLASS_DICT[ID_TO_TOPIC[self.model_id]]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
