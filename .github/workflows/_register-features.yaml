@@ -110,4 +110,4 @@ jobs:
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
-            REGISTER_FEATURES="${{ !inputs.pull-request }}"
+            REGISTER_FEATURES="${{ inputs.pull-request }}"
