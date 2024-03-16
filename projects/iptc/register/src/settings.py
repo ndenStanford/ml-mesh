@@ -20,7 +20,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
     feature_view_name: str = "iptc_feature_view"
     fields: Optional[List[Tuple[str, str]]]
     entity_join_key: str
-    register_features: bool = False
+    register_features: bool
 
     class Config:
         env_file = "config/dev.env"
