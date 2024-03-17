@@ -26,6 +26,9 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
+# hadolint ignore=DL3002
+USER root
+
 RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
@@ -50,8 +53,13 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
+# hadolint ignore=DL3002
+USER root
+
 RUN poetry install --no-interaction --with dev
 
+# switch user
+USER ${USER}
 
 # --- debugger stage
 FROM builder as debugger
