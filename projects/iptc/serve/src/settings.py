@@ -23,7 +23,7 @@ class TrackedCompiledModelSpecs(TrackedModelSpecs):
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = Field("IPTC-COMPILED-6", env="neptune_model_version_id")
+    with_id: str = Field("IP00000000-COMPILED-4", env="neptune_model_version_id")
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
 
@@ -31,7 +31,7 @@ class TrackedCompiledModelSpecs(TrackedModelSpecs):
 class ServerModelSettings(ServingParams):
     """Prediction model settings."""
 
-    model_name: str = "iptc"
+    model_name: str = Field("iptc", env="iptc_model_name")
     model_directory: Union[str, Path] = "."
 
 
