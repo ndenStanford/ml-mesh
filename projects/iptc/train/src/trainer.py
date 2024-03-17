@@ -73,19 +73,17 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
+        self.neptune_project = os.getenv("NEPTUNE_PROJECT")
+        self.neptune_model_id = os.getenv("NEPTUNE_MODEL_ID")
         if self.model_card.model_params.level == 1:
             self.first_level_root = None
             self.second_level_root = None
         elif self.model_card.model_params.level == 2:
-            self.first_level_root_id = extract_model_id(
-                self.tracked_model_specs.project
-            )
+            self.first_level_root_id = extract_model_id(self.neptune_project)
             self.first_level_root = ID_TO_TOPIC[self.first_level_root_id]
             self.second_level_root = None
         elif self.model_card.model_params.level == 3:
-            self.second_level_root_id = extract_model_id(
-                self.tracked_model_specs.project
-            )
+            self.second_level_root_id = extract_model_id(self.neptune_project)
             self.second_level_root = ID_TO_TOPIC[self.second_level_root_id]
             self.first_level_root = find_category_for_subcategory(
                 CLASS_DICT_SECOND, self.second_level_root
@@ -193,7 +191,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def save(self) -> None:
         """Save the model."""
         self.iptc_model_local_dir = os.path.join(
-            self.model_card.local_output_dir, f"{self.tracked_model_specs.model}"
+            self.model_card.local_output_dir, f"{self.neptune_model_id}"
         )
         self.trainer.save_model(self.iptc_model_local_dir)
 

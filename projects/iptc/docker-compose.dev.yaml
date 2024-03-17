@@ -71,6 +71,7 @@ services:
     profiles: [train]
     environment:
       NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
+      NEPTUNE_MODEL_ID: ${NEPTUNE_MODEL_ID}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -87,6 +88,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
+      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
+      NEPTUNE_MODEL_ID: ${NEPTUNE_MODEL_ID}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
