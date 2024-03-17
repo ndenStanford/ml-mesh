@@ -90,11 +90,6 @@ services:
     ports:
       - 5678:5678
       - 9000:9000
-    # depends_on:
-    #   entity-fishing-backend:
-    #     condition: service_healthy
-    #   ner-serve:
-    #     condition: service_healthy
     volumes:
       - type: bind
         source: ${HOME}/data
