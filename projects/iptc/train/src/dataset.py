@@ -74,7 +74,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
     def __getitem__(self, idx):  # type: ignore[no-untyped-def]
         text = self.df.iloc[idx][self.selected_text]
         inputs = self.tokenizer(
-            text, padding="max_length", max_length=self.max_length, truncation=True
+            text=text, padding="max_length", max_length=self.max_length, truncation=True
         )
         labels = self.get_label(idx)
         inputs["labels"] = labels

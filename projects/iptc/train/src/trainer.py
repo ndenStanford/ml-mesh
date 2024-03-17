@@ -13,6 +13,7 @@ from transformers import (
 )
 
 # 3rd party libraries
+from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
 # Internal libraries
@@ -23,7 +24,7 @@ from onclusiveml.training.huggingface.trainer import (
 )
 
 # Source
-from src.class_dict import CLASS_DICT_SECOND, ID_TO_TOPIC
+from src.class_dict import CLASS_DICT_SECOND, CLASS_DICT_THIRD, ID_TO_TOPIC
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -52,6 +53,18 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
         Returns: None
         """
+        self.data_fetch_params = data_fetch_params
+
+        if self.data_fetch_params.redshift_table == "iptc_second_level":
+            self.data_fetch_paramsfilter_columns = ["topic_1"]
+            self.data_fetch_paramsfilter_values = [self.data_fetch_params.iptc_label]
+            self.data_fetch_paramscomparison_operators = ["equal"]
+
+        if self.data_fetch_params.redshift_table == "iptc_third_level":
+            self.data_fetch_paramsfilter_columns = ["topic_2"]
+            self.data_fetch_paramsfilter_values = [self.data_fetch_params.iptc_label]
+            self.data_fetch_paramscomparison_operators = ["equal"]
+
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
@@ -107,6 +120,27 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
+        self.dataset_df: DataFrame = self.dataset_df.dropna(
+            subset=self.data_fetch_params.non_nullable_columns
+        )  # type: ignore
+
+        if self.data_fetch_params.redshift_table == "iptc_first_level":
+            self.dataset_df = self.dataset_df[
+                self.dataset_df["topic_1"].isin(CLASS_DICT_SECOND.keys())
+            ]
+
+        if self.data_fetch_params.redshift_table == "iptc_second_level":
+            self.dataset_df = self.dataset_df[
+                self.dataset_df["topic_2"].isin(CLASS_DICT_THIRD.keys())
+            ]
+
+        if self.data_fetch_params.redshift_table == "iptc_third_level":
+            self.dataset_df = self.dataset_df[
+                self.dataset_df["topic_3"].isin(
+                    [j for i in CLASS_DICT_THIRD.values() for j in i.values()]
+                )
+            ]
+
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=0.20,

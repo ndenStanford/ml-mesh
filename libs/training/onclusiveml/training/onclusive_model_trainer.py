@@ -82,7 +82,13 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             for feature in self.feature_view.features
         ]
 
-        self.dataset_df = self.fs_handle.fetch_historical_features(features)
+        self.dataset_df = self.fs_handle.fetch_historical_features(
+            features,
+            filter_columns=self.data_fetch_params.filter_columns,
+            filter_values=self.data_fetch_params.filter_values,
+            comparison_operators=self.data_fetch_params.comparison_operators,
+            non_nullable_columns=self.data_fetch_params.non_nullable_columns,
+        )
 
         self.logger.info(
             f"fetched dataset from feature-store : \n {self.dataset_df.head()}"

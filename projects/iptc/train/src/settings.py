@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+from typing import List
 
 # 3rd party libraries
 from neptune.types.mode import Mode
@@ -81,6 +82,11 @@ class DataFetchParams(FeatureStoreParams):
     save_artifact: bool = False
     n_records_sample: int
     n_records_full: int
+    iptc_label: str = "root"
+    filter_columns: List[str] = []
+    filter_values: List[str] = []
+    comparison_operators: List[str] = []
+    non_nullable_columns: List[str] = ["content", "topic_1"]
 
     class Config:
         env_file = "config/dev.env"
