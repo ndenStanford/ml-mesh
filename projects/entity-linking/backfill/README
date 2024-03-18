@@ -21,7 +21,7 @@ from confluent_kafka import Producer
 import json
 
 p = Producer({"bootstrap.servers": "localhost:9094"})
-p.produce("beam-input", key="identifier", value=json.dumps({"content": "Syria is a dangerous country. London is a wonderful city.", "lang": "en"}))
+p.produce("beam-input", key="identifier", value=json.dumps({"content": "Syria is a dangerous country. London is a wonderful city.", "entities": None, "lang": "en"}))
 p.flush()
 ```
 
