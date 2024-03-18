@@ -175,7 +175,7 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/ner
       NEPTUNE_MODEL_ID: NER-COMPILED
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional, load, backfill]
     volumes:
       - type: bind
         source: ${HOME}/data
@@ -210,7 +210,7 @@ services:
         target: /projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
-    profiles: [serve]
+    profiles: [serve, backfill]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -240,7 +240,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
     command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes, -d]
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional, load, backfill]
     volumes:
       - type: bind
         source: ${HOME}/data
