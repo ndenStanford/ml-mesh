@@ -17,7 +17,7 @@ class TrackedDocumentContentScoringSpecs(TrackedModelSpecs):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/document-content-scoring"
-    model: str = "DOCUMENT-content-scoring"
+    model: str = "DOCUMENT-SCORING"
 
     class Config:
         env_file = "config/dev.env"
@@ -55,7 +55,7 @@ class TrackedDocumentContentScoringModelCard(TrackedModelCard):
     model_type: str = "trained"
     # --- custom fields
     # model params
-    model_params: Documentcontent - scoringParams = Documentcontent - scoringParams()
+    model_params: DocumentContentScoringParams = DocumentContentScoringParams()
     # admin
     local_output_dir: str = os.path.join(".", "document_content-scoring_artifacts")
     logging_level: str = "INFO"
