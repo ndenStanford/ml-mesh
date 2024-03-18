@@ -21,6 +21,7 @@ class TrackedIPTCModelSpecs(TrackedModelSpecs):
     model: str = "IP00000000-TRAINED"
 
     class Config:
+        env_prefix = "trained_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
 
