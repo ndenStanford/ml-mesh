@@ -1,9 +1,7 @@
-"""Register trained model."""
-
-"""Register trained model."""
+"""Train and upload a model to Neptune AI."""
 
 # Standard Library
-import os  # Add missing import
+import os
 
 # 3rd party libraries
 import joblib
@@ -23,17 +21,21 @@ from src.settings import (
 
 
 def main() -> None:
-    """Upload trained model to Neptune."""
+    """Train and upload a model to Neptune AI."""
+    # Initialize model specs and model card
     model_specs = TrackedDocumentContentScoringSpecs()
     model_card = TrackedDocumentContentScoringModelCard()
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
-    # initialize registered model on Neptune AI
+
+    # Initialize registered model on Neptune AI
     model_version = TrackedModelVersion(**model_specs.dict())
+
     # Load data
     data_file_path = model_card.model_params.data_file_path
     df = pd.read_parquet(data_file_path)
+
     # Preprocess data
     df["y"] = 1
     df.loc[
@@ -49,10 +51,12 @@ def main() -> None:
     categorical_cols = model_card.model_params.categorical_cols
     X = df[numerical_cols + categorical_cols]
     y = df[["y"]]
+
     # Encode categorical features
     enc = OrdinalEncoder()
     enc.fit(X[categorical_cols])
     X[categorical_cols] = enc.transform(X[categorical_cols])
+
     # Split data into train and test sets
     test_size = model_card.model_params.test_size
     random_state = model_card.model_params.random_state
@@ -67,13 +71,19 @@ def main() -> None:
     num_boost_rounds = model_card.model_params.num_boost_rounds
 
     model = lgb.train(lgb_params, d_train, num_boost_rounds, valid_sets=[d_test])
+
     # Save the trained model
     model_output_path = os.path.join(model_card.local_output_dir, "trained_model.pkl")
     joblib.dump(model, model_output_path)
-    # Upload trained model to Neptune
+
+    # Upload trained model file to Neptune
     model_version.upload_file_to_model_version(
         local_file_path=model_output_path,
         neptune_attribute_path=model_card.model_artifact_attribute_path,
+    )
+
+    model_version.upload_config_to_model_version(
+        config=model_card.dict(), neptune_attribute_path="model/model_card"
     )
     # Stop tracking
     model_version.stop()
