@@ -37,13 +37,13 @@ def test_served_model_artifacts(settings):
 @pytest.fixture
 def test_model_bio_endpoint_url():
     """Model bio endpoint URL fixture."""
-    return "/iptc/v1/bio"
+    return "/iptc-00000000/v1/bio"
 
 
 @pytest.fixture
 def test_model_predict_endpoint_url():
     """Model predict endpoint URL fixture."""
-    return "/iptc/v1/predict"
+    return "/iptc-00000000/v1/predict"
 
 
 @pytest.fixture

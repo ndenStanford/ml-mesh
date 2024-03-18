@@ -15,23 +15,23 @@ using
 To invoke the `live` endpoint for server liveness, use:
 
 ```bash
-curl -X 'GET' 'http://0.0.0.0:8000/iptc/v1/live'
+curl -X 'GET' 'http://0.0.0.0:8000/iptc-00000000/v1/live'
 ```
 
 To invoke the `bio` endpoint for model meta data, use:
 
 ```bash
-curl -X 'GET' 'http://0.0.0.0:8000/iptc/v1/bio'
+curl -X 'GET' 'http://0.0.0.0:8000/iptc-00000000/v1/bio'
 ```
 
 To invoke the `predict` endpoint for inference, use:
 
 ```bash
-curl -X 'POST' 'http://0.0.0.0:8000/iptc/v1/predict' \
+curl -X 'POST' 'http://0.0.0.0:8000/iptc-00000000/v1/predict' \
     -H 'Content-Type: application/json' \
     -d '{
         "data": {
-            "namespace": "iptc",
+            "namespace": "iptc-00000000",
             "attributes": {
                 "content": "Stocks reversed earlier losses to close higher despite rising oil prices that followed the attack by Hamas on Israel over the weekend. Dovish comments by Federal Reserve officials boosted the three major indexes. The Dow Jones Industrial Average added nearly 200 points."
             },
