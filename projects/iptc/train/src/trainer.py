@@ -56,14 +56,14 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.data_fetch_params = data_fetch_params
 
         if self.data_fetch_params.redshift_table == "iptc_second_level":
-            self.data_fetch_paramsfilter_columns = ["topic_1"]
-            self.data_fetch_paramsfilter_values = [self.data_fetch_params.iptc_label]
-            self.data_fetch_paramscomparison_operators = ["equal"]
+            self.data_fetch_params.filter_columns = ["topic_1"]
+            self.data_fetch_params.filter_values = [self.data_fetch_params.iptc_label]
+            self.data_fetch_params.comparison_operators = ["equal"]
 
         if self.data_fetch_params.redshift_table == "iptc_third_level":
-            self.data_fetch_paramsfilter_columns = ["topic_2"]
-            self.data_fetch_paramsfilter_values = [self.data_fetch_params.iptc_label]
-            self.data_fetch_paramscomparison_operators = ["equal"]
+            self.data_fetch_params.filter_columns = ["topic_2"]
+            self.data_fetch_params.filter_values = [self.data_fetch_params.iptc_label]
+            self.data_fetch_params.comparison_operators = ["equal"]
 
         super().__init__(
             tracked_model_specs=tracked_model_specs,
