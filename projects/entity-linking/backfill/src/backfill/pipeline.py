@@ -36,7 +36,7 @@ def get_pipeline(root: beam.Pipeline, settings: OnclusiveBaseSettings) -> beam.P
             secure=settings.secure,
             in_keys=[
                 "content",
-                "language",
+                "lang",
             ],  # NOTE: Other models parameters go here as kwargs
             api_key=settings.api_key,
             namespace=settings.namespace,
