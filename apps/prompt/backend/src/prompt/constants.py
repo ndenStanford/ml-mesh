@@ -638,6 +638,7 @@ class PromptEnum(OnclusiveEnum):
 
         You will be given several requirements for your output summary and its formatting. Below are the requirements explainations.
         Output length: the maximal words of your output summary.
+        Output language: Your summary should be in same language as the input original article.
         Sentiment: The sentiment of your summary. 'Positive', 'negative' or any other words can describe a sentiment.
         Tone: The tone of summary. Can be 'formal', 'informal' or any other words can describe the tone.
         Quoted text: How to handle quoted text. 'Remove' or 'Keep'.
@@ -660,18 +661,22 @@ class PromptEnum(OnclusiveEnum):
         You must follow the steps below to generate the summary:
         1. Go through the whole article, understand its main idea.
         2. Find out the content in the article you are intereseted in, as a {role}.
-        3. Generate a summary which captures all the main idea and key details in the whole article, focusing more on the content you are interested in, in {sentiment} sentiment. {quote_handle} all the quoted text in the final summary if any.
-        4. Rewrite your summary to follow all required format, with {tone} tone, within {length} words.
+        3. Find out which language is the article in.
+        4. Generate a summary in same language as the article. The summary should capture all the main idea and key details in the whole article, focusing more on the content you are interested in, in {sentiment} sentiment. {quote_handle} all the quoted text in the final summary if any.
+        5. Rewrite your summary in the articles language and follow all required format, with {tone} tone, within {length} words.
+        6. Check if the summary and articles are in same language. If not, translate the summary into the language as the article.
 
         Here is the input article:
         Article:<{text}>
 
         You must output your answer in following JSON format. Here [XXX] is placeholders.
-        [Summary]:[The summary you generated as a {role}]
+        [Summary]:[The summary you generated as a {role}. The summary should be in same language as the article]
+        [Article language]:[Which language is the article in]
+        [Summary language]:[Which language is your output summary in]
+        [Language check]: [Is original article and your summary in same language?]
         [Interested content]:[The content you are intested in as a {role}]
         [Summary length]:[How many words inside the output summary]
         [Quoted text]:[Any quoted text inside the output Summary? If yes, show me. If no, output None]
-        [Summary tones]:[The tone that the summary sounds like]
         """,  # noqa: E501
         "ml-german-customer-summary-template",
         {
