@@ -21,7 +21,8 @@ from confluent_kafka import Producer
 import json
 
 p = Producer({"bootstrap.servers": "localhost:9094"})
-p.produce("beam-input", key="identifier", value=json.dumps({"content": "Syria is a dangerous country. London is a wonderful city.", "language": "es"}))
+p.produce("beam-input", key="identifier", value=json.dumps({"content": "Syria is a dangerous country. London is a wonderful city.", "language": "en"}))
+p.flush()
 ```
 
 and check if the enriched document is available in the target topic as follows:
