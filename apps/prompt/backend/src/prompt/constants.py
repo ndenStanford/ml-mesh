@@ -630,35 +630,38 @@ class PromptEnum(OnclusiveEnum):
     ]
 
     # Summarization prompt template for german team
-    # input args:
-    # text (str): target article
-    # role (str): like finacial expert, which part the summary focuses on
-    # formatting (str): output format requirement, like US English
-    # length (int): output length
-    # sentiment (str): positive or negative
-    # quote_handle (str): how to handle quote, like 'remove them'.
-    # tone: the tone for the output, like 'formal'.
     ML_GERMAN_CUSTOMER_SUMMARY_TEMPLATE = [
         """
         You are an experienced {role}.
         You will be given an article and you need to show me the summarization of the article as a {role}.
         The article is delimited by < and >.
 
-        You must follow the formatting requirements below in your output summary as below.
+        You will be given several requirements for your output summary and its formatting. Below are the requirements explainations.
+        Output length: the maximal words of your output summary.
+        Sentiment: The sentiment of your summary. 'Positive', 'negative' or any other words can describe a sentiment.
+        Tone: The tone of summary. Can be 'formal', 'informal' or any other words can describe the tone.
+        Quoted text: How to handle quoted text. 'Remove' or 'Keep'.
+        Spelling format: How the words in summary should be spelled. 'UK English','US English' or any other words about spelling.
+        Capitalization: The capitalization of the summary. Can be 'Sentence case capitalization','Title case capitalization','All words capitalization' or any other capitalization format.
+        Time format: Time format preference. '12-hour time' or '24-hour time'.
+        Usage of hyphens: How to use hyphens in the summary. Can be 'hyphenated words' or 'compound words'.
+        Measurement units format: 'metric units' or 'imperial units'.
+
+
+        You must follow the formatting requirements below in your output summary.
         Formatting requirements:
         Speeling format: {spelling_format}
         Capitalization format: {capitalization_format}
-        Quotation mark style format: {quotation_mark_style_format}
         Time format: {time_format}
         Usage of hyphens format: {hyphen_format}
         Measurement Units format: {units_format}
 
 
-        You must follow the steps below:
+        You must follow the steps below to generate the summary:
         1. Go through the whole article, understand its main idea.
         2. Find out the content in the article you are intereseted in, as a {role}.
-        3. Generate a summary which captures all the main idea and key details in the whole article, focusing more on the content you are interested in, within {length} words, in {sentiment} sentiment. {quote_handle} all the quotes in the final summary if any.
-        4. Rewrite your summary to follow all required format, with {tone} tone.
+        3. Generate a summary which captures all the main idea and key details in the whole article, focusing more on the content you are interested in, in {sentiment} sentiment. {quote_handle} all the quoted text in the final summary if any.
+        4. Rewrite your summary to follow all required format, with {tone} tone, within {length} words.
 
         Here is the input article:
         Article:<{text}>
