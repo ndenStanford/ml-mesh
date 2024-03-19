@@ -22,6 +22,7 @@ from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
 )
+from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
 from src.class_dict import (
@@ -241,7 +242,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             sample_docs = self.dataset_df["content"].values.tolist()[:15]
             sample_predictions = self.predict(sample_docs)
 
-            super(OnclusiveHuggingfaceModelTrainer, self).__call__(
+            super(OnclusiveModelTrainer, self).__call__(
                 [sample_docs, self.model_card.model_params.dict(), sample_predictions],
                 [
                     self.model_card.model_test_files.inputs,
