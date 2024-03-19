@@ -13,7 +13,7 @@ from onclusiveml.core.base import OnclusiveBaseSettings
 
 # Source
 from src.model.constants import ModelEnumChat, ModelEnumCompletions
-from src.prompt.v1.constants import PromptEnum
+from src.prompt.constants import PromptEnum
 
 
 class GithubSettings(OnclusiveBaseSettings):
