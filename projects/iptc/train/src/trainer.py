@@ -179,7 +179,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.train_dataset = IPTCDataset(
             self.train_df,
             self.tokenizer,
-            self.self.level,
+            self.level,
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
@@ -187,7 +187,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.eval_dataset = IPTCDataset(
             self.eval_df,
             self.tokenizer,
-            self.self.level,
+            self.level,
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
