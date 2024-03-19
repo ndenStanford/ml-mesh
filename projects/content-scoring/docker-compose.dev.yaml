@@ -25,7 +25,7 @@ services:
         source: train/data
         target: /projects/content-scoring/train/data
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG:-latest}
-    command: [python, -m, src.train_model]
+    command: [python, -m, src.model_train]
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
