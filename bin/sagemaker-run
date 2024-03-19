@@ -109,6 +109,13 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     show_default=True,
     help="""[Optional]: Whether training should be run with the full intended size of dataset and artifact be saved to neptune. Will be injected into the container at runtime."""
 )
+@click.option(
+    '--wait',
+    type=bool,
+    default=True,
+    show_default=True,
+    help="""[Optional]: Whether to wait for the job to complete before continuing."""
+)
 @click.argument(
     'container-entry-point',
     nargs=-1,
@@ -126,6 +133,7 @@ def project_train(
     run_configuration_dotenv: Optional[str],
     neptune_api_token: str,
     save_artifact: bool,
+    wait: bool,
     trained_project: Optional[str],
     trained_model: Optional[str],
     container_entry_point: List[str]) -> None:
@@ -230,7 +238,7 @@ def project_train(
         container_entry_point=container_entry_point,
     )
 
-    estimator.fit(job_name=f"{base_job_name}-{dt.now().strftime('%Y-%m-%d--%H-%M-%S')}")
+    estimator.fit(wait=wait, job_name=f"{base_job_name}-{dt.now().strftime('%Y-%m-%d--%H-%M-%S')}")
 
 if __name__ == "__main__":
     project_train()
