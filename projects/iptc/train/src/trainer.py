@@ -104,6 +104,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
+            data_fetch_params=self.data_fetch_params,
         )
 
     def initialize_model(self) -> None:
