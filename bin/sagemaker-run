@@ -223,7 +223,7 @@ def project_train(
 
     click.echo(f"Using container entry point: {container_entry_point}")
 
-    base_job_name = f"{project_name}-{project_component}"
+    base_job_name = f"{project_name}-{trained_model if trained_model else project_component}"
 
     estimator = Estimator(
         image_uri=image_uri,
