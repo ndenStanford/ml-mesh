@@ -5,7 +5,7 @@ import joblib
 from hummingbird.ml import convert
 
 # Source
-from src.settings import CompiledTrackedModelSpecs
+from src.settings import CompiledTrackedModelSpecs  # type: ignore[attr-defined]
 
 
 def convert_model() -> None:
