@@ -215,6 +215,7 @@ def project_train(
                     **github_action_env_vars,
                     **{'TRAINED_PROJECT': trained_project},
                     **{'TRAINED_MODEL': trained_model},
+                    **{'NEPTUNE_PROJECT': trained_project},
                     **{'NEPTUNE_API_TOKEN':neptune_api_token},
                     **{'SAVE_ARTIFACT':save_artifact}}
 
