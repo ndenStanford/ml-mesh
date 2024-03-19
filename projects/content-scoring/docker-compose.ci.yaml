@@ -17,6 +17,10 @@ services:
         PROJECT: content-scoring
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+      volumes:
+        - type: bind
+          source: train/src
+          target: /projects/content-scoring/train/src
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG}
     command: [python, -m, src.register_trained_model]
     profiles: [train]
