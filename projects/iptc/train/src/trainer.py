@@ -31,6 +31,7 @@ from src.utils import (
     extract_model_id,
     find_category_for_subcategory,
     find_num_labels,
+    topic_conversion,
 )
 
 
@@ -123,7 +124,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.dataset_df: DataFrame = self.dataset_df.dropna(
             subset=self.data_fetch_params.non_nullable_columns
         )  # type: ignore
-
         if self.data_fetch_params.redshift_table == "iptc_first_level":
             self.dataset_df = self.dataset_df[
                 self.dataset_df["topic_1"].isin(CLASS_DICT_SECOND.keys())
@@ -140,7 +140,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     [j for i in CLASS_DICT_THIRD.values() for j in i.values()]
                 )
             ]
-
+        self.dataset_df = topic_conversion(
+            self.dataset_df
+        )  # fix the topic discrepencies
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=0.20,
