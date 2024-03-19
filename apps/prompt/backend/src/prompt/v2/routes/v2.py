@@ -6,12 +6,12 @@ from github import Github
 from slugify import slugify
 
 # Source
-from src.prompt.v2.exceptions_v2 import (
+from src.prompt.v2.exceptions import (
     DeletionProtectedProject,
     ProjectNotFound,
     ProjectsExisting,
 )
-from src.prompt.v2.schemas_v2 import ProjectTemplateSchema
+from src.prompt.v2.schemas import ProjectTemplateSchema
 from src.settings import get_settings
 
 

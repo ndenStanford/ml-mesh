@@ -7,7 +7,7 @@ from typing import List, Optional
 from pydantic import BaseModel, validator
 
 # Source
-from src.prompt.v2.exceptions_v2 import (
+from src.prompt.v2.exceptions import (
     CreationProjectImpossible,
     DeletionProtectedProject,
     ProjectInvalidAlias,
