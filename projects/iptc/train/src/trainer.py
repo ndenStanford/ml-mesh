@@ -71,7 +71,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.data_fetch_params.redshift_table = "iptc_first_level"
             self.data_fetch_params.filter_columns = []
             self.data_fetch_params.filter_values = []
-            self.data_fetch_params.comparison_operators = ["equal"]
+            self.data_fetch_params.comparison_operators = []
             self.data_fetch_params.non_nullable_columns = ["content", "topic_1"]
 
         elif self.level == 2:
