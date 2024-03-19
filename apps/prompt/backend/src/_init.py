@@ -10,9 +10,9 @@ from onclusiveml.core.logging import get_default_logger
 from src.db import BaseTable
 from src.model.schemas import ModelSchema
 from src.model.tables import ModelTable
-from src.prompt.parameters import Parameters
-from src.prompt.schemas import PromptTemplateSchema
-from src.prompt.tables import PromptTemplateTable
+from src.prompt.v1.parameters import Parameters
+from src.prompt.v1.schemas import PromptTemplateSchema
+from src.prompt.v1.tables import PromptTemplateTable
 from src.settings import get_settings
 
 

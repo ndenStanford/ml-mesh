@@ -12,8 +12,8 @@ from slugify import slugify
 from src.model.constants import ModelEnumChat
 from src.model.exceptions import ModelNotFound
 from src.model.schemas import ModelSchema
-from src.prompt.chat import PromptChat
-from src.prompt.exceptions import (
+from src.prompt.v1.chat import PromptChat
+from src.prompt.v1.exceptions import (
     DeletionProtectedPrompt,
     PromptInvalidParameters,
     PromptModelUnsupported,
@@ -21,9 +21,9 @@ from src.prompt.exceptions import (
     PromptOutsideTempLimit,
     PromptTokenExceedModel,
 )
-from src.prompt.generate import generate_text
-from src.prompt.parameters import Parameters
-from src.prompt.schemas import (
+from src.prompt.v1.generate import generate_text
+from src.prompt.v1.parameters import Parameters
+from src.prompt.v1.schemas import (
     PromptInvalidTemplate,
     PromptTemplateListSchema,
     PromptTemplateOutputSchema,

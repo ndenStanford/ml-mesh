@@ -7,7 +7,7 @@ from typing import List, Optional
 from pydantic import BaseModel, validator
 
 # Source
-from src.prompt_v2.exceptions_v2 import (
+from src.prompt.v2.exceptions_v2 import (
     CreationProjectImpossible,
     DeletionProtectedProject,
     ProjectInvalidAlias,
@@ -15,8 +15,8 @@ from src.prompt_v2.exceptions_v2 import (
     ProjectsNotFound,
     ProjectTokenExceedAlias,
 )
-from src.prompt_v2.Githubtables import GithubTemplateTable
-from src.prompt_v2.projects import (
+from src.prompt.v2.Githubtables import GithubTemplateTable
+from src.prompt.v2.projects import (
     get_project,
     list_projects,
     project_creation,

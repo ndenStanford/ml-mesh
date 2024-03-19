@@ -8,7 +8,7 @@ from pydantic import BaseModel, validator
 
 # Source
 from src.model.constants import ModelEnumChat, ModelEnumCompletions
-from src.prompt.exceptions import (
+from src.prompt.v1.exceptions import (
     PromptInvalidParameters,
     PromptModelUnsupported,
     PromptOutsideTempLimit,

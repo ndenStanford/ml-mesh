@@ -7,8 +7,8 @@ from fastapi import APIRouter, status
 
 # Source
 from src.model.routes import v1_router as model_v1_router
-from src.prompt.routes import v1_router as prompt_v1_router
-from src.prompt_v2.routes import v2_router as prompt_v2_router
+from src.prompt.v1.routes import v1_router as prompt_v1_router
+from src.prompt.v2.routes import v2_router as prompt_v2_router
 from src.settings import get_settings
 
 

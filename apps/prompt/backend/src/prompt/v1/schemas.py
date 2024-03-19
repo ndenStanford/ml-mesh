@@ -11,14 +11,14 @@ from pydantic import BaseModel, validator
 
 # Source
 from src.model.constants import ModelEnumChat
-from src.prompt.exceptions import (
+from src.prompt.v1.exceptions import (
     DeletionProtectedPrompt,
     PromptInvalidTemplate,
     PromptNotFound,
     PromptVersionNotFound,
 )
-from src.prompt.parameters import Parameters
-from src.prompt.tables import PromptTemplateTable
+from src.prompt.v1.parameters import Parameters
+from src.prompt.v1.tables import PromptTemplateTable
 from src.settings import get_settings
 
 
