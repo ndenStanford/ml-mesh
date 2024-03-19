@@ -24,7 +24,12 @@ from onclusiveml.training.huggingface.trainer import (
 )
 
 # Source
-from src.class_dict import CLASS_DICT_SECOND, CLASS_DICT_THIRD, ID_TO_TOPIC
+from src.class_dict import (
+    CLASS_DICT_SECOND,
+    CLASS_DICT_THIRD,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+)
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -54,46 +59,69 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
         Returns: None
         """
+        self.model_id = extract_model_id(tracked_model_specs.project)
+        self.level = ID_TO_LEVEL[self.model_id]
+        self.iptc_label = ID_TO_TOPIC[self.model_id]
+
         self.data_fetch_params = data_fetch_params
 
-        if self.data_fetch_params.redshift_table == "iptc_second_level":
-            self.data_fetch_params.filter_columns = ["topic_1"]
-            self.data_fetch_params.filter_values = [self.data_fetch_params.iptc_label]
+        if self.level == 1:
+            self.data_fetch_params.entity_name = "iptc_first_level"
+            self.data_fetch_params.feature_view_name = "iptc_first_level_feature_view"
+            self.data_fetch_params.redshift_table = "iptc_first_level"
+            self.data_fetch_params.filter_columns = []
+            self.data_fetch_params.filter_values = []
             self.data_fetch_params.comparison_operators = ["equal"]
+            self.data_fetch_params.non_nullable_columns = ["content", "topic_1"]
 
-        if self.data_fetch_params.redshift_table == "iptc_third_level":
-            self.data_fetch_params.filter_columns = ["topic_2"]
-            self.data_fetch_params.filter_values = [self.data_fetch_params.iptc_label]
+        elif self.level == 2:
+            self.data_fetch_params.entity_name = "iptc_second_level"
+            self.data_fetch_params.feature_view_name = "iptc_second_level_feature_view"
+            self.data_fetch_params.redshift_table = "iptc_second_level"
+            self.data_fetch_params.filter_columns = ["topic_1"]
+            self.data_fetch_params.filter_values = [self.iptc_label]
             self.data_fetch_params.comparison_operators = ["equal"]
+            self.data_fetch_params.non_nullable_columns = [
+                "content",
+                "topic_1",
+                "topic_2",
+            ]
+
+        elif self.level == 3:
+            self.data_fetch_params.entity_name = "iptc_third_level"
+            self.data_fetch_params.feature_view_name = "iptc_third_level_feature_view"
+            self.data_fetch_params.redshift_table = "iptc_third_level"
+            self.data_fetch_params.filter_columns = ["topic_2"]
+            self.data_fetch_params.filter_values = [self.iptc_label]
+            self.data_fetch_params.comparison_operators = ["equal"]
+            self.data_fetch_params.non_nullable_columns = [
+                "content",
+                "topic_1",
+                "topic_2",
+                "topic_3",
+            ]
 
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
-            data_fetch_params=data_fetch_params,
         )
 
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
-        if self.model_card.model_params.level == 1:
+        if self.level == 1:
             self.first_level_root = None
             self.second_level_root = None
-        elif self.model_card.model_params.level == 2:
-            self.first_level_root_id = extract_model_id(
-                self.tracked_model_specs.project
-            )
-            self.first_level_root = ID_TO_TOPIC[self.first_level_root_id]
+        elif self.level == 2:
+            self.first_level_root = self.iptc_label
             self.second_level_root = None
-        elif self.model_card.model_params.level == 3:
-            self.second_level_root_id = extract_model_id(
-                self.tracked_model_specs.project
-            )
-            self.second_level_root = ID_TO_TOPIC[self.second_level_root_id]
+        elif self.level == 3:
+            self.second_level_root = self.iptc_label
             self.first_level_root = find_category_for_subcategory(
                 CLASS_DICT_SECOND, self.second_level_root
             )
         self.model_name = self.model_card.model_params.model_name
         self.num_labels = find_num_labels(
-            self.model_card.model_params.level,
+            self.level,
             self.first_level_root,
             self.second_level_root,
         )
@@ -146,11 +174,11 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=0.20,
-        )
+        )  # train eval split
         self.train_dataset = IPTCDataset(
             self.train_df,
             self.tokenizer,
-            self.model_card.model_params.level,
+            self.self.level,
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
@@ -158,7 +186,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.eval_dataset = IPTCDataset(
             self.eval_df,
             self.tokenizer,
-            self.model_card.model_params.level,
+            self.self.level,
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
