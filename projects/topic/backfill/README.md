@@ -26,7 +26,8 @@ p.produce(
     key="identifier",
     value=json.dumps(
         {
-            "content": "Ten-year US yields approached 4.5%. The S&P 500 fluctuated, with the benchmark headed toward its fourth straight week of gains. Stocks will finish trading at 1 p.m. New York time in observance of Thanksgiving, and the recommended close for the Treasury cash"
+            "content": "Ten-year US yields approached 4.5%. The S&P 500 fluctuated, with the benchmark headed toward its fourth straight week of gains. Stocks will finish trading at 1 p.m. New York time in observance of Thanksgiving, and the recommended close for the Treasury cash",
+            "language": "en"
         }
     ),
 )
