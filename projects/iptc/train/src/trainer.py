@@ -234,7 +234,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def __call__(self) -> None:
         """Call Method."""
-        super(IPTCTrainer, self).__call__()
+        super(OnclusiveHuggingfaceModelTrainer, self).__call__()
         self.logger.info(
             f"Training data uploaded to s3 location : {self.full_file_key}"
         )
