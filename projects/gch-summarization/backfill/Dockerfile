@@ -26,6 +26,8 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
+USER root
+
 RUN poetry install --only main --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
