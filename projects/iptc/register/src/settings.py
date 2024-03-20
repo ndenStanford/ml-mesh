@@ -19,7 +19,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
     entity_name: str = "iptc"
     feature_view_name: str = "iptc_feature_view"
     fields: Optional[List[Tuple[str, str]]]
-    entity_join_key: str
+    entity_join_key: str = "iptc_id"
     register_features: bool = False
 
     class Config:

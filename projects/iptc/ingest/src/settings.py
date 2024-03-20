@@ -13,18 +13,21 @@ class IngestionSettings(BaseSettings):
     source_bucket: str
     target_bucket: str
     iptc_level: str
+    data_state: str
     files: str
     shards: int
 
     @property
     def source_path(self):
         """Source path property."""
-        return f"s3://{self.source_bucket}/raw/{self.iptc_level}/{self.files}.csv"
+        return f"s3://{self.source_bucket}/{self.data_state}/{self.iptc_level}/{self.files}.csv"
 
     @property
     def target_path(self):
         """Target path property."""
-        return f"s3://{self.target_bucket}/iptc/{self.iptc_level}/{self.files.replace('*','')}"
+        path = f"s3://{self.target_bucket}/iptc/{self.data_state}/"
+        path += f"{self.iptc_level}/{self.files.replace('*','')}"
+        return path
 
     @property
     def schema(self):

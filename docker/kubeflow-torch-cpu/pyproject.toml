@@ -6,7 +6,7 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-transformers = "4.36.0"
+transformers = "4.38.2"
 torch = "1.12.1"
 numpy = "1.24.2"
 
