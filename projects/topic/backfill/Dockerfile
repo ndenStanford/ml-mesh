@@ -35,8 +35,6 @@ RUN poetry install --no-interaction --no-ansi --only main && \
 
 RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
 
-USER ${USER}
-
 # switch user
 USER ${USER}
 
@@ -54,7 +52,11 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
+USER root
+
 RUN poetry install --no-interaction --with dev
+
+USER ${USER}
 
 # --- debugger stage
 FROM builder as debugger
