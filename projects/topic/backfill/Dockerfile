@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/beam-backfill:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -10,15 +10,8 @@ ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# hadolint ignore=DL3002
-USER root
-RUN mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/share
 
-
+# setup workspace
 WORKDIR "/"
 
 # install - poetry requirements
@@ -33,17 +26,20 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-
-
-RUN MINIMAL_KATS=1 pip install --no-cache-dir holidays==0.24 kats==0.2.0 &&\
-    poetry install --only main --no-root --no-interaction --no-ansi && \
+RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
+RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
+
+# switch user
+USER ${USER}
 
 # --- production stage
 FROM builder as production
+
+ENV PYTHONPATH=${HOME}
 
 # --- test build stage
 FROM builder as development
@@ -54,11 +50,4 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction --with dev
-
-USER ${USER}
-
-# --- debugger stage
-FROM builder as debugger
-
-RUN poetry install --no-interaction --with debug
+RUN poetry install --no-interaction
