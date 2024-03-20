@@ -11,6 +11,7 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
+from transformers.integrations import NeptuneCallback
 
 # 3rd party libraries
 from pandas import DataFrame
@@ -235,20 +236,36 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def __call__(self) -> None:
         """Call Method."""
         super(IPTCTrainer, self).__call__()
-        self.logger.info(
-            f"Training data uploaded to s3 location : {self.full_file_key}"
-        )
-        self.initialize_model()
-        self.optimize_model()
-        self.save()
+
         if self.data_fetch_params.save_artifact:
-            sample_docs = self.dataset_df[
+            sample_df = self.dataset_df.sample(15)
+
+            sample_docs = sample_df[
                 self.model_card.model_params.selected_text
-            ].values.tolist()[:15]
-            sample_predictions = self.predict(sample_docs)
+            ].values.tolist()
+
+            sample_dataset = IPTCDataset(
+                sample_df,
+                self.tokenizer,
+                self.level,
+                self.model_card.model_params.selected_text,
+                self.first_level_root,
+                self.second_level_root,
+            )
+            sample_predictions = self.predict(sample_dataset)
+
+            neptune_run = NeptuneCallback.get_run(self.trainer).get_url()
 
             super(OnclusiveModelTrainer, self).__call__(
-                [sample_docs, self.model_card.model_params.dict(), sample_predictions],
+                [
+                    sample_docs,
+                    self.model_card.model_params.dict(),
+                    {
+                        "probs": sample_predictions[0].tolist(),
+                        "labels": sample_predictions[1].tolist(),
+                        "neptune_run": neptune_run,
+                    },
+                ],
                 [
                     self.model_card.model_test_files.inputs,
                     self.model_card.model_test_files.inference_params,
