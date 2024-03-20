@@ -302,7 +302,7 @@ class PromptEnum(OnclusiveEnum):
         [Related segment]:[The relevant news segment about the keywords]
         [Reason for segment]:[The reason you believe this story relates to the keywords]
         [Segment summary]:[A one sentence summary of the segment extracted]
-        [Segment title]:[A title that represents the segment extracted]
+        [Segment title]:[A title that represents the segment extracted. The title must be in same language as the segment.]
         [segment amount]: [How many news segment in total]
         [Piece before]:[The piece before the chosen segment]
         [Piece after]: [The piece after the chosen segment]
