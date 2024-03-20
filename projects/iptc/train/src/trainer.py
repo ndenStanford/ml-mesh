@@ -87,7 +87,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.data_fetch_params.filter_values = [self.iptc_label]
             self.data_fetch_params.comparison_operators = ["equal"]
             self.data_fetch_params.non_nullable_columns = [
-                self.model_card.model_params.selected_text,
+                model_card.model_params.selected_text,
                 "topic_1",
                 "topic_2",
             ]
@@ -100,7 +100,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.data_fetch_params.filter_values = [self.iptc_label]
             self.data_fetch_params.comparison_operators = ["equal"]
             self.data_fetch_params.non_nullable_columns = [
-                self.model_card.model_params.selected_text,
+                model_card.model_params.selected_text,
                 "topic_1",
                 "topic_2",
                 "topic_3",
