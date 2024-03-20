@@ -15,11 +15,11 @@ on  :
         required: true
         type: string
         description: Version tag of image providing the compilation runtime context.
-      neptune-project:
+      trained-project:
         required: false
         type: string
         description: Project identifier
-      neptune-model-id:
+      trained-model:
         required: false
         type: string
         description: Model identifier for the project
@@ -50,6 +50,11 @@ on  :
         default: true
         type: boolean
         description: Indicates whether this workflow is running for a Pull Request.
+      wait:
+        required: false
+        default: true
+        type: boolean
+        description: Indicates whether to wait for the job to complete before continuing.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -132,9 +137,10 @@ jobs:
             --project-name ${{ inputs.project }} \
             --project-component train \
             --image-tag ${{ inputs.tag }} \
-            --neptune-project ${{ inputs.neptune-project }} \
-            --neptune-model-id ${{ inputs.neptune-model-id }} \
+            --trained-project ${{ inputs.trained-project }} \
+            --trained-model ${{ inputs.trained-model }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
+            --wait ${{ inputs.wait }} \
             python -m src.train_model

@@ -59,3 +59,14 @@ def find_category_for_subcategory(  # type: ignore[no-untyped-def]
     for top_category, subcategories in class_dict.items():
         if target_subcategory in subcategories.values():
             return top_category
+
+
+def topic_conversion(df):  # type: ignore[no-untyped-def]
+    """Update the topic name to fix the discrepencies between class_dict and training data."""
+    df["topic_1"] = df["topic_1"].replace(
+        ["arts, culture and entertainment"], "arts, culture, entertainment and media"
+    )
+    df["topic_1"] = df["topic_1"].replace(
+        ["conflicts, war and peace"], "conflict, war and peace"
+    )
+    return df
