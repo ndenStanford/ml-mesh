@@ -302,7 +302,7 @@ class PromptEnum(OnclusiveEnum):
         [Related segment]:[The relevant news segment about the keywords]
         [Reason for segment]:[The reason you believe this story relates to the keywords]
         [Segment summary]:[A one sentence summary of the segment extracted]
-        [Segment title]:[A title that represents the segment extracted]
+        [Segment title]:[A title that represents the segment extracted. The title must be in same language as the segment.]
         [segment amount]: [How many news segment in total]
         [Piece before]:[The piece before the chosen segment]
         [Piece after]: [The piece after the chosen segment]
@@ -310,6 +310,41 @@ class PromptEnum(OnclusiveEnum):
         [Piece after accept]: [Does the piece after the segment hold any relevance to the segment and keywords? You must answer with just Yes or No]
         """,  # noqa: E501
         "ml-transcript-segmentation",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    # Transcript segmentation prompt
+    ML_TRANSCRIPT_SEGMENTATION_AD_DETECTION = [
+        """
+        You are an AI trained to distinguish between main content and advertisements in a paragraph.
+
+        The paragraph is delimited by < and >.
+
+        Use the following criteria to guide your analysis:
+        1. Content Relevance and Integration: Determine whether the content is closely related to the main theme or appears to be promotional or unrelated to the topic.
+        2. Tone and Language: Assess whether the language used is informational, educational, or entertaining consistent with the paragraph's overall tone, or if it uses persuasive language aimed at provoking action (such as 'Buy now', 'Subscribe', or 'Sign up').
+        3. Linking Patterns: Examine if the links within the paragraph aim to provide additional information or references, or if they direct readers to a product page, subscription form, or another platform for purchasing or engaging with a service or product.
+        4. Placement Within the Paragraph: Consider how each section contributes to the paragraph's narrative or informational structure, or if it seems inserted without contributing to the narrative flow, particularly noting sections that might be placed strategically to capture attention without adding to the content's value.
+        5. Disclosure Labels: Look for any labels that might indicate a section is sponsored or an advertisement, such as 'Sponsored', 'Ad', 'Promotion', or similar indicators.
+        6. Contextual Evaluation of Calls to Action: Specifically for sentences or sections calling for reader support or action, critically assess these in the context of the paragraph’s overall theme. Such content should not be classified as an advertisement if it directly relates to and supports the paragraph’s main argument or purpose.
+
+        You should follow the steps below:
+        1. Read the entire paragraph carefully.
+        2. Identify any segment that are advertisements, with the criterias provided above.
+        3. Use a 'yes' or 'no' to indicate if any advertisement inside the paragraph and output to me.
+
+        Paragraph: <{paragraph}>
+
+        Show me your result in following JSON format. Here [XXX] is placeholder:
+        [Advertisement detect]: [Answer 'yes' or 'no' to indicate if there is any advertisement in the paragraph]
+        [Advertisement content]:[The reason for why you think there is advertisement]
+        """,  # noqa: E501
+        "ml-transcript-segmentation-ad-detection",
         {
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
@@ -590,6 +625,64 @@ class PromptEnum(OnclusiveEnum):
             "model_name": "gpt-4-1106-preview",
             "max_tokens": None,
             "temperature": 1,
+            "response_format": {"type": "json_object"},
+        },
+    ]
+
+    # Summarization prompt template for german team
+    ML_GERMAN_CUSTOMER_SUMMARY_TEMPLATE = [
+        """
+        You are an experienced {role}.
+        You will be given an article and you need to show me the summarization of the article as a {role}.
+        The article is delimited by < and >.
+
+        You will be given several requirements for your output summary and its formatting. Below are the requirements explainations.
+        Output length: the maximal words of your output summary.
+        Output language: Your summary should be in same language as the input original article.
+        Sentiment: The sentiment of your summary. 'Positive', 'negative' or any other words can describe a sentiment.
+        Tone: The tone of summary. Can be 'formal', 'informal' or any other words can describe the tone.
+        Quoted text: How to handle quoted text. 'Remove' or 'Keep'.
+        Spelling format: How the words in summary should be spelled. 'UK English','US English' or any other words about spelling.
+        Capitalization: The capitalization of the summary. Can be 'Sentence case capitalization','Title case capitalization','All words capitalization' or any other capitalization format.
+        Time format: Time format preference. '12-hour time' or '24-hour time'.
+        Usage of hyphens: How to use hyphens in the summary. Can be 'hyphenated words' or 'compound words'.
+        Measurement units format: 'metric units' or 'imperial units'.
+
+
+        You must follow the formatting requirements below in your output summary.
+        Formatting requirements:
+        Speeling format: {spelling_format}
+        Capitalization format: {capitalization_format}
+        Time format: {time_format}
+        Usage of hyphens format: {hyphen_format}
+        Measurement Units format: {units_format}
+
+
+        You must follow the steps below to generate the summary:
+        1. Go through the whole article, understand its main idea.
+        2. Find out the content in the article you are intereseted in, as a {role}.
+        3. Find out which language is the article in.
+        4. Generate a summary in same language as the article. The summary should capture all the main idea and key details in the whole article, focusing more on the content you are interested in, in {sentiment} sentiment. {quote_handle} all the quoted text in the final summary if any.
+        5. Rewrite your summary in the articles language and follow all required format, with {tone} tone, within {length} words.
+        6. Check if the summary and articles are in same language. If not, translate the summary into the language as the article.
+
+        Here is the input article:
+        Article:<{text}>
+
+        You must output your answer in following JSON format. Here [XXX] is placeholders.
+        [Summary]:[The summary you generated as a {role}. The summary should be in same language as the article]
+        [Article language]:[Which language is the article in]
+        [Summary language]:[Which language is your output summary in]
+        [Language check]: [Is original article and your summary in same language?]
+        [Interested content]:[The content you are intested in as a {role}]
+        [Summary length]:[How many words inside the output summary]
+        [Quoted text]:[Any quoted text inside the output Summary? If yes, show me. If no, output None]
+        """,  # noqa: E501
+        "ml-german-customer-summary-template",
+        {
+            "model_name": "gpt-4-1106-preview",
+            "max_tokens": None,
+            "temperature": 0.5,
             "response_format": {"type": "json_object"},
         },
     ]
