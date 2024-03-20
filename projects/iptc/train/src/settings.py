@@ -43,9 +43,10 @@ class IPTCModelParams(TrackedParams):
     early_stopping_patience: int = 1
     report_to: str = "neptune"
 
-    level: int = 1
     selected_text: str = "content"
     temperature: float = 5
+    max_length: int = 128
+    test_size: float = 0.2
 
     class Config:
         env_file = "config/dev.env"

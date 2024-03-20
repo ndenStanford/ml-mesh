@@ -179,7 +179,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         )  # fix the topic discrepencies
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
-            test_size=0.20,
+            test_size=self.model_card.model_params.test_size,
         )  # train eval split
         self.train_dataset = IPTCDataset(
             self.train_df,
@@ -188,6 +188,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
+            self.model_card.model_params.max_length,
         )
         self.eval_dataset = IPTCDataset(
             self.eval_df,
@@ -196,6 +197,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
+            self.model_card.model_params.max_length,
         )
 
     def train(self) -> None:
@@ -251,6 +253,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.model_card.model_params.selected_text,
                 self.first_level_root,
                 self.second_level_root,
+                self.model_card.model_params.test_size,
             )
             sample_predictions = self.predict(sample_dataset)
 

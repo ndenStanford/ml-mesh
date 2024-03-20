@@ -28,6 +28,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         selected_text,
         first_level_root,
         second_level_root,
+        max_length,
     ):
         self.df = df
         self.level = level
@@ -35,7 +36,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         self.first_level_root = first_level_root
         self.second_level_root = second_level_root
         self.tokenizer = tokenizer
-        self.max_length = 128
+        self.max_length = max_length
 
     def __len__(self):  # type: ignore[no-untyped-def]
         return len(self.df)
