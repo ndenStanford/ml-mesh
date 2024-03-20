@@ -73,7 +73,10 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.data_fetch_params.filter_columns = []
             self.data_fetch_params.filter_values = []
             self.data_fetch_params.comparison_operators = []
-            self.data_fetch_params.non_nullable_columns = ["content", "topic_1"]
+            self.data_fetch_params.non_nullable_columns = [
+                model_card.model_params.selected_text,
+                "topic_1",
+            ]
 
         elif self.level == 2:
             self.data_fetch_params.entity_name = "iptc_second_level"
@@ -83,7 +86,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.data_fetch_params.filter_values = [self.iptc_label]
             self.data_fetch_params.comparison_operators = ["equal"]
             self.data_fetch_params.non_nullable_columns = [
-                "content",
+                self.model_card.model_params.selected_text,
                 "topic_1",
                 "topic_2",
             ]
@@ -96,7 +99,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.data_fetch_params.filter_values = [self.iptc_label]
             self.data_fetch_params.comparison_operators = ["equal"]
             self.data_fetch_params.non_nullable_columns = [
-                "content",
+                self.model_card.model_params.selected_text,
                 "topic_1",
                 "topic_2",
                 "topic_3",
@@ -239,7 +242,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.optimize_model()
         self.save()
         if self.data_fetch_params.save_artifact:
-            sample_docs = self.dataset_df["content"].values.tolist()[:15]
+            sample_docs = self.dataset_df[
+                self.model_card.model_params.selected_text
+            ].values.tolist()[:15]
             sample_predictions = self.predict(sample_docs)
 
             super(OnclusiveModelTrainer, self).__call__(
