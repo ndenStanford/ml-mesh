@@ -4,7 +4,7 @@
 from unittest.mock import patch
 
 # Source
-from src.prompt.tables import PromptTemplateTable
+from src.prompt.v1.tables import PromptTemplateTable
 from src.settings import get_settings
 
 

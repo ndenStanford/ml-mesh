@@ -15,8 +15,8 @@ from redis_cache import RedisCache
 # Source
 from src.model.schemas import ModelSchema
 from src.prompt.constants import PromptEnum
-from src.prompt.schemas import PromptTemplateSchema
-from src.prompt.tables import PromptTemplateTable
+from src.prompt.v1.schemas import PromptTemplateSchema
+from src.prompt.v1.tables import PromptTemplateTable
 from src.settings import get_settings
 
 
@@ -275,7 +275,7 @@ def test_create_prompt_same_alias(
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
-@patch("src.prompt.schemas.PromptTemplateSchema.update")
+@patch("src.prompt.v1.schemas.PromptTemplateSchema.update")
 def test_update_prompt(
     mock_prompt_update,
     mock_prompt_get,
@@ -337,7 +337,7 @@ def test_update_prompt(
     ],
 )
 @patch.object(PromptTemplateSchema, "get")
-@patch("src.prompt.schemas.PromptTemplateSchema.update")
+@patch("src.prompt.v1.schemas.PromptTemplateSchema.update")
 def test_update_prompt_parameters(
     mock_prompt_update,
     mock_prompt_get,

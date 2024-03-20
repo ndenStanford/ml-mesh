@@ -9,7 +9,7 @@ from fastapi import status
 from freezegun import freeze_time
 
 # Source
-from src.prompt.schemas import PromptTemplateSchema
+from src.prompt.v1.schemas import PromptTemplateSchema
 
 
 def test_get_prompts(test_client, create_prompts):
@@ -104,7 +104,7 @@ def test_update_prompt(test_client, create_prompts):
     """Test update prompt endpoint."""
     prompt = create_prompts[2]
     response = test_client.put(
-        f"/api/v1/prompts/{prompt.alias}?template=updated template",
+        f"/api/v1/prompts/v1/{prompt.alias}?template=updated template",
         headers={"x-api-key": "1234"},
     )
     assert response.status_code == status.HTTP_200_OK

@@ -8,8 +8,8 @@ from unittest.mock import patch
 import pytest
 
 # Source
-from src.prompt.schemas import PromptTemplateSchema
-from src.prompt.tables import PromptTemplateTable
+from src.prompt.v1.schemas import PromptTemplateSchema
+from src.prompt.v1.tables import PromptTemplateTable
 
 
 @pytest.mark.parametrize(
