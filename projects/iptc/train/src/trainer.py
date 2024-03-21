@@ -180,6 +180,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=self.model_card.model_params.test_size,
+            stratify=self.dataset_df[f"topic_{self.level}"],
         )  # train eval split
         self.train_dataset = IPTCDataset(
             self.train_df,
