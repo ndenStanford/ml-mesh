@@ -204,6 +204,7 @@ class TranscriptSegmentationHandler:
         elif isinstance(response, dict):
             json_response = response
 
+        print(json_response)
         # potential keys the gpt model could return
         if "Related segment" in json_response.keys():
             self.related_segment_key = "Related segment"
@@ -211,10 +212,14 @@ class TranscriptSegmentationHandler:
             self.related_segment_key = "Related Segment"
         elif "related_segment" in json_response.keys():
             self.related_segment_key = "related_segment"
+        elif "related segment" in json_response.keys():
+            self.related_segment_key = "related segment"
         elif "segment" in json_response.keys():
             self.related_segment_key = "segment"
         elif "Segment" in json_response.keys():
             self.related_segment_key = "Segment"
+        elif "[Related segment]" in json_response.keys():
+            self.related_segment_key = "[Related segment]"
 
         if json_response[self.related_segment_key] in [
             "N/A",
