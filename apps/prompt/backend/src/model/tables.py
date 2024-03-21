@@ -1,17 +1,20 @@
-"""DynamoDB Tables."""
+"""Language model dynamoDB tables."""
 
 # 3rd party libraries
-from pynamodb.attributes import UnicodeAttribute
+from dyntastic import Dyntastic
 
 # Source
-from src.db import BaseTable
+from src.settings import get_settings
 
 
-class ModelTable(BaseTable):
-    """Dynamodb table for Model."""
+settings = get_settings()
 
-    class Meta(BaseTable.Meta):
-        table_name = "model_v2"
 
-    model_name = UnicodeAttribute(null=False, hash_key=True)
-    parameters = UnicodeAttribute(null=True)
+class LanguageModel(Dyntastic):
+    __table_name__ = "model"
+    __hash_key__ = "name"
+    __table_region__ = settings.AWS_REGION
+    __table_host__ = settings.DYNAMODB_HOST
+
+    name: str
+    parameters: dict

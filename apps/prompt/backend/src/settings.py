@@ -71,12 +71,12 @@ class Settings(OnclusiveBaseSettings):
 
     LIST_OF_PROMPTS: List[List[Union[str, Dict]]] = PromptEnum.list()
 
-    AWS_REGION: str = "us-east-1"
-
     REDIS_CONNECTION_STRING: str = ""
     REDIS_TTL_SECONDS: int = 604800
 
-    DB_HOST: Optional[str] = None
+    DYNTASTIC_HOST: Optional[str] = None
+    DYNTASTIC_REGION: str = "us-east-1"
+
     CORS_ORIGIN: List[str] = ["*"]
 
     github_credentials: GithubSettings

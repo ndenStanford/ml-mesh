@@ -4,7 +4,6 @@
 from typing import List
 
 # 3rd party libraries
-from github import Github
 from github.GithubException import UnknownObjectException
 
 # Source
@@ -22,6 +21,12 @@ repo_url = settings.github_credentials.github_url
 repo = g.get_repo(repo_url)
 
 
+router = APIRouter(
+    prefix="/v2/projects",
+)
+
+
+@router.post("", status_code=status.HTTP_201_CREATED)
 def project_creation(alias: str) -> int:
     """Creates project in Github repository."""
     repo.create_file(alias + "/.gitkeep", "Creating empty folder", "")
