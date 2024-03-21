@@ -70,6 +70,8 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
+      TRAINED_PROJECT: ${TRAINED_PROJECT}
+      TRAINED_MODEL: ${TRAINED_MODEL}
       NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -87,6 +89,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
+      TRAINED_PROJECT: ${TRAINED_PROJECT}
+      TRAINED_MODEL: ${TRAINED_MODEL}
       NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
