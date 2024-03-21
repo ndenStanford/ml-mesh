@@ -158,6 +158,17 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.dataset_df: DataFrame = self.dataset_df.dropna(
             subset=self.data_fetch_params.non_nullable_columns
         )  # type: ignore
+
+        # Log the size and class distribution after dropping nulls
+        num_datapoints = len(self.dataset_df)
+        self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
+        class_distribution = self.dataset_df[f"topic_{self.level}"].value_counts(
+            normalize=True
+        )
+        self.logger.info(
+            f"Class distribution after dropping nulls: \n{class_distribution}"
+        )
+
         if self.data_fetch_params.redshift_table == "iptc_first_level":
             self.dataset_df = self.dataset_df[
                 self.dataset_df["topic_1"].isin(CLASS_DICT_SECOND.keys())
@@ -174,14 +185,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     [j for i in CLASS_DICT_THIRD.values() for j in i.values()]
                 )
             ]
-        self.dataset_df = topic_conversion(
-            self.dataset_df
-        )  # fix the topic discrepencies
+        # fix the topic discrepencies
+        self.dataset_df = topic_conversion(self.dataset_df)
+        # train eval split
         self.train_df, self.eval_df = train_test_split(
             self.dataset_df,
             test_size=self.model_card.model_params.test_size,
             stratify=self.dataset_df[f"topic_{self.level}"],
-        )  # train eval split
+        )
+        # convert df to torch dataset
         self.train_dataset = IPTCDataset(
             self.train_df,
             self.tokenizer,
