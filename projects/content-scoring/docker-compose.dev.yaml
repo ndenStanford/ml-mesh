@@ -7,8 +7,6 @@ services:
   # =============================================
 
   compile:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: compile
@@ -105,3 +103,6 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     hostname: onclusive-ml
     networks: [onclusive-net]
+
+networks:
+  onclusive-net:
