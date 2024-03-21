@@ -64,47 +64,51 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.model_id = extract_model_id(tracked_model_specs.project)
         self.level = ID_TO_LEVEL[self.model_id]
         self.iptc_label = ID_TO_TOPIC[self.model_id]
-
+        # Update data_fetch_params dynamically
         self.data_fetch_params = data_fetch_params
-
-        if self.level == 1:
-            self.data_fetch_params.entity_name = "iptc_first_level"
-            self.data_fetch_params.feature_view_name = "iptc_first_level_feature_view"
-            self.data_fetch_params.redshift_table = "iptc_first_level"
-            self.data_fetch_params.filter_columns = []
-            self.data_fetch_params.filter_values = []
-            self.data_fetch_params.comparison_operators = []
-            self.data_fetch_params.non_nullable_columns = [
-                model_card.model_params.selected_text,
-                "topic_1",
-            ]
-
-        elif self.level == 2:
-            self.data_fetch_params.entity_name = "iptc_second_level"
-            self.data_fetch_params.feature_view_name = "iptc_second_level_feature_view"
-            self.data_fetch_params.redshift_table = "iptc_second_level"
-            self.data_fetch_params.filter_columns = ["topic_1"]
-            self.data_fetch_params.filter_values = [self.iptc_label]
-            self.data_fetch_params.comparison_operators = ["equal"]
-            self.data_fetch_params.non_nullable_columns = [
-                model_card.model_params.selected_text,
-                "topic_1",
-                "topic_2",
-            ]
-
-        elif self.level == 3:
-            self.data_fetch_params.entity_name = "iptc_third_level"
-            self.data_fetch_params.feature_view_name = "iptc_third_level_feature_view"
-            self.data_fetch_params.redshift_table = "iptc_third_level"
-            self.data_fetch_params.filter_columns = ["topic_2"]
-            self.data_fetch_params.filter_values = [self.iptc_label]
-            self.data_fetch_params.comparison_operators = ["equal"]
-            self.data_fetch_params.non_nullable_columns = [
-                model_card.model_params.selected_text,
-                "topic_1",
-                "topic_2",
-                "topic_3",
-            ]
+        data_fetch_configurations = {
+            1: {
+                "entity_name": "iptc_first_level",
+                "feature_view_name": "iptc_first_level_feature_view",
+                "redshift_table": "iptc_first_level",
+                "filter_columns": [],
+                "filter_values": [],
+                "comparison_operators": [],
+                "non_nullable_columns": [
+                    model_card.model_params.selected_text,
+                    "topic_1",
+                ],
+            },
+            2: {
+                "entity_name": "iptc_second_level",
+                "feature_view_name": "iptc_second_level_feature_view",
+                "redshift_table": "iptc_second_level",
+                "filter_columns": ["topic_1"],
+                "filter_values": [self.iptc_label],
+                "comparison_operators": ["equal"],
+                "non_nullable_columns": [
+                    model_card.model_params.selected_text,
+                    "topic_1",
+                    "topic_2",
+                ],
+            },
+            3: {
+                "entity_name": "iptc_third_level",
+                "feature_view_name": "iptc_third_level_feature_view",
+                "redshift_table": "iptc_third_level",
+                "filter_columns": ["topic_2"],
+                "filter_values": [self.iptc_label],
+                "comparison_operators": ["equal"],
+                "non_nullable_columns": [
+                    model_card.model_params.selected_text,
+                    "topic_1",
+                    "topic_2",
+                    "topic_3",
+                ],
+            },
+        }
+        for key, value in data_fetch_configurations[self.level].items():
+            setattr(self.data_fetch_params, key, value)
 
         super().__init__(
             tracked_model_specs=tracked_model_specs,
