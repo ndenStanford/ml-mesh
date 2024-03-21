@@ -39,6 +39,8 @@ class FeatureStoreHandle:
         data_source: DataSource = None,
         data_id_key: str = "entity_key",
         data_ids: List[str] = ["1", "2"],
+        limit: str = "1000",
+        timestamp_key: str = "event_timestamp",
     ):
 
         self.feast_config_bucket = feast_config_bucket
@@ -57,6 +59,15 @@ class FeatureStoreHandle:
         self.data_source = data_source
         self.data_id_key = data_id_key
         self.data_ids = data_ids
+        self.limit = limit
+        self.timestamp_key = timestamp_key
+        self.operator_dict = {
+            "equal": "=",
+            "less_than": "<",
+            "greater_than": ">",
+            "less_than_equal_to": "<=",
+            "greater_than_equal_to": ">=",
+        }
 
     def initialize(self) -> None:
         """Initializes feature store registry.
@@ -172,18 +183,55 @@ class FeatureStoreHandle:
         return self.fs.list_data_sources()
 
     def fetch_historical_features(
-        self, features: List[str] = ["test_feature_view:feature_1"]
+        self,
+        features: List[str] = ["test_feature_view:feature_1"],
+        filter_columns: List[str] = [],
+        filter_values: List[str] = [],
+        comparison_operators: List[str] = [],
     ) -> pd.DataFrame:
         """Fetches Historical features from feast feature store.
 
         Returns: Pandas dataframe with historical features.
         """
+        if len(filter_columns) != len(filter_values) or len(filter_columns) != len(
+            comparison_operators
+        ):
+            raise ValueError(
+                "Lengths of filter_columns, filter_values, \
+                and comparison_operators must be the same."
+            )
+
         self.entity_sql = f"""
                         SELECT
-                            {self.data_id_key}, event_timestamp
-                        FROM {self.fs.get_data_source(self.data_source).get_table_query_string()}
-                        WHERE event_timestamp < CURRENT_TIMESTAMP
+                            {self.data_id_key}, {self.timestamp_key} FROM
+                            {self.fs.get_data_source(self.data_source).get_table_query_string()}
                     """
+
+        if filter_columns and filter_values and comparison_operators:
+            filters = []
+            for column, value, operator in zip(
+                filter_columns, filter_values, comparison_operators
+            ):
+                if operator in self.operator_dict.keys():
+                    filters.append(f"{column} {self.operator_dict[operator]} '{value}'")
+                else:
+                    raise ValueError(
+                        "Comparison operator is not valid. Should be one of the following: \
+                        ['equal', 'less_than', 'greater_than', \
+                        'less_than_equal_to', 'greater_than_equal_to']"
+                    )
+
+            self.entity_sql += f" WHERE ({self.timestamp_key} < CURRENT_TIMESTAMP AND "
+            self.entity_sql += " AND ".join(filters)
+            self.entity_sql += (
+                " AND ".join(f" {column} is NOT NULL" for column in filter_columns)
+                + ")"
+            )  # noqa: E501
+        else:
+            self.entity_sql += f" WHERE {self.timestamp_key} < CURRENT_TIMESTAMP"
+
+        if self.limit != "-1":
+            self.entity_sql += f" LIMIT {self.limit}"
 
         return self.fs.get_historical_features(
             entity_df=self.entity_sql,

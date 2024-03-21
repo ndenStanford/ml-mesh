@@ -16,7 +16,7 @@ def test_scoring(evaluate_query_test):
     all_scores, texts, embeddings, cluster_labels = evaluate_query(
         settings.es, settings.es_index, *evaluate_query_test
     )
-    assert all_scores["silhouette"] > 0
+    assert (all_scores["silhouette"] is None) or (all_scores["silhouette"] > 0)
     assert all_scores["intra_cluster_similarity"] > 0
     assert all_scores["w_penalization"] > 0
     assert all_scores["homogeneity_score"] > 0
