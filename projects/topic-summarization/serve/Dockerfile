@@ -13,7 +13,7 @@ ENV HOME="${PROJECT_DIR}"
 USER root
 RUN mkdir -p "${HOME}" && \
     chown -R "${USER}:users" "${HOME}" && \
-    chown -R "${USER}:users /usr/local/share"
+    chown -R "${USER}:users" "/usr/local/share"
 
 WORKDIR "/"
 
