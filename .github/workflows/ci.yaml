@@ -1122,20 +1122,10 @@ jobs       :
       matrix:
         models:
           - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
+            sagemaker-runner-type: ml.p3.2xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-02000000
-            trained-model: IP02000000-TRAINED
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-04000000
-            trained-model: IP04000000-TRAINED
 
     with:
       environment: prod

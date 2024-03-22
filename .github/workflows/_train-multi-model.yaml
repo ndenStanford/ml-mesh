@@ -141,6 +141,6 @@ jobs:
             --trained-model ${{ inputs.trained-model }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
-            --save_artifact ${{ !inputs.pull-request }} \
+            --save_artifact ${{ inputs.pull-request }} \
             --wait ${{ inputs.wait }} \
             python -m src.train_model
