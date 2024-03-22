@@ -22,6 +22,7 @@ from src.serve.schema import (
 from src.settings import get_settings
 
 from src.serve.topic import TopicHandler
+from src.serve.trend_detection import TrendDetection
 
 settings = get_settings()
 
@@ -40,6 +41,7 @@ class ServedTopicModel(ServedModel):
         """Load model."""
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
+        self.trend_detector = TrendDetection()
         self.ready = True
 
     @retry(tries=3)
@@ -52,8 +54,22 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
+        time_series_topic = inputs.time_series_topic
+        time_series_all = inputs.time_series_all
+        trending = self.trend_detector.single_topic_trend(
+            time_series_topic, time_series_all
+        )
 
-        topic = self.model.aggregate(content)
+        print("-------")
+        print("-------")
+        print(trending)
+        print("-------")
+        print("-------")
+
+        if trending:
+            topic = self.model.aggregate(content)
+        else:
+            topic = None
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
