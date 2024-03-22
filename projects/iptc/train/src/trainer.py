@@ -109,6 +109,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         }
         for key, value in data_fetch_configurations[self.level].items():
             setattr(self.data_fetch_params, key, value)
+        model_card.feature_store_params = self.data_fetch_params
 
         super().__init__(
             tracked_model_specs=tracked_model_specs,

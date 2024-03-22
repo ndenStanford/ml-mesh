@@ -82,6 +82,8 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     # --- custom fields
     # model params
     model_params: IPTCModelParams = IPTCModelParams()
+    # feature store params
+    feature_store_params: DataFetchParams = DataFetchParams()
     # admin
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
