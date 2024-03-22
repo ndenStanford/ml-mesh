@@ -1126,6 +1126,7 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
+            wait: false
 
     with:
       environment: prod
@@ -1134,6 +1135,7 @@ jobs       :
       tag: ${{ matrix.models.tag }}
       trained-project: ${{ matrix.models.trained-project}}
       trained-model: ${{ matrix.models.trained-model}}
+      wait: ${{ matrix.models.wait}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
