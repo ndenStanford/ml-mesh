@@ -12,7 +12,11 @@ from onclusiveml.tracking import (
 )
 
 # Source
-from src.settings import GlobalSettings, TrackedTrainedModelSpecs, get_settings
+from src.settings import (  # type: ignore[attr-defined]
+    GlobalSettings,
+    TrackedTrainedModelSpecs,
+    get_settings,
+)
 
 
 settings = get_settings()
