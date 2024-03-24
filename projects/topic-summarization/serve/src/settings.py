@@ -5,9 +5,11 @@
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings
+from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
+from pydantic import SecretStr, Field, BaseSettings
+from typing import List
 
 # Source
 from src.serve.category_storage import Category_list
@@ -33,10 +35,41 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     }
 
 
+class MediaApiSettings(BaseSettings):
+    """Media API."""
+
+    MEDIA_API_URI: str = "https://staging-querytool-api.platform.onclusive.org"
+    ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
+    CLIENT_ID: SecretStr = Field(default="...", exclude=True)
+    CLIENT_SECRET: SecretStr = Field(default="...", exclude=True)
+
+
+class ElasticsearchSettings(OnclusiveBaseSettings):
+    """Elasticsearch Settings."""
+
+    ELASTICSEARCH_KEY: SecretStr = Field(default="...", exclude=True)
+    es_index: List = [
+        "crawler",
+        "crawler-4-2024.02",
+        "crawler-4-2024.01",
+        "crawler-4-2023.12",
+    ]
+
+
+class ImpactQuantificationSettings(OnclusiveBaseSettings):
+    """Impact Quantification Settings."""
+
+    lookback_days: int = 125
+    time_interval: str = "24h"
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    MediaApiSettings,
+    ElasticsearchSettings,
+    ImpactQuantificationSettings,
 ):
     """Global server settings."""
 
