@@ -16,7 +16,6 @@ from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 # Source
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
-
 settings = get_api_settings()
 logger = get_default_logger(__name__)
 
@@ -406,7 +405,6 @@ class TranscriptSegmentationHandler:
             except JSONDecodeError:
                 str_response = self.remove_newlines(str_response)
                 str_response = self.trim_response(str_response)
-                print(str_response)
                 json_response = json.loads(str_response)
         elif isinstance(str_response, dict):
             json_response = str_response
