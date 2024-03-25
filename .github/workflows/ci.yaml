@@ -676,7 +676,8 @@ jobs       :
             functional: false
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-20.04
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-neuron: false
 
           # compile
@@ -703,6 +704,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-neuron: false
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
 
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
