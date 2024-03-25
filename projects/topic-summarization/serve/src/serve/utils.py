@@ -28,8 +28,7 @@ def from_boolean_to_media_api(boolean_query: str, token: str) -> Optional[Dict]:
     )
     if response.status_code == 204:
         response = requests.get(
-            f"{settings.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi? \
-                queryId={settings.ML_QUERY_ID}",
+            f"{settings.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi?queryId={settings.ML_QUERY_ID}",  # noqa: E501
             headers=headers,
         )
         return response.json()
