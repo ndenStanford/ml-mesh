@@ -3,9 +3,9 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
+import pymannkendall as mk
 from elasticsearch import Elasticsearch
 from prophet import Prophet
-import pymannkendall as mk
 
 from src.serve.utils import (
     all_global_query,
@@ -25,8 +25,7 @@ class ImpactQuantification:
     def __init__(self) -> None:
         self.es = Elasticsearch(
             [
-                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()} \
-                    @search5-client.airpr.com"
+                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
             ]
         )
 
@@ -171,7 +170,7 @@ class ImpactQuantification:
         result["local_trend_ratio"] = local_trend_ratio
         result["global_trend_ratio"] = global_trend_ratio
         return result
-    
+
     def quantify_impact(self, boolean_query: str, topic_id: int) -> str:
         """Quntify impact of detected trends.
 
@@ -182,12 +181,17 @@ class ImpactQuantification:
             impact (str): impact level (low, mid, high)
         """
         self.result = self.trend(boolean_query, topic_id)
-        raw_baseline_bool=(self.result['weighted_local_ratio']>settings.local_raio_cutoff)
-        global_vs_local_bool=(self.result['weighted_local_ratio']/self.result['weighted_global_ratio']>settings.global_local_comparison_ratio_cutoff)
-        
-        ts=self.result['local_trend_ratio']
+        raw_baseline_bool = (
+            self.result["weighted_local_ratio"] > settings.local_raio_cutoff
+        )
+        global_vs_local_bool = (
+            self.result["weighted_local_ratio"] / self.result["weighted_global_ratio"]
+            > settings.global_local_comparison_ratio_cutoff
+        )
+
+        ts = self.result["local_trend_ratio"]
         mk_result = mk.original_test(ts)
-        mk_test_bool=(mk_result.Tau>settings.mf_tau_cutoff)
+        mk_test_bool = mk_result.Tau > settings.mf_tau_cutoff
 
         if (not raw_baseline_bool) or (not global_vs_local_bool) or (not mk_test_bool):
             return settings.low_impact_class
@@ -201,5 +205,5 @@ class ImpactQuantification:
 # topic_id = 436
 
 # impact_quantifier = ImpactQuantification()
-# result = impact_quantifier.trend(query, topic_id)
+# result = impact_quantifier.quantify_impact(query, topic_id)
 # print(result)
