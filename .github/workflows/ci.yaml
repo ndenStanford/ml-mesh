@@ -1135,25 +1135,16 @@ jobs       :
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            base-project: onclusive/iptc-00000000
-            base-model: IP00000000-BASE
-            base-with-id: IP00000000-BASE-8
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            base-project: onclusive/iptc-02000000
-            base-model: IP02000000-BASE
-            base-with-id: IP02000000-BASE-1
             trained-project: onclusive/iptc-02000000
             trained-model: IP02000000-TRAINED
           - project: iptc
             sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            base-project: onclusive/iptc-04000000
-            base-model: IP04000000-BASE
-            base-with-id: IP04000000-BASE-1
             trained-project: onclusive/iptc-04000000
             trained-model: IP04000000-TRAINED
 
@@ -1162,9 +1153,6 @@ jobs       :
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
-      base-project: ${{ matrix.models.base-project}}
-      base-model: ${{ matrix.models.base-model}}
-      base-with-id: ${{ matrix.models.base-with-id}}
       trained-project: ${{ matrix.models.trained-project}}
       trained-model: ${{ matrix.models.trained-model}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
