@@ -691,17 +691,6 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
 
-          # serve
-          - name: serve
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-neuron: false
-
-
     with:
       project: iptc
       environment: prod
