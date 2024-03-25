@@ -538,6 +538,16 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
 
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
+
     with:
       project: entity-linking
       environment: prod
@@ -675,6 +685,15 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
     with:
       project: iptc
       environment: prod
