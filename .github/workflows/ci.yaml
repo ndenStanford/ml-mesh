@@ -657,7 +657,6 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
 
           # register
           - name: register
@@ -667,7 +666,6 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
 
           # train
           - name: train
@@ -676,11 +674,7 @@ jobs       :
             functional: false
             load: false
             upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
-            self-hosted-runner-neuron: false
-
+            runner-kind: ubuntu-20.04
 
           # compile
           - name: compile
@@ -690,8 +684,16 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
 
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
     with:
       project: iptc
       environment: prod
@@ -705,8 +707,6 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1118,7 +1118,7 @@ jobs       :
   # ===============================================
 
   run-multi-train-pipelines:
-    name: Train Multi-model
+    name: Train Model
     uses: ./.github/workflows/_train-multi-model.yaml
     needs:
       - run-repository-state
@@ -1133,20 +1133,40 @@ jobs       :
       matrix:
         models:
           - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
+            sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            base-project: onclusive/iptc-00000000
+            base-model: IP00000000-BASE
+            base-with-id: IP00000000-BASE-8
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
-            wait: false
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            base-project: onclusive/iptc-02000000
+            base-model: IP02000000-BASE
+            base-with-id: IP02000000-BASE-1
+            trained-project: onclusive/iptc-02000000
+            trained-model: IP02000000-TRAINED
+          - project: iptc
+            sagemaker-runner-type: ml.m4.xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            base-project: onclusive/iptc-04000000
+            base-model: IP04000000-BASE
+            base-with-id: IP04000000-BASE-1
+            trained-project: onclusive/iptc-04000000
+            trained-model: IP04000000-TRAINED
 
     with:
       environment: prod
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
+      base-project: ${{ matrix.models.base-project}}
+      base-model: ${{ matrix.models.base-model}}
+      base-with-id: ${{ matrix.models.base-with-id}}
       trained-project: ${{ matrix.models.trained-project}}
       trained-model: ${{ matrix.models.trained-model}}
-      wait: ${{ matrix.models.wait}}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
