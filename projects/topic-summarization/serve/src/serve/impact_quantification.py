@@ -173,6 +173,14 @@ class ImpactQuantification:
         return result
     
     def quantify_impact(self, boolean_query: str, topic_id: int) -> str:
+        """Quntify impact of detected trends.
+
+        Args:
+            boolean_query (str): boolean query of a profile
+            topic_id (int): topic id
+        Output:
+            impact (str): impact level (low, mid, high)
+        """
         self.result = self.trend(boolean_query, topic_id)
         raw_baseline_bool=(self.result['weighted_local_ratio']>settings.local_raio_cutoff)
         global_vs_local_bool=(self.result['weighted_local_ratio']/self.result['weighted_global_ratio']>settings.global_local_comparison_ratio_cutoff)
@@ -180,6 +188,13 @@ class ImpactQuantification:
         ts=self.result['local_trend_ratio']
         mk_result = mk.original_test(ts)
         mk_test_bool=(mk_result.Tau>settings.mf_tau_cutoff)
+
+        if (not raw_baseline_bool) or (not global_vs_local_bool) or (not mk_test_bool):
+            return settings.low_impact_class
+        elif (raw_baseline_bool) and (global_vs_local_bool) and (mk_test_bool):
+            return settings.mid_impact_class
+        else:
+            return settings.high_impact_class
 
 
 # query = '("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print'
