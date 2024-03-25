@@ -681,6 +681,7 @@ jobs       :
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
 
+
           # compile
           - name: compile
             download-model: false
@@ -713,8 +714,8 @@ jobs       :
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
   # ner
 
@@ -1132,7 +1133,7 @@ jobs       :
       matrix:
         models:
           - project: iptc
-            sagemaker-runner-type: ml.p3.2xlarge
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
