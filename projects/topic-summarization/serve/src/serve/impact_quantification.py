@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from elasticsearch import Elasticsearch
 from prophet import Prophet
+import pymannkendall as mk
 
 from src.serve.utils import (
     all_global_query,
@@ -170,6 +171,15 @@ class ImpactQuantification:
         result["local_trend_ratio"] = local_trend_ratio
         result["global_trend_ratio"] = global_trend_ratio
         return result
+    
+    def quantify_impact(self, boolean_query: str, topic_id: int) -> str:
+        self.result = self.trend(boolean_query, topic_id)
+        raw_baseline_bool=(self.result['weighted_local_ratio']>settings.local_raio_cutoff)
+        global_vs_local_bool=(self.result['weighted_local_ratio']/self.result['weighted_global_ratio']>settings.global_local_comparison_ratio_cutoff)
+        
+        ts=self.result['local_trend_ratio']
+        mk_result = mk.original_test(ts)
+        mk_test_bool=(mk_result.Tau>settings.mf_tau_cutoff)
 
 
 # query = '("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print'
