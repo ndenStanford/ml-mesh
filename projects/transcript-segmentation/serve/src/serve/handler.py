@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+from json.decoder import JSONDecodeError
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
@@ -79,7 +80,6 @@ class TranscriptSegmentationHandler:
         """
         # Filter out entries with None values
         word_transcript_filtered = [i for i in word_transcript if i["w"] is not None]
-
         # Extract first and last portions of the segment
         segment_split = segment.split()
 
@@ -87,7 +87,6 @@ class TranscriptSegmentationHandler:
 
         first_portion = " ".join(segment_split[:THRESHOLD]).lstrip(">")
         last_portion = " ".join(segment_split[-THRESHOLD:]).lstrip(">")
-
         # Find the most compatible sublists that matches the portions from the segment
         max_similarity_start = 0
         max_similarity_end = 0
@@ -141,6 +140,7 @@ class TranscriptSegmentationHandler:
         """
         # reverse order of the json response
         fields_list = [
+            ',  "Advertisement content": "',
             '",  "Piece after accept":"',
             '",  ["Piece after accept"]:"',
             '",  "Piece before accept":"',
@@ -210,7 +210,6 @@ class TranscriptSegmentationHandler:
             str_response = self.remove_newlines(response)
             try:
                 json_response = eval(str_response)
-
             # Deal with issue where response is cutoff (finish_reason = length|content_filter)
             except SyntaxError:
                 str_response = self.trim_response(str_response)
@@ -218,8 +217,6 @@ class TranscriptSegmentationHandler:
 
         elif isinstance(response, dict):
             json_response = response
-
-        print(json_response)
         # potential keys the gpt model could return
         related_seg_keys_list = [
             "Related segment",
@@ -401,11 +398,19 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
-        response = json.loads(q.content)["generated"]
-        print(response)
-        json_response = json.loads(response)
-        # get the time stamp with ads
+        str_response = json.loads(q.content)["generated"]
 
+        if isinstance(str_response, str):
+            try:
+                json_response = json.loads(str_response)
+            except JSONDecodeError:
+                str_response = self.remove_newlines(str_response)
+                str_response = self.trim_response(str_response)
+                print(str_response)
+                json_response = json.loads(str_response)
+        elif isinstance(str_response, dict):
+            json_response = str_response
+        # get the time stamp with ads
         candidate_keys = [
             "Advertisement detect",
             "[Advertisement detect]",
@@ -456,7 +461,6 @@ class TranscriptSegmentationHandler:
         """
         # preprocess
         paragraph = self.preprocess_transcript(word_transcript)
-
         # Truncate paragraph
         trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
 
@@ -469,7 +473,6 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
-
         # post process
         (
             (start_time_offsetted, end_time_offsetted),
