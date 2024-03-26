@@ -1,11 +1,20 @@
 """Settings."""
 
+# Standard Library
+import os
+from typing import List
+
 # 3rd party libraries
 from neptune.types.mode import Mode
 from pydantic import Field
 
 # Internal libraries
-from onclusiveml.tracking import TrackedModelSpecs, TrackedParams
+from onclusiveml.core.logging import INFO
+from onclusiveml.tracking import (
+    TrackedModelCard,
+    TrackedModelSpecs,
+    TrackedParams,
+)
 
 
 # --- atomic settings and models
@@ -140,17 +149,6 @@ class IOSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class TokenizerSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_tokenizer for details."""
-
-    add_special_tokens: bool = True
-
-    class Config:
-        env_prefix = "tokenizer_settings_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
 class ModelTracingSettings(TrackedParams):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
@@ -171,20 +169,6 @@ class ModelTracingSettings(TrackedParams):
         env_prefix = "model_tracing_settings_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
-
-
-class PipelineCompilationSettings(TrackedParams):
-    """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details."""
-
-    pipeline_name: str
-    max_length: int
-    batch_size: int = 1
-    neuron: bool = True
-    validate_compilation: bool = True
-    validation_rtol: float = 1e-02
-    validation_atol: float = 1e-02
-    tokenizer_settings: TokenizerSettings = TokenizerSettings()
-    model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
 
 
 class CompiledContentScoringTrackedModelCard(TrackedModelCard):

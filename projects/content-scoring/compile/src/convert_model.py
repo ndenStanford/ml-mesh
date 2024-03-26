@@ -1,9 +1,13 @@
 """Compile model."""
 
 # Standard Library
-from typing import Dict
+from typing import Any, Dict  # noqa
+
+# ML libs
+import torch  # noqa
 
 # 3rd party libraries
+import joblib
 from hummingbird.ml import convert
 
 # Internal libraries
@@ -32,11 +36,13 @@ def main() -> None:
     base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
     # get base model
-    base_model: Dict = base_model_version.download_config_from_model_version(
-        "model/model_card/model"
-    )
+    base_model: Any = base_model_version.download_file_from_model_version(  # noqa
+        local_file_path="src/model/model.pkl",  # noqa
+        neptune_attribute_path="model/model_artifacts",  # noqa
+    )  # noqa
+    model = joblib.load("src/model/model.pkl")
     # compile base model pipeline for iptc
-    converted_model = convert(base_model, "torch")
+    converted_model = convert(model, "torch")
 
     converted_model.save_pretrained(io_settings.compile.model_directory)
 

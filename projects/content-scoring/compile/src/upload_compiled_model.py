@@ -40,7 +40,7 @@ def main() -> None:
         config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
     )
     # upload compiled content-scoring model artifact
-    compiled_model_version.upload_directory_to_model_version(
+    compiled_model_version.upload_file_to_model_version(
         local_directory_path=io_settings.compile.model_directory,
         neptune_attribute_path=compiled_model_card.model_artifact_attribute_path,
     )

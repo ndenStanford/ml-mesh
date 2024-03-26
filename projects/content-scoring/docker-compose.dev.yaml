@@ -22,7 +22,7 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG:-latest}
-    command: [python, -m, src.compile_model]
+    command: [python, -m, src.convert_model]
     profiles: [compile, unit, integration, pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -58,14 +58,12 @@ services:
     networks: [onclusive-net]
 
   compile-compile-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: compile
         target: /projects/content-scoring/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile_model]
+    command: [python, -m, src.convert_model]
     profiles: [pipeline]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -74,8 +72,6 @@ services:
     networks: [onclusive-net]
 
   compile-validate-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
         source: compile
