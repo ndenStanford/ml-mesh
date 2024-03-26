@@ -1,6 +1,9 @@
 """Queries."""
+# isort: skip_file
 
 # Standard Library
+import getpass
+
 # from abc import abstractmethod
 from typing import Dict, Optional, Union
 
@@ -98,10 +101,10 @@ class StringQueryProfile(BaseQueryProfile):
 
 
 if __name__ == "__main__":
-    settings = MediaAPISettings(
-        client_id=SecretStr("57e86203-d48e-4724-aab5-f5e546144268"),
-        client_secret=SecretStr("8j-8Q~sWdvaBh5ZUhnqin2AAAe.yY2hRjVYvGbDS"),
-    )
+    client_id = getpass.getpass("Enter your Media API client id")
+    client_secret = getpass.getpass("Enter your Media API client secret")
+
+    settings = MediaAPISettings(client_id=client_id, client_secret=client_secret)
 
     query = StringQueryProfile(
         string_query="""
