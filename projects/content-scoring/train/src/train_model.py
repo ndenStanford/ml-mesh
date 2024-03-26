@@ -1,12 +1,13 @@
-"""Train and upload a model to Neptune AI."""
+"""Register trained model."""
 
 # Standard Library
 import os
 
 # 3rd party libraries
 import joblib
-import lightgbm as lgb
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
 
@@ -28,14 +29,11 @@ def main() -> None:
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
-
     # Initialize registered model on Neptune AI
     model_version = TrackedModelVersion(**model_specs.dict())
-
     # Load data
     data_file_path = model_card.model_params.data_file_path
     df = pd.read_parquet(data_file_path)
-
     # Preprocess data
     df["y"] = 1
     df.loc[
@@ -50,13 +48,10 @@ def main() -> None:
     numerical_cols = model_card.model_params.numerical_cols
     categorical_cols = model_card.model_params.categorical_cols
     X = df[numerical_cols + categorical_cols]
-    y = df[["y"]]
-
+    y = df["y"]
     # Encode categorical features
     enc = OrdinalEncoder()
-    enc.fit(X[categorical_cols])
-    X[categorical_cols] = enc.transform(X[categorical_cols])
-
+    X[categorical_cols] = enc.fit_transform(X[categorical_cols])
     # Split data into train and test sets
     test_size = model_card.model_params.test_size
     random_state = model_card.model_params.random_state
@@ -64,21 +59,24 @@ def main() -> None:
         X, y, test_size=test_size, random_state=random_state
     )
 
-    d_train = lgb.Dataset(X_train, label=y_train, categorical_feature=categorical_cols)
-    d_test = lgb.Dataset(X_test, label=y_test, categorical_feature=categorical_cols)
+    rf_params = model_card.model_params.rf_params
+    model = RandomForestClassifier(**rf_params)
+    model.fit(X_train, y_train)
 
-    lgb_params = model_card.model_params.lgb_params
-    num_boost_rounds = model_card.model_params.num_boost_rounds
-
-    model = lgb.train(lgb_params, d_train, num_boost_rounds, valid_sets=[d_test])
-
+    for epoch in range(10000):
+        if epoch % 100 == 0:
+            y_pred_proba = model.predict_proba(X_test)
+            valid_logloss = log_loss(y_test, y_pred_proba)
+            print(f"Epoch {epoch}: Validation Log Loss: {valid_logloss}")
+    #  compiled_model = hbm.convert(model, 'torch')
     # Save the trained model
-    model_output_path = os.path.join(model_card.local_output_dir, "trained_model.pkl")
-    joblib.dump(model, model_output_path)
-
+    model_output_path_pkl = os.path.join(
+        model_card.local_output_dir, "compiled_model.pkl"
+    )
+    joblib.dump(model, model_output_path_pkl)
     # Upload trained model file to Neptune
     model_version.upload_file_to_model_version(
-        local_file_path=model_output_path,
+        local_file_path=model_output_path_pkl,
         neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
 

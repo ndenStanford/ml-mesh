@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import List
+from typing import Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.tracking import (
@@ -47,6 +47,14 @@ class DocumentContentScoringParams(TrackedParams):
     test_size: float = 0.2
     random_state: int = 7
     num_boost_rounds: int = 10000
+    # Random Forest parameters
+    rf_params: Dict[str, Optional[int]] = {
+        "n_estimators": 100,
+        "max_depth": None,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "random_state": 42,
+    }
 
 
 class TrackedDocumentContentScoringModelCard(TrackedModelCard):
