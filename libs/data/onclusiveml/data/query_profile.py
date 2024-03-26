@@ -2,7 +2,7 @@
 
 # Standard Library
 # from abc import abstractmethod
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 # 3rd party libraries
 import requests
@@ -52,13 +52,18 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         token_request = requests.post(self.authentication_url, settings_dict)
         return token_request.json().get("access_token")
 
-    def es_query(self, settings: MediaAPISettings) -> Dict:
+    def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
         """Elastic search query."""
         # call the media to translate Boolean query -> ES query
-        data = self._from_boolean_to_media_api(settings).get("query", {})
-        return data["es_query"]
+        response = self._from_boolean_to_media_api(settings)
+        if response:
+            data = response.get("query", {})
+            return data["es_query"]
+        return None
 
-    def _from_boolean_to_media_api(self, settings: MediaAPISettings) -> Dict:
+    def _from_boolean_to_media_api(
+        self, settings: MediaAPISettings
+    ) -> Union[Dict, None]:
         """Translates a boolean query in media API format."""
         json_data = {
             "name": "ml-query",
@@ -70,11 +75,14 @@ class BaseQueryProfile(OnclusiveBaseSchema):
             headers=self.headers(settings),
             json=json_data,
         )
-        response = requests.get(
-            f"{self.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi?queryId={self.ml_query_id}",
-            headers=self.headers(settings),
-        )
-        return response.json()
+        if _.status_code == 204:
+            response = requests.get(
+                f"{self.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi?queryId={self.ml_query_id}",  # noqa: E501
+                headers=self.headers(settings),
+            )
+            return response.json()
+
+        return None
 
 
 class StringQueryProfile(BaseQueryProfile):
@@ -96,7 +104,9 @@ if __name__ == "__main__":
     )
 
     query = StringQueryProfile(
-        string_query="""("telecom*" OR "broadband*") NOT (("EEF" OR "EEFs" OR "EEF's")))"""
+        string_query="""
+        (apple  AND NOT  "Apple's Jade") OR  "Steve Jobs"  OR  "Tim Cook"  OR  "Angela Ahrends"  OR  "Eddie Cue"  OR  "Craig Federighi"  OR  "Jonathan Ive"  OR  "Luca Maestri"  OR  "Dan Riccio"  OR  "Phil Schiller"  OR  "Bruce Sewell"  OR  "Jeff Williams"  OR  "Paul Deneve"  OR  "Lisa Jackson"  OR  "Joel Podolny"  OR  "Johnny Srouji"  OR  "Denise Young Smith"
+        """  # noqa: E501
     )
 
     es_query = query.es_query(settings)
