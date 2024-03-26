@@ -238,8 +238,6 @@ class FeatureStoreHandle:
             self.entity_sql += " AND ".join(
                 f" {column} is NOT NULL" for column in non_nullable_columns
             )
-        else:
-            pass
 
         if self.limit != "-1":
             self.entity_sql += f" LIMIT {self.limit}"
