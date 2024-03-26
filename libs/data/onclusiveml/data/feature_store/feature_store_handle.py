@@ -209,7 +209,7 @@ class FeatureStoreHandle:
 
         self.entity_sql = f"""
                         SELECT
-                            {self.data_id_key}, {self.timestamp_key} FROM
+                            {self.data_id_key}, CURRENT_TIMESTAMP AS {self.timestamp_key} FROM
                             {self.fs.get_data_source(self.data_source).get_table_query_string()}
                     """
 
@@ -227,24 +227,19 @@ class FeatureStoreHandle:
                         'less_than_equal_to', 'greater_than_equal_to']"
                     )
 
-            self.entity_sql += f" WHERE ({self.timestamp_key} < CURRENT_TIMESTAMP AND "
+            self.entity_sql += " WHERE "
             self.entity_sql += " AND ".join(filters)
-            self.entity_sql += (
-                " AND "
-                + " AND ".join(
-                    f" {column} is NOT NULL"
-                    for column in filter_columns + non_nullable_columns
-                )
-                + ")"
+            self.entity_sql += " AND " + " AND ".join(
+                f" {column} is NOT NULL"
+                for column in filter_columns + non_nullable_columns
             )  # noqa: E501
         elif non_nullable_columns:
-            self.entity_sql += f" WHERE ({self.timestamp_key} < CURRENT_TIMESTAMP "
-            self.entity_sql += " AND " + " AND ".join(
+            self.entity_sql += " WHERE "
+            self.entity_sql += " AND ".join(
                 f" {column} is NOT NULL" for column in non_nullable_columns
             )
-            self.entity_sql += ")"
         else:
-            self.entity_sql += f" WHERE {self.timestamp_key} < CURRENT_TIMESTAMP"
+            pass
 
         if self.limit != "-1":
             self.entity_sql += f" LIMIT {self.limit}"
