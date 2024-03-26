@@ -16,9 +16,16 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: content-scoring
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG}
-    command: [python, -m, src.register_trained_model]
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/content-scoring/train/src
+      - type: bind
+        source: train/data
+        target: /projects/content-scoring/train/data
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -31,11 +38,8 @@ services:
   train-unit:
     volumes:
       - type: bind
-        source: train/src
-        target: /projects/content-scoring/train/src
-      - type: bind
-        source: train/tests
-        target: /projects/content-scoring/train/tests
+        source: train/
+        target: /projects/content-scoring/train/
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]

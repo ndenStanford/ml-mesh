@@ -7,7 +7,6 @@ import os
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
 
@@ -63,12 +62,6 @@ def main() -> None:
     model = RandomForestClassifier(**rf_params)
     model.fit(X_train, y_train)
 
-    for epoch in range(10000):
-        if epoch % 100 == 0:
-            y_pred_proba = model.predict_proba(X_test)
-            valid_logloss = log_loss(y_test, y_pred_proba)
-            print(f"Epoch {epoch}: Validation Log Loss: {valid_logloss}")
-    #  compiled_model = hbm.convert(model, 'torch')
     # Save the trained model
     model_output_path_pkl = os.path.join(
         model_card.local_output_dir, "compiled_model.pkl"

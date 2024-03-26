@@ -28,7 +28,6 @@ class DocumentContentScoringParams(TrackedParams):
     """Ground truth specification for document content-scoring model."""
 
     # LightGBM parameters
-    lgb_params: dict = {"objective": "binary", "verbose": -1, "is_unbalance": True}
 
     numerical_cols: List[str] = ["pagerank", "reach", "score"]
     categorical_cols: List[str] = [
@@ -46,7 +45,6 @@ class DocumentContentScoringParams(TrackedParams):
     # Training settings
     test_size: float = 0.2
     random_state: int = 7
-    num_boost_rounds: int = 10000
     # Random Forest parameters
     rf_params: Dict[str, Optional[int]] = {
         "n_estimators": 100,
