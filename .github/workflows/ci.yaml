@@ -689,8 +689,16 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
 
+          # serve
+          - name: serve
+            download-model: true
+            integration: true
+            functional: true
+            load: true
+            upload-test-results: true
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
     with:
       project: iptc
       environment: prod
@@ -704,8 +712,6 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1117,7 +1123,7 @@ jobs       :
   # ===============================================
 
   run-multi-train-pipelines:
-    name: Train Model
+    name: Train Multi-model
     uses: ./.github/workflows/_train-multi-model.yaml
     needs:
       - run-repository-state
@@ -1132,17 +1138,17 @@ jobs       :
       matrix:
         models:
           - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-00000000
             trained-model: IP00000000-TRAINED
           - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-02000000
             trained-model: IP02000000-TRAINED
           - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-04000000
             trained-model: IP04000000-TRAINED
