@@ -427,8 +427,8 @@ services:
       ARTIFACT_ENDPOINT: jobserver:8098
       JOB_ENDPOINT: jobserver:8099
       ENVIRONMENT_TYPE: LOOPBACK
-      SOURCE_TOPIC: test-input
-      TARGET_TOPIC: test-output
+      SOURCE_TOPIC: beam-input
+      TARGET_TOPIC: beam-output
       BOOTSTRAP_SERVERS: kafka:9092
       GROUP_ID: notification_consumer_group
       AUTO_OFFSET_RESET: earliest
