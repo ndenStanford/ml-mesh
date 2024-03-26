@@ -61,14 +61,16 @@ class ServedTopicModel(ServedModel):
         profile_id = inputs.profile_id
         skip_trend_detection = inputs.skip_trend_detection
 
-        end_time = pd.Timestamp.now()
+        end_time = pd.Timestamp.now()  # - pd.Timedelta(days=12)
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
 
-        trending, inflection_point = self.trend_detector.single_topic_trend(
-            profile_id, topic_id, start_time, end_time
-        )
+        if not skip_trend_detection:
+            trending, inflection_point = self.trend_detector.single_topic_trend(
+                profile_id, topic_id, start_time, end_time
+            )
 
         if skip_trend_detection or trending:
+            # if content is provided, use that instead of collecting
             if not content:
                 if not skip_trend_detection:
                     start_time = inflection_point

@@ -55,7 +55,8 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2023.12",
     ]
     NUM_DOCUMENTS: int = 5
-    trend_lookback_days: int = 7
+    trend_lookback_days: int = 14
+    trend_time_interval: str = "12h"
 
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):

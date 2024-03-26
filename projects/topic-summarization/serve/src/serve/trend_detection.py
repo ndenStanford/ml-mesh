@@ -16,11 +16,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 # Source
-from src.serve.utils import (
-    all_profile_boolean_query,
-    query_translation,
-    topic_profile_query,
-)
+from src.serve.utils import all_profile_query, query_translation, topic_profile_query
 
 
 class TrendDetection:
@@ -65,8 +61,8 @@ class TrendDetection:
         # Profile query
         results = self.es.search(
             index=settings.es_index,
-            body=all_profile_boolean_query(
-                query, start_time, end_time, settings.time_interval
+            body=all_profile_query(
+                query, start_time, end_time, settings.trend_time_interval
             ),
         )
         df_all_topic = pd.DataFrame.from_dict(
@@ -76,7 +72,7 @@ class TrendDetection:
         results = self.es.search(
             index=settings.es_index,
             body=topic_profile_query(
-                query, start_time, end_time, topic_id, settings.time_interval
+                query, start_time, end_time, topic_id, settings.trend_time_interval
             ),
         )
         df_single_topic = pd.DataFrame.from_dict(
@@ -91,8 +87,9 @@ class TrendDetection:
             return False, None
 
         if df_single_topic["doc_count"].sum() >= (
-            0.03 * df_all_topic["doc_count"].sum()
-        ):  # total number of instances of topic must be 3% of total number of documents
+            0.01 * df_all_topic["doc_count"].sum()
+        ):
+            # total number of instances of topic must be 3% of total number of documents
 
             df_single_topic["time"] = pd.to_datetime(df_single_topic["key_as_string"])
             df_single_topic = df_single_topic.rename(columns={"doc_count": "y"})
@@ -116,9 +113,5 @@ class TrendDetection:
                 threshold=0.005,
             )
             if len(change_points) > 0:
-                print("---")
-                print(topic_id)
-                print(change_points)
-                print("---")
                 return True, change_points[0].start_time
         return False, None

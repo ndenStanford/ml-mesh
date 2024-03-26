@@ -146,7 +146,7 @@ def all_global_query(
     return query
 
 
-def all_profile_boolean_query(
+def all_profile_query(
     translated_boolean_query: Dict,
     start_time: pd.datetime,
     end_time: pd.datetime,
@@ -177,6 +177,7 @@ def all_profile_boolean_query(
                 "filter": [
                     translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                    {"term": {"lang": "en"}},
                 ],
             }
         },
@@ -226,6 +227,7 @@ def topic_profile_query(
                 "filter": [
                     translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                    {"term": {"lang": "en"}},
                 ],
             }
         },
@@ -248,10 +250,9 @@ def topic_profile_documents_query(
     end_time: pd.datetime,
     topic_id: int,
 ) -> Dict:
-    """Local trend query.
+    """Documents query.
 
-    Time-series of total number of documents in the the scope
-    of a profile belonging to a topic.
+    Returns list of documents of a given profile and topic.
     """
     query = {
         "size": 100,
@@ -274,6 +275,7 @@ def topic_profile_documents_query(
                 "filter": [
                     translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                    {"term": {"lang": "en"}},
                 ],
             }
         },
