@@ -700,6 +700,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-neuron: true
     with:
       project: iptc
       environment: prod
