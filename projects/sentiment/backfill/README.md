@@ -26,10 +26,9 @@ p.produce(
     key="identifier",
     value=json.dumps(
         {
-            "content": "Syria is a dangerous country. London is a wonderful city.",
+            "content": "London is a nice city.",
             "entities": [
-                {"entity_text": "Syria", "entity_type": "", "score": 0, "wiki_link": ""},
-                {"entity_text": "London", "entity_type": "", "score": 0, "wiki_link": ""},
+                {"entity_text": "London", "entity_type": "LOC", "score": 0.9997141, "sentence_index": 0},
             ],
             "language": "en"
         }
@@ -38,7 +37,6 @@ p.produce(
 p.flush()
 ```
 
-and check if the enriched document is available in the target topic as follows:
 
 
 ```python
