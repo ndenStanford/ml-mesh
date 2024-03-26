@@ -33,14 +33,14 @@ def download_uncompiled_model() -> None:
         neptune_attribute_path="model/model_card"
     )
     # download model artifact
-    base_model_version.download_directory_from_model_version(
-        local_directory_path=io_settings.download.model_directory,
+    base_model_version.download_file_from_model_version(
+        local_file_path=io_settings.download.model_base,
         neptune_attribute_path=base_model_card["model_artifact_attribute_path"],
     )
 
     logger.info(
         f"Successfully downloaded uncompiled content-scoring model into "
-        f"{io_settings.download.model_directory}"
+        f"{io_settings.download.model_base}"
     )
 
     base_model_version.stop()

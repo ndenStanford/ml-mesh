@@ -114,6 +114,14 @@ class WorkflowComponentIOSettings(object):
             self.workflow_component_output_dir, "model_artifacts"
         )
 
+        self.model_base: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts/base_model"
+        )
+
+        self.compiled_model_base: str = os.path.join(
+            self.workflow_component_output_dir, "model_artifacts/base_model.pth"
+        )
+
     @staticmethod
     def check_component_reference(workflow_component: str):
         """Check component reference."""

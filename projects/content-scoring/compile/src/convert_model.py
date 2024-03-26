@@ -34,17 +34,19 @@ def main() -> None:
     )
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())  # noqa
-    # get base model
-    #   base_model: Any = base_model_version.download_file_from_model_version(  # noqa
-    #       local_file_path="src/model/model.pkl",  # noqa
-    #       neptune_attribute_path="model/model_artifacts",  # noqa
-    #   )  # noqa
-    model = joblib.load("src/model/model.pkl")
-    # compile base model pipeline for iptc
-    converted_model = convert(model, "torch")
+    base_model_version = TrackedModelVersion(**base_model_specs.dict())
 
-    converted_model.save(io_settings.compile.model_directory)
+    base_model_card: Dict = (  # noqa
+        base_model_version.download_config_from_model_version(  # noqa
+            "model/model_card"  # noqa
+        )
+    )  # noqa
+
+    model_pipeline_base = joblib.load(io_settings.download.model_base)
+    # compile base model pipeline for iptc
+    converted_model = convert(model_pipeline_base, "torch")
+
+    torch.save(converted_model, io_settings.compile.compiled_model_base)
 
     logger.debug(
         f"Successfully exported compiled content_scoring model to: {io_settings.compile.model_directory}"  # noqa
