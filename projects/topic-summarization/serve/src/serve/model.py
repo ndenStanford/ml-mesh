@@ -62,7 +62,7 @@ class ServedTopicModel(ServedModel):
         skip_trend_detection = inputs.skip_trend_detection
 
         end_time = pd.Timestamp.now()
-        start_time = end_time - pd.Timedelta(days=settings.lookback_days)
+        start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
 
         trending, inflection_point = self.trend_detector.single_topic_trend(
             profile_id, topic_id, start_time, end_time

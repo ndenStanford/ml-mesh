@@ -55,6 +55,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2023.12",
     ]
     NUM_DOCUMENTS: int = 5
+    trend_lookback_days: int = 7
 
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):

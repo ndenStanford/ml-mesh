@@ -6,8 +6,9 @@ from typing import Any, Tuple, Union
 # 3rd party libraries
 import pandas as pd
 from elasticsearch import Elasticsearch
-from kats.consts import TimeSeriesChangePoint, TimeSeriesData
+from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
+from pandas import Timestamp
 
 # Source
 from src.settings import get_settings
@@ -49,7 +50,7 @@ class TrendDetection:
 
     def single_topic_trend(
         self, profile_id: Any, topic_id: Any, start_time: Any, end_time: Any
-    ) -> Tuple[bool, Union[TimeSeriesChangePoint, None]]:
+    ) -> Tuple[bool, Union[Timestamp, None]]:
         """Trend detection for single topic and keyword.
 
         Args:
@@ -58,7 +59,7 @@ class TrendDetection:
             start_time (Any): start time range of trend detection
             end_time (Any): end time range of trend detection
         Output:
-            bool: trend or not
+            Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """
         query = query_translation(profile_id)
         # Profile query
@@ -115,5 +116,9 @@ class TrendDetection:
                 threshold=0.005,
             )
             if len(change_points) > 0:
-                return True, change_points
+                print("---")
+                print(topic_id)
+                print(change_points)
+                print("---")
+                return True, change_points[0].start_time
         return False, None
