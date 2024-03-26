@@ -54,19 +54,13 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
-        time_series_topic = inputs.time_series_topic
-        time_series_all = inputs.time_series_all
-        trending = self.trend_detector.single_topic_trend(
-            time_series_topic, time_series_all
-        )
+        topic_id = inputs.topic_id
+        profile_id = inputs.profile_id
+        skip_trend_detection = inputs.skip_trend_detection
 
-        print("-------")
-        print("-------")
-        print(trending)
-        print("-------")
-        print("-------")
+        trending = self.trend_detector.single_topic_trend(profile_id, topic_id)
 
-        if trending:
+        if skip_trend_detection or trending:
             topic = self.model.aggregate(content)
         else:
             topic = None

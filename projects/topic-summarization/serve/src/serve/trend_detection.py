@@ -5,22 +5,33 @@ from typing import Any
 
 # 3rd party libraries
 import pandas as pd
+from elasticsearch import Elasticsearch
 from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
+
+# Source
+from src.settings import get_settings
+
+
+settings = get_settings()
+
+# Source
+from src.serve.utils import (
+    all_profile_boolean_query,
+    query_translation,
+    topic_profile_query,
+)
 
 
 class TrendDetection:
     """Package trend detection."""
 
-    def convert_to_dataframe(self, time_series: Any) -> pd.DataFrame:
-        """Convert timeseries list of dicts into dataframes.
-
-        Args:
-            time_series (Any): time series
-        Output:
-            pd.DataFrame: time series in dataframe format
-        """
-        return pd.DataFrame(time_series)
+    def __init__(self) -> None:
+        self.es = Elasticsearch(
+            [
+                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
+            ]
+        )
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove weekends.
@@ -37,19 +48,43 @@ class TrendDetection:
         df = df.reset_index(drop=True)
         return df
 
-    def single_topic_trend(self, time_series_topic: Any, time_series_all: Any) -> bool:
+    def single_topic_trend(self, profile_id: Any, topic_id: Any) -> bool:
         """Trend detection for single topic and keyword.
 
         Args:
-            time_series_topic (Any): time series for single topic and keyword
-            time_series_all (Any): time series for all topic
+            profile_id (Any): boolean query
+            topic_id (Any): topic id
         Output:
             bool: trend or not
         """
-        df_single_topic = self.convert_to_dataframe(time_series_topic)
-        df_all_topic = self.convert_to_dataframe(time_series_all)
-
+        query = query_translation(profile_id)
+        end_time = pd.Timestamp.now()
+        start_time = end_time - pd.Timedelta(days=settings.lookback_days)
+        # Profile query
+        results = self.es.search(
+            index=settings.es_index,
+            body=all_profile_boolean_query(
+                query, start_time, end_time, settings.time_interval
+            ),
+        )
+        print(results["aggregations"]["daily_doc_count"]["buckets"])
+        df_all_topic = pd.DataFrame.from_dict(
+            results["aggregations"]["daily_doc_count"]["buckets"]
+        ).iloc[:-1]
+        # profile topic query
+        results = self.es.search(
+            index=settings.es_index,
+            body=topic_profile_query(
+                query, start_time, end_time, topic_id, settings.time_interval
+            ),
+        )
+        df_single_topic = pd.DataFrame.from_dict(
+            results["aggregations"]["daily_doc_count"]["buckets"]
+        ).iloc[:-1]
+        print(results["aggregations"]["daily_doc_count"]["buckets"])
+        # remove weekends
         df_all_topic = self.remove_weekends(df_all_topic)
+
         if len(df_single_topic) > 0:
             df_single_topic = self.remove_weekends(df_single_topic)
         else:
