@@ -59,7 +59,6 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
 
     project: str = "onclusive/document-content-scoring"
     model: str = "DOCUMENT-COMPILED"
-    target_format: str = "torch"
 
     class Config:
         env_prefix = "compiled_"

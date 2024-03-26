@@ -1,10 +1,5 @@
 """Upload compiled model."""
 
-# Standard Library
-from datetime import datetime as dt
-
-# 3rd party libraries
-from neptune.types.mode import Mode
 
 # Internal libraries
 from onclusiveml.core.logging import (
@@ -31,6 +26,7 @@ def main() -> None:
         level=io_settings.log_level,
     )
     # --- upload compiled model
+    base_model_specs = UncompiledTrackedModelSpecs()
     compiled_model_specs = CompiledTrackedModelSpecs()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
 
@@ -41,34 +37,8 @@ def main() -> None:
     )
     # upload compiled content-scoring model artifact
     compiled_model_version.upload_file_to_model_version(
-        local_directory_path=io_settings.compile.model_directory,
+        local_file_path=io_settings.compile.compiled_model_base,
         neptune_attribute_path=compiled_model_card.model_artifact_attribute_path,
-    )
-
-    # --- update uncompiled model
-    # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs(mode=Mode.ASYNC)
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
-
-    if base_model_version.exists("model/compiled_model_versions"):
-        compiled_model_versions = base_model_version.download_config_from_model_version(
-            neptune_attribute_path="model/compiled_model_versions"
-        )
-    else:
-        compiled_model_versions = []
-
-    compiled_model_versions.append(
-        {
-            "project": compiled_model_specs.project,
-            "model": compiled_model_specs.model,
-            "with_id": compiled_model_version._sys_id,
-            "time_stamp": dt.now().strftime("%Y-%m-%d %H:%M:%s"),
-        }
-    )
-
-    base_model_version.upload_config_to_model_version(
-        config=compiled_model_versions,
-        neptune_attribute_path="model/compiled_model_versions",
     )
 
     logger.info(
