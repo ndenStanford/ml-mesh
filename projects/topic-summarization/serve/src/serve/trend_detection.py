@@ -1,17 +1,16 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Any
+from typing import Any, Tuple, Union
 
 # 3rd party libraries
 import pandas as pd
 from elasticsearch import Elasticsearch
-from kats.consts import TimeSeriesData
+from kats.consts import TimeSeriesChangePoint, TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
 
 # Source
 from src.settings import get_settings
-
 
 settings = get_settings()
 
@@ -48,18 +47,20 @@ class TrendDetection:
         df = df.reset_index(drop=True)
         return df
 
-    def single_topic_trend(self, profile_id: Any, topic_id: Any) -> bool:
+    def single_topic_trend(
+        self, profile_id: Any, topic_id: Any, start_time: Any, end_time: Any
+    ) -> Tuple[bool, Union[TimeSeriesChangePoint, None]]:
         """Trend detection for single topic and keyword.
 
         Args:
             profile_id (Any): boolean query
             topic_id (Any): topic id
+            start_time (Any): start time range of trend detection
+            end_time (Any): end time range of trend detection
         Output:
             bool: trend or not
         """
         query = query_translation(profile_id)
-        end_time = pd.Timestamp.now()
-        start_time = end_time - pd.Timedelta(days=settings.lookback_days)
         # Profile query
         results = self.es.search(
             index=settings.es_index,
@@ -67,7 +68,6 @@ class TrendDetection:
                 query, start_time, end_time, settings.time_interval
             ),
         )
-        print(results["aggregations"]["daily_doc_count"]["buckets"])
         df_all_topic = pd.DataFrame.from_dict(
             results["aggregations"]["daily_doc_count"]["buckets"]
         ).iloc[:-1]
@@ -81,14 +81,13 @@ class TrendDetection:
         df_single_topic = pd.DataFrame.from_dict(
             results["aggregations"]["daily_doc_count"]["buckets"]
         ).iloc[:-1]
-        print(results["aggregations"]["daily_doc_count"]["buckets"])
         # remove weekends
         df_all_topic = self.remove_weekends(df_all_topic)
 
         if len(df_single_topic) > 0:
             df_single_topic = self.remove_weekends(df_single_topic)
         else:
-            return False
+            return False, None
 
         if df_single_topic["doc_count"].sum() >= (
             0.03 * df_all_topic["doc_count"].sum()
@@ -116,5 +115,5 @@ class TrendDetection:
                 threshold=0.005,
             )
             if len(change_points) > 0:
-                return True
-        return False
+                return True, change_points
+        return False, None

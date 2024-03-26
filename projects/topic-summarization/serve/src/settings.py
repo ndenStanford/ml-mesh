@@ -54,6 +54,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.01",
         "crawler-4-2023.12",
     ]
+    NUM_DOCUMENTS: int = 5
 
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):

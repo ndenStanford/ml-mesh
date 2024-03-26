@@ -10,7 +10,6 @@ import requests
 # Source
 from src.settings import get_settings
 
-
 settings = get_settings()
 
 
@@ -237,6 +236,45 @@ def topic_profile_query(
                     "interval": time_interval,
                     "min_doc_count": 0,
                 }
+            }
+        },
+    }
+    return query
+
+
+def topic_profile_documents_query(
+    translated_boolean_query: Dict,
+    start_time: pd.datetime,
+    end_time: pd.datetime,
+    topic_id: int,
+) -> Dict:
+    """Local trend query.
+
+    Time-series of total number of documents in the the scope
+    of a profile belonging to a topic.
+    """
+    query = {
+        "size": 100,
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "nested": {
+                            "path": "bertopic_topic",
+                            "query": {
+                                "bool": {
+                                    "must": [
+                                        {"match": {"bertopic_topic.topic_id": topic_id}}
+                                    ]
+                                }
+                            },
+                        }
+                    }
+                ],
+                "filter": [
+                    translated_boolean_query,
+                    {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                ],
             }
         },
     }

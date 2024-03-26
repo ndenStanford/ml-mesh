@@ -8,6 +8,7 @@ from typing import Type
 
 # 3rd party libraries
 from pydantic import BaseModel
+import pandas as pd
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
@@ -23,6 +24,7 @@ from src.settings import get_settings
 
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from src.serve.document_collector import DocumentCollector
 
 settings = get_settings()
 
@@ -42,6 +44,7 @@ class ServedTopicModel(ServedModel):
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
         self.trend_detector = TrendDetection()
+        self.document_collector = DocumentCollector()
         self.ready = True
 
     @retry(tries=3)
@@ -58,9 +61,21 @@ class ServedTopicModel(ServedModel):
         profile_id = inputs.profile_id
         skip_trend_detection = inputs.skip_trend_detection
 
-        trending = self.trend_detector.single_topic_trend(profile_id, topic_id)
+        end_time = pd.Timestamp.now()
+        start_time = end_time - pd.Timedelta(days=settings.lookback_days)
+
+        trending, inflection_point = self.trend_detector.single_topic_trend(
+            profile_id, topic_id, start_time, end_time
+        )
 
         if skip_trend_detection or trending:
+            if not content:
+                if not skip_trend_detection:
+                    start_time = inflection_point
+                    end_time = start_time + pd.Timedelta(days=1)
+                content = self.document_collector.get_documents(
+                    profile_id, topic_id, start_time, end_time
+                )
             topic = self.model.aggregate(content)
         else:
             topic = None
