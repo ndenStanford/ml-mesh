@@ -64,7 +64,6 @@ class ServedIPTCModel(ServedModel):
         )
         # load model card json file into dict
         self.model_card = self.served_model_artifacts.model_card
-
         self.ready = True
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
