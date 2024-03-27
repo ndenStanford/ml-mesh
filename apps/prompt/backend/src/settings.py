@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     OPENAI_MAX_TOKENS: int = 512
     OPENAI_TEMPERATURE: float = 0.7
     RESPONSE_FORMAT: Optional[Dict] = None
+    SEED: Optional[int] = None
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
 
@@ -46,6 +47,7 @@ class Settings(BaseSettings):
             "max_tokens": OPENAI_MAX_TOKENS,
             "temperature": OPENAI_TEMPERATURE,
             "response_format": RESPONSE_FORMAT,
+            "seed": SEED,
         }
     )
     # predefined models
