@@ -18,7 +18,7 @@ services:
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
-    command: [python, -m, src.register_trained_model]
+    command: [python, -m, src.train_model]
     profiles: [train]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
