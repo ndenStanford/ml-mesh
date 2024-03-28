@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from onclusiveml.serving.rest.serve import ServingParams
 
 # Source
-from src.serve.model_server import model_server
+from src.serve.__main__ import model_server
 from src.serve.params import ServedModelArtifacts
 
 

@@ -26,12 +26,16 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
+# hadolint ignore=DL3002
+USER root
+
+RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+USER "${USER}"
 
 # --- production stage
 FROM builder as production
@@ -45,8 +49,13 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --with dev
 
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
 USER root
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debug
