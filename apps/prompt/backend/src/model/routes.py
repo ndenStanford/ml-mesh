@@ -1,42 +1,46 @@
 """Model."""
 
+# Standard Library
+from typing import List
+
 # 3rd party libraries
+from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
 # Source
 from src.model.exceptions import ModelNotFound
-from src.model.schemas import ModelListSchema, ModelSchema
+from src.model.tables import LanguageModel
 
 
 router = APIRouter(
-    prefix="/v1/models",
+    prefix="/v2/models",
 )
 
 
 @router.get(
     "",
     status_code=status.HTTP_200_OK,
-    response_model=ModelListSchema,
+    response_model=List[LanguageModel],
 )
-def get_models():
+def list_models():
     """List models."""
-    return {"models": ModelSchema.get()}  # NOTE: Pagination is not needed here (yet)
+    return LanguageModel.scan()
 
 
 @router.get(
-    "/{model_name}",
+    "/{alias}",
     status_code=status.HTTP_200_OK,
-    response_model=ModelSchema,
+    response_model=LanguageModel,
 )
-def get_model(model_name: str):
-    """Retrieves model via model name.
+def get_model(alias: str):
+    """Retrieves model via model alias.
 
     Args:
-        model_name (str): model name
+        alias (str): model alias
     """
     try:
-        return ModelSchema.get(model_name, raises_if_not_found=True)
-    except ModelNotFound as e:
+        return LanguageModel.get(alias)
+    except DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),

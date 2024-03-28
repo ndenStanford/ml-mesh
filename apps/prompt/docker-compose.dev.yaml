@@ -32,7 +32,6 @@ services:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234
       REACT_APP_API_URI: http://localhost:4000/api/v1
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
 
   frontend-unit:
     build:
@@ -59,7 +58,6 @@ services:
       ENVIRONMENT: dev
       REACT_APP_API_KEY: 1234
       REACT_APP_API_URI: http://localhost:4000/api/v1
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
 
   # =====================================================
   # BACKEND
@@ -90,12 +88,12 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
       dynamodb:
@@ -129,12 +127,12 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
     networks:
       - onclusive-net
 
@@ -162,12 +160,12 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
       DOCS_URL: /docs
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
     depends_on:
       dynamodb:
         condition: service_healthy

@@ -11,19 +11,6 @@ from pydantic import Field, SecretStr
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 
-# Source
-from src.model.constants import ModelEnumChat, ModelEnumCompletions
-from src.prompt.constants import PromptEnum
-
-
-class GithubSettings(OnclusiveBaseSettings):
-    """Credentials for Github reposotory."""
-
-    github_token: SecretStr = Field(
-        default="github_token", env="PROMPT_REPO_GITHUB_TOKEN"
-    )
-    github_url: str = "AirPR/ml-prompt-registry"
-
 
 class Settings(OnclusiveBaseSettings):
     """API configuration."""
@@ -60,32 +47,20 @@ class Settings(OnclusiveBaseSettings):
             "response_format": RESPONSE_FORMAT,
         }
     )
-    # predefined models
-    LIST_OF_MODELS: Dict[str, List[Union[str, int]]] = {
-        "1": [ModelEnumChat.GPT3_5.value, OPENAI_PARAMETERS, 4098],
-        "2": [ModelEnumChat.GPT4.value, OPENAI_PARAMETERS, 8192],
-        "3": [ModelEnumChat.GPT3_5_turbo.value, OPENAI_PARAMETERS, 16385],
-        "4": [ModelEnumChat.GPT4_turbo.value, OPENAI_PARAMETERS, 128000],
-        "5": [ModelEnumCompletions.GPT3_5_instruct.value, OPENAI_PARAMETERS, 4096],
-    }
-
-    LIST_OF_PROMPTS: List[List[Union[str, Dict]]] = PromptEnum.list()
 
     REDIS_CONNECTION_STRING: str = ""
     REDIS_TTL_SECONDS: int = 604800
 
-    DYNTASTIC_HOST: Optional[str] = None
-    DYNTASTIC_REGION: str = "us-east-1"
+    DYNAMODB_HOST: Optional[str] = None
+    AWS_REGION: str = "us-east-1"
 
     CORS_ORIGIN: List[str] = ["*"]
 
-    github_credentials: GithubSettings
-
-    forbidden_characters: str = r'\/:*?"<>|'
+    GITHUB_TOKEN: SecretStr = Field(default="github_token")
+    GITHUB_URL: str = "AirPR/ml-prompt-registry"
 
 
 @lru_cache
 def get_settings() -> Settings:
     """Returns instanciated Settings class."""
-    github_credentials = GithubSettings()
-    return Settings(github_credentials=github_credentials)
+    return Settings()

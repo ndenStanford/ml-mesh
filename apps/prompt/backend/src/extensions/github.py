@@ -21,4 +21,4 @@ class GithubClient:
         return g.get_repo(repo_url)
 
 
-github_repo = GithubClient().get_repo()
+repo = GithubClient().get_repo()
