@@ -64,9 +64,7 @@ def test_served_topic_model_predict_sample_content(
 
 @freeze_time("2024-03-15 15:01:00")
 @pytest.mark.order(4)
-def test_served_topic_model_predict_no_sample_content(
-    test_predict_input, test_inference_params
-):
+def test_served_topic_model_predict_no_sample_content(test_inference_params):
     """Tests the fully initialized and loaded ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
