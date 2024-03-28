@@ -13,14 +13,14 @@ from onclusiveml.serving.rest.serve import (
 
 def test_model_server_root():
     """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/iptc/v1/")
+    root_response = requests.get("http://serve:8000/iptc-00000000/v1/")
 
     assert root_response.status_code == 200
 
 
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
-    liveness_response = requests.get("http://serve:8000/iptc/v1/live")
+    liveness_response = requests.get("http://serve:8000/iptc-00000000/v1/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
@@ -28,7 +28,7 @@ def test_model_server_liveness():
 
 def test_model_server_readiness():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/iptc/v1/ready")
+    readiness_response = requests.get("http://serve:8000/iptc-00000000/v1/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -36,7 +36,7 @@ def test_model_server_readiness():
 
 def test_model_server_bio():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/iptc/v1/bio")
+    readiness_response = requests.get("http://serve:8000/iptc-00000000/v1/bio")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
@@ -49,7 +49,7 @@ def test_model_server_bio():
             {
                 "data": {
                     "identifier": None,
-                    "namespace": "iptc",
+                    "namespace": "iptc-00000000",
                     "attributes": {"content": ""},
                     "parameters": {},
                 }
@@ -58,7 +58,7 @@ def test_model_server_bio():
                 "version": 1,
                 "data": {
                     "identifier": None,
-                    "namespace": "iptc",
+                    "namespace": "iptc-00000000",
                     "attributes": {"iptc": []},
                 },
             },
@@ -66,7 +66,7 @@ def test_model_server_bio():
         (
             {
                 "data": {
-                    "namespace": "iptc",
+                    "namespace": "iptc-00000000",
                     "attributes": {
                         "content": """Stocks reversed earlier losses to close higher despite rising oil prices
             that followed the attack by Hamas on Israel over the weekend. Dovish comments by
@@ -80,7 +80,7 @@ def test_model_server_bio():
                 "version": 1,
                 "data": {
                     "identifier": None,
-                    "namespace": "iptc",
+                    "namespace": "iptc-00000000",
                     "attributes": {
                         "iptc": [
                             {"label": "economy, business and finance", "score": 0.9871},
@@ -115,7 +115,7 @@ def test_model_server_bio():
 def test_model_server_prediction(payload, expected_response):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     response = requests.post(
-        "http://serve:8000/iptc/v1/predict",
+        "http://serve:8000/iptc-00000000/v1/predict",
         json=payload,
     )
 
