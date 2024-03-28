@@ -1,9 +1,6 @@
 """Queries."""
 # isort: skip_file
 
-# Standard Library
-import getpass
-
 # from abc import abstractmethod
 from typing import Dict, Optional, Union
 
@@ -98,19 +95,3 @@ class StringQueryProfile(BaseQueryProfile):
         """String query."""
         # api call to query tool
         return self.string_query
-
-
-if __name__ == "__main__":
-    client_id = getpass.getpass("Enter your Media API client id")
-    client_secret = getpass.getpass("Enter your Media API client secret")
-
-    settings = MediaAPISettings(client_id=client_id, client_secret=client_secret)
-
-    query = StringQueryProfile(
-        string_query="""
-        (apple  AND NOT  "Apple's Jade") OR  "Steve Jobs"  OR  "Tim Cook"  OR  "Angela Ahrends"  OR  "Eddie Cue"  OR  "Craig Federighi"  OR  "Jonathan Ive"  OR  "Luca Maestri"  OR  "Dan Riccio"  OR  "Phil Schiller"  OR  "Bruce Sewell"  OR  "Jeff Williams"  OR  "Paul Deneve"  OR  "Lisa Jackson"  OR  "Joel Podolny"  OR  "Johnny Srouji"  OR  "Denise Young Smith"
-        """  # noqa: E501
-    )
-
-    es_query = query.es_query(settings)
-    print(es_query)
