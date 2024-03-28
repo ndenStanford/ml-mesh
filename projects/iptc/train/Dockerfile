@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -9,16 +9,6 @@ ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 ENV USER=app
 ENV HOME="${PROJECT_DIR}"
-
-# Install unzip and AWS CLI
-RUN apt-get update && \
-    apt-get install -y unzip=6.0-26+deb11u1 --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/* && \
-    curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm awscliv2.zip
-
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
