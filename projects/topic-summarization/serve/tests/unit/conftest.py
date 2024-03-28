@@ -341,7 +341,7 @@ def mock_boolean_query_translated():
 
 @pytest.fixture
 def mock_topic_profile_es_result_not_trending():
-    """Mock response for topic profile elastic search query."""
+    """Mock response for topic profile elastic search query that isn't trending."""
     return {
         "took": 143,
         "timed_out": False,
@@ -508,7 +508,7 @@ def mock_topic_profile_es_result_not_trending():
 
 @pytest.fixture
 def mock_profile_es_result():
-    """Mock response for all topic profile elastic search query."""
+    """Mock response for profile elastic search query."""
     return {
         "took": 181,
         "timed_out": False,
@@ -675,7 +675,7 @@ def mock_profile_es_result():
 
 @pytest.fixture
 def mock_topic_profile_es_result_trending():
-    """Mock response for topic profile elastic search query."""
+    """Mock response for topic profile elastic search query that is trending."""
     return {
         "took": 143,
         "timed_out": False,

@@ -24,6 +24,7 @@ elasticsearch = "7.17"
 pytest = "7.2.0"
 pytest-order = "1.1.0"
 pytest-mock = "3.10.0"
+freezegun = "1.2.2"
 
 
 [build-system]

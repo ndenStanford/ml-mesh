@@ -5,6 +5,7 @@
 
 # Standard Library
 from typing import Type
+from datetime import datetime
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -61,16 +62,32 @@ class ServedTopicModel(ServedModel):
         profile_id = inputs.profile_id
         skip_trend_detection = inputs.skip_trend_detection
 
-        end_time = pd.Timestamp.now()  # - pd.Timedelta(days=12)
+        # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
+        # to work for integration tests
+        end_time = pd.Timestamp(datetime.now())  # - pd.Timedelta(days=12)
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-
+        trending = True
         if not skip_trend_detection:
             trending, inflection_point = self.trend_detector.single_topic_trend(
                 profile_id, topic_id, start_time, end_time
             )
-
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print(start_time)
+        print(end_time)
+        print(trending)
+        print(profile_id)
+        print(topic_id)
+        print(content)
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print("------------------")
         if skip_trend_detection or trending:
-            # if content is provided, use that instead of collecting
+            # if content is provided, use that instead of collecting documents
             if not content:
                 if not skip_trend_detection:
                     start_time = inflection_point

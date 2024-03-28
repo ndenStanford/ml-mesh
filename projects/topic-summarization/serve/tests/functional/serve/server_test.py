@@ -3,6 +3,7 @@
 
 # 3rd party libraries
 import pytest
+from freezegun import freeze_time
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
@@ -43,6 +44,7 @@ def test_model_server_readiness(test_client, test_model_name):
     assert readiness_response.json() == ReadinessProbeResponse().dict()
 
 
+@freeze_time("2024-03-15 15:01:00")
 @pytest.mark.order(8)
 def test_model_server_predict(test_client, test_model_name, test_payload):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
