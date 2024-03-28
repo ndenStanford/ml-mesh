@@ -143,4 +143,4 @@ def test_trending(
     ]
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(profile_id, topic_id, start_time, end_time)
-    assert res == (True, None)
+    assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))

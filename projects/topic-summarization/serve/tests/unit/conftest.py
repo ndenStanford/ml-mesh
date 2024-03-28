@@ -807,32 +807,32 @@ def mock_topic_profile_es_result_trending():
                     {
                         "key_as_string": "2024-03-25T12:00:00.000Z",
                         "key": 1711368000000,
-                        "doc_count": 5,
+                        "doc_count": 10,
                     },
                     {
                         "key_as_string": "2024-03-26T00:00:00.000Z",
                         "key": 1711411200000,
-                        "doc_count": 10,
+                        "doc_count": 20,
                     },
                     {
                         "key_as_string": "2024-03-26T12:00:00.000Z",
                         "key": 1711454400000,
-                        "doc_count": 4,
+                        "doc_count": 32,
                     },
                     {
                         "key_as_string": "2024-03-27T00:00:00.000Z",
                         "key": 1711497600000,
-                        "doc_count": 5,
+                        "doc_count": 36,
                     },
                     {
                         "key_as_string": "2024-03-27T12:00:00.000Z",
                         "key": 1711540800000,
-                        "doc_count": 3,
+                        "doc_count": 41,
                     },
                     {
                         "key_as_string": "2024-03-28T00:00:00.000Z",
                         "key": 1711584000000,
-                        "doc_count": 6,
+                        "doc_count": 39,
                     },
                 ]
             }
