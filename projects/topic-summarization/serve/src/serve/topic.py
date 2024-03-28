@@ -178,6 +178,7 @@ class TopicHandler:
         )
 
         output_content = json.loads(json.loads(q.content)["generated"])
+        print(output_content)
         agg_out_content, agg_out_impact, agg_out_theme = (
             output_content["Overall summary"],
             output_content["Impact level"],
