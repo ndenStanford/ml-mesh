@@ -26,6 +26,7 @@ def generate_text(
     max_tokens: int,
     temperature: float,
     response_format: dict,
+    seed: int,
 ) -> str:
     """Sends request to generate text."""
     logger.info("Calling openai API....")
@@ -40,6 +41,7 @@ def generate_text(
                 max_tokens=max_tokens,
                 temperature=temperature,
                 response_format=response_format,
+                seed=seed,
             )
             return response.choices[0].message.content
         else:
