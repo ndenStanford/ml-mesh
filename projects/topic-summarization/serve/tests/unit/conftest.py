@@ -168,3 +168,673 @@ def article_input():
             in shaping the formation and evolution of galaxies.'
         """,  # noqa: E501
     ]
+
+
+@pytest.fixture
+def mock_boolean_query_translated():
+    """Mock response for request.post."""
+    mock_response = MagicMock()
+    query = {
+        "query": {
+            "es_query": {
+                "must": [
+                    {
+                        "function_score": {
+                            "query": {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "bool": {
+                                                "should": [
+                                                    {
+                                                        "multi_match": {
+                                                            "query": "Apple Music",
+                                                            "fields": [
+                                                                "content.split_word",
+                                                                "title.split_word",
+                                                            ],
+                                                            "type": "phrase",
+                                                        }
+                                                    },
+                                                    {
+                                                        "multi_match": {
+                                                            "query": "AppleMusic",
+                                                            "fields": [
+                                                                "content.split_word",
+                                                                "title.split_word",
+                                                            ],
+                                                            "type": "best_fields",
+                                                        }
+                                                    },
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            "functions": [
+                                {
+                                    "script_score": {
+                                        "script": {
+                                            "source": "if (doc.containsKey('pagerank') && doc['pagerank'].size() > 0){ def pagerank = doc['pagerank'].value;  if (pagerank > 7)    { return params.pgrb_7_plus; }  else if (pagerank >= 4)    {  return params.pgrb_4_to_7; }  else if (pagerank >= 2)     { return params.pgrb_2_to_4; }  else     { return params.pgrb_less_than_2; }  } else  {return params.pgrb_none;}",  # noqa: E501
+                                            "params": {
+                                                "pgrb_7_plus": 13.0,
+                                                "pgrb_4_to_7": 8.5,
+                                                "pgrb_2_to_4": 3.5,
+                                                "pgrb_less_than_2": 2.0,
+                                                "pgrb_none": 1.0,
+                                            },
+                                        }
+                                    },
+                                    "weight": 100.0,
+                                },
+                                {
+                                    "script_score": {
+                                        "script": {
+                                            "source": "if (doc.containsKey('publication_details.publication_tier') && doc['publication_details.publication_tier'].size() > 0){ def publication_tier = doc['publication_details.publication_tier'].value; if (publication_tier.contains('1'))   { return params.pbb_1; }  else if (publication_tier.contains('2'))   { return params.pbb_2; }  else   { return params.pbb_1; }  }else { return params.pbb_none;} ",  # noqa: E501
+                                            "params": {
+                                                "pbb_1": 3.0,
+                                                "pbb_2": 2.0,
+                                                "pbb_3": 1.0,
+                                                "pbb_none": 2.0,
+                                            },
+                                        }
+                                    },
+                                    "weight": 50.0,
+                                },
+                                {
+                                    "script_score": {
+                                        "script": {
+                                            "source": " def size = doc['content_size'].value; if (size < params.threshold)  { return params.factor; } else  { return 1;}",  # noqa: E501
+                                            "params": {"threshold": 1000, "factor": 0},
+                                        }
+                                    }
+                                },
+                            ],
+                            "boost_mode": "multiply",
+                        }
+                    }
+                ]
+            }
+        },
+        "filters": {
+            "restrict_licenses": False,
+            "country": ["ESP", "AND"],
+            "date": {
+                "start": "2023-12-27 17:04:00",
+                "end": "2024-09-27 17:04:00",
+                "time_zone": "+00:00",
+            },
+            "es_filter": {
+                "must_not": [
+                    {
+                        "bool": {
+                            "must": [
+                                {
+                                    "multi_match": {
+                                        "query": "moreover",
+                                        "fields": ["source"],
+                                        "type": "best_fields",
+                                    }
+                                },
+                                {
+                                    "multi_match": {
+                                        "query": "print",
+                                        "fields": ["media_type"],
+                                        "type": "best_fields",
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {"prefix": {"licenses": {"value": "AGR"}}},
+                ]
+            },
+        },
+        "media_types": ["print"],
+        "sort": [{"published_on": {"order": "desc"}}],
+        "return_fields": [
+            "id",
+            "domain",
+            "title",
+            "author",
+            "publication",
+            "publication_info",
+            "metadata",
+            "licenses",
+            "is_copyrighted",
+            "copyright",
+            "published_on",
+            "crawled_on",
+            "amplification",
+            "pagerank",
+            "url",
+            "country",
+            "reach",
+            "lang",
+            "sentiment",
+            "tags",
+            "content",
+            "highlight",
+            "media_type",
+            "thumbnail_url",
+            "author_id",
+            "score",
+            "formatted_full_text",
+            "iptc_topic",
+            "presenter",
+            "cluster_id",
+            "publication_id",
+            "wordplay_media_url",
+            "publication_details",
+            "ave",
+            "ave_legacy",
+            "domain_details",
+            "source_article_id",
+            "source",
+        ],
+    }
+    # Create the final string
+    mock_response.content = query
+    return mock_response
+
+
+@pytest.fixture
+def mock_topic_profile_es_result_not_trending():
+    """Mock response for topic profile elastic search query."""
+    return {
+        "took": 143,
+        "timed_out": False,
+        "num_reduce_phases": 2,
+        "_shards": {"total": 720, "successful": 720, "skipped": 186, "failed": 0},
+        "hits": {
+            "total": {"value": 110, "relation": "eq"},
+            "max_score": None,
+            "hits": [],
+        },
+        "aggregations": {
+            "daily_doc_count": {
+                "buckets": [
+                    {
+                        "key_as_string": "2024-03-14T00:00:00.000Z",
+                        "key": 1710374400000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-14T12:00:00.000Z",
+                        "key": 1710417600000,
+                        "doc_count": 6,
+                    },
+                    {
+                        "key_as_string": "2024-03-15T00:00:00.000Z",
+                        "key": 1710460800000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-15T12:00:00.000Z",
+                        "key": 1710504000000,
+                        "doc_count": 7,
+                    },
+                    {
+                        "key_as_string": "2024-03-16T00:00:00.000Z",
+                        "key": 1710547200000,
+                        "doc_count": 4,
+                    },
+                    {
+                        "key_as_string": "2024-03-16T12:00:00.000Z",
+                        "key": 1710590400000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-17T00:00:00.000Z",
+                        "key": 1710633600000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-17T12:00:00.000Z",
+                        "key": 1710676800000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-18T00:00:00.000Z",
+                        "key": 1710720000000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-18T12:00:00.000Z",
+                        "key": 1710763200000,
+                        "doc_count": 5,
+                    },
+                    {
+                        "key_as_string": "2024-03-19T00:00:00.000Z",
+                        "key": 1710806400000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-19T12:00:00.000Z",
+                        "key": 1710849600000,
+                        "doc_count": 7,
+                    },
+                    {
+                        "key_as_string": "2024-03-20T00:00:00.000Z",
+                        "key": 1710892800000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-20T12:00:00.000Z",
+                        "key": 1710936000000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-21T00:00:00.000Z",
+                        "key": 1710979200000,
+                        "doc_count": 6,
+                    },
+                    {
+                        "key_as_string": "2024-03-21T12:00:00.000Z",
+                        "key": 1711022400000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-22T00:00:00.000Z",
+                        "key": 1711065600000,
+                        "doc_count": 7,
+                    },
+                    {
+                        "key_as_string": "2024-03-22T12:00:00.000Z",
+                        "key": 1711108800000,
+                        "doc_count": 6,
+                    },
+                    {
+                        "key_as_string": "2024-03-23T00:00:00.000Z",
+                        "key": 1711152000000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-23T12:00:00.000Z",
+                        "key": 1711195200000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-24T00:00:00.000Z",
+                        "key": 1711238400000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-24T12:00:00.000Z",
+                        "key": 1711281600000,
+                        "doc_count": 0,
+                    },
+                    {
+                        "key_as_string": "2024-03-25T00:00:00.000Z",
+                        "key": 1711324800000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-25T12:00:00.000Z",
+                        "key": 1711368000000,
+                        "doc_count": 5,
+                    },
+                    {
+                        "key_as_string": "2024-03-26T00:00:00.000Z",
+                        "key": 1711411200000,
+                        "doc_count": 10,
+                    },
+                    {
+                        "key_as_string": "2024-03-26T12:00:00.000Z",
+                        "key": 1711454400000,
+                        "doc_count": 4,
+                    },
+                    {
+                        "key_as_string": "2024-03-27T00:00:00.000Z",
+                        "key": 1711497600000,
+                        "doc_count": 5,
+                    },
+                    {
+                        "key_as_string": "2024-03-27T12:00:00.000Z",
+                        "key": 1711540800000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-28T00:00:00.000Z",
+                        "key": 1711584000000,
+                        "doc_count": 6,
+                    },
+                ]
+            }
+        },
+    }
+
+
+@pytest.fixture
+def mock_profile_es_result():
+    """Mock response for all topic profile elastic search query."""
+    return {
+        "took": 181,
+        "timed_out": False,
+        "num_reduce_phases": 2,
+        "_shards": {"total": 720, "successful": 720, "skipped": 186, "failed": 0},
+        "hits": {
+            "total": {"value": 2557, "relation": "eq"},
+            "max_score": None,
+            "hits": [],
+        },
+        "aggregations": {
+            "daily_doc_count": {
+                "buckets": [
+                    {
+                        "key_as_string": "2024-03-14T00:00:00.000Z",
+                        "key": 1710374400000,
+                        "doc_count": 22,
+                    },
+                    {
+                        "key_as_string": "2024-03-14T12:00:00.000Z",
+                        "key": 1710417600000,
+                        "doc_count": 161,
+                    },
+                    {
+                        "key_as_string": "2024-03-15T00:00:00.000Z",
+                        "key": 1710460800000,
+                        "doc_count": 129,
+                    },
+                    {
+                        "key_as_string": "2024-03-15T12:00:00.000Z",
+                        "key": 1710504000000,
+                        "doc_count": 114,
+                    },
+                    {
+                        "key_as_string": "2024-03-16T00:00:00.000Z",
+                        "key": 1710547200000,
+                        "doc_count": 77,
+                    },
+                    {
+                        "key_as_string": "2024-03-16T12:00:00.000Z",
+                        "key": 1710590400000,
+                        "doc_count": 61,
+                    },
+                    {
+                        "key_as_string": "2024-03-17T00:00:00.000Z",
+                        "key": 1710633600000,
+                        "doc_count": 48,
+                    },
+                    {
+                        "key_as_string": "2024-03-17T12:00:00.000Z",
+                        "key": 1710676800000,
+                        "doc_count": 69,
+                    },
+                    {
+                        "key_as_string": "2024-03-18T00:00:00.000Z",
+                        "key": 1710720000000,
+                        "doc_count": 64,
+                    },
+                    {
+                        "key_as_string": "2024-03-18T12:00:00.000Z",
+                        "key": 1710763200000,
+                        "doc_count": 81,
+                    },
+                    {
+                        "key_as_string": "2024-03-19T00:00:00.000Z",
+                        "key": 1710806400000,
+                        "doc_count": 65,
+                    },
+                    {
+                        "key_as_string": "2024-03-19T12:00:00.000Z",
+                        "key": 1710849600000,
+                        "doc_count": 105,
+                    },
+                    {
+                        "key_as_string": "2024-03-20T00:00:00.000Z",
+                        "key": 1710892800000,
+                        "doc_count": 85,
+                    },
+                    {
+                        "key_as_string": "2024-03-20T12:00:00.000Z",
+                        "key": 1710936000000,
+                        "doc_count": 84,
+                    },
+                    {
+                        "key_as_string": "2024-03-21T00:00:00.000Z",
+                        "key": 1710979200000,
+                        "doc_count": 115,
+                    },
+                    {
+                        "key_as_string": "2024-03-21T12:00:00.000Z",
+                        "key": 1711022400000,
+                        "doc_count": 168,
+                    },
+                    {
+                        "key_as_string": "2024-03-22T00:00:00.000Z",
+                        "key": 1711065600000,
+                        "doc_count": 137,
+                    },
+                    {
+                        "key_as_string": "2024-03-22T12:00:00.000Z",
+                        "key": 1711108800000,
+                        "doc_count": 119,
+                    },
+                    {
+                        "key_as_string": "2024-03-23T00:00:00.000Z",
+                        "key": 1711152000000,
+                        "doc_count": 61,
+                    },
+                    {
+                        "key_as_string": "2024-03-23T12:00:00.000Z",
+                        "key": 1711195200000,
+                        "doc_count": 70,
+                    },
+                    {
+                        "key_as_string": "2024-03-24T00:00:00.000Z",
+                        "key": 1711238400000,
+                        "doc_count": 44,
+                    },
+                    {
+                        "key_as_string": "2024-03-24T12:00:00.000Z",
+                        "key": 1711281600000,
+                        "doc_count": 55,
+                    },
+                    {
+                        "key_as_string": "2024-03-25T00:00:00.000Z",
+                        "key": 1711324800000,
+                        "doc_count": 81,
+                    },
+                    {
+                        "key_as_string": "2024-03-25T12:00:00.000Z",
+                        "key": 1711368000000,
+                        "doc_count": 90,
+                    },
+                    {
+                        "key_as_string": "2024-03-26T00:00:00.000Z",
+                        "key": 1711411200000,
+                        "doc_count": 79,
+                    },
+                    {
+                        "key_as_string": "2024-03-26T12:00:00.000Z",
+                        "key": 1711454400000,
+                        "doc_count": 129,
+                    },
+                    {
+                        "key_as_string": "2024-03-27T00:00:00.000Z",
+                        "key": 1711497600000,
+                        "doc_count": 97,
+                    },
+                    {
+                        "key_as_string": "2024-03-27T12:00:00.000Z",
+                        "key": 1711540800000,
+                        "doc_count": 97,
+                    },
+                    {
+                        "key_as_string": "2024-03-28T00:00:00.000Z",
+                        "key": 1711584000000,
+                        "doc_count": 50,
+                    },
+                ]
+            }
+        },
+    }
+
+
+@pytest.fixture
+def mock_topic_profile_es_result_trending():
+    """Mock response for topic profile elastic search query."""
+    return {
+        "took": 143,
+        "timed_out": False,
+        "num_reduce_phases": 2,
+        "_shards": {"total": 720, "successful": 720, "skipped": 186, "failed": 0},
+        "hits": {
+            "total": {"value": 110, "relation": "eq"},
+            "max_score": None,
+            "hits": [],
+        },
+        "aggregations": {
+            "daily_doc_count": {
+                "buckets": [
+                    {
+                        "key_as_string": "2024-03-14T00:00:00.000Z",
+                        "key": 1710374400000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-14T12:00:00.000Z",
+                        "key": 1710417600000,
+                        "doc_count": 6,
+                    },
+                    {
+                        "key_as_string": "2024-03-15T00:00:00.000Z",
+                        "key": 1710460800000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-15T12:00:00.000Z",
+                        "key": 1710504000000,
+                        "doc_count": 7,
+                    },
+                    {
+                        "key_as_string": "2024-03-16T00:00:00.000Z",
+                        "key": 1710547200000,
+                        "doc_count": 4,
+                    },
+                    {
+                        "key_as_string": "2024-03-16T12:00:00.000Z",
+                        "key": 1710590400000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-17T00:00:00.000Z",
+                        "key": 1710633600000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-17T12:00:00.000Z",
+                        "key": 1710676800000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-18T00:00:00.000Z",
+                        "key": 1710720000000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-18T12:00:00.000Z",
+                        "key": 1710763200000,
+                        "doc_count": 5,
+                    },
+                    {
+                        "key_as_string": "2024-03-19T00:00:00.000Z",
+                        "key": 1710806400000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-19T12:00:00.000Z",
+                        "key": 1710849600000,
+                        "doc_count": 7,
+                    },
+                    {
+                        "key_as_string": "2024-03-20T00:00:00.000Z",
+                        "key": 1710892800000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-20T12:00:00.000Z",
+                        "key": 1710936000000,
+                        "doc_count": 1,
+                    },
+                    {
+                        "key_as_string": "2024-03-21T00:00:00.000Z",
+                        "key": 1710979200000,
+                        "doc_count": 6,
+                    },
+                    {
+                        "key_as_string": "2024-03-21T12:00:00.000Z",
+                        "key": 1711022400000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-22T00:00:00.000Z",
+                        "key": 1711065600000,
+                        "doc_count": 7,
+                    },
+                    {
+                        "key_as_string": "2024-03-22T12:00:00.000Z",
+                        "key": 1711108800000,
+                        "doc_count": 6,
+                    },
+                    {
+                        "key_as_string": "2024-03-23T00:00:00.000Z",
+                        "key": 1711152000000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-23T12:00:00.000Z",
+                        "key": 1711195200000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-24T00:00:00.000Z",
+                        "key": 1711238400000,
+                        "doc_count": 2,
+                    },
+                    {
+                        "key_as_string": "2024-03-24T12:00:00.000Z",
+                        "key": 1711281600000,
+                        "doc_count": 0,
+                    },
+                    {
+                        "key_as_string": "2024-03-25T00:00:00.000Z",
+                        "key": 1711324800000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-25T12:00:00.000Z",
+                        "key": 1711368000000,
+                        "doc_count": 5,
+                    },
+                    {
+                        "key_as_string": "2024-03-26T00:00:00.000Z",
+                        "key": 1711411200000,
+                        "doc_count": 10,
+                    },
+                    {
+                        "key_as_string": "2024-03-26T12:00:00.000Z",
+                        "key": 1711454400000,
+                        "doc_count": 4,
+                    },
+                    {
+                        "key_as_string": "2024-03-27T00:00:00.000Z",
+                        "key": 1711497600000,
+                        "doc_count": 5,
+                    },
+                    {
+                        "key_as_string": "2024-03-27T12:00:00.000Z",
+                        "key": 1711540800000,
+                        "doc_count": 3,
+                    },
+                    {
+                        "key_as_string": "2024-03-28T00:00:00.000Z",
+                        "key": 1711584000000,
+                        "doc_count": 6,
+                    },
+                ]
+            }
+        },
+    }
