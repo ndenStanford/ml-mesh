@@ -20,6 +20,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     # These are prompts for generating short summaries for each language
@@ -31,6 +32,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_SHORT_SUMMARY_FR = [
@@ -41,6 +43,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_SHORT_SUMMARY_CA = [
@@ -51,6 +54,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_SHORT_SUMMARY_ES = [
@@ -61,6 +65,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_SHORT_SUMMARY_DE = [
@@ -74,6 +79,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_SHORT_SUMMARY_IT = [
@@ -87,6 +93,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_SHORT_SUMMARY_JP = [
@@ -97,6 +104,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 512,
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
     ]
 
@@ -124,6 +132,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_HEADLINE_FR = [
@@ -149,6 +158,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_HEADLINE_CA = [
@@ -174,6 +184,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_HEADLINE_ES = [
@@ -199,6 +210,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_HEADLINE_IT = [
@@ -224,6 +236,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_HEADLINE_DE = [
@@ -249,6 +262,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
     ML_HEADLINE_JP = [
@@ -274,6 +288,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": 2048,
             "temperature": 1,
             "response_format": None,
+            "seed": None,
         },
     ]
 
@@ -315,6 +330,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 0,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -350,6 +366,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 0,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -386,6 +403,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -421,6 +439,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -455,6 +474,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -488,6 +508,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -520,6 +541,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -566,6 +588,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -596,6 +619,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -626,6 +650,7 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
 
@@ -684,5 +709,6 @@ class PromptEnum(OnclusiveEnum):
             "max_tokens": None,
             "temperature": 0.5,
             "response_format": {"type": "json_object"},
+            "seed": None,
         },
     ]
