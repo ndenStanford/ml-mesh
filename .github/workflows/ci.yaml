@@ -1148,7 +1148,7 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      max-parallel: 5
+      max-parallel: 10
       matrix:
         models:
           - project: iptc
