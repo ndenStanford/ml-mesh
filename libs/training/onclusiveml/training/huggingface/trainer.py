@@ -46,7 +46,6 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         """
         pass
 
-
     @abstractmethod
     def data_preprocess(self) -> None:
         """Preprocess the data to the Huggingface trainer format and split for train and evaluation.
