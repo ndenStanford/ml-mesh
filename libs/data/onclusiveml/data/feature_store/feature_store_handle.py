@@ -14,6 +14,9 @@ from feast.data_source import DataSource
 from feast.feast_object import FeastObject
 from feast.feature_store import RepoContents
 
+# Internal libraries
+from onclusiveml.core.logging import get_default_logger
+
 
 class FeatureStoreHandle:
     """Handle for feast feature store.
@@ -42,6 +45,8 @@ class FeatureStoreHandle:
         limit: str = "1000",
         timestamp_key: str = "event_timestamp",
     ):
+
+        self.logger = get_default_logger(__name__)
 
         self.feast_config_bucket = feast_config_bucket
         self.config_file = config_file
@@ -188,6 +193,7 @@ class FeatureStoreHandle:
         filter_columns: List[str] = [],
         filter_values: List[str] = [],
         comparison_operators: List[str] = [],
+        non_nullable_columns: List[str] = [],
     ) -> pd.DataFrame:
         """Fetches Historical features from feast feature store.
 
@@ -203,7 +209,7 @@ class FeatureStoreHandle:
 
         self.entity_sql = f"""
                         SELECT
-                            {self.data_id_key}, {self.timestamp_key} FROM
+                            {self.data_id_key}, CURRENT_TIMESTAMP AS {self.timestamp_key} FROM
                             {self.fs.get_data_source(self.data_source).get_table_query_string()}
                     """
 
@@ -221,17 +227,22 @@ class FeatureStoreHandle:
                         'less_than_equal_to', 'greater_than_equal_to']"
                     )
 
-            self.entity_sql += f" WHERE ({self.timestamp_key} < CURRENT_TIMESTAMP AND "
+            self.entity_sql += " WHERE "
             self.entity_sql += " AND ".join(filters)
-            self.entity_sql += (
-                " AND ".join(f" {column} is NOT NULL" for column in filter_columns)
-                + ")"
+            self.entity_sql += " AND " + " AND ".join(
+                f" {column} is NOT NULL"
+                for column in filter_columns + non_nullable_columns
             )  # noqa: E501
-        else:
-            self.entity_sql += f" WHERE {self.timestamp_key} < CURRENT_TIMESTAMP"
+        elif non_nullable_columns:
+            self.entity_sql += " WHERE "
+            self.entity_sql += " AND ".join(
+                f" {column} is NOT NULL" for column in non_nullable_columns
+            )
 
         if self.limit != "-1":
             self.entity_sql += f" LIMIT {self.limit}"
+
+        self.logger.info(f"running sql query: {self.entity_sql}")
 
         return self.fs.get_historical_features(
             entity_df=self.entity_sql,
