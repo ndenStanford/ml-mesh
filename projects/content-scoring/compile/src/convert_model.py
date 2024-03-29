@@ -1,4 +1,4 @@
-"""Compile model."""
+"""Convert model."""
 
 # Standard Library
 from typing import Any, Dict  # noqa
