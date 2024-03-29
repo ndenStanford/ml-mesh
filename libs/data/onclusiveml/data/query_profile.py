@@ -21,7 +21,7 @@ class MediaAPISettings(OnclusiveFrozenSettings):
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
     ml_query_id: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
     authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
-    MEDIA_API_URI: str = "https://staging-querytool-api.platform.onclusive.org"
+    media_api_url: str = "https://staging-querytool-api.platform.onclusive.org"
 
     def get_client_secret_value(self) -> str:
         """Get client_secret."""
@@ -72,13 +72,13 @@ class BaseQueryProfile(OnclusiveBaseSchema):
             "booleanQuery": self.query,
         }
         _ = requests.put(
-            f"{settings.MEDIA_API_URI}/v1/topics/{settings.ml_query_id}",
+            f"{settings.media_api_url}/v1/topics/{settings.ml_query_id}",
             headers=self.headers(settings),
             json=json_data,
         )
         if _.status_code == 204:
             response = requests.get(
-                f"{settings.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi?queryId={settings.ml_query_id}",  # noqa: E501
+                f"{settings.media_api_url}/v1/mediaContent/translate/mediaapi?queryId={settings.ml_query_id}",  # noqa: E501
                 headers=self.headers(settings),
             )
             return response.json()
