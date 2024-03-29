@@ -1206,7 +1206,7 @@ jobs       :
             trained-model: IP10000000-TRAINED
             wait: false
           - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge ###
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-11000000
             trained-model: IP11000000-TRAINED
@@ -1230,7 +1230,7 @@ jobs       :
             trained-model: IP14000000-TRAINED
             wait: false
           - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge ###
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-15000000
             trained-model: IP15000000-TRAINED
@@ -1284,16 +1284,16 @@ jobs       :
             trained-model: IP20000065-TRAINED
             wait: false
           - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge ###
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000082
             trained-model: IP20000082-TRAINED
             wait: false
-          - project: iptc
-            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
+          - project: iptc #685.4
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-200000106
-            trained-model: IP200000106-TRAINED
+            trained-project: onclusive/iptc-20000106
+            trained-model: IP20000106-TRAINED
             wait: false
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
@@ -1301,8 +1301,8 @@ jobs       :
             trained-project: onclusive/iptc-20000121
             trained-model: IP20000121-TRAINED
             wait: false
-          - project: iptc
-            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
+          - project: iptc #480.3
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000129
             trained-model: IP20000129-TRAINED
@@ -1340,12 +1340,6 @@ jobs       :
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000424
-            trained-model: IP20000424-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000430
             trained-model: IP20000430-TRAINED
             wait: false
@@ -1356,7 +1350,7 @@ jobs       :
             trained-model: IP20000441-TRAINED
             wait: false
           - project: iptc
-            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000446
             trained-model: IP20000446-TRAINED
@@ -1380,7 +1374,7 @@ jobs       :
             trained-model: IP20000538-TRAINED
             wait: false
           - project: iptc
-            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
+            sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000565
             trained-model: IP20000565-TRAINED
@@ -1474,12 +1468,6 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000780
             trained-model: IP20000780-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000788
-            trained-model: IP20000788-TRAINED
             wait: false
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
