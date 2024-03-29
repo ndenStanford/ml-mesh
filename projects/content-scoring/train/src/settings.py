@@ -41,7 +41,6 @@ class DocumentContentScoringParams(TrackedParams):
     ]
     # File paths
     data_file_path: str = "data/processed_data.parquet"
-    config_file_path: str = "config/dev.env"
     # Training settings
     test_size: float = 0.2
     random_state: int = 7
@@ -53,6 +52,10 @@ class DocumentContentScoringParams(TrackedParams):
         "min_samples_leaf": 1,
         "random_state": 42,
     }
+
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class TrackedDocumentContentScoringModelCard(TrackedModelCard):
