@@ -1,18 +1,9 @@
 """Conftest."""
 
 # Standard Library
-import os
 
 # 3rd party libraries
 import pytest  # noqa
-
-
-@pytest.fixture
-def get_secret():
-    """Get client id and secret."""
-    client_id = os.getenv("CLIENT_ID")
-    client_secret = os.getenv("CLIENT_SECRET")
-    return client_id, client_secret
 
 
 @pytest.fixture

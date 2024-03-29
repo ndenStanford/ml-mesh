@@ -6,17 +6,17 @@ from typing import Dict, Optional, Union
 
 # 3rd party libraries
 import requests
-from pydantic import SecretStr
+from pydantic import SecretStr, Field
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveFrozenSettings
+from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
 
 
-class MediaAPISettings(OnclusiveFrozenSettings):
+class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    client_id: SecretStr
-    client_secret: SecretStr
+    client_id: SecretStr = Field(default="...", env="CLIENT_ID", exclude=True)
+    client_secret: SecretStr = Field(default="...", env="CLIENT_SECRET", exclude=True)
     grant_type: str = "client_credentials"
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
     ml_query_id: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
