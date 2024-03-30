@@ -1,7 +1,7 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Any, Tuple, Union
+from typing import Tuple, Union
 
 # 3rd party libraries
 import pandas as pd
@@ -45,15 +45,19 @@ class TrendDetection:
         return df
 
     def single_topic_trend(
-        self, profile_id: Any, topic_id: Any, start_time: Any, end_time: Any
+        self,
+        profile_id: str,
+        topic_id: str,
+        start_time: pd.datetime,
+        end_time: pd.datetime,
     ) -> Tuple[bool, Union[Timestamp, None]]:
         """Trend detection for single topic and keyword.
 
         Args:
-            profile_id (Any): boolean query
-            topic_id (Any): topic id
-            start_time (Any): start time range of trend detection
-            end_time (Any): end time range of trend detection
+            profile_id (str): boolean query corresponding to a profile id
+            topic_id (str): topic id
+            start_time (pd.datetime): start time range of documents to be collected
+            end_time (pd.datetime): end time range of documents to be collected
         Output:
             Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """

@@ -1,7 +1,9 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Any, List
+from typing import List
+
+import pandas as pd
 
 # 3rd party libraries
 from elasticsearch import Elasticsearch
@@ -26,17 +28,21 @@ class DocumentCollector:
         )
 
     def get_documents(
-        self, profile_id: Any, topic_id: Any, start_time: Any, end_time: Any
+        self,
+        profile_id: str,
+        topic_id: str,
+        start_time: pd.datetime,
+        end_time: pd.datetime,
     ) -> List[str]:
         """Trend detection for single topic and keyword.
 
         Args:
-            profile_id (Any): boolean query
-            topic_id (Any): topic id
-            start_time (Any): start time range of documents to be collected
-            end_time (Any): end time range of documents to be collected
+            profile_id (str): boolean query corresponding to a profile id
+            topic_id (str): topic id
+            start_time (pd.datetime): start time range of documents to be collected
+            end_time (pd.datetime): end time range of documents to be collected
         Output:
-            bool: trend or not
+            bool: Is there a trend corresponding to profile id and timeframe?
         """
         query = query_translation(profile_id)
 
