@@ -26,12 +26,7 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
-from src.class_dict import (
-    CLASS_DICT_SECOND,
-    CLASS_DICT_THIRD,
-    ID_TO_LEVEL,
-    ID_TO_TOPIC,
-)
+from src.class_dict import CLASS_DICT_SECOND, ID_TO_LEVEL, ID_TO_TOPIC
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -159,10 +154,12 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def data_preprocess(self) -> None:
         """Preprocess to torch dataset and split for train and evaluation."""
+        # drop null
         self.dataset_df: DataFrame = self.dataset_df.dropna(
             subset=self.data_fetch_params.non_nullable_columns
         )  # type: ignore
-
+        # fix the topic discrepencies
+        self.dataset_df = topic_conversion(self.dataset_df)
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
@@ -172,27 +169,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.logger.info(
             f"Class distribution after dropping nulls: \n{class_distribution}"
         )
-
-        if self.data_fetch_params.redshift_table == "iptc_first_level":
-            self.dataset_df = self.dataset_df[
-                self.dataset_df["topic_1"].isin(CLASS_DICT_SECOND.keys())
-            ]
-
-        if self.data_fetch_params.redshift_table == "iptc_second_level":
-            self.dataset_df = self.dataset_df[
-                self.dataset_df["topic_2"].isin(CLASS_DICT_THIRD.keys())
-            ]
-
-        if self.data_fetch_params.redshift_table == "iptc_third_level":
-            self.dataset_df = self.dataset_df[
-                self.dataset_df["topic_3"].isin(
-                    [j for i in CLASS_DICT_THIRD.values() for j in i.values()]
-                )
-            ]
-        # fix the topic discrepencies
-        self.dataset_df = topic_conversion(self.dataset_df)
+        # train eval split
         try:
-            # train eval split
             self.train_df, self.eval_df = train_test_split(
                 self.dataset_df,
                 test_size=self.model_card.model_params.test_size,
@@ -200,7 +178,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             )
         except Exception as e:
             self.logger.info(f"Error with stratify splitting: {e}")
-            # train eval split
             self.train_df, self.eval_df = train_test_split(
                 self.dataset_df,
                 test_size=self.model_card.model_params.test_size,
