@@ -1557,10 +1557,10 @@ jobs       :
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
-      trained-project: ${{ matrix.models.trained-project}}
-      trained-model: ${{ matrix.models.trained-model}}
-      wait: ${{ matrix.models.wait}}
-      skip: ${{ matrix.models.skip}}
+      trained-project: ${{ matrix.models.trained-project }}
+      trained-model: ${{ matrix.models.trained-model }}
+      wait: ${{ matrix.models.wait }}
+      skip: ${{ matrix.models.skip }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR

@@ -55,6 +55,11 @@ on  :
         default: true
         type: boolean
         description: Indicates whether to wait for the job to complete before continuing.
+      skip:
+        required: false
+        default: false
+        type: boolean
+        description: Indicates whether to skip the training for the model.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
