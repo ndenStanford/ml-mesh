@@ -1154,18 +1154,6 @@ jobs       :
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-00000000
-            trained-model: IP00000000-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-02000000
-            trained-model: IP02000000-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
-            tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000822
             trained-model: IP20000822-TRAINED
             wait: false

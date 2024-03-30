@@ -191,12 +191,20 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             ]
         # fix the topic discrepencies
         self.dataset_df = topic_conversion(self.dataset_df)
-        # train eval split
-        self.train_df, self.eval_df = train_test_split(
-            self.dataset_df,
-            test_size=self.model_card.model_params.test_size,
-            stratify=self.dataset_df[f"topic_{self.level}"],
-        )
+        try:
+            # train eval split
+            self.train_df, self.eval_df = train_test_split(
+                self.dataset_df,
+                test_size=self.model_card.model_params.test_size,
+                stratify=self.dataset_df[f"topic_{self.level}"],
+            )
+        except Exception as e:
+            self.logger.info(f"Error with stratify splitting: {e}")
+            # train eval split
+            self.train_df, self.eval_df = train_test_split(
+                self.dataset_df,
+                test_size=self.model_card.model_params.test_size,
+            )
         # convert df to torch dataset
         self.train_dataset = IPTCDataset(
             self.train_df,
