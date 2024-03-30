@@ -270,7 +270,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.model_card.model_params.selected_text,
                 self.first_level_root,
                 self.second_level_root,
-                self.model_card.model_params.test_size,
+                self.model_card.model_params.max_length,
             )
             sample_predictions = self.predict(sample_dataset)
 
