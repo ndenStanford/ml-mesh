@@ -1185,7 +1185,7 @@ jobs       :
             trained-project: onclusive/iptc-05000000
             trained-model: IP05000000-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1206,7 +1206,7 @@ jobs       :
             trained-project: onclusive/iptc-09000000
             trained-model: IP09000000-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1255,14 +1255,14 @@ jobs       :
             trained-project: onclusive/iptc-16000000
             trained-model: IP16000000-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-17000000
             trained-model: IP17000000-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1283,7 +1283,7 @@ jobs       :
             trained-project: onclusive/iptc-20000045
             trained-model: IP20000045-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1318,7 +1318,7 @@ jobs       :
             trained-project: onclusive/iptc-20000106
             trained-model: IP20000106-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1374,7 +1374,7 @@ jobs       :
             trained-project: onclusive/iptc-20000430
             trained-model: IP20000430-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1388,7 +1388,7 @@ jobs       :
             trained-project: onclusive/iptc-20000446
             trained-model: IP20000446-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1402,7 +1402,7 @@ jobs       :
             trained-project: onclusive/iptc-20000493
             trained-model: IP20000493-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1437,7 +1437,7 @@ jobs       :
             trained-project: onclusive/iptc-20000593
             trained-model: IP20000593-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1465,14 +1465,14 @@ jobs       :
             trained-project: onclusive/iptc-20000657
             trained-model: IP20000657-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000697
             trained-model: IP20000697-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1500,49 +1500,49 @@ jobs       :
             trained-project: onclusive/iptc-20000742
             trained-model: IP20000742-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000756
             trained-model: IP20000756-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000775
             trained-model: IP20000775-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000780
             trained-model: IP20000780-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000799
             trained-model: IP20000799-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000802
             trained-model: IP20000802-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ml.g4dn.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
             trained-project: onclusive/iptc-20000808
             trained-model: IP20000808-TRAINED
             wait: false
-            skip: false
+            skip: true
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
