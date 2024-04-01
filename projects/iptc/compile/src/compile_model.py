@@ -31,6 +31,7 @@ def main() -> None:
         fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
         level=io_settings.log_level,
     )
+
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
