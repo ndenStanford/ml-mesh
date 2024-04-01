@@ -53,7 +53,7 @@ CLASS_DICT_SECOND = {
         2: "business information",
         3: "market and exchange",
     },
-    "education": {0: "school", 1: "religious education", 2: "teaching and learning"},
+    "education": {0: "school", 1: "teaching and learning"},
     "environment": {
         0: "natural resources",
         1: "conservation",
@@ -75,9 +75,7 @@ CLASS_DICT_SECOND = {
         0: "employment",
         1: "retirement",
         2: "unemployment",
-        3: "employment legislation",
-        4: "labour relations",
-        5: "unions",
+        3: "labour relations",
     },
     "lifestyle and leisure": {0: "leisure", 1: "lifestyle"},
     "politics": {
