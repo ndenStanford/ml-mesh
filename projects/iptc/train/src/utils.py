@@ -30,7 +30,7 @@ def find_num_labels(  # type: ignore[no-untyped-def]
     elif level == 2:
         return len(CLASS_DICT_SECOND[first_level_root])
     elif level == 3:
-        return len(CLASS_DICT_THIRD[first_level_root][second_level_root])
+        return len(CLASS_DICT_THIRD[second_level_root])
 
 
 def extract_model_id(project: str) -> str:
