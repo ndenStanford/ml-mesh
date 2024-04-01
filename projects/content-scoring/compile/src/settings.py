@@ -89,8 +89,8 @@ class WorkflowComponentIOSettings(object):
         workflow_component (str): Name of workflow component
         workflow_component_output_dir (str): The output directory specific to the component
         model_directory (str): The directory for model artifacts
-        model_directory_base (str): The directory for base NER model
-        model_directory_kj (str): The directory for NER model used for korean/japanese
+        model_directory_base (str): The directory for base content-scoring model
+        model_directory_kj (str): The directory for content-scoring model used for korean/japanese
         test_files (dict): Paths to test related files
 
     """

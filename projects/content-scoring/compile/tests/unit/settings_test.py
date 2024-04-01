@@ -18,6 +18,6 @@ def test_compiled_tracked_model_specs():
     CompiledTrackedModelSpecs()
 
 
-def test_compiled_ner_tracked_model_card():
-    """Test compiled NER tracked model card."""
+def test_compiled_content_scoring_tracked_model_card():
+    """Test compiled content-scoring tracked model card."""
     CompiledContentScoringTrackedModelCard()

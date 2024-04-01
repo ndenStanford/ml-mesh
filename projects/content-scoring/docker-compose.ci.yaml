@@ -8,7 +8,7 @@ services:
 
   compile:
     volumes:
-      - compile-volume:/projects/ner/compile/outputs
+      - compile-volume:/projects/content-scoring/compile/outputs
     build:
       context: ../../
       dockerfile: projects/content-scoring/compile/Dockerfile
