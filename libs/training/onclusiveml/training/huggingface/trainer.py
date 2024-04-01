@@ -47,6 +47,31 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         pass
 
     @abstractmethod
+    def data_preprocess(self) -> None:
+        """Preprocess the data to the Huggingface trainer format and split for train and evaluation.
+
+        Example implementation
+        self.train_df, self.eval_df = train_test_split(
+            self.dataset_df,
+            test_size = 0.20,
+            stratify=self.dataset_df["target_label"]
+            )
+        self.train_dataset = IPTCDataset(
+            self.train_df,
+            self.model_card.tokenizer,
+            self.model_card.selected_text
+
+        )
+        self.eval_dataset = IPTCDataset(
+            self.eval_df,
+            self.model_card.tokenizer,
+            self.model_card.level,
+            self.model_card.selected_text
+        )
+        """
+        pass
+
+    @abstractmethod
     def create_training_argument(self) -> None:
         """Create training argument object for Huggingface trainer.
 
@@ -90,6 +115,14 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         Returns: None
         """
         self.train()
+
+    @abstractmethod
+    def save(self) -> None:
+        """Save the trained model and related information locally.
+
+        Returns: None
+        """
+        pass
 
     def __call__(self) -> None:
         """Call Method."""

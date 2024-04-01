@@ -36,6 +36,7 @@ class Parameters(BaseModel):
     max_tokens: Optional[int] = settings.OPENAI_MAX_TOKENS
     temperature: Optional[float] = settings.OPENAI_TEMPERATURE
     response_format: Optional[Dict] = settings.RESPONSE_FORMAT
+    seed: Optional[int] = settings.SEED
 
     @classmethod
     def from_dict(cls, params_dict):
