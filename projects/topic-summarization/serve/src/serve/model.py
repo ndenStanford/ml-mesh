@@ -25,6 +25,7 @@ from src.settings import get_settings
 
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from src.serve.impact_quantification import ImpactQuantification
 from src.serve.document_collector import DocumentCollector
 
 settings = get_settings()
@@ -45,6 +46,7 @@ class ServedTopicModel(ServedModel):
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
         self.trend_detector = TrendDetection()
+        self.impact_quantifier = ImpactQuantification()
         self.document_collector = DocumentCollector()
         self.ready = True
 
@@ -96,15 +98,14 @@ class ServedTopicModel(ServedModel):
                     profile_id, topic_id, start_time, end_time
                 )
             topic = self.model.aggregate(content)
+            impact_category = quantify_impact(profile_id, topic_id)
         else:
             topic = None
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={
-                "topic": topic,
-            },
+            attributes={"topic": topic, "impact_category": impact_category},
         )
 
     @retry(tries=3)
