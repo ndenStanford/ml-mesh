@@ -1,4 +1,4 @@
-"""Trend detection."""
+"""Document Collector."""
 
 # Standard Library
 from typing import List
@@ -9,16 +9,16 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 
 # Source
+from src.serve.utils import query_translation, topic_profile_documents_query
+
+# Source
 from src.settings import get_settings
 
 settings = get_settings()
 
-# Source
-from src.serve.utils import query_translation, topic_profile_documents_query
-
 
 class DocumentCollector:
-    """Package trend detection."""
+    """Document collector class used to return documents from elastic search."""
 
     def __init__(self) -> None:
         self.es = Elasticsearch(
@@ -34,7 +34,7 @@ class DocumentCollector:
         start_time: pd.datetime,
         end_time: pd.datetime,
     ) -> List[str]:
-        """Trend detection for single topic and keyword.
+        """Return documents for single topic and keyword within a timeframe.
 
         Args:
             profile_id (str): boolean query corresponding to a profile id
@@ -42,7 +42,7 @@ class DocumentCollector:
             start_time (pd.datetime): start time range of documents to be collected
             end_time (pd.datetime): end time range of documents to be collected
         Output:
-            bool: Is there a trend corresponding to profile id and timeframe?
+            List[str]: List of content from elastic search
         """
         query = query_translation(profile_id)
 
