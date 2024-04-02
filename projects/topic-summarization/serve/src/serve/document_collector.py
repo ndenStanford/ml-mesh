@@ -1,17 +1,11 @@
 """Document Collector."""
 
-# Standard Library
 from typing import List
 
 import pandas as pd
-
-# 3rd party libraries
 from elasticsearch import Elasticsearch
 
-# Source
 from src.serve.utils import query_translation, topic_profile_documents_query
-
-# Source
 from src.settings import get_settings
 
 settings = get_settings()
