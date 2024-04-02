@@ -3,6 +3,7 @@
 
 # 3rd party libraries
 import pytest
+from freezegun import freeze_time
 
 # Source
 from src.settings import get_settings
@@ -30,8 +31,9 @@ def test_served_topic_model_load():
     assert served_topic_model.is_ready()
 
 
+@freeze_time("2024-03-15 15:01:00")
 @pytest.mark.order(4)
-def test_served_topic_model_predict(
+def test_served_topic_model_predict_sample_content(
     test_predict_input, test_inference_params, test_expected_predict_output
 ):
     """Tests the fully initialized and loaded ServedTopicModel's predict method."""
@@ -41,11 +43,14 @@ def test_served_topic_model_predict(
     test_input = PredictRequestSchema.from_data(
         namespace=settings.model_name,
         parameters=test_inference_params,
-        attributes={"content": test_predict_input},
+        attributes={
+            "content": test_predict_input,
+            "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+            "topic_id": 257,
+            "skip_trend_detection": False,
+        },
     )
-
     test_actual_predict_output = served_topic_model.predict(test_input)
-
     assert set(test_actual_predict_output.attributes.topic.keys()).issubset(
         set(
             Category_list
@@ -55,6 +60,26 @@ def test_served_topic_model_predict(
             ]
         )
     )
+
+
+@freeze_time("2024-03-15 15:01:00")
+@pytest.mark.order(5)
+def test_served_topic_model_predict_no_sample_content(test_inference_params):
+    """Tests the fully initialized and loaded ServedTopicModel's predict method."""
+    served_topic_model = ServedTopicModel()
+    served_topic_model.load()
+
+    test_input = PredictRequestSchema.from_data(
+        namespace=settings.model_name,
+        parameters=test_inference_params,
+        attributes={
+            "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+            "topic_id": 257,
+            "skip_trend_detection": False,
+        },
+    )
+    test_actual_predict_output = served_topic_model.predict(test_input)
+    assert test_actual_predict_output["data"]["attributes"] is not None
 
 
 @pytest.mark.order(3)

@@ -1,9 +1,13 @@
 """Topic summairization utility functions."""
+
+# Standard Library
 from typing import Dict, Optional
 
+# 3rd party libraries
 import pandas as pd
 import requests
 
+# Source
 from src.settings import get_settings
 
 settings = get_settings()
@@ -231,6 +235,44 @@ def topic_profile_query(
                     "interval": time_interval,
                     "min_doc_count": 0,
                 }
+            }
+        },
+    }
+    return query
+
+
+def topic_profile_documents_query(
+    translated_boolean_query: Dict,
+    start_time: pd.datetime,
+    end_time: pd.datetime,
+    topic_id: int,
+) -> Dict:
+    """Documents query.
+
+    Returns list of documents of a given profile and topic.
+    """
+    query = {
+        "size": 100,
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "nested": {
+                            "path": "bertopic_topic",
+                            "query": {
+                                "bool": {
+                                    "must": [
+                                        {"match": {"bertopic_topic.topic_id": topic_id}}
+                                    ]
+                                }
+                            },
+                        }
+                    }
+                ],
+                "filter": [
+                    translated_boolean_query,
+                    {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                ],
             }
         },
     }

@@ -166,6 +166,9 @@ def test_payload():
                         in shaping the formation and evolution of galaxies.'
                     """,  # noqa: E501
                 ],
+                "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+                "topic_id": 257,
+                "skip_trend_detection": True,
             },
             "parameters": {},
         }

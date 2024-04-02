@@ -8,7 +8,7 @@ from functools import lru_cache
 from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
-from pydantic import SecretStr, Field, BaseSettings
+from pydantic import SecretStr, Field
 from typing import List
 
 # Source
@@ -35,7 +35,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     }
 
 
-class MediaApiSettings(BaseSettings):
+class MediaApiSettings(OnclusiveBaseSettings):
     """Media API."""
 
     MEDIA_API_URI: str = "https://staging-querytool-api.platform.onclusive.org"
@@ -54,6 +54,9 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.01",
         "crawler-4-2023.12",
     ]
+    NUM_DOCUMENTS: int = 5
+    trend_lookback_days: int = 14
+    trend_time_interval: str = "12h"
 
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):
@@ -62,12 +65,11 @@ class ImpactQuantificationSettings(OnclusiveBaseSettings):
     lookback_days: int = 125
     time_interval: str = "24h"
     local_raio_cutoff = 0.01
-    global_local_comparison_ratio_cutoff=1
+    global_local_comparison_ratio_cutoff = 1
     mf_tau_cutoff = 0.8
     low_impact_class = "low"
     mid_impact_class = "mid"
     high_impact_class = "high"
-
 
 
 class GlobalSettings(

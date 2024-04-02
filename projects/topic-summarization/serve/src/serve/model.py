@@ -5,9 +5,11 @@
 
 # Standard Library
 from typing import Type
+from datetime import datetime
 
 # 3rd party libraries
 from pydantic import BaseModel
+import pandas as pd
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
@@ -23,6 +25,7 @@ from src.settings import get_settings
 
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from src.serve.document_collector import DocumentCollector
 
 settings = get_settings()
 
@@ -42,6 +45,7 @@ class ServedTopicModel(ServedModel):
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
         self.trend_detector = TrendDetection()
+        self.document_collector = DocumentCollector()
         self.ready = True
 
     @retry(tries=3)
@@ -54,19 +58,43 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
-        time_series_topic = inputs.time_series_topic
-        time_series_all = inputs.time_series_all
-        trending = self.trend_detector.single_topic_trend(
-            time_series_topic, time_series_all
-        )
+        topic_id = inputs.topic_id
+        profile_id = inputs.profile_id
+        skip_trend_detection = inputs.skip_trend_detection
 
-        print("-------")
-        print("-------")
+        # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
+        # to work for integration tests
+        end_time = pd.Timestamp(datetime.now())  # - pd.Timedelta(days=12)
+        start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
+        trending = True
+        if not skip_trend_detection:
+            trending, inflection_point = self.trend_detector.single_topic_trend(
+                profile_id, topic_id, start_time, end_time
+            )
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print(start_time)
+        print(end_time)
         print(trending)
-        print("-------")
-        print("-------")
-
-        if trending:
+        print(profile_id)
+        print(topic_id)
+        print(content)
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        print("------------------")
+        if skip_trend_detection or trending:
+            # if content is provided, use that instead of collecting documents
+            if not content:
+                if not skip_trend_detection:
+                    start_time = inflection_point
+                    end_time = start_time + pd.Timedelta(days=1)
+                content = self.document_collector.get_documents(
+                    profile_id, topic_id, start_time, end_time
+                )
             topic = self.model.aggregate(content)
         else:
             topic = None

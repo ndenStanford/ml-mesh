@@ -7,6 +7,7 @@ from typing import Any
 import onclusiveml.serving.serialization.entity_linking.v1 as entity_linking_v1
 import onclusiveml.serving.serialization.gch_summarization.v1 as gch_summarization_v1
 import onclusiveml.serving.serialization.ner.v1 as ner_v1
+import onclusiveml.serving.serialization.topic.v1 as topic_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
 from onclusiveml.serving.client._bind import bind
 
@@ -66,6 +67,16 @@ class OnclusiveApiClient:
         request_attributes_schema=topic_summarization_v1.PredictRequestAttributeSchemaV1,
         request_parameters_schema=topic_summarization_v1.PredictRequestParametersSchemaV1,
         response_attributes_schema=topic_summarization_v1.PredictResponseAttributeSchemaV1,
+    )
+
+    topic = bind(
+        namespace="topic",
+        version=1,
+        method="POST",
+        endpoint="predict",
+        request_attributes_schema=topic_v1.PredictRequestAttributeSchemaV1,
+        request_parameters_schema=topic_v1.PredictRequestParametersSchemaV1,
+        response_attributes_schema=topic_v1.PredictResponseAttributeSchemaV1,
     )
 
     gch_summarization = bind(

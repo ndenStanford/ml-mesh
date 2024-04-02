@@ -1,26 +1,33 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Any
+from typing import Tuple, Union
 
 # 3rd party libraries
 import pandas as pd
+from elasticsearch import Elasticsearch
 from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
+from pandas import Timestamp
+
+# Source
+from src.settings import get_settings
+
+settings = get_settings()
+
+# Source
+from src.serve.utils import all_profile_query, query_translation, topic_profile_query
 
 
 class TrendDetection:
     """Package trend detection."""
 
-    def convert_to_dataframe(self, time_series: Any) -> pd.DataFrame:
-        """Convert timeseries list of dicts into dataframes.
-
-        Args:
-            time_series (Any): time series
-        Output:
-            pd.DataFrame: time series in dataframe format
-        """
-        return pd.DataFrame(time_series)
+    def __init__(self) -> None:
+        self.es = Elasticsearch(
+            [
+                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
+            ]
+        )
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove weekends.
@@ -37,27 +44,56 @@ class TrendDetection:
         df = df.reset_index(drop=True)
         return df
 
-    def single_topic_trend(self, time_series_topic: Any, time_series_all: Any) -> bool:
+    def single_topic_trend(
+        self,
+        profile_id: str,
+        topic_id: str,
+        start_time: pd.datetime,
+        end_time: pd.datetime,
+    ) -> Tuple[bool, Union[Timestamp, None]]:
         """Trend detection for single topic and keyword.
 
         Args:
-            time_series_topic (Any): time series for single topic and keyword
-            time_series_all (Any): time series for all topic
+            profile_id (str): boolean query corresponding to a profile id
+            topic_id (str): topic id
+            start_time (pd.datetime): start time range of documents to be collected
+            end_time (pd.datetime): end time range of documents to be collected
         Output:
-            bool: trend or not
+            Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """
-        df_single_topic = self.convert_to_dataframe(time_series_topic)
-        df_all_topic = self.convert_to_dataframe(time_series_all)
-
+        query = query_translation(profile_id)
+        # Profile query
+        results = self.es.search(
+            index=settings.es_index,
+            body=all_profile_query(
+                query, start_time, end_time, settings.trend_time_interval
+            ),
+        )
+        df_all_topic = pd.DataFrame.from_dict(
+            results["aggregations"]["daily_doc_count"]["buckets"]
+        ).iloc[:-1]
+        # profile topic query
+        results = self.es.search(
+            index=settings.es_index,
+            body=topic_profile_query(
+                query, start_time, end_time, topic_id, settings.trend_time_interval
+            ),
+        )
+        df_single_topic = pd.DataFrame.from_dict(
+            results["aggregations"]["daily_doc_count"]["buckets"]
+        ).iloc[:-1]
+        # remove weekends
         df_all_topic = self.remove_weekends(df_all_topic)
+
         if len(df_single_topic) > 0:
             df_single_topic = self.remove_weekends(df_single_topic)
         else:
-            return False
+            return False, None
 
         if df_single_topic["doc_count"].sum() >= (
-            0.03 * df_all_topic["doc_count"].sum()
-        ):  # total number of instances of topic must be 3% of total number of documents
+            0.01 * df_all_topic["doc_count"].sum()
+        ):
+            # total number of instances of topic must be 3% of total number of documents
 
             df_single_topic["time"] = pd.to_datetime(df_single_topic["key_as_string"])
             df_single_topic = df_single_topic.rename(columns={"doc_count": "y"})
@@ -81,5 +117,5 @@ class TrendDetection:
                 threshold=0.005,
             )
             if len(change_points) > 0:
-                return True
-        return False
+                return True, change_points[0].start_time
+        return False, None

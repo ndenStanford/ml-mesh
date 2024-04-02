@@ -206,6 +206,7 @@ def generate(alias: str, values: Dict[str, Any]):
     max_tokens = settings.OPENAI_MAX_TOKENS
     temperature = settings.OPENAI_TEMPERATURE
     response_format = settings.RESPONSE_FORMAT
+    seed = settings.SEED
     # Override if parameters exist
     if prompt_template.parameters is not None:
         model_name = prompt_template.parameters.model_name
@@ -216,6 +217,7 @@ def generate(alias: str, values: Dict[str, Any]):
             max_tokens = int(prompt_template.parameters.max_tokens)
         temperature = float(prompt_template.parameters.temperature)
         response_format = prompt_template.parameters.response_format
+        seed = prompt_template.parameters.seed
     # if parameters field exists, replace model and parameter values
     return {
         "prompt": prompt,
@@ -225,6 +227,7 @@ def generate(alias: str, values: Dict[str, Any]):
             max_tokens,
             temperature,
             response_format,
+            seed,
         ),
     }
 
@@ -262,6 +265,7 @@ def generate_with_diff_model(alias: str, model_name: str, values: Dict[str, Any]
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
             settings.RESPONSE_FORMAT,
+            settings.SEED,
         ),
     }
 
@@ -280,6 +284,7 @@ def generate_text_from_chat(values: PromptChat):
             settings.OPENAI_MAX_TOKENS,
             settings.OPENAI_TEMPERATURE,
             settings.RESPONSE_FORMAT,
+            settings.SEED,
         ),
     }
 
@@ -306,5 +311,6 @@ def generate_text_from_chat_diff_model(model_name: str, values: PromptChat):
             int(json.loads(model.parameters)["max_tokens"]),
             float(json.loads(model.parameters)["temperature"]),
             settings.RESPONSE_FORMAT,
+            settings.SEED,
         ),
     }
