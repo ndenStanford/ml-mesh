@@ -50,26 +50,13 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     ELASTICSEARCH_KEY: SecretStr = Field(default="...", exclude=True)
     es_index: List = [
         "crawler",
+        "crawler-4-2024.03",
         "crawler-4-2024.02",
         "crawler-4-2024.01",
-        "crawler-4-2023.12",
     ]
     NUM_DOCUMENTS: int = 5
     trend_lookback_days: int = 14
     trend_time_interval: str = "12h"
-
-
-class ImpactQuantificationSettings(OnclusiveBaseSettings):
-    """Impact Quantification Settings."""
-
-    lookback_days: int = 125
-    time_interval: str = "24h"
-    local_raio_cutoff = 0.01
-    global_local_comparison_ratio_cutoff = 1
-    mf_tau_cutoff = 0.8
-    low_impact_class = "low"
-    mid_impact_class = "mid"
-    high_impact_class = "high"
 
 
 class GlobalSettings(
@@ -78,7 +65,6 @@ class GlobalSettings(
     TrackedImageSpecs,
     MediaApiSettings,
     ElasticsearchSettings,
-    ImpactQuantificationSettings,
 ):
     """Global server settings."""
 

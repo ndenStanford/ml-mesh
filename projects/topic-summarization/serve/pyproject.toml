@@ -29,6 +29,8 @@ pytest-order = "1.1.0"
 pytest-mock = "3.10.0"
 freezegun = "1.2.2"
 
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
 
 [build-system]
 requires = ["poetry-core"]

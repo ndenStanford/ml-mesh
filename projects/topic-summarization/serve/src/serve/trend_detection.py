@@ -11,16 +11,14 @@ from kats.detectors.cusum_detection import CUSUMDetector
 from pandas import Timestamp
 
 # Source
+from src.serve.utils import all_profile_query, query_translation, topic_profile_query
 from src.settings import get_settings
 
 settings = get_settings()
 
-# Source
-from src.serve.utils import all_profile_query, query_translation, topic_profile_query
-
 
 class TrendDetection:
-    """Package trend detection."""
+    """Trend detection class used to find trend of a given profile and topic."""
 
     def __init__(self) -> None:
         self.es = Elasticsearch(
@@ -94,7 +92,6 @@ class TrendDetection:
             0.01 * df_all_topic["doc_count"].sum()
         ):
             # total number of instances of topic must be 3% of total number of documents
-
             df_single_topic["time"] = pd.to_datetime(df_single_topic["key_as_string"])
             df_single_topic = df_single_topic.rename(columns={"doc_count": "y"})
             # remove rows from all_topic_count_temp that doesn't exist in df_all_count
