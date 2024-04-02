@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "content-scoring-compile"
+name = "content-scoring-serve"
 version = "0.1.0"
 description = "Implementation of content-scoring model compilation,"
 authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
@@ -11,6 +11,9 @@ lightgbm = "^3.2.1"
 pyarrow = "^7.0.0"
 joblib = "^1.1.0"
 hummingbird-ml = "^0.4.11"
+core = {path = "../../../libs/core"}
+models = {path = "../../../libs/models"}
+serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 
 [tool.poetry.group.dev.dependencies]

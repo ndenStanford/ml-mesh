@@ -7,7 +7,7 @@ from typing import Type
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.models.ner import CompiledNER
+from onclusiveml.models.contentscoring import CompiledContentScoring
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -23,8 +23,8 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-class ServedNERModel(ServedModel):
-    """Served NER model.
+class ServedContentScoringModel(ServedModel):
+    """Served Content Scoring model.
 
     Attributes:
         predict_request_model (Type[BaseModel]):  Request model for prediction
@@ -37,7 +37,7 @@ class ServedNERModel(ServedModel):
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
-        """Initalize the served NER model with its artifacts.
+        """Initalize the served Content Scoring model with its artifacts.
 
         Args:
             served_model_artifacts (ServedModelArtifacts): Served model artifact
@@ -47,7 +47,7 @@ class ServedNERModel(ServedModel):
         super().__init__(name=served_model_artifacts.model_name)
 
     @property
-    def model(self) -> CompiledNER:
+    def model(self) -> CompiledContentScoring:
         """Model class."""
         if self.ready:
             return self._model
@@ -57,8 +57,8 @@ class ServedNERModel(ServedModel):
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
-        # load model artifacts into ready CompiledNER instance
-        self._model = CompiledNER.from_pretrained(
+        # load model artifacts into ready CompiledContentScoring instance
+        self._model = CompiledContentScoring.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
@@ -67,7 +67,7 @@ class ServedNERModel(ServedModel):
         self.ready = True
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
-        """Make predictions using the loaded NER model.
+        """Make predictions using the loaded Content Scoring model.
 
         Args:
             payload (PredictRequestSchema): The input data for making predictions
@@ -76,30 +76,17 @@ class ServedNERModel(ServedModel):
             PredictResponseSchema: Response containing extracted entities
         """
         # attributes and parameters from payload
-        attributes = payload.attributes
-        parameters = payload.parameters
+        attributes = payload.attributes  # noqa
+        parameters = payload.parameters  # noqa
 
-        if attributes.content == "":
-            entities_list: list = [[]]
-        else:
-            # score the model
-            entities_list = self.model(
-                documents=[attributes.content], **parameters.dict()
-            )
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={
-                "entities": [
-                    entity._asdict()
-                    for entities in entities_list
-                    for entity in entities
-                ]
-            },
+            attributes={},
         )
 
     def bio(self) -> BioResponseSchema:
-        """Get bio information about the served NER model.
+        """Get bio information about the served Content Scoring model.
 
         Returns:
             BioResponseModel: Bio information about the model
