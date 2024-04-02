@@ -52,6 +52,6 @@ class DocumentCollector:
             body=topic_profile_documents_query(query, start_time, end_time, topic_id),
         )
         content_list: List[str] = [
-            h["_source"]["title"] for h in results["hits"]["hits"]
+            h["_source"]["content"] for h in results["hits"]["hits"]
         ]
         return content_list[: settings.NUM_DOCUMENTS]

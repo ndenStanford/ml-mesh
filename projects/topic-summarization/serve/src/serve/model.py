@@ -66,26 +66,11 @@ class ServedTopicModel(ServedModel):
         # to work for integration tests
         end_time = pd.Timestamp(datetime.now())  # - pd.Timedelta(days=12)
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-        trending = True
+        trending = False
         if not skip_trend_detection:
             trending, inflection_point = self.trend_detector.single_topic_trend(
                 profile_id, topic_id, start_time, end_time
             )
-        print("------------------")
-        print("------------------")
-        print("------------------")
-        print("------------------")
-        print(start_time)
-        print(end_time)
-        print(trending)
-        print(profile_id)
-        print(topic_id)
-        print(content)
-        print("------------------")
-        print("------------------")
-        print("------------------")
-        print("------------------")
-        print("------------------")
         if skip_trend_detection or trending:
             # if content is provided, use that instead of collecting documents
             if not content:
