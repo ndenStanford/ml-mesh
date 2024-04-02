@@ -1,10 +1,13 @@
 """Document Collector."""
 
+# Standard Library
 from typing import List
 
+# 3rd party libraries
 import pandas as pd
 from elasticsearch import Elasticsearch
 
+# Source
 from src.serve.utils import query_translation, topic_profile_documents_query
 from src.settings import get_settings
 
@@ -39,7 +42,6 @@ class DocumentCollector:
             List[str]: List of content from elastic search
         """
         query = query_translation(profile_id)
-
         # Profile query
         results = self.es.search(
             index=settings.es_index,
