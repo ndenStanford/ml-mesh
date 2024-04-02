@@ -32,6 +32,30 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  train-debug:
+    build:
+      context: ../../
+      dockerfile: projects/gch-summarization/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: gch-summarization
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-train:${IMAGE_TAG:-latest}
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
+    ports:
+      - 5678:5678
+    profiles: [train, debug]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
   train-unit:
     volumes:
       - type: bind
@@ -104,7 +128,49 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
-      timeout: 10s
+      timeout: 15s
+
+  serve-debug:
+    build:
+      context: ../../
+      dockerfile: projects/gch-summarization/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: gch-summarization
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: gch-summarization-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SUM-TRAINED-87
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_READINESS_SAMPLE_INFERENCE: false
+      ONCLUSIVEML_SERVING_LIVENESS_SAMPLE_INFERENCE: false
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/gch-summarization
+      NEPTUNE_MODEL_ID: SUM-TRAINED
+    profiles: [serve, debug]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.util.download
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
+    ports:
+      - 5678:5678
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
 
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
@@ -357,6 +423,44 @@ services:
       - kafka
       - zookeeper
 
+  backfill-debug:
+    build:
+      context: ../../
+      dockerfile: projects/gch-summarization/backfill/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: gch-summarization
+        COMPONENT: backfill
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-backfill:${IMAGE_TAG}
+    entrypoint: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.backfill.__main__]
+    profiles: [backfill, debug]
+    ports:
+      - 5678:5678
+    environment:
+      HOST: internal.api.ml.stage.onclusive.com
+      NAMESPACE: gch-summarization
+      VERSION: 1
+      API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
+      SECURE: true
+      JOB_NAME: gch-summarization-backfill
+      RUNNER: PortableRunner
+      STREAMING: true
+      ARTIFACT_ENDPOINT: jobserver:8098
+      JOB_ENDPOINT: jobserver:8099
+      ENVIRONMENT_TYPE: LOOPBACK
+      SOURCE_TOPIC: beam-input
+      TARGET_TOPIC: beam-output
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: notification_consumer_group
+      AUTO_OFFSET_RESET: earliest
+    depends_on:
+      - jobserver
+      - kafka
+      - zookeeper
+
   backfill-unit:
     volumes:
       - type: bind
@@ -390,7 +494,7 @@ services:
     command: [jobmanager]
     ports:
       - 8081:8081
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     environment:
       FLINK_PROPERTIES: |
@@ -405,7 +509,7 @@ services:
     command: [taskmanager]
     ports:
       - 8100-8200:8100-8200
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     environment:
       FLINK_PROPERTIES: |
@@ -425,14 +529,14 @@ services:
       - 8099:8099
     depends_on:
       - jobmanager
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     volumes:
       - backfill-vol:/tmp/beam-artifact-staging
 
   zookeeper:
     image: confluentinc/cp-zookeeper
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     ports:
       - 2181:2181
@@ -443,7 +547,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:6.1.13
-    profiles: [backfill]
+    profiles: [backfill, debug]
     networks: [onclusive-net]
     ports:
       - 9092:9092
