@@ -20,6 +20,7 @@ ARG KUBECTL_VERSION=v1.24.0
 ARG S6_ARCH="amd64"
 # https://skarnet.org/software/s6/
 ARG S6_VERSION=v2.2.0.3
+ARG AWS_CLI_VERSION="2.10.0"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -76,6 +77,11 @@ RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_A
    && echo "$(cat /tmp/kubectl.sha256) /usr/local/bin/kubectl" | sha256sum --check \
    && rm /tmp/kubectl.sha256 \
    && chmod +x /usr/local/bin/kubectl
+
+# install aws cli
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install
 
 WORKDIR "/"
 

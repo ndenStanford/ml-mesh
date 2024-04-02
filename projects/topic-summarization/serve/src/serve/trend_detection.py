@@ -1,7 +1,7 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Any, Tuple, Union
+from typing import Tuple, Union
 
 # 3rd party libraries
 import pandas as pd
@@ -11,16 +11,14 @@ from kats.detectors.cusum_detection import CUSUMDetector
 from pandas import Timestamp
 
 # Source
+from src.serve.utils import all_profile_query, query_translation, topic_profile_query
 from src.settings import get_settings
 
 settings = get_settings()
 
-# Source
-from src.serve.utils import all_profile_query, query_translation, topic_profile_query
-
 
 class TrendDetection:
-    """Package trend detection."""
+    """Trend detection class used to find trend of a given profile and topic."""
 
     def __init__(self) -> None:
         self.es = Elasticsearch(
@@ -45,15 +43,19 @@ class TrendDetection:
         return df
 
     def single_topic_trend(
-        self, profile_id: Any, topic_id: Any, start_time: Any, end_time: Any
+        self,
+        profile_id: str,
+        topic_id: str,
+        start_time: pd.datetime,
+        end_time: pd.datetime,
     ) -> Tuple[bool, Union[Timestamp, None]]:
         """Trend detection for single topic and keyword.
 
         Args:
-            profile_id (Any): boolean query
-            topic_id (Any): topic id
-            start_time (Any): start time range of trend detection
-            end_time (Any): end time range of trend detection
+            profile_id (str): boolean query corresponding to a profile id
+            topic_id (str): topic id
+            start_time (pd.datetime): start time range of documents to be collected
+            end_time (pd.datetime): end time range of documents to be collected
         Output:
             Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """
@@ -90,7 +92,6 @@ class TrendDetection:
             0.01 * df_all_topic["doc_count"].sum()
         ):
             # total number of instances of topic must be 3% of total number of documents
-
             df_single_topic["time"] = pd.to_datetime(df_single_topic["key_as_string"])
             df_single_topic = df_single_topic.rename(columns={"doc_count": "y"})
             # remove rows from all_topic_count_temp that doesn't exist in df_all_count

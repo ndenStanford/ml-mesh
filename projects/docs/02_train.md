@@ -11,7 +11,7 @@ A project's `train` container image provides the code and runtime environment fo
 - training it (optional) and
 - registering it on our internal neptune AI model registry.
 
-The python module implementing the above process is `src/register_trained_model.py`.
+The python module implementing the above process is `src/train_model.py`.
 
 It draws its configurations from the `src/settings.py` module, which parses all required
 environment variable either
@@ -132,7 +132,7 @@ the functionality of your code via make command once the development is finished
 1. Change into the `projects/${PROJECT_NAME}/train/src` directory
    - `cd projects/${PROJECT_NAME}/train`
 2. Run the model retrieval + registering step
-   - `python -m src.register_trained_model`
+   - `python -m src.train_model`
 
 As described in the previous section the `settings.py` script will fall back onto the
 `config/dev.env` file for any environment variables that it cant obtain from the environment.
