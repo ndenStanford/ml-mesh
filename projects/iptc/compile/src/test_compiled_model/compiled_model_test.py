@@ -28,7 +28,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     total_sample_size = len(test_files["inputs"])
     model_specs = UncompiledTrackedModelSpecs()
     model_id = extract_model_id(model_specs.project)
-    class_dict_dict = class_dict(id_to_topic(model_id))
+    class_dict_dict = class_dict[id_to_topic[model_id]]
     for test_sample_index in range(total_sample_size):
 
         compiled_pred = compiled_iptc(test_files["inputs"][test_sample_index])
