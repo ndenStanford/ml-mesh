@@ -46,10 +46,10 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
             test_sample_index
         ]
         test_input = test_files["inputs"][test_sample_index]
-        logger.debug(f"the {test_sample_index} test")
-        logger.debug(f"test input is : {test_input}")
-        logger.debug(f"compiled pred is : {compiled_pred}")
-        logger.debug(f"expected label is : {expected_predictions_label}")
+        logger.info(f"the {test_sample_index} test")
+        logger.info(f"test input is : {test_input}")
+        logger.info(f"compiled pred is : {compiled_pred}")
+        logger.info(f"expected label is : {expected_predictions_label}")
         assert (
             compiled_predictions["label"] == class_dict_dict[expected_predictions_label]
         )
