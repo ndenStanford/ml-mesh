@@ -3,11 +3,10 @@
 # Standard Library
 import json
 
+# ML libs
+import torch
+
 # Internal libraries
-from onclusiveml.core.logging import (
-    OnclusiveLogMessageFormat,
-    get_default_logger,
-)
 from onclusiveml.models.iptc.compiled_iptc import extract_model_id
 
 # Source
@@ -17,7 +16,12 @@ from src.settings import (
 
 
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
-    io_settings, compiled_iptc, test_files, class_dict, id_to_topic
+    io_settings,
+    compiled_iptc,
+    test_files,
+    compilation_test_settings,
+    class_dict,
+    id_to_topic,
 ):
     """Perform regression testing for the compiled iptc model.
 
@@ -25,14 +29,10 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         io_settings: IO settigns for workflow component
         compiled_iptc: Compiled IPTC model instance
         test_files: Dictionary containing test input
+        compilation_test_settings: Compilation settings
         class_dict: Dictionary containing class name
         id_to_topic: model_id to class name
     """
-    logger = get_default_logger(
-        name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
-        level=io_settings.log_level,
-    )
     assert len(test_files["inputs"]) == len(test_files["predictions"]["labels"])
     total_sample_size = len(test_files["inputs"])
     model_specs = UncompiledTrackedModelSpecs()
@@ -42,17 +42,19 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
         compiled_pred = compiled_iptc(test_files["inputs"][test_sample_index])
         compiled_predictions = [iptc.dict() for iptc in compiled_pred][0]
-        expected_predictions_label = test_files["predictions"]["labels"][
+        expected_predictions_prob = test_files["predictions"]["probs"][
             test_sample_index
         ]
-        test_input = test_files["inputs"][test_sample_index]
-        logger.info(f"the {test_sample_index} test")
-        logger.info(f"test input is : {test_input}")
-        logger.info(f"compiled pred is : {compiled_pred}")
-        logger.info(f"expected label is : {expected_predictions_label}")
-        assert (
-            compiled_predictions["label"] == class_dict_dict[expected_predictions_label]
+        logits_tensor = torch.tensor(expected_predictions_prob)
+        probabilities = torch.softmax(logits_tensor, dim=0)
+        max_prob, max_index = torch.max(probabilities, dim=0)
+        torch.testing.assert_close(
+            compiled_predictions["score"],
+            max_prob.item(),
+            atol=compilation_test_settings.regression_atol,
+            rtol=compilation_test_settings.regression_rtol,
         )
+        assert compiled_predictions["label"] == class_dict_dict[max_index.item()]
         # create new export file or append prediction to existing exported prediction file
         try:
             with open(
