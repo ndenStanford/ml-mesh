@@ -11,6 +11,7 @@ from elasticsearch import Elasticsearch
 from src.serve.utils import query_translation, topic_profile_documents_query
 from src.settings import get_settings
 
+
 settings = get_settings()
 
 

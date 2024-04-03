@@ -32,6 +32,9 @@ services:
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
       MULTIPROCESS_WORKER: 5
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s
