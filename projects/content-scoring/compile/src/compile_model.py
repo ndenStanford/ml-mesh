@@ -43,7 +43,7 @@ def main() -> None:
     )  # noqa
 
     model_pipeline_base = joblib.load(io_settings.download.model_base)
-    # compile base model pipeline for iptc
+    # compile base model pipeline for content-scoring
     converted_model = convert(model_pipeline_base, "torch")
 
     torch.save(converted_model, io_settings.compile.compiled_model_base)

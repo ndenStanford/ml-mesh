@@ -7,7 +7,6 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-pyarrow = "^7.0.0"
 joblib = "^1.1.0"
 hummingbird-ml = "^0.4.11"
 tracking = {path = "../../../libs/tracking"}

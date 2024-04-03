@@ -179,13 +179,13 @@ class ModelTracingSettings(TrackedParams):
 
 
 class CompiledContentScoringTrackedModelCard(TrackedModelCard):
-    """Compiled iptc tracked model card."""
+    """Compiled content-scoring tracked model card."""
 
     model_type: str = "compiled"
 
     uncompiled_model: UncompiledTrackedModelSpecs = UncompiledTrackedModelSpecs()
 
     class Config:
-        env_prefix = "compiled_iptc_tracked_model_card_"
+        env_prefix = "compiled_content-scoring_tracked_model_card_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
