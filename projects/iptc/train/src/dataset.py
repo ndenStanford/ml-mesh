@@ -62,12 +62,8 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                 self.df.iloc[idx]["topic_2"]
             )
         elif self.level == 3:
-            return int(
-                list(
-                    CLASS_DICT_THIRD[self.first_level_root][
-                        self.second_level_root
-                    ].values()
-                ).index(self.df.iloc[idx]["topic_3"])
+            return list(CLASS_DICT_THIRD[self.second_level_root].values()).index(
+                self.df.iloc[idx]["topic_3"]
             )
         else:
             raise ("undefined level")  # type: ignore[misc]
