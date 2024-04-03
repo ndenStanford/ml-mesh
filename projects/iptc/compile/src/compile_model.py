@@ -43,7 +43,7 @@ def main() -> None:
     logger.debug(f"Base model model_card: {base_model_card}")
     # re-load base model pipeline
     base_model_pipeline = pipeline(
-        task=base_model_card["model_params"]["huggingface_pipeline_task"],
+        task="text-classification",
         model=io_settings.download.model_directory,
     )
     # compile base model pipeline for iptc
