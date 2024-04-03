@@ -168,7 +168,7 @@ def test_payload():
                 ],
                 "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
                 "topic_id": 257,
-                "skip_trend_detection": True,
+                "trend_detection": False,
             },
             "parameters": {},
         }

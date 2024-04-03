@@ -13,7 +13,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     content: Optional[List[str]] = None
     topic_id: int
     profile_id: str
-    skip_trend_detection: Optional[bool] = False
+    trend_detection: Optional[bool] = True
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):

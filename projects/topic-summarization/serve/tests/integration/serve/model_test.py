@@ -44,7 +44,7 @@ def test_served_topic_model_predict_no_sample_content(test_inference_params):
         attributes={
             "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
-            "skip_trend_detection": False,
+            "trend_detection": True,
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
@@ -75,7 +75,7 @@ def test_served_topic_model_predict_sample_content(
             "content": test_predict_input,
             "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
-            "skip_trend_detection": False,
+            "trend_detection": True,
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
@@ -103,7 +103,7 @@ def test_served_topic_model_predict_skip_trend_no_sample_content(test_inference_
         attributes={
             "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
-            "skip_trend_detection": True,
+            "trend_detection": False,
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
@@ -134,7 +134,7 @@ def test_served_topic_model_predict_skip_trend_sample_content(
             "content": test_predict_input,
             "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
-            "skip_trend_detection": True,
+            "trend_detection": False,
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)

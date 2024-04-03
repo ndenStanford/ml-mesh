@@ -11,8 +11,13 @@ from kats.detectors.cusum_detection import CUSUMDetector
 from pandas import Timestamp
 
 # Source
-from src.serve.utils import all_profile_query, query_translation, topic_profile_query
+from src.serve.utils import (
+    all_profile_query,
+    query_translation,
+    topic_profile_query,
+)
 from src.settings import get_settings
+
 
 settings = get_settings()
 

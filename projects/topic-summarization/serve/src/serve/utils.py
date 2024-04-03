@@ -10,6 +10,7 @@ import requests
 # Source
 from src.settings import get_settings
 
+
 settings = get_settings()
 
 
