@@ -76,7 +76,7 @@ class ServedTopicModel(ServedModel):
                 start_time = inflection_point
                 end_time = start_time + pd.Timedelta(days=1)
 
-            # collect documents
+            # collect documents of profile
             content = self.document_collector.get_documents(
                 profile_id, topic_id, start_time, end_time
             )
