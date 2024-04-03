@@ -40,8 +40,8 @@ class MediaApiSettings(OnclusiveBaseSettings):
 
     MEDIA_API_URI: str = "https://staging-querytool-api.platform.onclusive.org"
     ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
-    CLIENT_ID: SecretStr = Field(default="...", exclude=True)
-    CLIENT_SECRET: SecretStr = Field(default="...", exclude=True)
+    MEDIA_CLIENT_ID: SecretStr = Field(default="...", exclude=True)
+    MEDIA_CLIENT_SECRET: SecretStr = Field(default="...", exclude=True)
 
 
 class ElasticsearchSettings(OnclusiveBaseSettings):
@@ -54,7 +54,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.02",
         "crawler-4-2024.01",
     ]
-    NUM_DOCUMENTS: int = 5
+    NUM_DOCUMENTS: int = 10
     trend_lookback_days: int = 14
     trend_time_interval: str = "12h"
 

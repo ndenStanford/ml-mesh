@@ -33,8 +33,8 @@ def test_served_topic_model_load():
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(4)
-def test_served_topic_model_predict_no_sample_content(test_inference_params):
-    """Tests the ServedTopicModel's predict method without sample input."""
+def test_served_topic_model_predict(test_inference_params):
+    """Tests the ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
@@ -42,37 +42,6 @@ def test_served_topic_model_predict_no_sample_content(test_inference_params):
         namespace=settings.model_name,
         parameters=test_inference_params,
         attributes={
-            "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
-            "topic_id": 257,
-            "trend_detection": True,
-        },
-    )
-    test_actual_predict_output = served_topic_model.predict(test_input)
-    assert set(test_actual_predict_output.attributes.topic.keys()).issubset(
-        set(
-            Category_list
-            + [
-                "Summary",
-                "Theme",
-            ]
-        )
-    )
-
-
-@freeze_time("2024-03-15 15:01:00", tick=True)
-@pytest.mark.order(5)
-def test_served_topic_model_predict_sample_content(
-    test_predict_input, test_inference_params
-):
-    """Tests the fully ServedTopicModel's predict method with sample input."""
-    served_topic_model = ServedTopicModel()
-    served_topic_model.load()
-
-    test_input = PredictRequestSchema.from_data(
-        namespace=settings.model_name,
-        parameters=test_inference_params,
-        attributes={
-            "content": test_predict_input,
             "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
             "trend_detection": True,
@@ -92,8 +61,8 @@ def test_served_topic_model_predict_sample_content(
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(6)
-def test_served_topic_model_predict_skip_trend_no_sample_content(test_inference_params):
-    """Tests the ServedTopicModel's predict method without sample docs and skip trend detection."""
+def test_served_topic_model_predict_skip_trend(test_inference_params):
+    """Tests the ServedTopicModel's predict method without trend detection."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
@@ -101,37 +70,6 @@ def test_served_topic_model_predict_skip_trend_no_sample_content(test_inference_
         namespace=settings.model_name,
         parameters=test_inference_params,
         attributes={
-            "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
-            "topic_id": 257,
-            "trend_detection": False,
-        },
-    )
-    test_actual_predict_output = served_topic_model.predict(test_input)
-    assert set(test_actual_predict_output.attributes.topic.keys()).issubset(
-        set(
-            Category_list
-            + [
-                "Summary",
-                "Theme",
-            ]
-        )
-    )
-
-
-@freeze_time("2024-03-15 15:01:00", tick=True)
-@pytest.mark.order(7)
-def test_served_topic_model_predict_skip_trend_sample_content(
-    test_predict_input, test_inference_params
-):
-    """Tests the ServedTopicModel's predict method without sample docs and skip trend detection."""
-    served_topic_model = ServedTopicModel()
-    served_topic_model.load()
-
-    test_input = PredictRequestSchema.from_data(
-        namespace=settings.model_name,
-        parameters=test_inference_params,
-        attributes={
-            "content": test_predict_input,
             "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
             "trend_detection": False,

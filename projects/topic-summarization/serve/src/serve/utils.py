@@ -46,8 +46,8 @@ def query_translation(query: str) -> Dict:
     token_request = requests.post(
         "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token",
         {
-            "client_id": settings.CLIENT_ID.get_secret_value(),
-            "client_secret": settings.CLIENT_SECRET.get_secret_value(),
+            "client_id": settings.MEDIA_CLIENT_ID.get_secret_value(),
+            "client_secret": settings.MEDIA_CLIENT_SECRET.get_secret_value(),
             "grant_type": "client_credentials",
             "scope": "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default",
         },
