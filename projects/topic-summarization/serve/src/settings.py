@@ -3,6 +3,7 @@
 
 # Standard Library
 from functools import lru_cache
+import os
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
@@ -40,14 +41,20 @@ class MediaApiSettings(OnclusiveBaseSettings):
 
     MEDIA_API_URI: str = "https://staging-querytool-api.platform.onclusive.org"
     ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
-    MEDIA_CLIENT_ID: SecretStr = Field(default="...", exclude=True)
-    MEDIA_CLIENT_SECRET: SecretStr = Field(default="...", exclude=True)
+    MEDIA_CLIENT_ID: SecretStr = Field(
+        default=os.environ.get("MEDIA_CLIENT_ID", "..."), exclude=True
+    )
+    MEDIA_CLIENT_SECRET: SecretStr = Field(
+        default=os.environ.get("MEDIA_CLIENT_SECRET", "..."), exclude=True
+    )
 
 
 class ElasticsearchSettings(OnclusiveBaseSettings):
     """Elasticsearch Settings."""
 
-    ELASTICSEARCH_KEY: SecretStr = Field(default="...", exclude=True)
+    ELASTICSEARCH_KEY: SecretStr = Field(
+        default=os.environ.get("ELASTICSEARCH_KEY", "..."), exclude=True
+    )
     es_index: List = [
         "crawler",
         "crawler-4-2024.03",
