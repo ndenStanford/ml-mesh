@@ -37,31 +37,3 @@ class ServedModelArtifacts(object):
         self.model_artifact_directory = os.path.join(
             self.model_directory, self.model_card["model_artifact_attribute_path"]
         )
-        # obtain file paths for test files from model card
-        self.inputs_test_file = os.path.join(
-            self.model_directory, self.model_card["model_test_files"]["inputs"]
-        )
-
-        self.inference_params_test_file = os.path.join(
-            self.model_directory,
-            self.model_card["model_test_files"]["inference_params"],
-        )
-
-        self.predictions_test_file = os.path.join(
-            self.model_directory, self.model_card["model_test_files"]["predictions"]
-        )
-
-        if remove_model_prefix:
-            model_prefix_pattern = "model" + os.sep
-            self.inputs_test_file = self.inputs_test_file.replace(
-                model_prefix_pattern, ""
-            )
-            self.inference_params_test_file = self.inference_params_test_file.replace(
-                model_prefix_pattern, ""
-            )
-            self.predictions_test_file = self.predictions_test_file.replace(
-                model_prefix_pattern, ""
-            )
-            self.model_artifact_directory = self.model_artifact_directory.replace(
-                model_prefix_pattern, ""
-            )
