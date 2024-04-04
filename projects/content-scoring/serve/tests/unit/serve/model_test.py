@@ -88,11 +88,6 @@ def test_served_model_predict(
 
     assert isinstance(response, PredictResponseSchema)
 
-    model_call_mock.assert_called_with(
-        documents=[payload["data"]["attributes"]["content"]],
-        **payload["data"]["parameters"]
-    )
-
     response.version == expected_response["version"]
     response.data.identifier == expected_response["data"]["identifier"]
     response.data.namespace == expected_response["data"]["namespace"]

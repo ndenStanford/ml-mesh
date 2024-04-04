@@ -79,18 +79,17 @@ class ServedContentScoringModel(ServedModel):
         Returns:
             PredictResponseSchema: Response containing content scores
         """
-        print("payload input: ", payload)
-        df = pd.DataFrame(payload)
+        # Assuming `payload.data.attributes.dataframe` is a dictionary
+        df_data = payload.data.attributes.dataframe
+
+        # Construct DataFrame from the payload dataframe dictionary
+        df = pd.DataFrame(df_data)
         content_status = self.model(df)
-
-        response_data = {"messages": content_status}
-
-        print("response data: ", response_data)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes=response_data,
+            attributes=content_status,
         )
 
     def bio(self) -> BioResponseSchema:
