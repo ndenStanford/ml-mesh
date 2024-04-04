@@ -66,6 +66,10 @@ class ServedTopicModel(ServedModel):
         end_time = pd.Timestamp(datetime.now())
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
         trending = False
+        print("================")
+        print("================")
+        print("================")
+        print("================")
         print(settings.ELASTICSEARCH_KEY.get_secret_value())
         print(settings.MEDIA_CLIENT_ID.get_secret_value())
         print(settings.MEDIA_CLIENT_SECRET.get_secret_value())
