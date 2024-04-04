@@ -13,11 +13,12 @@ core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
 nlp = {path = "../../../libs/nlp"}
 tracking = {path = "../../../libs/tracking"}
+data = {path = "../../../libs/data"}
 types-requests = "^2.31.0.2"
 requests = "^2.31.0"
 httpx = "^0.25.0"
 packaging = "21.3"
-pandas = "1.3.5"
+pandas = "1.4.3"
 elasticsearch = "7.17"
 
 [tool.poetry.group.dev.dependencies]

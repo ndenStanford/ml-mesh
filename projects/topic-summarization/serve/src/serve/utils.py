@@ -1,64 +1,72 @@
 """Topic summairization utility functions."""
 
+# Internal libraries
 # Standard Library
-from typing import Dict, Optional
+from typing import Dict
 
 # 3rd party libraries
 import pandas as pd
-import requests
+
+# import requests
+from onclusiveml.data.query_profile import MediaAPISettings, StringQueryProfile
 
 # Source
 from src.settings import get_settings
 
-
 settings = get_settings()
 
 
-def from_boolean_to_media_api(boolean_query: str, token: str) -> Optional[Dict]:
-    """Invoke media API to translates a boolean query in media API format."""
-    headers = {
-        "accept": "*/*",
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}",
-    }
-    json_data = {
-        "name": "ml-query",
-        "description": "used by ML team to translate queries from boolean to media API",
-        "booleanQuery": boolean_query,
-    }
-    response = requests.put(
-        f"{settings.MEDIA_API_URI}/v1/topics/{settings.ML_QUERY_ID}",
-        headers=headers,
-        json=json_data,
-    )
-    if response.status_code == 204:
-        response = requests.get(
-            f"{settings.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi?queryId={settings.ML_QUERY_ID}",  # noqa: E501
-            headers=headers,
-        )
-        return response.json()
-    else:
-        return None
+# def from_boolean_to_media_api(boolean_query: str, token: str) -> Optional[Dict]:
+#     """Invoke media API to translates a boolean query in media API format."""
+#     headers = {
+#         "accept": "*/*",
+#         "Content-Type": "application/json",
+#         "Authorization": f"Bearer {token}",
+#     }
+#     json_data = {
+#         "name": "ml-query",
+#         "description": "used by ML team to translate queries from boolean to media API",
+#         "booleanQuery": boolean_query,
+#     }
+#     response = requests.put(
+#         f"{settings.MEDIA_API_URI}/v1/topics/{settings.ML_QUERY_ID}",
+#         headers=headers,
+#         json=json_data,
+#     )
+#     if response.status_code == 204:
+#         response = requests.get(
+#             f"{settings.MEDIA_API_URI}/v1/mediaContent/translate/mediaapi?queryId={settings.ML_QUERY_ID}",
+#             headers=headers,
+#         )
+#         return response.json()
+#     else:
+#         return None
 
 
 def query_translation(query: str) -> Dict:
     """Translates a boolean query in media API format."""
-    token_request = requests.post(
-        "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token",
-        {
-            "client_id": settings.MEDIA_CLIENT_ID.get_secret_value(),
-            "client_secret": settings.MEDIA_CLIENT_SECRET.get_secret_value(),
-            "grant_type": "client_credentials",
-            "scope": "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default",
-        },
-    )
+    # token_request = requests.post(
+    #     "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token",
+    #     {
+    #         "client_id": settings.MEDIA_CLIENT_ID.get_secret_value(),
+    #         "client_secret": settings.MEDIA_CLIENT_SECRET.get_secret_value(),
+    #         "grant_type": "client_credentials",
+    #         "scope": "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default",
+    #     },
+    # )
 
-    access_token: str = token_request.json()["access_token"]
-    media_api_query = from_boolean_to_media_api(query, access_token)
-    if media_api_query is not None and "es_query" in media_api_query["query"]:
-        return {"bool": media_api_query["query"]["es_query"]}
-    else:
-        return {}
+    # access_token: str = token_request.json()["access_token"]
+    # media_api_query = from_boolean_to_media_api(query, access_token)
+    # if media_api_query is not None and "es_query" in media_api_query["query"]:
+    #     return {"bool": media_api_query["query"]["es_query"]}
+    # else:
+    #     return {}
+    settings = MediaAPISettings()
+    str_query = StringQueryProfile(string_query=query)
+    es_query = str_query.es_query(settings)
+    if not es_query:
+        es_query = {}
+    return es_query
 
 
 def all_profile_query(
