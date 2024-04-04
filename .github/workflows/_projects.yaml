@@ -93,6 +93,15 @@ on  :
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: Github PAT to allow EC2 instance to connect to Github repository content.
+      MEDIA_CLIENT_ID:
+        required: false
+        description: Media client ID.
+      MEDIA_CLIENT_SECRET:
+        required: false
+        description: Media client secret key.
+      ELASTICSEARCH_KEY:
+        required: false
+        description: Elastic search key.
 
 jobs:
   check-run-criteria:
