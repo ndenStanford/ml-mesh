@@ -1,4 +1,4 @@
-"""Ner v1 data schemas."""
+"""Content scoring v1 data schemas."""
 
 # Standard Library
 from typing import Any, Dict, List
