@@ -14,6 +14,9 @@ apps.deploy/%: ## Deploy project component docker image to ECR.
 apps.start/%: # Start development container of component
 	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) up --force-recreate
 
+apps.debug/%: # Start debugger container of component
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile debug up $(COMPONENT)-debug --force-recreate --attach-dependencies
+
 apps.stop/%: # Start development container of component
 	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
 

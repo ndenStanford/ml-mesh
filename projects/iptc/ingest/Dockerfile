@@ -38,17 +38,18 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/src" "${PROJECT_DIR}/src"
 
 WORKDIR "${PROJECT_DIR}"
 
-RUN poetry install --no-interaction --no-ansi && \
+# hadolint ignore=DL3002
+USER root
+
+RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-USER app
+USER "${USER}"
 
 # --- production stage
 FROM builder as production
-
-USER app
 
 # --- test build stage
 FROM builder as development
@@ -59,14 +60,14 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
 WORKDIR "${PROJECT_DIR}"
 
-RUN poetry install \
-    --only dev \
-    --no-root \
-    --no-interaction \
-    --no-ansi \
-    -v && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+# hadolint ignore=DL3002
+USER root
 
-USER app
+RUN poetry install --with dev --no-root --no-interaction --no-ansi -v
+
+USER "${USER}"
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debug

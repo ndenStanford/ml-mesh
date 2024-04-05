@@ -32,6 +32,29 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
+  ingest-debug:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.ingest]
+    ports:
+      - 5678:5678
+    profiles: [ingest, debug]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: ingest/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
   ingest-unit:
     volumes:
       - type: bind
@@ -70,6 +93,33 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
+      TRAINED_PROJECT: ${TRAINED_PROJECT}
+      TRAINED_MODEL: ${TRAINED_MODEL}
+      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-debug:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG:-latest}
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
+    ports:
+      - 5678:5678
+    profiles: [train, debug]
+    environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -86,6 +136,9 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
+      TRAINED_PROJECT: ${TRAINED_PROJECT}
+      TRAINED_MODEL: ${TRAINED_MODEL}
+      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -118,6 +171,29 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       REGISTER_FEATURES: ${REGISTER_FEATURES}
+    env_file: register/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  register-debug:
+    build:
+      context: ../../
+      dockerfile: projects/iptc/register/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc
+        COMPONENT: register
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG:-latest}
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.register_features]
+    ports:
+      - 5678:5678
+    profiles: [register, debug]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: register/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -163,6 +239,37 @@ services:
       UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
       COMPILED_PROJECT: ${COMPILED_PROJECT}
       COMPILED_MODEL: ${COMPILED_MODEL}
+    env_file: compile/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-debug:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/iptc/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.1}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download_uncompiled_model
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile_model
+    ports:
+      - 5678:5678
+    profiles: [compile, debug]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -320,6 +427,51 @@ services:
       IPTC_MODEL_NAME: iptc-00000000
     hostname: onclusiveml
     networks: [onclusive-net]
+
+  serve-debug:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/iptc/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/iptc
+      NEPTUNE_MODEL_ID: IPTC-COMPILED
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    profiles: [serve, debug]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
+    ports:
+      - 5678:5678
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
 
   # unit tests
   # - do NOT include model artifact
