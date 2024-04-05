@@ -115,11 +115,8 @@ services:
     profiles: [integration]
     volumes:
       - type: bind
-        source: serve/src
-        target: /projects/topic-summarization/serve/src
-      - type: bind
-        source: serve/tests
-        target: /projects/topic-summarization/serve/tests
+        source: serve
+        target: /projects/topic-summarization/serve
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
@@ -141,11 +138,8 @@ services:
     profiles: [functional]
     volumes:
       - type: bind
-        source: serve/src
-        target: /projects/topic-summarization/serve/src
-      - type: bind
-        source: serve/tests
-        target: /projects/topic-summarization/serve/tests
+        source: serve
+        target: /projects/topic-summarization/serve
     environment:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
@@ -434,6 +428,7 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui
+    profiles: [kafka-ui]
     ports:
       - 9000:9000
     environment:
