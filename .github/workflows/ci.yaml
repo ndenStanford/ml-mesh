@@ -988,9 +988,6 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
-      MEDIA_CLIENT_ID: ${{ secrets.MEDIA_CLIENT_ID }}
-      MEDIA_CLIENT_SECRET: ${{ secrets.MEDIA_CLIENT_SECRET }}
-      ELASTICSEARCH_KEY: ${{ secrets.ELASTICSEARCH_KEY }}
 
   # topic-summarization
 
@@ -1045,6 +1042,9 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+      MEDIA_CLIENT_ID: ${{ secrets.MEDIA_CLIENT_ID }}
+      MEDIA_CLIENT_SECRET: ${{ secrets.MEDIA_CLIENT_SECRET }}
+      ELASTICSEARCH_KEY: ${{ secrets.ELASTICSEARCH_KEY }}
 
   # ===============================================
   # REGISTER FEATURES
@@ -1165,47 +1165,24 @@ jobs       :
       matrix:
         models:
           - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
+            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-16000000
-            trained-model: IP16000000-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000697
-            trained-model: IP20000697-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000780
-            trained-model: IP20000780-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000799
-            trained-model: IP20000799-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000802
-            trained-model: IP20000802-TRAINED
-            wait: false
-          - project: iptc
-            sagemaker-runner-type: ml.g4dn.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000808
-            trained-model: IP20000808-TRAINED
+            trained-project: onclusive/iptc-00000000
+            trained-model: IP00000000-TRAINED
             wait: false
           - project: iptc
             sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            trained-project: onclusive/iptc-20000822
-            trained-model: IP20000822-TRAINED
+            trained-project: onclusive/iptc-01000000
+            trained-model: IP01000000-TRAINED
             wait: false
+          - project: iptc
+            sagemaker-runner-type: ${{ github.event_name == 'pull_request' && 'ml.g4dn.xlarge' || 'ml.p3.2xlarge' }}
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            trained-project: onclusive/iptc-20000002
+            trained-model: IP20000002-TRAINED
+            wait: false
+
 
     with:
       environment: prod
@@ -1296,7 +1273,7 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      max-parallel: 5
+      max-parallel: 10
       matrix:
         models:
           - project: iptc
@@ -1305,28 +1282,27 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             uncompiled-project: onclusive/iptc-00000000
             uncompiled-model: IP00000000-TRAINED
-            uncompiled-with-id: IP00000000-TRAINED-12
+            uncompiled-with-id: IP00000000-TRAINED-313
             compiled-project: onclusive/iptc-00000000
             compiled-model: IP00000000-COMPILED
           - project: iptc
             self-hosted-runner-type: inf1.6xlarge
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            uncompiled-project: onclusive/iptc-02000000
-            uncompiled-model: IP02000000-TRAINED
-            uncompiled-with-id: IP02000000-TRAINED-7
-            compiled-project: onclusive/iptc-02000000
-            compiled-model: IP02000000-COMPILED
+            uncompiled-project: onclusive/iptc-01000000
+            uncompiled-model: IP01000000-TRAINED
+            uncompiled-with-id: IP01000000-TRAINED-4
+            compiled-project: onclusive/iptc-01000000
+            compiled-model: IP01000000-COMPILED
           - project: iptc
             self-hosted-runner-type: inf1.6xlarge
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
-            uncompiled-project: onclusive/iptc-04000000
-            uncompiled-model: IP04000000-TRAINED
-            uncompiled-with-id: IP04000000-TRAINED-2
-            compiled-project: onclusive/iptc-04000000
-            compiled-model: IP04000000-COMPILED
-
+            uncompiled-project: onclusive/iptc-20000002
+            uncompiled-model: IP20000002-TRAINED
+            uncompiled-with-id: IP20000002-TRAINED-4
+            compiled-project: onclusive/iptc-20000002
+            compiled-model: IP20000002-COMPILED
     with:
       environment: prod
       runner-kind: ${{ matrix.models.runner-kind }}
