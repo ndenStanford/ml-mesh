@@ -2,7 +2,7 @@
 CLASS_DICT_FIRST = {
     "root": {
         0: "arts, culture, entertainment and media",
-        1: "conflict, war and peace",
+        1: "conflicts, war and peace",
         2: "crime, law and justice",
         3: "disaster, accident and emergency incident",
         4: "economy, business and finance",
@@ -26,7 +26,7 @@ CLASS_DICT_SECOND = {
         1: "culture",
         2: "mass media",
     },
-    "conflict, war and peace": {
+    "conflicts, war and peace": {
         0: "armed conflict",
         1: "civil unrest",
         2: "act of terror",
@@ -382,7 +382,7 @@ CLASS_DICT_THIRD = {
         11: "Jainism",
     },  # manually added
     "religious text": {0: "Torah", 1: "Bible", 2: "Qur'an"},  # manually added
-    "religious facility": {
+    "religious facilities": {
         0: "church",
         1: "temple",
         2: "mosque",
@@ -468,7 +468,7 @@ CLASS_DICT = {**CLASS_DICT_FIRST, **CLASS_DICT_SECOND, **CLASS_DICT_THIRD}
 ID_TO_TOPIC = {
     "00000000": "root",
     "01000000": "arts, culture, entertainment and media",
-    "16000000": "conflict, war and peace",
+    "16000000": "conflicts, war and peace",
     "02000000": "crime, law and justice",
     "03000000": "disaster, accident and emergency incident",
     "04000000": "economy, business and finance",
@@ -572,7 +572,7 @@ ID_TO_TOPIC = {
     "20000702": "relations between religion and government",
     "20000688": "religious conflict",
     "20000689": "religious event",
-    "20000697": "religious facility",
+    "20000697": "religious facilities",
     "20000690": "religious festival and holiday",
     "20000703": "religious leader",
     "20000696": "religious ritual",
