@@ -1,6 +1,9 @@
 """Service initialization."""
 # isort: skip_file
 
+# Internal libraries
+from onclusiveml.data.query_profile import MediaAPISettings
+
 # Standard Library
 from functools import lru_cache
 
@@ -35,25 +38,10 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     }
 
 
-class MediaApiSettings(OnclusiveBaseSettings):
-    """Media API."""
-
-    MEDIA_API_URI: str = "https://staging-querytool-api.platform.onclusive.org"
-    ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
-    MEDIA_CLIENT_ID: SecretStr = Field(
-        default="...", exclude=True, env="MEDIA_CLIENT_ID"
-    )
-    MEDIA_CLIENT_SECRET: SecretStr = Field(
-        default="...", exclude=True, env="MEDIA_CLIENT_SECRET"
-    )
-
-
 class ElasticsearchSettings(OnclusiveBaseSettings):
     """Elasticsearch Settings."""
 
-    ELASTICSEARCH_KEY: SecretStr = Field(
-        default="...", exclude=True, env="ELASTICSEARCH_KEY"
-    )
+    ELASTICSEARCH_KEY: SecretStr = Field(default="...", exclude=True)
     es_index: List = [
         "crawler",
         "crawler-4-2024.03",
@@ -69,7 +57,7 @@ class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    MediaApiSettings,
+    MediaAPISettings,
     ElasticsearchSettings,
 ):
     """Global server settings."""
