@@ -988,9 +988,6 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
-      MEDIA_CLIENT_ID: ${{ secrets.MEDIA_CLIENT_ID }}
-      MEDIA_CLIENT_SECRET: ${{ secrets.MEDIA_CLIENT_SECRET }}
-      ELASTICSEARCH_KEY: ${{ secrets.ELASTICSEARCH_KEY }}
 
   # topic-summarization
 
@@ -1045,6 +1042,9 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+      MEDIA_CLIENT_ID: ${{ secrets.MEDIA_CLIENT_ID }}
+      MEDIA_CLIENT_SECRET: ${{ secrets.MEDIA_CLIENT_SECRET }}
+      ELASTICSEARCH_KEY: ${{ secrets.ELASTICSEARCH_KEY }}
 
   # ===============================================
   # REGISTER FEATURES
