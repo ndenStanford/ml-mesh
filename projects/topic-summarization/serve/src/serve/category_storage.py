@@ -2,7 +2,7 @@
 Category_list = [
     "Opportunities",
     "Risk detection",
-    # "Threats for the brand",
+    "Threats for the brand",
     # "Company or spokespersons",
     # "Brand Reputation",
     # "CEO Reputation",
