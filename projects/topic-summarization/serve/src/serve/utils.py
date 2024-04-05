@@ -1,19 +1,15 @@
 """Topic summairization utility functions."""
-
 # Internal libraries
+
 # Standard Library
 from typing import Dict
 
 # 3rd party libraries
 import pandas as pd
 
+# Internal libraries
 # import requests
 from onclusiveml.data.query_profile import MediaAPISettings, StringQueryProfile
-
-# Source
-from src.settings import get_settings
-
-settings = get_settings()
 
 
 def query_translation(query: str) -> Dict:
