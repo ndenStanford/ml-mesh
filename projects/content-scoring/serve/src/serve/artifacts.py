@@ -35,5 +35,5 @@ class ServedModelArtifacts(object):
         json_file.close()
         # obtain directory for model artifacts from model card
         self.model_artifact_directory = os.path.join(
-            self.model_directory, self.model_card["model_artifact_attribute_path"]
+            self.model_directory, "model_artifacts"
         )

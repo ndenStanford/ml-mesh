@@ -3,6 +3,7 @@
 # 3rd party libraries
 import pytest
 import requests
+import sklearn
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
@@ -11,16 +12,20 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
+sklearn_version = sklearn.__version__
+print("Scikit-learn version:", sklearn_version)
+
+
 def test_model_server_root():
     """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/ner/v1/")
+    root_response = requests.get("http://serve:8000/content-scoring/v1/")
 
     assert root_response.status_code == 200
 
 
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
-    liveness_response = requests.get("http://serve:8000/ner/v1/live")
+    liveness_response = requests.get("http://serve:8000/content-scoring/v1/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().dict()
@@ -28,7 +33,7 @@ def test_model_server_liveness():
 
 def test_model_server_readiness():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/ner/v1/ready")
+    readiness_response = requests.get("http://serve:8000/content-scoring/v1/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
@@ -36,7 +41,7 @@ def test_model_server_readiness():
 
 def test_model_server_bio():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/ner/v1/bio")
+    readiness_response = requests.get("http://serve:8000/content-scoring/v1/bio")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
@@ -49,9 +54,20 @@ def test_model_server_bio():
             {
                 "data": {
                     "identifier": None,
-                    "namespace": "ner",
+                    "namespace": "content-scoring",
                     "attributes": {
-                        "content": "House prices were unchanged last month, defying predictions of another drop, but they are unlikely to have troughed just yet."  # noqa
+                        "dataframe": {
+                            "pagerank": [3.299923, 9.1, 9.4],
+                            "reach": [90, 2821568, 3614746],
+                            "score": [628226.6, 4213572.0, 1601918.4],
+                            "lang": [2.0, 2.0, 0.0],
+                            "media_type": [3.0, 3.0, 3.0],
+                            "label": [1.0, 1.0, 2.0],
+                            "publication": [72.0, 69.0, 43.0],
+                            "country": [1.0, 1.0, 2.0],
+                            "is_copyrighted": [0.0, 0.0, 0.0],
+                            "type_of_summary": [0.0, 0.0, 0.0],
+                        }
                     },
                     "parameters": {"language": "en"},
                 }
@@ -60,103 +76,17 @@ def test_model_server_bio():
                 "version": 1,
                 "data": {
                     "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {"entities": []},
+                    "namespace": "content-scoring",
+                    "attributes": {"messages": ["rejected", "rejected", "rejected"]},
                 },
             },
-        ),
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "content": "에어비앤비, 하와이 임시 거처 제공마우이 신속대응팀 등 비영리 단체와 지속 협력"
-                    },
-                    "parameters": {"language": "ko"},
-                }
-            },
-            {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "entities": [
-                            {
-                                "entity_text": "에어비앤비",
-                                "entity_type": "ORG",
-                                "score": 0.9980051755905152,
-                                "sentence_index": 0,
-                                "start": 0,
-                                "end": 5,
-                            },
-                            {
-                                "entity_text": "제공마우이 신속대응",
-                                "entity_type": "ORG",
-                                "score": 0.7580916749106513,
-                                "sentence_index": 0,
-                                "start": 17,
-                                "end": 27,
-                            },
-                        ]
-                    },
-                },
-            },
-        ),
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "content": "Amazon steps up AI race with up to 4 billion deal to invest in Anthropic."  # noqa
-                    },
-                    "parameters": {"language": "en"},
-                }
-            },
-            {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "entities": [
-                            {
-                                "entity_text": "Amazon",
-                                "entity_type": "LOC",
-                                "score": 0.9364089369773865,
-                                "sentence_index": 0,
-                                "start": 0,
-                                "end": 6,
-                            },
-                            {
-                                "entity_text": "AI",
-                                "entity_type": "MISC",
-                                "score": 0.9874637126922607,
-                                "sentence_index": 0,
-                                "start": 16,
-                                "end": 18,
-                            },
-                            {
-                                "entity_text": "Anthropic",
-                                "entity_type": "MISC",
-                                "score": 0.8394989768664042,
-                                "sentence_index": 0,
-                                "start": 63,
-                                "end": 72,
-                            },
-                        ]
-                    },
-                },
-            },
-        ),
+        )
     ],
 )
 def test_model_server_prediction(payload, expected_response):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     response = requests.post(
-        "http://serve:8000/ner/v1/predict",
+        "http://serve:8000/content-scoring/v1/predict",
         json=payload,
     )
 

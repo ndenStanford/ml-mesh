@@ -2,7 +2,7 @@
 
 # Standard Library
 from pathlib import Path
-from typing import Any, List, Union
+from typing import Any, Dict, List, Union
 
 # ML libs
 import torch
@@ -71,7 +71,7 @@ class CompiledContentScoring:
         ]
         X = df[numerical_cols + categorical_cols]
         # Encode categorical features
-        X[categorical_cols] = self.ordinal_encoder.transform(X[categorical_cols])
+        X[categorical_cols] = self.ordinal_encoder.fit_transform(X[categorical_cols])
 
         return X
 
@@ -85,6 +85,7 @@ class CompiledContentScoring:
             Tuple: associated output
         """
         labels = ["rejected", "accepted"]
+        print("predictionsX: ", predictions)
         processed_predictions = [labels[prediction] for prediction in predictions]
         return processed_predictions
 
@@ -102,7 +103,7 @@ class CompiledContentScoring:
 
         return processed_content_messages
 
-    def __call__(self, df: pd.DataFrame) -> List[Any]:
+    def __call__(self, df: pd.DataFrame) -> Dict[str, List[Any]]:
         """Perform content scoring on input data.
 
         Args:
@@ -113,5 +114,4 @@ class CompiledContentScoring:
         """
         preprocessed_df = self.preprocess_data(df)
         content_messages = self.inference(preprocessed_df)
-        processed_content_messages = self.postprocess_predictions(content_messages)
-        return processed_content_messages
+        return {"messages": content_messages}
