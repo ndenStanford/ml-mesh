@@ -93,6 +93,15 @@ on  :
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: Github PAT to allow EC2 instance to connect to Github repository content.
+      MEDIA_CLIENT_ID:
+        required: false
+        description: Media client ID.
+      MEDIA_CLIENT_SECRET:
+        required: false
+        description: Media client secret key.
+      ELASTICSEARCH_KEY:
+        required: false
+        description: Elastic search key.
 
 jobs:
   check-run-criteria:
@@ -221,6 +230,9 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
+            MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
+            ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
             ENVIRONMENT="ci"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
@@ -232,6 +244,9 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
+            MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
+            ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
             ENVIRONMENT="ci"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
