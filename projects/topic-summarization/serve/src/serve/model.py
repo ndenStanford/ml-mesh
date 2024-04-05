@@ -66,13 +66,6 @@ class ServedTopicModel(ServedModel):
         end_time = pd.Timestamp(datetime.now())
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
         trending = False
-        print("================")
-        print("================")
-        print("================")
-        print("================")
-        print(settings.ELASTICSEARCH_KEY.get_secret_value())
-        print(settings.MEDIA_CLIENT_ID.get_secret_value())
-        print(settings.MEDIA_CLIENT_SECRET.get_secret_value())
         if trend_detection:
             trending, inflection_point = self.trend_detector.single_topic_trend(
                 profile_id, topic_id, start_time, end_time
