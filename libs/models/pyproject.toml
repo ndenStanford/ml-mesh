@@ -9,11 +9,11 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 compile = {path = "../compile"}
 nlp = {path = "../nlp"}
-keybert = "0.7.0"
 regex = "^2023.6.3"
 beautifulsoup4 = "^4.12.2"
 nptyping = "2.5.0"
-bertopic = "0.15.0"
+bertopic = {version = "0.15.0", extras = ["topic"]}
+keybert = {version = "0.7.0", extras = ["keywords"]}
 
 [[tool.poetry.source]]
 name = "aws-neuron"

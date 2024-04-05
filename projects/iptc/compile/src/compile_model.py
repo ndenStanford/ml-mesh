@@ -31,6 +31,7 @@ def main() -> None:
         fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
         level=io_settings.log_level,
     )
+
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
     base_model_version = TrackedModelVersion(**base_model_specs.dict())
@@ -42,7 +43,7 @@ def main() -> None:
     logger.debug(f"Base model model_card: {base_model_card}")
     # re-load base model pipeline
     base_model_pipeline = pipeline(
-        task=base_model_card["model_params"]["huggingface_pipeline_task"],
+        task="text-classification",
         model=io_settings.download.model_directory,
     )
     # compile base model pipeline for iptc

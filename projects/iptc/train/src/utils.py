@@ -69,4 +69,10 @@ def topic_conversion(df):  # type: ignore[no-untyped-def]
     df["topic_1"] = df["topic_1"].replace(
         ["conflicts, war and peace"], "conflict, war and peace"
     )
+    if "topic_2" in df.columns:
+        df["topic_2"] = df["topic_2"].replace(
+            ["religious facilities"], "religious facility"
+        )
+    if "topic_3" in df.columns:
+        df["topic_3"] = df["topic_3"].replace(["bullfighting "], "bullfighting")
     return df
