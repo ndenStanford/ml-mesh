@@ -30,7 +30,7 @@ def find_num_labels(  # type: ignore[no-untyped-def]
     elif level == 2:
         return len(CLASS_DICT_SECOND[first_level_root])
     elif level == 3:
-        return len(CLASS_DICT_THIRD[first_level_root][second_level_root])
+        return len(CLASS_DICT_THIRD[second_level_root])
 
 
 def extract_model_id(project: str) -> str:
@@ -69,4 +69,10 @@ def topic_conversion(df):  # type: ignore[no-untyped-def]
     df["topic_1"] = df["topic_1"].replace(
         ["conflicts, war and peace"], "conflict, war and peace"
     )
+    if "topic_2" in df.columns:
+        df["topic_2"] = df["topic_2"].replace(
+            ["religious facilities"], "religious facility"
+        )
+    if "topic_3" in df.columns:
+        df["topic_3"] = df["topic_3"].replace(["bullfighting "], "bullfighting")
     return df
