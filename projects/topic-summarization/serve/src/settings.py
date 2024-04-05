@@ -41,9 +41,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 class ElasticsearchSettings(OnclusiveBaseSettings):
     """Elasticsearch Settings."""
 
-    ELASTICSEARCH_KEY: SecretStr = Field(
-        default="GnVjrB5jXgGGzPZHWNRpwWGu4NqTWJsw", exclude=True
-    )
+    ELASTICSEARCH_KEY: SecretStr = Field(default="...", exclude=True)
     es_index: List = [
         "crawler",
         "crawler-4-2024.03",
