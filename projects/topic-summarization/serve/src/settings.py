@@ -60,7 +60,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.02",
         "crawler-4-2024.01",
     ]
-    NUM_DOCUMENTS: int = 10
+    NUM_DOCUMENTS: int = 5
     trend_lookback_days: int = 14
     trend_time_interval: str = "12h"
 
