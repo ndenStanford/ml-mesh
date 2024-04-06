@@ -8,7 +8,7 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 core = {path = "../../../libs/core"}
-models = {path = "../../../libs/models"}
+models = {path = "../../../libs/models", extras = ["keywords"]}
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 

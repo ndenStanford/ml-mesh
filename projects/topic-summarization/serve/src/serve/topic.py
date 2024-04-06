@@ -58,11 +58,18 @@ class TopicHandler:
         }  # input target category & articles
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
+        print("&" * 20)
+        print("{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias))
+        print(headers)
+        print(input_dict)
+
         q = requests.post(
             "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
             headers=headers,
             json=input_dict,
         )
+        print(q)
+        print(q.content)
 
         output_content = json.loads(json.loads(q.content)["generated"])
 

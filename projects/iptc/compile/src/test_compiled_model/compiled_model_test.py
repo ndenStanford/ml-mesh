@@ -16,7 +16,12 @@ from src.settings import (
 
 
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
-    io_settings, compiled_iptc, test_files, compilation_test_settings
+    io_settings,
+    compiled_iptc,
+    test_files,
+    compilation_test_settings,
+    class_dict,
+    id_to_topic,
 ):
     """Perform regression testing for the compiled iptc model.
 
@@ -25,22 +30,31 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compiled_iptc: Compiled IPTC model instance
         test_files: Dictionary containing test input
         compilation_test_settings: Compilation settings
+        class_dict: Dictionary containing class name
+        id_to_topic: model_id to class name
     """
-    assert len(test_files["inputs"]) == len(test_files["predictions"])
+    assert len(test_files["inputs"]) == len(test_files["predictions"]["labels"])
     total_sample_size = len(test_files["inputs"])
-
+    model_specs = UncompiledTrackedModelSpecs()
+    model_id = extract_model_id(model_specs.project)
+    class_dict_dict = class_dict[id_to_topic[model_id]]
     for test_sample_index in range(total_sample_size):
 
         compiled_pred = compiled_iptc(test_files["inputs"][test_sample_index])
         compiled_predictions = [iptc.dict() for iptc in compiled_pred][0]
-        expected_predictions = test_files["predictions"][test_sample_index]
-
+        expected_predictions_prob = test_files["predictions"]["probs"][
+            test_sample_index
+        ]
+        logits_tensor = torch.tensor(expected_predictions_prob)
+        probabilities = torch.softmax(logits_tensor, dim=0)
+        max_prob, max_index = torch.max(probabilities, dim=0)
         torch.testing.assert_close(
             compiled_predictions["score"],
-            expected_predictions["score"],
+            max_prob.item(),
             atol=compilation_test_settings.regression_atol,
             rtol=compilation_test_settings.regression_rtol,
         )
+        assert compiled_predictions["label"] == class_dict_dict[max_index.item()]
         # create new export file or append prediction to existing exported prediction file
         try:
             with open(

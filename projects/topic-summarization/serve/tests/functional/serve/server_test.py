@@ -73,4 +73,4 @@ def test_model_server_bio(test_model_name, test_client, test_expected_bio_output
     assert test_response.status_code == 200
     test_actual_bio_output = test_response.json()
 
-    assert test_actual_bio_output
+    assert test_actual_bio_output == test_expected_bio_output

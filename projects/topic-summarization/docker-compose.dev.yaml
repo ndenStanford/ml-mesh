@@ -40,8 +40,8 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
-      CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       MULTIPROCESS_WORKER: 5
     healthcheck:
@@ -84,6 +84,9 @@ services:
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
       MULTIPROCESS_WORKER: 5
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -121,6 +124,9 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -146,6 +152,9 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     depends_on:
       serve:
         condition: service_healthy

@@ -59,29 +59,29 @@ class ServedTopicModel(ServedModel):
         """
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
-        content = inputs.content
         topic_id = inputs.topic_id
         profile_id = inputs.profile_id
-        skip_trend_detection = inputs.skip_trend_detection
+        trend_detection = inputs.trend_detection
 
         # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
         # to work for integration tests
-        end_time = pd.Timestamp(datetime.now())  # - pd.Timedelta(days=12)
+        end_time = pd.Timestamp(datetime.now())
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
         trending = False
-        if not skip_trend_detection:
+        if trend_detection:
             trending, inflection_point = self.trend_detector.single_topic_trend(
                 profile_id, topic_id, start_time, end_time
             )
-        if skip_trend_detection or trending:
-            # if content is provided, use that instead of collecting documents
-            if not content:
-                if not skip_trend_detection:
-                    start_time = inflection_point
-                    end_time = start_time + pd.Timedelta(days=1)
-                content = self.document_collector.get_documents(
-                    profile_id, topic_id, start_time, end_time
-                )
+        if not trend_detection or trending:
+            # if trending, take documents between inflection point and next day
+            if trending:
+                start_time = inflection_point
+                end_time = start_time + pd.Timedelta(days=1)
+
+            # collect documents of profile
+            content = self.document_collector.get_documents(
+                profile_id, topic_id, start_time, end_time
+            )
             topic = self.model.aggregate(content)
             impact_category = quantify_impact(profile_id, topic_id)
         else:
