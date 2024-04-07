@@ -66,9 +66,6 @@ class ImpactQuantificationSettings(OnclusiveBaseSettings):
     local_raio_cutoff = 0.01
     global_local_comparison_ratio_cutoff = 1
     mf_tau_cutoff = 0.8
-    # low_impact_class = "low"
-    # mid_impact_class = "mid"
-    # high_impact_class = "high"
 
 
 class GlobalSettings(
