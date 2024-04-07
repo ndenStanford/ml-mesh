@@ -1,12 +1,21 @@
 """Impact quantification."""
+
+# Standard Library
 from typing import Dict, List
 
+# 3rd party libraries
 import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
 from prophet import Prophet
 
+# Internal libraries
+from onclusiveml.serving.serialization.topic_summarization.v1 import (
+    ImpactCategoryLabel,
+)
+
+# Source
 from src.serve.utils import (
     all_global_query,
     all_profile_boolean_query,
@@ -15,6 +24,7 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
+
 
 settings = get_settings()
 
@@ -54,7 +64,6 @@ class ImpactQuantification:
             index = 0
             while index < len(result) and result[index]["key"] < i["key"]:
                 index += 1
-
             # Check if the key already exists in the list
             if index < len(result) and result[index]["key"] == i["key"]:
                 continue
@@ -86,8 +95,7 @@ class ImpactQuantification:
         """
         query = query_translation(boolean_query)
         end_time = pd.Timestamp.now()
-        start_time = end_time - pd.Timedelta(days=settings.lookback_days)
-
+        start_time = end_time - pd.Timedelta(days=settings.impact_lookback_days)
         # ========== Profile (global) ==========
         # Global count of all documents from ES
         series_global_es = self.es.search(
@@ -97,7 +105,6 @@ class ImpactQuantification:
         # Remove weekends
         # series_global_es = remove_weekends(series_global_es)
         series_global = np.array([i["doc_count"] for i in series_global_es])
-
         # Global count of all documents of a topic  from ES
         series_topic_es = self.es.search(
             index=settings.es_index,
@@ -108,7 +115,6 @@ class ImpactQuantification:
         # Remove weekends
         # series_topic_es = remove_weekends(series_topic_es)
         series_topic = np.array([i["doc_count"] for i in series_topic_es])
-
         # calculate global ratio
         global_ratio = series_topic / series_global
         # Decomposes trend
@@ -116,7 +122,6 @@ class ImpactQuantification:
         series_topic_trend = self.decompose_trend(series_topic)
         # calculate ratio of trend between topic and global series
         global_trend_ratio = series_topic_trend / series_global_trend
-
         # ========== Profile (local) ==========
         # Profile count from ES
         series_profile_es = self.es.search(
@@ -125,11 +130,9 @@ class ImpactQuantification:
                 query, start_time, end_time, settings.time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
-
         # Remove weekends
         # series_profile_es = remove_weekends(series_profile_es)
         series_profile = np.array([i["doc_count"] for i in series_profile_es])
-
         # Profile count of a topic from ES
         series_topic_profile_es = self.es.search(
             index=settings.es_index,
@@ -137,7 +140,6 @@ class ImpactQuantification:
                 query, start_time, end_time, topic_id, settings.time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
-
         # Remove weekends
         # series_topic_profile_es = remove_weekends(series_topic_profile_es)
         series_topic_profile_es = self.insert_into_sorted_list(
@@ -147,7 +149,6 @@ class ImpactQuantification:
             [i["doc_count"] for i in series_topic_profile_es]
         )
         print("Topic Profile Count:", series_topic_profile)
-
         # Calculate local ratio
         local_ratio = series_topic_profile / series_profile
         # Decompose trend
@@ -159,7 +160,6 @@ class ImpactQuantification:
         num_points = len(local_ratio)
         const = 0.01
         weight = np.exp(np.arange(num_points) * const) / np.exp(0 * const)
-
         # Calculate ratios
         weighted_local_ratio = np.nansum(weight * local_ratio) / np.nansum(weight)
         weighted_global_ratio = np.nansum(weight * global_ratio) / np.nansum(weight)
@@ -194,16 +194,8 @@ class ImpactQuantification:
         mk_test_bool = mk_result.Tau > settings.mf_tau_cutoff
 
         if (not raw_baseline_bool) or (not global_vs_local_bool) or (not mk_test_bool):
-            return settings.low_impact_class
+            return ImpactCategoryLabel.low
         elif (raw_baseline_bool) and (global_vs_local_bool) and (mk_test_bool):
-            return settings.mid_impact_class
+            return ImpactCategoryLabel.mid
         else:
-            return settings.high_impact_class
-
-
-# query = '("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print'
-# topic_id = 436
-
-# impact_quantifier = ImpactQuantification()
-# result = impact_quantifier.quantify_impact(query, topic_id)
-# print(result)
+            return ImpactCategoryLabel.high

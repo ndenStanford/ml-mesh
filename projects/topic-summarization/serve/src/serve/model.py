@@ -83,7 +83,9 @@ class ServedTopicModel(ServedModel):
                 profile_id, topic_id, start_time, end_time
             )
             topic = self.model.aggregate(content)
-            impact_category = quantify_impact(profile_id, topic_id)
+            impact_category = self.impact_quantifier.quantify_impact(
+                profile_id, topic_id
+            )
         else:
             topic = None
 

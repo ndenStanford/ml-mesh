@@ -59,6 +59,7 @@ def test_model_server_predict(test_client, test_model_name, test_payload):
             ]
         )
     )
+    assert test_response.json()["data"]["attributes"]["impact_category"] == "low"
 
 
 @pytest.mark.order(7)

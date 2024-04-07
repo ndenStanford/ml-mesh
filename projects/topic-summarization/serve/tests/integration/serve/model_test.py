@@ -10,6 +10,7 @@ from src.settings import get_settings
 from src.serve.category_storage import Category_list
 from src.serve.schema import PredictRequestSchema
 from src.serve.model import ServedTopicModel
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
 settings = get_settings()
 
@@ -48,6 +49,8 @@ def test_served_topic_model_predict(test_inference_params):
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
+    print("%" * 20)
+    print(test_actual_predict_output)
     assert set(test_actual_predict_output.attributes.topic.keys()).issubset(
         set(
             Category_list
@@ -56,6 +59,10 @@ def test_served_topic_model_predict(test_inference_params):
                 "Theme",
             ]
         )
+    )
+
+    assert (
+        test_actual_predict_output.attributes.impact_category == ImpactCategoryLabel.low
     )
 
 
@@ -84,6 +91,10 @@ def test_served_topic_model_predict_skip_trend(test_inference_params):
                 "Theme",
             ]
         )
+    )
+
+    assert (
+        test_actual_predict_output.attributes.impact_category == ImpactCategoryLabel.low
     )
 
 

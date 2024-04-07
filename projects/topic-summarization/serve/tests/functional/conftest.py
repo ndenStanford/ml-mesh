@@ -123,6 +123,7 @@ def test_expected_predict_output() -> Dict[str, str]:
             "Summary": "The recent diaspora of global developments encapsulates technological progress, environmental challenges, and socio-political concerns. India's semiconductor market is on an upsurge, paralleled by a global emphasis on water conservation amid climate change. As Taiwan braces for a typhoon, Germany and Italy underscore the vital need for meteorological foresight. Scientific curiosity probes both the microcosm, in advances in fluorescence and skin care tech, and the macrocosm, through unveiling cosmic mysteries and pursuing lunar exploration. Marine biology and botany burgeon, driven by patents and public interest, while health and security issues engender responses to mosquito-borne diseases, drug trafficking, and airspace violations. Collectively, these snapshots from diverse fields illustrate an era marked by an adaptive humanity as it navigates a balance between exploiting and conserving its natural and intellectual resources.",  # noqa: E501
             "Theme": "Adaptive Progress in a Changing World",
         },  # noqa: E501
+        impact_category="low",
     )  # noqa:E501
 
 

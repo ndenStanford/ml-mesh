@@ -8,7 +8,10 @@ from onclusiveml.data.query_profile import MediaAPISettings
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
+from onclusiveml.core.base import (
+    OnclusiveFrozenSettings,
+    OnclusiveBaseSettings,
+)
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
@@ -55,12 +58,26 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     trend_time_interval: str = "12h"
 
 
+class ImpactQuantificationSettings(OnclusiveBaseSettings):
+    """Impact Quantification Settings."""
+
+    impact_lookback_days: int = 125
+    time_interval: str = "24h"
+    local_raio_cutoff = 0.01
+    global_local_comparison_ratio_cutoff = 1
+    mf_tau_cutoff = 0.8
+    # low_impact_class = "low"
+    # mid_impact_class = "mid"
+    # high_impact_class = "high"
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     MediaAPISettings,
     ElasticsearchSettings,
+    ImpactQuantificationSettings,
 ):
     """Global server settings."""
 
