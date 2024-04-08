@@ -18,7 +18,11 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
-    """Prediction request data."""
+    """Prediction request data.
+
+    Attributes:
+        boolean_messages List(str): List of 'accepted' or 'rejected' corresponding to the prediction
+    """
 
     boolean_messages: List[Any] = []
 
