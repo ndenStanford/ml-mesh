@@ -53,6 +53,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     NUM_DOCUMENTS: int = 5
     trend_lookback_days: int = 14
     trend_time_interval: str = "12h"
+    TOPIC_DOCUMENT_THRESHOLD: float = 0.01
 
 
 class GlobalSettings(

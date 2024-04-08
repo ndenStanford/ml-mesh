@@ -57,6 +57,7 @@ class ServedTopicModel(ServedModel):
         """
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
+        content = inputs.content
         topic_id = inputs.topic_id
         profile_id = inputs.profile_id
         trend_detection = inputs.trend_detection
@@ -66,23 +67,27 @@ class ServedTopicModel(ServedModel):
         end_time = pd.Timestamp(datetime.now())
         start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
         trending = False
-        if trend_detection:
-            trending, inflection_point = self.trend_detector.single_topic_trend(
-                profile_id, topic_id, start_time, end_time
-            )
-        if not trend_detection or trending:
-            # if trending, take documents between inflection point and next day
-            if trending:
-                start_time = inflection_point
-                end_time = start_time + pd.Timedelta(days=1)
 
-            # collect documents of profile
-            content = self.document_collector.get_documents(
-                profile_id, topic_id, start_time, end_time
-            )
-            topic = self.model.aggregate(content)
+        if not content:
+            if trend_detection:
+                trending, inflection_point = self.trend_detector.single_topic_trend(
+                    profile_id, topic_id, start_time, end_time
+                )
+            if not trend_detection or trending:
+                # if trending, take documents between inflection point and next day
+                if trending:
+                    start_time = inflection_point
+                    end_time = start_time + pd.Timedelta(days=1)
+
+                # collect documents of profile
+                content = self.document_collector.get_documents(
+                    profile_id, topic_id, start_time, end_time
+                )
+                topic = self.model.aggregate(content)
+            else:
+                topic = None
         else:
-            topic = None
+            topic = self.model.aggregate(content)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),

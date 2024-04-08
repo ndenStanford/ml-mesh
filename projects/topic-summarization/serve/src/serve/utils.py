@@ -127,13 +127,14 @@ def topic_profile_documents_query(
     start_time: pd.datetime,
     end_time: pd.datetime,
     topic_id: int,
+    size: int,
 ) -> Dict:
     """Documents query.
 
     Returns list of documents of a given profile and topic.
     """
     query = {
-        "size": 100,
+        "size": size,
         "query": {
             "bool": {
                 "must": [

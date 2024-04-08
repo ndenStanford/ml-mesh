@@ -1,7 +1,7 @@
 """Topic Summarization v1 data schemas."""
 
 # Standard Library
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -10,8 +10,9 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    topic_id: int
-    profile_id: str
+    content: Optional[List[str]] = None
+    topic_id: Optional[int] = None
+    profile_id: Optional[str] = None
     trend_detection: Optional[bool] = True
 
 

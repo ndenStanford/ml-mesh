@@ -46,9 +46,11 @@ class DocumentCollector:
         # Profile query
         results = self.es.search(
             index=settings.es_index,
-            body=topic_profile_documents_query(query, start_time, end_time, topic_id),
+            body=topic_profile_documents_query(
+                query, start_time, end_time, topic_id, settings.NUM_DOCUMENTS
+            ),
         )
         content_list: List[str] = [
             h["_source"]["content"] for h in results["hits"]["hits"]
         ]
-        return content_list[: settings.NUM_DOCUMENTS]
+        return content_list
