@@ -25,30 +25,25 @@ class CompiledContentScoring:
     def __init__(
         self,
         trained_content_model: RandomForestClassifier,
-        ordinal_encoder: OrdinalEncoder,
     ):
         self.trained_content_model = trained_content_model
-        self.ordinal_encoder = ordinal_encoder
 
     @classmethod
     def from_pretrained(
-        cls, content_model_directory: Union[Path, str], ordinal_encoder: OrdinalEncoder
+        cls, content_model_directory: Union[Path, str]
     ) -> "CompiledContentScoring":
         """Load CompiledContentScoring object from specified directory.
 
         Args:
             content_model_directory (Union[Path, str]): The directory path containing the trained
                 content scoring model.
-            ordinal_encoder (OrdinalEncoder): The pre-trained ordinal encoder.
 
         Returns:
             CompiledContentScoring: The loaded compiled content scoring object.
         """
         trained_content_model = torch.load(content_model_directory)
 
-        return cls(
-            trained_content_model=trained_content_model, ordinal_encoder=ordinal_encoder
-        )
+        return cls(trained_content_model=trained_content_model)
 
     def preprocess_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Preprocess the input DataFrame.
@@ -70,8 +65,9 @@ class CompiledContentScoring:
             "type_of_summary",
         ]
         X = df[numerical_cols + categorical_cols]
+        ordinal_encoder = OrdinalEncoder()
         # Encode categorical features
-        X[categorical_cols] = self.ordinal_encoder.fit_transform(X[categorical_cols])
+        X[categorical_cols] = ordinal_encoder.fit_transform(X[categorical_cols])
 
         return X
 
@@ -113,4 +109,4 @@ class CompiledContentScoring:
         """
         preprocessed_df = self.preprocess_data(df)
         content_messages = self.inference(preprocessed_df)
-        return {"messages": content_messages}
+        return {"boolean_messages": content_messages}

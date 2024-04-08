@@ -20,7 +20,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    messages: List[Any] = []
+    boolean_messages: List[Any] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

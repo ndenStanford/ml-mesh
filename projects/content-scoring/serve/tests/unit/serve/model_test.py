@@ -64,7 +64,9 @@ def test_served_model_load(mock_from_pretrained, served_model):
                 "data": {
                     "identifier": None,
                     "namespace": "content-scoring",
-                    "attributes": {"messages": ["rejected", "rejected", "accepted"]},
+                    "attributes": {
+                        "boolean_messages": ["rejected", "rejected", "accepted"]
+                    },
                 },
             },
         ),

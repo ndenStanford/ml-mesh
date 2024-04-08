@@ -6,7 +6,6 @@ from typing import Type
 # 3rd party libraries
 import pandas as pd
 from pydantic import BaseModel
-from sklearn.preprocessing import OrdinalEncoder
 
 # Internal libraries
 from onclusiveml.models.content_scoring import CompiledContentScoring
@@ -61,10 +60,7 @@ class ServedContentScoringModel(ServedModel):
         """Load the model artifacts and prepare the model for prediction."""
         # Load model artifacts into ready CompiledContentScoring instance
         content_model_directory = self.served_model_artifacts.model_artifact_directory
-        ordinal_encoder = OrdinalEncoder()
-        self._model = CompiledContentScoring.from_pretrained(
-            content_model_directory, ordinal_encoder
-        )
+        self._model = CompiledContentScoring.from_pretrained(content_model_directory)
         # Load model card JSON file into dict
         self.model_card = self.served_model_artifacts.model_card
 

@@ -69,7 +69,7 @@ def test_model_server_bio():
                             "type_of_summary": [0.0, 0.0, 0.0],
                         }
                     },
-                    "parameters": {"language": "en"},
+                    "parameters": {},
                 }
             },
             {
@@ -77,7 +77,9 @@ def test_model_server_bio():
                 "data": {
                     "identifier": None,
                     "namespace": "content-scoring",
-                    "attributes": {"messages": ["rejected", "rejected", "rejected"]},
+                    "attributes": {
+                        "boolean_messages": ["rejected", "rejected", "rejected"]
+                    },
                 },
             },
         )
