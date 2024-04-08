@@ -9,7 +9,6 @@ from pydantic import Field, validator
 
 # Source
 from src.extensions.github import github
-from src.project import functional as F
 from src.project.constants import PROJECT_NAME_FORBIDDEN_CHARACTERS
 from src.project.exceptions import ProjectInvalidAlias
 from src.settings import get_settings

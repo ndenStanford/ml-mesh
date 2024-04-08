@@ -11,7 +11,6 @@ from slugify import slugify
 
 # Source
 from src.extensions.github import github
-from src.project import functional as F
 from src.project.exceptions import (
     CreationProjectImpossible,
     DeletionProtectedProject,
