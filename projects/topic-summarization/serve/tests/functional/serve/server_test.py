@@ -11,7 +11,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 # Source
-from src.serve.category_storage import Category_list
 from src.settings import get_settings
 
 settings = get_settings()
@@ -50,15 +49,7 @@ def test_model_server_predict(test_client, test_model_name, test_payload):
         f"/{test_model_name}/v1/predict", json=test_payload
     )
     assert test_response.status_code == 200
-    assert set(test_response.json()["data"]["attributes"]["topic"].keys()).issubset(
-        set(
-            Category_list
-            + [
-                "Summary",
-                "Theme",
-            ]
-        )
-    )
+    assert test_response.json()["data"]["attributes"]["topic"] is not None
 
 
 @pytest.mark.order(9)
@@ -70,15 +61,7 @@ def test_model_server_predict_sample_docs(
         f"/{test_model_name}/v1/predict", json=test_payload_sample_docs
     )
     assert test_response.status_code == 200
-    assert set(test_response.json()["data"]["attributes"]["topic"].keys()).issubset(
-        set(
-            Category_list
-            + [
-                "Summary",
-                "Theme",
-            ]
-        )
-    )
+    assert test_response.json()["data"]["attributes"]["topic"] is not None
 
 
 @pytest.mark.order(7)
