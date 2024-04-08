@@ -62,7 +62,7 @@ def test_served_topic_model_predict(test_inference_params):
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(6)
 def test_served_topic_model_predict_skip_trend(test_inference_params):
-    """Tests the ServedTopicModel's predict method without trend detection."""
+    """Tests ServedTopicModel's predict method without trend detection."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
