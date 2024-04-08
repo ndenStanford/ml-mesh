@@ -88,16 +88,6 @@ class ServedTopicModel(ServedModel):
                 topic = None
         else:
             topic = self.model.aggregate(content)
-        print("---------")
-        print("---------")
-        print(topic_id)
-        print(profile_id)
-        print(trend_detection)
-        print(trending)
-        print(len(content))
-        print(topic)
-        print("---------")
-        print("---------")
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
