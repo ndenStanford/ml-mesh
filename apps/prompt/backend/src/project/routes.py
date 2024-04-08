@@ -4,12 +4,13 @@
 from typing import List
 
 # 3rd party libraries
+from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 from github.GithubException import UnknownObjectException
 from slugify import slugify
 
 # Source
-from src.extensions.github import repo
+from src.extensions.github import github
 from src.project import functional as F
 from src.project.exceptions import (
     CreationProjectImpossible,
@@ -42,10 +43,9 @@ def create_project(alias: str):
     if project is None:
         try:
             Project(alias=alias).save()
-            F.create_project(repo, alias)
-            return {"message": "Project created successfully"}
+            return Project(alias=alias)
 
-        except Exception as e:
+        except HTTPException as e:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=str(e),
@@ -68,29 +68,16 @@ def delete_project(alias: str):
     Raises:
         HTTPException.DoesNotExist if alias is not found in table.
     """
-    alias = slugify(alias)
-    project = Project.get(alias)
-    if not project:
-        e = ProjectNotFound(alias=alias)
+
+    try:
+        project = Project.get(alias)
+        project.delete()
+        return {"message": "Project deleted successfully"}
+    except DoesNotExist as e:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(e),
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project {alias} not found in database",
         )
-    else:
-        try:
-            Project(alias=alias).delete()
-            F.delete_project(repo, alias)
-            return {"message": "Project deleted successfully"}
-        except ProjectNotFound as e:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=str(e),
-            )
-        except DeletionProtectedProject as e:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=str(e),
-            )
 
 
 @router.get("", status_code=status.HTTP_200_OK)
@@ -110,18 +97,19 @@ def list_projects():
 
 
 @router.get("/{alias}", status_code=status.HTTP_200_OK)
-def get_projects(alias: str):
+def get_project(alias: str):
     """Get project from database.
 
     Raises:
         HTTPException.ProjectNotFound named project found in table.
     """
     try:
-        project = Project.get(alias)
-        if not project:
-            raise ProjectNotFound(alias=alias)
-        else:
-            return project
+        return Project.get(alias)
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project {alias} not found in database",
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

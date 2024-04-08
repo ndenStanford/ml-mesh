@@ -2,12 +2,13 @@
 
 # 3rd party libraries
 from dyntastic import A
+from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 from github import Github
 from slugify import slugify
 
 # Source
-from src.extensions.github import repo
+from src.extensions.github import github
 from src.project.exceptions import ProjectNotFound
 from src.project.tables import Project
 from src.prompt import functional as F
@@ -33,35 +34,84 @@ router = APIRouter(
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_project(project: str, alias: str, template: str, parameters: dict = {}):
+def create_prompt(prompt: PromptTemplate):
     """Creates prompt in project.
 
     Args:
         project (str): project
         alias (str): alias for template.
     """
-    project_alias = slugify(project)
-    project = Project.safe_get(project_alias)
     # if project does exist, create a new version
-    if project is not None:
-        try:
-            prompt = PromptTemplate(
-                alias=alias,
-                template=template,
-                parameters=parameters,
-                project=project.alias,
-                sha="",
-            )
-            F.create_prompt(repo, project, prompt)
-            return {"message": "Prompt template created successfully"}
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=str(e),
-            )
-    else:
-        e = ProjectNotFound(alias=project_alias)
+    try:
+        project = Project.get(prompt.project)
+        prompt.save()
+        return prompt
+    except DoesNotExist as e:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project {prompt.project} not found in database",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+
+
+@router.delete("/{alias}", status_code=status.HTTP_200_OK)
+def delete_prompt(alias: str):
+    """Deletes project from database.
+
+    Args:
+        alias (str): prompt alias
+
+    Raises:
+        HTTPException.DoesNotExist if alias is not found in table.
+    """
+
+    try:
+        prompt = PromptTemplate.get(alias)
+        prompt.delete()
+        return prompt
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project {alias} not found in database",
+        )
+
+
+@router.get("/project/{project}", status_code=status.HTTP_200_OK)
+def list_prompts(project: str):
+    """Get list of projects from database.
+
+    Raises:
+        HTTPException.ProjectsNotFound if no projects found in table.
+    """
+    try:
+        return PromptTemplate.scan((A.project == project))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.get("/{alias}", status_code=status.HTTP_200_OK)
+def get_prompt(alias: str):
+    """Get prompt from database.
+
+    Raises:
+        HTTPException: prompt found in table.
+    """
+    try:
+        return PromptTemplate.get(alias)
+    except DoesNotExist as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project {alias} not found in database",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         )

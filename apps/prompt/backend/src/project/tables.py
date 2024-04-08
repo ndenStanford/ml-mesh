@@ -1,10 +1,15 @@
 """Project dynamoDB tables."""
 
+# Standard Library
+import os
+
 # 3rd party libraries
 from dyntastic import Dyntastic
 from pydantic import Field, validator
 
 # Source
+from src.extensions.github import github
+from src.project import functional as F
 from src.project.constants import PROJECT_NAME_FORBIDDEN_CHARACTERS
 from src.project.exceptions import ProjectInvalidAlias
 from src.settings import get_settings
@@ -47,3 +52,16 @@ class Project(Dyntastic):
 
         else:
             return value
+
+    def save(self) -> None:
+        """Custom save function."""
+        github.write(
+            os.path.join(self.alias, ".gitkeep"), f"Create project {self.alias}", ""
+        )
+        return super(Project, self).save()
+
+    def delete(self) -> None:
+        """Delete project from database and github."""
+        # TODO: Prevent deleting projects with existing prompts
+        github.rm(self.alias, f"Delete project {self.alias}")
+        return super(Project, self).delete()

@@ -8,6 +8,9 @@ from dyntastic import Dyntastic
 from langchain.chat_models import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 
+# Internal libraries
+from onclusiveml.core.base import OnclusiveFrozenSchema
+
 # Source
 from src.model.constants import ChatModelProdiver
 from src.settings import get_settings
