@@ -85,7 +85,6 @@ class CompiledContentScoring:
             Tuple: associated output
         """
         labels = ["rejected", "accepted"]
-        print("predictionsX: ", predictions)
         processed_predictions = [labels[prediction] for prediction in predictions]
         return processed_predictions
 

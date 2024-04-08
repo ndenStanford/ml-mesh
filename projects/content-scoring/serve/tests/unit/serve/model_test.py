@@ -55,7 +55,7 @@ def test_served_model_load(mock_from_pretrained, served_model):
                             "type_of_summary": [0.0, 0.0, 0.0],
                         }
                     },
-                    "parameters": {"language": "en"},
+                    "parameters": {},
                 }
             },
             ["rejected", "rejected", "accepted"],
