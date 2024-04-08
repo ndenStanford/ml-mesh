@@ -76,15 +76,6 @@ def test_served_topic_model_predict_skip_trend(test_inference_params):
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
-    # assert set(test_actual_predict_output.attributes.topic.keys()).issubset(
-    #     set(
-    #         Category_list
-    #         + [
-    #             "Summary",
-    #             "Theme",
-    #         ]
-    #     )
-    # )
     assert test_actual_predict_output.attributes.topic is not None
 
 
