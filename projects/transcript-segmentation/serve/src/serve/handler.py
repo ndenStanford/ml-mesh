@@ -83,18 +83,21 @@ class TranscriptSegmentationHandler:
         # Extract first and last portions of the segment
         segment_split = segment.split()
 
-        THRESHOLD = 20
+        # search window for finding location of segment in transcript
+        window_threshold = min(len(segment_split), settings.WINDOW_THRESHOLD)
 
-        first_portion = " ".join(segment_split[:THRESHOLD]).lstrip(">")
-        last_portion = " ".join(segment_split[-THRESHOLD:]).lstrip(">")
+        first_portion = " ".join(segment_split[:window_threshold]).lstrip(">")
+        last_portion = " ".join(segment_split[-window_threshold:]).lstrip(">")
         # Find the most compatible sublists that matches the portions from the segment
         max_similarity_start = 0
         max_similarity_end = 0
         best_portion_start = []
         best_portion_end: List[Dict[str, Any]] = []
 
-        for i in range(len(word_transcript_filtered) - (THRESHOLD - 1)):
-            candidate_list = word_transcript_filtered[i : i + THRESHOLD]  # noqa: E203
+        for i in range(len(word_transcript_filtered) - (window_threshold - 1)):
+            candidate_list = word_transcript_filtered[
+                i : i + window_threshold  # noqa: E203
+            ]
             candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
             # fix abbreviations
             candidate = candidate.replace(" .", ".")
