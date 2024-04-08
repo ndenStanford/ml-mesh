@@ -74,7 +74,7 @@ class ServedTopicModel(ServedModel):
                     profile_id, topic_id, start_time, end_time
                 )
             if not trend_detection or trending:
-                # if trending, take documents between inflection point and next day
+                # if trending, retrieve documents between inflection point and next day
                 if trending:
                     start_time = inflection_point
                     end_time = start_time + pd.Timedelta(days=1)
