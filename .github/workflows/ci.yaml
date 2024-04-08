@@ -1148,6 +1148,7 @@ jobs       :
       - run-register-pipelines
       - get-target-branch-name
       - run-get-core-dependencies-versions
+      - run-content-scoring-project
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -1164,6 +1165,9 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
           - project: topic
             sagemaker-runner-type: ml.p3.2xlarge
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+          - project: content-scoring
+            sagemaker-runner-type: ml.m4.xlarge
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
     with:
