@@ -811,7 +811,7 @@ jobs       :
 
   # content-scoring
 
-  run-content-scoringr-project:
+  run-content-scoring-project:
     name: content-scoring Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
