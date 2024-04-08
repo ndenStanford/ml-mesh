@@ -50,9 +50,18 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.02",
         "crawler-4-2024.01",
     ]
+
+
+class TrendSummarizationSettings(OnclusiveBaseSettings):
+    """Trend Summarization Settings."""
+
+    # No of documents to collect for summarization
     NUM_DOCUMENTS: int = 5
+    # Lookback days to assess trend
     trend_lookback_days: int = 14
+    # Number of documents per interval
     trend_time_interval: str = "12h"
+    # Document scale threshold to run trend detection
     TOPIC_DOCUMENT_THRESHOLD: float = 0.01
 
 
@@ -62,6 +71,7 @@ class GlobalSettings(
     TrackedImageSpecs,
     MediaAPISettings,
     ElasticsearchSettings,
+    TrendSummarizationSettings,
 ):
     """Global server settings."""
 
