@@ -809,6 +809,47 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
+  # content-scoring
+
+  run-content-scoringr-project:
+    name: content-scoring Project
+    uses: ./.github/workflows/_projects.yaml
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    strategy:
+      max-parallel: 10
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        components:
+          # NOTE: list of project components to run
+
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+    with:
+      project: content-scoring
+      environment: prod
+      component: ${{ matrix.components.name }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      download-model: ${{ matrix.components.download-model }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+
   # lsh
 
   run-lsh-project:
@@ -1213,6 +1254,7 @@ jobs       :
       - run-keywords-project
       - run-summarization-project
       - run-sentiment-project
+      - run-content-scoring-project
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
@@ -1234,6 +1276,11 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
           - project: sentiment
+            self-hosted-runner-type: inf1.2xlarge
+            runner-kind: custom
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
+          - project: content-scoring
             self-hosted-runner-type: inf1.2xlarge
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
