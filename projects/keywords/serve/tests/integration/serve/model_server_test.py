@@ -10,7 +10,7 @@ from onclusiveml.serving.rest.serve import (
 )
 
 # Source
-from src.serve.model_server import get_model_server
+from src.serve.__main__ import get_model_server
 from src.serve.served_model import ServedKeywordsModel
 
 
