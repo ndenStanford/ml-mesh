@@ -15,6 +15,26 @@ def input_query():
 
 
 @pytest.fixture
+def input_query_id():
+    """Input query id."""
+    return "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
+
+
+@pytest.fixture
+def input_product_tool_version():
+    """Input product tool version."""
+    return "1"
+
+
+@pytest.fixture
+def expected_query_id_output():
+    """Expected output for id to boolean."""
+    return """
+        (apple  AND NOT  "Apple's Jade") OR  "Steve Jobs"  OR  "Tim Cook"  OR  "Angela Ahrends"  OR  "Eddie Cue"  OR  "Craig Federighi"  OR  "Jonathan Ive"  OR  "Luca Maestri"  OR  "Dan Riccio"  OR  "Phil Schiller"  OR  "Bruce Sewell"  OR  "Jeff Williams"  OR  "Paul Deneve"  OR  "Lisa Jackson"  OR  "Joel Podolny"  OR  "Johnny Srouji"  OR  "Denise Young Smith"
+        """  # noqa: E501
+
+
+@pytest.fixture
 def expected_output():
     """Expected output for input query."""
     return {

@@ -98,3 +98,21 @@ class StringQueryProfile(BaseQueryProfile):
         """String query."""
         # api call to query tool
         return self.string_query
+
+
+class ProductionToolsQueryProfile(BaseQueryProfile):
+    """Query ID to Boolean."""
+
+    version: int
+    query_id: str
+
+    def id_to_boolean(self, settings: MediaAPISettings) -> Union[str, None]:
+        """Translate query id to string query."""
+        request_result = requests.get(
+            f"{settings.media_api_url}/v{self.version}/topics/{self.query_id}",
+            headers=self.headers(settings),
+        )
+        if request_result.status_code == 200:
+            return request_result.json().get("booleanQuery")
+        else:
+            return None
