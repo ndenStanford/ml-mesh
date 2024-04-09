@@ -28,7 +28,7 @@ class TranscriptSegmentationHandlerSettings(OnclusiveBaseSettings):
     """Transcript Segmentation configurations."""
 
     CHARACTER_BUFFER: int = 2500
-    WINDOW_THRESHOLD: int = 50
+    WINDOW_THRESHOLD: int = 40
 
 
 class GlobalSettings(
