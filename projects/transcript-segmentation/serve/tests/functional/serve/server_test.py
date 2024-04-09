@@ -159,7 +159,6 @@ def test_server_prediction_timeout(test_payload_timeout, expected_response_timeo
         "http://serve:8888/transcript-segmentation/v1/predict",
         json=test_payload_timeout,
     )
-    print(response.json())
 
     assert response.status_code == 200
     assert response.json()["version"] == expected_response_timeout["version"]
