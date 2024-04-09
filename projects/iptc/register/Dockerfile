@@ -38,7 +38,7 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction --no-ansi && \
+RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
@@ -60,6 +60,11 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction
+RUN poetry install --no-interaction --with dev
 
 USER app
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debug

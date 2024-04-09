@@ -66,6 +66,7 @@ def test_get_prompt(mock_prompt_get, alias, test_client):
             "model_name": "gpt-3.5-turbo",
             "temperature": 0.7,
             "response_format": None,
+            "seed": None,
         },
         "variables": [],
         "version": 0,
@@ -116,6 +117,7 @@ def test_create_prompt(mock_prompt_get, mock_table_save, template, alias, test_c
                 "max_tokens": 123,
                 "temperature": 0.3,
                 "response_format": None,
+                "seed": None,
             },
         ),
     ],
@@ -257,6 +259,7 @@ def test_create_prompt_same_alias(
                 "model_name": "gpt-3.5-turbo",
                 "temperature": 0.7,
                 "response_format": None,
+                "seed": None,
             },
         ),
         (
@@ -270,6 +273,7 @@ def test_create_prompt_same_alias(
                 "model_name": "gpt-3.5-turbo",
                 "temperature": 0.7,
                 "response_format": None,
+                "seed": None,
             },
         ),
     ],
@@ -320,6 +324,7 @@ def test_update_prompt(
                 "model_name": "gpt-3.5-turbo",
                 "temperature": 0.7,
                 "response_format": None,
+                "seed": None,
             },
         ),
         (
@@ -332,6 +337,7 @@ def test_update_prompt(
                 "model_name": "gpt-3.5-turbo",
                 "temperature": 0.7,
                 "response_format": None,
+                "seed": None,
             },
         ),
     ],
@@ -517,6 +523,7 @@ def test_generate_text(
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
         response_format=settings.RESPONSE_FORMAT,
+        seed=settings.SEED,
     )
 
     assert mock_prompt_get.call_count == 1
@@ -583,6 +590,7 @@ def test_generate_text_override_parameters(
         max_tokens=100,
         temperature=0.2,
         response_format=None,
+        seed=None,
     )
 
     assert mock_prompt_get.call_count == 1
@@ -668,6 +676,7 @@ def test_generate_text_with_diff_model(
         max_tokens=settings.OPENAI_MAX_TOKENS,
         temperature=settings.OPENAI_TEMPERATURE,
         response_format=settings.RESPONSE_FORMAT,
+        seed=settings.SEED,
     )
 
     assert mock_model_get.call_count == 1
