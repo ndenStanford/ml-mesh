@@ -105,12 +105,14 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
 
     version: int
     query_id: str
+    settings = MediaAPISettings()
 
-    def id_to_boolean(self, settings: MediaAPISettings) -> Union[str, None]:
+    @property
+    def query(self) -> Union[str, None]:
         """Translate query id to string query."""
         request_result = requests.get(
-            f"{settings.media_api_url}/v{self.version}/topics/{self.query_id}",
-            headers=self.headers(settings),
+            f"{self.settings.media_api_url}/v{self.version}/topics/{self.query_id}",
+            headers=self.headers(self.settings),
         )
         if request_result.status_code == 200:
             return request_result.json().get("booleanQuery")
