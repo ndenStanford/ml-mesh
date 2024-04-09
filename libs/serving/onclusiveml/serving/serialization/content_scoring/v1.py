@@ -10,7 +10,7 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    dataframe: Dict = {}
+    data: Dict = {}
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):

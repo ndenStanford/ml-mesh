@@ -45,15 +45,16 @@ class CompiledContentScoring:
 
         return cls(trained_content_model=trained_content_model)
 
-    def preprocess_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Preprocess the input DataFrame.
+    def preprocess_data(self, data: Dict) -> pd.DataFrame:
+        """Preprocess the input Dictionary.
 
         Args:
-            df (pd.DataFrame): Input DataFrame containing data to be preprocessed.
+            df (dict): Input dict containing data to be preprocessed.
 
         Returns:
             pd.DataFrame: Preprocessed DataFrame.
         """
+        df = pd.DataFrame(data)
         numerical_cols = ["pagerank", "reach", "score"]
         categorical_cols = [
             "lang",
@@ -98,11 +99,11 @@ class CompiledContentScoring:
 
         return processed_content_messages
 
-    def __call__(self, df: pd.DataFrame) -> Dict[str, List[Any]]:
+    def __call__(self, df: Dict) -> Dict[str, List[Any]]:
         """Perform content scoring on input data.
 
         Args:
-            df (pd.DataFrame): Input DataFrame containing features for prediction.
+            df (Dict): Input dictionary containing features for prediction.
 
         Returns:
             Tuple: Predicted content messages.

@@ -4,7 +4,6 @@
 from typing import Type
 
 # 3rd party libraries
-import pandas as pd
 from pydantic import BaseModel
 
 # Internal libraries
@@ -75,12 +74,9 @@ class ServedContentScoringModel(ServedModel):
         Returns:
             PredictResponseSchema: Response containing content scores
         """
-        # Assuming `payload.data.attributes.dataframe` is a dictionary
-        df_data = payload.data.attributes.dataframe
+        df_data = payload.data.attributes.data
 
-        # Construct DataFrame from the payload dataframe dictionary
-        df = pd.DataFrame(df_data)
-        content_status = self.model(df)
+        content_status = self.model(df_data)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),

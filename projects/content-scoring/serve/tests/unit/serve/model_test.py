@@ -42,7 +42,7 @@ def test_served_model_load(mock_from_pretrained, served_model):
                     "identifier": None,
                     "namespace": "content-scoring",
                     "attributes": {
-                        "dataframe": {
+                        "data": {
                             "pagerank": [3.299923, 9.1, 9.4],
                             "reach": [90, 2821568, 3614746],
                             "score": [628226.6, 4213572.0, 1601918.4],
