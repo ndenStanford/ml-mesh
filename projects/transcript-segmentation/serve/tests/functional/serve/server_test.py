@@ -151,3 +151,58 @@ def test_server_prediction_o2(test_payload_o2, expected_response_o2):
         response.json()["data"]["attributes"]["ad"]
         == expected_response_o2["data"]["attributes"]["ad"]
     )
+
+
+def test_server_prediction_timeout(test_payload_timeout, expected_response_timeout):
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    response = requests.post(
+        "http://serve:8888/transcript-segmentation/v1/predict",
+        json=test_payload_timeout,
+    )
+    print(response.json())
+
+    assert response.status_code == 200
+    assert response.json()["version"] == expected_response_timeout["version"]
+    assert (
+        response.json()["data"]["identifier"]
+        == expected_response_timeout["data"]["identifier"]
+    )
+    assert (
+        response.json()["data"]["namespace"]
+        == expected_response_timeout["data"]["namespace"]
+    )
+    assert (
+        abs(
+            response.json()["data"]["attributes"]["start_time"]
+            - expected_response_timeout["data"]["attributes"]["start_time"]
+        )
+        <= 20000
+    )
+    assert (
+        abs(
+            response.json()["data"]["attributes"]["end_time"]
+            - expected_response_timeout["data"]["attributes"]["end_time"]
+        )
+        <= 20000
+    )
+    assert (
+        abs(
+            response.json()["data"]["attributes"]["transcript_start_time"]
+            - expected_response_timeout["data"]["attributes"]["transcript_start_time"]
+        )
+        <= 20000
+    )
+    assert (
+        abs(
+            response.json()["data"]["attributes"]["transcript_end_time"]
+            - expected_response_timeout["data"]["attributes"]["transcript_end_time"]
+        )
+        <= 20000
+    )
+    assert isinstance(response.json()["data"]["attributes"]["title"], str)
+    assert isinstance(response.json()["data"]["attributes"]["summary"], str)
+    assert isinstance(response.json()["data"]["attributes"]["segment"], str)
+    assert (
+        response.json()["data"]["attributes"]["ad"]
+        == expected_response_timeout["data"]["attributes"]["ad"]
+    )
