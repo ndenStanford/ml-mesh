@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import Tuple
+from typing import List, Tuple
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
@@ -87,6 +87,10 @@ class DataFetchParams(FeatureStoreParams):
     save_artifact: bool = False
     n_records_sample: int
     n_records_full: int
+    filter_columns: List[str] = []
+    filter_values: List[str] = []
+    comparison_operators: List[str] = []
+    non_nullable_columns: List[str] = ["content"]
 
     class Config:
         env_file = "config/dev.env"
