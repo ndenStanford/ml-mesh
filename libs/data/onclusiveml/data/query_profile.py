@@ -61,7 +61,7 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         response = self._from_boolean_to_media_api(settings)
         if response:
             data = response.get("query", {})
-            return data["es_query"]
+            return {"bool": data["es_query"]}
         return None
 
     def _from_boolean_to_media_api(

@@ -26,6 +26,7 @@ from src.settings import get_settings
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.document_collector import DocumentCollector
+from onclusiveml.data.query_profile import StringQueryProfile, BaseQueryProfile
 
 settings = get_settings()
 
@@ -36,6 +37,13 @@ class ServedTopicModel(ServedModel):
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
+
+    def get_query_profile(self, query_profile: str) -> BaseQueryProfile:
+        """Convert user profile input into appropriate Profile class."""
+        if isinstance(query_profile, str):
+            return StringQueryProfile(string_query=query_profile)
+        else:
+            return None  # TODO: ADD ERROR RESPONSE HERE
 
     def __init__(self) -> None:
         super().__init__(name="topic-summarization")
@@ -59,7 +67,7 @@ class ServedTopicModel(ServedModel):
         inputs = payload.attributes
         content = inputs.content
         topic_id = inputs.topic_id
-        profile_id = inputs.profile_id
+        query_profile = self.get_query_profile(inputs.profile)
         trend_detection = inputs.trend_detection
 
         # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
@@ -71,7 +79,7 @@ class ServedTopicModel(ServedModel):
         if not content:
             if trend_detection:
                 trending, inflection_point = self.trend_detector.single_topic_trend(
-                    profile_id, topic_id, start_time, end_time
+                    query_profile, topic_id, start_time, end_time
                 )
             if not trend_detection or trending:
                 # if trending, retrieve documents between inflection point and next day
@@ -81,7 +89,7 @@ class ServedTopicModel(ServedModel):
 
                 # collect documents of profile
                 content = self.document_collector.get_documents(
-                    profile_id, topic_id, start_time, end_time
+                    query_profile, topic_id, start_time, end_time
                 )
                 topic = self.model.aggregate(content)
             else:
@@ -96,7 +104,6 @@ class ServedTopicModel(ServedModel):
             },
         )
 
-    @retry(tries=3)
     def bio(self) -> BioResponseSchema:
         """Model bio endpoint."""
         return BioResponseSchema.from_data(

@@ -10,10 +10,12 @@ from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
 from pandas import Timestamp
 
+# Internal libraries
+from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+
 # Source
-from src.serve.utils import (
+from src.serve.utils import (  # query_translation,
     all_profile_query,
-    query_translation,
     topic_profile_query,
 )
 from src.settings import get_settings
@@ -49,7 +51,7 @@ class TrendDetection:
 
     def single_topic_trend(
         self,
-        profile_id: str,
+        query_profile: BaseQueryProfile,
         topic_id: str,
         start_time: pd.datetime,
         end_time: pd.datetime,
@@ -57,14 +59,14 @@ class TrendDetection:
         """Trend detection for single topic and keyword.
 
         Args:
-            profile_id (str): boolean query corresponding to a profile id
+            query_profile (BaseQueryProfile): boolean query of a profile e.g. a company
             topic_id (str): topic id
             start_time (pd.datetime): start time range of documents to be collected
             end_time (pd.datetime): end time range of documents to be collected
         Output:
             Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """
-        query = query_translation(profile_id)
+        query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results = self.es.search(
             index=settings.es_index,

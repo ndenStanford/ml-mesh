@@ -56,7 +56,7 @@ def test_payload():
             "identifier": "string",
             "namespace": "topic-summarization",
             "attributes": {
-                "profile_id": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+                "profile": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
                 "topic_id": 257,
                 "trend_detection": False,
             },
