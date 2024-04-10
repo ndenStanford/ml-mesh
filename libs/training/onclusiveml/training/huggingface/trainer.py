@@ -4,7 +4,7 @@
 from abc import abstractmethod
 
 # ML libs
-from transformers import EarlyStoppingCallback, Trainer
+from transformers import EarlyStoppingCallback, Trainer, TrainingArguments
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
@@ -71,18 +71,17 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         """
         pass
 
-    @abstractmethod
     def create_training_argument(self) -> None:
         """Create training argument object for Huggingface trainer.
 
-        Example implementation
-        self.training_args = TrainingArguments(
-          output_dir=self.model_card.output_dir,
-          num_train_epochs=self.model_card.epochs,
-          learning_rate=self.model_card.learning_rate
-        )
+        Returns: None
         """
-        pass
+        self.training_args = TrainingArguments(
+            output_dir=self.model_card.output_dir,
+            num_train_epochs=self.model_card.epochs,
+            learning_rate=self.model_card.learning_rate,
+            report_to="neptune",
+        )
 
     def train(self) -> None:
         """Train the model.
@@ -99,7 +98,6 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
             callbacks=[EarlyStoppingCallback(early_stopping_patience=1)],
         )
         self.trainer.train()
-        return
 
     @abstractmethod
     def predict(self) -> None:
