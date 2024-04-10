@@ -13,7 +13,9 @@ import pandas as pd
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
+from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.serve.schema import (
@@ -28,6 +30,8 @@ from src.serve.trend_detection import TrendDetection
 from src.serve.document_collector import DocumentCollector
 from onclusiveml.data.query_profile import StringQueryProfile, BaseQueryProfile
 
+logger = get_default_logger(__name__)
+
 settings = get_settings()
 
 
@@ -38,11 +42,12 @@ class ServedTopicModel(ServedModel):
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
-    def get_query_profile(self, query_profile: str) -> BaseQueryProfile:
+    def get_query_profile(self, inputs: JsonApiSchema) -> BaseQueryProfile:
         """Convert user profile input into appropriate Profile class."""
-        if isinstance(query_profile, str):
-            return StringQueryProfile(string_query=query_profile)
+        if inputs.query_string:
+            return StringQueryProfile(string_query=inputs.query_string)
         else:
+            logger.error("QueryProfile not found")
             return None  # TODO: ADD ERROR RESPONSE HERE
 
     def __init__(self) -> None:
@@ -67,7 +72,7 @@ class ServedTopicModel(ServedModel):
         inputs = payload.attributes
         content = inputs.content
         topic_id = inputs.topic_id
-        query_profile = self.get_query_profile(inputs.profile)
+        query_profile = self.get_query_profile(inputs)
         trend_detection = inputs.trend_detection
 
         # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time

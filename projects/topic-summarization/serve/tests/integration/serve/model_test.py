@@ -41,7 +41,7 @@ def test_served_topic_model_predict(test_inference_params):
         namespace=settings.model_name,
         parameters=test_inference_params,
         attributes={
-            "profile": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+            "query_string": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
             "trend_detection": True,
         },
@@ -61,7 +61,7 @@ def test_served_topic_model_predict_skip_trend(test_inference_params):
         namespace=settings.model_name,
         parameters=test_inference_params,
         attributes={
-            "profile": """((amex OR "american express" OR americanexpress) AND NOT ("nyse amex" OR "stade amex" OR abonnez-vous OR "American Express Global Business Travel" OR "american express gbt" OR "amex gbt" OR "amex global business travel" OR "William Muller" OR Sarrebourg )) OR "aXHH-Hotel hub" OR Euraxo OR aXcent OR "Carte Optima" OR "Carte SBS" OR "Carte Blue" OR Uvet OR Mobilextend OR Resoclub OR Resoclick OR Pcard OR "Nathalie Estrada" OR "Eric Tredjeu" OR "Sophie Janvier" OR "Cathy Notlet" OR "Claudine Hameau" OR "Stéphanie Laroque" OR "PF Brezes" OR "Hervé Sedky" OR "Gabrielle Elbaz" OR "Yves Pechon" OR  "Christophe Haviland" OR "Espace Voyages professionnels" OR Tripcase""",  # noqa: E501
+            "query_string": """((amex OR "american express" OR americanexpress) AND NOT ("nyse amex" OR "stade amex" OR abonnez-vous OR "American Express Global Business Travel" OR "american express gbt" OR "amex gbt" OR "amex global business travel" OR "William Muller" OR Sarrebourg )) OR "aXHH-Hotel hub" OR Euraxo OR aXcent OR "Carte Optima" OR "Carte SBS" OR "Carte Blue" OR Uvet OR Mobilextend OR Resoclub OR Resoclick OR Pcard OR "Nathalie Estrada" OR "Eric Tredjeu" OR "Sophie Janvier" OR "Cathy Notlet" OR "Claudine Hameau" OR "Stéphanie Laroque" OR "PF Brezes" OR "Hervé Sedky" OR "Gabrielle Elbaz" OR "Yves Pechon" OR  "Christophe Haviland" OR "Espace Voyages professionnels" OR Tripcase""",  # noqa: E501
             "topic_id": 19,
             "trend_detection": False,
         },
