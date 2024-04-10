@@ -14,6 +14,7 @@ from slugify import slugify
 from src.extensions.github import github
 from src.project.exceptions import ProjectNotFound
 from src.project.tables import Project
+from src.prompt import functional as F
 from src.prompt.exceptions import (
     DeletionProtectedPrompt,
     PromptInvalidParameters,
@@ -120,30 +121,12 @@ def get_prompt(alias: str):
 
 
 @router.post("/{alias}/generate/model/{model}", status_code=status.HTTP_200_OK)
-def generate_with_diff_model(alias: str, model: str, values: Dict[str, Any]):
-    """Generates text using a prompt template.
+def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str, Any]):
+    """Generates text using a prompt template with specific model.
 
     Args:
         alias (str): prompt alias
-        model_name (str): model name
+        model (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-
-
-@router.post("/generate", status_code=status.HTTP_200_OK)
-def generate_text_from_chat(values):
-    """Retrieves prompt via id.
-
-    Args:
-        values (Dict[str, Any]): input from chat
-    """
-
-
-@router.post("/generate/model/{model}", status_code=status.HTTP_200_OK)
-def generate_text_from_chat_diff_model(model: str, values):
-    """Retrieves prompt via id.
-
-    Args:
-        values (Dict[str, Any]): input from chat
-        model_name (str): model name
-    """
+    return F.generate_from_prompt_template(alias, model, **values)

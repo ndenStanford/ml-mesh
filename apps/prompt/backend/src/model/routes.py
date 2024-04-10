@@ -10,6 +10,7 @@ from fastapi import APIRouter, HTTPException, status
 # Source
 from src.model.exceptions import ModelNotFound
 from src.model.tables import LanguageModel
+from src.prompt import functional as F
 
 
 router = APIRouter(
@@ -48,5 +49,6 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str, parameters: Dict[str, Any]):
+def generate(alias: str, prompt: str):
     """Generates text using a prompt template."""
+    F.generate_from_prompt(alias prompt)

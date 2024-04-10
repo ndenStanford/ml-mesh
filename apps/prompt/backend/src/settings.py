@@ -34,21 +34,9 @@ class Settings(OnclusiveBaseSettings):
     INITIALIZE: bool = True
     # OpenAI API key
     OPENAI_API_KEY: str
-    OPENAI_MAX_TOKENS: int = 512
-    OPENAI_TEMPERATURE: float = 0.7
-    RESPONSE_FORMAT: Optional[Dict] = None
-    SEED: Optional[int] = None
+    LLM_CALL_RETRY_COUNT: int = 2
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
-
-    OPENAI_PARAMETERS = json.dumps(
-        {
-            "max_tokens": OPENAI_MAX_TOKENS,
-            "temperature": OPENAI_TEMPERATURE,
-            "response_format": RESPONSE_FORMAT,
-            "seed": SEED,
-        }
-    )
 
     REDIS_CONNECTION_STRING: str = ""
     REDIS_TTL_SECONDS: int = 604800

@@ -5,7 +5,15 @@ from typing import Optional
 
 # 3rd party libraries
 from dyntastic import Dyntastic
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+)
 from pydantic import Field
+
+# Internal libraries
+from onclusiveml.llm.mixins import LangchainConvertibleMixin
+from onclusiveml.llm.typing import LangchainT
 
 # Source
 from src.extensions.github import github
@@ -16,7 +24,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-class PromptTemplate(Dyntastic):
+class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     __table_name__ = "prompt"
     __hash_key__ = "alias"
     __table_region__ = settings.AWS_REGION
@@ -24,7 +32,6 @@ class PromptTemplate(Dyntastic):
 
     alias: str
     template: str
-    parameters: dict = {}
     project: str
     sha: Optional[str] = None
 
@@ -42,3 +49,9 @@ class PromptTemplate(Dyntastic):
         """Delete project from database and github."""
         github.rm(os.path.join(project, self.alias), f"Delete prompt {self.alias}")
         return super(Project, self).delete()
+
+    def as_langchain(self) -> Optional[LangchainT]:
+        """Convert to langchain object."""
+        return ChatPromptTemplate.from_messages(
+            [HumanMessagePromptTemplate.from_template(self.template)]
+        )

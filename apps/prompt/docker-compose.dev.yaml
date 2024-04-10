@@ -116,7 +116,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload]
-    profiles: [backend, debug]
+    profiles: [debug]
     ports:
       - 4000:4000
       - 5678:5678
