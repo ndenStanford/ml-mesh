@@ -11,6 +11,7 @@ import pandas as pd
 # Source
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from onclusiveml.data.query_profile import StringQueryProfile
 
 _service = TopicHandler()
 
@@ -79,10 +80,12 @@ def test_handler_group(article_input):
 @patch("requests.post")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
-    "profile_id, topic_id, start_time, end_time",
+    "profile, topic_id, start_time, end_time",
     [
         (
-            """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",
+            StringQueryProfile(
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+            ),
             562,
             pd.Timestamp.now(),
             pd.Timestamp.now() - pd.Timedelta(days=14),
@@ -92,7 +95,7 @@ def test_handler_group(article_input):
 def test_not_trending(
     mock_elasticsearch,
     mock_post,
-    profile_id,
+    profile,
     topic_id,
     start_time,
     end_time,
@@ -107,17 +110,19 @@ def test_not_trending(
         mock_topic_profile_es_result_not_trending,
     ]
     trend_detector = TrendDetection()
-    res = trend_detector.single_topic_trend(profile_id, topic_id, start_time, end_time)
+    res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
     assert res == (False, None)
 
 
 @patch("requests.post")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
-    "profile_id, topic_id, start_time, end_time",
+    "profile, topic_id, start_time, end_time",
     [
         (
-            """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",
+            StringQueryProfile(
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+            ),
             562,
             pd.Timestamp.now(),
             pd.Timestamp.now() - pd.Timedelta(days=14),
@@ -127,7 +132,7 @@ def test_not_trending(
 def test_trending(
     mock_elasticsearch,
     mock_post,
-    profile_id,
+    profile,
     topic_id,
     start_time,
     end_time,
@@ -142,5 +147,5 @@ def test_trending(
         mock_topic_profile_es_result_trending,
     ]
     trend_detector = TrendDetection()
-    res = trend_detector.single_topic_trend(profile_id, topic_id, start_time, end_time)
+    res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))

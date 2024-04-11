@@ -2,7 +2,7 @@
 
 # Standard Library
 from enum import Enum
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -11,8 +11,9 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    topic_id: int
-    profile_id: str
+    content: Optional[List[str]] = None
+    topic_id: Optional[int] = None
+    query_string: Optional[str] = None
     trend_detection: Optional[bool] = True
 
 

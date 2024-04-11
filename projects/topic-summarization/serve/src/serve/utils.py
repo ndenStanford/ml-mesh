@@ -7,22 +7,6 @@ from typing import Dict
 # 3rd party libraries
 import pandas as pd
 
-# Internal libraries
-# import requests
-from onclusiveml.data.query_profile import MediaAPISettings, StringQueryProfile
-
-
-def query_translation(query: str) -> Dict:
-    """Translates a boolean query in media API format."""
-    settings = MediaAPISettings()
-    str_query = StringQueryProfile(string_query=query)
-    es_query = str_query.es_query(settings)
-    if es_query:
-        es_query = {"bool": es_query}
-    else:
-        es_query = {}
-    return es_query
-
 
 def all_profile_query(
     translated_boolean_query: Dict,
@@ -259,13 +243,14 @@ def topic_profile_documents_query(
     start_time: pd.datetime,
     end_time: pd.datetime,
     topic_id: int,
+    size: int,
 ) -> Dict:
     """Documents query.
 
     Returns list of documents of a given profile and topic.
     """
     query = {
-        "size": 100,
+        "size": size,
         "query": {
             "bool": {
                 "must": [

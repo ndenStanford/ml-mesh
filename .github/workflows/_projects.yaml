@@ -171,7 +171,7 @@ jobs:
     name: 'Build, test & deploy: ${{ inputs.project }}-${{ inputs.component }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    timeout-minutes: 20
+    timeout-minutes: 50
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:

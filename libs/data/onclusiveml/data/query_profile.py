@@ -61,7 +61,7 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         response = self._from_boolean_to_media_api(settings)
         if response:
             data = response.get("query", {})
-            return data["es_query"]
+            return {"bool": data["es_query"]}
         return None
 
     def _from_boolean_to_media_api(
@@ -98,3 +98,23 @@ class StringQueryProfile(BaseQueryProfile):
         """String query."""
         # api call to query tool
         return self.string_query
+
+
+class ProductionToolsQueryProfile(BaseQueryProfile):
+    """Query ID to Boolean."""
+
+    version: int
+    query_id: str
+    settings = MediaAPISettings()
+
+    @property
+    def query(self) -> Union[str, None]:
+        """Translate query id to string query."""
+        request_result = requests.get(
+            f"{self.settings.media_api_url}/v{self.version}/topics/{self.query_id}",
+            headers=self.headers(self.settings),
+        )
+        if request_result.status_code == 200:
+            return request_result.json().get("booleanQuery")
+        else:
+            return None

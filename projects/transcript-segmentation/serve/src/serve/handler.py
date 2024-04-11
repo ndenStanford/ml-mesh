@@ -80,27 +80,31 @@ class TranscriptSegmentationHandler:
         """
         # Filter out entries with None values
         word_transcript_filtered = [i for i in word_transcript if i["w"] is not None]
-        # Extract first and last portions of the segment
+
         segment_split = segment.split()
+        window_threshold = min(len(segment_split), settings.WINDOW_THRESHOLD)
 
-        THRESHOLD = 20
+        first_portion = " ".join(segment_split[:window_threshold]).lstrip(">")
 
-        first_portion = " ".join(segment_split[:THRESHOLD]).lstrip(">")
-        last_portion = " ".join(segment_split[-THRESHOLD:]).lstrip(">")
-        # Find the most compatible sublists that matches the portions from the segment
+        search_last_portion = False
+        if window_threshold >= settings.WINDOW_THRESHOLD:
+            search_last_portion = True
+            last_portion = " ".join(segment_split[-window_threshold:]).lstrip(">")
         max_similarity_start = 0
         max_similarity_end = 0
         best_portion_start = []
         best_portion_end: List[Dict[str, Any]] = []
 
-        for i in range(len(word_transcript_filtered) - (THRESHOLD - 1)):
-            candidate_list = word_transcript_filtered[i : i + THRESHOLD]  # noqa: E203
+        for i in range(len(word_transcript_filtered) - (window_threshold - 1)):
+            candidate_list = word_transcript_filtered[
+                i : i + window_threshold  # noqa: E203
+            ]
             candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
-            # fix abbreviations
             candidate = candidate.replace(" .", ".")
 
             similarity_start = fuzz.ratio(candidate, first_portion)
-            similarity_end = fuzz.ratio(candidate, last_portion)
+            if search_last_portion:
+                similarity_end = fuzz.ratio(candidate, last_portion)
 
             if (
                 similarity_start > max_similarity_start
@@ -109,23 +113,27 @@ class TranscriptSegmentationHandler:
                 max_similarity_start = similarity_start
                 best_portion_start = candidate_list
 
-            if (
-                similarity_end > max_similarity_end
-                and best_portion_start != candidate_list
-            ):
-                max_similarity_end = similarity_end
-                best_portion_end = candidate_list
+            if search_last_portion:
+                if (
+                    similarity_end > max_similarity_end
+                    and best_portion_start != candidate_list
+                ):
+                    max_similarity_end = similarity_end
+                    best_portion_end = candidate_list
 
         start_time = best_portion_start[0]["ts"]
-        end_time = best_portion_end[-1]["ts"]
-        start_time_offsetted = start_time + offset_start_buffer
-        end_time_offsetted = end_time + offset_end_buffer
+        end_time = (
+            best_portion_end[-1]["ts"]
+            if search_last_portion
+            else best_portion_start[-1]["ts"]
+        )
 
-        if start_time_offsetted < word_transcript_filtered[0]["ts"]:
-            start_time_offsetted = word_transcript_filtered[0]["ts"]
-
-        if end_time_offsetted > word_transcript_filtered[-1]["ts"]:
-            end_time_offsetted = word_transcript_filtered[-1]["ts"]
+        start_time_offsetted = max(
+            start_time + offset_start_buffer, word_transcript_filtered[0]["ts"]
+        )
+        end_time_offsetted = min(
+            end_time + offset_end_buffer, word_transcript_filtered[-1]["ts"]
+        )
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
