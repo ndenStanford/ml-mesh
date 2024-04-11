@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     AWS_REGION: str = "us-east-1"
 
     REDIS_CONNECTION_STRING: str = ""
-    REDIS_TTL_SECONDS: int = 604800
+    REDIS_TTL_SECONDS: int = 86400
 
     DB_HOST: Optional[str] = None
     CORS_ORIGIN: List[str] = ["*"]
