@@ -13,15 +13,23 @@ core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
 nlp = {path = "../../../libs/nlp"}
 tracking = {path = "../../../libs/tracking"}
+data = {path = "../../../libs/data"}
 types-requests = "^2.31.0.2"
 requests = "^2.31.0"
 httpx = "^0.25.0"
+packaging = "21.3"
+pandas = "1.4.3"
+elasticsearch = "7.17"
+statsmodels = "0.13.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
 pytest-order = "1.1.0"
 pytest-mock = "3.10.0"
+freezegun = "1.2.2"
 
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
 
 [build-system]
 requires = ["poetry-core"]

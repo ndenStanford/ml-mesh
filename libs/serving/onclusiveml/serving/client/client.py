@@ -6,7 +6,9 @@ from typing import Any
 # Internal libraries
 import onclusiveml.serving.serialization.entity_linking.v1 as entity_linking_v1
 import onclusiveml.serving.serialization.gch_summarization.v1 as gch_summarization_v1
+import onclusiveml.serving.serialization.lsh.v1 as lsh_v1
 import onclusiveml.serving.serialization.ner.v1 as ner_v1
+import onclusiveml.serving.serialization.sentiment.v1 as sentiment_v1
 import onclusiveml.serving.serialization.topic.v1 as topic_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
 from onclusiveml.serving.client._bind import bind
@@ -87,6 +89,26 @@ class OnclusiveApiClient:
         request_attributes_schema=gch_summarization_v1.PredictRequestAttributeSchemaV1,
         request_parameters_schema=gch_summarization_v1.PredictRequestParametersSchemaV1,
         response_attributes_schema=gch_summarization_v1.PredictResponseAttributeSchemaV1,
+    )
+
+    sentiment = bind(
+        namespace="sentiment",
+        version=1,
+        method="POST",
+        endpoint="predict",
+        request_attributes_schema=sentiment_v1.PredictRequestAttributeSchemaV1,
+        request_parameters_schema=sentiment_v1.PredictRequestParametersSchemaV1,
+        response_attributes_schema=sentiment_v1.PredictResponseAttributeSchemaV1,
+    )
+
+    lsh = bind(
+        namespace="lsh",
+        version=1,
+        method="POST",
+        endpoint="predict",
+        request_attributes_schema=lsh_v1.PredictRequestAttributeSchemaV1,
+        request_parameters_schema=lsh_v1.PredictRequestParametersSchemaV1,
+        response_attributes_schema=lsh_v1.PredictResponseAttributeSchemaV1,
     )
 
     def __getitem__(self, model: str) -> Any:

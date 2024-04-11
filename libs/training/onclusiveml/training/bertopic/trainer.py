@@ -10,6 +10,7 @@ from bertopic import BERTopic
 from bertopic.representation import MaximalMarginalRelevance
 from cuml.cluster import HDBSCAN
 from cuml.manifold import UMAP
+from neptune import init_run
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -149,6 +150,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         self.logger.info(
             f"Training data uploaded to s3 location : {self.full_file_key}"
         )
+        self.run = init_run()
         self.initialize_model()
         self.optimize_model()
         self.save()
@@ -167,3 +169,4 @@ class BertopicTrainer(OnclusiveModelTrainer):
                 ],
                 self.topic_model_local_dir,
             )
+        self.run.stop()

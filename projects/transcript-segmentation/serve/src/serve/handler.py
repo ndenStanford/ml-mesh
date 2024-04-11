@@ -2,6 +2,7 @@
 
 # Standard Library
 import json
+from json.decoder import JSONDecodeError
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
@@ -80,28 +81,30 @@ class TranscriptSegmentationHandler:
         # Filter out entries with None values
         word_transcript_filtered = [i for i in word_transcript if i["w"] is not None]
 
-        # Extract first and last portions of the segment
         segment_split = segment.split()
+        window_threshold = min(len(segment_split), settings.WINDOW_THRESHOLD)
 
-        THRESHOLD = 20
+        first_portion = " ".join(segment_split[:window_threshold]).lstrip(">")
 
-        first_portion = " ".join(segment_split[:THRESHOLD]).lstrip(">")
-        last_portion = " ".join(segment_split[-THRESHOLD:]).lstrip(">")
-
-        # Find the most compatible sublists that matches the portions from the segment
+        search_last_portion = False
+        if window_threshold >= settings.WINDOW_THRESHOLD:
+            search_last_portion = True
+            last_portion = " ".join(segment_split[-window_threshold:]).lstrip(">")
         max_similarity_start = 0
         max_similarity_end = 0
         best_portion_start = []
         best_portion_end: List[Dict[str, Any]] = []
 
-        for i in range(len(word_transcript_filtered) - (THRESHOLD - 1)):
-            candidate_list = word_transcript_filtered[i : i + THRESHOLD]  # noqa: E203
+        for i in range(len(word_transcript_filtered) - (window_threshold - 1)):
+            candidate_list = word_transcript_filtered[
+                i : i + window_threshold  # noqa: E203
+            ]
             candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
-            # fix abbreviations
             candidate = candidate.replace(" .", ".")
 
             similarity_start = fuzz.ratio(candidate, first_portion)
-            similarity_end = fuzz.ratio(candidate, last_portion)
+            if search_last_portion:
+                similarity_end = fuzz.ratio(candidate, last_portion)
 
             if (
                 similarity_start > max_similarity_start
@@ -110,23 +113,27 @@ class TranscriptSegmentationHandler:
                 max_similarity_start = similarity_start
                 best_portion_start = candidate_list
 
-            if (
-                similarity_end > max_similarity_end
-                and best_portion_start != candidate_list
-            ):
-                max_similarity_end = similarity_end
-                best_portion_end = candidate_list
+            if search_last_portion:
+                if (
+                    similarity_end > max_similarity_end
+                    and best_portion_start != candidate_list
+                ):
+                    max_similarity_end = similarity_end
+                    best_portion_end = candidate_list
 
         start_time = best_portion_start[0]["ts"]
-        end_time = best_portion_end[-1]["ts"]
-        start_time_offsetted = start_time + offset_start_buffer
-        end_time_offsetted = end_time + offset_end_buffer
+        end_time = (
+            best_portion_end[-1]["ts"]
+            if search_last_portion
+            else best_portion_start[-1]["ts"]
+        )
 
-        if start_time_offsetted < word_transcript_filtered[0]["ts"]:
-            start_time_offsetted = word_transcript_filtered[0]["ts"]
-
-        if end_time_offsetted > word_transcript_filtered[-1]["ts"]:
-            end_time_offsetted = word_transcript_filtered[-1]["ts"]
+        start_time_offsetted = max(
+            start_time + offset_start_buffer, word_transcript_filtered[0]["ts"]
+        )
+        end_time_offsetted = min(
+            end_time + offset_end_buffer, word_transcript_filtered[-1]["ts"]
+        )
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
@@ -141,6 +148,7 @@ class TranscriptSegmentationHandler:
         """
         # reverse order of the json response
         fields_list = [
+            ',  "Advertisement content": "',
             '",  "Piece after accept":"',
             '",  ["Piece after accept"]:"',
             '",  "Piece before accept":"',
@@ -161,6 +169,21 @@ class TranscriptSegmentationHandler:
             if position != -1
             else str_response[:position] + '"}'
         )
+
+    def find_key(self, json_response: Dict[str, str], keys_list: List[str]) -> str:
+        """Find the key that is being used in json response.
+
+        Args:
+            json_resposne (Dict[str,str]): openai json response
+            keys_list: Candidate key that may be found in json response
+
+        Returns:
+            str: key that exists in json response
+        """
+        for key in keys_list:
+            if key in json_response.keys():
+                break
+        return key
 
     def postprocess(
         self,
@@ -195,7 +218,6 @@ class TranscriptSegmentationHandler:
             str_response = self.remove_newlines(response)
             try:
                 json_response = eval(str_response)
-
             # Deal with issue where response is cutoff (finish_reason = length|content_filter)
             except SyntaxError:
                 str_response = self.trim_response(str_response)
@@ -203,42 +225,104 @@ class TranscriptSegmentationHandler:
 
         elif isinstance(response, dict):
             json_response = response
-
         # potential keys the gpt model could return
-        if "Related segment" in json_response.keys():
-            self.related_segment_key = "Related segment"
-        elif "Related Segment" in json_response.keys():
-            self.related_segment_key = "Related Segment"
-        elif "related_segment" in json_response.keys():
-            self.related_segment_key = "related_segment"
-        elif "segment" in json_response.keys():
-            self.related_segment_key = "segment"
-        elif "Segment" in json_response.keys():
-            self.related_segment_key = "Segment"
+        related_seg_keys_list = [
+            "Related segment",
+            "Related Segment",
+            "related_segment",
+            "related segment",
+            "segment",
+            "Segment",
+            "[Related segment]",
+        ]
+        self.related_segment_key = self.find_key(json_response, related_seg_keys_list)
+        segment = json_response.get(self.related_segment_key)
 
-        if json_response[self.related_segment_key] in [
+        if segment in [
             "N/A",
             "",
             "nothing",
             "n/a",
             "Nothing",
+            None,
         ]:
-            start_time, end_time, start_time_offsetted, end_time_offsetted, segment = (
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                "",
-            )
+            (
+                start_time,
+                end_time,
+                start_time_offsetted,
+                end_time_offsetted,
+                segment,
+                segment_title,
+                segment_summary,
+            ) = (0.0, 0.0, 0.0, 0.0, "", None, None)
         else:
 
-            segment = json_response.get(self.related_segment_key)
-            piece_before = json_response.get("Piece before")
-            piece_after = json_response.get("Piece after")
-            if json_response.get("Piece before accept") == "Yes":
+            piece_before_keys_list = [
+                "Piece before",
+                "piece before",
+                "piece_before",
+                "[Piece before]",
+            ]
+            self.piece_before_key = self.find_key(json_response, piece_before_keys_list)
+            piece_before = json_response.get(self.piece_before_key)
+
+            piece_after_keys_list = [
+                "Piece after",
+                "piece after",
+                "piece_after",
+                "[Piece after]",
+            ]
+            self.piece_after_key = self.find_key(json_response, piece_after_keys_list)
+            piece_after = json_response.get(self.piece_after_key)
+
+            piece_before_accept_keys_list = [
+                "Piece before accept",
+                "piece before accept",
+                "Piece_before_accept",
+                "[Piece before accept]",
+            ]
+            self.piece_before_accept_key = self.find_key(
+                json_response, piece_before_accept_keys_list
+            )
+            piece_before_accept = json_response.get(self.piece_before_accept_key)
+
+            piece_after_accept_keys_list = [
+                "Piece after accept",
+                "piece after accept",
+                "Piece_after_accept",
+                "[Piece after accept]",
+            ]
+            self.piece_after_accept_key = self.find_key(
+                json_response, piece_after_accept_keys_list
+            )
+            piece_after_accept = json_response.get(self.piece_after_accept_key)
+
+            segment_title_keys_list = [
+                "Segment title",
+                "segment title",
+                "segment_title",
+                "[Segment title]",
+            ]
+            self.segment_title_key = self.find_key(
+                json_response, segment_title_keys_list
+            )
+            segment_title = json_response.get(self.segment_title_key)
+
+            segment_summary_keys_list = [
+                "Segment summary",
+                "segment summary",
+                "segment_summary",
+                "[Segment summary]",
+            ]
+            self.segment_summary_key = self.find_key(
+                json_response, segment_summary_keys_list
+            )
+            segment_summary = json_response.get(self.segment_summary_key)
+
+            if piece_before_accept == "Yes":
                 segment = piece_before + " " + segment
 
-            if json_response.get("Piece after accept") == "Yes":
+            if piece_after_accept == "Yes":
                 segment = segment + piece_after
 
             (
@@ -251,8 +335,8 @@ class TranscriptSegmentationHandler:
         return (
             (start_time_offsetted, end_time_offsetted),
             (start_time, end_time),
-            json_response.get("Segment title"),
-            json_response.get("Segment summary"),
+            segment_title,
+            segment_summary,
             segment,
         )
 
@@ -322,10 +406,18 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
-        response = json.loads(q.content)["generated"]
-        json_response = json.loads(response)
-        # get the time stamp with ads
+        str_response = json.loads(q.content)["generated"]
 
+        if isinstance(str_response, str):
+            try:
+                json_response = json.loads(str_response)
+            except JSONDecodeError:
+                str_response = self.remove_newlines(str_response)
+                str_response = self.trim_response(str_response)
+                json_response = json.loads(str_response)
+        elif isinstance(str_response, dict):
+            json_response = str_response
+        # get the time stamp with ads
         candidate_keys = [
             "Advertisement detect",
             "[Advertisement detect]",
@@ -376,7 +468,6 @@ class TranscriptSegmentationHandler:
         """
         # preprocess
         paragraph = self.preprocess_transcript(word_transcript)
-
         # Truncate paragraph
         trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
 
@@ -389,7 +480,6 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
-
         # post process
         (
             (start_time_offsetted, end_time_offsetted),

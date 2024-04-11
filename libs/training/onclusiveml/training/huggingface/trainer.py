@@ -4,7 +4,7 @@
 from abc import abstractmethod
 
 # ML libs
-from transformers import EarlyStoppingCallback, Trainer
+from transformers import EarlyStoppingCallback, Trainer, TrainingArguments
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
@@ -47,17 +47,41 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         pass
 
     @abstractmethod
-    def create_training_argument(self) -> None:
-        """Create training argument object for Huggingface trainer.
+    def data_preprocess(self) -> None:
+        """Preprocess the data to the Huggingface trainer format and split for train and evaluation.
 
         Example implementation
-        self.training_args = TrainingArguments(
-          output_dir=self.model_card.output_dir,
-          num_train_epochs=self.model_card.epochs,
-          learning_rate=self.model_card.learning_rate
+        self.train_df, self.eval_df = train_test_split(
+            self.dataset_df,
+            test_size = 0.20,
+            stratify=self.dataset_df["target_label"]
+            )
+        self.train_dataset = IPTCDataset(
+            self.train_df,
+            self.model_card.tokenizer,
+            self.model_card.selected_text
+
+        )
+        self.eval_dataset = IPTCDataset(
+            self.eval_df,
+            self.model_card.tokenizer,
+            self.model_card.level,
+            self.model_card.selected_text
         )
         """
         pass
+
+    def create_training_argument(self) -> None:
+        """Create training argument object for Huggingface trainer.
+
+        Returns: None
+        """
+        self.training_args = TrainingArguments(
+            output_dir=self.model_card.output_dir,
+            num_train_epochs=self.model_card.epochs,
+            learning_rate=self.model_card.learning_rate,
+            report_to="neptune",
+        )
 
     def train(self) -> None:
         """Train the model.
@@ -74,7 +98,6 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
             callbacks=[EarlyStoppingCallback(early_stopping_patience=1)],
         )
         self.trainer.train()
-        return
 
     @abstractmethod
     def predict(self) -> None:
@@ -90,6 +113,14 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         Returns: None
         """
         self.train()
+
+    @abstractmethod
+    def save(self) -> None:
+        """Save the trained model and related information locally.
+
+        Returns: None
+        """
+        pass
 
     def __call__(self) -> None:
         """Call Method."""
