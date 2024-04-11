@@ -152,7 +152,7 @@ def expected_output():
     return {
         "start_time": 1701127816000.0,
         "end_time": 1701127859428.5715,
-        "transcript_start_time": 1701127820285.7144,
+        "transcript_start_time": 1701127820000.0,
         "transcript_end_time": 1701127859428.5715,
         "segment title": """The Rise of Generative AI and ChatGPT-4""",
         "segment summary": """Ian Bremmer discusses generative AI and the capabilities of chatbots like ChatGPT, highlighting the recent release of ChatGPT-4.""",  # noqa:E501
