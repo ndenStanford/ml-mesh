@@ -1182,6 +1182,7 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: content-scoring
+            sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/content-scoring
             trained-model: DOCUMENT_TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
