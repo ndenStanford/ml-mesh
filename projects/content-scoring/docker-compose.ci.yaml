@@ -31,6 +31,7 @@ services:
   compile-unit:
     volumes:
       - compile-volume:/projects/content-scoring/compile/outputs
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     hostname: onclusive-ml
