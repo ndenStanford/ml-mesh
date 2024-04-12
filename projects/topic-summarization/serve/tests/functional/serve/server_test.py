@@ -12,6 +12,7 @@ from onclusiveml.serving.rest.serve import (
 
 # Source
 from src.settings import get_settings
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
 settings = get_settings()
 
@@ -62,7 +63,10 @@ def test_model_server_predict_sample_docs(
     )
     assert test_response.status_code == 200
     assert test_response.json()["data"]["attributes"]["topic"] is not None
-    assert test_response.json()["data"]["attributes"]["impact_category"] == "low"
+    assert (
+        test_response.json()["data"]["attributes"]["impact_category"]
+        == ImpactCategoryLabel.low
+    )
 
 
 @pytest.mark.order(7)

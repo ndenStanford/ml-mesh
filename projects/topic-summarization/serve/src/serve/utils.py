@@ -222,6 +222,7 @@ def topic_profile_query(
                 "filter": [
                     translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                    {"term": {"lang": "en"}},
                 ],
             }
         },
@@ -270,6 +271,7 @@ def topic_profile_documents_query(
                 "filter": [
                     translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
+                    {"term": {"lang": "en"}},
                 ],
             }
         },
