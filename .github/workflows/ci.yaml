@@ -1160,25 +1160,25 @@ jobs       :
           - project: keywords
             sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/keywords
-            trained-model: KEYWORDS_TRAINED
+            trained-model: KEYWORDS-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: ner
             sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/ner
-            trained-model: NER_TRAINED
+            trained-model: NER-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/gch-summarization
-            trained-model: SUM_TRAINED
+            trained-model: SUM-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: topic
             sagemaker-runner-type: ml.p3.2xlarge
             trained-project: onclusive/topic
-            trained-model: TOPIC_TRAINED
+            trained-model: TOPIC-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: content-scoring
