@@ -822,8 +822,8 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
-          # train
-          - name: train
+          # compile
+          - name: compile
             download-model: false
             integration: false
             functional: false
