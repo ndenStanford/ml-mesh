@@ -1183,7 +1183,6 @@ jobs       :
             wait: true
           - project: content-scoring
             sagemaker-runner-type: ml.m4.xlarge
-
             trained-project: onclusive/document-content-scoring
             trained-model: DOCUMENT-SCORING
             tag: ${{ needs.run-repository-state.outputs.tag }}
