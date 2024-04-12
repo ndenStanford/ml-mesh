@@ -36,8 +36,8 @@ COPY --chown=${USER}:users libs/ libs/
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 # Copy and execute download_data.sh script
-COPY --chown=${USER}:users "${HOME}/src/download_data.sh" "${HOME}/download_data.sh" \
- && chmod +x "${HOME}/download_data.sh"\
+COPY --chown=${USER}:users "projects/content-scoring/train/src/download_data.sh" "${HOME}/download_data.sh" \
+ && chmod +x "${HOME}/download_data.sh" \
  && "${HOME}/download_data.sh" /
 
 WORKDIR "${HOME}"
