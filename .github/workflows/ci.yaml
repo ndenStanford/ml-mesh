@@ -1182,8 +1182,8 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: content-scoring
-            trained-project: onclusive/content-scoring
-            trained-model: DOCUMENT_TRAINED
+            trained-project: onclusive/document-content-scoring
+            trained-model: DOCUMENT-SCORING
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
 
