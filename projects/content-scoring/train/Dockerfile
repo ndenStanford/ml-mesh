@@ -34,12 +34,17 @@ COPY --chown=${USER}:users libs/ libs/
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
+# Copy and execute download_data.sh script
+COPY --chown=${USER}:users "${HOME}/src/download_data.sh" "${HOME}/download_data.sh" \
+ && chmod +x "${HOME}/download_data.sh"\
+ && "${HOME}/download_data.sh" /
+
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction --no-ansi && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+RUN poetry install --no-interaction --no-ansi \
+ && rm -rf ~/.cache/pypoetry/cache \
+ && rm -rf ~/.cache/pypoetry/artifacts \
+ && poetry cache clear pypi --all -q
 
 # --- production stage
 FROM builder as production
