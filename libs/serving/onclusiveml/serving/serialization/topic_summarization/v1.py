@@ -33,7 +33,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
-    impact_category: ImpactCategoryLabel
+    impact_category: Optional[ImpactCategoryLabel]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

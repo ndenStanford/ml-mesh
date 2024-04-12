@@ -59,7 +59,7 @@ class TrendDetection:
         """Trend detection for single topic and keyword.
 
         Args:
-            query_profile (BaseQueryProfile): boolean query of a profile e.g. a company
+            query_profile (BaseQueryProfile): profile to fetch query from
             topic_id (str): topic id
             start_time (pd.datetime): start time range of documents to be collected
             end_time (pd.datetime): end time range of documents to be collected

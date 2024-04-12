@@ -100,10 +100,13 @@ class ServedTopicModel(ServedModel):
                 )
                 topic = self.model.aggregate(content)
                 impact_category = self.impact_quantifier.quantify_impact(
-                    profile_id, topic_id
+                    query_profile, topic_id
                 )
             else:
                 topic = None
+        else:
+            topic = self.model.aggregate(content)
+            impact_category = None
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),

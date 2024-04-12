@@ -11,7 +11,9 @@ import pandas as pd
 # Source
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from src.serve.impact_quantification import ImpactQuantification
 from onclusiveml.data.query_profile import StringQueryProfile
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
 _service = TopicHandler()
 
@@ -149,3 +151,40 @@ def test_trending(
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
+
+
+@patch("requests.post")
+@patch("src.serve.impact_quantification.Elasticsearch")
+@pytest.mark.parametrize(
+    "profile, topic_id",
+    [
+        (
+            StringQueryProfile(
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+            ),
+            562,
+        ),
+    ],
+)
+def test_impact_quantification(
+    mock_elasticsearch,
+    mock_post,
+    profile,
+    topic_id,
+    mock_boolean_query_translated,
+    mock_all_global_query,
+    mock_topic_global_query,
+    mock_all_profile_boolean_query,
+    mock_topic_profile_query,
+):
+    """Test single topic trend function."""
+    mock_post.return_value = mock_boolean_query_translated
+    mock_elasticsearch.return_value.search.side_effect = [
+        mock_all_global_query,
+        mock_topic_global_query,
+        mock_all_profile_boolean_query,
+        mock_topic_profile_query,
+    ]
+    trend_detector = ImpactQuantification()
+    res = trend_detector.quantify_impact(profile, topic_id)
+    assert res == ImpactCategoryLabel.low

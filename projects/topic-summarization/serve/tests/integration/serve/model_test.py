@@ -92,9 +92,7 @@ def test_served_topic_model_predict_sample_content(
     test_actual_predict_output = served_topic_model.predict(test_input)
     assert test_actual_predict_output.attributes.topic is not None
 
-    assert (
-        test_actual_predict_output.attributes.impact_category == ImpactCategoryLabel.low
-    )
+    assert test_actual_predict_output.attributes.impact_category is None
 
 
 @pytest.mark.order(3)
