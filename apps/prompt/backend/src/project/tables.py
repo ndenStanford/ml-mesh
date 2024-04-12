@@ -20,7 +20,7 @@ settings = get_settings()
 class Project(Dyntastic):
     __table_name__ = "project"
     __hash_key__ = "alias"
-    __table_region__ = settings.AWS_REGION
+    __table_region__ = settings.AWS_DEFAULT_REGION
     __table_host__ = settings.DYNAMODB_HOST
 
     alias: str

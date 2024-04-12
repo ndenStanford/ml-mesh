@@ -42,7 +42,7 @@ class Settings(OnclusiveBaseSettings):
     REDIS_TTL_SECONDS: int = 604800
 
     DYNAMODB_HOST: Optional[str] = None
-    AWS_REGION: str = "us-east-1"
+    AWS_DEFAULT_REGION: str = "us-east-1"
 
     CORS_ORIGIN: List[str] = ["*"]
 

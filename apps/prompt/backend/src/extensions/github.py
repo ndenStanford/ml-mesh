@@ -64,7 +64,7 @@ class GithubClient(OnclusiveFrozenSchema):
         """Removes content from repo."""
         contents = self.repo.get_contents(path)
         if not isinstance(contents, list):
-            self.repo.delete_file(sub_content_file.path, commit, sub_content_file.sha)
+            return self.repo.delete_file(contents.path, commit, contents.sha)
         for content_file in contents:
             if content_file.type == "dir":
                 sub_contents = self.repo.get_contents(content_file.path)

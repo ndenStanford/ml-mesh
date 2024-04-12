@@ -51,4 +51,4 @@ def get_model(alias: str):
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate(alias: str, prompt: str):
     """Generates text using a prompt template."""
-    F.generate_from_prompt(alias prompt)
+    return F.generate_from_prompt(prompt, alias)

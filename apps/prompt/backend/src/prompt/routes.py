@@ -4,7 +4,6 @@
 from typing import Any, Dict
 
 # 3rd party libraries
-from dyntastic import A
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 from github import Github
@@ -83,22 +82,6 @@ def delete_prompt(alias: str):
         )
 
 
-@router.get("/project/{project}", status_code=status.HTTP_200_OK)
-def list_prompts(project: str):
-    """Get list of projects from database.
-
-    Raises:
-        HTTPException.ProjectsNotFound if no projects found in table.
-    """
-    try:
-        return PromptTemplate.scan((A.project == project))
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
-
-
 @router.get("/{alias}", status_code=status.HTTP_200_OK)
 def get_prompt(alias: str):
     """Get prompt from database.
@@ -129,4 +112,4 @@ def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str,
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    return F.generate_from_prompt_template(alias, model, **values)
+    return F.generate_from_prompt_template(alias, model, **values["values"])

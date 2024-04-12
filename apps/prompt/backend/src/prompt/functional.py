@@ -8,7 +8,6 @@ from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 
 # Internal libraries
 from onclusiveml.core.retry import retry
-from onclusiveml.llm.callbacks import GenericTokenCounter
 
 # Source
 from src.extensions.redis import cache
@@ -26,13 +25,11 @@ def generate_from_prompt_template(
     prompt_alias: str, model_alias: str, **kwargs
 ) -> ConversationChain:
     """Generates chat message from input prompt and model."""
+    # get langchain objects
     prompt = PromptTemplate.get(prompt_alias).as_langchain()
     llm = LanguageModel.get(model_alias).as_langchain()
-
-    callback = GenericTokenCounter(llm)
-
-    conversation = ConversationChain(prompt=prompt, llm=llm)
-    return conversation.run(**kwargs, callbacks=[callback])
+    conversation = ConversationChain(prompt=prompt, llm=llm, memory=ConversationBufferMemory(return_messages=True))
+    return conversation.predict(**kwargs)
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)

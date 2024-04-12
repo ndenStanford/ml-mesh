@@ -11,6 +11,7 @@ class ChatModel(str, OnclusiveEnum):
     GPT4 = "gpt-4"
     GPT3_5_TURBO = "gpt-3.5-turbo-1106"
     GPT4_TURBO = "gpt-4-1106-preview"
+    AMAZON_TITAN = "amazon.titan-text-express-v1"
 
 
 class ChatModelProdiver(str, OnclusiveEnum):
@@ -19,10 +20,10 @@ class ChatModelProdiver(str, OnclusiveEnum):
     OPENAI: str = "openai"
     BEDROCK: str = "bedrock"
 
-
+# DEFAULT models
 DEFAULT_MODELS = [
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT3_5_TURBO, "provider": ChatModelProdiver.OPENAI},
-    {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI},
+    {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI}
 ]

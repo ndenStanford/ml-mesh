@@ -21,6 +21,7 @@ from src.project.exceptions import (
     ProjectTokenExceedAlias,
 )
 from src.project.tables import Project
+from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
 
@@ -109,6 +110,21 @@ def get_project(alias: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project {alias} not found in database",
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+@router.get("/{alias}/prompts", status_code=status.HTTP_200_OK)
+def list_prompts(alias: str):
+    """Get list of projects from database.
+
+    Raises:
+        HTTPException.ProjectsNotFound if no projects found in table.
+    """
+    try:
+        return PromptTemplate.scan(alias)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
