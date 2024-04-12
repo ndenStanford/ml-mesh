@@ -187,3 +187,4 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         """Call Method."""
         self.get_training_data()
         self.upload_training_data_to_s3()
+        self.model_card.training_data_s3_path = "s3://" + self.full_file_key

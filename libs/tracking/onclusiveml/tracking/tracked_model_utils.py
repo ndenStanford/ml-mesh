@@ -110,6 +110,8 @@ class TrackedModelCard(TrackedParams):
     model_test_files: TrackedModelTestFiles = (
         TrackedModelTestFiles()
     )  # class containing paths to the test file attributes
+    training_data_s3_path: str
+    # the s3 url path to the dataset used in model training
 
     @validator("model_type")
     def check_model_type(v: str) -> str:
