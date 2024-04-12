@@ -16,8 +16,8 @@ from onclusiveml.tracking import (
 class TrackedDocumentContentScoringSpecs(TrackedModelSpecs):
     """Params class for specifying the neptune project and model suite."""
 
-    project: str = "onclusive/document-content-scoring"
-    model: str = "DOCUMENT-SCORING"
+    project: str = "onclusive/content-scoring"
+    model: str = "SCORING-TRAINED"
 
     class Config:
         env_file = "config/dev.env"
