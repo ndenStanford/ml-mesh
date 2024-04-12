@@ -35,11 +35,11 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
         model (str): Mode of interaction with the model
     """
 
-    project: str = "onclusive/document-content-scoring"
-    model: str = "DOCUMENT-SCORING"
+    project: str = "onclusive/content-scoring"
+    model: str = "SCORING-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "DOCUMENT-SCORING-42"
+    with_id: str = "SCORING-TRAINED-2"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
@@ -57,8 +57,8 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
         model (str): The model name
     """
 
-    project: str = "onclusive/document-content-scoring"
-    model: str = "DOCUMENT-COMPILED"
+    project: str = "onclusive/content-scoring"
+    model: str = "SCORING-COMPILED"
 
     class Config:
         env_prefix = "compiled_"
