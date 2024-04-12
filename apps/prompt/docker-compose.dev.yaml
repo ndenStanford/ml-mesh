@@ -83,6 +83,9 @@ services:
       - type: bind
         source: backend/tests
         target: /apps/prompt/backend/tests
+      - type: bind
+        source: ~/.aws
+        target: /root/.aws
     ports:
       - 4000:4000
     environment:

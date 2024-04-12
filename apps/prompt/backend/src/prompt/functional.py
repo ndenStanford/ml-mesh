@@ -2,7 +2,6 @@
 
 # 3rd party libraries
 from langchain.chains import ConversationChain
-from langchain.llms import OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 
@@ -28,7 +27,9 @@ def generate_from_prompt_template(
     # get langchain objects
     prompt = PromptTemplate.get(prompt_alias).as_langchain()
     llm = LanguageModel.get(model_alias).as_langchain()
-    conversation = ConversationChain(prompt=prompt, llm=llm, memory=ConversationBufferMemory(return_messages=True))
+    conversation = ConversationChain(
+        prompt=prompt, llm=llm, memory=ConversationBufferMemory(return_messages=True)
+    )
     return conversation.predict(**kwargs)
 
 

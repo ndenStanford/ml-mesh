@@ -5,17 +5,16 @@ import os
 from typing import Optional, Type
 
 # 3rd party libraries
-from dyntastic import A
-from dyntastic import Dyntastic
+from boto3.dynamodb.conditions import ConditionBase
+from dyntastic import A, Dyntastic
 from dyntastic.main import ResultPage
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
+    MessagesPlaceholder,
     SystemMessagePromptTemplate,
-    MessagesPlaceholder
 )
 from pydantic import Field
-from boto3.dynamodb.conditions import ConditionBase
 
 # Internal libraries
 from onclusiveml.llm.mixins import LangchainConvertibleMixin
@@ -64,32 +63,37 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     def as_langchain(self) -> Optional[LangchainT]:
         """Convert to langchain object."""
         return ChatPromptTemplate.from_messages(
-            [
-                HumanMessagePromptTemplate.from_template(self.template)
-            ]
+            [HumanMessagePromptTemplate.from_template(self.template)]
         )
 
     @classmethod
-    def get(
-        cls: Type["PromptTemplate"],
-        hash_key,
-        range_key=None
-    ) -> "PromptTemplate":
+    def get(cls: Type["PromptTemplate"], hash_key, range_key=None) -> "PromptTemplate":
         """Subclass the get method to retrieve templates directly from Github."""
         result = super(PromptTemplate, cls).get(hash_key, range_key)
         print(result)
-        # get from github
-        # intersect
+        # get template from github
+        contents = github.read(result.path)
+        # use the github template as the source of truth.
+        result.template = contents["template"]
         return result
 
     @classmethod
     def scan(
         cls: Type["PromptTemplate"],
-        project: str,
+        project: Optional[str] = None,
     ) -> ResultPage["PromptTemplate"]:
         """Subclass the scan method to retrieve templates directly from Github."""
-        results = super(PromptTemplate, cls).scan((A.project == project))
-        print(results)
-        # get from github
-        # intersect
+        if project is None:
+            return super(PromptTemplate, cls).scan()
+        results = list(
+            super(PromptTemplate, cls).scan(
+                (A.project.is_in([project])), consistent_read=True
+            )
+        )
+        for result in results:
+            # get from github
+            contents = github.read(result.path)
+            # use the github template as the source of truth.
+            result.template = contents["template"]
+
         return results

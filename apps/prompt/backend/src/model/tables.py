@@ -4,9 +4,9 @@
 from typing import Optional, Type
 
 # 3rd party libraries
+import boto3
 from dyntastic import Dyntastic
-from langchain.chat_models import ChatOpenAI
-from langchain.chat_models.base import BaseChatModel
+from langchain_community.chat_models import ChatOpenAI
 from langchain_community.llms import Bedrock
 
 # Internal libraries
@@ -35,5 +35,11 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         if self.provider == ChatModelProdiver.OPENAI:
             return ChatOpenAI(model=self.alias)
         if self.provider == ChatModelProdiver.BEDROCK:
-            return Bedrock(credentials_profile_name="dev", model_id=self.alias, region_name=settings.AWS_DEFAULT_REGION)
+            session = boto3.Session(region_name=settings.AWS_DEFAULT_REGION)
+            boto3_bedrock = session.client(service_name="bedrock")
+            return Bedrock(
+                client=boto3_bedrock,
+                model_id=self.alias,
+                region_name=settings.AWS_DEFAULT_REGION,
+            )
         return None

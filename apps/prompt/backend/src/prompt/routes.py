@@ -78,7 +78,7 @@ def delete_prompt(alias: str):
     except DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Project {alias} not found in database",
+            detail=f"Prompt {alias} not found in database",
         )
 
 
@@ -94,8 +94,20 @@ def get_prompt(alias: str):
     except DoesNotExist as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Project {alias} not found in database",
+            detail=f"Prompt {alias} not found in database",
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.get("", status_code=status.HTTP_200_OK)
+def list_prompts():
+    """List all prompts."""
+    try:
+        return PromptTemplate.scan()
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

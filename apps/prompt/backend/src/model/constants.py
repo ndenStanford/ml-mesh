@@ -20,10 +20,12 @@ class ChatModelProdiver(str, OnclusiveEnum):
     OPENAI: str = "openai"
     BEDROCK: str = "bedrock"
 
+
 # DEFAULT models
 DEFAULT_MODELS = [
+    {"alias": ChatModel.AMAZON_TITAN, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT3_5_TURBO, "provider": ChatModelProdiver.OPENAI},
-    {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI}
+    {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI},
 ]

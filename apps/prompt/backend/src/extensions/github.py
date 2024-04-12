@@ -1,10 +1,12 @@
 """Github connector."""
 
 # Standard Library
-from typing import Any, Dict, List
+import json
+from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
 from github import Github
+from github.ContentFile import ContentFile
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveFrozenSchema
@@ -33,16 +35,12 @@ class GithubClient(OnclusiveFrozenSchema):
         """Creates folder."""
         return self.repo.create_file(path, commit, contents)
 
-    def read(self, path: str) -> List[Dict]:
+    def read(self, path: str) -> Optional[Dict]:
         """Opens file."""
         contents = self.repo.get_contents(path)
-        result: List[str] = []
-        for content_file in contents:
-            if (
-                content_file.type == "file"
-                and content_file.name not in self.excluded_files
-            ):
-                result.append(json.loads(content_file.decoded_content.decode()))
+        result: Optional[Dict] = None
+        if contents.type == "file":
+            result = json.loads(contents.decoded_content.decode())
         return result
 
     def ls(self, path: str) -> List[str]:
