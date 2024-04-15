@@ -2,7 +2,7 @@
 
 # Standard Library
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Tuple
 
 # 3rd party libraries
 from pydantic import BaseSettings, Field, SecretStr, validator
@@ -110,8 +110,8 @@ class TrackedModelCard(TrackedParams):
     model_test_files: TrackedModelTestFiles = (
         TrackedModelTestFiles()
     )  # class containing paths to the test file attributes
-    training_data_s3_path: Optional[str] = None
-    # the s3 url path to the dataset used in model training
+    # the path to the dataset used in model training
+    training_data_attribute_path: str = "training_data"
 
     @validator("model_type")
     def check_model_type(v: str) -> str:
