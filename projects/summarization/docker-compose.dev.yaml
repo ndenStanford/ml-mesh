@@ -54,7 +54,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '8888', --reload]
-    profiles: [serve, debug]
+    profiles: [debug]
     ports:
       - 5678:5678
       - 8888:8888
