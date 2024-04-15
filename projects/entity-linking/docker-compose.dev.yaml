@@ -80,7 +80,7 @@ services:
       ONCLUSIVEML_SERVING_ENTITY_RECOGNITION_ENDPOINT: http://ner-serve:8000/ner/v1/predict
       ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
     user: root
-    profiles: [serve, debug]
+    profiles: [debug]
     command:
       - /bin/sh
       - -c
