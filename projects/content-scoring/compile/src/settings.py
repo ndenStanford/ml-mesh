@@ -58,7 +58,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
     """
 
     project: str = "onclusive/content-scoring"
-    model: str = "SCORING-COMPILE"
+    model: str = "SCORING-COMPILED"
 
     class Config:
         env_prefix = "compiled_"
@@ -112,6 +112,9 @@ class WorkflowComponentIOSettings(object):
         self.model_directory: str = os.path.join(
             self.workflow_component_output_dir, "model_artifacts"
         )
+
+        if not os.path.isdir(self.model_directory):
+            os.makedirs(self.model_directory)
 
         self.model_base: str = os.path.join(
             self.workflow_component_output_dir, "model_artifacts/base_model"
