@@ -150,6 +150,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         self.logger.info(
             f"Training data uploaded to s3 location : {self.full_file_key}"
         )
+        super(BertopicTrainer, self).upload_training_data_to_neptune()
         self.run = init_run()
         self.initialize_model()
         self.optimize_model()
