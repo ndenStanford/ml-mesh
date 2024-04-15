@@ -1042,6 +1042,9 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+      MEDIA_CLIENT_ID: ${{ secrets.MEDIA_CLIENT_ID }}
+      MEDIA_CLIENT_SECRET: ${{ secrets.MEDIA_CLIENT_SECRET }}
+      ELASTICSEARCH_KEY: ${{ secrets.ELASTICSEARCH_KEY }}
 
   # ===============================================
   # REGISTER FEATURES
@@ -1114,22 +1117,37 @@ jobs       :
         models:
           - project: keywords
             sagemaker-runner-type: ml.m4.xlarge
+            trained-project: onclusive/keywords
+            trained-model: KEYWORDS-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            wait: true
           - project: ner
             sagemaker-runner-type: ml.m4.xlarge
+            trained-project: onclusive/ner
+            trained-model: NER-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            wait: true
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
+            trained-project: onclusive/gch-summarization
+            trained-model: SUM-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            wait: true
           - project: topic
             sagemaker-runner-type: ml.p3.2xlarge
+            trained-project: onclusive/topic
+            trained-model: TOPIC-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
+            wait: true
 
     with:
       environment: prod
       project: ${{ matrix.models.project }}
       sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
       tag: ${{ matrix.models.tag }}
+      trained-project: ${{ matrix.models.trained-project }}
+      trained-model: ${{ matrix.models.trained-model }}
+      wait: ${{ matrix.models.wait }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR

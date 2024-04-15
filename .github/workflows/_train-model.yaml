@@ -15,6 +15,14 @@ on  :
         required: true
         type: string
         description: Version tag of image providing the compilation runtime context.
+      trained-project:
+        required: false
+        type: string
+        description: Project identifier
+      trained-model:
+        required: false
+        type: string
+        description: Model identifier for the project
       sagemaker-runner-type:
         required: true
         default: ml.m4.xlarge # non-gpu
@@ -129,6 +137,8 @@ jobs:
             --project-name ${{ inputs.project }} \
             --project-component train \
             --image-tag ${{ inputs.tag }} \
+            --trained-project ${{ inputs.trained-project }} \
+            --trained-model ${{ inputs.trained-model }} \
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
