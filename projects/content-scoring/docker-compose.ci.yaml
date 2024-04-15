@@ -8,7 +8,9 @@ services:
 
   compile:
     volumes:
-      - compile-volume:/projects/content-scoring/compile/outputs
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
     build:
       context: ../../
       dockerfile: projects/content-scoring/compile/Dockerfile
@@ -30,7 +32,9 @@ services:
 
   compile-unit:
     volumes:
-      - compile-volume:/projects/content-scoring/compile/outputs
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
@@ -39,7 +43,9 @@ services:
 
   compile-download-model:
     volumes:
-      - compile-volume:/projects/content-scoring/compile/outputs
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
@@ -53,7 +59,9 @@ services:
 
   compile-validate-model:
     volumes:
-      - compile-volume:/projects/content-scoring/compile/outputs
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -65,7 +73,9 @@ services:
 
   compile-upload-model:
     volumes:
-      - compile-volume:/projects/content-scoring/compile/outputs
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
