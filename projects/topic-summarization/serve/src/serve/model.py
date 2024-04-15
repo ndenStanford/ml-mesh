@@ -28,7 +28,11 @@ from src.settings import get_settings
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.document_collector import DocumentCollector
-from onclusiveml.data.query_profile import StringQueryProfile, BaseQueryProfile
+from onclusiveml.data.query_profile import (
+    StringQueryProfile,
+    BaseQueryProfile,
+    ProductionToolsQueryProfile,
+)
 
 logger = get_default_logger(__name__)
 
@@ -46,6 +50,10 @@ class ServedTopicModel(ServedModel):
         """Convert user profile input into appropriate Profile class."""
         if inputs.query_string:
             return StringQueryProfile(string_query=inputs.query_string)
+        elif inputs.query_id:
+            return ProductionToolsQueryProfile(
+                version=inputs.media_api_version, query_id=inputs.query_id
+            )
         else:
             logger.error("QueryProfile not found")
             return None  # TODO: ADD ERROR RESPONSE HERE

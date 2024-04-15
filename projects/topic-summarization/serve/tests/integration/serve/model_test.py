@@ -51,6 +51,26 @@ def test_served_topic_model_predict(test_inference_params):
 
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
+@pytest.mark.order(4)
+def test_served_topic_model_predict_query_id(test_inference_params):
+    """Tests the ServedTopicModel's predict method."""
+    served_topic_model = ServedTopicModel()
+    served_topic_model.load()
+
+    test_input = PredictRequestSchema.from_data(
+        namespace=settings.model_name,
+        parameters=test_inference_params,
+        attributes={
+            "query_id": "b529bdd8-47fd-4dbe-b105-53a02ced41cc",  # noqa: E501
+            "topic_id": 257,
+            "trend_detection": True,
+        },
+    )
+    test_actual_predict_output = served_topic_model.predict(test_input)
+    assert test_actual_predict_output.attributes.topic is not None
+
+
+@freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(6)
 def test_served_topic_model_predict_skip_trend(test_inference_params):
     """Tests ServedTopicModel's predict method without trend detection."""

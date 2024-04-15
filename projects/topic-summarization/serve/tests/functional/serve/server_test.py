@@ -52,6 +52,18 @@ def test_model_server_predict(test_client, test_model_name, test_payload):
     assert test_response.json()["data"]["attributes"]["topic"] is not None
 
 
+@pytest.mark.order(8)
+def test_model_server_predict_query_id(
+    test_client, test_model_name, test_payload_query_id
+):
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    test_response = test_client.post(
+        f"/{test_model_name}/v1/predict", json=test_payload_query_id
+    )
+    assert test_response.status_code == 200
+    assert test_response.json()["data"]["attributes"]["topic"] is not None
+
+
 @pytest.mark.order(9)
 def test_model_server_predict_sample_docs(
     test_client, test_model_name, test_payload_sample_docs
