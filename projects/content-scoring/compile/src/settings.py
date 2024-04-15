@@ -106,8 +106,8 @@ class WorkflowComponentIOSettings(object):
             self.workflow_ouput_dir, workflow_component
         )
 
-        #    if not os.path.isdir(self.workflow_component_output_dir):
-        #       os.makedirs(self.workflow_component_output_dir)
+        if not os.path.isdir(self.workflow_component_output_dir):
+            os.makedirs(self.workflow_component_output_dir)
 
         self.model_directory: str = os.path.join(
             self.workflow_component_output_dir, "model_artifacts"
