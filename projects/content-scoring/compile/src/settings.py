@@ -58,7 +58,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
     """
 
     project: str = "onclusive/content-scoring"
-    model: str = "SCORING-COMPILED"
+    model: str = "SCORING-COMPILE"
 
     class Config:
         env_prefix = "compiled_"
