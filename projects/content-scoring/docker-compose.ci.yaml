@@ -44,8 +44,8 @@ services:
   compile-download-model:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/content-scoring/compile
+        source: compile/
+        target: /projects/content-scoring/compile/
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
