@@ -187,4 +187,4 @@ def test_impact_quantification(
     ]
     trend_detector = ImpactQuantification()
     res = trend_detector.quantify_impact(profile, topic_id)
-    assert res == ImpactCategoryLabel.low
+    assert res == ImpactCategoryLabel.LOW

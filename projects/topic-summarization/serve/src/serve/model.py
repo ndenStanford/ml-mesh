@@ -73,17 +73,17 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
-        topic_id = inputs.topic_id
-        query_profile = self.get_query_profile(inputs)
-        trend_detection = inputs.trend_detection
-
-        # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
-        # to work for integration tests
-        end_time = pd.Timestamp(datetime.now())
-        start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-        trending = False
 
         if not content:
+            topic_id = inputs.topic_id
+            query_profile = self.get_query_profile(inputs)
+            trend_detection = inputs.trend_detection
+
+            # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
+            # to work for integration tests
+            end_time = pd.Timestamp(datetime.now())
+            start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
+            trending = False
             if trend_detection:
                 trending, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time

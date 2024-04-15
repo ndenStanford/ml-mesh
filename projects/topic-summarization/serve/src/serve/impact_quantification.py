@@ -20,10 +20,14 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import (
 from src.serve.utils import (
     all_global_query,
     all_profile_boolean_query,
+    remove_weekends,
     topic_global_query,
     topic_profile_query,
 )
 from src.settings import get_settings
+
+
+# from settings import get_settings
 
 
 settings = get_settings()
@@ -74,16 +78,6 @@ class ImpactQuantification:
             )
         return result
 
-    def remove_weekends(self, results: Dict) -> Dict:
-        """Time-series helper function."""
-        df = pd.DataFrame(results)
-        # remove weekends
-        df["weekday_index"] = pd.to_datetime(df["key_as_string"]).apply(
-            lambda x: x.weekday()
-        )
-        df = df[df["weekday_index"] <= 4]
-        return df.to_dict("records")
-
     def trend(self, query_profile: BaseQueryProfile, topic_id: int) -> Dict:
         """Analysis of time series of document counts.
 
@@ -104,7 +98,7 @@ class ImpactQuantification:
             body=all_global_query(start_time, end_time, settings.time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
-        series_global_es = self.remove_weekends(series_global_es)
+        series_global_es = remove_weekends(series_global_es)
         series_global = np.array([i["doc_count"] for i in series_global_es])
         # Global count of all documents of a topic  from ES
         series_topic_es = self.es.search(
@@ -114,7 +108,7 @@ class ImpactQuantification:
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
-        series_topic_es = self.remove_weekends(series_topic_es)
+        series_topic_es = remove_weekends(series_topic_es)
         series_topic = np.array([i["doc_count"] for i in series_topic_es])
         # calculate global ratio
         global_ratio = series_topic / series_global
@@ -132,7 +126,7 @@ class ImpactQuantification:
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
-        series_profile_es = self.remove_weekends(series_profile_es)
+        series_profile_es = remove_weekends(series_profile_es)
         series_profile = np.array([i["doc_count"] for i in series_profile_es])
         # Profile count of a topic from ES
         series_topic_profile_es = self.es.search(
@@ -142,14 +136,13 @@ class ImpactQuantification:
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
-        series_topic_profile_es = self.remove_weekends(series_topic_profile_es)
+        series_topic_profile_es = remove_weekends(series_topic_profile_es)
         series_topic_profile_es = self.insert_into_sorted_list(
             series_topic_profile_es, series_profile_es
         )
         series_topic_profile = np.array(
             [i["doc_count"] for i in series_topic_profile_es]
         )
-
         # Calculate local ratio
         local_ratio = series_topic_profile / series_profile
         # Decompose trend
@@ -195,8 +188,8 @@ class ImpactQuantification:
         mk_test_bool = mk_result.Tau > settings.mf_tau_cutoff
 
         if (not raw_baseline_bool) or (not global_vs_local_bool) or (not mk_test_bool):
-            return ImpactCategoryLabel.low
+            return ImpactCategoryLabel.LOW
         elif (raw_baseline_bool) and (global_vs_local_bool) and (mk_test_bool):
-            return ImpactCategoryLabel.mid
+            return ImpactCategoryLabel.MID
         else:
-            return ImpactCategoryLabel.high
+            return ImpactCategoryLabel.HIGH

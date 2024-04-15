@@ -277,3 +277,14 @@ def topic_profile_documents_query(
         },
     }
     return query
+
+
+def remove_weekends(results: Dict) -> Dict:
+    """Time-series helper function."""
+    df = pd.DataFrame(results)
+    # remove weekends
+    df["weekday_index"] = pd.to_datetime(df["key_as_string"]).apply(
+        lambda x: x.weekday()
+    )
+    df = df[df["weekday_index"] <= 4]
+    return df.to_dict("records")

@@ -65,7 +65,7 @@ def test_model_server_predict_sample_docs(
     assert test_response.json()["data"]["attributes"]["topic"] is not None
     assert (
         test_response.json()["data"]["attributes"]["impact_category"]
-        == ImpactCategoryLabel.low
+        == ImpactCategoryLabel.LOW
     )
 
 

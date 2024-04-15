@@ -1,10 +1,10 @@
 """Topic Summarization v1 data schemas."""
 
 # Standard Library
-from enum import Enum
 from typing import Dict, List, Optional, Union
 
 # Internal libraries
+from onclusiveml.core.base.utils import OnclusiveEnum
 from onclusiveml.core.serialization import JsonApiSchema
 
 
@@ -21,12 +21,12 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
 
-class ImpactCategoryLabel(str, Enum):
+class ImpactCategoryLabel(str, OnclusiveEnum):
     """Impact category label."""
 
-    low = "low"
-    mid = "mid"
-    high = "high"
+    LOW = "low"
+    MID = "mid"
+    HIGH = "high"
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
