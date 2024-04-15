@@ -3,9 +3,12 @@
 # Standard Library
 import json
 from typing import Any, Dict, List, Optional
+from pydantic import SecretStr
 
 # 3rd party libraries
+from github import Auth
 from github import Github
+from github import GithubIntegration
 from github.ContentFile import ContentFile
 
 # Internal libraries
@@ -21,14 +24,21 @@ settings = get_settings()
 class GithubClient(OnclusiveFrozenSchema):
     """Github client wrapper class."""
 
-    access_token: str
+    app_id: str
+    app_private_key: SecretStr
     repo_url: str
     excluded_files: List[str] = [".gitkeep"]
 
     @property
     def repo(self) -> Any:
         """Set github connector."""
-        g = Github(self.access_token)
+        auth = Auth.AppAuth(
+            self.app_id,
+            self.app_private_key.get_secret_value()
+        )
+        gi = GithubIntegration(auth=auth)
+        installation = gi.get_installations()[0]
+        g = installation.get_github_for_installation()
         return g.get_repo(self.repo_url)
 
     def write(self, path: str, commit: str, contents: str = "") -> Dict:
@@ -75,5 +85,7 @@ class GithubClient(OnclusiveFrozenSchema):
 
 
 github = GithubClient(
-    access_token=settings.GITHUB_TOKEN.get_secret_value(), repo_url=settings.GITHUB_URL
+    app_id=settings.GITHUB_APP_ID,
+    app_private_key=settings.GITHUB_APP_PRIVATE_KEY,
+    repo_url=settings.GITHUB_URL
 )

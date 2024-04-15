@@ -32,9 +32,11 @@ class Settings(OnclusiveBaseSettings):
     DOCS_URL: Optional[str] = None
     # initialize database
     INITIALIZE: bool = True
+
     # OpenAI API key
     OPENAI_API_KEY: str
     LLM_CALL_RETRY_COUNT: int = 2
+
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
 
@@ -46,7 +48,9 @@ class Settings(OnclusiveBaseSettings):
 
     CORS_ORIGIN: List[str] = ["*"]
 
-    GITHUB_TOKEN: SecretStr = Field(default="github_token")
+    # Github configuration
+    GITHUB_APP_ID: str
+    GITHUB_APP_PRIVATE_KEY: SecretStr
     GITHUB_URL: str = "AirPR/ml-prompt-registry"
 
 
