@@ -812,7 +812,7 @@ jobs       :
   # content-scoring
 
   run-content-scoring-project:
-    name: content-scoring Project
+    name: CONTENT SCORING Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -821,6 +821,15 @@ jobs       :
       matrix:
         components:
           # NOTE: list of project components to run
+
+          # compile
+          - name: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
 
           # SERVE
           - name: serve
