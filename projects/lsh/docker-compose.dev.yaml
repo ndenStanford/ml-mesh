@@ -78,13 +78,7 @@ services:
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
-    profiles: [serve, debug]
-    # command:
-    #   - /bin/sh
-    #   - -c
-    #   - |
-    #     python -m src.util.download_compiled_model
-    #     python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
+    profiles: [debug]
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
     ports:
       - 5678:5678
