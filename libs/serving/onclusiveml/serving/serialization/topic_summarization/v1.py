@@ -10,7 +10,10 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    content: List[str]
+    content: Optional[List[str]] = None
+    topic_id: Optional[int] = None
+    query_string: Optional[str] = None
+    trend_detection: Optional[bool] = True
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):

@@ -17,6 +17,7 @@ dyntastic = "^0.14.0"
 llm = {path = "../../../libs/llm"}
 typing-inspect = "0.8.0"
 typing-extensions = "4.5.0"
+xxhash = "3.4.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

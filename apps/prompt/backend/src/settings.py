@@ -1,12 +1,11 @@
 """Settings."""
 
 # Standard Library
-import json
 from functools import lru_cache
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 # 3rd party libraries
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -41,7 +40,7 @@ class Settings(OnclusiveBaseSettings):
     BETTERSTACK_KEY: str = ""
 
     REDIS_CONNECTION_STRING: str = ""
-    REDIS_TTL_SECONDS: int = 604800
+    REDIS_TTL_SECONDS: int = 86400
 
     DYNAMODB_HOST: Optional[str] = None
     AWS_DEFAULT_REGION: str = "us-east-1"
