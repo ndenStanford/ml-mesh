@@ -4,7 +4,7 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
+from typing import Type, Optional
 from datetime import datetime
 
 # 3rd party libraries
@@ -46,7 +46,7 @@ class ServedTopicModel(ServedModel):
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
-    def get_query_profile(self, inputs: JsonApiSchema) -> BaseQueryProfile:
+    def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
         if inputs.query_string:
             return StringQueryProfile(string_query=inputs.query_string)
@@ -56,7 +56,8 @@ class ServedTopicModel(ServedModel):
             )
         else:
             logger.error("QueryProfile not found")
-            return None  # TODO: ADD ERROR RESPONSE HERE
+            # TODO: ADD ERROR RESPONSE HERE
+            return None
 
     def __init__(self) -> None:
         super().__init__(name="topic-summarization")
