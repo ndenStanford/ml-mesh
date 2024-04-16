@@ -8,6 +8,7 @@ import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OrdinalEncoder
 
 # Internal libraries
 from onclusiveml.tracking import TrackedModelVersion
@@ -16,7 +17,6 @@ from onclusiveml.tracking import TrackedModelVersion
 from src.settings import (  # type: ignore[attr-defined]
     TrackedDocumentContentScoringModelCard,
     TrackedDocumentContentScoringSpecs,
-    TrackedDocumentUncompiledContentScoringSpecs,
 )
 
 
@@ -24,23 +24,33 @@ def main() -> None:
     """Train and upload a model to Neptune AI."""
     # Initialize model specs and model card
     model_specs = TrackedDocumentContentScoringSpecs()
-    uncompiled_model_specs = TrackedDocumentUncompiledContentScoringSpecs()
     model_card = TrackedDocumentContentScoringModelCard()
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # Initialize registered model on Neptune AI
     model_version = TrackedModelVersion(**model_specs.dict())
-    uncompiled_model_version = TrackedModelVersion(**uncompiled_model_specs.dict())
     # Load data
-    X_dict = uncompiled_model_version.download_config_from_model_version(
-        neptune_attribute_path=model_card.model_test_files.inputs
-    )
-    y_dict = uncompiled_model_version.download_config_from_model_version(
-        neptune_attribute_path=model_card.model_test_files.predictions
-    )
-    X = pd.DataFrame.from_dict(X_dict, orient="index")
-    y = pd.DataFrame.from_dict(y_dict, orient="index")
+    data_file_path = model_card.model_params.data_file_path
+    df = pd.read_parquet(data_file_path)
+    # Preprocess data
+    df["y"] = 1
+    df.loc[
+        df["message_type"] == "onclusive.delivery.event.content.validation.accepted",
+        "y",
+    ] = 1
+    df.loc[
+        df["message_type"] == "onclusive.delivery.event.content.validation.rejected",
+        "y",
+    ] = 0
+
+    numerical_cols = model_card.model_params.numerical_cols
+    categorical_cols = model_card.model_params.categorical_cols
+    X = df[numerical_cols + categorical_cols]
+    y = df["y"]
+    # Encode categorical features
+    enc = OrdinalEncoder()
+    X[categorical_cols] = enc.fit_transform(X[categorical_cols])
     # Split data into train and test sets
     test_size = model_card.model_params.test_size
     random_state = model_card.model_params.random_state
@@ -67,9 +77,15 @@ def main() -> None:
         config=model_card.dict(), neptune_attribute_path="model/model_card"
     )
 
+    sample_inputs = X_train.head(15)
+    sample_outputs = y_train.head(15)
+
+    sample_inputs_dict = sample_inputs.to_dict(orient="index")
+    sample_outputs_dict = sample_outputs.to_dict()
+
     for (test_file, test_file_attribute_path) in [
-        (X_dict, model_card.model_test_files.inputs),
-        (y_dict, model_card.model_test_files.predictions),
+        (sample_inputs_dict, model_card.model_test_files.inputs),
+        (sample_outputs_dict, model_card.model_test_files.predictions),
     ]:
         model_version.upload_config_to_model_version(
             config=test_file, neptune_attribute_path=test_file_attribute_path

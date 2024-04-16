@@ -13,6 +13,18 @@ from onclusiveml.tracking import (
 
 
 # Settings classes
+class TrackedDocumentUncompiledContentScoringSpecs(TrackedModelSpecs):
+    """Params class for specifying the neptune project and DATA suite."""
+
+    project: str = "onclusive/content-scoring"
+    model: str = "SCORING-TRAINED"
+    with_id: str = "SCORING-TRAINED-14"
+
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
 class TrackedDocumentContentScoringSpecs(TrackedModelSpecs):
     """Params class for specifying the neptune project and model suite."""
 
