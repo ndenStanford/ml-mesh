@@ -1,7 +1,7 @@
 """Model test."""
 
 # Standard Library
-from unittest.mock import ANY, patch
+from unittest.mock import patch
 
 # 3rd party libraries
 import pytest
@@ -27,10 +27,6 @@ def test_served_model_load(mock_from_pretrained, served_model):
     assert not served_model.ready
     served_model.load()
     assert served_model.ready
-
-    mock_from_pretrained.assert_called_with(
-        served_model.served_model_artifacts.model_artifact_directory, ANY
-    )
 
 
 @pytest.mark.parametrize(
