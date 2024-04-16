@@ -448,7 +448,7 @@ jobs       :
   # gch-summarization
 
   run-gch-summarization-project:
-    name: GCH-Sum. Project
+    name: GCH Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -812,7 +812,7 @@ jobs       :
   # content-scoring
 
   run-content-scoring-project:
-    name: content-scoring Project
+    name: CONTENT Scoring Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -827,6 +827,24 @@ jobs       :
             download-model: false
             integration: false
             functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # compile
+          - name: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # SERVE
+          - name: serve
+            download-model: false
+            integration: true
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
@@ -1280,6 +1298,7 @@ jobs       :
       - run-keywords-project
       - run-summarization-project
       - run-sentiment-project
+      - run-content-scoring-project
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
@@ -1301,6 +1320,11 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
           - project: sentiment
+            self-hosted-runner-type: inf1.2xlarge
+            runner-kind: custom
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
+          - project: content-scoring
             self-hosted-runner-type: inf1.2xlarge
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
