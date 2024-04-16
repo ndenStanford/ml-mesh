@@ -11,7 +11,18 @@ class ChatModel(str, OnclusiveEnum):
     GPT4 = "gpt-4"
     GPT3_5_TURBO = "gpt-3.5-turbo-1106"
     GPT4_TURBO = "gpt-4-1106-preview"
-    AMAZON_TITAN = "amazon.titan-text-express-v1"
+    TITAN = "amazon.titan-text-express-v1"
+    TITAN_G1 = "amazon.titan-text-lite-v1"
+    CLAUDE_2 = "anthropic.claude-v2"
+    CLAUDE_2_1 = "anthropic.claude-v2:1"
+    CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
+    CLAUDE_3_HAIKU = "anthropic.claude-3-haiku-20240307-v1:0"
+    CLAUDE_3_INSTANT = "anthropic.claude-instant-v1"
+    LLAMA_2_13B = "meta.llama2-13b-chat-v1"
+    LLAMA_2_70B = "meta.llama2-70b-chat-v1"
+    INSTRUCT_7B = "mistral.mistral-7b-instruct-v0:2"
+    INSTRUCT_8_7B = "mistral.mixtral-8x7b-instruct-v0:1"
+    MISTRAL_LARGE = "mistral.mistral-large-2402-v1:0"
 
 
 class ChatModelProdiver(str, OnclusiveEnum):
@@ -23,7 +34,17 @@ class ChatModelProdiver(str, OnclusiveEnum):
 
 # DEFAULT models
 DEFAULT_MODELS = [
-    {"alias": ChatModel.AMAZON_TITAN, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.TITAN, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.TITAN_G1, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_2, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_2_1, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_3_SONNET, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_3_INSTANT, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.LLAMA_2_13B, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.LLAMA_2_70B, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.INSTRUCT_7B, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.INSTRUCT_8_7B, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.MISTRAL_LARGE, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT3_5_TURBO, "provider": ChatModelProdiver.OPENAI},

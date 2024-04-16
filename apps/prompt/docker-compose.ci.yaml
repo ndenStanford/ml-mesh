@@ -64,6 +64,10 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [backend]
+    volumes:
+      - type: bind
+        source: ~/.aws/
+        target: /apps/prompt/backend/.aws/
     ports:
       - 4000:4000
     environment:
@@ -122,6 +126,10 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
+    volumes:
+      - type: bind
+        source: ~/.aws/
+        target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
