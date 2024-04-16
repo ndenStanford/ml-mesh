@@ -153,11 +153,9 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
 
         file_name = self.tracked_model_version.get_url().split("/")[-1] + ".parquet"
-        neptune_attribute_path = (
-            f"{self.model_card.training_data_attribute_path}/{file_name}"
-        )
+        neptune_attribute_path = f"{self.model_card.training_data_attribute_path}"
 
-        file_key = f"{s3_model_version_prefix}/{neptune_attribute_path}"
+        file_key = f"{s3_model_version_prefix}/{neptune_attribute_path}/{file_name}"
 
         full_file_key = self.s3_parquet_upload(
             self.client,
