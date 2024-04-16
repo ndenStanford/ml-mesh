@@ -35,17 +35,12 @@ COPY --chown=${USER}:users libs/ libs/
 # source
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
-# Copy and execute download_data.sh script
-COPY --chown=${USER}:users "projects/content-scoring/train/src/download_data.sh" "${HOME}/download_data.sh" \
- && chmod +x "${HOME}/download_data.sh" \
- && "${HOME}/download_data.sh" /
-
 WORKDIR "${HOME}"
 
-RUN poetry install --no-interaction --no-ansi \
- && rm -rf ~/.cache/pypoetry/cache \
- && rm -rf ~/.cache/pypoetry/artifacts \
- && poetry cache clear pypi --all -q
+RUN poetry install --no-interaction --no-ansi --only main && \
+    rm -rf ~/.cache/pypoetry/cache && \
+    rm -rf ~/.cache/pypoetry/artifacts && \
+    poetry cache clear pypi --all -q
 
 # --- production stage
 FROM builder as production
@@ -55,7 +50,7 @@ FROM builder as development
 
 # install development dependencies
 RUN poetry install \
-    --only dev \
+    --with dev \
     --no-root \
     --no-interaction \
     --no-ansi \
@@ -66,3 +61,8 @@ RUN poetry install \
     chown -R "${USER}:users" "${HOME}"
 
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
+
+# --- debugger stage
+FROM builder as debugger
+
+RUN poetry install --no-interaction --with debug
