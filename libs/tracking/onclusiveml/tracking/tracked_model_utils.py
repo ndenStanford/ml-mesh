@@ -111,7 +111,7 @@ class TrackedModelCard(TrackedParams):
         TrackedModelTestFiles()
     )  # class containing paths to the test file attributes
     # the path to the dataset used in model training
-    training_data_attribute_path: str = "training_data"
+    training_data_attribute_path: str = "data/train"
 
     @validator("model_type")
     def check_model_type(v: str) -> str:
