@@ -53,14 +53,20 @@ def test_model_server_predict(
     assert test_response.status_code == 200
     assert test_response.json()["data"]["attributes"]["topic"] is not None
 
-    # test_response_query_id = test_client.post(
-    #     f"/{test_model_name}/v1/predict", json=test_payload_query_id
-    # )
-    # assert test_response_query_id.status_code == 200
-    # assert test_response_query_id.json()["data"]["attributes"]["topic"] is not None
-
 
 @pytest.mark.order(9)
+def test_model_server_query_predict(
+    test_client, test_model_name, test_payload_query_id
+):
+    """Tests the readiness endpoint for query id input."""
+    test_response_query_id = test_client.post(
+        f"/{test_model_name}/v1/predict", json=test_payload_query_id
+    )
+    assert test_response_query_id.status_code == 200
+    assert test_response_query_id.json()["data"]["attributes"]["topic"] is not None
+
+
+@pytest.mark.order(10)
 def test_model_server_predict_sample_docs(
     test_client, test_model_name, test_payload_sample_docs
 ):
