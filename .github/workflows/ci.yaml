@@ -831,6 +831,15 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # SERVE
+          - name: serve
+            download-model: false
+            integration: true
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
     with:
       project: content-scoring
       environment: prod
