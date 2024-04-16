@@ -131,5 +131,7 @@ class OnclusiveHuggingfaceModelTrainer(OnclusiveModelTrainer):
         self.initialize_model()
         self.optimize_model()
         self.save()
-        # if self.data_fetch_params.save_artifact:
-        super(OnclusiveHuggingfaceModelTrainer, self).upload_training_data_to_neptune()
+        if self.data_fetch_params.save_artifact:
+            super(
+                OnclusiveHuggingfaceModelTrainer, self
+            ).upload_training_data_to_neptune()
