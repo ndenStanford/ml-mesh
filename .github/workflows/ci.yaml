@@ -448,7 +448,7 @@ jobs       :
   # gch-summarization
 
   run-gch-summarization-project:
-    name: GCH-Sum. Project
+    name: GCH Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -812,7 +812,7 @@ jobs       :
   # content-scoring
 
   run-content-scoring-project:
-    name: CONTENT SCORING Project
+    name: Content Scoring Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -1168,25 +1168,25 @@ jobs       :
           - project: keywords
             sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/keywords
-            trained-model: KEYWORDS_TRAINED
+            trained-model: KEYWORDS-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: ner
             sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/ner
-            trained-model: NER_TRAINED
+            trained-model: NER-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: gch-summarization
             sagemaker-runner-type: ml.m4.xlarge
             trained-project: onclusive/gch-summarization
-            trained-model: SUM_TRAINED
+            trained-model: SUM-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
           - project: topic
             sagemaker-runner-type: ml.p3.2xlarge
             trained-project: onclusive/topic
-            trained-model: TOPIC_TRAINED
+            trained-model: TOPIC-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
 
@@ -1281,6 +1281,7 @@ jobs       :
       - run-keywords-project
       - run-summarization-project
       - run-sentiment-project
+      - run-content-scoring-project
       - run-ner-project
       - run-lsh-project
       - run-iptc-project
@@ -1302,6 +1303,11 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
 
           - project: sentiment
+            self-hosted-runner-type: inf1.2xlarge
+            runner-kind: custom
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+
+          - project: content-scoring
             self-hosted-runner-type: inf1.2xlarge
             runner-kind: custom
             tag: ${{ needs.run-repository-state.outputs.tag }}
