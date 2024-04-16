@@ -448,7 +448,7 @@ jobs       :
   # gch-summarization
 
   run-gch-summarization-project:
-    name: GCH-Sum. Project
+    name: GCH Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
