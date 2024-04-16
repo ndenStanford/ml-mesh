@@ -8,13 +8,11 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
-from prophet import Prophet
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
-from onclusiveml.serving.serialization.topic_summarization.v1 import (
-    ImpactCategoryLabel,
-)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+from prophet import Prophet
 
 # Source
 from src.serve.utils import (
@@ -25,7 +23,6 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
-
 
 # from settings import get_settings
 
@@ -144,6 +141,11 @@ class ImpactQuantification:
             [i["doc_count"] for i in series_topic_profile_es]
         )
         # Calculate local ratio
+        print("&" * 30)
+        print("series_topic_profile")
+        print(series_topic_profile)
+        print("series_profile")
+        print(series_profile)
         local_ratio = series_topic_profile / series_profile
         # Decompose trend
         series_profile_trend = self.decompose_trend(series_profile)
