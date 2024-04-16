@@ -66,7 +66,7 @@ class TrackedDocumentContentScoringModelCard(TrackedModelCard):
     # model params
     model_params: DocumentContentScoringParams = DocumentContentScoringParams()
     # admin
-    local_output_dir: str = os.path.join(".", "document_content-scoring_artifacts")
+    local_output_dir: str = os.path.join(".", "content-scoring_artifacts")
     logging_level: str = "INFO"
 
     class Config:
