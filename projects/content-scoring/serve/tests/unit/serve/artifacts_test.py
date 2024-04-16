@@ -16,8 +16,8 @@ from src.serve.artifacts import ServedModelArtifacts
     [
         (
             False,
-            "models/DOCUMENT-COMPILED-2/models/model_card",
-            "models/DOCUMENT-COMPILED-2/model/some/other/dir",
+            "models/SCORING-COMPILED-1/models/model_card",
+            "models/SCORING-COMPILED-1/model/some/other/dir",
         ),  # TODO: add test case for remove_model_prefix=True
     ],
 )
