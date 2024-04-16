@@ -812,7 +812,7 @@ jobs       :
   # content-scoring
 
   run-content-scoring-project:
-    name: CONTENT Scoring Project
+    name: Content Scoring Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -855,7 +855,7 @@ jobs       :
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
     secrets:
