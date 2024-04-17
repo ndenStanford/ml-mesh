@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "content-scoring-serve"
+version = "0.1.0"
+description = "Implementation of content-scoring model compilation,"
+authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+hummingbird-ml = "^0.4.6"
+core = {path = "../../../libs/core"}
+models = {path = "../../../libs/models"}
+serving = {path = "../../../libs/serving"}
+tracking = {path = "../../../libs/tracking"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true
