@@ -5,7 +5,11 @@ from onclusiveml.core.base.utils import OnclusiveEnum
 
 
 class ChatModel(str, OnclusiveEnum):
-    """Chat models."""
+    """Chat models.
+
+    References:
+        Bedrock: https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids.html
+    """
 
     GPT3_5 = "gpt-3.5-turbo"
     GPT4 = "gpt-4"
