@@ -822,6 +822,15 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
           # compile
           - name: compile
             download-model: false
@@ -1160,6 +1169,7 @@ jobs       :
       - run-register-pipelines
       - get-target-branch-name
       - run-get-core-dependencies-versions
+      - run-content-scoring-project
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -1189,6 +1199,13 @@ jobs       :
             trained-model: TOPIC-TRAINED
             tag: ${{ needs.run-repository-state.outputs.tag }}
             wait: true
+          - project: content-scoring
+            sagemaker-runner-type: ml.m4.xlarge
+            trained-project: onclusive/content-scoring
+            trained-model: SCORING-TRAINED
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            wait: true
+
 
     with:
       environment: prod
