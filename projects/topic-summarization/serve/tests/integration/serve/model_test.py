@@ -48,6 +48,9 @@ def test_served_topic_model_predict(test_inference_params):
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
+    print("&" * 30)
+    print("test_actual_predict_output")
+    print(test_actual_predict_output)
     assert test_actual_predict_output.attributes.topic is not None
     assert (
         test_actual_predict_output.attributes.impact_category == ImpactCategoryLabel.LOW
