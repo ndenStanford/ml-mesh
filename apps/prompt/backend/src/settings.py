@@ -51,7 +51,7 @@ class Settings(OnclusiveBaseSettings):
     # Github configuration
     GITHUB_APP_ID: str
     GITHUB_APP_PRIVATE_KEY: SecretStr
-    GITHUB_URL: str = "AirPR/ml-prompt-registry"
+    GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
 
 
 @lru_cache

@@ -79,7 +79,8 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
+      GITHUB_APP_ID: ${GITHUB_APP_ID:-}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
     depends_on:
       - dynamodb
       - redisdb
@@ -108,7 +109,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
+      GITHUB_APP_ID: ${GITHUB_APP_ID}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY}
     networks:
       - onclusive-net
 
@@ -138,7 +140,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
-      PROMPT_REPO_GITHUB_TOKEN: ${PROMPT_REPO_GITHUB_TOKEN}
+      GITHUB_APP_ID: ${GITHUB_APP_ID}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY}
     depends_on:
       dynamodb:
         condition: service_healthy

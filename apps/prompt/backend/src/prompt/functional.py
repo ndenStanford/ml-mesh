@@ -9,7 +9,7 @@ from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from onclusiveml.core.retry import retry
 
 # Source
-from src.extensions.redis import cache
+from src.extensions.redis import redis
 from src.model.tables import LanguageModel
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
@@ -19,7 +19,7 @@ settings = get_settings()
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
-@cache.cache(ttl=settings.REDIS_TTL_SECONDS)
+@redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
     prompt_alias: str, model_alias: str, **kwargs
 ) -> ConversationChain:
@@ -34,7 +34,7 @@ def generate_from_prompt_template(
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
-@cache.cache(ttl=settings.REDIS_TTL_SECONDS)
+@redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
     prompt: str,
     model_alias: str,

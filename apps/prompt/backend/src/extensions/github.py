@@ -3,13 +3,11 @@
 # Standard Library
 import json
 from typing import Any, Dict, List, Optional
-from pydantic import SecretStr
 
 # 3rd party libraries
-from github import Auth
-from github import Github
-from github import GithubIntegration
+from github import Auth, Github, GithubIntegration
 from github.ContentFile import ContentFile
+from pydantic import SecretStr
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveFrozenSchema
@@ -32,10 +30,7 @@ class GithubClient(OnclusiveFrozenSchema):
     @property
     def repo(self) -> Any:
         """Set github connector."""
-        auth = Auth.AppAuth(
-            self.app_id,
-            self.app_private_key.get_secret_value()
-        )
+        auth = Auth.AppAuth(self.app_id, self.app_private_key.get_secret_value())
         gi = GithubIntegration(auth=auth)
         installation = gi.get_installations()[0]
         g = installation.get_github_for_installation()
@@ -87,5 +82,5 @@ class GithubClient(OnclusiveFrozenSchema):
 github = GithubClient(
     app_id=settings.GITHUB_APP_ID,
     app_private_key=settings.GITHUB_APP_PRIVATE_KEY,
-    repo_url=settings.GITHUB_URL
+    repo_url=settings.GITHUB_REPOSITORY,
 )
