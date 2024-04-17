@@ -4,8 +4,8 @@
 from typing import Union
 
 # 3rd party libraries
-from langchain.llms import BaseLLM
 from langchain.prompts import BasePromptTemplate
+from langchain_core.language_models.chat_models import BaseChatModel
 
 
-LangchainT = Union[BaseLLM, BasePromptTemplate]
+LangchainT = Union[BaseChatModel, BasePromptTemplate]

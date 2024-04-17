@@ -1,7 +1,6 @@
 """Test routes."""
 
 # Standard Library
-import json
 from unittest.mock import patch
 
 # 3rd party libraries
@@ -43,18 +42,24 @@ def test_get_models(mock_model_get, test_client):
 )
 @patch.object(LanguageModel, "get")
 def test_get_model(mock_model_get, alias, provider, test_client):
-    """Test get model."""
     """Test get model endpoint."""
-    mock_model_get.return_value = LanguageModel(alias=alias, prodiver=provider)
+    mock_model_get.return_value = LanguageModel(alias=alias, provider=provider)
     response = test_client.get(f"/api/v2/models/{alias}", headers={"x-api-key": "1234"})
-    raises_if_not_found = True
-    mock_model_get.assert_called_with(
-        f"{model_name}", raises_if_not_found=raises_if_not_found
-    )
+    mock_model_get.assert_called_with(f"{alias}")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {
-        "created_at": None,
-        "id": "123abc",
-        "model_name": model_name,
-        "parameters": parameters,
-    }
+    assert response.json() == {"alias": alias, "provider": provider}
+
+
+@pytest.mark.parametrize(
+    "alias, provider, prompt",
+    [("model-1", "openai", "test prompt"), ("model-2", "bedrock", "hello")],
+)
+@patch("src.prompt.functional.generate_from_prompt")
+def test_generate(mock_generate, alias, provider, prompt, test_client):
+    """Test get model endpoint."""
+    response = test_client.post(
+        f"/api/v2/models/{alias}/generate?prompt={prompt}",
+        headers={"x-api-key": "1234"},
+    )
+    mock_generate.assert_called_with(prompt, alias)
+    assert response.status_code == status.HTTP_200_OK
