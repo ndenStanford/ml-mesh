@@ -32,12 +32,17 @@ services:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       MULTIPROCESS_WORKER: 5
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
@@ -64,7 +69,7 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    profiles: [serve, debug]
+    profiles: [debug]
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
     ports:
       - 5678:5678
@@ -79,6 +84,9 @@ services:
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
       MULTIPROCESS_WORKER: 5
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -116,6 +124,9 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -141,6 +152,9 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
+      MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     depends_on:
       serve:
         condition: service_healthy
@@ -286,7 +300,7 @@ services:
         COMPONENT: backfill
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
-    profiles: [backfill, debug]
+    profiles: [debug]
     entrypoint: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.backfill.__main__]
     ports:
       - 5678:5678
