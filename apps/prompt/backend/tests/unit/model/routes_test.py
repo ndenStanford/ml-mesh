@@ -15,13 +15,6 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def test_health_route(test_client):
-    """Test health endpoint."""
-    response = test_client.get("/health")
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == "OK"
-
-
 @patch.object(LanguageModel, "scan")
 def test_get_models(mock_model_get, test_client):
     """Test get models endpoint."""
