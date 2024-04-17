@@ -66,6 +66,23 @@ def test_payload():
 
 
 @pytest.fixture
+def test_payload_query_id():
+    """Payload."""
+    return {
+        "data": {
+            "identifier": "string",
+            "namespace": "topic-summarization",
+            "attributes": {
+                "topic_id": 257,
+                "trend_detection": False,
+                "query_id": "b529bdd8-47fd-4dbe-b105-53a02ced41cc",  # noqa: E501
+            },
+            "parameters": {},
+        }
+    }
+
+
+@pytest.fixture
 def test_payload_sample_docs():
     """Payload."""
     return {

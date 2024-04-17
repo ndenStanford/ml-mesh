@@ -1,7 +1,7 @@
-"""Topic Summarization v1 data schemas."""
+"""Content scoring v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -10,12 +10,7 @@ from onclusiveml.core.serialization import JsonApiSchema
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    content: Optional[List[str]] = None
-    topic_id: Optional[int] = None
-    query_string: Optional[str] = None
-    trend_detection: Optional[bool] = True
-    query_id: Optional[str] = None
-    media_api_version: Optional[str] = "1"
+    data: Dict = {}
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
@@ -23,9 +18,13 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
-    """Prediction request data."""
+    """Prediction request data.
 
-    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
+    Attributes:
+        boolean_messages List(str): List of 'accepted' or 'rejected' corresponding to the prediction
+    """
+
+    boolean_messages: List[Any] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
@@ -36,4 +35,5 @@ class BioRequestAttributeSchemaV1(JsonApiSchema):
         model_card (Dict): Information about the model
     """
 
-    model_name: str = "topic-summarization"
+    model_name: str = "content-scoring"
+    model_card: Dict

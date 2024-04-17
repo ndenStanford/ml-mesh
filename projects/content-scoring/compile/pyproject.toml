@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "content-scoring-compile"
+version = "0.1.0"
+description = "Implementation of content-scoring model compilation,"
+authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+joblib = "^1.1.0"
+hummingbird-ml = "^0.4.11"
+tracking = {path = "../../../libs/tracking"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
