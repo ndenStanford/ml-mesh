@@ -5,16 +5,12 @@ import os
 from typing import Optional, Type
 
 # 3rd party libraries
-from boto3.dynamodb.conditions import ConditionBase
 from dyntastic import A, Dyntastic
 from dyntastic.main import ResultPage
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
 )
-from pydantic import Field
 
 # Internal libraries
 from onclusiveml.llm.mixins import LangchainConvertibleMixin
@@ -22,7 +18,6 @@ from onclusiveml.llm.typing import LangchainT
 
 # Source
 from src.extensions.github import github
-from src.project.exceptions import ProjectInvalidAlias
 from src.settings import get_settings
 
 
@@ -30,6 +25,8 @@ settings = get_settings()
 
 
 class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
+    """Prompt Template."""
+
     __table_name__ = "prompt"
     __hash_key__ = "alias"
     __table_region__ = settings.AWS_DEFAULT_REGION
@@ -70,7 +67,6 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     def get(cls: Type["PromptTemplate"], hash_key, range_key=None) -> "PromptTemplate":
         """Subclass the get method to retrieve templates directly from Github."""
         result = super(PromptTemplate, cls).get(hash_key, range_key)
-        print(result)
         # get template from github
         contents = github.read(result.path)
         # use the github template as the source of truth.

@@ -1,28 +1,12 @@
 """Projects."""
 
-# Standard Library
-from typing import List
-
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
-from github.GithubException import UnknownObjectException
-from slugify import slugify
 
 # Source
-from src.extensions.github import github
-from src.project.exceptions import (
-    CreationProjectImpossible,
-    DeletionProtectedProject,
-    ProjectInvalidAlias,
-    ProjectNotFound,
-    ProjectsExisting,
-    ProjectsNotFound,
-    ProjectTokenExceedAlias,
-)
 from src.project.tables import Project
 from src.prompt.tables import PromptTemplate
-from src.settings import get_settings
 
 
 router = APIRouter(
@@ -37,7 +21,6 @@ def create_project(alias: str):
     Args:
         alias (str): alias for template.
     """
-    alias = slugify(alias)
     project = Project.safe_get(alias)
     # if project does exist, create a new version
     if project is None:
@@ -68,12 +51,11 @@ def delete_project(alias: str):
     Raises:
         HTTPException.DoesNotExist if alias is not found in table.
     """
-
     try:
         project = Project.get(alias)
         project.delete()
-        return {"message": "Project deleted successfully"}
-    except DoesNotExist as e:
+        return project
+    except DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project {alias} not found in database",
@@ -89,7 +71,7 @@ def list_projects():
     """
     try:
         return Project.scan()
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
@@ -105,7 +87,7 @@ def get_project(alias: str):
     """
     try:
         return Project.get(alias)
-    except DoesNotExist as e:
+    except DoesNotExist:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project {alias} not found in database",
@@ -115,6 +97,7 @@ def get_project(alias: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         )
+
 
 @router.get("/{alias}/prompts", status_code=status.HTTP_200_OK)
 def list_prompts(alias: str):
