@@ -97,6 +97,9 @@ class ServedTopicModel(ServedModel):
                 trending, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
                 )
+                print("&" * 30)
+                print(trending)
+                print(inflection_point)
             if not trend_detection or trending:
                 # if trending, retrieve documents between inflection point and next day
                 if trending:
@@ -107,12 +110,19 @@ class ServedTopicModel(ServedModel):
                 content = self.document_collector.get_documents(
                     query_profile, topic_id, start_time, end_time
                 )
+                print("&" * 30)
+                print(content)
                 topic = self.model.aggregate(content)
+                print("topic")
+                print(topic)
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
+                print("impact_category")
+                print(impact_category)
             else:
                 topic = None
+                impact_category = None
         else:
             topic = self.model.aggregate(content)
             impact_category = None
