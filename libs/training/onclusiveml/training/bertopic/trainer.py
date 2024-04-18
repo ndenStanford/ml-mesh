@@ -169,5 +169,4 @@ class BertopicTrainer(OnclusiveModelTrainer):
                 ],
                 self.topic_model_local_dir,
             )
-            super(BertopicTrainer, self).upload_training_data_to_neptune()
         self.run.stop()
