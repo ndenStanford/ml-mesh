@@ -3,6 +3,8 @@
 # Standard Library
 from typing import Dict, List
 
+# 3rd party libraries
+from prophet import Prophet
 import numpy as np
 import pandas as pd
 import pymannkendall as mk
@@ -11,9 +13,6 @@ from elasticsearch import Elasticsearch
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
 from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-
-# 3rd party libraries
-from prophet import Prophet
 
 # Source
 from src.serve.utils import (
