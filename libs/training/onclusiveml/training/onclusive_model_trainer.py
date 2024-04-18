@@ -125,46 +125,42 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self.client = boto3.client("s3")
         self.parquet_buffer = io.BytesIO()
         self.dataset_df.to_parquet(self.parquet_buffer, index=False)
-        file_name = self.tracked_model_version.get_url().split("/")[-1]
 
-        file_key = f"{self.data_fetch_params.dataset_upload_dir}/{file_name}.parquet"
-        full_file_key = self.s3_parquet_upload(
-            self.client,
-            file_key,
-            self.parquet_buffer,
-            self.data_fetch_params.dataset_upload_bucket,
-        )
-        self.full_file_key = full_file_key
+        s3_bucket = self.data_fetch_params.dataset_upload_bucket
 
-    def upload_training_data_to_neptune(self) -> None:
-        """Upload the training dataset to model store and track with Neptune.
-
-        Returns: None
-        """
         # assemble full s3 uri for file
-        s3_bucket = (
-            self.tracked_model_version.s3_storage_backend_config.s3_backend_bucket
+        s3_model_version_full_prefix = (
+            self.tracked_model_version.derive_model_version_s3_prefix()
         )
-        s3_prefix = (
-            self.tracked_model_version.s3_storage_backend_config.s3_backend_prefix
-        )
-        s3_model_version_prefix = (
-            self.tracked_model_version.derive_model_version_s3_prefix(s3_prefix)
-        )
+        s3_model_version_prefix = "/".join(s3_model_version_full_prefix.split("/")[-3:])
 
         file_name = self.tracked_model_version.get_url().split("/")[-1] + ".parquet"
-        neptune_attribute_path = f"{self.model_card.training_data_attribute_path}"
+        self.neptune_attr_path = (
+            f"{self.model_card.training_data_attribute_path}/{file_name}"
+        )
 
-        file_key = f"{s3_model_version_prefix}/{neptune_attribute_path}/{file_name}"
-
+        file_key = (
+            f"{self.data_fetch_params.dataset_upload_dir}/"
+            f"{s3_model_version_prefix}/{self.neptune_attr_path}"
+        )
         full_file_key = self.s3_parquet_upload(
             self.client,
             file_key,
             self.parquet_buffer,
             s3_bucket,
         )
-        self.tracked_model_version[f"{neptune_attribute_path}/{file_name}"].track_files(
-            f"s3://{full_file_key}"
+        self.full_file_key = full_file_key
+
+        if self.data_fetch_params.save_artifact:
+            self.track_training_data_in_neptune()
+
+    def track_training_data_in_neptune(self) -> None:
+        """Set up tracking of training data S3 file in Neptune.
+
+        Returns: None
+        """
+        self.tracked_model_version[self.neptune_attr_path].track_files(
+            f"s3://{self.full_file_key}"
         )
 
     @staticmethod
