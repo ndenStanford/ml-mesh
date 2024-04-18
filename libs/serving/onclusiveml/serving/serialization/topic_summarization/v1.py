@@ -15,6 +15,8 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     topic_id: Optional[int] = None
     query_string: Optional[str] = None
     trend_detection: Optional[bool] = True
+    query_id: Optional[str] = None
+    media_api_version: Optional[str] = "1"
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
