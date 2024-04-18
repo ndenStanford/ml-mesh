@@ -27,9 +27,9 @@ def mock_responses():
     }
     # Manually construct the inner JSON string
     value_str = json.dumps(value_dict).replace('"', '\\"')
-    inner_json_parts = inner_json_parts = [
-        f'\\"{key}\\": {value_str}' for key in keys
-    ] + [f'\\"{key}\\": \\"Not mentioned\\"' for key in ["Summary", "Theme"]]
+    inner_json_parts = [f'\\"{key}\\": {value_str}' for key in keys] + [
+        f'\\"{key}\\": \\"Not mentioned\\"' for key in ["Summary", "Theme"]
+    ]
     inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
 
     # Create the final string
@@ -45,13 +45,21 @@ def mock_responses_aggregate():
     # build mock sample
     keys = ["Overall summary", "Theme", "Impact level", "Summary"]
     # Manually construct the inner JSON string
-    inner_json_parts = inner_json_parts = [
-        f'\\"{key}\\": \\"Not mentioned\\"' for key in keys
-    ]
+    inner_json_parts = [f'\\"{key}\\": \\"Not mentioned\\"' for key in keys]
     inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
 
     # Create the final string
     mock_response.content = f'{{"generated": "{inner_json_str}"}}'
+    return mock_response
+
+
+@pytest.fixture
+def mock_reponses_production_tool():
+    """Mock response for production tool query profile."""
+    mock_response = MagicMock()
+    string_query = """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+    mock_response_data = {"booleanQuery\\": string_query}
+    mock_response.json.return_value = mock_response_data
     return mock_response
 
 
