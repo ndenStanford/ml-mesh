@@ -1,0 +1,259 @@
+---
+version : '3.9'
+
+services:
+  # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/content-scoring/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-production}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: content-scoring
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/content-scoring/train/src
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train/
+        target: /projects/content-scoring/train/
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-train:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [train, unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # COMPILE
+  # =============================================
+
+  compile:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
+    build:
+      context: ../../
+      dockerfile: projects/content-scoring/compile/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: content-scoring
+        COMPONENT: compile
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG:-latest}
+    command: [python, -m, src.compile_model]
+    profiles: [compile, unit, integration, pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-unit:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    profiles: [unit]
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-download-model:
+    volumes:
+      - type: bind
+        source: compile/
+        target: /projects/content-scoring/compile/
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
+    command: [python, -m, src.download_uncompiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-validate-model:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
+    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: compile/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  compile-upload-model:
+    volumes:
+      - type: bind
+        source: compile
+        target: /projects/content-scoring/compile
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
+    command: [python, -m, src.upload_compiled_model]
+    profiles: [pipeline]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
+      GITHUB_ACTOR: ${GITHUB_ACTOR}
+      GITHUB_ENV: ${GITHUB_ENV}
+      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
+      GITHUB_JOB: ${GITHUB_JOB}
+      GITHUB_REF: ${GITHUB_REF}
+      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
+      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
+      GITHUB_SHA: ${GITHUB_SHA}
+      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
+      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
+      RUNNER_ARCH: ${RUNNER_ARCH}
+      RUNNER_NAME: ${RUNNER_NAME}
+      RUNNER_OS: ${RUNNER_OS}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    volumes:
+      - serve-volume:/projects/content-scoring/serve/models
+    build:
+      context: ../../
+      dockerfile: projects/content-scoring/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: content-scoring
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: content-scoring-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      PROMETHEUS_MULTIPROC_DIR: /tmp
+      NEURON_RT_NUM_CORES: 1
+      NEPTUNE_PROJECT: onclusive/content-scoring
+      NEPTUNE_MODEL_ID: SCORING-COMPILED
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/content-scoring/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # utility service: downloading the compiled model artifact that will be served
+  serve-download-model:
+    volumes:
+      - serve-volume:/projects/content-scoring/serve/models
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve, functional, load]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+      NEPTUNE_PROJECT: onclusive/content-scoring
+      NEPTUNE_MODEL_ID: SCORING-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: SCORING-COMPILED-1
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusiveml
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
+      NEPTUNE_PROJECT: onclusive/content-scoring
+      NEPTUNE_MODEL_ID: SCORING-COMPILED
+      NEPTUNE_MODEL_VERSION_ID: SCORING-COMPILED-1
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - serve-volume:/projects/content-scoring/serve/models
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      NEPTUNE_PROJECT: onclusive/content-scoring
+      NEPTUNE_MODEL_ID: SCORING-COMPILED
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+networks:
+  onclusive-net:
+
+volumes :
+  compile-volume:
+  serve-volume:
