@@ -19,7 +19,6 @@ from src.settings import (  # type: ignore[attr-defined]
 logger = get_default_logger(__name__)
 
 
-# train trigger
 def main() -> None:
     """Register trained model."""
     model_specs = TrackedTopicModelSpecs()

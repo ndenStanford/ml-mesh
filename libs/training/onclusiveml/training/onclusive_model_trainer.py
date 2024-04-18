@@ -151,8 +151,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
         self.full_file_key = full_file_key
 
-        # if self.data_fetch_params.save_artifact:
-        self.track_training_data_in_neptune()
+        if self.data_fetch_params.save_artifact:
+            self.track_training_data_in_neptune()
 
     def track_training_data_in_neptune(self) -> None:
         """Set up tracking of training data S3 file in Neptune.
