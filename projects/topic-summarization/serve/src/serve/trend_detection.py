@@ -3,7 +3,6 @@
 # Standard Library
 from typing import Tuple, Union
 
-# 3rd party libraries
 import pandas as pd
 from elasticsearch import Elasticsearch
 from kats.consts import TimeSeriesData
@@ -11,6 +10,8 @@ from kats.detectors.cusum_detection import CUSUMDetector
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+
+# 3rd party libraries
 from pandas import Timestamp
 
 # Source
