@@ -3,7 +3,6 @@
 # 3rd party libraries
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
-from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 
 # Internal libraries
 from onclusiveml.core.retry import retry
@@ -27,10 +26,8 @@ def generate_from_prompt_template(
     # get langchain objects
     prompt = PromptTemplate.get(prompt_alias).as_langchain()
     llm = LanguageModel.get(model_alias).as_langchain()
-    conversation = ConversationChain(
-        prompt=prompt, llm=llm, memory=ConversationBufferMemory(return_messages=True)
-    )
-    return conversation.predict(**kwargs)
+    conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
+    return conversation.predict(input=prompt.format(**kwargs))
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
