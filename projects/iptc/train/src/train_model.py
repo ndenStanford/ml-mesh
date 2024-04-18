@@ -18,6 +18,7 @@ from src.trainer import IPTCTrainer
 logger = get_default_logger(__name__)
 
 
+# train trigger
 def main() -> None:
     """Execute the training process."""
     model_specs = TrackedIPTCModelSpecs()
