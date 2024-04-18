@@ -112,7 +112,6 @@ class TrendDetection:
         if df_single_topic["doc_count"].sum() >= (
             settings.TOPIC_DOCUMENT_THRESHOLD * df_all_topic["doc_count"].sum()
         ):
-
             # total number of instances of topic must be 3% of total number of documents
             df_single_topic["time"] = pd.to_datetime(df_single_topic["key_as_string"])
             df_single_topic = df_single_topic.rename(columns={"doc_count": "y"})
