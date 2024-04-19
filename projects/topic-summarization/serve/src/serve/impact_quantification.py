@@ -8,11 +8,13 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
+from prophet import Prophet
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
-from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-from prophet import Prophet
+from onclusiveml.serving.serialization.topic_summarization.v1 import (
+    ImpactCategoryLabel,
+)
 
 # Source
 from src.serve.utils import (
@@ -23,6 +25,7 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
+
 
 # from settings import get_settings
 
