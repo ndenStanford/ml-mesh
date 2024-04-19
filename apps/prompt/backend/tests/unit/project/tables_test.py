@@ -59,3 +59,23 @@ def test_save(mock_dyntastic_save, mock_github_write, alias):
         os.path.join(alias, ".gitkeep"), f"Create project {alias}", ""
     )
     mock_dyntastic_save.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "alias",
+    [
+        "new-project1",
+        "new-project2",
+        "new-project3",
+    ],
+)
+@patch.object(GithubClient, "rm")
+@patch.object(Dyntastic, "delete")
+def test_delete(mock_dyntastic_delete, mock_github_rm, alias):
+    """Test save."""
+    # call
+    project = Project(alias=alias)
+    project.delete()
+    # asserts
+    mock_github_rm.assert_called_with(alias, f"Delete project {alias}")
+    mock_dyntastic_delete.assert_called_once()
