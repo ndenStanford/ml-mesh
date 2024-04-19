@@ -44,19 +44,21 @@ def test_model_server_readiness(test_client, test_model_name):
 
 
 @pytest.mark.order(8)
-def test_model_server_predict(
-    test_client, test_model_name, test_payload, test_payload_query_id
-):
+def test_model_server_query_string_predict(test_client, test_model_name, test_payload):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     test_response = test_client.post(
         f"/{test_model_name}/v1/predict", json=test_payload
     )
     assert test_response.status_code == 200
     assert test_response.json()["data"]["attributes"]["topic"] is not None
+    assert (
+        test_response.json()["data"]["attributes"]["impact_category"]
+        == ImpactCategoryLabel.LOW
+    )
 
 
 @pytest.mark.order(9)
-def test_model_server_query_predict(
+def test_model_server_query_id_predict(
     test_client, test_model_name, test_payload_query_id
 ):
     """Tests the readiness endpoint for query id input."""
@@ -65,6 +67,10 @@ def test_model_server_query_predict(
     )
     assert test_response_query_id.status_code == 200
     assert test_response_query_id.json()["data"]["attributes"]["topic"] is not None
+    assert (
+        test_response_query_id.json()["data"]["attributes"]["impact_category"]
+        == ImpactCategoryLabel.LOW
+    )
 
 
 @pytest.mark.order(10)
@@ -77,10 +83,6 @@ def test_model_server_predict_sample_docs(
     )
     assert test_response.status_code == 200
     assert test_response.json()["data"]["attributes"]["topic"] is not None
-    assert (
-        test_response.json()["data"]["attributes"]["impact_category"]
-        == ImpactCategoryLabel.LOW
-    )
 
 
 @pytest.mark.order(7)
