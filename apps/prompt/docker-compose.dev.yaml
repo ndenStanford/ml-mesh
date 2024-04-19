@@ -94,8 +94,6 @@ services:
       GITHUB_APP_ID: ${GITHUB_APP_ID}
       GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY}
       DOCS_URL: /docs
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
@@ -128,8 +126,6 @@ services:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
       DOCS_URL: /docs
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
@@ -167,8 +163,6 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
       GITHUB_TOKEN: ${GITHUB_TOKEN}
       DOCS_URL: /docs
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://
       DYNAMODB_HOST: http://dynamodb:8000
       GITHUB_APP_ID: ${GITHUB_APP_ID:-}
@@ -200,12 +194,12 @@ services:
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_APP_ID: ${GITHUB_APP_ID}
+      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY}
       DOCS_URL: /docs
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
     depends_on:
       dynamodb:
         condition: service_healthy
