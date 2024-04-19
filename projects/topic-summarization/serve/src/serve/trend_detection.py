@@ -8,10 +8,10 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
-from pandas import Timestamp
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from pandas import Timestamp
 
 # Source
 from src.serve.utils import (  # query_translation,
@@ -20,7 +20,6 @@ from src.serve.utils import (  # query_translation,
     topic_profile_query,
 )
 from src.settings import get_settings
-
 
 settings = get_settings()
 
@@ -75,14 +74,10 @@ class TrendDetection:
                 query, start_time, end_time, settings.trend_time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
-        print("results_all_profile_query")
-        print(results_all_profile_query)
         results_all_profile_query_no_weekends = remove_weekends(
             results_all_profile_query
         )
         df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends)  # .iloc[:-1]
-        print("df_all_topic")
-        print(df_all_topic)
         # profile topic query
         results_topic_profile_query = self.es.search(
             index=settings.es_index,
@@ -90,8 +85,6 @@ class TrendDetection:
                 query, start_time, end_time, topic_id, settings.trend_time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
-        print("results_topic_profile_query")
-        print(results_topic_profile_query)
         if len(results_topic_profile_query) > 0:
             results_topic_profile_query_no_weekends = remove_weekends(
                 results_topic_profile_query
@@ -99,16 +92,8 @@ class TrendDetection:
             df_single_topic = pd.DataFrame(
                 results_topic_profile_query_no_weekends
             )  # .iloc[:-1]
-            print("df_single_topic")
-            print(df_single_topic)
         else:
             return False, None
-
-        print("here1")
-        print(df_single_topic["doc_count"].sum())
-        print("here2")
-        print(settings.TOPIC_DOCUMENT_THRESHOLD)
-        print(settings.TOPIC_DOCUMENT_THRESHOLD * df_all_topic["doc_count"].sum())
 
         if df_single_topic["doc_count"].sum() >= (
             settings.TOPIC_DOCUMENT_THRESHOLD * df_all_topic["doc_count"].sum()
