@@ -15,8 +15,10 @@ from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    client_id: SecretStr = Field(default="...", env="CLIENT_ID", exclude=True)
-    client_secret: SecretStr = Field(default="...", env="CLIENT_SECRET", exclude=True)
+    client_id: SecretStr = Field(default="...", env="MEDIA_CLIENT_ID", exclude=True)
+    client_secret: SecretStr = Field(
+        default="...", env="MEDIA_CLIENT_SECRET", exclude=True
+    )
     grant_type: str = "client_credentials"
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
     ml_query_id: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
@@ -59,7 +61,7 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         response = self._from_boolean_to_media_api(settings)
         if response:
             data = response.get("query", {})
-            return data["es_query"]
+            return {"bool": data["es_query"]}
         return None
 
     def _from_boolean_to_media_api(
@@ -96,3 +98,23 @@ class StringQueryProfile(BaseQueryProfile):
         """String query."""
         # api call to query tool
         return self.string_query
+
+
+class ProductionToolsQueryProfile(BaseQueryProfile):
+    """Query ID to Boolean."""
+
+    version: int
+    query_id: str
+    settings = MediaAPISettings()
+
+    @property
+    def query(self) -> Union[str, None]:
+        """Translate query id to string query."""
+        request_result = requests.get(
+            f"{self.settings.media_api_url}/v{self.version}/topics/{self.query_id}",
+            headers=self.headers(self.settings),
+        )
+        if request_result.status_code == 200:
+            return request_result.json().get("booleanQuery")
+        else:
+            return None

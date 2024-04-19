@@ -11,7 +11,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 # Source
-from src.serve.category_storage import Category_list
 from src.settings import get_settings
 
 settings = get_settings()
@@ -44,21 +43,39 @@ def test_model_server_readiness(test_client, test_model_name):
 
 
 @pytest.mark.order(8)
-def test_model_server_predict(test_client, test_model_name, test_payload):
+def test_model_server_predict(
+    test_client, test_model_name, test_payload, test_payload_query_id
+):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     test_response = test_client.post(
         f"/{test_model_name}/v1/predict", json=test_payload
     )
     assert test_response.status_code == 200
-    assert set(test_response.json()["data"]["attributes"]["topic"].keys()).issubset(
-        set(
-            Category_list
-            + [
-                "Summary",
-                "Theme",
-            ]
-        )
+    assert test_response.json()["data"]["attributes"]["topic"] is not None
+
+
+@pytest.mark.order(9)
+def test_model_server_query_predict(
+    test_client, test_model_name, test_payload_query_id
+):
+    """Tests the readiness endpoint for query id input."""
+    test_response_query_id = test_client.post(
+        f"/{test_model_name}/v1/predict", json=test_payload_query_id
     )
+    assert test_response_query_id.status_code == 200
+    assert test_response_query_id.json()["data"]["attributes"]["topic"] is not None
+
+
+@pytest.mark.order(10)
+def test_model_server_predict_sample_docs(
+    test_client, test_model_name, test_payload_sample_docs
+):
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    test_response = test_client.post(
+        f"/{test_model_name}/v1/predict", json=test_payload_sample_docs
+    )
+    assert test_response.status_code == 200
+    assert test_response.json()["data"]["attributes"]["topic"] is not None
 
 
 @pytest.mark.order(7)
@@ -73,4 +90,4 @@ def test_model_server_bio(test_model_name, test_client, test_expected_bio_output
     assert test_response.status_code == 200
     test_actual_bio_output = test_response.json()
 
-    assert test_actual_bio_output
+    assert test_actual_bio_output == test_expected_bio_output

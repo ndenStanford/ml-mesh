@@ -4,7 +4,7 @@
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings
+from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveFrozenSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 
@@ -22,7 +22,13 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     prompt_alias: str = "ml-transcript-segmentation"
     prompt_ad_alias: str = "ml-transcript-segmentation-ad-detection"
     internal_ml_endpoint_api_key: str = "1234"
+
+
+class TranscriptSegmentationHandlerSettings(OnclusiveBaseSettings):
+    """Transcript Segmentation configurations."""
+
     CHARACTER_BUFFER: int = 2500
+    WINDOW_THRESHOLD: int = 20
 
 
 class GlobalSettings(
@@ -31,6 +37,13 @@ class GlobalSettings(
     TrackedImageSpecs,
 ):
     """Global server settings."""
+
+
+class ApiSettings(
+    PromptBackendAPISettings,
+    TranscriptSegmentationHandlerSettings,
+):
+    """API settings."""
 
 
 @lru_cache
@@ -42,4 +55,4 @@ def get_settings() -> OnclusiveFrozenSettings:
 @lru_cache
 def get_api_settings() -> OnclusiveFrozenSettings:
     """Returns API settings."""
-    return PromptBackendAPISettings()
+    return ApiSettings()

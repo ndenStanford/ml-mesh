@@ -28,6 +28,7 @@ def download_model(settings: BaseSettings) -> None:
         # if the target dir does not exist, download all model artifacts for the model version to
         # local
         print("settings.model_directory: ", settings.model_directory)
+
         mv.download_directory_from_model_version(
             local_directory_path=settings.model_directory,
             neptune_attribute_path="model",

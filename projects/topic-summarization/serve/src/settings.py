@@ -1,13 +1,18 @@
 """Service initialization."""
 # isort: skip_file
 
+# Internal libraries
+from onclusiveml.data.query_profile import MediaAPISettings
+
 # Standard Library
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings
+from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
+from pydantic import SecretStr, Field
+from typing import List
 
 # Source
 from src.serve.category_storage import Category_list
@@ -33,10 +38,40 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     }
 
 
+class ElasticsearchSettings(OnclusiveBaseSettings):
+    """Elasticsearch Settings."""
+
+    ELASTICSEARCH_KEY: SecretStr = Field(
+        default="...", env="ELASTICSEARCH_KEY", exclude=True
+    )
+    es_index: List = [
+        "crawler",
+        "crawler-4-2024.03",
+        "crawler-4-2024.02",
+        "crawler-4-2024.01",
+    ]
+
+
+class TrendSummarizationSettings(OnclusiveBaseSettings):
+    """Trend Summarization Settings."""
+
+    # No of documents to collect for summarization
+    NUM_DOCUMENTS: int = 5
+    # Lookback days to assess trend
+    trend_lookback_days: int = 14
+    # Number of documents per interval
+    trend_time_interval: str = "12h"
+    # Document scale threshold to run trend detection
+    TOPIC_DOCUMENT_THRESHOLD: float = 0.01
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    MediaAPISettings,
+    ElasticsearchSettings,
+    TrendSummarizationSettings,
 ):
     """Global server settings."""
 
