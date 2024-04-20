@@ -21,7 +21,6 @@ from src.serve.utils import (  # query_translation,
 )
 from src.settings import get_settings
 
-
 settings = get_settings()
 
 
@@ -96,6 +95,11 @@ class TrendDetection:
         else:
             return False, None
 
+        print("&" * 30)
+        print("ratio")
+        print(df_single_topic["doc_count"])
+        print(df_all_topic["doc_count"])
+        print(df_single_topic["doc_count"].sum() / df_all_topic["doc_count"].sum())
         if df_single_topic["doc_count"].sum() >= (
             settings.TOPIC_DOCUMENT_THRESHOLD * df_all_topic["doc_count"].sum()
         ):

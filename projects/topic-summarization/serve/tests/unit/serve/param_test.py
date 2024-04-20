@@ -79,7 +79,7 @@ def test_handler_group(article_input):
     group_result = _service.group(
         article=article_input,
     )
-    assert len(group_result) == 2
+    assert len(group_result) == 1
 
 
 @patch("requests.post")

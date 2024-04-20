@@ -3,8 +3,7 @@
 
 # 3rd party libraries
 import pytest
-
-# from freezegun import freeze_time
+from freezegun import freeze_time
 
 # Source
 from src.settings import get_settings
