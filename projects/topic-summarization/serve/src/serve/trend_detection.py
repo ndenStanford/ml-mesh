@@ -8,10 +8,10 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
-from pandas import Timestamp
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from pandas import Timestamp
 
 # Source
 from src.serve.utils import (  # query_translation,
@@ -20,7 +20,6 @@ from src.serve.utils import (  # query_translation,
     topic_profile_query,
 )
 from src.settings import get_settings
-
 
 settings = get_settings()
 
@@ -78,7 +77,7 @@ class TrendDetection:
         results_all_profile_query_no_weekends = remove_weekends(
             results_all_profile_query
         )
-        df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends)  # .iloc[:-1]
+        df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends).iloc[:-1]
         # profile topic query
         results_topic_profile_query = self.es.search(
             index=settings.es_index,
@@ -92,7 +91,7 @@ class TrendDetection:
             )
             df_single_topic = pd.DataFrame(
                 results_topic_profile_query_no_weekends
-            )  # .iloc[:-1]
+            ).iloc[:-1]
         else:
             return False, None
 
