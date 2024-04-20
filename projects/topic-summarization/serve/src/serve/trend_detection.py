@@ -69,24 +69,17 @@ class TrendDetection:
         """
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
-        print("profile query info")
-        print("all_profile_query input")
-        print(query, start_time, end_time, settings.trend_time_interval)
         results_all_profile_query = self.es.search(
             index=settings.es_index,
             body=all_profile_query(
                 query, start_time, end_time, settings.trend_time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
-        print(results_all_profile_query)
         results_all_profile_query_no_weekends = remove_weekends(
             results_all_profile_query
         )
         df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends)  # .iloc[:-1]
         # profile topic query
-        print("profile topic query info")
-        print("topic_profile_query input")
-        print(query, start_time, end_time, topic_id, settings.trend_time_interval)
         results_topic_profile_query = self.es.search(
             index=settings.es_index,
             body=topic_profile_query(
@@ -103,11 +96,6 @@ class TrendDetection:
         else:
             return False, None
 
-        print("&" * 30)
-        print("ratio")
-        print(df_single_topic["doc_count"])
-        print(df_all_topic["doc_count"])
-        print(df_single_topic["doc_count"].sum() / df_all_topic["doc_count"].sum())
         if df_single_topic["doc_count"].sum() >= (
             settings.TOPIC_DOCUMENT_THRESHOLD * df_all_topic["doc_count"].sum()
         ):
