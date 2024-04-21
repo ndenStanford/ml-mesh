@@ -82,7 +82,8 @@ def test_handler_group(article_input):
     assert len(group_result) == 1
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -99,17 +100,20 @@ def test_handler_group(article_input):
 )
 def test_not_trending(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -119,7 +123,8 @@ def test_not_trending(
     assert res == (False, None)
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -136,17 +141,20 @@ def test_not_trending(
 )
 def test_trending(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -156,7 +164,8 @@ def test_trending(
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -174,17 +183,24 @@ def test_trending(
 )
 def test_not_trending_query_id(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
+    mock_reponses_production_tool,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.side_effect = [
+        mock_reponses_production_tool,
+        mock_boolean_query_translated,
+    ]
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -194,7 +210,8 @@ def test_not_trending_query_id(
     assert res == (False, None)
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -212,17 +229,24 @@ def test_not_trending_query_id(
 )
 def test_trending_query_id(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
+    mock_reponses_production_tool,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.side_effect = [
+        mock_reponses_production_tool,
+        mock_boolean_query_translated,
+    ]
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -232,7 +256,8 @@ def test_trending_query_id(
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.impact_quantification.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id",
@@ -247,17 +272,20 @@ def test_trending_query_id(
 )
 def test_impact_quantification(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     mock_boolean_query_translated,
+    mock_boolean_check,
     mock_all_global_query,
     mock_topic_global_query,
     mock_all_profile_boolean_query,
     mock_topic_profile_query,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_all_global_query,
         mock_topic_global_query,

@@ -60,6 +60,7 @@ def mock_reponses_production_tool():
     string_query = """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
     mock_response_data = {"booleanQuery\\": string_query}
     mock_response.json.return_value = mock_response_data
+    mock_response.status_code = 200
     return mock_response
 
 
@@ -96,8 +97,17 @@ def article_input():
 
 
 @pytest.fixture
+def mock_boolean_check():
+    """Mock response for request.put."""
+    mock_response = MagicMock()
+    mock_response.content = ""
+    mock_response.status_code = 204
+    return mock_response
+
+
+@pytest.fixture
 def mock_boolean_query_translated():
-    """Mock response for request.post."""
+    """Mock response for request.get."""
     mock_response = MagicMock()
     query = {
         "query": {
