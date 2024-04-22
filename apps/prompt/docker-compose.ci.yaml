@@ -109,8 +109,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
-      GITHUB_APP_ID: ${GITHUB_APP_ID}
-      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
     networks:
       - onclusive-net
 
@@ -140,8 +140,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DB_HOST: http://dynamodb:8000
-      GITHUB_APP_ID: ${GITHUB_APP_ID}
-      GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
     depends_on:
       dynamodb:
         condition: service_healthy
