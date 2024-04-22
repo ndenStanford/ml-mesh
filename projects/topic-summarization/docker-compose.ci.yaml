@@ -35,6 +35,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/prod.env
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s
@@ -67,6 +68,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/prod.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -88,6 +90,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/prod.env
     depends_on:
       serve:
         condition: service_healthy

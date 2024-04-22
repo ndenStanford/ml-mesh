@@ -44,6 +44,7 @@ services:
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       MULTIPROCESS_WORKER: 5
+    env_file: serve/config/dev.env
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s
@@ -94,6 +95,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -134,8 +136,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
-      NUM_DOCUMENTS: 2
-      # TOPIC_DOCUMENT_THRESHOLD: 0.001
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -164,8 +165,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
-      NUM_DOCUMENTS: 2
-      # TOPIC_DOCUMENT_THRESHOLD: 0.001
+    env_file: serve/config/dev.env
     depends_on:
       serve:
         condition: service_healthy

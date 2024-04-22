@@ -67,6 +67,10 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     # Document scale threshold to run trend detection
     TOPIC_DOCUMENT_THRESHOLD: float = 0.01
 
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):
     """Impact Quantification Settings."""
