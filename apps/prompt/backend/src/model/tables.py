@@ -1,7 +1,7 @@
 """Language model dynamoDB tables."""
 
 # Standard Library
-from typing import Optional, Type
+from typing import Optional
 
 # 3rd party libraries
 import boto3
@@ -21,6 +21,8 @@ settings = get_settings()
 
 
 class LanguageModel(Dyntastic, LangchainConvertibleMixin):
+    """Language model."""
+
     __table_name__ = "model"
     __hash_key__ = "alias"
     __table_region__ = settings.AWS_DEFAULT_REGION
@@ -34,7 +36,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         if self.provider == ChatModelProdiver.OPENAI:
             return ChatOpenAI(model=self.alias)
         if self.provider == ChatModelProdiver.BEDROCK:
-            session = boto3.setup_default_session(profile_name=settings.AWS_PROFILE)
+            boto3.setup_default_session()
             bedrock = boto3.client(
                 service_name="bedrock-runtime",
                 region_name=settings.AWS_DEFAULT_REGION,

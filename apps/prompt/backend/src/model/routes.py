@@ -1,14 +1,13 @@
 """Model."""
 
 # Standard Library
-from typing import Any, Dict, List
+from typing import List
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
 # Source
-from src.model.exceptions import ModelNotFound
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
 

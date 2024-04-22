@@ -19,6 +19,8 @@ settings = get_settings()
 
 @dataclass
 class MockContentFile:
+    """Mock ContentFile object."""
+
     name: str
     type: str
     path: str
@@ -141,7 +143,7 @@ def test_rm(github_auth_mock, github_integration_mock, path, contentfiles):
     get_contents = get_github_for_installation.get_repo.return_value.get_contents
     get_contents.return_value = contentfiles
 
-    files = github.rm(path, "")
+    _ = github.rm(path, "")
 
     get_contents.assert_called_with(path)
 

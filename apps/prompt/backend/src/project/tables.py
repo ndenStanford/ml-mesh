@@ -5,7 +5,7 @@ import os
 
 # 3rd party libraries
 from dyntastic import Dyntastic
-from pydantic import Field, validator
+from pydantic import validator
 
 # Source
 from src.extensions.github import github
@@ -18,6 +18,8 @@ settings = get_settings()
 
 
 class Project(Dyntastic):
+    """Prompt project."""
+
     __table_name__ = "project"
     __hash_key__ = "alias"
     __table_region__ = settings.AWS_DEFAULT_REGION

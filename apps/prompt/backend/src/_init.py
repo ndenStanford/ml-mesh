@@ -37,7 +37,7 @@ def _create_tables(tables: List[Type[Dyntastic]]) -> None:
     for table in tables:
         try:
             table.create_table()
-        except ClientError as e:
+        except ClientError:
             logging.info("Table already exists, skipping creation ...")
 
 
