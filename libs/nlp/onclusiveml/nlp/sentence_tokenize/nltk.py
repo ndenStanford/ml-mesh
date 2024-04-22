@@ -16,7 +16,7 @@ from onclusiveml.nlp.sentence_tokenize.consts import (
     NLTK_SUPPORTED_LANGS,
     SPECIAL_CHARACTERS,
 )
-from onclusiveml.nlp.base import BaseSentenceTokenizer
+from onclusiveml.nlp.sentence_tokenize.base import BaseSentenceTokenizer
 
 
 class NLTKSentenceTokenizer(BaseSentenceTokenizer):
