@@ -18,14 +18,14 @@ from pydantic import SecretStr, Field
 from typing import List
 
 # Source
-from src.serve.category_storage import Category_list
+from src.serve.category_storage import category_list
 
 
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "topic-summarization"
-    CATEGORY_LIST: list = Category_list
+    CATEGORY_LIST: list = category_list
 
 
 class PromptBackendAPISettings(OnclusiveFrozenSettings):

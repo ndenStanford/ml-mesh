@@ -9,7 +9,7 @@ import pytest
 import json
 
 # Source
-from src.serve.category_storage import Category_list
+from src.serve.category_storage import category_list
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def mock_responses():
     mock_response = MagicMock()
 
     # build mock sample
-    keys = Category_list
+    keys = category_list
     # The value for each key in the inner JSON object
     value_dict = {
         "Overall summary": "Not mentioned",

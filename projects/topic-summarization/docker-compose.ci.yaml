@@ -68,7 +68,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
-    env_file: serve/config/prod.env
+    env_file: serve/config/test.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -90,7 +90,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
-    env_file: serve/config/prod.env
+    env_file: serve/config/test.env
     depends_on:
       serve:
         condition: service_healthy
