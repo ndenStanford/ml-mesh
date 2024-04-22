@@ -191,6 +191,9 @@ services:
       - type: bind
         source: backend/tests
         target: /apps/prompt/backend/tests
+      - type: bind
+        source: ~/.aws/
+        target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
@@ -200,6 +203,7 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+      AWS_PROFILE: dev
     depends_on:
       dynamodb:
         condition: service_healthy

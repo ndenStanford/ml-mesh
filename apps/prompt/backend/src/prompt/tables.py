@@ -64,9 +64,17 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
         )
 
     @classmethod
-    def get(cls: Type["PromptTemplate"], hash_key, range_key=None) -> "PromptTemplate":
+    def get(
+        cls: Type["PromptTemplate"],
+        hash_key,
+        range_key=None,
+        *,
+        consistent_read: bool = False,
+    ) -> "PromptTemplate":
         """Subclass the get method to retrieve templates directly from Github."""
-        result = super(PromptTemplate, cls).get(hash_key, range_key)
+        result = super(PromptTemplate, cls).get(
+            hash_key, range_key, consistent_read=consistent_read
+        )
         # get template from github
         contents = github.read(result.path)
         # use the github template as the source of truth.

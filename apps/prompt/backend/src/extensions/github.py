@@ -2,11 +2,10 @@
 
 # Standard Library
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 # 3rd party libraries
-from github import Auth, Github, GithubIntegration
-from github.ContentFile import ContentFile
+from github import Auth, GithubIntegration
 from pydantic import SecretStr
 
 # Internal libraries
@@ -54,8 +53,8 @@ class GithubClient(OnclusiveFrozenSchema):
         result: List[str] = []
         for content_file in contents:
             if content_file.type == "dir":
-                sub_contents = repo.get_contents(content_file.path)
-                result.extend(self.ls(self.repo, sub_contents))
+                sub_contents = self.repo.get_contents(content_file.path)
+                result.extend([s.path for s in sub_contents])
             if (
                 content_file.type == "file"
                 and content_file.name not in self.excluded_files

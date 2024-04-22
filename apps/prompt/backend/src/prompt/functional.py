@@ -19,9 +19,7 @@ settings = get_settings()
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
-def generate_from_prompt_template(
-    prompt_alias: str, model_alias: str, **kwargs
-) -> ConversationChain:
+def generate_from_prompt_template(prompt_alias: str, model_alias: str, **kwargs) -> str:
     """Generates chat message from input prompt and model."""
     # get langchain objects
     prompt = PromptTemplate.get(prompt_alias).as_langchain()
@@ -35,7 +33,7 @@ def generate_from_prompt_template(
 def generate_from_prompt(
     prompt: str,
     model_alias: str,
-) -> ConversationChain:
+) -> str:
     """Generates chat message from input prompt and model."""
     llm = LanguageModel.get(model_alias).as_langchain()
     conversation = ConversationChain(llm=llm)
