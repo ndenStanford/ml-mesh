@@ -79,7 +79,7 @@ class GithubClient(OnclusiveFrozenSchema):
 
 
 github = GithubClient(
-    app_id=settings.GITHUB_APP_ID,
-    app_private_key=settings.GITHUB_APP_PRIVATE_KEY,
+    app_id=settings.PROMPT_REGISTRY_APP_ID,
+    app_private_key=settings.PROMPT_REGISTRY_APP_PRIVATE_KEY,
     repo_url=settings.GITHUB_REPOSITORY,
 )
