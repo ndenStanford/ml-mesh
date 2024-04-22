@@ -2,7 +2,7 @@
 
 # Standard Library
 import json
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
 from github import Auth, GithubIntegration
