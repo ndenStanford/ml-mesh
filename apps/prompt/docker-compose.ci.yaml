@@ -64,7 +64,7 @@ services:
     profiles: [backend]
     volumes:
       - type: bind
-        source: ~/.aws/
+        source: /root/.aws
         target: /apps/prompt/backend/.aws/
     ports:
       - 4000:4000
@@ -128,7 +128,7 @@ services:
     profiles: [integration]
     volumes:
       - type: bind
-        source: ~/.aws/
+        source: /root/.aws
         target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
