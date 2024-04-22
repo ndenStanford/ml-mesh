@@ -49,8 +49,8 @@ class Settings(OnclusiveBaseSettings):
     CORS_ORIGIN: List[str] = ["*"]
 
     # Github configuration
-    GITHUB_APP_ID: str
-    GITHUB_APP_PRIVATE_KEY: SecretStr
+    PROMPT_REGISTRY_APP_ID: str
+    PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
 
 
