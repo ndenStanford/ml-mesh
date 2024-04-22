@@ -86,15 +86,6 @@ def test_model_server_query_id_predict(
 
 
 @pytest.mark.order(7)
-def test_model_server_readiness_2(test_client, test_model_name):
-    """Tests the running ModelServer instance's readiness endpoint."""
-    readiness_response = test_client.get(f"/{test_model_name}/v1/ready")
-
-    assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
-
-
-@pytest.mark.order(8)
 def test_model_server_predict_sample_docs(
     test_client, test_model_name, test_payload_sample_docs
 ):
