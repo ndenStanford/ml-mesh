@@ -1,4 +1,4 @@
-# Contet Scoring
+# Content-Scoring
 
 This project requires a model artifact.
 
