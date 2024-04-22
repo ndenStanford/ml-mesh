@@ -17,7 +17,7 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCateg
 settings = get_settings()
 
 
-@pytest.mark.order(5)
+@pytest.mark.order(1)
 def test_model_server_root(test_client, test_model_name):
     """Tests the running ModelServer instance's root endpoint."""
     root_response = test_client.get(f"{test_model_name}/v1/")
@@ -25,7 +25,22 @@ def test_model_server_root(test_client, test_model_name):
     assert root_response.status_code == 200
 
 
-@pytest.mark.order(6)
+@pytest.mark.order(2)
+def test_model_server_bio(test_model_name, test_client, test_expected_bio_output):
+    """Tests the running ModelServer's bio endpoint.
+
+    Uses the custom data models for validation and the model card from the model
+    artifact as ground truth for the regression test element.
+    """
+    test_response = test_client.get(f"{test_model_name}/v1/bio")
+
+    assert test_response.status_code == 200
+    test_actual_bio_output = test_response.json()
+
+    assert test_actual_bio_output == test_expected_bio_output
+
+
+@pytest.mark.order(3)
 def test_model_server_liveness(test_client, test_model_name):
     """Tests the running ModelServer instance's liveness endpoint."""
     liveness_response = test_client.get(f"{test_model_name}/v1/live")
@@ -34,7 +49,7 @@ def test_model_server_liveness(test_client, test_model_name):
     assert liveness_response.json() == LivenessProbeResponse().dict()
 
 
-@pytest.mark.order(6)
+@pytest.mark.order(4)
 def test_model_server_readiness(test_client, test_model_name):
     """Tests the running ModelServer instance's readiness endpoint."""
     readiness_response = test_client.get(f"/{test_model_name}/v1/ready")
@@ -43,7 +58,7 @@ def test_model_server_readiness(test_client, test_model_name):
     assert readiness_response.json() == ReadinessProbeResponse().dict()
 
 
-@pytest.mark.order(8)
+@pytest.mark.order(5)
 def test_model_server_query_string_predict(test_client, test_model_name, test_payload):
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     test_response = test_client.post(
@@ -57,7 +72,7 @@ def test_model_server_query_string_predict(test_client, test_model_name, test_pa
     )
 
 
-@pytest.mark.order(9)
+@pytest.mark.order(6)
 def test_model_server_query_id_predict(
     test_client, test_model_name, test_payload_query_id
 ):
@@ -73,7 +88,7 @@ def test_model_server_query_id_predict(
     )
 
 
-@pytest.mark.order(10)
+@pytest.mark.order(7)
 def test_model_server_predict_sample_docs(
     test_client, test_model_name, test_payload_sample_docs
 ):
@@ -83,18 +98,3 @@ def test_model_server_predict_sample_docs(
     )
     assert test_response.status_code == 200
     assert test_response.json()["data"]["attributes"]["topic"] is not None
-
-
-@pytest.mark.order(7)
-def test_model_server_bio(test_model_name, test_client, test_expected_bio_output):
-    """Tests the running ModelServer's bio endpoint.
-
-    Uses the custom data models for validation and the model card from the model
-    artifact as ground truth for the regression test element.
-    """
-    test_response = test_client.get(f"{test_model_name}/v1/bio")
-
-    assert test_response.status_code == 200
-    test_actual_bio_output = test_response.json()
-
-    assert test_actual_bio_output == test_expected_bio_output
