@@ -80,7 +80,8 @@ class OnclusiveModelOptimizer:
         )
         # # model card
         self.tracked_model_version.upload_config_to_model_version(
-            config=self.model_card.dict(), neptune_attribute_path="model/model_card"
+            config=self.model_card.dict(),
+            neptune_attribute_path="model/model_card",
         )
         self.tracked_model_version.stop()
 
