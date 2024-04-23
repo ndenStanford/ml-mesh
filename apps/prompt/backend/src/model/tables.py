@@ -36,7 +36,11 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         if self.provider == ChatModelProdiver.OPENAI:
             return ChatOpenAI(model=self.alias)
         if self.provider == ChatModelProdiver.BEDROCK:
-            boto3.setup_default_session()
+            boto3.setup_default_session(
+                profile_name=settings.AWS_PROFILE,
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
             bedrock = boto3.client(
                 service_name="bedrock-runtime",
                 region_name=settings.AWS_DEFAULT_REGION,

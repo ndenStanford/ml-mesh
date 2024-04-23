@@ -45,6 +45,8 @@ class Settings(OnclusiveBaseSettings):
     DYNAMODB_HOST: Optional[str] = None
     AWS_DEFAULT_REGION: str = "us-east-1"
     AWS_PROFILE: Optional[str] = None
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
 
     CORS_ORIGIN: List[str] = ["*"]
 
