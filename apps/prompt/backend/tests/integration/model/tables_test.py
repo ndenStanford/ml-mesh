@@ -9,7 +9,7 @@ from src.model.tables import LanguageModel
 
 
 @pytest.mark.order(6)
-def test_list_models():
+def test_list_models(app):
     """Test get models."""
     assert len(list(LanguageModel.scan())) == len(DEFAULT_MODELS)
 
@@ -22,7 +22,7 @@ def test_list_models():
         (ChatModel.GPT4_TURBO, ChatModelProdiver.OPENAI),
     ],
 )
-def test_get_model(alias, provider):
+def test_get_model(alias, provider, app):
     """Test get models."""
     llm = LanguageModel.get(alias)
     assert llm.provider == provider

@@ -16,7 +16,7 @@ from src.project.tables import Project
     ["integration-test"],
 )
 @pytest.mark.order(8)
-def test_save(alias):
+def test_save(alias, app):
     """Test save."""
     project = Project(alias=alias)
     project.save()
@@ -28,7 +28,7 @@ def test_save(alias):
     ["integration-test"],
 )
 @pytest.mark.order(9)
-def test_delete(alias):
+def test_delete(alias, app):
     """Test delete."""
     project = Project(alias=alias)
     project.delete()
