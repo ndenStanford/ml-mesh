@@ -102,7 +102,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
     networks:
@@ -129,7 +129,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
     depends_on:
