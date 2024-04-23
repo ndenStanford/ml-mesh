@@ -12,11 +12,13 @@ nltk.download("punkt")
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
+from onclusiveml.nlp.sentence_tokenize.base_tokenizer import (
+    BaseSentenceTokenizer,
+)
 from onclusiveml.nlp.sentence_tokenize.consts import (
     NLTK_SUPPORTED_LANGS,
     SPECIAL_CHARACTERS,
 )
-from onclusiveml.nlp.sentence_tokenize.base import BaseSentenceTokenizer
 
 
 class NLTKSentenceTokenizer(BaseSentenceTokenizer):

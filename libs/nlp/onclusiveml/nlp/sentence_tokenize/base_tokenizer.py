@@ -1,8 +1,8 @@
 """Sentence Tokenize."""
 
 # Standard Library
-from typing import Any, Dict, List, Optional
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
 
 
 class BaseSentenceTokenizer(ABC):
