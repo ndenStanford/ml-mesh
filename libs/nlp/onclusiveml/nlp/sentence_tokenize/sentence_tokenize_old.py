@@ -16,7 +16,6 @@ from onclusiveml.nlp.sentence_tokenize.consts import (
     NLTK_SUPPORTED_LANGS,
     SPECIAL_CHARACTERS,
 )
-from onclusiveml.nlp.sentence_tokenize.consts import factory 
 
 
 class SentenceTokenizer:
@@ -45,6 +44,16 @@ class SentenceTokenizer:
         else:
             lang_simplified = "english"
 
-        sentence_tokenizer = factory.get_sentence_tokenizer(lang_simplified)
-        ret = sentence_tokenizer.tokenize(content, lang_simplified)
+        if lang_simplified in NLTK_SUPPORTED_LANGS:
+            sentences_first = nltk.sent_tokenize(content, lang_simplified)
+        else:
+            sentences_first = nltk.sent_tokenize(content, "english")
+
+        sentences = []
+        for sentence in sentences_first:
+            s = self.regex.split(sentence)
+            sentences += s
+
+        ret = {"sentences": sentences}
+
         return ret
