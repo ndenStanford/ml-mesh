@@ -123,18 +123,45 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         Returns: None
         """
         self.client = boto3.client("s3")
-        parquet_buffer = io.BytesIO()
-        self.dataset_df.to_parquet(parquet_buffer, index=False)
-        file_name = self.tracked_model_version.get_url().split("/")[-1]
+        self.parquet_buffer = io.BytesIO()
+        self.dataset_df.to_parquet(self.parquet_buffer, index=False)
 
-        file_key = f"{self.data_fetch_params.dataset_upload_dir}/{file_name}.parquet"
+        s3_bucket = self.data_fetch_params.dataset_upload_bucket
+
+        # assemble full s3 uri for file
+        s3_model_version_full_prefix = (
+            self.tracked_model_version.derive_model_version_s3_prefix()
+        )
+        s3_model_version_prefix = "/".join(s3_model_version_full_prefix.split("/")[-3:])
+
+        file_name = self.tracked_model_version.get_url().split("/")[-1] + ".parquet"
+        self.neptune_attr_path = (
+            f"{self.model_card.training_data_attribute_path}/{file_name}"
+        )
+
+        file_key = (
+            f"{self.data_fetch_params.dataset_upload_dir}/"
+            f"{s3_model_version_prefix}/{self.neptune_attr_path}"
+        )
         full_file_key = self.s3_parquet_upload(
             self.client,
             file_key,
-            parquet_buffer,
-            self.data_fetch_params.dataset_upload_bucket,
+            self.parquet_buffer,
+            s3_bucket,
         )
         self.full_file_key = full_file_key
+
+        if self.data_fetch_params.save_artifact:
+            self.track_training_data_in_neptune()
+
+    def track_training_data_in_neptune(self) -> None:
+        """Set up tracking of training data S3 file in Neptune.
+
+        Returns: None
+        """
+        self.tracked_model_version[self.neptune_attr_path].track_files(
+            f"s3://{self.full_file_key}"
+        )
 
     @staticmethod
     def s3_parquet_upload(
