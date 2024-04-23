@@ -43,12 +43,14 @@ class SentenceTokenizer:
         if langIso:
             lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
         else:
-            lang_simplified = "english"
+            english_text = next(iter(LanguageIso.EN.locales.values()))["en"].lower()
+            lang_simplified = english_text
 
         if lang_simplified in NLTK_SUPPORTED_LANGS:
             sentence_tokenizer = factory.get_sentence_tokenizer(lang_simplified)
         else:
-            sentence_tokenizer = factory.get_sentence_tokenizer("english")
+            lang_simplified = next(iter(LanguageIso.EN.locales.values()))["en"].lower()
+            sentence_tokenizer = factory.get_sentence_tokenizer(lang_simplified)
 
         ret = sentence_tokenizer.tokenize(content, lang_simplified)
         return ret

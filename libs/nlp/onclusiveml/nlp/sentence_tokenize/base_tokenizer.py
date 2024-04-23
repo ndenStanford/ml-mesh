@@ -18,4 +18,3 @@ class BaseSentenceTokenizer(ABC):
         Returns:
             dict: Dictionary containing tokenized setences
         """
-        pass

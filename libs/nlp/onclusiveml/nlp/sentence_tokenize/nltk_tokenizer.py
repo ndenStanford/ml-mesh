@@ -11,14 +11,10 @@ import nltk
 nltk.download("punkt")
 
 # Internal libraries
-from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.sentence_tokenize.base_tokenizer import (
     BaseSentenceTokenizer,
 )
-from onclusiveml.nlp.sentence_tokenize.consts import (
-    NLTK_SUPPORTED_LANGS,
-    SPECIAL_CHARACTERS,
-)
+from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
 
 
 class NLTKSentenceTokenizer(BaseSentenceTokenizer):
@@ -38,19 +34,7 @@ class NLTKSentenceTokenizer(BaseSentenceTokenizer):
         Returns:
             dict: Dictionary containing tokenized setences
         """
-        # return language iso equivalent of language e.g. fr is LanguageIso.FR
-        langIso = LanguageIso.from_language_iso(language)
-        # if LanguageIso of the language is not None, return english name of LanguageIso
-        # e.g. LanguageIso.FR is french
-        if langIso:
-            lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
-        else:
-            lang_simplified = "english"
-
-        if lang_simplified in NLTK_SUPPORTED_LANGS:
-            sentences_first = nltk.sent_tokenize(content, lang_simplified)
-        else:
-            sentences_first = nltk.sent_tokenize(content, "english")
+        sentences_first = nltk.sent_tokenize(content, language)
 
         sentences = []
         for sentence in sentences_first:
