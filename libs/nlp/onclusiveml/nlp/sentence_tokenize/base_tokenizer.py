@@ -29,6 +29,7 @@ class BaseMultiLingualSentenceTokenizer(ABC):
 
         Args:
             content (str): Text to be tokenized into sentences
+            language (str): Language of the text to be tokenized
 
         Returns:
             dict: Dictionary containing tokenized setences
