@@ -12,12 +12,12 @@ nltk.download("punkt")
 
 # Internal libraries
 from onclusiveml.nlp.sentence_tokenize.base_tokenizer import (
-    BaseSentenceTokenizer,
+    BaseMultiLingualSentenceTokenizer,
 )
 from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
 
 
-class NLTKSentenceTokenizer(BaseSentenceTokenizer):
+class NLTKSentenceTokenizer(BaseMultiLingualSentenceTokenizer):
     """Tokenizing sentences in a given text."""
 
     regex = re.compile(r"|".join(SPECIAL_CHARACTERS))

@@ -9,6 +9,21 @@ class BaseSentenceTokenizer(ABC):
     """Tokenizing sentences in a given text."""
 
     @abstractmethod
+    def tokenize(self, content: str) -> Dict[str, List[Any]]:
+        """Tokenizes the input content into sentences.
+
+        Args:
+            content (str): Text to be tokenized into sentences
+
+        Returns:
+            dict: Dictionary containing tokenized setences
+        """
+
+
+class BaseMultiLingualSentenceTokenizer(ABC):
+    """Tokenizing sentences in a given text."""
+
+    @abstractmethod
     def tokenize(self, content: str, language: Optional[str]) -> Dict[str, List[Any]]:
         """Tokenizes the input content into sentences.
 
