@@ -1,0 +1,142 @@
+---
+version : '3.9'
+
+services:
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/iptc-multi/serve
+    build:
+      context: ../../
+      dockerfile: projects/iptc-multi/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc-multi
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ENVIRONMENT: dev
+      DOCS_URL: /iptc-multi/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      PROMETHEUS_MULTIPROC_DIR: /tmp
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+    profiles: [serve, functional]
+    ports:
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  serve-debug:
+    build:
+      context: ../../
+      dockerfile: projects/iptc-multi/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: iptc-multi
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-multi-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ENVIRONMENT: dev
+      DOCS_URL: /iptc-multi/docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+    profiles: [debug]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
+    ports:
+      - 5678:5678
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # unit tests
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/iptc-multi/serve
+    profiles: [unit]
+    environment:
+      ENVIRONMENT: dev
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  serve-integration:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/iptc-multi/serve
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    profiles: [integration]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: serve
+        target: /projects/iptc-multi/serve
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+networks:
+  onclusive-net:

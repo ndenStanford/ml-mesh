@@ -87,7 +87,7 @@ class ServedIPTCModel(ServedModel):
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"iptc": [iptc.dict() for iptc in iptc_list]},
+            attributes={"iptc_topic": [iptc.dict() for iptc in iptc_list]},
         )
 
     def bio(self) -> BioResponseSchema:

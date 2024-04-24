@@ -32,7 +32,8 @@
                     "localRoot": "${workspaceFolder}/projects/topic-summarization/serve",
                     "remoteRoot": "."
                 }
-            ]
+            ],
+            "justMyCode": false
         },
         {
             "name": "topic summarization backfill",

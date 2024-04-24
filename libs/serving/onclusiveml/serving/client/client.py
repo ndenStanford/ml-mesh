@@ -6,6 +6,7 @@ from typing import Any
 # Internal libraries
 import onclusiveml.serving.serialization.entity_linking.v1 as entity_linking_v1
 import onclusiveml.serving.serialization.gch_summarization.v1 as gch_summarization_v1
+import onclusiveml.serving.serialization.iptc_multi.v1 as iptc_multi_v1
 import onclusiveml.serving.serialization.lsh.v1 as lsh_v1
 import onclusiveml.serving.serialization.ner.v1 as ner_v1
 import onclusiveml.serving.serialization.sentiment.v1 as sentiment_v1
@@ -18,7 +19,7 @@ class OnclusiveApiClient:
     """Onclusive Api client.
 
     Attributes:
-        host (str): client hostname
+        host (str): client hostnamne
         api_key (str): client api key.
         api_key_header (str): client api key header key.
         secure (bool): if yes, request is made through a secure endpoint.
@@ -109,6 +110,25 @@ class OnclusiveApiClient:
         request_attributes_schema=lsh_v1.PredictRequestAttributeSchemaV1,
         request_parameters_schema=lsh_v1.PredictRequestParametersSchemaV1,
         response_attributes_schema=lsh_v1.PredictResponseAttributeSchemaV1,
+    )
+
+    iptc_0000000 = bind(
+        namespace="iptc_0000000",
+        version=1,
+        method="POST",
+        endpoint="predict",
+        request_attributes_schema=iptc_multi_v1.PredictRequestAttributeSchemaV1,
+        request_parameters_schema=iptc_multi_v1.PredictRequestParametersSchemaV1,
+        response_attributes_schema=iptc_multi_v1.PredictResponseAttributeSchemaV1,
+    )
+    iptc_multi = bind(
+        namespace="iptc_multi",
+        version=1,
+        method="POST",
+        endpoint="predict",
+        request_attributes_schema=iptc_multi_v1.PredictRequestAttributeSchemaV1,
+        request_parameters_schema=iptc_multi_v1.PredictRequestParametersSchemaV1,
+        response_attributes_schema=iptc_multi_v1.PredictResponseAttributeSchemaV1,
     )
 
     def __getitem__(self, model: str) -> Any:

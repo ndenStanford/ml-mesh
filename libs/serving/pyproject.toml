@@ -18,10 +18,11 @@ opentelemetry-instrumentation-logging = "^0.38b0"
 opentelemetry-exporter-otlp = "^1.17.0"
 opentelemetry-api = "^1.17.0"
 opentelemetry-sdk = "^1.17.0"
-core = {path = "../core"}
 types-requests = "^2.31.0.2"
 pydantic = "^1.10.4"
 urllib3 = "^1.26.16"
+core = {path = "../core"}
+models = {path = "../models"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4.2"
