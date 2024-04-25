@@ -31,6 +31,12 @@ def transcript_offset():
 
 
 @pytest.fixture
+def transcript_country():
+    """Country the video from."""
+    return "ES"
+
+
+@pytest.fixture
 def transcript_input():
     """Input transcript."""
     return [

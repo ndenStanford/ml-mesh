@@ -16,6 +16,7 @@ def test_handler___call___(
     transcript_input,
     transcript_keywords,
     transcript_offset,
+    transcript_country,
     model_card,
     expected_output,
 ):
@@ -27,6 +28,7 @@ def test_handler___call___(
         keywords=transcript_keywords,
         offset_start_buffer=transcript_offset[0],
         offset_end_buffer=transcript_offset[1],
+        country=transcript_country[1],
     )
     assert transcript_segmentation_inference[0][0] == expected_output["start_time"]
     assert transcript_segmentation_inference[0][1] == expected_output["end_time"]
