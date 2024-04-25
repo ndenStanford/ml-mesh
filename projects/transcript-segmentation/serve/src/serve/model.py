@@ -58,6 +58,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
         ) = self.model.__call__(
             word_transcript=inputs.transcript,
             keywords=inputs.keywords,
+            country=parameter_input.country,
             offset_start_buffer=parameter_input.offset_start_buffer,
             offset_end_buffer=parameter_input.offset_end_buffer,
         )
