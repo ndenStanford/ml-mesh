@@ -11,10 +11,11 @@ import nltk
 nltk.download("punkt")
 
 # Internal libraries
-from onclusiveml.nlp.sentence_tokenize.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.tokenize.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.tokenize.word.base_tokenizer import BaseWordTokenizer
 
 
-class WordTokenizer:
+class NLTKWordTokenizer(BaseWordTokenizer):
     """Tokenizing words in a given text."""
 
     regex = re.compile(r"|".join(SPECIAL_CHARACTERS))

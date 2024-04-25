@@ -4,7 +4,8 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.nlp.word_tokenize import SPECIAL_CHARACTERS, WordTokenizer
+from onclusiveml.nlp.tokenize.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.tokenize.word import WordTokenizer
 
 
 def test_word_tokenize():

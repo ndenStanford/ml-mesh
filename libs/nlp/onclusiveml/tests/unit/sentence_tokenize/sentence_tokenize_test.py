@@ -4,10 +4,8 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.nlp.sentence_tokenize import (
-    SPECIAL_CHARACTERS,
-    SentenceTokenizer,
-)
+from onclusiveml.nlp.tokenize.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.tokenize.sentence import SentenceTokenizer
 
 
 def test_tokenize():
