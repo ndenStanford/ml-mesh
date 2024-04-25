@@ -6,7 +6,7 @@ from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 
 @patch(
-    "onclusiveml.core.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
+    "onclusiveml.tracking.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
     return_value=None,
 )
 def test_onclusive_model_trainer_initialize(
