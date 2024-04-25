@@ -445,6 +445,7 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui
+    profiles: [kafka]
     ports:
       - 9000:9000
     environment:

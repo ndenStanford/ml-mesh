@@ -93,6 +93,7 @@ class ServedTopicModel(ServedModel):
             end_time = pd.Timestamp(datetime.now())
             start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
             trending = False
+            trend_found = None
             if trend_detection:
                 trending, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
@@ -100,6 +101,7 @@ class ServedTopicModel(ServedModel):
             if not trend_detection or trending:
                 # if trending, retrieve documents between inflection point and next day
                 if trending:
+                    trend_found = True
                     start_time = inflection_point
                     end_time = start_time + pd.Timedelta(days=1)
 
@@ -112,6 +114,7 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id
                 )
             else:
+                trend_found = False
                 topic = None
                 impact_category = None
         else:
@@ -121,7 +124,11 @@ class ServedTopicModel(ServedModel):
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"topic": topic, "impact_category": impact_category},
+            attributes={
+                "topic": topic,
+                "impact_category": impact_category,
+                "trend_found": trend_found,
+            },
         )
 
     def bio(self) -> BioResponseSchema:
