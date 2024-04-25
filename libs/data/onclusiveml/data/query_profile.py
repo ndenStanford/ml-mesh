@@ -10,6 +10,11 @@ from pydantic import SecretStr, Field
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
+from onclusiveml.data.exceptions import (
+    QueryException,
+    QueryStringException,
+    QueryIdException,
+)
 
 
 class MediaAPISettings(OnclusiveBaseSettings):
@@ -62,7 +67,8 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         if response:
             data = response.get("query", {})
             return {"bool": data["es_query"]}
-        return None
+        else:
+            raise QueryException()
 
     def _from_boolean_to_media_api(
         self, settings: MediaAPISettings
@@ -84,8 +90,8 @@ class BaseQueryProfile(OnclusiveBaseSchema):
                 headers=self.headers(settings),
             )
             return response.json()
-
-        return None
+        else:
+            raise QueryStringException(boolean_query=self.query)
 
 
 class StringQueryProfile(BaseQueryProfile):
@@ -117,4 +123,4 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
         if request_result.status_code == 200:
             return request_result.json().get("booleanQuery")
         else:
-            return None
+            raise QueryIdException(query_id=self.query_id)

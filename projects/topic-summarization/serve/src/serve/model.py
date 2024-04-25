@@ -27,6 +27,7 @@ from src.settings import get_settings
 
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from src.serve.impact_quantification import ImpactQuantification
 from src.serve.document_collector import DocumentCollector
 from onclusiveml.data.query_profile import (
     StringQueryProfile,
@@ -67,6 +68,7 @@ class ServedTopicModel(ServedModel):
         # load model artifacts into ready CompiledKeyBERT instance
         self.model = TopicHandler()
         self.trend_detector = TrendDetection()
+        self.impact_quantifier = ImpactQuantification()
         self.document_collector = DocumentCollector()
         self.ready = True
 
@@ -80,17 +82,17 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
-        topic_id = inputs.topic_id
-        query_profile = self.get_query_profile(inputs)
-        trend_detection = inputs.trend_detection
-
-        # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
-        # to work for integration tests
-        end_time = pd.Timestamp(datetime.now())
-        start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-        trending = False
 
         if not content:
+            topic_id = inputs.topic_id
+            query_profile = self.get_query_profile(inputs)
+            trend_detection = inputs.trend_detection
+
+            # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
+            # to work for integration tests
+            end_time = pd.Timestamp(datetime.now())
+            start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
+            trending = False
             if trend_detection:
                 trending, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
@@ -106,16 +108,20 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id, start_time, end_time
                 )
                 topic = self.model.aggregate(content)
+                impact_category = self.impact_quantifier.quantify_impact(
+                    query_profile, topic_id
+                )
             else:
                 topic = None
+                impact_category = None
         else:
             topic = self.model.aggregate(content)
+            impact_category = None
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={
-                "topic": topic,
-            },
+            attributes={"topic": topic, "impact_category": impact_category},
         )
 
     def bio(self) -> BioResponseSchema:

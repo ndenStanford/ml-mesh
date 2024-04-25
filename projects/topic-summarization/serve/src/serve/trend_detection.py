@@ -16,6 +16,7 @@ from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
 # Source
 from src.serve.utils import (  # query_translation,
     all_profile_query,
+    remove_weekends,
     topic_profile_query,
 )
 from src.settings import get_settings
@@ -59,7 +60,7 @@ class TrendDetection:
         """Trend detection for single topic and keyword.
 
         Args:
-            query_profile (BaseQueryProfile): boolean query of a profile e.g. a company
+            query_profile (BaseQueryProfile): profile to fetch query from
             topic_id (str): topic id
             start_time (pd.datetime): start time range of documents to be collected
             end_time (pd.datetime): end time range of documents to be collected
@@ -68,30 +69,30 @@ class TrendDetection:
         """
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
-        results = self.es.search(
+        results_all_profile_query = self.es.search(
             index=settings.es_index,
             body=all_profile_query(
                 query, start_time, end_time, settings.trend_time_interval
             ),
+        )["aggregations"]["daily_doc_count"]["buckets"]
+        results_all_profile_query_no_weekends = remove_weekends(
+            results_all_profile_query
         )
-        df_all_topic = pd.DataFrame.from_dict(
-            results["aggregations"]["daily_doc_count"]["buckets"]
-        ).iloc[:-1]
+        df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends).iloc[:-1]
         # profile topic query
-        results = self.es.search(
+        results_topic_profile_query = self.es.search(
             index=settings.es_index,
             body=topic_profile_query(
                 query, start_time, end_time, topic_id, settings.trend_time_interval
             ),
-        )
-        df_single_topic = pd.DataFrame.from_dict(
-            results["aggregations"]["daily_doc_count"]["buckets"]
-        ).iloc[:-1]
-        # remove weekends
-        df_all_topic = self.remove_weekends(df_all_topic)
-
-        if len(df_single_topic) > 0:
-            df_single_topic = self.remove_weekends(df_single_topic)
+        )["aggregations"]["daily_doc_count"]["buckets"]
+        if len(results_topic_profile_query) > 0:
+            results_topic_profile_query_no_weekends = remove_weekends(
+                results_topic_profile_query
+            )
+            df_single_topic = pd.DataFrame(
+                results_topic_profile_query_no_weekends
+            ).iloc[:-1]
         else:
             return False, None
 

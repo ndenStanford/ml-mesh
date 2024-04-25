@@ -10,6 +10,8 @@ from src.settings import get_settings
 from src.serve.schema import PredictRequestSchema
 from src.serve.model import ServedTopicModel
 
+# from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+
 settings = get_settings()
 
 
@@ -107,6 +109,8 @@ def test_served_topic_model_predict_sample_content(
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
     assert test_actual_predict_output.attributes.topic is not None
+
+    assert test_actual_predict_output.attributes.impact_category is None
 
 
 @pytest.mark.order(3)
