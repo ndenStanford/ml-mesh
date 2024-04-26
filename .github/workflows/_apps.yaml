@@ -42,6 +42,15 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: AWS secret access key
+      PROMPT_REGISTRY_APP_ID:
+        required: true
+        description: Prompt registry app ID.
+      PROMPT_REGISTRY_APP_PRIVATE_KEY:
+        required: true
+        description: Prompt registry app private key.
+      OPENAI_API_KEY:
+        required: true
+        description: OPENAI Api key.
 
 jobs:
   deploy:
@@ -49,9 +58,10 @@ jobs:
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     env:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - name: Check out code
@@ -83,6 +93,8 @@ jobs:
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+          PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
@@ -93,6 +105,8 @@ jobs:
         run: |
           make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+          PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
@@ -103,6 +117,10 @@ jobs:
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+          PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
+          AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="development" \
           PLATFORM=linux/amd64 \
@@ -113,6 +131,8 @@ jobs:
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+          PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           TARGET_BUILD_STAGE="production" \
           PLATFORM=linux/amd64 \

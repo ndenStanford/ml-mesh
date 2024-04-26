@@ -11,12 +11,12 @@ from botocore.client import BaseClient
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.core.optimization import OnclusiveModelOptimizer
 from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     FeatureStoreParams,
 )
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
+from onclusiveml.tracking.optimization import OnclusiveModelOptimizer
 
 
 class OnclusiveModelTrainer(OnclusiveModelOptimizer):
