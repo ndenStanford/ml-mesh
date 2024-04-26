@@ -116,6 +116,48 @@ def test_word_tokenize_de():
     ]  # noqa: E501
 
 
+def test_word_tokenize_it():
+    """Test word tokenizer Italian."""
+    text = """Elon Musk è stata la seconda persona in assoluto ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando quella soglia nel gennaio 2021, mesi dopo Jeff Bezos."""  # noqa: E501
+    tokenizer = WordTokenizer()
+    res = tokenizer.tokenize(content=text, language="ca")
+    assert res["words"] == [
+        "Elon",
+        "Musk",
+        "è",
+        "stata",
+        "la",
+        "seconda",
+        "persona",
+        "in",
+        "assoluto",
+        "ad",
+        "accumulare",
+        "una",
+        "fortuna",
+        "personale",
+        "di",
+        "oltre",
+        "200",
+        "miliardi",
+        "di",
+        "dollari",
+        ",",
+        "superando",
+        "quella",
+        "soglia",
+        "nel",
+        "gennaio",
+        "2021",
+        ",",
+        "mesi",
+        "dopo",
+        "Jeff",
+        "Bezos",
+        ".",
+    ]  # noqa: E501
+
+
 def test_word_tokenize_es():
     """Test word tokenizer Spanish."""
     text = """Elon Musk fue la segunda persona en amasar una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos."""  # noqa: E501
