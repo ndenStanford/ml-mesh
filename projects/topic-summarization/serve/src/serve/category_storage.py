@@ -1,5 +1,5 @@
 """Settings storage."""
-Category_list = [
+category_list = [
     "Opportunities",
     "Risk detection",
     "Threats for the brand",

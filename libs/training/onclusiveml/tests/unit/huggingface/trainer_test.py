@@ -10,7 +10,7 @@ from libs.training.onclusiveml.training.huggingface.trainer import (
 
 
 @patch(
-    "onclusiveml.core.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
+    "onclusiveml.tracking.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
     return_value=None,
 )
 def test_onclusive_huggingface_model_trainer_initialize(

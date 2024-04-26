@@ -11,6 +11,8 @@ import pandas as pd
 # Source
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
+from src.serve.impact_quantification import ImpactQuantification
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 from onclusiveml.data.query_profile import (
     StringQueryProfile,
     ProductionToolsQueryProfile,
@@ -77,10 +79,11 @@ def test_handler_group(article_input):
     group_result = _service.group(
         article=article_input,
     )
-    assert len(group_result) == 2
+    assert len(group_result) == 1
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -97,17 +100,20 @@ def test_handler_group(article_input):
 )
 def test_not_trending(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -117,7 +123,8 @@ def test_not_trending(
     assert res == (False, None)
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -134,17 +141,20 @@ def test_not_trending(
 )
 def test_trending(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -154,7 +164,8 @@ def test_trending(
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -172,17 +183,24 @@ def test_trending(
 )
 def test_not_trending_query_id(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
+    mock_reponses_production_tool,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.side_effect = [
+        mock_reponses_production_tool,
+        mock_boolean_query_translated,
+    ]
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -192,7 +210,8 @@ def test_not_trending_query_id(
     assert res == (False, None)
 
 
-@patch("requests.post")
+@patch("requests.put")
+@patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
 @pytest.mark.parametrize(
     "profile, topic_id, start_time, end_time",
@@ -210,17 +229,24 @@ def test_not_trending_query_id(
 )
 def test_trending_query_id(
     mock_elasticsearch,
-    mock_post,
+    mock_get,
+    mock_put,
     profile,
     topic_id,
     start_time,
     end_time,
     mock_boolean_query_translated,
+    mock_boolean_check,
+    mock_reponses_production_tool,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
 ):
     """Test single topic trend function."""
-    mock_post.return_value = mock_boolean_query_translated
+    mock_get.side_effect = [
+        mock_reponses_production_tool,
+        mock_boolean_query_translated,
+    ]
+    mock_put.return_value = mock_boolean_check
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -228,3 +254,44 @@ def test_trending_query_id(
     trend_detector = TrendDetection()
     res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
+
+
+@patch("requests.put")
+@patch("requests.get")
+@patch("src.serve.impact_quantification.Elasticsearch")
+@pytest.mark.parametrize(
+    "profile, topic_id",
+    [
+        (
+            StringQueryProfile(
+                string_query="""("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
+            ),
+            562,
+        ),
+    ],
+)
+def test_impact_quantification(
+    mock_elasticsearch,
+    mock_get,
+    mock_put,
+    profile,
+    topic_id,
+    mock_boolean_query_translated,
+    mock_boolean_check,
+    mock_all_global_query,
+    mock_topic_global_query,
+    mock_all_profile_boolean_query,
+    mock_topic_profile_query,
+):
+    """Test single topic trend function."""
+    mock_get.return_value = mock_boolean_query_translated
+    mock_put.return_value = mock_boolean_check
+    mock_elasticsearch.return_value.search.side_effect = [
+        mock_all_global_query,
+        mock_topic_global_query,
+        mock_all_profile_boolean_query,
+        mock_topic_profile_query,
+    ]
+    trend_detector = ImpactQuantification()
+    res = trend_detector.quantify_impact(profile, topic_id)
+    assert res == ImpactCategoryLabel.LOW

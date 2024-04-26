@@ -5,7 +5,7 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE
 
 ARG APP_NAME
 ARG APP_COMPONENT
-ARG APP_DIR="apps/${APP_NAME}/${APP_COMPONENT}"
+ARG APP_DIR="/apps/${APP_NAME}/${APP_COMPONENT}"
 
 RUN mkdir -p "${HOME}" && \
     chown -R "${USER}:users" "${HOME}"

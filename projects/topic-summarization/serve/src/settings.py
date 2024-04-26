@@ -8,21 +8,24 @@ from onclusiveml.data.query_profile import MediaAPISettings
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
+from onclusiveml.core.base import (
+    OnclusiveFrozenSettings,
+    OnclusiveBaseSettings,
+)
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
 from typing import List
 
 # Source
-from src.serve.category_storage import Category_list
+from src.serve.category_storage import category_list
 
 
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "topic-summarization"
-    CATEGORY_LIST: list = Category_list
+    CATEGORY_LIST: list = category_list
 
 
 class PromptBackendAPISettings(OnclusiveFrozenSettings):
@@ -64,6 +67,20 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     # Document scale threshold to run trend detection
     TOPIC_DOCUMENT_THRESHOLD: float = 0.01
 
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class ImpactQuantificationSettings(OnclusiveBaseSettings):
+    """Impact Quantification Settings."""
+
+    impact_lookback_days: int = 125
+    time_interval: str = "24h"
+    local_raio_cutoff = 0.01
+    global_local_comparison_ratio_cutoff = 1
+    mf_tau_cutoff = 0.8
+
 
 class GlobalSettings(
     ServerModelSettings,
@@ -71,6 +88,7 @@ class GlobalSettings(
     TrackedImageSpecs,
     MediaAPISettings,
     ElasticsearchSettings,
+    ImpactQuantificationSettings,
     TrendSummarizationSettings,
 ):
     """Global server settings."""
