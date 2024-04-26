@@ -11,8 +11,8 @@ import nltk
 nltk.download("punkt")
 
 # Internal libraries
-from onclusiveml.nlp.tokenize.consts import SPECIAL_CHARACTERS
-from onclusiveml.nlp.tokenize.word.base_tokenizer import BaseWordTokenizer
+from onclusiveml.nlp.tokenizers.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.tokenizers.word.base_tokenizer import BaseWordTokenizer
 
 
 class NLTKWordTokenizer(BaseWordTokenizer):

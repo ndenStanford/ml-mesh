@@ -1,9 +1,9 @@
 """Sentence Tokenize Factory."""
 
 # Internal libraries
-from onclusiveml.nlp.tokenize.consts import NLTK_SUPPORTED_LANGS
-from onclusiveml.nlp.tokenize.factory import TokenizerFactory
-from onclusiveml.nlp.tokenize.sentence.nltk_tokenizer import (
+from onclusiveml.nlp.tokenizers.consts import NLTK_SUPPORTED_LANGS
+from onclusiveml.nlp.tokenizers.factory import TokenizerFactory
+from onclusiveml.nlp.tokenizers.sentence.nltk_tokenizer import (
     NLTKSentenceTokenizer,
 )
 

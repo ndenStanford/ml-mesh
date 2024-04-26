@@ -1,32 +1,33 @@
-"""Sentence Tokenize."""
+"""Word tokenizer."""
 
 # Standard Library
 from typing import Any, Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
-from onclusiveml.nlp.tokenize.base_tokenizer import BaseTokenizer
-from onclusiveml.nlp.tokenize.consts import NLTK_SUPPORTED_LANGS
-from onclusiveml.nlp.tokenize.sentence.factory import sentence_factory
+from onclusiveml.nlp.tokenizers.consts import NLTK_SUPPORTED_LANGS
+from onclusiveml.nlp.tokenizers.word.factory import word_factory
 
 
-class SentenceTokenizer(BaseTokenizer):
-    """Tokenizing sentences in a given text."""
+class WordTokenizer:
+    """Tokenizing words in a given text."""
 
-    factory = sentence_factory
+    factory = word_factory
     all_support_lang = NLTK_SUPPORTED_LANGS
 
     def tokenize(
         self, content: str, language: Optional[str] = "en"
     ) -> Dict[str, List[Any]]:
-        """Tokenizes the input content.
+        """Tokenizes the input content into words.
+
+        Uses both nltk word tokenize and regex using list of unique characters
 
         Args:
-            content (str): Text to be tokenized
-            language (str, optional): Language of the text to be tokenized
+            content (str): Text to be tokenized into words
+            language (str, optional): Language of the text (default English)
 
         Returns:
-            dict: Dictionary containing tokens
+            dict: Dictionary containing tokenized words
         """
         # return language iso equivalent of language e.g. fr is LanguageIso.FR
         langIso = LanguageIso.from_language_iso(language)
