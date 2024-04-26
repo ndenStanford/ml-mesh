@@ -537,7 +537,7 @@ class PromptEnum(OnclusiveEnum):
         """,  # noqa: E501
         "ml-topic-summarization-single-analysis",
         {
-            "model_name": "gpt-4-1106-preview",
+            "model_name": "gpt-4-turbo-2024-04-09",
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
@@ -584,7 +584,7 @@ class PromptEnum(OnclusiveEnum):
         """,  # noqa: E501
         "ml-topic-summarization-aggregation",
         {
-            "model_name": "gpt-4-1106-preview",
+            "model_name": "gpt-4-turbo-2024-04-09",
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
@@ -615,7 +615,7 @@ class PromptEnum(OnclusiveEnum):
         """,  # noqa: E501
         "ml-multi-articles-summarization",
         {
-            "model_name": "gpt-4-1106-preview",
+            "model_name": "gpt-4-turbo-2024-04-09",
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
@@ -646,7 +646,7 @@ class PromptEnum(OnclusiveEnum):
         """,  # noqa: E501
         "ml-articles-summary-aggregation",
         {
-            "model_name": "gpt-4-1106-preview",
+            "model_name": "gpt-4-turbo-2024-04-09",
             "max_tokens": None,
             "temperature": 1,
             "response_format": {"type": "json_object"},
