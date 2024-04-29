@@ -2,11 +2,11 @@
 from unittest.mock import patch
 
 # Internal libraries
-from onclusiveml.core.optimization import OnclusiveModelOptimizer
+from onclusiveml.tracking.optimization import OnclusiveModelOptimizer
 
 
 @patch(
-    "onclusiveml.core.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
+    "onclusiveml.tracking.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
     return_value=None,
 )
 def test_onclusive_model_optimizer_initialize(

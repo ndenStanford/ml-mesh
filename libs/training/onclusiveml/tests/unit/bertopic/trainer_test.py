@@ -12,7 +12,7 @@ from onclusiveml.training import BertopicTrainer
 
 @pytest.fixture
 @patch(
-    "onclusiveml.core.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
+    "onclusiveml.tracking.optimization.OnclusiveModelOptimizer.create_tracked_model_version",
     return_value=None,
 )
 def bertopic_trainer(
