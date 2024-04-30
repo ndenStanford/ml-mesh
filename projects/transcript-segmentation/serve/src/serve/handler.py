@@ -16,7 +16,6 @@ from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 # Source
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
-
 settings = get_api_settings()
 logger = get_default_logger(__name__)
 
@@ -397,7 +396,9 @@ class TranscriptSegmentationHandler:
         """
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {
-            "paragraph": paragraph,
+            "values": {
+                "paragraph": paragraph,
+            }
         }
         q = requests.post(
             "{}/api/v3/prompts/{}/generate/{}".format(
