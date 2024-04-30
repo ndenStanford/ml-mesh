@@ -39,6 +39,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         "single_summary": "ml-multi-articles-summarization",
         "summary_aggregate": "ml-articles-summary-aggregation",
     }
+    DEFAULT_MODEL: str = "gpt-4-1106-preview"
 
 
 class ElasticsearchSettings(OnclusiveBaseSettings):

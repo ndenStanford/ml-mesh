@@ -59,7 +59,9 @@ class TopicHandler:
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
-            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
+            "{}/api/v2/prompts/{}/generate/{}".format(
+                settings.PROMPT_API, alias, settings.DEFAULT_MODEL
+            ),
             headers=headers,
             json=input_dict,
         )
