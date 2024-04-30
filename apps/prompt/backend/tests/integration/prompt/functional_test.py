@@ -32,8 +32,6 @@ def test_generate_from_prompt(model_alias, prompt, app):
 def test_generate_from_prompt_template(model_alias, prompt_alias, create_prompts, app):
     """Test generate prompt from template."""
     assert isinstance(
-        F.generate_from_prompt_template(
-            prompt_alias, model_alias, values={"values": {}}
-        ),
+        F.generate_from_prompt_template(prompt_alias, model_alias, values={}),
         str,
     )

@@ -63,4 +63,5 @@ def _syncronize_prompts():
             prompt = PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             )
+            logging.info(f"Syncing prompt.. {prompt.json()}")
             prompt.sync()
