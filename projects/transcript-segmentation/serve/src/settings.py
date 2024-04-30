@@ -22,6 +22,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     prompt_alias: str = "ml-transcript-segmentation"
     prompt_ad_alias: str = "ml-transcript-segmentation-ad-detection"
     internal_ml_endpoint_api_key: str = "1234"
+    default_model: str = "gpt-4-1106-preview"
 
 
 class TranscriptSegmentationHandlerSettings(OnclusiveBaseSettings):

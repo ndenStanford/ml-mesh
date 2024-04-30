@@ -400,8 +400,10 @@ class TranscriptSegmentationHandler:
             "paragraph": paragraph,
         }
         q = requests.post(
-            "{}/api/v1/prompts/{}/generate".format(
-                settings.prompt_api_url, settings.prompt_ad_alias
+            "{}/api/v3/prompts/{}/generate/{}".format(
+                settings.prompt_api_url,
+                settings.prompt_ad_alias,
+                settings.default_model,
             ),
             headers=headers,
             json=payload,
