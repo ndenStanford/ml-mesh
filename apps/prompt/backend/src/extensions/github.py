@@ -24,7 +24,7 @@ class GithubClient(OnclusiveFrozenSchema):
     app_id: str
     app_private_key: SecretStr
     repo_url: str
-    excluded_files: List[str] = [".gitkeep"]
+    excluded_files: List[str] = [".gitkeep", "README.md", ".gitignore"]
 
     @property
     def repo(self) -> Any:
@@ -39,12 +39,14 @@ class GithubClient(OnclusiveFrozenSchema):
         """Creates folder."""
         return self.repo.create_file(path, commit, contents)
 
-    def read(self, path: str) -> Optional[Dict]:
+    def read(self, path: str) -> str:
         """Opens file."""
         contents = self.repo.get_contents(path)
+        if isinstance(contents, list):
+            return [self.read(content.path) for content in contents]
         result: Optional[Dict] = None
         if contents.type == "file":
-            result = json.loads(contents.decoded_content.decode())
+            result = contents.decoded_content.decode()
         return result
 
     def ls(self, path: str) -> List[str]:
@@ -52,12 +54,14 @@ class GithubClient(OnclusiveFrozenSchema):
         contents = self.repo.get_contents(path)
         result: List[str] = []
         for content_file in contents:
-            if content_file.type == "dir":
-                sub_contents = self.repo.get_contents(content_file.path)
-                result.extend([s.path for s in sub_contents])
-            if (
-                content_file.type == "file"
-                and content_file.name not in self.excluded_files
+            if content_file.type == "dir" and all(
+                f not in content_file.path for f in self.excluded_files
+            ):
+                sub_contents = self.repo.get_contents(content_file.name)
+                result.append(content_file.path)
+                result.extend(self.ls(content_file.path))
+            if content_file.type == "file" and all(
+                f not in content_file.name for f in self.excluded_files
             ):
                 result.append(content_file.path)
         return result

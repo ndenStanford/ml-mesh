@@ -1,5 +1,8 @@
 """Functional."""
 
+# Standard Library
+from typing import Dict
+
 # 3rd party libraries
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
@@ -19,13 +22,18 @@ settings = get_settings()
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
-def generate_from_prompt_template(prompt_alias: str, model_alias: str, **kwargs) -> str:
+def generate_from_prompt_template(
+    prompt_alias: str, model_alias: str, **kwargs
+) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     # get langchain objects
     prompt = PromptTemplate.get(prompt_alias).as_langchain()
     llm = LanguageModel.get(model_alias).as_langchain()
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
-    return conversation.predict(input=prompt.format(**kwargs))
+    return {
+        "prompt": prompt.format(**kwargs),
+        "generated": conversation.predict(input=prompt.format(**kwargs)),
+    }
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
@@ -33,8 +41,8 @@ def generate_from_prompt_template(prompt_alias: str, model_alias: str, **kwargs)
 def generate_from_prompt(
     prompt: str,
     model_alias: str,
-) -> str:
+) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     llm = LanguageModel.get(model_alias).as_langchain()
     conversation = ConversationChain(llm=llm)
-    return conversation.predict(input=prompt)
+    return {"prompt": prompt, "generated": conversation.predict(input=prompt)}

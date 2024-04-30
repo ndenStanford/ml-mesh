@@ -66,3 +66,7 @@ class Project(Dyntastic):
         # TODO: Prevent deleting projects with existing prompts
         github.rm(self.alias, f"Delete project {self.alias}")
         return super(Project, self).delete()
+
+    def sync(self) -> None:
+        """Sync object already present in registry."""
+        return super(Project, self).save()

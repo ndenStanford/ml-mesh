@@ -40,14 +40,14 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     @property
     def path(self) -> str:
         """Prompt file path."""
-        return os.path.join(self.project, f"{self.alias}.json")
+        return os.path.join(self.project, self.alias)
 
     def save(self) -> None:
         """Creates prompt template in github."""
         commit = github.write(
             self.path,
             f"Add new prompt {self.alias}",
-            self.json(exclude={"sha", "project", "alias"}),
+            self.template,
         )
         self.sha = commit["commit"].sha
         return super(PromptTemplate, self).save()
@@ -76,9 +76,7 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
             hash_key, range_key, consistent_read=consistent_read
         )
         # get template from github
-        contents = github.read(result.path)
-        # use the github template as the source of truth.
-        result.template = contents["template"]
+        result.template = github.read(result.path)
         return result
 
     @classmethod
@@ -101,3 +99,7 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
             result.template = contents["template"]
 
         return results
+
+    def sync(self) -> None:
+        """Sync object already present in registry."""
+        return super(PromptTemplate, self).save()
