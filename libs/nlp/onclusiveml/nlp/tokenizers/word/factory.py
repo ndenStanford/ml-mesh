@@ -3,7 +3,7 @@
 # Internal libraries
 from onclusiveml.nlp.tokenizers.consts import NLTK_SUPPORTED_LANGS
 from onclusiveml.nlp.tokenizers.factory import TokenizerFactory
-from onclusiveml.nlp.tokenizers.word.nltk_tokenizer import NLTKWordTokenizer
+from onclusiveml.nlp.tokenizers.word.tokenizer import NLTKWordTokenizer
 
 
 word_factory = TokenizerFactory()
