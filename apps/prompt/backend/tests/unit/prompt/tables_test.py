@@ -94,9 +94,7 @@ def test_get(mock_dyntastic_get, mock_github_read, alias, template, project):
     mock_dyntastic_get.return_value = PromptTemplate(
         alias=alias, project=project, template=""
     )
-    mock_github_read.return_value = PromptTemplate(
-        alias=alias, project=project, template=template
-    ).dict()
+    mock_github_read.return_value = template
 
     result = PromptTemplate.get(alias)
 
