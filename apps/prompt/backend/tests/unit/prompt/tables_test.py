@@ -42,7 +42,7 @@ def test_save(mock_dyntastic_save, mock_github_write, alias, template, project):
     prompt.save()
     # asserts
     mock_github_write.assert_called_with(
-        os.path.join(project, alias,
+        os.path.join(project, alias),
         f"Add new prompt {alias}",
         prompt.template,
     )

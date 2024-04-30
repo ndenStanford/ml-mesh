@@ -1,7 +1,6 @@
 """Github connector."""
 
 # Standard Library
-import json
 from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
@@ -57,7 +56,6 @@ class GithubClient(OnclusiveFrozenSchema):
             if content_file.type == "dir" and all(
                 f not in content_file.path for f in self.excluded_files
             ):
-                sub_contents = self.repo.get_contents(content_file.name)
                 result.append(content_file.path)
                 result.extend(self.ls(content_file.path))
             if content_file.type == "file" and all(
