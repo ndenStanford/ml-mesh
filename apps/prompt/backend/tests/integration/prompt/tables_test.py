@@ -6,6 +6,7 @@ import os
 # 3rd party libraries
 import pytest
 from dyntastic.exceptions import DoesNotExist
+from github.GithubException import UnknownObjectException
 
 # Source
 from src.extensions.github import github
@@ -21,7 +22,7 @@ from src.prompt.tables import PromptTemplate
 @pytest.mark.order(12)
 def test_save(alias, template, project, app):
     """Test save method."""
-    with pytest.raises(DoesNotExist):
+    with pytest.raises(UnknownObjectException):
         _ = PromptTemplate.get(alias)
 
     prompt = PromptTemplate(alias=alias, template=template, project=project)

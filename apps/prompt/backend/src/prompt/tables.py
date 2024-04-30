@@ -96,7 +96,7 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
             # get from github
             contents = github.read(result.path)
             # use the github template as the source of truth.
-            result.template = contents["template"]
+            result.template = contents
 
         return results
 

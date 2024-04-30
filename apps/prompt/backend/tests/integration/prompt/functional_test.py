@@ -18,7 +18,15 @@ from src.prompt import functional as F
 @pytest.mark.order(10)
 def test_generate_from_prompt(model_alias, prompt, app):
     """Test generate from prompt."""
-    assert isinstance(F.generate_from_prompt(prompt, model_alias), str)
+    response = F.generate_from_prompt(prompt, model_alias)
+
+    assert isinstance(
+        response,
+        dict,
+    )
+
+    assert isinstance(response["prompt"], str)
+    assert isinstance(response["generated"], str)
 
 
 @pytest.mark.parametrize(
@@ -31,7 +39,12 @@ def test_generate_from_prompt(model_alias, prompt, app):
 @pytest.mark.order(11)
 def test_generate_from_prompt_template(model_alias, prompt_alias, create_prompts, app):
     """Test generate prompt from template."""
+    response = F.generate_from_prompt_template(prompt_alias, model_alias, values={})
+
     assert isinstance(
-        F.generate_from_prompt_template(prompt_alias, model_alias, values={}),
-        str,
+        response,
+        dict,
     )
+
+    assert isinstance(response["prompt"], str)
+    assert isinstance(response["generated"], str)
