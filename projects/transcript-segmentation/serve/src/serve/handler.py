@@ -16,6 +16,7 @@ from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
 # Source
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
+
 settings = get_api_settings()
 logger = get_default_logger(__name__)
 
