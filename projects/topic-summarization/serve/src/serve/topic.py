@@ -53,11 +53,9 @@ class TopicHandler:
             )
 
         input_dict = {
-            "values": {
-                "target_category": category,
-                "content": processed_article,
-            }  # input target category & articles
-        }
+            "target_category": category,
+            "content": processed_article,
+        }  # input target category & articles
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
