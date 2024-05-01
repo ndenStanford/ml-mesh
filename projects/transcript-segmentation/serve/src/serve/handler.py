@@ -136,39 +136,6 @@ class TranscriptSegmentationHandler:
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
-    def trim_response(self, str_response: str) -> str:
-        """Fix incomplete json by remove field that is incomplete.
-
-        Args:
-            str_response (str): incomplete json string response
-
-        Returns:
-            str: complete json string response
-        """
-        # reverse order of the json response
-        fields_list = [
-            ',  "Advertisement content": "',
-            '",  "Piece after accept":"',
-            '",  ["Piece after accept"]:"',
-            '",  "Piece before accept":"',
-            '",  ["Piece before accept"]:"',
-            '",  "Piece after":"',
-            '",  ["Piece after"]:"',
-            '",  "Piece before":"',
-            '",  ["Piece before"]:"',
-            '",  "segment amount":"',
-            '",  ["segment amount"]:"',
-        ]
-        for field in fields_list:
-            position = self.find_last_occurrence(field, str_response)
-            if position != -1:
-                break
-        return (
-            str_response[:position] + "}"
-            if position != -1
-            else str_response[:position] + '"}'
-        )
-
     def find_key(self, json_response: Dict[str, str], keys_list: List[str]) -> str:
         """Find the key that is being used in json response.
 
@@ -245,7 +212,7 @@ class TranscriptSegmentationHandler:
                 segment = f"{piece_before} {segment}"
 
             if piece_after_accept == "Yes":
-                segment = f"{segment} {piece_after}"
+                segment = f"{segment}{piece_after}"
 
             (
                 (start_time, end_time),
