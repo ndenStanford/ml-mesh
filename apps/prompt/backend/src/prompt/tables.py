@@ -121,10 +121,8 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
             )
         )
         for result in results:
-            # get from github
-            contents = github.read(result.path)
             # use the github template as the source of truth.
-            result.template = contents
+            result.template = github.read(result.path)
 
         return results
 
