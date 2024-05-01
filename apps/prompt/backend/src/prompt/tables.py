@@ -2,15 +2,17 @@
 
 # Standard Library
 import os
-from typing import Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 from dyntastic import A, Dyntastic
 from dyntastic.main import ResultPage
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
 )
+from pydantic import Field
 
 # Internal libraries
 from onclusiveml.llm.mixins import LangchainConvertibleMixin
@@ -36,6 +38,27 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     template: str
     project: str
     sha: Optional[str] = None
+    fields: Optional[Dict[str, str]] = Field(default=None, exclude=True)
+
+    @property
+    def response_schemas(self) -> List[ResponseSchema]:
+        """Response schemas getter."""
+        if self.fields is None:
+            return [ResponseSchema(name="generated", description="generated text")]
+        else:
+            return [
+                ResponseSchema(name=k, description=v) for k, v in self.fields.items()
+            ]
+
+    @property
+    def output_parser(self) -> Any:
+        """Output parser."""
+        return StructuredOutputParser.from_response_schemas(self.response_schemas)
+
+    @property
+    def format_instructions(self) -> Any:
+        """Output format instructions."""
+        return self.output_parser.get_format_instructions()
 
     @property
     def path(self) -> str:
@@ -60,7 +83,12 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     def as_langchain(self) -> Optional[LangchainT]:
         """Convert to langchain object."""
         return ChatPromptTemplate.from_messages(
-            [HumanMessagePromptTemplate.from_template(self.template)]
+            [
+                HumanMessagePromptTemplate.from_template(
+                    template=self.template + " \n{format_instructions}",
+                    partial_variables={"format_instructions": self.format_instructions},
+                )
+            ]
         )
 
     @classmethod

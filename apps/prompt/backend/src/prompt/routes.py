@@ -108,4 +108,6 @@ def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str,
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    return F.generate_from_prompt_template(alias, model, **values)
+    r = F.generate_from_prompt_template(alias, model, **values)
+    print(r)
+    return r
