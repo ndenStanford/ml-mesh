@@ -106,10 +106,6 @@ services:
     profiles: [serve, integration, functional]
     ports:
       - 4000:4000
-    volumes:
-      - type: bind
-        source: ~/.aws/
-        target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
