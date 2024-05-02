@@ -32,7 +32,7 @@ def test_generate_from_prompt(model_alias, prompt, app):
     "model_alias, prompt_alias",
     [
         (ChatModel.LLAMA_2_13B, "prompt1"),
-        (ChatModel.TITAN, "prompt2"),
+        (ChatModel.GPT4_TURBO, "prompt2"),
     ],
 )
 @pytest.mark.order(11)

@@ -34,7 +34,7 @@ def test_save(alias, template, project, app):
 @pytest.mark.parametrize(
     "alias, template, project",
     [
-        ("prompt1", "template1", "integration-test-1"),
+        ("prompt1", "Hello! How are you?", "integration-test-1"),
     ],
 )
 @pytest.mark.order(13)
