@@ -51,7 +51,6 @@ def main() -> None:
 
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
-        (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
         (entity_linking_settings, model_card.model_test_files.inference_params),
     ]:
         model_version.upload_config_to_model_version(
@@ -60,7 +59,7 @@ def main() -> None:
     logger.info("Pushing model artifact and assets to s3")
     # model artifact
     model_version.upload_directory_to_model_version(
-        local_directory_path=model_card.model_params.local_output_dir,
+        local_directory_path=model_card.local_output_dir,
         neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
     # model card
