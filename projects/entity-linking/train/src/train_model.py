@@ -34,17 +34,17 @@ def main() -> None:
     hf_hub_download(
         repo_id=model_card.model_params.repo,
         filename=model_card.model_params.embeddings_filename,
-        local_dir=model_card.model_params.local_output_dir,
+        local_dir=model_card.local_output_dir,
     )
     hf_hub_download(
         repo_id=model_card.model_params.repo,
         filename=model_card.model_params.embeddings_filename,
-        local_dir=model_card.model_params.local_output_dir,
+        local_dir=model_card.local_output_dir,
     )
     hf_hub_download(
         repo_id=model_card.model_params.repo,
         filename=checkpoint_name_path,
-        local_dir=model_card.model_params.local_output_dir,
+        local_dir=model_card.local_output_dir,
     )
 
     entity_linking_settings = model_card.model_params.entity_linking_settings.dict()
