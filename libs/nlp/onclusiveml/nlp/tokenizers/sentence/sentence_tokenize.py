@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
-from onclusiveml.nlp.tokenizers.consts import NLTK_SUPPORTED_LANGS
+from onclusiveml.nlp.tokenizers.consts import ALL_SUPPORTED_LANGS
 from onclusiveml.nlp.tokenizers.sentence.factory import sentence_factory
 
 
@@ -13,7 +13,7 @@ class SentenceTokenizer:
     """Tokenizing sentences in a given text."""
 
     factory = sentence_factory
-    all_support_lang = NLTK_SUPPORTED_LANGS
+    all_support_lang = ALL_SUPPORTED_LANGS
 
     def tokenize(
         self, content: str, language: Optional[str] = "en"
@@ -27,21 +27,16 @@ class SentenceTokenizer:
         Returns:
             dict: Dictionary containing tokens
         """
-        # return language iso equivalent of language e.g. fr is LanguageIso.FR
-        langIso = LanguageIso.from_language_iso(language)
-        # if LanguageIso of the language is not None, return english name of LanguageIso
-        # e.g. LanguageIso.FR is french
-        if langIso:
-            lang_simplified = next(iter(langIso.locales.values()))["en"].lower()
-        else:
-            english_text = next(iter(LanguageIso.EN.locales.values()))["en"].lower()
-            lang_simplified = english_text
+        lang_iso = LanguageIso.from_language_iso(language)
+        # Default to English if the specified language is not langIso
+        if not lang_iso:
+            lang_iso = LanguageIso.EN
 
+        lang_simplified = next(iter(lang_iso.locales.values()))["en"].lower()
         if lang_simplified in self.all_support_lang:
             tokenizer = self.factory.get_tokenizer(lang_simplified)
         else:
-            lang_simplified = next(iter(LanguageIso.EN.locales.values()))["en"].lower()
-            tokenizer = self.factory.get_tokenizer(lang_simplified)
+            tokenizer = self.factory.get_tokenizer("english")
 
         ret = tokenizer.tokenize(content, lang_simplified)
         return ret
