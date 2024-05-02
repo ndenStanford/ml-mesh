@@ -9,10 +9,10 @@ import pytest
 import json
 
 # Source
-from src.settings import get_api_settings
+from src.settings import get_settings
 
 
-settings = get_api_settings()
+settings = get_settings()
 
 
 @pytest.fixture
@@ -20,23 +20,16 @@ def mock_responses():
     """Mock response for request.post."""
     mock_response = MagicMock()
 
-    # build mock sample
-    keys = list(settings.IMPACT_CATEGORIES.values())
     # The value for each key in the inner JSON object
     value_dict = {
-        "Overall summary": "Not mentioned",
-        "Theme": "Not mentioned",
-        "Impact level": "Not mentioned",
+        "summary": "Not mentioned",
+        "theme": "Not mentioned",
     }
     # Manually construct the inner JSON string
-    value_str = json.dumps(value_dict).replace('"', '\\"')
-    inner_json_parts = [f'\\"{key}\\": {value_str}' for key in keys] + [
-        f'\\"{key}\\": \\"Not mentioned\\"' for key in ["Summary", "Theme"]
-    ]
-    inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
+    value_str = json.dumps(value_dict)
 
     # Create the final string
-    mock_response.content = f'{{"generated": "{inner_json_str}"}}'
+    mock_response.content = value_str
     return mock_response
 
 
@@ -46,13 +39,12 @@ def mock_responses_aggregate():
     mock_response = MagicMock()
 
     # build mock sample
-    keys = ["Overall summary", "Theme", "Impact level", "Summary"]
+    keys = ["summary", "theme", "impact", "summary", "information", "reason"]
     # Manually construct the inner JSON string
-    inner_json_parts = [f'\\"{key}\\": \\"Not mentioned\\"' for key in keys]
-    inner_json_str = "{" + ", ".join(inner_json_parts) + "}"
+    inner_json = {key: "Not mentionned" for key in keys}
 
     # Create the final string
-    mock_response.content = f'{{"generated": "{inner_json_str}"}}'
+    mock_response.content = json.dumps(inner_json)
     return mock_response
 
 
