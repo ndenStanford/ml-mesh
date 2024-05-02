@@ -10,7 +10,7 @@ from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 # Source
 from src.settings import get_api_settings  # type: ignore[attr-defined]
