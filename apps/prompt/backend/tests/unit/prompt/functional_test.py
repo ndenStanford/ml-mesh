@@ -50,7 +50,7 @@ def test_generate_from_prompt_template(
     )
 
     _ = F.generate_from_prompt_template(
-        prompt_alias, model_alias, {"input": {"text": ""}}
+        prompt_alias, model_alias, **{"input": {"text": ""}}
     )
 
     mock_conversation_chain_predict.assert_called_with(input="Human: ")
