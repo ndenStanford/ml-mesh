@@ -20,7 +20,6 @@ from src.settings import get_api_settings, get_settings  # type: ignore[attr-def
 logger = get_default_logger(__name__)
 settings = get_api_settings()
 model_settings = get_settings()
-alias_dict = settings.PROMPT_ALIAS
 num_process = min(model_settings.MULTIPROCESS_WORKER, cpu_count())
 
 
@@ -43,7 +42,7 @@ class TopicHandler:
         Output:
             Category summary: str
         """
-        alias = alias_dict["single_topic"]
+        alias = settings.PROMPT_ALIAS["single_topic"]
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -53,9 +52,13 @@ class TopicHandler:
             )
 
         input_dict = {
-            "target_category": category,
-            "content": processed_article,
-        }  # input target category & articles
+            "input": {
+                "target_category": category,
+                "content": processed_article,
+            },
+            "output": settings.SINGLE_TOPIC_OUTPUT_SCHEMA,
+        }
+
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
@@ -66,10 +69,9 @@ class TopicHandler:
             json=input_dict,
         )
 
-        output_content = json.loads(json.loads(q.content)["generated"])
+        output_content = json.loads(q.content)
 
-        key = category if category in output_content else f"<{category}>"
-        return output_content.get(key)
+        return output_content.get("summary")
 
     def summary(
         self,
@@ -82,7 +84,7 @@ class TopicHandler:
         Output:
             Summary: str
         """
-        alias = alias_dict["single_summary"]
+        alias = settings.PROMPT_ALIAS["single_summary"]
         # transfer article to the format used in prompt
         processed_article = ""
         for i in range(len(article)):
@@ -92,8 +94,12 @@ class TopicHandler:
             )
 
         input_dict = {
-            "content": processed_article,
-        }  # input articles
+            "input": {
+                "content": processed_article,
+            },
+            "output": settings.SINGLE_SUMMARY_OUTPUT_SCHEMA,
+        }
+
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
@@ -103,7 +109,8 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
-        return json.loads(json.loads(q.content)["generated"])["Summary"]
+
+        return json.loads(q.content)
 
     def summary_aggregate(self, grouped_article: List[List]) -> Dict[str, str]:
         """Function for aggregating summaries and generating theme.
@@ -122,13 +129,16 @@ class TopicHandler:
 
         processed_summary = "\n".join(
             [
-                f"Summary {index + 1}: '''{article}'''"
+                f"summary {index + 1}: '''{article}'''"
                 for index, article in enumerate(group_summary)
             ]
         )
 
-        alias = alias_dict["summary_aggregate"]
-        input_dict = {"Summary": processed_summary}  # input target category & articles
+        alias = settings.PROMPT_ALIAS["summary_aggregation"]
+        input_dict = {
+            "input": {"summary": processed_summary},
+            "output": settings.SUMMARY_AGGREGATION_OUTPUT_SCHEMA,
+        }
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
@@ -139,9 +149,9 @@ class TopicHandler:
             json=input_dict,
         )
 
-        output_content = json.loads(json.loads(q.content)["generated"])
-        record["Summary"] = output_content["Summary"]
-        record["Theme"] = output_content["Theme"]
+        output_content = json.loads(q.content)
+        record["summary"] = output_content["summary"]
+        record["theme"] = output_content["theme"]
 
         return record
 
@@ -164,17 +174,21 @@ class TopicHandler:
         # combine the output of each group together
         processed_summary = "\n".join(
             [
-                f"Summary {index + 1}: '''{article}'''"
+                f"summary {index + 1}: '''{article}'''"
                 for index, article in enumerate(record_cate)
             ]
         )
 
-        alias = alias_dict["topic_aggregate"]
+        alias = settings.PROMPT_ALIAS["topic_aggregation"]
 
         input_dict = {
-            "target_category": category,
-            "Summary": processed_summary,
-        }  # input target category & articles
+            "input": {
+                "target_category": model_settings.IMPACT_CATEGORIES[category],
+                "summary": processed_summary,
+            },
+            "output": settings.TOPIC_AGGREGATION_OUTPUT_SCHEMA,
+        }
+
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
@@ -185,11 +199,11 @@ class TopicHandler:
             json=input_dict,
         )
 
-        output_content = json.loads(json.loads(q.content)["generated"])
+        output_content = json.loads(q.content)
         agg_out_content, agg_out_impact, agg_out_theme = (
-            output_content["Overall summary"],
-            output_content["Impact level"],
-            output_content["Theme"],
+            output_content["summary"],
+            output_content["impact"],
+            output_content["theme"],
         )
         return agg_out_content, agg_out_impact, agg_out_theme
 
@@ -203,10 +217,11 @@ class TopicHandler:
         Output:
             topic analysis & topic theme & topic impact(dict): dict[str,str]
         """
-        category_list = model_settings.CATEGORY_LIST
         record: Dict[str, Optional[Dict[str, Any]]] = {}  # record for final output
 
-        combined_input = [(grouped_article, category) for category in category_list]
+        combined_input = [
+            (grouped_article, key) for key in model_settings.IMPACT_CATEGORIES
+        ]
         # parallel based on category
         with Pool(processes=num_process) as p:
             category_summary = p.starmap(
@@ -214,8 +229,7 @@ class TopicHandler:
             )  # list of tupel
 
         # combine the final result
-        for i in range(len(category_list)):
-            category = category_list[i]
+        for i, key in enumerate(model_settings.IMPACT_CATEGORIES):
             agg_out_content, agg_out_impact, agg_out_theme = (
                 category_summary[i][0],
                 category_summary[i][1],
@@ -223,10 +237,11 @@ class TopicHandler:
             )
             if not agg_out_content:
                 continue
-            record[category] = {
-                f"{category} analysis ": agg_out_content,
-                f"{category} theme ": agg_out_theme,
-                f"{category} impact ": agg_out_impact,
+            record[key] = {
+                "name": model_settings.IMPACT_CATEGORIES[key],
+                "analysis": agg_out_content,
+                "theme": agg_out_theme,
+                "impact": agg_out_impact,
             }
 
         return record
@@ -269,7 +284,7 @@ class TopicHandler:
         Args:
             article(list): list of str
         Output:
-            merged_result(dict): dict
+            merged_result (dict): dict
         """
         article = self.pre_process(article)
         grouped_article = self.group(article)
