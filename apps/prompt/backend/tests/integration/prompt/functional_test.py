@@ -22,29 +22,25 @@ def test_generate_from_prompt(model_alias, prompt, app):
 
     assert isinstance(
         response,
-        dict,
+        str,
     )
 
-    assert isinstance(response["prompt"], str)
-    assert isinstance(response["generated"], str)
+    assert isinstance(response, str)
 
 
 @pytest.mark.parametrize(
     "model_alias, prompt_alias",
     [
         (ChatModel.LLAMA_2_13B, "prompt1"),
-        (ChatModel.INSTRUCT_7B, "prompt2"),
+        (ChatModel.TITAN, "prompt2"),
     ],
 )
 @pytest.mark.order(11)
 def test_generate_from_prompt_template(model_alias, prompt_alias, create_prompts, app):
     """Test generate prompt from template."""
     response = F.generate_from_prompt_template(prompt_alias, model_alias, values={})
-
     assert isinstance(
         response,
         dict,
     )
-
-    assert isinstance(response["prompt"], str)
     assert isinstance(response["generated"], str)
