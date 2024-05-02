@@ -37,6 +37,12 @@ services:
       prompt-backend:
         condition: service_healthy
     hostname: onclusiveml
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8888/transcript-segmentation/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
     networks:
       - onclusive-net
 
