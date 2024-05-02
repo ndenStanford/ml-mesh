@@ -56,9 +56,6 @@ projects.functional/%: ## Run functional tests for project component
 projects.load/%: ## Run load tests for project component
 	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile load up $(COMPONENT)-load --exit-code-from $(COMPONENT)-load --force-recreate
 
-	# ensure dependency service(s) shuts down
-	docker compose -f projects/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile $(COMPONENT) down
-
 projects.lock/%:
 	poetry lock --directory=projects/$(notdir $@)/$(COMPONENT)
 
