@@ -40,7 +40,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8888/transcript-segmentation/v1/ready]
+      test: [CMD-SHELL, sleep 15s || exit 1]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -100,12 +100,16 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.4.2}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [serve, integration, functional]
     ports:
       - 4000:4000
+    volumes:
+      - type: bind
+        source: ~/.aws/
+        target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
@@ -124,8 +128,8 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 6s || exit 1]
-      interval: 10s
+      test: [CMD-SHELL, sleep 3s || exit 1]
+      interval: 5s
       retries: 5
       start_period: 5s
       timeout: 10s
