@@ -118,8 +118,8 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 20s || exit 1]
-      interval: 15s
+      test: [CMD-SHELL, sleep 15s || exit 1]
+      interval: 5s
       retries: 5
       start_period: 5s
       timeout: 10s
