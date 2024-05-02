@@ -47,7 +47,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         "single_summary": "ml-multi-articles-summarization",
         "summary_aggregation": "ml-articles-summary-aggregation",
     }
-    DEFAULT_MODEL: str = "gpt-4-1106-preview"
+    DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
     SINGLE_TOPIC_OUTPUT_SCHEMA: Dict[str, str] = {
         "content": "For each article, what it talks about the target category",
         "summary": "An overall summary for the content about target category, based on all the input articles.",  # noqa: E501
