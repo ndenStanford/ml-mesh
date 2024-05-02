@@ -1,18 +1,15 @@
 [tool.poetry]
-name = "sentiment-train"
+name = "entity-linking-train"
 version = "0.1.0"
-description = "Docker image for registering model for named entity recognition"
+description = "Docker image for registering model for entity linking"
 authors = ["Nutch <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-torch = "1.9.1"
-transformers = "4.17.0"
+huggingface-hub = "0.22.2"
 core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
-sentencepiece = "^0.1.99"
-protobuf = "^3.20"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
