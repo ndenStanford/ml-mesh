@@ -38,7 +38,7 @@ def main() -> None:
     )
     hf_hub_download(
         repo_id=model_card.model_params.repo,
-        filename=model_card.model_params.embeddings_filename,
+        filename=model_card.model_params.index_filename,
         local_dir=model_card.local_output_dir,
     )
     hf_hub_download(
