@@ -624,3 +624,5 @@ ID_TO_TOPIC = {
     "20001131": "weather warning",
     "20000479": "healthcare policy",
 }
+
+TOPIC_TO_ID = {value: key for key, value in ID_TO_TOPIC.items()}

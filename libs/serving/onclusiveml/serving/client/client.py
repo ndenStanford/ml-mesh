@@ -6,12 +6,14 @@ from typing import Any
 # Internal libraries
 import onclusiveml.serving.serialization.entity_linking.v1 as entity_linking_v1
 import onclusiveml.serving.serialization.gch_summarization.v1 as gch_summarization_v1
+import onclusiveml.serving.serialization.iptc.v1 as iptc_v1
 import onclusiveml.serving.serialization.iptc_multi.v1 as iptc_multi_v1
 import onclusiveml.serving.serialization.lsh.v1 as lsh_v1
 import onclusiveml.serving.serialization.ner.v1 as ner_v1
 import onclusiveml.serving.serialization.sentiment.v1 as sentiment_v1
 import onclusiveml.serving.serialization.topic.v1 as topic_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
+from onclusiveml.models.iptc.class_dict import ID_TO_TOPIC
 from onclusiveml.serving.client._bind import bind
 
 
@@ -41,6 +43,25 @@ class OnclusiveApiClient:
         self.host = host
         self.api_key_header = api_key_header
         self.api_key = api_key
+        self.setup_iptc_bindings()
+
+    def setup_iptc_bindings(self) -> None:
+        """Dynamically create bindings for each model ID based on ID_TO_TOPIC."""
+        for model_id, _ in ID_TO_TOPIC.items():
+            namespace = f"iptc-{model_id}"
+            setattr(
+                self,
+                f"iptc_{model_id}",
+                bind(
+                    namespace=namespace,
+                    version=1,
+                    method="POST",
+                    endpoint="predict",
+                    request_attributes_schema=iptc_v1.PredictRequestAttributeSchemaV1,
+                    request_parameters_schema=iptc_v1.PredictRequestParametersSchemaV1,
+                    response_attributes_schema=iptc_v1.PredictResponseAttributeSchemaV1,
+                ),
+            )
 
     ner = bind(
         namespace="ner",
@@ -112,17 +133,8 @@ class OnclusiveApiClient:
         response_attributes_schema=lsh_v1.PredictResponseAttributeSchemaV1,
     )
 
-    iptc_0000000 = bind(
-        namespace="iptc_0000000",
-        version=1,
-        method="POST",
-        endpoint="predict",
-        request_attributes_schema=iptc_multi_v1.PredictRequestAttributeSchemaV1,
-        request_parameters_schema=iptc_multi_v1.PredictRequestParametersSchemaV1,
-        response_attributes_schema=iptc_multi_v1.PredictResponseAttributeSchemaV1,
-    )
     iptc_multi = bind(
-        namespace="iptc_multi",
+        namespace="iptc-multi",
         version=1,
         method="POST",
         endpoint="predict",

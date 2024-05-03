@@ -1,4 +1,4 @@
-"""LSH v1 data schemas."""
+"""IPTC v1 data schemas."""
 
 # Standard Library
 from typing import List, Optional
@@ -8,7 +8,11 @@ from onclusiveml.core.serialization import JsonApiSchema
 
 
 class PredictRequestAttributeSchemaV1(JsonApiSchema):
-    """Prediction request data."""
+    """Prediction request data.
+
+    Attributes:
+        content (str):
+    """
 
     content: str = ""
 
@@ -16,16 +20,22 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
-    language: str = "en"
-    shingle_list: int = 5
-    threshold: float = 0.6
-    num_perm: int = 128
+
+class PredictResponseIPTC(JsonApiSchema):
+    """Prediction iptc."""
+
+    label: Optional[str] = None
+    score: Optional[float] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
-    """Prediction request data."""
+    """Prediction request data.
 
-    signature: Optional[List[str]]
+    Attributes:
+        iptc (label): list of iptc of the article
+    """
+
+    iptc: List[PredictResponseIPTC] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
@@ -33,7 +43,6 @@ class BioRequestAttributeSchemaV1(JsonApiSchema):
 
     Attributes:
         model_name (str): The name of the model used for prediction
-        model_card (Dict): Information about the model
     """
 
-    model_name: str = "iptc_multi"
+    model_name: str = "iptc-multi"

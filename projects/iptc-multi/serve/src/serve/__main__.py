@@ -22,7 +22,7 @@ def get_model_server() -> ModelServer:
     model_server = ModelServer(
         configuration=serving_params, model=iptc_multi_served_model
     )
-    Instrumentator.enable(model_server, app_name="lsh")
+    Instrumentator.enable(model_server, app_name="iptc-multi")
 
     return model_server
 

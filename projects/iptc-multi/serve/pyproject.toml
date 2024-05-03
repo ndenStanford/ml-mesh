@@ -1,18 +1,18 @@
 [tool.poetry]
-name = "lsh-serve"
+name = "iptc-multi-serve"
 version = "0.1.0"
-description = "Implementation LSH API"
+description = "Implementation IPTC Multi Client"
 authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-regex = "2022.10.31"
+regex = "^2023.6.3"
 
 core = {path = "../../../libs/core"}
-hashing = {path = "../../../libs/hashing"}
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
+models = {path = "../../../libs/models"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
@@ -26,3 +26,9 @@ debugpy = "1.8.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "aws-neuron"
+url = "https://pip.repos.neuron.amazonaws.com/"
+default = false
+secondary = true

@@ -16,7 +16,7 @@ from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
-    model_name: str = "iptc_multi"
+    model_name: str = "iptc-multi"
     model_directory: Union[str, Path] = "."
 
 
