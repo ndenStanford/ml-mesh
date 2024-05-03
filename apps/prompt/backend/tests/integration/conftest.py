@@ -27,9 +27,13 @@ TEST_PROJECTS = [
 
 
 TEST_PROMPTS = [
-    PromptTemplate(alias="prompt1", template="template1", project="integration-test-1"),
-    PromptTemplate(alias="prompt2", template="template2", project="integration-test-2"),
-    PromptTemplate(alias="prompt3", template="template3", project="integration-test-2"),
+    PromptTemplate(
+        alias="prompt1", template="Hello! How are you?", project="integration-test-1"
+    ),
+    PromptTemplate(
+        alias="prompt2", template="What's happening?", project="integration-test-2"
+    ),
+    PromptTemplate(alias="prompt3", template="Bonjour!", project="integration-test-2"),
 ]
 
 

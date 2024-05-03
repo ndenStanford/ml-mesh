@@ -102,6 +102,12 @@ on  :
       ELASTICSEARCH_KEY:
         required: false
         description: Elastic search key.
+      PROMPT_REGISTRY_APP_ID:
+        required: false
+        description: Prompt registry app ID.
+      PROMPT_REGISTRY_APP_PRIVATE_KEY:
+        required: false
+        description: Prompt registry app private key.
 
 jobs:
   check-run-criteria:
@@ -171,7 +177,7 @@ jobs:
     name: 'Build, test & deploy: ${{ inputs.project }}-${{ inputs.component }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    timeout-minutes: 50
+    timeout-minutes: 30
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     steps:
@@ -233,6 +239,8 @@ jobs:
             MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
             MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
             ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
+            PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+            PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             ENVIRONMENT="ci"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
@@ -247,6 +255,8 @@ jobs:
             MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
             MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
             ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
+            PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+            PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             ENVIRONMENT="ci"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
@@ -271,6 +281,8 @@ jobs:
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+            PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci"
 
