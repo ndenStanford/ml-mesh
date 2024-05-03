@@ -24,7 +24,7 @@ def test_path(alias, template, project):
     """Test path method."""
     prompt = PromptTemplate(alias=alias, project=project, template=template)
 
-    assert prompt.path == os.path.join(project, f"{alias}.json")
+    assert prompt.path == os.path.join(project, alias)
 
 
 @pytest.mark.parametrize(
@@ -42,9 +42,9 @@ def test_save(mock_dyntastic_save, mock_github_write, alias, template, project):
     prompt.save()
     # asserts
     mock_github_write.assert_called_with(
-        os.path.join(project, f"{alias}.json"),
+        os.path.join(project, alias),
         f"Add new prompt {alias}",
-        prompt.json(exclude={"sha", "project", "alias"}),
+        prompt.template,
     )
     mock_dyntastic_save.assert_called_once()
 
@@ -64,7 +64,7 @@ def test_delete(mock_dyntastic_delete, mock_github_rm, alias, template, project)
     prompt.delete()
     # asserts
     mock_github_rm.assert_called_with(
-        os.path.join(project, f"{alias}.json"), f"Delete prompt {alias}"
+        os.path.join(project, alias), f"Delete prompt {alias}"
     )
     mock_dyntastic_delete.assert_called_once()
 
@@ -94,13 +94,11 @@ def test_get(mock_dyntastic_get, mock_github_read, alias, template, project):
     mock_dyntastic_get.return_value = PromptTemplate(
         alias=alias, project=project, template=""
     )
-    mock_github_read.return_value = PromptTemplate(
-        alias=alias, project=project, template=template
-    ).dict()
+    mock_github_read.return_value = template
 
     result = PromptTemplate.get(alias)
 
-    mock_github_read.assert_called_with(os.path.join(project, f"{alias}.json"))
+    mock_github_read.assert_called_with(os.path.join(project, alias))
     assert (
         result == PromptTemplate(alias=alias, project=project, template=template).dict()
     )

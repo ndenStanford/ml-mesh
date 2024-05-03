@@ -28,13 +28,13 @@ def test_save(alias, template, project, app):
     prompt.save()
 
     assert PromptTemplate.get(alias).json() == prompt.json()
-    assert os.path.join(project, f"{alias}.json") in github.ls(project)
+    assert os.path.join(project, alias) in github.ls(project)
 
 
 @pytest.mark.parametrize(
     "alias, template, project",
     [
-        ("prompt1", "template1", "integration-test-1"),
+        ("prompt1", "Hello! How are you?", "integration-test-1"),
     ],
 )
 @pytest.mark.order(13)
