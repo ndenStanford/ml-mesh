@@ -23,7 +23,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     prompt_alias: str = "ml-transcript-segmentation"
     prompt_ad_alias: str = "ml-transcript-segmentation-ad-detection"
     internal_ml_endpoint_api_key: str = "1234"
-    default_model: str = "gpt-4-1106-preview"
+    default_model: str = "gpt-4-0125-preview"
     segmentation_output_schema: Dict[str, str] = {
         "related_segment": "The relevant news segment about the keywords",
         "reason_for_segment": "The reason you believe this story relates to the keywords",

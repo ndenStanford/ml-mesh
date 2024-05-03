@@ -100,7 +100,7 @@ def test_server_prediction(test_payload, expected_response):
 
 
 def test_server_prediction_o2(test_payload_o2, expected_response_o2):
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    """Tests prediction on O2 use case (short keyword)."""
     response = requests.post(
         "http://serve:8888/transcript-segmentation/v1/predict",
         json=test_payload_o2,
