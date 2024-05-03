@@ -1,8 +1,5 @@
 """Github test."""
 
-# Standard Library
-import json
-
 # 3rd party libraries
 import pytest
 from github import GithubException
@@ -16,14 +13,14 @@ def test_github_write():
     """Github write method."""
     with pytest.raises(GithubException):
         github.read("integration-tests/file")
-    github.write("integration-tests/file", "integration tests", json.dumps(dict()))
-    assert github.read("integration-tests/file") == {}
+    github.write("integration-tests/file", "integration tests", "")
+    assert github.read("integration-tests/file") == ""
 
 
 @pytest.mark.order(1)
 def test_github_read():
     """Github write method."""
-    assert github.read("integration-tests/file") == {}
+    assert github.read("integration-tests/file") == ""
 
 
 @pytest.mark.order(2)

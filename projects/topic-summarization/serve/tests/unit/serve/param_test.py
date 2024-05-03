@@ -28,9 +28,9 @@ def test_handler_inference(mock_post, article_input, mock_responses):
 
     gpt_inference = _service.inference(
         article=article_input,
-        category="Opportunities",
+        category="opportunities",
     )
-    assert isinstance(gpt_inference, dict)
+    assert isinstance(gpt_inference, str)
 
 
 @patch("requests.post")
@@ -41,7 +41,7 @@ def test_handler_summary(mock_post, article_input, mock_responses):
     gpt_inference = _service.summary(
         article=article_input,
     )
-    assert isinstance(gpt_inference, str)
+    assert isinstance(gpt_inference, dict)
 
 
 @patch("requests.post")
