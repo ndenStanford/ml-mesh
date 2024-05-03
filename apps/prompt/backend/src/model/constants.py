@@ -15,6 +15,7 @@ class ChatModel(str, OnclusiveEnum):
     GPT4 = "gpt-4"
     GPT3_5_TURBO = "gpt-3.5-turbo-1106"
     GPT4_TURBO = "gpt-4-1106-preview"
+    GPT4_TURBO_LATEST = "gpt-4-0125-preview"
     TITAN = "amazon.titan-text-express-v1"
     TITAN_G1 = "amazon.titan-text-lite-v1"
     CLAUDE_2 = "anthropic.claude-v2"
@@ -53,4 +54,5 @@ DEFAULT_MODELS = [
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT3_5_TURBO, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI},
+    {"alias": ChatModel.GPT4_TURBO_LATEST, "provider": ChatModelProdiver.OPENAI},
 ]
