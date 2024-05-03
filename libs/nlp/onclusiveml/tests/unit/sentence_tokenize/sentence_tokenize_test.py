@@ -4,10 +4,8 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.nlp.sentence_tokenize import (
-    SPECIAL_CHARACTERS,
-    SentenceTokenizer,
-)
+from onclusiveml.nlp.tokenizers.consts import SPECIAL_CHARACTERS
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 
 def test_tokenize():
@@ -42,6 +40,73 @@ def test_tokenize_fr():
         "Il est le fils d'Errol Musk, riche ingénieur et promoteur immobilier sud-africain aux origines afrikaner et anglo-sud-africaine, ayant eu des parts d’une mine d'émeraudes en Zambie, et de Maye Haldeman, une nutritionniste et mannequin canadienne.",  # noqa: E501
         "Après le divorce de ses parents en 1979, il continue de vivre avec son père.",
         "À l'âge de 12 ans, il vend son premier programme de jeu vidéo pour l'équivalent de 500 dollars",  # noqa: E501
+    ]
+
+
+def test_tokenize_de():
+    """Test SentenceTokenizer class for tokenizing German text into a list of sentences.
+
+    Returns:
+        None
+    """
+    text = """Elon Musk war der zweite Mensch überhaupt, der ein Privatvermögen von mehr als 200 Milliarden US-Dollar anhäufte und überschritt diese Schwelle im Januar 2021, Monate nach Jeff Bezos.
+    Dem Vorstandsvorsitzenden von Tesla Inc. ist nun ein Novum gelungen: Er ist der einzige Mensch in der Geschichte, der 200 Milliarden US-Dollar aus seinem Nettovermögen gestrichen hat."""  # noqa: E501
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="de")
+    assert res["sentences"] == [
+        "Elon Musk war der zweite Mensch überhaupt, der ein Privatvermögen von mehr als 200 Milliarden US-Dollar anhäufte und überschritt diese Schwelle im Januar 2021, Monate nach Jeff Bezos.",  # noqa: E501
+        "Dem Vorstandsvorsitzenden von Tesla Inc.",
+        "ist nun ein Novum gelungen: Er ist der einzige Mensch in der Geschichte, der 200 Milliarden US-Dollar aus seinem Nettovermögen gestrichen hat.",  # noqa: E501
+    ]
+
+
+def test_tokenize_it():
+    """Test SentenceTokenizer class for tokenizing Italian text into a list of sentences.
+
+    Returns:
+        None
+    """
+    text = """Elon Musk è stata la seconda persona in assoluto ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando quella soglia nel gennaio 2021, mesi dopo Jeff Bezos.
+    L’amministratore delegato di Tesla Inc. ha ora raggiunto un primato: diventare l’unica persona nella storia a cancellare 200 miliardi di dollari dal proprio patrimonio netto."""  # noqa: E501
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="it")
+    assert res["sentences"] == [
+        "Elon Musk è stata la seconda persona in assoluto ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando quella soglia nel gennaio 2021, mesi dopo Jeff Bezos.",  # noqa: E501
+        "L’amministratore delegato di Tesla Inc.",
+        "ha ora raggiunto un primato: diventare l’unica persona nella storia a cancellare 200 miliardi di dollari dal proprio patrimonio netto.",  # noqa: E501
+    ]
+
+
+def test_tokenize_es():
+    """Test SentenceTokenizer class for tokenizing Spanish text into a list of sentences.
+
+    Returns:
+        None
+    """
+    text = """Elon Musk fue la segunda persona en amasar una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos.
+    El director ejecutivo de Tesla Inc. ha logrado ahora una primicia: convertirse en la única persona en la historia en borrar 200.000 millones de dólares de su patrimonio neto."""  # noqa: E501
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="es")
+    assert res["sentences"] == [
+        "Elon Musk fue la segunda persona en amasar una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos.",  # noqa: E501
+        "El director ejecutivo de Tesla Inc.",
+        "ha logrado ahora una primicia: convertirse en la única persona en la historia en borrar 200.000 millones de dólares de su patrimonio neto.",  # noqa: E501
+    ]
+
+
+def test_tokenize_ca():
+    """Test SentenceTokenizer class for tokenizing Catalan text into a list of sentences.
+
+    Returns:
+        None
+    """
+    text = """Elon Musk va ser la segona persona que va acumular una fortuna personal de més de 200.000 milions de dòlars, superant aquest llindar el gener del 2021, mesos després de Jeff Bezos.
+    El conseller delegat de Tesla Inc. ha aconseguit ara el seu primer: convertir-se en l'única persona de la història que ha esborrat 200.000 milions de dòlars del seu patrimoni net."""  # noqa: E501
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="ca")
+    assert res["sentences"] == [
+        "Elon Musk va ser la segona persona que va acumular una fortuna personal de més de 200.000 milions de dòlars, superant aquest llindar el gener del 2021, mesos després de Jeff Bezos.",  # noqa: E501
+        "El conseller delegat de Tesla Inc. ha aconseguit ara el seu primer: convertir-se en l'única persona de la història que ha esborrat 200.000 milions de dòlars del seu patrimoni net.",  # noqa: E501
     ]
 
 

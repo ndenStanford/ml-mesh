@@ -19,7 +19,7 @@ from onclusiveml.hashing.storage import (
 )
 from onclusiveml.nlp.language import LanguageIso
 from onclusiveml.nlp.stopwords import stopwords as stop_word_remover
-from onclusiveml.nlp.word_tokenize import WordTokenizer
+from onclusiveml.nlp.tokenizers.word import WordTokenizer
 
 
 def _probability(s: float, r: int, b: int) -> float:
