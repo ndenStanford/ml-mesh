@@ -94,6 +94,8 @@ services:
     depends_on:
       serve:
         condition: service_healthy
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -132,7 +134,7 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 9s || exit 1]
+      test: [CMD-SHELL, sleep 10s || exit 1]
       interval: 30s
       timeout: 10s
       retries: 5
