@@ -100,7 +100,7 @@ def test_list_prompt(mock_prompt_scan, test_client):
 
 @pytest.mark.parametrize(
     "alias, model, values",
-    [("prompt-1", "model-1", {"values": {"text": ""}})],
+    [("prompt-1", "model-1", {"text": ""})],
 )
 @patch("src.prompt.functional.generate_from_prompt_template")
 def test_generate(mock_generate, alias, model, values, test_client):
@@ -110,5 +110,5 @@ def test_generate(mock_generate, alias, model, values, test_client):
         headers={"x-api-key": "1234"},
         json=values,
     )
-    mock_generate.assert_called_with(alias, model, **values["values"])
+    mock_generate.assert_called_with(alias, model, **values)
     assert response.status_code == status.HTTP_200_OK

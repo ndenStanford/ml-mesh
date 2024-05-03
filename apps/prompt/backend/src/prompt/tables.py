@@ -2,15 +2,17 @@
 
 # Standard Library
 import os
-from typing import Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 from dyntastic import A, Dyntastic
 from dyntastic.main import ResultPage
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
 )
+from pydantic import Field
 
 # Internal libraries
 from onclusiveml.llm.mixins import LangchainConvertibleMixin
@@ -36,18 +38,39 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     template: str
     project: str
     sha: Optional[str] = None
+    fields: Optional[Dict[str, str]] = Field(default=None, exclude=True)
+
+    @property
+    def response_schemas(self) -> List[ResponseSchema]:
+        """Response schemas getter."""
+        if self.fields is None:
+            return [ResponseSchema(name="generated", description="generated text")]
+        else:
+            return [
+                ResponseSchema(name=k, description=v) for k, v in self.fields.items()
+            ]
+
+    @property
+    def output_parser(self) -> Any:
+        """Output parser."""
+        return StructuredOutputParser.from_response_schemas(self.response_schemas)
+
+    @property
+    def format_instructions(self) -> Any:
+        """Output format instructions."""
+        return self.output_parser.get_format_instructions()
 
     @property
     def path(self) -> str:
         """Prompt file path."""
-        return os.path.join(self.project, f"{self.alias}.json")
+        return os.path.join(self.project, self.alias)
 
     def save(self) -> None:
         """Creates prompt template in github."""
         commit = github.write(
             self.path,
             f"Add new prompt {self.alias}",
-            self.json(exclude={"sha", "project", "alias"}),
+            self.template,
         )
         self.sha = commit["commit"].sha
         return super(PromptTemplate, self).save()
@@ -60,7 +83,12 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
     def as_langchain(self) -> Optional[LangchainT]:
         """Convert to langchain object."""
         return ChatPromptTemplate.from_messages(
-            [HumanMessagePromptTemplate.from_template(self.template)]
+            [
+                HumanMessagePromptTemplate.from_template(
+                    template=self.template + " \n{format_instructions}",
+                    partial_variables={"format_instructions": self.format_instructions},
+                )
+            ]
         )
 
     @classmethod
@@ -76,9 +104,7 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
             hash_key, range_key, consistent_read=consistent_read
         )
         # get template from github
-        contents = github.read(result.path)
-        # use the github template as the source of truth.
-        result.template = contents["template"]
+        result.template = github.read(result.path)
         return result
 
     @classmethod
@@ -95,9 +121,11 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
             )
         )
         for result in results:
-            # get from github
-            contents = github.read(result.path)
             # use the github template as the source of truth.
-            result.template = contents["template"]
+            result.template = github.read(result.path)
 
         return results
+
+    def sync(self) -> None:
+        """Sync object already present in registry."""
+        return super(PromptTemplate, self).save()
