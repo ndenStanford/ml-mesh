@@ -78,7 +78,7 @@ class ServedIPTCMultiModel(ServedModel):
         model_client = self.model(
             host=f"serve-iptc-{current_model_id}:8000", api_key="", secure=False
         )
-        level = 1
+        level = 0
         # Loop to handle dynamic chaining based on prediction results
         while level < 3:
             level += 1
