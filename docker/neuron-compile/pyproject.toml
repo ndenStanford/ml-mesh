@@ -20,7 +20,7 @@ default = false
 secondary = true
 
 [tool.poetry.group.dev.dependencies]
-pytest = "8.1.1"
+pytest = "8.2.0"
 
 [build-system]
 requires = ["poetry-core"]
