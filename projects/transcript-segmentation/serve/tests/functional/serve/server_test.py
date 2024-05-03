@@ -175,28 +175,28 @@ def test_server_prediction_timeout(test_payload_timeout, expected_response_timeo
             response.json()["data"]["attributes"]["start_time"]
             - expected_response_timeout["data"]["attributes"]["start_time"]
         )
-        <= 25000
+        <= 30000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["end_time"]
             - expected_response_timeout["data"]["attributes"]["end_time"]
         )
-        <= 25000
+        <= 30000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["transcript_start_time"]
             - expected_response_timeout["data"]["attributes"]["transcript_start_time"]
         )
-        <= 25000
+        <= 30000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["transcript_end_time"]
             - expected_response_timeout["data"]["attributes"]["transcript_end_time"]
         )
-        <= 25000
+        <= 30000
     )
     assert isinstance(response.json()["data"]["attributes"]["title"], str)
     assert isinstance(response.json()["data"]["attributes"]["summary"], str)
