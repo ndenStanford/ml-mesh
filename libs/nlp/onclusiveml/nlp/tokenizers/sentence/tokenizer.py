@@ -2,6 +2,7 @@
 
 # Standard Library
 import re
+import subprocess
 from typing import Any, Dict, List
 
 # 3rd party libraries
@@ -11,7 +12,10 @@ from konoha import SentenceTokenizer as konoha_tokenize
 from zh_sentence.tokenizer import tokenize as zh_tokenize
 
 
+# Download nltk tokenizers and Spacy tokenizer for Korean
 nltk.download("punkt")
+command = "python -m spacy download ko_core_news_sm"
+subprocess.run(command, shell=True, check=True)
 
 # Internal libraries
 from onclusiveml.nlp.tokenizers.consts import SPECIAL_CHARACTERS
@@ -37,7 +41,14 @@ class NLTKSentenceTokenizer(BaseSentenceTokenizer):
         Returns:
             dict: Dictionary containing tokenized sentences
         """
-        sentences_first = nltk.sent_tokenize(content, language)
+        try:
+            sentences_first = nltk.sent_tokenize(content, language)
+        except LookupError:
+            # Fallback to the default tokenizer if the specific language is not found
+            print(
+                f"Warning: Language model for '{language}' not found. Falling back to default."
+            )
+            sentences_first = nltk.sent_tokenize(content)
 
         sentences = []
         for sentence in sentences_first:
