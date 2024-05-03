@@ -528,6 +528,15 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
           # serve
           - name: serve
             download-model: true
@@ -535,8 +544,7 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            runner-kind: ubuntu-20.04
 
           # backfill
           - name: backfill
