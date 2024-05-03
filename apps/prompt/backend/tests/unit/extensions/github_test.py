@@ -1,7 +1,6 @@
 """Github test."""
 
 # Standard Library
-import json
 from dataclasses import dataclass
 from unittest.mock import patch
 
@@ -78,7 +77,7 @@ def test_read(github_auth_mock, github_integration_mock, path, contents):
     get_github_for_installation.get_repo.return_value.get_contents.assert_called_with(  # noqa: E501
         path
     )
-    assert read_result == json.loads(contents)
+    assert read_result == contents
 
 
 @pytest.mark.parametrize(
