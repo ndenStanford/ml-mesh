@@ -26,11 +26,21 @@ SUPPORTED_LANGUAGE_ISO_LIST = [
     LanguageIso.ES,
     LanguageIso.SV,
     LanguageIso.TR,
+    LanguageIso.AR,
+    LanguageIso.ZH,
+    LanguageIso.KO,
+    LanguageIso.JA,
+]
+
+ALL_SUPPORTED_LANGS = [
+    next(iter(item.locales.values()))["en"].lower()
+    for item in SUPPORTED_LANGUAGE_ISO_LIST
 ]
 
 NLTK_SUPPORTED_LANGS = [
-    next(iter(item.locales.values()))["en"].lower()
-    for item in SUPPORTED_LANGUAGE_ISO_LIST
+    lang
+    for lang in ALL_SUPPORTED_LANGS
+    if lang not in ["chinese", "korean", "japanese"]
 ]
 
 
