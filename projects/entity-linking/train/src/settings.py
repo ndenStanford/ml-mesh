@@ -56,6 +56,7 @@ class TrackedEntityLinkingBaseModelCard(TrackedModelCard):
     # model_inputs: Inputs = Inputs()
     # admin
     local_output_dir: str = os.path.join(".", "entity_linking_model_artifacts")
+    local_cache_dir: str = os.path.join(".", "entity_linking_model_cache")
     logging_level: str = "INFO"
 
     class Config:

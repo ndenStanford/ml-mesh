@@ -11,6 +11,9 @@ services:
       - type: bind
         source: train
         target: /projects/entity-linking/train
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/entity-linking/artifact
     build:
       context: ../../
       dockerfile: projects/entity-linking/train/Dockerfile
