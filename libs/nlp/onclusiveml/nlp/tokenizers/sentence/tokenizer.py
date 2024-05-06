@@ -87,9 +87,6 @@ class SpacySentenceTokenizer(BaseSentenceTokenizer):
     ) -> None:
         """Define the Spacy model for each language."""
         self.language_to_spacy_model = {
-            "english": "en_core_web_sm",
-            "chinese": "zh_core_web_sm",
-            "japanese": "ja_core_news_sm",
             "korean": "ko_core_news_sm",
         }
 
