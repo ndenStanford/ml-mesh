@@ -5,8 +5,8 @@ import json
 from typing import Any, Dict
 
 # 3rd party libraries
-import redis
 import xxhash
+from redis import from_url
 from redis_cache import RedisCache
 
 # Source
@@ -16,17 +16,16 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-class RedisDb:
+class RedisDb(RedisCache):
     """Redisdb wrapper class."""
 
-    def get_cache(self):
-        """Returns redis client."""
-        redis_client = redis.from_url(settings.REDIS_CONNECTION_STRING)
-        cache = RedisCache(redis_client=redis_client, key_serializer=self.generate_hash)
-        return cache
+    def __init__(self, redis_client):
+        super(RedisDb, self).__init__(
+            redis_client=redis_client, key_serializer=self._generate_hash
+        )
 
     @staticmethod
-    def generate_hash(key: Dict[str, Any]) -> str:
+    def _generate_hash(key: Dict[str, Any]) -> str:
         """Generates a hash for a given key."""
         json_key = json.dumps(key, sort_keys=True)
         # Using xxhash for fast non-cryptographic hashing
@@ -34,4 +33,4 @@ class RedisDb:
         return hashed_key
 
 
-cache = RedisDb().get_cache()
+redis = RedisDb(from_url(settings.REDIS_CONNECTION_STRING))

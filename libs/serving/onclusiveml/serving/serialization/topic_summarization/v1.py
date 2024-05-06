@@ -4,6 +4,7 @@
 from typing import Dict, List, Optional, Union
 
 # Internal libraries
+from onclusiveml.core.base.utils import OnclusiveEnum
 from onclusiveml.core.serialization import JsonApiSchema
 
 
@@ -22,10 +23,19 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
 
+class ImpactCategoryLabel(str, OnclusiveEnum):
+    """Impact category label."""
+
+    LOW = "low"
+    MID = "mid"
+    HIGH = "high"
+
+
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
+    impact_category: Optional[ImpactCategoryLabel]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

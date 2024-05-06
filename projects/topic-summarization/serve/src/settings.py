@@ -8,21 +8,32 @@ from onclusiveml.data.query_profile import MediaAPISettings
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings, OnclusiveBaseSettings
+from onclusiveml.core.base import (
+    OnclusiveFrozenSettings,
+    OnclusiveBaseSettings,
+)
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
-from typing import List
-
-# Source
-from src.serve.category_storage import Category_list
+from typing import Dict, List
 
 
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "topic-summarization"
-    CATEGORY_LIST: list = Category_list
+    IMPACT_CATEGORIES: Dict[str, str] = {
+        "opportunities": "Opportunities",
+        "risk": "Risk detection",
+        "threats": "Threats for the brand",
+        "company": "Company or spokespersons",
+        "brand": "Brand Reputation",
+        "ceo": "CEO Reputation",
+        "customer": "Customer Response",
+        "stock": "Stock Price Impact",
+        "industry": "Industry trends",
+        "environment": "Environmental, social and governance",
+    }
 
 
 class PromptBackendAPISettings(OnclusiveFrozenSettings):
@@ -32,9 +43,29 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     PROMPT_ALIAS: dict = {
         "single_topic": "ml-topic-summarization-single-analysis",
-        "topic_aggregate": "ml-topic-summarization-aggregation",
+        "topic_aggregation": "ml-topic-summarization-aggregation",
         "single_summary": "ml-multi-articles-summarization",
-        "summary_aggregate": "ml-articles-summary-aggregation",
+        "summary_aggregation": "ml-articles-summary-aggregation",
+    }
+    DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+    SINGLE_TOPIC_OUTPUT_SCHEMA: Dict[str, str] = {
+        "content": "For each article, what it talks about the target category",
+        "summary": "An overall summary for the content about target category, based on all the input articles.",  # noqa: E501
+    }
+    TOPIC_AGGREGATION_OUTPUT_SCHEMA: Dict[str, str] = {
+        "information": "The distinct information in each summary",
+        "theme": "The theme for the target category, based on the one-paragraph summary",
+        "impact": "The impact level of this target category",
+        "summary": "An overall summary for the content about target category, based on all the input summaries",  # noqa: E501
+        "change": "if the content suggests a significant change in the target category",
+        "reason": "The reason for this impact level",
+    }
+    SINGLE_SUMMARY_OUTPUT_SCHEMA: Dict[str, str] = {
+        "summary": "The summary you generate for these articles"
+    }
+    SUMMARY_AGGREGATION_OUTPUT_SCHEMA: Dict[str, str] = {
+        "summary": "Your synthesized summary based on all the summaries I provided",
+        "theme": "The theme for your consolidated summary",
     }
 
 
@@ -64,6 +95,20 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     # Document scale threshold to run trend detection
     TOPIC_DOCUMENT_THRESHOLD: float = 0.01
 
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class ImpactQuantificationSettings(OnclusiveBaseSettings):
+    """Impact Quantification Settings."""
+
+    impact_lookback_days: int = 125
+    time_interval: str = "24h"
+    local_raio_cutoff = 0.01
+    global_local_comparison_ratio_cutoff = 1
+    mf_tau_cutoff = 0.8
+
 
 class GlobalSettings(
     ServerModelSettings,
@@ -71,6 +116,7 @@ class GlobalSettings(
     TrackedImageSpecs,
     MediaAPISettings,
     ElasticsearchSettings,
+    ImpactQuantificationSettings,
     TrendSummarizationSettings,
 ):
     """Global server settings."""

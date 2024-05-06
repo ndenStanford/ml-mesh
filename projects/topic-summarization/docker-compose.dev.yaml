@@ -44,6 +44,7 @@ services:
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       MULTIPROCESS_WORKER: 5
+    env_file: serve/config/dev.env
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
       interval: 10s
@@ -73,6 +74,13 @@ services:
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
     ports:
       - 5678:5678
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/topic-summarization/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/topic-summarization/serve/tests
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: topic-summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
@@ -87,6 +95,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -127,6 +136,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -155,6 +165,7 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+    env_file: serve/config/dev.env
     depends_on:
       serve:
         condition: service_healthy
@@ -178,16 +189,20 @@ services:
     profiles: [serve, integration, functional, debug]
     ports:
       - 4000:4000
+    volumes:
+      - type: bind
+        source: ~/.aws/
+        target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
       DOCS_URL: /docs
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      API_KEY: 1234
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+      AWS_PROFILE: dev
     depends_on:
       dynamodb:
         condition: service_healthy
@@ -196,11 +211,11 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 3s || exit 1]
-      interval: 5s
+      test: [CMD-SHELL, sleep 10s || exit 1]
+      interval: 30s
+      timeout: 20s
       retries: 5
-      start_period: 5s
-      timeout: 10s
+      start_period: 50s
     networks:
       - onclusive-net
 
@@ -216,7 +231,7 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 3s || exit 1]
+      test: [CMD-SHELL, sleep 6s || exit 1]
       interval: 5s
       retries: 5
       start_period: 5s
@@ -333,7 +348,7 @@ services:
         target: /projects/topic-summarization/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
-    profiles: [unit]
+    profiles: [backfill, unit]
     environment:
       HOST: test.onclusive.com
       NAMESPACE: topic-summarization
@@ -434,13 +449,15 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui
+    profiles: [backfill, debug]
+    networks: [onclusive-net]
     ports:
       - 9000:9000
+    depends_on:
+      - kafka
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-    depends_on:
-      - kafka
 
 volumes :
   backfill-volume:

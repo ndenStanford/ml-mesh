@@ -8,8 +8,7 @@ packages = [{include = "onclusiveml"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 typing-extensions = "^4.5.0"
-pydantic = "1.10.4"
-tracking = {path = "../tracking"}
+pydantic = "1.10.11"
 
 [tool.poetry.group.dev.dependencies]
 pytest-catchlog = "1.2.2"
