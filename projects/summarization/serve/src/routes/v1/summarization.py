@@ -22,7 +22,7 @@ from src.settings import settings  # type: ignore[attr-defined]
 logger = get_default_logger(__name__)
 
 router = APIRouter(
-    prefix="/summarization/gpt3",
+    prefix="/summarization",
 )
 
 
