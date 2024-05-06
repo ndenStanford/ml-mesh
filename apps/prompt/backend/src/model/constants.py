@@ -54,6 +54,7 @@ DEFAULT_MODELS = [
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT3_5_TURBO, "provider": ChatModelProdiver.OPENAI},
+    {"alias": ChatModel.GPT4_TURBO_PREVIEW, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI},
-    {"alias": ChatModel.GPT4_TURBO_LATEST, "provider": ChatModelProdiver.OPENAI},
+    {"alias": ChatModel.GPT4_1106, "provider": ChatModelProdiver.OPENAI},
 ]
