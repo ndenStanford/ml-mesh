@@ -8,7 +8,7 @@ from typing import List, NamedTuple, Optional, Union
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.nlp import preprocess
-from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 
 DISTILBERT_SUPPORTED_LANGS = ["ko", "ja"]
