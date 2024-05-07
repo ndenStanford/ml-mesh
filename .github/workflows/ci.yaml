@@ -115,37 +115,37 @@ jobs       :
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         libs:
-          - name: core
-            integration: false
-            functional: false
+          # - name: core
+          #   integration: false
+          #   functional: false
 
-          - name: compile
-            integration: false
-            functional: false
+          # - name: compile
+          #   integration: false
+          #   functional: false
 
-          - name: models
-            integration: false
-            functional: false
+          # - name: models
+          #   integration: false
+          #   functional: false
 
-          - name: serving
-            integration: false
-            functional: false
+          # - name: serving
+          #   integration: false
+          #   functional: false
 
-          - name: tracking
-            integration: false
-            functional: false # TODO: turn this to true when self hosted runners are available.
+          # - name: tracking
+          #   integration: false
+          #   functional: false # TODO: turn this to true when self hosted runners are available.
 
           - name: nlp
             integration: false
             functional: false
 
-          - name: hashing
-            integration: false
-            functional: false
+          # - name: hashing
+          #   integration: false
+          #   functional: false
 
-          - name: data
-            integration: false
-            functional: false
+          # - name: data
+          #   integration: false
+          #   functional: false
 
     with:
       lib: ${{ matrix.libs.name }}
