@@ -36,7 +36,10 @@ class SentenceTokenizer:
         if lang_simplified in self.all_support_lang:
             tokenizer = self.factory.get_tokenizer(lang_simplified)
         else:
-            tokenizer = self.factory.get_tokenizer("english")
+            # Default to English if the specific language is not well supported
+            tokenizer = self.factory.get_tokenizer(
+                next(iter(LanguageIso.EN.locales.values()))["en"].lower()
+            )  # self.factory.get_tokenizer("english")
 
         ret = tokenizer.tokenize(content, lang_simplified)
         return ret

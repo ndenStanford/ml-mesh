@@ -49,13 +49,13 @@ def test_tokenize_de():
     Returns:
         None
     """
-    text = """Elon Musk war der zweite Mensch überhaupt, der ein Privatvermögen von mehr als 200 Milliarden US-Dollar anhäufte und überschritt diese Schwelle im Januar 2021, Monate nach Jeff Bezos. \
-Dem Vorstandsvorsitzenden von Tesla Inc. ist nun ein Novum gelungen: Er ist der einzige Mensch in der Geschichte, der 200 Milliarden US-Dollar aus seinem Nettovermögen gestrichen hat."""  # noqa: E501
+    text = """Elon Musk war die zweite Person, die jemals ein persönliches Vermögen von mehr als 200 Milliarden Dollar angesammelt hat, und überschritt diese Schwelle im Januar 2021, einige Monate nach Jeff Bezos.
+Elon Musk hat nun auch eine eigene Premiere erreicht: Er ist die einzige Person in der Geschichte, die 200 Milliarden Dollar aus ihrem Nettovermögen ausradiert hat."""  # noqa: E501
     tokenizer = SentenceTokenizer()
-    res = tokenizer.tokenize(content=text)
+    res = tokenizer.tokenize(content=text, language="de")
     assert res["sentences"] == [
-        "Elon Musk war der zweite Mensch überhaupt, der ein Privatvermögen von mehr als 200 Milliarden US-Dollar anhäufte und überschritt diese Schwelle im Januar 2021, Monate nach Jeff Bezos.",  # noqa: E501
-        "Dem Vorstandsvorsitzenden von Tesla Inc. ist nun ein Novum gelungen: Er ist der einzige Mensch in der Geschichte, der 200 Milliarden US-Dollar aus seinem Nettovermögen gestrichen hat.",  # noqa: E501
+        "Elon Musk war die zweite Person, die jemals ein persönliches Vermögen von mehr als 200 Milliarden Dollar angesammelt hat, und überschritt diese Schwelle im Januar 2021, einige Monate nach Jeff Bezos.",  # noqa: E501
+        "Elon Musk hat nun auch eine eigene Premiere erreicht: Er ist die einzige Person in der Geschichte, die 200 Milliarden Dollar aus ihrem Nettovermögen ausradiert hat.",  # noqa: E501
     ]
 
 
@@ -65,13 +65,13 @@ def test_tokenize_it():
     Returns:
         None
     """
-    text = """Elon Musk è stata la seconda persona in assoluto ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando quella soglia nel gennaio 2021, mesi dopo Jeff Bezos. \
-L’amministratore delegato di Tesla Inc. ha ora raggiunto un primato: diventare l’unica persona nella storia a cancellare 200 miliardi di dollari dal proprio patrimonio netto."""  # noqa: E501
+    text = """Elon Musk è stata la seconda persona nella storia ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando questa soglia nel gennaio 2021, alcuni mesi dopo Jeff Bezos.
+Elon Musk ha ora raggiunto un primato tutto suo: diventare l'unica persona nella storia ad aver cancellato 200 miliardi di dollari dal proprio patrimonio netto."""  # noqa: E501
     tokenizer = SentenceTokenizer()
-    res = tokenizer.tokenize(content=text)
+    res = tokenizer.tokenize(content=text, language="it")
     assert res["sentences"] == [
-        "Elon Musk è stata la seconda persona in assoluto ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando quella soglia nel gennaio 2021, mesi dopo Jeff Bezos.",  # noqa: E501
-        "L’amministratore delegato di Tesla Inc. ha ora raggiunto un primato: diventare l’unica persona nella storia a cancellare 200 miliardi di dollari dal proprio patrimonio netto.",  # noqa: E501
+        "Elon Musk è stata la seconda persona nella storia ad accumulare una fortuna personale di oltre 200 miliardi di dollari, superando questa soglia nel gennaio 2021, alcuni mesi dopo Jeff Bezos.",  # noqa: E501
+        "Elon Musk ha ora raggiunto un primato tutto suo: diventare l'unica persona nella storia ad aver cancellato 200 miliardi di dollari dal proprio patrimonio netto.",  # noqa: E501
     ]
 
 
@@ -81,13 +81,13 @@ def test_tokenize_es():
     Returns:
         None
     """
-    text = """Elon Musk fue la segunda persona en amasar una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos. \
-El director ejecutivo de Tesla Inc. ha logrado ahora una primicia: convertirse en la única persona en la historia en borrar 200.000 millones de dólares de su patrimonio neto."""  # noqa: E501
+    text = """Elon Musk fue la segunda persona en acumular una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos.
+Elon Musk ahora ha logrado un primer hito propio: convertirse en la única persona en la historia en borrar 200 mil millones de dólares de su patrimonio neto."""  # noqa: E501
     tokenizer = SentenceTokenizer()
-    res = tokenizer.tokenize(content=text)
+    res = tokenizer.tokenize(content=text, language="es")
     assert res["sentences"] == [
-        "Elon Musk fue la segunda persona en amasar una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos.",  # noqa: E501
-        "El director ejecutivo de Tesla Inc. ha logrado ahora una primicia: convertirse en la única persona en la historia en borrar 200.000 millones de dólares de su patrimonio neto.",  # noqa: E501
+        "Elon Musk fue la segunda persona en acumular una fortuna personal de más de 200 mil millones de dólares, superando ese umbral en enero de 2021, meses después de Jeff Bezos.",  # noqa: E501
+        "Elon Musk ahora ha logrado un primer hito propio: convertirse en la única persona en la historia en borrar 200 mil millones de dólares de su patrimonio neto.",  # noqa: E501
     ]
 
 
@@ -97,13 +97,13 @@ def test_tokenize_ca():
     Returns:
         None
     """
-    text = """Elon Musk va ser la segona persona que va acumular una fortuna personal de més de 200.000 milions de dòlars, superant aquest llindar el gener del 2021, mesos després de Jeff Bezos. \
-El conseller delegat de Tesla Inc. ha aconseguit ara el seu primer: convertir-se en l'única persona de la història que ha esborrat 200.000 milions de dòlars del seu patrimoni net."""  # noqa: E501
+    text = """Elon Musk va ser la segona persona que va acumular una fortuna personal de més de 200 mil milions de dòlars, superant aquest llindar al gener de 2021, mesos després de Jeff Bezos.
+Elon Musk ara ha aconseguit un primer rècord propi: convertir-se en l'única persona de la història a esborrar 200 mil milions de dòlars del seu patrimoni net."""  # noqa: E501
     tokenizer = SentenceTokenizer()
-    res = tokenizer.tokenize(content=text)
+    res = tokenizer.tokenize(content=text, language="es")
     assert res["sentences"] == [
-        "Elon Musk va ser la segona persona que va acumular una fortuna personal de més de 200.000 milions de dòlars, superant aquest llindar el gener del 2021, mesos després de Jeff Bezos.",  # noqa: E501
-        "El conseller delegat de Tesla Inc. ha aconseguit ara el seu primer: convertir-se en l'única persona de la història que ha esborrat 200.000 milions de dòlars del seu patrimoni net.",  # noqa: E501
+        "Elon Musk va ser la segona persona que va acumular una fortuna personal de més de 200 mil milions de dòlars, superant aquest llindar al gener de 2021, mesos després de Jeff Bezos.",  # noqa: E501
+        "Elon Musk ara ha aconseguit un primer rècord propi: convertir-se en l'única persona de la història a esborrar 200 mil milions de dòlars del seu patrimoni net.",  # noqa: E501
     ]
 
 
@@ -179,6 +179,17 @@ def test_tokenize_unknown_language():
     assert res["sentences"] == [
         "This is a sample English text.",
         "It contains multiple sentences.",
+    ]
+
+
+def test_tokenize_unsupported_language():
+    """Test SentenceTokenizer with a language that doesn't support."""
+    text = """Đây là một ví dụ về văn bản tiếng Việt. Nó bao gồm nhiều câu."""
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="vi")
+    assert res["sentences"] == [
+        "Đây là một ví dụ về văn bản tiếng Việt.",
+        "Nó bao gồm nhiều câu.",
     ]
 
 
