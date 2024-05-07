@@ -1,20 +1,31 @@
 """Conftest."""
-# isort: skip_file
 
 # Standard Library
+import json
 from unittest.mock import MagicMock
 
 # 3rd party libraries
 import pytest
 
-# Source
-
 
 @pytest.fixture
-def model_card():
+def mock_response():
     """Mock response for request.post."""
     mock_response = MagicMock()
-    mock_response.content = """{"generated":"{\\n    \\"Related segment\\": \\"Hello and welcome to \\\\\\"gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,\\",\\n    \\"Reason for segment\\": \\"This segment directly discusses the topic of artificial intelligence, specifically mentioning generative AI and ChatGPT, which are related to the keyword \'Ai\'.\\",\\n    \\"Segment summary\\": \\"Ian Bremmer discusses generative AI and the capabilities of chatbots like ChatGPT, highlighting the recent release of ChatGPT-4.\\",\\n    \\"Segment title\\": \\"The Rise of Generative AI and ChatGPT-4\\",\\n    \\"segment amount\\": \\"1\\",\\n    \\"Piece before\\": \\"They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream.\\",\\n    \\"Piece after\\": \\"N/A\\",\\n    \\"Piece before accept\\": \\"Yes\\",\\n    \\"Piece after accept\\": \\"No\\",\\n    \\"Advertisement detect\\": \\"Yes\\"}"}"""  # noqa:E501
+    mock_response.content = json.dumps(
+        {
+            "related_segment": "They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. Hello and welcome to gzero World. I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI's ChatGPT-4,",  # noqa:E501
+            "reason_for_segment": "This segment directly discusses the topic of artificial intelligence, specifically mentioning generative AI and ChatGPT, which are related to the keyword Ai.",  # noqa:E501
+            "segment_summary": "Ian Bremmer discusses generative AI and the capabilities of chatbots like ChatGPT, highlighting the recent release of ChatGPT-4.",  # noqa:E501
+            "segment_title": "The Rise of Generative AI and ChatGPT-4",
+            "segment_amount": "1",
+            "piece_before": "They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream.",  # noqa:E501
+            "piece_after": "N/A",
+            "piece_before_accept": "Yes",
+            "piece_after_accept": "No",
+            "advertisement_detect": "Yes",
+        }
+    )
     return mock_response
 
 
@@ -95,7 +106,7 @@ def transcript_input():
         {"ts": 1701127837571.4285, "w": "and", "index": 52},
         {"ts": 1701127837857.1428, "w": "welcome", "index": 53},
         {"ts": 1701127838142.8572, "w": "to", "index": 54},
-        {"ts": 1701127838428.5715, "w": '"gzero', "index": 55},
+        {"ts": 1701127838428.5715, "w": "gzero", "index": 55},
         {"ts": 1701127838714.2856, "w": "World.", "index": 56},
         {"ts": 1701127839000.0, "w": "I'm", "index": 57},
         {"ts": 1701127839600.0, "w": "Ian", "index": 58},
@@ -160,9 +171,9 @@ def expected_output():
         "end_time": 1701127859428.5715,
         "transcript_start_time": 1701127820000.0,
         "transcript_end_time": 1701127859428.5715,
-        "segment title": """The Rise of Generative AI and ChatGPT-4""",
-        "segment summary": """Ian Bremmer discusses generative AI and the capabilities of chatbots like ChatGPT, highlighting the recent release of ChatGPT-4.""",  # noqa:E501
-        "segment": """They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. Hello and welcome to "gzero World. I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI's ChatGPT-4,""",  # noqa:E501
+        "segment_title": """The Rise of Generative AI and ChatGPT-4""",
+        "segment_summary": """Ian Bremmer discusses generative AI and the capabilities of chatbots like ChatGPT, highlighting the recent release of ChatGPT-4.""",  # noqa:E501
+        "related_segment": "They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. They're arguably the most versatile ai technique that's ever been developed, but they're also the least reliable ai technique that's ever gone mainstream. Hello and welcome to gzero World. I'm Ian Bremmer, and, today, we're talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you've surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI's ChatGPT-4,",  # noqa:E501
         "ad": True,
     }
 
@@ -170,7 +181,7 @@ def expected_output():
 @pytest.fixture
 def expected_preprocessing_output():
     """Expected preprocessing output."""
-    return """Watch \'a Day\'s Work,\' in their unreliability. They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to "gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,"""  # noqa:E501
+    return """Watch \'a Day\'s Work,\' in their unreliability. They\'re arguably the most versatile ai technique that\'s ever been developed, but they\'re also the least reliable ai technique that\'s ever gone mainstream. [bright music] [logo whooshes] - Hello and welcome to gzero World. I\'m Ian Bremmer, and, today, we\'re talking about all things artificial intelligence, specifically generative ai, those chatbots like ChatGPT that you\'ve surely heard about by now. You know, the ones that can churn out a two-hour movie script or Picasso-style painting in just an instant. With the recent rollout of OpenAI\'s ChatGPT-4,"""  # noqa:E501
 
 
 @pytest.fixture
