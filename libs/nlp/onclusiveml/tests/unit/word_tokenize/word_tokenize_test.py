@@ -331,8 +331,7 @@ def test_word_tokenize_ja():
 
 def test_word_tokenize_ko():
     """Test word tokenizer Korean."""
-    text = """일론 머스크는 2021년 1월에 2000억 달러 이상의 개인 재산을 축적한 두 번째 사람이었으며,
-        그는 제프 베조스 몇 달 후에 이 기준을 넘었습니다."""
+    text = "일론 머스크는 2021년 1월에 2000억 달러 이상의 개인 재산을 축적한 두 번째 사람이었으며,그는 제프 베조스 몇 달 후에 이 기준을 넘었습니다."
     tokenizer = WordTokenizer()
     res = tokenizer.tokenize(content=text, language="ko")
     assert res["words"] == [
