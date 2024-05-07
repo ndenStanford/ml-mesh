@@ -47,7 +47,7 @@ class SummarizationHandler:
         except KeyError:
             logger.errror("Summarization language not supported.")
 
-        input_dict = {"desired_length": desired_length, "content": text}
+        input_dict = {"input": {"desired_length": desired_length, "content": text}}
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
