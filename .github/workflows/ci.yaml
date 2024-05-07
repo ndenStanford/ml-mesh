@@ -548,6 +548,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-neuron: true
 
           # backfill
           - name: backfill
