@@ -17,7 +17,6 @@ def test_handler___call___(
     transcript_keywords,
     transcript_offset,
     transcript_country,
-    model_card,
     mock_response,
     expected_output,
 ):
