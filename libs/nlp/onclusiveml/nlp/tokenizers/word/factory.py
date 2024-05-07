@@ -3,10 +3,10 @@
 # Internal libraries
 from onclusiveml.nlp.tokenizers.consts import NLTK_SUPPORTED_LANGS
 from onclusiveml.nlp.tokenizers.factory import TokenizerFactory
-from onclusiveml.nlp.tokenizers.word.nltk_tokenizer import (
+from onclusiveml.nlp.tokenizers.word.tokenizer import (
     JiebaWordTokenizer,
     KonlpyWordTokenizer,
-    MecabWordTokenizer,
+    MeCabWordTokenizer,
     NLTKWordTokenizer,
 )
 
@@ -14,6 +14,7 @@ from onclusiveml.nlp.tokenizers.word.nltk_tokenizer import (
 word_factory = TokenizerFactory()
 for lang in NLTK_SUPPORTED_LANGS:
     word_factory.register_language(lang, NLTKWordTokenizer())
-word_factory.register_language("ko", KonlpyWordTokenizer())
-word_factory.register_language("ja", MecabWordTokenizer())
-word_factory.register_language("zh", JiebaWordTokenizer())
+word_factory.register_language("korean", KonlpyWordTokenizer())
+word_factory.register_language("japanese", MeCabWordTokenizer())
+word_factory.register_language("chinese", JiebaWordTokenizer())
+# sudo yum install gcc-c++ java-1.8.0-openjdk-devel python3-devel python3-pip curl

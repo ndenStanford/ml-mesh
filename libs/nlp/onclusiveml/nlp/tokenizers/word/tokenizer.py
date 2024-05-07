@@ -50,7 +50,7 @@ class NLTKWordTokenizer(BaseWordTokenizer):
 class JiebaWordTokenizer(BaseWordTokenizer):
     """Tokenizing words in a given text."""
 
-    def tokenize(self, content: str) -> Dict[str, List[Any]]:
+    def tokenize(self, content: str, language: str = "chinese") -> Dict[str, List[Any]]:
         """Tokenizes the input content into words.
 
         Uses both nltk word tokenize and regex using list of unique characters
@@ -72,7 +72,7 @@ class JiebaWordTokenizer(BaseWordTokenizer):
 class KonlpyWordTokenizer(BaseWordTokenizer):
     """Tokenizing words in a given text."""
 
-    def tokenize(self, content: str) -> Dict[str, List[Any]]:
+    def tokenize(self, content: str, language: str = "korean") -> Dict[str, List[Any]]:
         """Tokenizes the input content into words.
 
         Uses both nltk word tokenize and regex using list of unique characters
@@ -95,7 +95,9 @@ class KonlpyWordTokenizer(BaseWordTokenizer):
 class MeCabWordTokenizer(BaseWordTokenizer):
     """Tokenizing words in a given text."""
 
-    def tokenize(self, content: str) -> Dict[str, List[Any]]:
+    def tokenize(
+        self, content: str, language: str = "japanese"
+    ) -> Dict[str, List[Any]]:
         """Tokenizes the input content into words.
 
         Uses both nltk word tokenize and regex using list of unique characters
