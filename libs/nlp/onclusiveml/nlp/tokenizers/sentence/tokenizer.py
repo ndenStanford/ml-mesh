@@ -9,7 +9,11 @@ from typing import Any, Dict, List
 import nltk
 import spacy
 from konoha import SentenceTokenizer as konoha_tokenize
-from zh_sentence.tokenizer import tokenize as zh_tokenize
+
+# Internal libraries
+from onclusiveml.nlp.tokenizers.sentence.zh_sentence import (
+    tokenize as zh_tokenize,
+)
 
 
 # Download nltk tokenizers and Spacy tokenizer for Korean

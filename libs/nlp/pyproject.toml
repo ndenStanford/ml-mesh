@@ -13,7 +13,6 @@ nltk = "^3.8.1"
 langdetect = "1.0.8"
 beautifulsoup4 = "^4.12.2"
 core = {path = "../core"}
-zh-sentence = "0.0.5"
 spacy = "3.7.4"
 konoha = {version = "^5.0.0", extras = ["all"]}
 
