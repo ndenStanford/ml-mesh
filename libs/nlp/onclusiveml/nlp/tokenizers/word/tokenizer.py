@@ -2,16 +2,19 @@
 
 # Standard Library
 import re
+import subprocess
 from typing import Any, Dict, List
 
 # 3rd party libraries
 import jieba
 import nltk
-from konlpy.tag import Okt
+import spacy
 from konoha import WordTokenizer
 
 
 nltk.download("punkt")
+command = "python -m spacy download ko_core_news_sm"
+subprocess.run(command, shell=True, check=True)
 
 # Internal libraries
 from onclusiveml.nlp.tokenizers.consts import SPECIAL_CHARACTERS
@@ -21,7 +24,8 @@ from onclusiveml.nlp.tokenizers.word.base_tokenizer import BaseWordTokenizer
 class NLTKWordTokenizer(BaseWordTokenizer):
     """Tokenizing words in a given text."""
 
-    regex = re.compile(r"|".join(SPECIAL_CHARACTERS))
+    def __init__(self) -> None:
+        self.regex = re.compile(r"|".join(SPECIAL_CHARACTERS))
 
     def tokenize(self, content: str, language: str = "english") -> Dict[str, List[Any]]:
         """Tokenizes the input content into words.
@@ -48,7 +52,7 @@ class NLTKWordTokenizer(BaseWordTokenizer):
 
 
 class JiebaWordTokenizer(BaseWordTokenizer):
-    """Tokenizing words in a given text."""
+    """Tokenizing Chinese words in a given text."""
 
     def tokenize(self, content: str, language: str = "chinese") -> Dict[str, List[Any]]:
         """Tokenizes the input content into words.
@@ -57,7 +61,7 @@ class JiebaWordTokenizer(BaseWordTokenizer):
 
         Args:
             content (str): Text to be tokenized into words
-            language (str, optional): Language of the text (default English)
+            language (str, optional): Language of the text
 
         Returns:
             dict: Dictionary containing tokenized words
@@ -69,31 +73,42 @@ class JiebaWordTokenizer(BaseWordTokenizer):
         return ret
 
 
-class KonlpyWordTokenizer(BaseWordTokenizer):
-    """Tokenizing words in a given text."""
+class SpacyWordTokenizer(BaseWordTokenizer):
+    """Tokenizing Korean words in a given text."""
+
+    def __init__(self) -> None:
+        """Initialize and load the Spacy models for each language."""
+        self.language_to_spacy_model = {
+            "korean": "ko_core_news_sm",  # Korean
+        }
+        self.nlp = {}
+        for language, model_name in self.language_to_spacy_model.items():
+            self.nlp[language] = spacy.load(model_name)
 
     def tokenize(self, content: str, language: str = "korean") -> Dict[str, List[Any]]:
-        """Tokenizes the input content into words.
-
-        Uses both nltk word tokenize and regex using list of unique characters
+        """Tokenizes the input content into words using SpaCy.
 
         Args:
             content (str): Text to be tokenized into words
-            language (str, optional): Language of the text (default English)
+            language (str, optional): Language of the text
 
         Returns:
             dict: Dictionary containing tokenized words
         """
-        tokenizer_okt = Okt()
-        words = tokenizer_okt.morphs(content)
+        # Process the content using SpaCy
+        doc = self.nlp[language](content)
 
-        ret = {"words": words}
+        # Extract the words from the SpaCy doc
+        words = [token.text for token in doc if not token.is_space]
 
-        return ret
+        return {"words": words}
 
 
-class MeCabWordTokenizer(BaseWordTokenizer):
-    """Tokenizing words in a given text."""
+class JanomeWordTokenizer(BaseWordTokenizer):
+    """Tokenizing Japanese words in a given text."""
+
+    def __init__(self) -> None:
+        self.tokenizer = WordTokenizer("Janome")
 
     def tokenize(
         self, content: str, language: str = "japanese"
@@ -104,14 +119,13 @@ class MeCabWordTokenizer(BaseWordTokenizer):
 
         Args:
             content (str): Text to be tokenized into words
-            language (str, optional): Language of the text (default English)
+            language (str, optional): Language of the text
 
         Returns:
             dict: Dictionary containing tokenized words
         """
-        tokenizer = WordTokenizer("MeCab")
-        words = tokenizer.tokenize(content)
-
-        ret = {"words": words}
+        words = self.tokenizer.tokenize(content)
+        words_with_quotes = [str(word.surface) for word in words]
+        ret = {"words": words_with_quotes}
 
         return ret
