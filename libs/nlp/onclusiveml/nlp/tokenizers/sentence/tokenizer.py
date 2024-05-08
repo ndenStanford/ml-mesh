@@ -11,7 +11,7 @@ import spacy
 from konoha import SentenceTokenizer as konoha_tokenize
 
 # Internal libraries
-from onclusiveml.nlp.tokenizers.sentence.zh_sentence import (
+from onclusiveml.nlp.tokenizers.sentence.src.zh_sentence import (
     tokenize as zh_tokenize,
 )
 
