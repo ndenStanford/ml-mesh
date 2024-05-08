@@ -626,3 +626,48 @@ ID_TO_TOPIC = {
 }
 
 TOPIC_TO_ID = {value: key for key, value in ID_TO_TOPIC.items()}
+
+DROP_LIST = [
+    "government health care",
+    "health insurance",
+    "economic policy",
+    "environmental politics",
+    "opera",
+    "food and drink",
+]
+
+CONVERSION_DICT = {
+    "censorship": "censorship and freedom of speech",
+    "parliament": "legislative body",
+    "regulatory of industry": "regulation of industry",
+    "migration of people": "migration policy",
+    "IT/computer sciences": "information technology and computer science",
+    "electronics": "electronic engineering",
+    "pharmacology": "pharmaceutical",
+    "veterinarian science": "veterinary medicine",
+    "health treatment": "health treatment and procedure",
+    "mental and behavioural disorder": "mental health and disorder",
+    "travel": "travel and tourism",
+    "punishment (criminal)": "investigation (criminal)",
+    "religious facilities": "religious facility",
+    "theft": "robbery and theft",
+    "ministers (government)": "minister and secretary (government)",
+    "computer crime": "cyber crime",
+    "religious belief": "belief systems",
+    "justice and rights": "justice",
+    "recreational activities": "outdoor recreational activities",
+    "prosecution": "prosecution and prosecutors",
+    "tourism and leisure": "tourism and leisure industry",
+    "medicine": "preventative medicine",
+    "athletics, track and field": "athletics",
+    "transport accident and incident": "transportation accident and incident",
+    "natural disasters": "natural disaster",
+    "medical procedure/test": "medical test",
+    "medical drugs": "prescription drug",
+    "food and drink": "food and drink enthusiasm",
+    "weightlifting": "weightlifting and powerlifting",
+    "equestrianism": "equestrian",
+    "cult and sect": "cult",
+    "parent and child": "parenting",
+    "gays and lesbians": "LGBTQ",
+}

@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -18,6 +18,16 @@ class ServerModelSettings(ServingParams):
 
     model_name: str = "iptc-multi"
     model_directory: Union[str, Path] = "."
+    max_topic_num: int = 5
+    min_score_cutoff: float = 0.01
+    model_endpoint_template: str = "serve-iptc-{}:8000"
+    model_endpoint_secure: bool = False
+    test_model_sequence: List[str] = []
+
+    class Config:
+        env_prefix = "server_model_settings_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class GlobalSettings(

@@ -26,6 +26,7 @@ class PredictResponseIPTC(JsonApiSchema):
 
     label: Optional[str] = None
     score: Optional[float] = None
+    mediatopic_id: Optional[str] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
@@ -35,7 +36,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
         iptc (label): list of iptc of the article
     """
 
-    iptc: List[PredictResponseIPTC] = []
+    iptc_topic: List[PredictResponseIPTC] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
