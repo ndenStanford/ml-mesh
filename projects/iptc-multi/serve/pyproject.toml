@@ -2,7 +2,7 @@
 name = "iptc-multi-serve"
 version = "0.1.0"
 description = "Implementation IPTC Multi Client"
-authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
+authors = ["Vincent Park <vincent.park@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]

@@ -33,7 +33,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data.
 
     Attributes:
-        iptc (label): list of iptc of the article
+        iptc_topic (label): list of iptc of the article
     """
 
     iptc_topic: List[PredictResponseIPTC] = []

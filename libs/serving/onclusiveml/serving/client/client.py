@@ -21,7 +21,7 @@ class OnclusiveApiClient:
     """Onclusive Api client.
 
     Attributes:
-        host (str): client hostnamne
+        host (str): client hostname
         api_key (str): client api key.
         api_key_header (str): client api key header key.
         secure (bool): if yes, request is made through a secure endpoint.
