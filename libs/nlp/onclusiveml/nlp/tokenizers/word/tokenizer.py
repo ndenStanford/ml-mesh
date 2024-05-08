@@ -104,7 +104,7 @@ class SpacyWordTokenizer(BaseWordTokenizer):
         return {"words": words}
 
 
-class JanomeWordTokenizer(BaseWordTokenizer):
+class KonohaWordTokenizer(BaseWordTokenizer):
     """Tokenizing Japanese words in a given text."""
 
     def __init__(self) -> None:
