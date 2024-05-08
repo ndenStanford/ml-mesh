@@ -13,7 +13,7 @@ import onclusiveml.serving.serialization.ner.v1 as ner_v1
 import onclusiveml.serving.serialization.sentiment.v1 as sentiment_v1
 import onclusiveml.serving.serialization.topic.v1 as topic_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
-from onclusiveml.models.iptc.class_dict import ID_TO_TOPIC
+from onclusiveml.models.iptc.class_dict import AVAILABLE_MODELS
 from onclusiveml.serving.client._bind import bind
 
 
@@ -47,7 +47,7 @@ class OnclusiveApiClient:
 
     def setup_iptc_bindings(self) -> None:
         """Dynamically create bindings for each model ID based on ID_TO_TOPIC."""
-        for model_id, _ in ID_TO_TOPIC.items():
+        for model_id, _ in AVAILABLE_MODELS.items():
             namespace = f"iptc-{model_id}"
             setattr(
                 self,
