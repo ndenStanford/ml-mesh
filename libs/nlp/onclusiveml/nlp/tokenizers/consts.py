@@ -26,7 +26,6 @@ SUPPORTED_LANGUAGE_ISO_LIST = [
     LanguageIso.ES,
     LanguageIso.SV,
     LanguageIso.TR,
-    LanguageIso.AR,
     LanguageIso.ZH,
     LanguageIso.KO,
     LanguageIso.JA,
