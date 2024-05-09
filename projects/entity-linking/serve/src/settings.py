@@ -3,48 +3,44 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Union
+from typing import Union
 
 # 3rd party libraries
-from pydantic import BaseSettings, SecretStr
+from neptune.types.mode import Mode
+from pydantic import BaseSettings, Field
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.serving.rest.serve.params import ServingParams
+from onclusiveml.serving.params import ServingBaseParams  # noqa
+from onclusiveml.serving.rest.serve.params import ServingParams  # noqa
+from onclusiveml.tracking import (
+    TrackedGithubActionsSpecs,
+    TrackedImageSpecs,
+    TrackedModelSpecs,
+)
 
 
-class KnowledgeGraphDataSettings(ServingParams):
-    """Serve model parameters."""
+class TrackedTrainedModelSpecs(TrackedModelSpecs):
+    """Tracked compiled model settings."""
 
-    source_bucket: str = "onclusive-model-store-dev"
-    source_path: str = "entity-fishing"
-    source_version: str = "0.0.6"
-    target_path: str = "/opt/entity-fishing/data/db"
-    knowledge_bases: List[str] = [
-        "kb",
-        "en",
-    ]
+    # we need an additional version tag since we are referencing an EXISTING model version, rather
+    # than creating a new one
+    with_id: str = Field("EL-TRAINED-22", env="neptune_model_version_id")
+    # we only need to download from the base model, not upload
+    mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
 
 
-class ServedModelSettings(ServingParams):
+class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "entity-linking"
     model_directory: Union[str, Path] = "."
 
 
-class ApplicationSettings(OnclusiveBaseSettings):
-    """App base settings."""
-
-    api_key_name: str = "x-api-key"
-    entity_fishing_endpoint: str
-    internal_ml_api_key: SecretStr
-    entity_recognition_endpoint: str
-    enable_metrics: bool = False
-
-
 class GlobalSettings(
-    ServedModelSettings, ApplicationSettings, KnowledgeGraphDataSettings
+    ServerModelSettings,
+    TrackedTrainedModelSpecs,
+    TrackedGithubActionsSpecs,
+    TrackedImageSpecs,
 ):
     """Global server settings."""
 

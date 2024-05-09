@@ -41,10 +41,8 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {
-                        "content": "House prices were unchanged last month, defying predictions of another drop, but they are unlikely to have troughed just yet."  # noqa
-                    },
-                    "parameters": {"lang": "en"},
+                    "attributes": {"content": "Jobs was CEO of Apple"},  # noqa
+                    "parameters": {},
                 }
             },
             {
@@ -52,7 +50,7 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"entities": []},
+                    "attributes": {"entities": ["Q484876", "Q312"]},
                 },
             },
         ),
@@ -61,10 +59,8 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {
-                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium."  # noqa
-                    },
-                    "parameters": {"lang": "en"},
+                    "attributes": {"content": "Jobs war der CEO von Apple"},  # noqa
+                    "parameters": {},
                 }
             },
             {
@@ -72,55 +68,7 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {
-                        "entities": [
-                            {
-                                "entity_type": "ORG",
-                                "entity_text": "Tottenham Hotspur Football Club",
-                                "score": 0.9259419441223145,
-                                "sentence_index": 0,
-                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
-                            }
-                        ]
-                    },
-                },
-            },
-        ),
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "entity-linking",
-                    "attributes": {
-                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
-                        "entities": [
-                            {
-                                "entity_type": "ORG",
-                                "text": "Tottenham Hotspur Football Club",
-                                "salience_score": 0.9259419441223145,
-                                "sentence_indexes": [0],
-                            }
-                        ],
-                    },
-                    "parameters": {"lang": "en"},
-                }
-            },
-            {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "entity-linking",
-                    "attributes": {
-                        "entities": [
-                            {
-                                "entity_type": "ORG",
-                                "entity_text": "Tottenham Hotspur Football Club",
-                                "score": 0.9259419441223145,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q18741",
-                            }
-                        ]
-                    },
+                    "attributes": {"entities": ["Q484876", "Q312"]},
                 },
             },
         ),
