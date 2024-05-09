@@ -124,8 +124,8 @@ class KonohaWordTokenizer(BaseWordTokenizer):
         Returns:
             dict: Dictionary containing tokenized words
         """
-        words = self.tokenizer.tokenize(content)
-        words_with_quotes = [str(word.surface) for word in words]
-        ret = {"words": words_with_quotes}
+        tokens = self.tokenizer.tokenize(content)
+        words = [str(token.surface) for token in tokens]
+        ret = {"words": words}
 
         return ret

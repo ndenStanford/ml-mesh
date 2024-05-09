@@ -367,6 +367,14 @@ def test_word_tokenize_ko():
     ]
 
 
+def test_word_tokenize_ar():
+    """Test word tokenizer Arabic."""
+    text = "الطقس جميل اليوم في المدينة"
+    tokenizer = WordTokenizer()
+    res = tokenizer.tokenize(content=text, language="arabic")
+    assert res["words"] == ["الطقس", "جميل", "اليوم", "في", "المدينة"]
+
+
 @pytest.mark.parametrize(
     "char",
     SPECIAL_CHARACTERS,
