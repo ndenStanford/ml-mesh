@@ -44,7 +44,7 @@ JA_LANG_SIMPLIFIED = next(iter(LanguageIso.JA.locales.values()))["en"].lower()
 NLTK_SUPPORTED_LANGS = [
     lang
     for lang in ALL_SUPPORTED_LANGS
-    if lang not in ["chinese", "korean", "japanese"]
+    if lang not in [ZH_LANG_SIMPLIFIED, KO_LANG_SIMPLIFIED, JA_LANG_SIMPLIFIED]
 ]
 
 
