@@ -58,6 +58,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
         ) = self.model.__call__(
             word_transcript=inputs.transcript,
             keywords=inputs.keywords,
+            country=parameter_input.country,
             offset_start_buffer=parameter_input.offset_start_buffer,
             offset_end_buffer=parameter_input.offset_end_buffer,
         )
@@ -66,10 +67,10 @@ class ServedTranscriptSegmentationModel(ServedModel):
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={
-                "start_time": start_time_offsetted,
-                "end_time": end_time_offsetted,
-                "transcript_start_time": start_time,
-                "transcript_end_time": end_time,
+                "start_time": start_time,
+                "end_time": end_time,
+                "transcript_start_time": start_time_offsetted,
+                "transcript_end_time": end_time_offsetted,
                 "title": title,
                 "summary": summary,
                 "ad": ad_detect_output,

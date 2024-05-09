@@ -4008,8 +4008,8 @@ def expected_response_o2():
             "identifier": None,
             "namespace": "transcript-segmentation",
             "attributes": {
-                "start_time": 1710856494000.0,
-                "end_time": 1710856520600.0,
+                "start_time": 1710856493067.0,
+                "end_time": 1710856507667.0,
                 "transcript_start_time": 1710856501000.0,
                 "transcript_end_time": 1710856515600.0,
                 "title": "O2's Unlimited Data Sim Offer",
