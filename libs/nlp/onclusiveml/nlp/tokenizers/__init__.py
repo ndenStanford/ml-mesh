@@ -8,6 +8,7 @@ from onclusiveml.nlp.tokenizers.factory import (  # noqa: F401
 )
 from onclusiveml.nlp.tokenizers.consts import (  # noqa: F401
     SUPPORTED_LANGUAGE_ISO_LIST,
+    ALL_SUPPORTED_LANGS,
     NLTK_SUPPORTED_LANGS,
     SPECIAL_CHARACTERS,
 )
