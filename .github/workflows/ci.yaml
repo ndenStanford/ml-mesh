@@ -553,8 +553,8 @@ jobs       :
           # backfill
           - name: backfill
             download-model: false
-            integration: false
-            functional: false
+            integration: true
+            functional: true
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
