@@ -45,6 +45,7 @@ DEFAULT_MODELS = [
     {"alias": ChatModel.CLAUDE_2, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_2_1, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_SONNET, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_3_HAIKU, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_INSTANT, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.LLAMA_2_13B, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.LLAMA_2_70B, "provider": ChatModelProdiver.BEDROCK},
