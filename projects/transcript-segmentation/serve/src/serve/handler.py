@@ -26,9 +26,9 @@ class TranscriptSegmentationHandler:
 
     sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
     country_offsets = {
-        "uk": OffsetEnum.UK.value,
+        "gbr": OffsetEnum.UK.value,
         "fra": OffsetEnum.FRA.value,
-        "es": OffsetEnum.ES.value,
+        "esp": OffsetEnum.ES.value,
     }
     related_segment_key: str
 
