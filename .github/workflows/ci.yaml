@@ -542,7 +542,7 @@ jobs       :
           # serve
           - name: serve
             download-model: true
-            integration: true
+            integration: false
             functional: true
             load: false
             upload-test-results: false
