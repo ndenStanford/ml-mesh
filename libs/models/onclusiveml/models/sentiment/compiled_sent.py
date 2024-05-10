@@ -15,7 +15,7 @@ from nptyping import NDArray
 from onclusiveml.compile import CompiledPipeline
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp import preprocess
-from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 
 logger = get_default_logger(__name__, level=20)
