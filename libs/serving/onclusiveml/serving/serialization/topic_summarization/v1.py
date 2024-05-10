@@ -3,6 +3,9 @@
 # Standard Library
 from typing import Dict, List, Optional, Union
 
+# 3rd party libraries
+from dyntastic import Dyntastic
+
 # Internal libraries
 from onclusiveml.core.base.utils import OnclusiveEnum
 from onclusiveml.core.serialization import JsonApiSchema
@@ -32,6 +35,13 @@ class ImpactCategoryLabel(str, OnclusiveEnum):
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
+    """Prediction request data."""
+
+    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
+    impact_category: Optional[ImpactCategoryLabel]
+
+
+class PredictResponseAttributeSchemaDynamoDBV1(Dyntastic):
     """Prediction request data."""
 
     topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
