@@ -42,30 +42,15 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     PROMPT_ALIAS: dict = {
-        "single_topic": "ml-topic-summarization-single-analysis",
-        "topic_aggregation": "ml-topic-summarization-aggregation",
-        "single_summary": "ml-multi-articles-summarization",
-        "summary_aggregation": "ml-articles-summary-aggregation",
+        "claude_topic": "ml-topic-summarization-claude",
+        "gpt_topic": "ml-topic-summarization-gpt",
     }
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
-    SINGLE_TOPIC_OUTPUT_SCHEMA: Dict[str, str] = {
-        "content": "For each article, what it talks about the target category",
-        "summary": "An overall summary for the content about target category, based on all the input articles.",  # noqa: E501
-    }
-    TOPIC_AGGREGATION_OUTPUT_SCHEMA: Dict[str, str] = {
-        "information": "The distinct information in each summary",
-        "theme": "The theme for the target category, based on the one-paragraph summary",
-        "impact": "The impact level of this target category",
-        "summary": "An overall summary for the content about target category, based on all the input summaries",  # noqa: E501
-        "change": "if the content suggests a significant change in the target category",
-        "reason": "The reason for this impact level",
-    }
-    SINGLE_SUMMARY_OUTPUT_SCHEMA: Dict[str, str] = {
-        "summary": "The summary you generate for these articles"
-    }
-    SUMMARY_AGGREGATION_OUTPUT_SCHEMA: Dict[str, str] = {
-        "summary": "Your synthesized summary based on all the summaries I provided",
-        "theme": "The theme for your consolidated summary",
+    GPT_MODEL: str = "gpt-4-turbo-2024-04-09"
+
+    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {
+        category: f"The summary for the content related to {category} in the articles. And the impact level of {category} based on the summary."  # noqa: E501
+        for category in ServerModelSettings.IMPACT_CATEGORIES.values()
     }
 
 
@@ -121,8 +106,8 @@ class GlobalSettings(
 ):
     """Global server settings."""
 
-    ARTICLE_GROUP_SIZE: int = 8  # how many articles are handled together
-    MULTIPROCESS_WORKER: int = 5
+    # ARTICLE_GROUP_SIZE: int = 8  # how many articles are handled together
+    # MULTIPROCESS_WORKER: int = 5
 
 
 @lru_cache
