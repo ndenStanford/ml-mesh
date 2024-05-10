@@ -15,7 +15,7 @@ from onclusiveml.core.base import (
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class ServerModelSettings(ServingParams):
@@ -83,6 +83,13 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     ]
 
 
+class DynamoDBSettings(OnclusiveBaseSettings):
+    """DynamoDB Settings."""
+
+    AWS_DEFAULT_REGION: str = "us-east-1"
+    DYNAMODB_HOST: Optional[str] = None
+
+
 class TrendSummarizationSettings(OnclusiveBaseSettings):
     """Trend Summarization Settings."""
 
@@ -116,6 +123,7 @@ class GlobalSettings(
     TrackedImageSpecs,
     MediaAPISettings,
     ElasticsearchSettings,
+    DynamoDBSettings,
     ImpactQuantificationSettings,
     TrendSummarizationSettings,
 ):

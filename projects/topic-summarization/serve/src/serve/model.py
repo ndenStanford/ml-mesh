@@ -22,6 +22,7 @@ from src.serve.schema import (
     BioResponseSchema,
     PredictRequestSchema,
     PredictResponseSchema,
+    TopicSummaryDynamoDB,
 )
 from src.settings import get_settings
 
@@ -118,6 +119,14 @@ class ServedTopicModel(ServedModel):
             topic = self.model.aggregate(content)
             impact_category = None
 
+        dynamodb_dict = {
+            "query_profile": query_profile,
+            "topic": topic,
+            "impact_category": impact_category,
+        }
+        client = TopicSummaryDynamoDB(**dynamodb_dict)
+        client
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
@@ -131,3 +140,9 @@ class ServedTopicModel(ServedModel):
             namespace=settings.model_name,
             attributes={"model_name": settings.model_name},
         )
+
+
+model = ServedTopicModel()
+
+
+PredictRequestSchema()
