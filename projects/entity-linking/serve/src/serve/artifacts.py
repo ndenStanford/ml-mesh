@@ -8,7 +8,7 @@ import os
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
 
-class ServedModelArtifacts(object):
+class BelaModelArtifacts(object):
     """Served model artifacts."""
 
     def __init__(

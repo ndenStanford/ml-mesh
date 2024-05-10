@@ -73,7 +73,7 @@ class BelaModel:
         config_name="joint_el_mel",
         embeddings_path=None,
         ent_catalogue_idx_path=None,
-        device="cuda:0",
+        device="cuda:0"
     ):
         self.device = torch.device(device)
 

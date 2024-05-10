@@ -42,7 +42,7 @@ def test_model_server_readiness(test_client):
                     "identifier": None,
                     "namespace": "entity-linking",
                     "attributes": {"content": "Jobs was CEO of Apple"},  # noqa
-                    "parameters": {},
+                    "parameters": {"lang": "en"},
                 }
             },
             {
@@ -50,7 +50,7 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"entities": ["Q484876", "Q312"]},
+                    "attributes": {"entities": [["Q484876", "Q312"]]},
                 },
             },
         ),
@@ -60,7 +60,7 @@ def test_model_server_readiness(test_client):
                     "identifier": None,
                     "namespace": "entity-linking",
                     "attributes": {"content": "Jobs war der CEO von Apple"},  # noqa
-                    "parameters": {},
+                    "parameters": {"lang": "de"},
                 }
             },
             {
@@ -68,7 +68,70 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"entities": ["Q484876", "Q312"]},
+                    "attributes": {"entities": [["Q484876", "Q312"]]},
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {"content": "Steve Jobs was CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla."},  # noqa
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {"entities": [['Q19837', 'Q484876', 'Q312'],[],['Q317521', 'Q484876', 'Q478214']]},
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Elon Musk is the CEO of Tesla. Hello, nothing to see here. Steve Jobs was CEO of Apple.",
+                        "entities": [
+                            {
+                                "entity_type": "Pers",
+                                "text": "Elon Musk",
+                                "salience_score": 0.9259419441223145,
+                                "sentence_indexes": [0],
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "text": "Tesla",
+                                "salience_score": 0.9259419441223145,
+                                "sentence_indexes": [0],
+                            },
+                            {
+                                "entity_type": "Pers",
+                                "text": "Steve Jobs",
+                                "salience_score": 0.9259419441223145,
+                                "sentence_indexes": [2],
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "text": "Apple",
+                                "salience_score": 0.9259419441223145,
+                                "sentence_indexes": [2],
+                            },
+                        ]},  # noqa
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {"entities": [['Q317521', 'Q484876', 'Q478214'],[],['Q19837', 'Q484876', 'Q312']]},
                 },
             },
         ),

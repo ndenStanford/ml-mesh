@@ -12,10 +12,14 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 
     content: str
     entities: Optional[List[Dict[str, Any]]] = None
+    mention_offsets: Optional[List[List[Optional[int]]]] = None
+    mention_lengths: Optional[List[List[Optional[int]]]] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
+
+    lang: str = "en"
 
 
 class PredictResponseEntity(JsonApiSchema):
@@ -31,7 +35,7 @@ class PredictResponseEntity(JsonApiSchema):
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    entities: List[PredictResponseEntity] = []
+    entities: Optional[List[List[Optional[str]]]]  = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

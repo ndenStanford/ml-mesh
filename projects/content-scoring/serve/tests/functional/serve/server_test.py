@@ -12,10 +12,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-sklearn_version = sklearn.__version__
-print("Scikit-learn version:", sklearn_version)
-
-
 def test_model_server_root():
     """Tests the root endpoint of a ModelServer (not running) instance."""
     root_response = requests.get("http://serve:8000/content-scoring/v1/")

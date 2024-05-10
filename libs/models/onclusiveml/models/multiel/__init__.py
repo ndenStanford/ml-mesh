@@ -29,3 +29,5 @@ class BELA:
         self.model.task.el_threshold = self.el_threshold
     def process_batch(self, list_text:list):
         return self.model.process_batch(list_text)
+    def process_disambiguation_batch(self, list_text:list, mention_offsets:list, mention_lengths:list, entities:list):
+        return self.model.process_batch(list_text)
