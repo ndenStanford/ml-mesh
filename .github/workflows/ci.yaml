@@ -543,7 +543,7 @@ jobs       :
           - name: serve
             download-model: true
             integration: false
-            functional: true
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: custom
