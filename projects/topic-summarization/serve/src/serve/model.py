@@ -142,7 +142,17 @@ class ServedTopicModel(ServedModel):
         )
 
 
-model = ServedTopicModel()
+served_topic_model = ServedTopicModel()
+served_topic_model.load()
 
-
-PredictRequestSchema()
+test_input = PredictRequestSchema.from_data(
+    namespace=settings.model_name,
+    parameters=test_inference_params,
+    attributes={
+        "query_id": "b529bdd8-47fd-4dbe-b105-53a02ced41cc",  # noqa: E501
+        "topic_id": 257,
+        "trend_detection": True,
+    },
+)
+test_actual_predict_output = served_topic_model.predict(test_input)
+test_actual_predict_output
