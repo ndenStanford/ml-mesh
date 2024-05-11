@@ -22,7 +22,6 @@ core = {path = "../core"}
 types-requests = "^2.31.0.2"
 pydantic = "^1.10.4"
 urllib3 = "^1.26.16"
-dyntastic = "^0.14.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4.2"
