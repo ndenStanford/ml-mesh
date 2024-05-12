@@ -1,8 +1,6 @@
 """Prediction data schemas."""
 # isort: skip_file
 
-from typing import Optional, Dict, Union
-
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiResponseSchema, JsonApiSchemas
 from onclusiveml.serving.serialization.topic_summarization.v1 import (
@@ -11,12 +9,10 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import (
     PredictRequestParametersSchemaV1,
     PredictResponseAttributeSchemaV1,
 )
-from dyntastic import Dyntastic
-from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+
 
 # Source
-# from src.settings import get_settings
-from settings import get_settings
+from src.settings import get_settings
 
 settings = get_settings()
 
@@ -32,20 +28,3 @@ PredictRequestSchema, PredictResponseSchema = JsonApiSchemas(
 BioResponseSchema = JsonApiResponseSchema(
     namespace=settings.model_name, attributes_schema=BioRequestAttributeSchemaV1
 )
-
-
-class TopicSummaryDynamoDB(Dyntastic):
-    """Prediction request data."""
-
-    __table_name__ = "topic_summary"
-    __hash_key__ = "query_id"
-    __table_region__ = settings.AWS_DEFAULT_REGION
-    __table_host__ = settings.DYNAMODB_HOST
-
-    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
-    impact_category: Optional[ImpactCategoryLabel]
-    query_id: Optional[str]
-
-
-client = TopicSummaryDynamoDB()
-client

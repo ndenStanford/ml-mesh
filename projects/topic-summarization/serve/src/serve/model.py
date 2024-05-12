@@ -2,10 +2,11 @@
 # isort: skip_file
 # black:skip_file
 """Prediction model."""
-
+print("start")
 # Standard Library
 from typing import Type, Optional
 from datetime import datetime
+from freezegun import freeze_time
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -16,13 +17,14 @@ from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
 from onclusiveml.core.logging import get_default_logger
+from src.serve.tables import TopicSummaryDynamoDB
+from src.serve.exceptions import TopicSummaryInsertionException
 
 # Source
 from src.serve.schema import (
     BioResponseSchema,
     PredictRequestSchema,
     PredictResponseSchema,
-    TopicSummaryDynamoDB,
 )
 from src.settings import get_settings
 
@@ -119,13 +121,20 @@ class ServedTopicModel(ServedModel):
             topic = self.model.aggregate(content)
             impact_category = None
 
+        query_string = query_profile.query
         dynamodb_dict = {
-            "query_profile": query_profile,
+            "query_id": inputs.query_id,
+            "query_string": query_string,
             "topic": topic,
             "impact_category": impact_category,
         }
         client = TopicSummaryDynamoDB(**dynamodb_dict)
-        client
+
+        try:
+            client.save()
+            # print(client.get(client.topic_summary_id))
+        except Exception:
+            raise TopicSummaryInsertionException(query_string=query_string)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
@@ -142,17 +151,24 @@ class ServedTopicModel(ServedModel):
         )
 
 
-served_topic_model = ServedTopicModel()
-served_topic_model.load()
+@freeze_time("2024-03-15 15:01:00", tick=True)
+def test():
+    """Test."""
 
-test_input = PredictRequestSchema.from_data(
-    namespace=settings.model_name,
-    parameters=test_inference_params,
-    attributes={
-        "query_id": "b529bdd8-47fd-4dbe-b105-53a02ced41cc",  # noqa: E501
-        "topic_id": 257,
-        "trend_detection": True,
-    },
-)
-test_actual_predict_output = served_topic_model.predict(test_input)
-test_actual_predict_output
+    served_topic_model = ServedTopicModel()
+    served_topic_model.load()
+
+    test_input = PredictRequestSchema.from_data(
+        namespace="topic-summarization",
+        parameters={},
+        attributes={
+            "query_string": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+            "topic_id": 257,
+            "trend_detection": True,
+        },
+    )
+    test_actual_predict_output = served_topic_model.predict(test_input)
+    return test_actual_predict_output
+
+
+test()
