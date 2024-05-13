@@ -2,7 +2,7 @@
 
 # Standard Library
 from enum import Enum
-from typing import List
+from typing import Any, Dict, List
 
 
 class OnclusiveEnum(Enum):
@@ -15,3 +15,8 @@ class OnclusiveEnum(Enum):
             return [field.value for field in cls]
         else:
             return [field.name for field in cls]
+
+    @classmethod
+    def to_dict(cls) -> Dict[str, Any]:
+        """Return dictionary of enum."""
+        return {i.name.lower(): i.value for i in cls}

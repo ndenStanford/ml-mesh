@@ -38,6 +38,12 @@ class ChatModelProdiver(str, OnclusiveEnum):
     BEDROCK: str = "bedrock"
 
 
+class ModelParameters(OnclusiveEnum):
+    """Enum values for default parameters for models."""
+
+    MAX_TOKENS: int = 50000
+
+
 # DEFAULT models
 DEFAULT_MODELS = [
     {"alias": ChatModel.TITAN, "provider": ChatModelProdiver.BEDROCK},

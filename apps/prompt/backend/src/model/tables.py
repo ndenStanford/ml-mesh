@@ -13,7 +13,7 @@ from onclusiveml.llm.mixins import LangchainConvertibleMixin
 from onclusiveml.llm.typing import LangchainT
 
 # Source
-from src.model.constants import ChatModelProdiver
+from src.model.constants import ChatModelProdiver, ModelParameters
 from src.settings import get_settings
 
 
@@ -46,5 +46,10 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
                 region_name=settings.AWS_DEFAULT_REGION,
                 endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
             )
-            return BedrockChat(client=bedrock, model_id=self.alias)
+            print(ModelParameters.to_dict())
+            return BedrockChat(
+                client=bedrock,
+                model_id=self.alias,
+                model_kwargs=ModelParameters.to_dict(),
+            )
         return None
