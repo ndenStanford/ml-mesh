@@ -36,7 +36,6 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
 
     topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
     impact_category: Optional[ImpactCategoryLabel]
-    trend_found: Optional[bool]
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
