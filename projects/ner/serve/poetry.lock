@@ -1771,6 +1771,17 @@ python-versions = "*"
 files = [
     {file = "Janome-0.5.0-py2.py3-none-any.whl", hash = "sha256:d098670394a77881ce2f6b7d696c0ea5ff74c0c8cf74a8a882159ec82c0e6dc7"},
     {file = "Janome-0.5.0.tar.gz", hash = "sha256:ce4a3ed7a4635c2f80139639327d5b1e0381858ad74a3c4a61e8cc83f820400e"},
+
+
+[[package]]
+name = "jieba"
+version = "0.42.1"
+description = "Chinese Words Segmentation Utilities"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "jieba-0.42.1.tar.gz", hash = "sha256:055ca12f62674fafed09427f176506079bc135638a14e23e25be909131928db2"},
 ]
 
 [[package]]
@@ -2630,6 +2641,7 @@ develop = false
 [package.dependencies]
 beautifulsoup4 = "^4.12.2"
 core = {path = "../core"}
+jieba = "^0.42.1"
 konoha = {version = "^5.0.0", extras = ["all"]}
 langdetect = "1.0.8"
 nltk = "^3.8.1"
