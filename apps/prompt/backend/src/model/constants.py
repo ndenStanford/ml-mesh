@@ -4,12 +4,6 @@
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.utils import OnclusiveEnum
 
-# Source
-from src.settings import get_settings
-
-
-settings = get_settings()
-
 
 class ChatModel(str, OnclusiveEnum):
     """Chat models.
