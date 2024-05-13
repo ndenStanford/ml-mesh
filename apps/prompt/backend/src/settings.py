@@ -55,9 +55,6 @@ class Settings(OnclusiveBaseSettings):
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
 
-    # model parameters
-    MAX_TOKENS: int = 50000
-
 
 @lru_cache
 def get_settings() -> Settings:

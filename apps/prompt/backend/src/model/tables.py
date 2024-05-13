@@ -46,7 +46,6 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
                 region_name=settings.AWS_DEFAULT_REGION,
                 endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
             )
-            print(ModelParameters().__dict__)
             return BedrockChat(
                 client=bedrock,
                 model_id=self.alias,

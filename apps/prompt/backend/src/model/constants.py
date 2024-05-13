@@ -48,7 +48,7 @@ class ChatModelProdiver(str, OnclusiveEnum):
 class ModelParameters(OnclusiveBaseSettings):
     """Default model parameters."""
 
-    max_tokens: int = settings.MAX_TOKENS
+    max_tokens: int = 50000
 
 
 # DEFAULT models
