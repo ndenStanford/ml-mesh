@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.nlp.language import filter_language
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -17,7 +18,7 @@ from src.serve.schemas import (
     PredictRequestSchema,
     PredictResponseSchema,
 )
-from src.settings import get_settings
+from src.settings import SENT_SUPPORTED_LANGUAGE, get_settings
 
 
 settings = get_settings()
@@ -67,6 +68,7 @@ class ServedSentModel(ServedModel):
 
         self.ready = True
 
+    @filter_language(supported_languages=SENT_SUPPORTED_LANGUAGE, raise_if_none=True)
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded Sent model.
 

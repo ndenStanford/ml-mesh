@@ -159,3 +159,101 @@ def test_model_server_prediction_no_entities(payload, expected_response):
     assert response.status_code == 200
     # TODO: assert score close to expected
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload, expected_response",
+    [
+        # Test case for an unsupported language (invalid language code)
+        (
+            {
+                "data": {
+                    "namespace": "sentiment",
+                    "attributes": {
+                        "content": "Esta es una prueba con un idioma no soportado.",
+                        "entities": [],
+                    },
+                    "parameters": {
+                        "language": "xyz",
+                    },
+                }
+            },
+            {"status": 422, "error": "Unsupported language"},
+        ),
+        # Test case for a correct but unsupported language code
+        (
+            {
+                "data": {
+                    "namespace": "sentiment",
+                    "attributes": {
+                        "content": "Ĉi tiu estas testo en ne subtenata lingvo.",
+                        "entities": [],
+                    },
+                    "parameters": {
+                        "language": "eo",
+                    },
+                }
+            },
+            {"status": 422, "error": "Unsupported language"},
+        ),
+        # Test case for Chinese
+        (
+            {
+                "data": {
+                    "namespace": "sentiment",
+                    "attributes": {
+                        "content": "北京是中国的首都。",
+                        "entities": [
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "北京",
+                                "score": "0.9999",
+                                "sentence_index": 0,
+                                "start": 0,
+                                "end": 2,
+                            },
+                        ],
+                    },
+                    "parameters": {
+                        "language": "zh",
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "namespace": "sentiment",
+                    "attributes": {
+                        "label": "neutral",
+                        "negative_prob": 0.1000,
+                        "positive_prob": 0.1000,
+                        "entities": [
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "北京",
+                                "score": 0.9999,
+                                "sentence_index": 0,
+                                "start": 0,
+                                "end": 2,
+                                "sentiment": "neutral",
+                            },
+                        ],
+                    },
+                },
+            },
+        ),
+    ],
+)
+def test_new_language_cases(payload, expected_response):
+    """Tests the sentiment prediction endpoint for new language scenarios."""
+    response = requests.post(
+        "http://serve:8000/sentiment/v1/predict",
+        json=payload,
+    )
+
+    if "error" in expected_response:
+        assert response.status_code == expected_response.get("status", 500)
+        assert response.json().get("error") == expected_response["error"]
+    else:
+        assert response.status_code == 200
+        assert response.json() == expected_response
