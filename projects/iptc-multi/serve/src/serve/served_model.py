@@ -1,7 +1,9 @@
 """Prediction model."""
 
 # Standard Library
+import random
 import re
+import time
 from typing import Any, Dict, List, Type
 
 # 3rd party libraries
@@ -10,6 +12,7 @@ from pydantic import BaseModel
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import (
+    AVAILABLE_MODELS,
     CLASS_DICT_SECOND,
     CLASS_DICT_THIRD,
     CONVERSION_DICT,
@@ -35,17 +38,113 @@ logger = get_default_logger(__name__)
 class ServedIPTCMultiModel(ServedModel):
     """Served IPTC Multi model."""
 
+    SAMPLE_INFERENCE_CONTENT = "Test Content"
+    HISTORICALLY_HIGH_INFERENCED_MODELS = {
+        "00000000",
+        "01000000",
+        "04000000",
+        "10000000",
+        "20000209",
+    }
+    CRITICAL_MODELS_TO_BE_LIVE = {"00000000"}
+
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
         super().__init__(name="iptc-multi")
+        self.last_checked: Dict[str, float] = {}
 
     def load(self) -> None:
         """Initializes the OnclusiveApiClient and sets the model state to ready."""
         self.model = OnclusiveApiClient
         self.ready = True
+
+    def are_all_models_live(self) -> bool:
+        """Check the liveness of all/critical models by sending a test request to each model's endpoint.
+
+        Returns:
+            bool: True if all/critical models are live and responsive, False otherwise.
+        """
+        all_models_live = True
+        for model_id in AVAILABLE_MODELS.keys():
+            if not self.should_check_model(model_id):
+                continue
+            client = self._create_client(model_id)
+            current_model = self._get_current_model(client, model_id)
+            try:
+                response_schema = current_model(
+                    client, content=self.SAMPLE_INFERENCE_CONTENT
+                )
+                if not response_schema.attributes.iptc:
+                    logger.error(
+                        f"Error while inferencing the IPTC model {model_id}: empty attributes"
+                    )
+                    if self._should_return_failure(model_id):
+                        all_models_live = False
+            except Exception as e:
+                logger.error(
+                    f"Error while inferencing the IPTC model {model_id}: {str(e)}"
+                )
+                if self._should_return_failure(model_id):
+                    all_models_live = False
+                    # do not break here to check all models
+        return all_models_live
+
+    def _calculate_probability_with_decay(self, model_id: str) -> float:
+        """Calculate the probability of checking a model based on its historical inference frequency.
+
+        The probability decays over time, incentivizing less frequent checks if the model
+        has not been checked recently.
+
+        Args:
+            model_id (str): The unique identifier of the model.
+
+        Returns:
+            float: A probability value that decreases as more time elapses since the last check.
+        """
+        now = time.time()
+        if self.last_checked.get(model_id) is None:
+            self.last_checked[model_id] = now
+        last_time = self.last_checked.get(model_id, now)
+        elapsed = now - last_time
+        base_probability = (
+            0.5 if model_id in self.HISTORICALLY_HIGH_INFERENCED_MODELS else 0.1
+        )
+        time_factor = min(1, elapsed / 3600)
+        decayed_probability = min(
+            1, base_probability + (1 - base_probability) * time_factor
+        )
+
+        return decayed_probability
+
+    def _should_check_model(self, model_id: str) -> bool:
+        """Determine whether to check the model based on a probabilistic decision influenced by time decay.
+
+        Args:
+            model_id (str): The unique identifier of the model.
+
+        Returns:
+            bool: True if the model should be checked based on the current probability influenced by
+            historical frequency and time decay; False otherwise.
+        """
+        probability = self._calculate_probability_with_decay(model_id)
+        should_check = random.random() < probability
+        if should_check:
+            self.last_checked[model_id] = time.time()
+        return should_check
+
+    def _should_return_failure(self, model_id: str) -> bool:
+        """Determines whether to return False on the failutre of a model_id.
+
+        Args:
+            model_id (str): The ID of the model.
+
+        Returns:
+            bool: True if the faiure should return, False otherwise.
+        """
+        return model_id in self.CRITICAL_MODELS_TO_BE_LIVE
 
     def _get_model_id_from_label(self, label: str) -> str:
         """Retrieve the model ID corresponding to a given label.

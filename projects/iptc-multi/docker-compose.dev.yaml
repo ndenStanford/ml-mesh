@@ -39,6 +39,7 @@ services:
       PROMETHEUS_MULTIPROC_DIR: /tmp
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE_MULTI_MODEL_CHECK: true
     env_file: serve/config/dev.env
     profiles: [serve, functional]
     ports:
@@ -47,7 +48,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/live]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -79,6 +80,7 @@ services:
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE_MULTI_MODEL_CHECK: true
     env_file: serve/config/dev.env
     profiles: [debug]
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
@@ -97,6 +99,12 @@ services:
         condition: service_healthy
       serve-iptc-20000121:
         condition: service_healthy
+    healthcheck:
+      test: [CMD, curl, -f, http://serve-debug:8000/iptc-multi/v1/live]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
 
   serve-iptc-00000000:
     devices:
