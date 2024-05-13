@@ -1,7 +1,14 @@
 """Constants."""
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.utils import OnclusiveEnum
+
+# Source
+from src.settings import get_settings
+
+
+settings = get_settings()
 
 
 class ChatModel(str, OnclusiveEnum):
@@ -38,10 +45,10 @@ class ChatModelProdiver(str, OnclusiveEnum):
     BEDROCK: str = "bedrock"
 
 
-class ModelParameters(OnclusiveEnum):
-    """Enum values for default parameters for models."""
+class ModelParameters(OnclusiveBaseSettings):
+    """Default model parameters."""
 
-    MAX_TOKENS: int = 50000
+    max_tokens: int = settings.MAX_TOKENS
 
 
 # DEFAULT models
