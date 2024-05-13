@@ -528,6 +528,17 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+
           # serve
           - name: serve
             download-model: true
@@ -537,6 +548,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-neuron: true
 
           # backfill
           - name: backfill
@@ -561,6 +573,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
