@@ -53,18 +53,11 @@ class ModelParameters(OnclusiveBaseSettings):
 
 # DEFAULT models
 DEFAULT_MODELS = [
-    {"alias": ChatModel.TITAN, "provider": ChatModelProdiver.BEDROCK},
-    {"alias": ChatModel.TITAN_G1, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_2, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_2_1, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_SONNET, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_HAIKU, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_INSTANT, "provider": ChatModelProdiver.BEDROCK},
-    {"alias": ChatModel.LLAMA_2_13B, "provider": ChatModelProdiver.BEDROCK},
-    {"alias": ChatModel.LLAMA_2_70B, "provider": ChatModelProdiver.BEDROCK},
-    {"alias": ChatModel.INSTRUCT_7B, "provider": ChatModelProdiver.BEDROCK},
-    {"alias": ChatModel.INSTRUCT_8_7B, "provider": ChatModelProdiver.BEDROCK},
-    {"alias": ChatModel.MISTRAL_LARGE, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT3_5_TURBO, "provider": ChatModelProdiver.OPENAI},
