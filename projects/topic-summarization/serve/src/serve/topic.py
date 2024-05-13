@@ -62,7 +62,7 @@ class TopicHandler:
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/prompt/api/v2/prompts/{}/generate/model/{}".format(
                 settings.PROMPT_API, alias, settings.DEFAULT_MODEL
             ),
             headers=headers,
@@ -103,7 +103,7 @@ class TopicHandler:
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/prompt/api/v2/prompts/{}/generate/model/{}".format(
                 settings.PROMPT_API, alias, settings.DEFAULT_MODEL
             ),
             headers=headers,
@@ -142,7 +142,7 @@ class TopicHandler:
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/prompt/api/v2/prompts/{}/generate/model/{}".format(
                 settings.PROMPT_API, alias, settings.DEFAULT_MODEL
             ),
             headers=headers,
@@ -192,7 +192,7 @@ class TopicHandler:
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/prompt/api/v2/prompts/{}/generate/model/{}".format(
                 settings.PROMPT_API, alias, settings.DEFAULT_MODEL
             ),
             headers=headers,
