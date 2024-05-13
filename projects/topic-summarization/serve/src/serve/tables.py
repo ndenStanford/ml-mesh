@@ -1,7 +1,7 @@
 """Topic summarization table."""
 
 import uuid
-from typing import Dict, Optional, Union, Any
+from typing import Any, Dict, Optional, Union
 
 from dyntastic import Dyntastic
 from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
@@ -17,7 +17,7 @@ class CustomBaseModel(BaseModel):
     """Custom data."""
 
     @classmethod
-    def custom_field(cls, default: Any=None, **kwargs) -> Field:
+    def custom_field(cls, default: Any = None, **kwargs) -> Field:
         """Convert None to N/A."""
         return Field(default=default if default is not None else "N/A", **kwargs)
 

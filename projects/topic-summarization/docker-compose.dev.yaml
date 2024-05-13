@@ -72,7 +72,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     profiles: [debug]
     # command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.model.py]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.model]
     ports:
       - 5678:5678
     volumes:
@@ -96,6 +96,9 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+      DYNAMODB_HOST: http://dynamodb:8000
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -258,6 +261,7 @@ services:
       timeout: 10s
     networks:
       - onclusive-net
+
 
   # =============================================
   # BACKFILL
