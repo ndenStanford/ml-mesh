@@ -16,7 +16,7 @@ settings = get_settings()
 
 
 health_router = APIRouter()
-api_router = APIRouter(prefix="/api")
+api_router = APIRouter(prefix="/prompt/api")
 
 
 @health_router.get("/health", status_code=status.HTTP_200_OK)

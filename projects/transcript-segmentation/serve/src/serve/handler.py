@@ -297,7 +297,7 @@ class TranscriptSegmentationHandler:
             "output": settings.ad_detection_output_schema,
         }
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/prompt/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_ad_alias,
                 settings.default_model_ad,
@@ -360,7 +360,7 @@ class TranscriptSegmentationHandler:
         }
 
         q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
+            "{}/prompt/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_alias,
                 settings.default_model_segmentation,
