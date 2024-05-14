@@ -30,13 +30,13 @@ def test_client():
 @pytest.fixture
 def test_predict_input() -> str:
     """Predict input fixture."""
-    return "Call functions to generate hash signatures for each article"
+    return "Test IPTC content"
 
 
 @pytest.fixture
 def test_inference_params() -> str:
     """Predict input fixture."""
-    return {"language": "en", "shingle_list": 5, "threshold": 0.6, "num_perm": 128}
+    return {}
 
 
 @pytest.fixture
@@ -85,6 +85,6 @@ def test_expected_bio_output():
     """Test expected bio output."""
     return BioResponseSchema.from_data(
         version=1,
-        namespace="lsh",
-        attributes={"model_name": "lsh"},
+        namespace="iptc-multi",
+        attributes={"model_name": "iptc-multi"},
     )

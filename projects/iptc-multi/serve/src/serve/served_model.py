@@ -69,7 +69,7 @@ class ServedIPTCMultiModel(ServedModel):
         """
         all_models_live = True
         for model_id in AVAILABLE_MODELS.keys():
-            if not self.should_check_model(model_id):
+            if not self._should_check_model(model_id):
                 continue
             client = self._create_client(model_id)
             current_model = self._get_current_model(client, model_id)
