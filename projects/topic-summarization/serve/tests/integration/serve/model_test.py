@@ -1,5 +1,6 @@
 """Prediction model tests."""
 # isort: skip_file
+from unittest.mock import patch
 
 # 3rd party libraries
 import pytest
@@ -9,6 +10,7 @@ from freezegun import freeze_time
 from src.settings import get_settings
 from src.serve.schema import PredictRequestSchema
 from src.serve.model import ServedTopicModel
+from src.serve.tables import TopicSummaryDynamoDB
 
 # from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
@@ -32,6 +34,18 @@ def test_served_topic_model_load():
     assert served_topic_model.is_ready()
 
 
+@pytest.mark.order(3)
+def test_served_topic_model_bio(test_expected_bio_output):
+    """Tests the fully initialized and loaded ServedTopicModel's bio method."""
+    served_topic_model = ServedTopicModel()
+
+    served_topic_model.load()
+
+    test_actual_bio_output = served_topic_model.bio()
+
+    assert test_actual_bio_output == test_expected_bio_output
+
+
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(4)
 def test_served_topic_model_predict(test_inference_params):
@@ -53,7 +67,33 @@ def test_served_topic_model_predict(test_inference_params):
 
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
-@pytest.mark.order(4)
+@patch.object(TopicSummaryDynamoDB, "save")
+@pytest.mark.order(5)
+def test_served_topic_model_predict_save_dynamodb(
+    mock_topic_summary_dynamodb_save, test_inference_params
+):
+    """Tests the ServedTopicModel's predict method."""
+    served_topic_model = ServedTopicModel()
+    served_topic_model.load()
+
+    test_input = PredictRequestSchema.from_data(
+        namespace=settings.model_name,
+        parameters=test_inference_params,
+        attributes={
+            "query_string": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
+            "topic_id": 257,
+            "trend_detection": True,
+            "save_report_dynamodb": True,
+        },
+    )
+    test_actual_predict_output = served_topic_model.predict(test_input)
+    assert test_actual_predict_output.attributes.topic is not None
+
+    mock_topic_summary_dynamodb_save.assert_called_once()
+
+
+@freeze_time("2024-03-15 15:01:00", tick=True)
+@pytest.mark.order(6)
 def test_served_topic_model_predict_query_id(test_inference_params):
     """Tests the ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
@@ -73,7 +113,7 @@ def test_served_topic_model_predict_query_id(test_inference_params):
 
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
-@pytest.mark.order(6)
+@pytest.mark.order(7)
 def test_served_topic_model_predict_skip_trend(test_inference_params):
     """Tests ServedTopicModel's predict method without trend detection."""
     served_topic_model = ServedTopicModel()
@@ -92,7 +132,7 @@ def test_served_topic_model_predict_skip_trend(test_inference_params):
     assert test_actual_predict_output.attributes.topic is not None
 
 
-@pytest.mark.order(7)
+@pytest.mark.order(8)
 def test_served_topic_model_predict_sample_content(
     test_predict_input, test_inference_params
 ):
@@ -111,15 +151,3 @@ def test_served_topic_model_predict_sample_content(
     assert test_actual_predict_output.attributes.topic is not None
 
     assert test_actual_predict_output.attributes.impact_category is None
-
-
-@pytest.mark.order(3)
-def test_served_topic_model_bio(test_expected_bio_output):
-    """Tests the fully initialized and loaded ServedTopicModel's bio method."""
-    served_topic_model = ServedTopicModel()
-
-    served_topic_model.load()
-
-    test_actual_bio_output = served_topic_model.bio()
-
-    assert test_actual_bio_output == test_expected_bio_output

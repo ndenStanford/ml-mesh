@@ -85,6 +85,7 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
+        save_report_dynamodb = inputs.save_report_dynamodb
 
         if not content:
             topic_id = inputs.topic_id
@@ -121,20 +122,22 @@ class ServedTopicModel(ServedModel):
             topic = self.model.aggregate(content)
             impact_category = None
 
-        query_string = query_profile.query
-        dynamodb_dict = {
-            "query_id": inputs.query_id,
-            "query_string": query_string,
-            "topic": topic,
-            "impact_category": impact_category,
-        }
-        client = TopicSummaryDynamoDB(**dynamodb_dict)
+        if save_report_dynamodb:
+            query_string = query_profile.query
+            dynamodb_dict = {
+                "topic_id": topic_id,
+                "trending": trending,
+                "query_id": inputs.query_id,
+                "query_string": query_string,
+                "topic": topic,
+                "impact_category": impact_category,
+            }
+            client = TopicSummaryDynamoDB(**dynamodb_dict)
 
-        try:
-            client.save()
-            # print(client.get(client.topic_summary_id))
-        except Exception:
-            raise TopicSummaryInsertionException(query_string=query_string)
+            try:
+                client.save()
+            except Exception:
+                raise TopicSummaryInsertionException(query_string=query_string)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
@@ -154,7 +157,6 @@ class ServedTopicModel(ServedModel):
 @freeze_time("2024-03-15 15:01:00", tick=True)
 def test():
     """Test."""
-
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
@@ -165,10 +167,11 @@ def test():
             "query_string": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
             "topic_id": 257,
             "trend_detection": True,
+            "save_report_dynamodb": True,
         },
     )
     test_actual_predict_output = served_topic_model.predict(test_input)
     return test_actual_predict_output
 
 
-test()
+# test()

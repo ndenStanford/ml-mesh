@@ -75,7 +75,12 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     ELASTICSEARCH_KEY: SecretStr = Field(
         default="...", env="ELASTICSEARCH_KEY", exclude=True
     )
-    es_index: List = ["crawler-4-2024.04", "crawler-4-2024.03", "crawler-4-2024.02"]
+    es_index: List = [
+        "crawler-4-2024.04",
+        "crawler-4-2024.03",
+        "crawler-4-2024.02",
+        "crawler-4-2024.01",
+    ]
 
 
 class DynamoDBSettings(OnclusiveBaseSettings):
@@ -83,6 +88,7 @@ class DynamoDBSettings(OnclusiveBaseSettings):
 
     AWS_DEFAULT_REGION: str = "us-east-1"
     DYNAMODB_HOST: Optional[str] = "http://dynamodb:8000"  # None
+    EMPTY_FIELD_TEXT = "N/A"
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):
