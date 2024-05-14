@@ -6,7 +6,6 @@ print("start")
 # Standard Library
 from typing import Type, Optional
 from datetime import datetime
-from freezegun import freeze_time
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -152,26 +151,3 @@ class ServedTopicModel(ServedModel):
             namespace=settings.model_name,
             attributes={"model_name": settings.model_name},
         )
-
-
-@freeze_time("2024-03-15 15:01:00", tick=True)
-def test():
-    """Test."""
-    served_topic_model = ServedTopicModel()
-    served_topic_model.load()
-
-    test_input = PredictRequestSchema.from_data(
-        namespace="topic-summarization",
-        parameters={},
-        attributes={
-            "query_string": """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print""",  # noqa: E501
-            "topic_id": 257,
-            "trend_detection": True,
-            "save_report_dynamodb": True,
-        },
-    )
-    test_actual_predict_output = served_topic_model.predict(test_input)
-    return test_actual_predict_output
-
-
-# test()
