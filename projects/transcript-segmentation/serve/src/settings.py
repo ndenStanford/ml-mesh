@@ -23,17 +23,18 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     prompt_alias: str = "ml-transcript-segmentation"
     prompt_ad_alias: str = "ml-transcript-segmentation-ad-detection"
     internal_ml_endpoint_api_key: str = "1234"
-    default_model: str = "gpt-4-0125-preview"
+    default_model_segmentation: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+    default_model_ad: str = "gpt-4-0125-preview"
     segmentation_output_schema: Dict[str, str] = {
-        "related_segment": "The relevant news segment about the keywords",
+        "related_segment": "The most descriptive and informative news segment related to the keywords (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
         "reason_for_segment": "The reason you believe this story relates to the keywords",
-        "segment_summary": "A one sentence summary of the segment extracted",
-        "segment_title": "A title that represents the segment extracted. The title must be in same language as the segment.",  # noqa: E501
-        "segment_amount": "How many news segment in total",
-        "piece_before": "The piece before the chosen segment",
-        "piece_after": "The piece after the chosen segment",
-        "piece_before_accept": "Does the piece before the segment hold any relevance to the segment and keywords? You must answer with just Yes or No",  # noqa: E501
-        "piece_after_accept": "Does the piece after the segment hold any relevance to the segment and keywords? You must answer with just Yes or No",  # noqa: E501
+        "segment_summary": "A one-sentence summary of the extracted segment in the same language as the segment",  # noqa: E501
+        "segment_title": "A title that represents the extracted segment in the same language as the segment",  # noqa: E501
+        "segment_amount": "The total number of news segments in the content",
+        "piece_before": "The segment immediately before the chosen segment (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
+        "piece_after": "The segment immediately after the chosen segment (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
+        "piece_before_accept": "Yes/No - Does the piece before hold any relevance to the segment and keywords?",  # noqa: E501
+        "piece_after_accept": "Yes/No - Does the piece after hold any relevance to the segment and keywords?",  # noqa: E501
     }
     ad_detection_output_schema: Dict[str, str] = {
         "advertisement_detect": "Answer 'yes' or 'no' to indicate if there is any advertisement in the paragraph",  # noqa: E501

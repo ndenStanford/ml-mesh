@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.nlp.language.constants import LanguageIso
-from onclusiveml.nlp.tokenizers.consts import NLTK_SUPPORTED_LANGS
+from onclusiveml.nlp.tokenizers.consts import ALL_SUPPORTED_LANGS
 from onclusiveml.nlp.tokenizers.word.factory import word_factory
 
 
@@ -13,7 +13,7 @@ class WordTokenizer:
     """Tokenizing words in a given text."""
 
     factory = word_factory
-    all_support_lang = NLTK_SUPPORTED_LANGS
+    all_support_lang = ALL_SUPPORTED_LANGS
 
     def tokenize(
         self, content: str, language: Optional[str] = "en"

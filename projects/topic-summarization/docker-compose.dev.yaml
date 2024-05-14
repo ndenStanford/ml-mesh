@@ -71,8 +71,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     profiles: [debug]
-    # command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.model]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
     ports:
       - 5678:5678
     volumes:
