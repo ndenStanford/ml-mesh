@@ -35,25 +35,25 @@ SENT_SUPPORTED_LANGUAGE = [
     LanguageIso.ET,  # Estonian
     LanguageIso.FI,  # Finnish
     LanguageIso.FR,  # French
-    LanguageIso.KA,  # Georgian
+    # LanguageIso.KA,  # Georgian
     LanguageIso.DE,  # German
     LanguageIso.EL,  # Greek
     LanguageIso.GU,  # Gujarati
-    LanguageIso.HT,  # Haitian
+    # LanguageIso.HT,  # Haitian
     LanguageIso.HE,  # Hebrew
     LanguageIso.HI,  # Hindi
     LanguageIso.HU,  # Hungarian
-    LanguageIso.IS,  # Icelandic
+    # LanguageIso.IS,  # Icelandic
     LanguageIso.ID,  # Indonesian
-    LanguageIso.GA,  # Irish (assuming Irish for Gaelic)
+    # LanguageIso.GA,  # Irish (assuming Irish for Gaelic)
     LanguageIso.IT,  # Italian
     LanguageIso.JA,  # Japanese
     LanguageIso.KN,  # Kannada
     LanguageIso.KK,  # Kazakh (assuming Kazakh for Kurdish)
-    LanguageIso.KM,  # Khmer
+    # LanguageIso.KM,  # Khmer
     LanguageIso.KO,  # Korean
     LanguageIso.KU,  # Kurdish
-    LanguageIso.LO,  # Lao
+    # LanguageIso.LO,  # Lao
     LanguageIso.LV,  # Latvian
     LanguageIso.LT,  # Lithuanian
     LanguageIso.MK,  # Macedonian (assuming Macedonian for Macedonian)
@@ -62,16 +62,16 @@ SENT_SUPPORTED_LANGUAGE = [
     LanguageIso.MR,  # Marathi
     LanguageIso.NE,  # Nepali
     LanguageIso.NO,  # Norwegian
-    LanguageIso.OR,  # Oriya
-    LanguageIso.PS,  # Pushto
+    # LanguageIso.OR,  # Oriya
+    # LanguageIso.PS,  # Pushto
     LanguageIso.PA,  # Panjabi
     LanguageIso.PL,  # Polish
     LanguageIso.PT,  # Portuguese
     LanguageIso.RO,  # Romanian
     LanguageIso.RU,  # Russian
     LanguageIso.SA,  # Sanskrit (assuming Sanskrit for Sindhi)
-    LanguageIso.SR,  # Serbian
-    LanguageIso.SI,  # Sinhala
+    # LanguageIso.SR,  # Serbian
+    # LanguageIso.SI,  # Sinhala
     LanguageIso.SK,  # Slovak (assuming Slovak for Slovenian)
     LanguageIso.SL,  # Slovenian
     LanguageIso.ES,  # Spanish

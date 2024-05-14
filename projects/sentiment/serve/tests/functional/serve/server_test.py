@@ -178,7 +178,37 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                     },
                 }
             },
-            {"status": 422, "error": "Unsupported language"},
+            {
+                "status": 422,
+                "detail": (
+                    "The language reference 'xyz' could not be mapped, or the language "
+                    "could not be inferred from the content. Supported references are: "
+                    "['ar', 'hy', 'eu', 'bn', 'my', 'ca', 'zh', 'hr', "
+                    "'cs', 'da', 'nl', 'en', 'et', "
+                    "'fi', 'fr', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'kn', 'kk', "
+                    "'ko', 'ku', 'lv', 'lt', 'mk', 'ms', 'ml', 'mr', 'ne', 'no', 'pa', 'pl', 'pt', "
+                    "'ro', 'ru', 'sa', 'sk', 'sl', 'es', 'sv', 'ta', 'te', 'th', 'tr', 'uk', 'ur', "
+                    "'uz', 'vi', 'cy']. Supported languages are: [<LanguageIso.AR: 'ar'>, "
+                    "<LanguageIso.HY: 'hy'>, <LanguageIso.EU: 'eu'>, <LanguageIso.BN: 'bn'>, "
+                    "<LanguageIso.MY: 'my'>, <LanguageIso.CA: 'ca'>, <LanguageIso.ZH: 'zh'>, "
+                    "<LanguageIso.HR: 'hr'>, <LanguageIso.CS: 'cs'>, <LanguageIso.DA: 'da'>, "
+                    "<LanguageIso.NL: 'nl'>, <LanguageIso.EN: 'en'>, <LanguageIso.ET: 'et'>, "
+                    "<LanguageIso.FI: 'fi'>, <LanguageIso.FR: 'fr'>, <LanguageIso.DE: 'de'>, "
+                    "<LanguageIso.EL: 'el'>, <LanguageIso.GU: 'gu'>, <LanguageIso.HE: 'he'>, "
+                    "<LanguageIso.HI: 'hi'>, <LanguageIso.HU: 'hu'>, <LanguageIso.ID: 'id'>, "
+                    "<LanguageIso.IT: 'it'>, <LanguageIso.JA: 'ja'>, <LanguageIso.KN: 'kn'>, "
+                    "<LanguageIso.KK: 'kk'>, <LanguageIso.KO: 'ko'>, <LanguageIso.KU: 'ku'>, "
+                    "<LanguageIso.LV: 'lv'>, <LanguageIso.LT: 'lt'>, <LanguageIso.MK: 'mk'>, "
+                    "<LanguageIso.MS: 'ms'>, <LanguageIso.ML: 'ml'>, <LanguageIso.MR: 'mr'>, "
+                    "<LanguageIso.NE: 'ne'>, <LanguageIso.NO: 'no'>, <LanguageIso.PA: 'pa'>, "
+                    "<LanguageIso.PL: 'pl'>, <LanguageIso.PT: 'pt'>, <LanguageIso.RO: 'ro'>, "
+                    "<LanguageIso.RU: 'ru'>, <LanguageIso.SA: 'sa'>, <LanguageIso.SK: 'sk'>, "
+                    "<LanguageIso.SL: 'sl'>, <LanguageIso.ES: 'es'>, <LanguageIso.SV: 'sv'>, "
+                    "<LanguageIso.TA: 'ta'>, <LanguageIso.TE: 'te'>, <LanguageIso.TH: 'th'>, "
+                    "<LanguageIso.TR: 'tr'>, <LanguageIso.UK: 'uk'>, <LanguageIso.UR: 'ur'>, "
+                    "<LanguageIso.UZ: 'uz'>, <LanguageIso.VI: 'vi'>, <LanguageIso.CY: 'cy'>]."
+                ),
+            },
         ),
         # Test case for a correct but unsupported language code
         (
@@ -194,7 +224,36 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                     },
                 }
             },
-            {"status": 422, "error": "Unsupported language"},
+            {
+                "status": 422,
+                "detail": (
+                    "The language reference 'eo' could not be mapped, or the language could not be "
+                    "inferred from the content. Supported references are: ['ar', 'hy', 'eu', 'bn', "
+                    "'my', 'ca', 'zh', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', "
+                    "'gu', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'kn', 'kk', 'ko', 'ku', 'lv', 'lt', "
+                    "'mk', 'ms', 'ml', 'mr', 'ne', 'no', 'pa', 'pl', 'pt', 'ro', 'ru', 'sa', 'sk', "
+                    "'sl', 'es', 'sv', 'ta', 'te', 'th', 'tr', 'uk', 'ur', 'uz', 'vi', 'cy']. "
+                    "Supported languages are: [<LanguageIso.AR: 'ar'>, <LanguageIso.HY: 'hy'>, "
+                    "<LanguageIso.EU: 'eu'>, <LanguageIso.BN: 'bn'>, <LanguageIso.MY: 'my'>, "
+                    "<LanguageIso.CA: 'ca'>, <LanguageIso.ZH: 'zh'>, <LanguageIso.HR: 'hr'>, "
+                    "<LanguageIso.CS: 'cs'>, <LanguageIso.DA: 'da'>, <LanguageIso.NL: 'nl'>, "
+                    "<LanguageIso.EN: 'en'>, <LanguageIso.ET: 'et'>, <LanguageIso.FI: 'fi'>, "
+                    "<LanguageIso.FR: 'fr'>, <LanguageIso.DE: 'de'>, <LanguageIso.EL: 'el'>, "
+                    "<LanguageIso.GU: 'gu'>, <LanguageIso.HE: 'he'>, <LanguageIso.HI: 'hi'>, "
+                    "<LanguageIso.HU: 'hu'>, <LanguageIso.ID: 'id'>, <LanguageIso.IT: 'it'>, "
+                    "<LanguageIso.JA: 'ja'>, <LanguageIso.KN: 'kn'>, <LanguageIso.KK: 'kk'>, "
+                    "<LanguageIso.KO: 'ko'>, <LanguageIso.KU: 'ku'>, <LanguageIso.LV: 'lv'>, "
+                    "<LanguageIso.LT: 'lt'>, <LanguageIso.MK: 'mk'>, <LanguageIso.MS: 'ms'>, "
+                    "<LanguageIso.ML: 'ml'>, <LanguageIso.MR: 'mr'>, <LanguageIso.NE: 'ne'>, "
+                    "<LanguageIso.NO: 'no'>, <LanguageIso.PA: 'pa'>, <LanguageIso.PL: 'pl'>, "
+                    "<LanguageIso.PT: 'pt'>, <LanguageIso.RO: 'ro'>, <LanguageIso.RU: 'ru'>, "
+                    "<LanguageIso.SA: 'sa'>, <LanguageIso.SK: 'sk'>, <LanguageIso.SL: 'sl'>, "
+                    "<LanguageIso.ES: 'es'>, <LanguageIso.SV: 'sv'>, <LanguageIso.TA: 'ta'>, "
+                    "<LanguageIso.TE: 'te'>, <LanguageIso.TH: 'th'>, <LanguageIso.TR: 'tr'>, "
+                    "<LanguageIso.UK: 'uk'>, <LanguageIso.UR: 'ur'>, <LanguageIso.UZ: 'uz'>, "
+                    "<LanguageIso.VI: 'vi'>, <LanguageIso.CY: 'cy'>]."
+                ),
+            },
         ),
         # Test case for Chinese
         (
@@ -222,23 +281,24 @@ def test_model_server_prediction_no_entities(payload, expected_response):
             {
                 "version": 1,
                 "data": {
-                    "namespace": "sentiment",
+                    "identifier": None,
                     "attributes": {
-                        "label": "neutral",
-                        "negative_prob": 0.1000,
-                        "positive_prob": 0.1000,
                         "entities": [
                             {
-                                "entity_type": "LOC",
+                                "end": 2,
                                 "entity_text": "北京",
+                                "entity_type": "LOC",
                                 "score": 0.9999,
                                 "sentence_index": 0,
+                                "sentiment": "positive",
                                 "start": 0,
-                                "end": 2,
-                                "sentiment": "neutral",
-                            },
+                            }
                         ],
+                        "label": "positive",
+                        "negative_prob": 0.1478,
+                        "positive_prob": 0.3239,
                     },
+                    "namespace": "sentiment",
                 },
             },
         ),
@@ -251,9 +311,9 @@ def test_new_language_cases(payload, expected_response):
         json=payload,
     )
 
-    if "error" in expected_response:
+    if response.status_code != 200:
         assert response.status_code == expected_response.get("status", 500)
-        assert response.json().get("error") == expected_response["error"]
+        assert response.json().get("detail") == expected_response["detail"]
     else:
         assert response.status_code == 200
         assert response.json() == expected_response
