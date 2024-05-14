@@ -2,7 +2,6 @@
 
 # Standard Library
 import json
-from json.decoder import JSONDecodeError
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
@@ -11,9 +10,10 @@ from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.nlp.sentence_tokenize import SentenceTokenizer
+from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 # Source
+from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
 
@@ -25,7 +25,11 @@ class TranscriptSegmentationHandler:
     """Transcript Segmentation using prompt backend."""
 
     sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
-
+    country_offsets = {
+        "gbr": OffsetEnum.GBR.value,
+        "fra": OffsetEnum.FRA.value,
+        "esp": OffsetEnum.ESP.value,
+    }
     related_segment_key: str
 
     def find_last_occurrence(self, phrase: str, response: str) -> int:
@@ -137,39 +141,6 @@ class TranscriptSegmentationHandler:
 
         return ((start_time, end_time), (start_time_offsetted, end_time_offsetted))
 
-    def trim_response(self, str_response: str) -> str:
-        """Fix incomplete json by remove field that is incomplete.
-
-        Args:
-            str_response (str): incomplete json string response
-
-        Returns:
-            str: complete json string response
-        """
-        # reverse order of the json response
-        fields_list = [
-            ',  "Advertisement content": "',
-            '",  "Piece after accept":"',
-            '",  ["Piece after accept"]:"',
-            '",  "Piece before accept":"',
-            '",  ["Piece before accept"]:"',
-            '",  "Piece after":"',
-            '",  ["Piece after"]:"',
-            '",  "Piece before":"',
-            '",  ["Piece before"]:"',
-            '",  "segment amount":"',
-            '",  ["segment amount"]:"',
-        ]
-        for field in fields_list:
-            position = self.find_last_occurrence(field, str_response)
-            if position != -1:
-                break
-        return (
-            str_response[:position] + "}"
-            if position != -1
-            else str_response[:position] + '"}'
-        )
-
     def find_key(self, json_response: Dict[str, str], keys_list: List[str]) -> str:
         """Find the key that is being used in json response.
 
@@ -187,7 +158,7 @@ class TranscriptSegmentationHandler:
 
     def postprocess(
         self,
-        response: Union[str, Dict[str, str]],
+        response: Dict[str, str],
         word_transcript: List[Dict[str, Any]],
         offset_start_buffer: float,
         offset_end_buffer: float,
@@ -214,29 +185,7 @@ class TranscriptSegmentationHandler:
                 Optional[str],
             ]:The start and end timestamp of the segment, the segment title, the segment summary.
         """
-        if isinstance(response, str):
-            str_response = self.remove_newlines(response)
-            try:
-                json_response = eval(str_response)
-            # Deal with issue where response is cutoff (finish_reason = length|content_filter)
-            except SyntaxError:
-                str_response = self.trim_response(str_response)
-                json_response = eval(str_response)
-
-        elif isinstance(response, dict):
-            json_response = response
-        # potential keys the gpt model could return
-        related_seg_keys_list = [
-            "Related segment",
-            "Related Segment",
-            "related_segment",
-            "related segment",
-            "segment",
-            "Segment",
-            "[Related segment]",
-        ]
-        self.related_segment_key = self.find_key(json_response, related_seg_keys_list)
-        segment = json_response.get(self.related_segment_key)
+        segment = response["related_segment"]
 
         if segment in [
             "N/A",
@@ -257,73 +206,18 @@ class TranscriptSegmentationHandler:
             ) = (0.0, 0.0, 0.0, 0.0, "", None, None)
         else:
 
-            piece_before_keys_list = [
-                "Piece before",
-                "piece before",
-                "piece_before",
-                "[Piece before]",
-            ]
-            self.piece_before_key = self.find_key(json_response, piece_before_keys_list)
-            piece_before = json_response.get(self.piece_before_key)
-
-            piece_after_keys_list = [
-                "Piece after",
-                "piece after",
-                "piece_after",
-                "[Piece after]",
-            ]
-            self.piece_after_key = self.find_key(json_response, piece_after_keys_list)
-            piece_after = json_response.get(self.piece_after_key)
-
-            piece_before_accept_keys_list = [
-                "Piece before accept",
-                "piece before accept",
-                "Piece_before_accept",
-                "[Piece before accept]",
-            ]
-            self.piece_before_accept_key = self.find_key(
-                json_response, piece_before_accept_keys_list
-            )
-            piece_before_accept = json_response.get(self.piece_before_accept_key)
-
-            piece_after_accept_keys_list = [
-                "Piece after accept",
-                "piece after accept",
-                "Piece_after_accept",
-                "[Piece after accept]",
-            ]
-            self.piece_after_accept_key = self.find_key(
-                json_response, piece_after_accept_keys_list
-            )
-            piece_after_accept = json_response.get(self.piece_after_accept_key)
-
-            segment_title_keys_list = [
-                "Segment title",
-                "segment title",
-                "segment_title",
-                "[Segment title]",
-            ]
-            self.segment_title_key = self.find_key(
-                json_response, segment_title_keys_list
-            )
-            segment_title = json_response.get(self.segment_title_key)
-
-            segment_summary_keys_list = [
-                "Segment summary",
-                "segment summary",
-                "segment_summary",
-                "[Segment summary]",
-            ]
-            self.segment_summary_key = self.find_key(
-                json_response, segment_summary_keys_list
-            )
-            segment_summary = json_response.get(self.segment_summary_key)
+            piece_before = response.get("piece_before")
+            piece_after = response.get("piece_after")
+            piece_before_accept = response.get("piece_before_accept")
+            piece_after_accept = response.get("piece_after_accept")
+            segment_title = response.get("segment_title")
+            segment_summary = response.get("segment_summary")
 
             if piece_before_accept == "Yes":
-                segment = piece_before + " " + segment
+                segment = f"{piece_before} {segment}"
 
             if piece_after_accept == "Yes":
-                segment = segment + piece_after
+                segment = f"{segment}{piece_after}"
 
             (
                 (start_time, end_time),
@@ -397,39 +291,25 @@ class TranscriptSegmentationHandler:
         """
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {
-            "paragraph": paragraph,
+            "input": {
+                "paragraph": paragraph,
+            },
+            "output": settings.ad_detection_output_schema,
         }
         q = requests.post(
-            "{}/api/v1/prompts/{}/generate".format(
-                settings.prompt_api_url, settings.prompt_ad_alias
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
+                settings.prompt_api_url,
+                settings.prompt_ad_alias,
+                settings.default_model_ad,
             ),
             headers=headers,
             json=payload,
         )
-        str_response = json.loads(q.content)["generated"]
 
-        if isinstance(str_response, str):
-            try:
-                json_response = json.loads(str_response)
-            except JSONDecodeError:
-                str_response = self.remove_newlines(str_response)
-                str_response = self.trim_response(str_response)
-                json_response = json.loads(str_response)
-        elif isinstance(str_response, dict):
-            json_response = str_response
+        json_response = json.loads(q.content)
+
         # get the time stamp with ads
-        candidate_keys = [
-            "Advertisement detect",
-            "[Advertisement detect]",
-            "advertisement detect",
-            "[advertisement detect]",
-        ]
-
-        advertisement_detect = "no"
-        for key in candidate_keys:
-            if isinstance(json_response.get(key), str):
-                advertisement_detect = json_response.get(key).lower()
-                break
+        advertisement_detect = json_response.get("advertisement_detect").lower()
 
         if advertisement_detect == "yes":
             return True
@@ -440,8 +320,9 @@ class TranscriptSegmentationHandler:
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
-        offset_start_buffer: float = -7000.0,
-        offset_end_buffer: float = 5000.0,
+        country: str,
+        offset_start_buffer: float,
+        offset_end_buffer: float,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -458,6 +339,7 @@ class TranscriptSegmentationHandler:
             offset_start_buffer (float): start offset, float
             offset_end_buffer (float): end offset, float
 
+
         Returns:
             Tuple[
                 Tuple[Union[int, float], Union[int, float]],
@@ -472,14 +354,26 @@ class TranscriptSegmentationHandler:
         trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
 
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
-        payload = {"paragraph": trimmed_paragraph, "keywords": keywords}
+        payload = {
+            "input": {"paragraph": trimmed_paragraph, "keywords": keywords},
+            "output": settings.segmentation_output_schema,
+        }
+
         q = requests.post(
-            "{}/api/v1/prompts/{}/generate".format(
-                settings.prompt_api_url, settings.prompt_alias
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
+                settings.prompt_api_url,
+                settings.prompt_alias,
+                settings.default_model_segmentation,
             ),
             headers=headers,
             json=payload,
         )
+
+        if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
+            offset = self.country_offsets.get(country.lower())
+            if offset:
+                offset_start_buffer = offset_end_buffer = offset
+
         # post process
         (
             (start_time_offsetted, end_time_offsetted),
@@ -488,7 +382,7 @@ class TranscriptSegmentationHandler:
             summary,
             segment,
         ) = self.postprocess(
-            response=json.loads(q.content)["generated"],
+            response=json.loads(q.content),
             word_transcript=word_transcript,
             offset_start_buffer=offset_start_buffer,
             offset_end_buffer=offset_end_buffer,
