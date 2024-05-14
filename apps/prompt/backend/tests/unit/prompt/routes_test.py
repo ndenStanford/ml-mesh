@@ -92,7 +92,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
 def test_list_prompt(mock_prompt_scan, test_client):
     """Test list prompt."""
     # call
-    response = test_client.get("/api/v2/prompts", headers={"x-api-key": "1234"})
+    response = test_client.get("/prompt/api/v2/prompts", headers={"x-api-key": "1234"})
     # asserts
     assert response.status_code == status.HTTP_200_OK
     mock_prompt_scan.assert_called_once()

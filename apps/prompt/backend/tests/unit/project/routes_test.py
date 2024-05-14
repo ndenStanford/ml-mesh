@@ -66,7 +66,7 @@ def test_delete_project(mock_project_get, mock_project_delete, alias, test_clien
 def test_list_projects(mock_project_scan, test_client):
     """List projects endpoint."""
     # call
-    response = test_client.get("/api/v2/projects", headers={"x-api-key": "1234"})
+    response = test_client.get("/prompt/api/v2/projects", headers={"x-api-key": "1234"})
     # asserts
     assert response.status_code == status.HTTP_200_OK
     mock_project_scan.assert_called_once()
