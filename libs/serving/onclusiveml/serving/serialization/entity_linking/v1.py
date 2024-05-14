@@ -26,16 +26,17 @@ class PredictResponseEntity(JsonApiSchema):
     """Prediction entity."""
 
     entity_type: Optional[str] = None
-    entity_text: Optional[str] = None
-    score: Optional[float] = None
-    sentence_index: Optional[Union[int, List[int]]] = None
+    text: Optional[str] = None
+    salience_score: Optional[float] = None
+    sentence_indexes: Optional[Union[int, List[int]]] = None
     wiki_link: Optional[str] = None
+    wiki_score: Optional[float] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    entities: Optional[List[List[Optional[str]]]]  = []
+    entities: List[PredictResponseEntity] = []
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

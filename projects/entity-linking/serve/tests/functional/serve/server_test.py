@@ -50,8 +50,27 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"entities": [["Q484876", "Q312"]]},
-                },
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "UNK",
+                                "text": "CEO",
+                                "salience_score": 0.24852901697158813,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+                                "wiki_score": 0.48496711254119873
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "Apple",
+                                "salience_score": 0.7043066024780273,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                                "wiki_score": 0.9504453539848328
+                            }
+                        ]
+                    }
+                }
             },
         ),
         (
@@ -68,8 +87,27 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"entities": [["Q484876", "Q312"]]},
-                },
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "UNK",
+                                "text": "CEO",
+                                "salience_score": 0.46443355083465576,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+                                "wiki_score": 0.6950671076774597
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "Apple",
+                                "salience_score": 0.79751056432724,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                                "wiki_score": 0.9626907706260681
+                            }
+                        ]
+                    }
+                }
             },
         ),
         (
@@ -86,8 +124,59 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"entities": [['Q19837', 'Q484876', 'Q312'],[],['Q317521', 'Q484876', 'Q478214']]},
-                },
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "UNK",
+                                "text": "Steve Jobs",
+                                "salience_score": 0.438759982585907,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q19837",
+                                "wiki_score": 0.931149959564209
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "CEO",
+                                "salience_score": 0.2891087830066681,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+                                "wiki_score": 0.5837497115135193
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "Apple",
+                                "salience_score": 0.7522366046905518,
+                                "sentence_indexes": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                                "wiki_score": 0.9569951295852661
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "Elon Musk",
+                                "salience_score": 0.3659305274486542,
+                                "sentence_indexes": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q317521",
+                                "wiki_score": 0.8962705135345459
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "CEO",
+                                "salience_score": 0.28305891156196594,
+                                "sentence_indexes": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+                                "wiki_score": 0.578008234500885
+                            },
+                            {
+                                "entity_type": "UNK",
+                                "text": "Tesla",
+                                "salience_score": 0.7223825454711914,
+                                "sentence_indexes": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q478214",
+                                "wiki_score": 0.9659820199012756
+                            }
+                        ]
+                    }
+                }
             },
         ),
         (
@@ -127,12 +216,47 @@ def test_model_server_readiness(test_client):
                 }
             },
             {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "entity-linking",
-                    "attributes": {"entities": [['Q317521', 'Q484876', 'Q478214'],[],['Q19837', 'Q484876', 'Q312']]},
-                },
+                'version': 1,
+                'data': {
+                    'identifier': None,
+                    'namespace': 'entity-linking',
+                    'attributes': {
+                        'entities': [
+                            {
+                                'entity_type': 'Pers',
+                                'text': 'Elon Musk',
+                                'salience_score': 0.9259419441223145,
+                                'sentence_indexes': [0],
+                                'wiki_link': 'https://www.wikidata.org/wiki/Q317521',
+                                'wiki_score': 0.9352254867553711
+                            },
+                            {
+                                'entity_type': 'ORG',
+                                'text': 'Tesla',
+                                'salience_score': 0.9259419441223145,
+                                'sentence_indexes': [0],
+                                'wiki_link': 'https://www.wikidata.org/wiki/Q478214',
+                                'wiki_score': 0.9614943265914917
+                            },
+                            {
+                                'entity_type': 'Pers',
+                                'text': 'Steve Jobs',
+                                'salience_score': 0.9259419441223145,
+                                'sentence_indexes': [2],
+                                'wiki_link': 'https://www.wikidata.org/wiki/Q19837',
+                                'wiki_score': 0.8936492800712585
+                            },
+                            {
+                                'entity_type': 'ORG',
+                                'text': 'Apple',
+                                'salience_score': 0.9259419441223145,
+                                'sentence_indexes': [2],
+                                'wiki_link': 'https://www.wikidata.org/wiki/Q312',
+                                'wiki_score': 0.9717069268226624
+                            }
+                        ]
+                    }
+                }
             },
         ),
     ],

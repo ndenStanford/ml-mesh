@@ -24,9 +24,7 @@ def get_model_server(artifacts: BelaModelArtifacts) -> ModelServer:
     """
     # initialize model
     served_model_artifacts = artifacts
-    print("path1: ", served_model_artifacts.model_artifact_directory)
     cs_served_model = ServedBelaModel(served_model_artifacts=artifacts)
-    print('SERVER STARTED')
     # initialize model server
     model_server = ModelServer(configuration=settings, model=cs_served_model)
     Instrumentator.enable(model_server, app_name=settings.model_name)

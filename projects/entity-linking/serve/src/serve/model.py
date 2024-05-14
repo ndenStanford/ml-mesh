@@ -5,6 +5,7 @@ import re
 import json
 from collections import Counter
 from typing import Any, Dict, List, Optional, Type
+from collections import defaultdict
 
 # 3rd party libraries
 import requests
@@ -70,7 +71,6 @@ class ServedBelaModel(ServedModel):
         """Load the model artifacts and prepare the model for prediction."""
         # Load model artifacts into ready CompiledContentScoring instance
         content_model_directory = self.served_model_artifacts.model_artifact_directory
-        print("path: ", content_model_directory)
         self._model = BELA(
             md_threshold=0.2,
             el_threshold=0.4, 
@@ -100,6 +100,7 @@ class ServedBelaModel(ServedModel):
         mention_lengths = getattr(attributes, "mention_lengths", None)  # Fetch mention lengths if provided
 
         content = re.sub("\n+", " ", content)
+        content = content.split(". ")
         print('TEXT: ',content)
         try:
             output = self._predict(content=content, language=lang, entities=entities, mention_offsets=mention_offsets, mention_lengths=mention_lengths)
@@ -111,18 +112,65 @@ class ServedBelaModel(ServedModel):
                 status_code=422, detail=language_exception.message
             )
         print('OUTPUT: ', output)
-        entities = [entry["entities"] for entry in output]
-        print('ENTITIES: ', entities)
+        entities_with_links= []
+
+        if entities:
+            text_list = [entity["text"] for entity in entities]
+            print ('text list: ',text_list)
+            for sentence_idx, entry in enumerate(output):
+                print("sentence index: ",sentence_idx)
+                entity_score_map = dict(zip(entry['entities'], entry['el_scores']))
+                entity_ner_map = dict(zip(entry['entities'], entry['md_scores']))
+                for idx, entity_id in enumerate(entry['entities']):
+                    start_offset = entry['offsets'][idx]
+                    entity_length = entry['lengths'][idx]
+                    end_offset = start_offset + entity_length
+                    entity_text = str(content[sentence_idx][start_offset:end_offset])
+                    print('ENTITY TEXT: ',entity_text)
+                    if entity_text in text_list:
+                        print('YYYAYYYY')
+                        index = text_list.index(entity_text)
+                        entity_with_link = {
+                            "entity_type": entities[index]["entity_type"],
+                            "text": entity_text,
+                            "salience_score": entities[index]["salience_score"],
+                            "sentence_indexes": [sentence_idx],
+                            "wiki_link": "https://www.wikidata.org/wiki/"+entity_id, 
+                            "wiki_score": entity_score_map.get(entity_id, None)
+                        }
+                        entities_with_links.append(entity_with_link)
+
+        else: 
+            for sentence_idx, entry in enumerate(output):
+                entity_score_map = dict(zip(entry['entities'], entry['el_scores']))
+                entity_ner_map = dict(zip(entry['entities'], entry['md_scores']))
+                for idx, entity_id in enumerate(entry['entities']):
+                    start_offset = entry['offsets'][idx]
+                    entity_length = entry['lengths'][idx]
+                    end_offset = start_offset + entity_length
+                    entity_text = str(content[sentence_idx][start_offset:end_offset])
+                    entity_with_link = {
+                        "entity_type": "UNK",
+                        "text": entity_text,
+                        "salience_score": entity_ner_map.get(entity_id, None),
+                        "sentence_indexes": [sentence_idx],  
+                        "wiki_link": "https://www.wikidata.org/wiki/"+entity_id,  
+                        "wiki_score": entity_score_map.get(entity_id, None)
+                    }
+                    entities_with_links.append(entity_with_link)
+
+            print('ENTITIES WITH LINKS1: ', entities_with_links)
+        
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"entities": entities},
+            attributes={"entities": entities_with_links},
         )
 
     @filter_language(supported_languages=list(LanguageIso), raise_if_none=True)
     def _predict(
         self,
-        content: str,
+        content: List[str],
         language: str,
         entities: Optional[List[Dict[str, Any]]],
         mention_offsets: Optional[List[List[Optional[int]]]],
@@ -131,14 +179,13 @@ class ServedBelaModel(ServedModel):
         """Language filtered prediction."""
         print('LANGUAGE: ', language)
         if entities:
-            mention_offsets = []
-            mention_lengths = []
+            grouped_entities = defaultdict(list)
             for entity in entities:
-                sentence_index = entity["sentence_indexes"][0]
-                mention_offsets.append([0])  # Assuming start of each sentence
-                mention_lengths.append([len(entity["text"])])
-            return self.model.process_disambiguation_batch(list_text=content.split(". "), mention_offsets=mention_offsets, mention_lengths=mention_lengths, entities=entities)
+                for index in entity["sentence_indexes"]:
+                    grouped_entities[index].append(entity["text"])
+            grouped_entities_list = [grouped_entities[index] for index in sorted(grouped_entities.keys())]
+            return self.model.process_disambiguation_batch(list_text=content, mention_offsets=[], mention_lengths=[], entities=grouped_entities_list)
         elif mention_offsets and mention_lengths:
-            return self.model.process_disambiguation_batch(list_text=content.split(". "), mention_offsets=mention_offsets, mention_lengths=mention_lengths, entities=[])
+            return self.model.process_disambiguation_batch(list_text=content, mention_offsets=mention_offsets, mention_lengths=mention_lengths, entities=[])
         else:
-            return self.model.process_batch(list_text=content.split(". "))
+            return self.model.process_batch(list_text=content)
