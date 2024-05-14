@@ -28,7 +28,7 @@ def test_create_project(mock_project_safe_get, mock_project_save, alias, test_cl
     mock_project_safe_get.return_value = None
     # mock call
     response = test_client.post(
-        f"/api/v2/projects?alias={alias}", headers={"x-api-key": "1234"}
+        f"/prompt/api/v2/projects?alias={alias}", headers={"x-api-key": "1234"}
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
@@ -53,7 +53,7 @@ def test_delete_project(mock_project_get, mock_project_delete, alias, test_clien
     mock_project_get.return_value = Project(alias=alias)
     # call
     response = test_client.delete(
-        f"/api/v2/projects/{alias}", headers={"x-api-key": "1234"}
+        f"/prompt/api/v2/projects/{alias}", headers={"x-api-key": "1234"}
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
@@ -87,7 +87,7 @@ def test_get_project(mock_project_get, alias, test_client):
     mock_project_get.return_value = Project(alias=alias)
     # call
     response = test_client.get(
-        f"/api/v2/projects/{alias}", headers={"x-api-key": "1234"}
+        f"/prompt/api/v2/projects/{alias}", headers={"x-api-key": "1234"}
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK

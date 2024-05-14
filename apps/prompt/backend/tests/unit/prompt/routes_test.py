@@ -58,7 +58,7 @@ def test_delete_prompt(
     mock_prompt_get.return_value = prompt
     # api call
     response = test_client.delete(
-        f"/api/v2/prompts/{alias}",
+        f"/prompt/api/v2/prompts/{alias}",
         headers={"x-api-key": "1234"},
     )
     # asserts
@@ -79,7 +79,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
     mock_prompt_get.return_value = prompt
     # api call
     response = test_client.get(
-        f"/api/v2/prompts/{alias}",
+        f"/prompt/api/v2/prompts/{alias}",
         headers={"x-api-key": "1234"},
     )
     # asserts
@@ -106,7 +106,7 @@ def test_list_prompt(mock_prompt_scan, test_client):
 def test_generate(mock_generate, alias, model, values, test_client):
     """Test get model endpoint."""
     response = test_client.post(
-        f"/api/v2/prompts/{alias}/generate/model/{model}",
+        f"/prompt/api/v2/prompts/{alias}/generate/model/{model}",
         headers={"x-api-key": "1234"},
         json=values,
     )
