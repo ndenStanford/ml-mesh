@@ -1,4 +1,3 @@
-
 # Standard Library
 from typing import Type
 
@@ -12,7 +11,6 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.serve.tables import TopicSummaryDynamoDB
 from src.settings import get_settings
-
 
 settings = get_settings()
 
