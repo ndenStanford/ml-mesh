@@ -99,7 +99,7 @@ def test_list_prompts(mock_project_scan, test_client):
     """Test list project endpoint."""
     # call
     response = test_client.get(
-        "/api/v2/projects/new-project/prompts", headers={"x-api-key": "1234"}
+        "/prompt/api/v2/projects/new-project/prompts", headers={"x-api-key": "1234"}
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK

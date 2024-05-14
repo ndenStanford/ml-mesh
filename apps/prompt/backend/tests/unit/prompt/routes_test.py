@@ -35,7 +35,7 @@ def test_create_prompt(
     mock_project_get.return_value = Project(alias=project)
     # api call
     response = test_client.post(
-        "/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.dict()
+        "/prompt/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.dict()
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
