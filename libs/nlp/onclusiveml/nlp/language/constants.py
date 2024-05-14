@@ -72,22 +72,6 @@ class LanguageIso(Enum):
     # than in entity fishing - see below two comments
     # missing: zh-cn - included in entity-fishing language detection
     # missing: zh-tw - included in entity-fishing language detection
-    HY = "hy"  # Armenian
-    EU = "eu"  # Basque
-    MY = "my"  # Burmese
-    KK = "kk"  # Kazakh
-    KU = "ku"  # Kurdish
-    MS = "ms"  # Malay
-    SA = "sa"  # Sanskrit
-    UZ = "uz"  # Uzbek
-    KA = "ka"  # Georgian
-    HT = "ht"  # Haitian Creole
-    IS = "is"  # Icelandic
-    GA = "ga"  # Irish
-    KM = "km"  # Khmer
-    LO = "lo"  # Lao
-    PS = "ps"  # Pashto
-    SR = "sr"  # Serbian
 
     @property
     def locales(self) -> Dict[str, Dict[str, str]]:
@@ -353,53 +337,5 @@ _LOCALES: Dict[LanguageIso, Dict[str, Dict[str, str]]] = {
         "zh-HK": {"name": "中文（香港）", "en": "Chinese Traditional (Hong Kong)"},
         "zh-SG": {"name": "中文（新加坡）", "en": "Chinese Simplified (Singapore)"},
         "zh-TW": {"name": "中文（台灣）", "en": "Chinese Traditional (Taiwan)"},
-    },
-    LanguageIso.HY: {
-        "hy": {"name": "հայերեն", "en": "Armenian"},
-    },
-    LanguageIso.EU: {
-        "eu": {"name": "euskara", "en": "Basque"},
-    },
-    LanguageIso.MY: {
-        "my": {"name": "ဗမာစာ", "en": "Burmese"},
-    },
-    LanguageIso.KK: {
-        "kk": {"name": "қазақ тілі", "en": "Kazakh"},
-    },
-    LanguageIso.KU: {
-        "ku": {"name": "Kurdî / كوردی", "en": "Kurdish"},
-    },
-    LanguageIso.MS: {
-        "ms": {"name": "Bahasa Melayu", "en": "Malay"},
-    },
-    LanguageIso.SA: {
-        "sa": {"name": "संस्कृतम्", "en": "Sanskrit"},
-    },
-    LanguageIso.UZ: {
-        "uz": {"name": "O‘zbek", "en": "Uzbek"},
-    },
-    LanguageIso.KA: {
-        "ka": {"name": "ქართული", "en": "Georgian"},
-    },
-    LanguageIso.HT: {
-        "ht": {"name": "Kreyòl ayisyen", "en": "Haitian Creole"},
-    },
-    LanguageIso.IS: {
-        "is": {"name": "Íslenska", "en": "Icelandic"},
-    },
-    LanguageIso.GA: {
-        "ga": {"name": "Gaeilge", "en": "Irish"},
-    },
-    LanguageIso.KM: {
-        "km": {"name": "ភាសាខ្មែរ", "en": "Khmer"},
-    },
-    LanguageIso.LO: {
-        "lo": {"name": "ພາສາລາວ", "en": "Lao"},
-    },
-    LanguageIso.PS: {
-        "ps": {"name": "پښتو", "en": "Pashto"},
-    },
-    LanguageIso.SR: {
-        "sr": {"name": "српски", "en": "Serbian"},
     },
 }

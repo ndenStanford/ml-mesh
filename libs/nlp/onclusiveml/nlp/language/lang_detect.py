@@ -78,7 +78,6 @@ def filter_language(
                     raise LanguageDetectionException(
                         original_language=language,
                         supported_language_iso_values=supported_language_iso_values,
-                        supported_language_isos=supported_languages,
                     )
                 else:
                     return None
@@ -90,7 +89,7 @@ def filter_language(
                     raise LanguageFilterException(
                         original_language=language,
                         language_iso=language_iso,
-                        supported_language_isos=supported_languages,
+                        supported_language_iso_values=supported_language_iso_values,
                     )
 
         return wrapper

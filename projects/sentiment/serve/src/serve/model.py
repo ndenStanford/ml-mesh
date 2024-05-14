@@ -22,7 +22,7 @@ from src.serve.schemas import (
     PredictRequestSchema,
     PredictResponseSchema,
 )
-from src.settings import SENT_SUPPORTED_LANGUAGE, get_settings
+from src.settings import get_settings
 
 
 settings = get_settings()
@@ -117,7 +117,9 @@ class ServedSentModel(ServedModel):
             attributes=attributes,
         )
 
-    @filter_language(supported_languages=SENT_SUPPORTED_LANGUAGE, raise_if_none=True)
+    @filter_language(
+        supported_languages=settings.supported_languages, raise_if_none=True
+    )
     def _sentiment_analysis(
         self,
         content: str,
