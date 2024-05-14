@@ -1,9 +1,14 @@
+# Standard Library
 from typing import Type
 
+# 3rd party libraries
 from botocore.exceptions import ClientError
 from dyntastic import Dyntastic
+
+# Internal libraries
 from onclusiveml.core.logging import get_default_logger
 
+# Source
 from src.serve.tables import TopicSummaryDynamoDB
 from src.settings import get_settings
 
@@ -25,7 +30,3 @@ def _create_table(table: Type[Dyntastic]) -> None:
         table.create_table()
     except ClientError:
         logger.info("Table already exists, skipping creation ...")
-
-
-init()
-print("end")

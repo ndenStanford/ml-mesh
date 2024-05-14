@@ -5,9 +5,8 @@
 from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer, ServingParams
 
-from src.serve._init import init
-
 # Source
+from src.serve._init import init
 from src.serve.model import ServedTopicModel
 
 
