@@ -2,10 +2,14 @@
 
 # Standard Library
 from functools import lru_cache
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic import BaseSettings, SecretStr
+
+# Internal libraries
+from onclusiveml.serving.rest.serve.params import ServingParams
 
 
 class Settings(BaseSettings):
@@ -57,10 +61,25 @@ class Settings(BaseSettings):
     }
 
 
+class ServerModelSettings(ServingParams):
+    """Serve model parameters."""
+
+    model_name: str = "summarization"
+    model_directory: Union[str, Path] = "."
+    enable_metrics: bool = False
+    api_version: str = "v1"
+    api_key_name: str = "x-api-key"
+    internal_ml_api_key: SecretStr = ""
+
+
+class GlobalSettings(ServerModelSettings, Settings):
+    """Global server settings."""
+
+
 @lru_cache
 def get_settings() -> BaseSettings:
-    """Returns instanciated Settings class."""
-    return Settings()
+    """Returns instanciated GlobalSettings class."""
+    return GlobalSettings()
 
 
 settings = get_settings()

@@ -122,7 +122,8 @@
                     "localRoot": "${workspaceFolder}/projects/summarization/serve",
                     "remoteRoot": "."
                 }
-            ]
+            ],
+            "justMyCode": false
         },
         {
             "name": "sentiment train",

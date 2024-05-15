@@ -18,16 +18,15 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
-    """Prediction request paramaters data."""
+    """Prediction request paramaters data.
+
+    Attributes:
+        desired_length (int): Desired token length of summary used in the prompt
+    """
 
     language: str = "en"
     target_language: str = "en"
     desired_length: Optional[int] = 100
-    max_tokens: Optional[int] = 512
-    temperature: Optional[float] = 0.7
-    top_p: Optional[float] = 1
-    presence_penalty: Optional[float] = 0
-    frequency_penalty: Optional[float] = 0
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
@@ -48,5 +47,5 @@ class BioRequestAttributeSchemaV1(JsonApiSchema):
         model_card (Dict): Information about the model
     """
 
-    model_name: str = "gpt-3.5-turbo"
+    model_name: str = "summarization"
     model_card: Dict

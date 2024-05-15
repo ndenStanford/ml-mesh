@@ -1,7 +1,6 @@
 """Prediction model."""
 
 # Standard Library
-import datetime
 import re
 from typing import Dict, Type
 
@@ -11,6 +10,7 @@ from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
 from src.serve.schemas import (
@@ -25,8 +25,8 @@ settings = get_settings()
 logger = get_default_logger(__name__)
 
 
-class SummarizationServedModel:
-    """Summarisation model."""
+class SummarizationServedModel(ServedModel):
+    """Summarization model."""
 
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
@@ -37,7 +37,7 @@ class SummarizationServedModel:
         return BioResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"model_name": settings.model_name},
+            attributes={"model_name": self.name, "model_card": {}},
         )
 
     @property
@@ -65,7 +65,7 @@ class SummarizationServedModel:
         except KeyError:
             logger.errror("Summarization language not supported.")
 
-        input_dict = {"desired_length": desired_length, "content": text}
+        input_dict = {"input": {"desired_length": desired_length, "content": text}}
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
@@ -81,9 +81,9 @@ class SummarizationServedModel:
         parameters = payload.data.parameters
 
         content = attributes.content
-        lang = parameters.lang
+        lang = parameters.language
         desired_length = parameters.desired_length
-        target_lang = parameters.target_lang
+        target_lang = parameters.target_language
 
         if content is None or content == "":
             logger.warning(
@@ -91,16 +91,8 @@ class SummarizationServedModel:
             )
 
         text = re.sub("\n+", " ", content)
-        starttime = datetime.datetime.utcnow()
         summary = self.inference(text, desired_length, lang, target_lang)
-        endtime = datetime.datetime.utcnow()
         summary = re.sub("\n+", " ", summary)
-
-        logger.debug(
-            "Total Time in milliseconds = {}".format(
-                (endtime - starttime).total_seconds() * 1000
-            )
-        )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
