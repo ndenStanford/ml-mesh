@@ -26,21 +26,21 @@ def test_handler_inference(mock_post, article_input, mock_responses):
     """Test the inference function in topic handler."""
     mock_post.return_value = mock_responses
 
-    gpt_inference = _service.inference(
-        article=article_input,
+    gpt_inference = _service.topic_inference(
+        articles=article_input,
     )
-    assert isinstance(gpt_inference, str)
+    assert isinstance(gpt_inference, dict)
 
 
-# @patch("requests.post")
-# def test_handler_summary(mock_post, article_input, mock_responses):
-#     """Test the summary function in topic handler."""
-#     mock_post.return_value = mock_responses
+@patch("requests.post")
+def test_handler_summary(mock_post, article_input, mock_responses):
+    """Test the summary function in topic handler."""
+    mock_post.return_value = mock_responses
 
-#     gpt_inference = _service.summary(
-#         article=article_input,
-#     )
-#     assert isinstance(gpt_inference, dict)
+    gpt_inference = _service.summary_inference(
+        articles=article_input,
+    )
+    assert isinstance(gpt_inference, dict)
 
 
 # @patch("requests.post")
@@ -64,9 +64,9 @@ def test_handler_inference(mock_post, article_input, mock_responses):
 
 
 @patch("requests.post")
-def test_handler_aggregate(mock_post, article_input, mock_responses_aggregate):
+def test_handler_aggregate(mock_post, article_input, mock_responses):
     """Test the aggregate function in handler."""
-    mock_post.return_value = mock_responses_aggregate
+    mock_post.return_value = mock_responses
     gpt_inference = _service.aggregate(
         article=article_input,
     )

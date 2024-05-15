@@ -44,13 +44,25 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     PROMPT_ALIAS: dict = {
         "claude_topic": "ml-topic-summarization-claude",
         "gpt_topic": "ml-topic-summarization-gpt",
+        "claude_summary": "ml-multi-articles-summary-claude",
     }
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
     GPT_MODEL: str = "gpt-4-turbo-2024-04-09"
 
-    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {
-        category: f"The summary for the content related to {category} in the articles. And the impact level of {category} based on the summary."  # noqa: E501
-        for category in ServerModelSettings.IMPACT_CATEGORIES.values()
+    model_settings = ServerModelSettings()
+
+    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
+    for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():
+        category_dict = {
+            f"{category_key}_Summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
+            f"{category_key}_Theme": f"An overall theme for {category_value}",
+            f"{category_key}_Impact": f"The impact level of {category_value}",
+        }
+        TOPIC_RESPONSE_SCHEMA.update(category_dict)
+
+    SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
+        "summary": "Your synthesized summary based on all the summaries I provided",
+        "theme": "The theme for your consolidated summary",
     }
 
 
