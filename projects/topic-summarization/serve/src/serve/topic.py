@@ -13,6 +13,9 @@ from multiprocessing import Pool, cpu_count
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
+from onclusiveml.serving.serialization.topic_summarization.v1 import (
+    ImpactCategoryLabel,
+)
 
 # Source
 from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
@@ -200,6 +203,17 @@ class TopicHandler:
         )
 
         output_content = json.loads(q.content)
+
+        if output_content["impact"].lower() == "low":
+            output_content["impact"] = ImpactCategoryLabel.LOW
+        elif (
+            output_content["impact"].lower() == "mid"
+            or output_content["impact"].lower() == "medium"
+        ):
+            output_content["impact"] = ImpactCategoryLabel.MID
+        elif output_content["impact"].lower() == "high":
+            output_content["impact"] = ImpactCategoryLabel.HIGH
+
         agg_out_content, agg_out_impact, agg_out_theme = (
             output_content["summary"],
             output_content["impact"],
