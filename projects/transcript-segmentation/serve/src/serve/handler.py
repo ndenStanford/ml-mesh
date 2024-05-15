@@ -13,6 +13,7 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 # Source
+from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
 
@@ -24,7 +25,11 @@ class TranscriptSegmentationHandler:
     """Transcript Segmentation using prompt backend."""
 
     sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
-
+    country_offsets = {
+        "gbr": OffsetEnum.GBR.value,
+        "fra": OffsetEnum.FRA.value,
+        "esp": OffsetEnum.ESP.value,
+    }
     related_segment_key: str
 
     def find_last_occurrence(self, phrase: str, response: str) -> int:
@@ -295,7 +300,7 @@ class TranscriptSegmentationHandler:
             "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_ad_alias,
-                settings.default_model,
+                settings.default_model_ad,
             ),
             headers=headers,
             json=payload,
@@ -315,8 +320,9 @@ class TranscriptSegmentationHandler:
         self,
         word_transcript: List[Dict[str, Any]],
         keywords: List[str],
-        offset_start_buffer: float = -7000.0,
-        offset_end_buffer: float = 5000.0,
+        country: str,
+        offset_start_buffer: float,
+        offset_end_buffer: float,
     ) -> Tuple[
         Tuple[Union[int, float], Union[int, float]],
         Tuple[Union[int, float], Union[int, float]],
@@ -332,6 +338,7 @@ class TranscriptSegmentationHandler:
             keyword (List[str]): List of keywords to query the transcript
             offset_start_buffer (float): start offset, float
             offset_end_buffer (float): end offset, float
+
 
         Returns:
             Tuple[
@@ -354,11 +361,18 @@ class TranscriptSegmentationHandler:
 
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.prompt_api_url, settings.prompt_alias, settings.default_model
+                settings.prompt_api_url,
+                settings.prompt_alias,
+                settings.default_model_segmentation,
             ),
             headers=headers,
             json=payload,
         )
+
+        if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
+            offset = self.country_offsets.get(country.lower())
+            if offset:
+                offset_start_buffer = offset_end_buffer = offset
 
         # post process
         (
