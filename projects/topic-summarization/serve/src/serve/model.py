@@ -82,7 +82,7 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
-
+        trend_found = None
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -100,6 +100,7 @@ class ServedTopicModel(ServedModel):
             if not trend_detection or trending:
                 # if trending, retrieve documents between inflection point and next day
                 if trending:
+                    trend_found = True
                     start_time = inflection_point
                     end_time = start_time + pd.Timedelta(days=1)
 
@@ -112,16 +113,20 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id
                 )
             else:
+                trend_found = False
                 topic = None
                 impact_category = None
         else:
             topic = self.model.aggregate(content)
             impact_category = None
-
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"topic": topic, "impact_category": impact_category},
+            attributes={
+                "topic": topic,
+                "impact_category": impact_category,
+                "trend_found": trend_found,
+            },
         )
 
     def bio(self) -> BioResponseSchema:

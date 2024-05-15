@@ -1,7 +1,7 @@
 """Topic Summarization v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 # Internal libraries
 from onclusiveml.core.base.utils import OnclusiveEnum
@@ -31,11 +31,38 @@ class ImpactCategoryLabel(str, OnclusiveEnum):
     HIGH = "high"
 
 
+class Analysis(JsonApiSchema):
+    """Analysis of each topic."""
+
+    name: Optional[str] = None
+    analysis: Optional[str] = None
+    theme: Optional[str] = None
+    impact: Optional[str] = None
+
+
+class Topic(JsonApiSchema):
+    """Topic analysis schema."""
+
+    opportunities: Optional[Analysis] = Analysis()
+    risk: Optional[Analysis] = Analysis()
+    threats: Optional[Analysis] = Analysis()
+    company: Optional[Analysis] = Analysis()
+    brand: Optional[Analysis] = Analysis()
+    ceo: Optional[Analysis] = Analysis()
+    customer: Optional[Analysis] = Analysis()
+    stock: Optional[Analysis] = Analysis()
+    industry: Optional[Analysis] = Analysis()
+    environment: Optional[Analysis] = Analysis()
+    summary: str
+    theme: str
+
+
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
+    topic: Topic
     impact_category: Optional[ImpactCategoryLabel]
+    trend_found: Optional[bool] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
