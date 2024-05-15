@@ -73,6 +73,25 @@ class LanguageIso(Enum):
     # missing: zh-cn - included in entity-fishing language detection
     # missing: zh-tw - included in entity-fishing language detection
 
+    TL = "tl"  # Tagalog
+    HT = "ht"  # Haitian Creole
+    EU = "eu"  # Basque
+    SR = "sr"  # Serbian
+    IS = "is"  # Icelandic
+    SI = "si"  # Sinhala
+    OR = "or"  # Oriya
+    LO = "lo"  # Lao
+    KU = "ku"  # Kurdish
+    PS = "ps"  # Pashto
+    AM = "am"  # Amharic
+    SD = "sd"  # Sindhi
+    KM = "km"  # Khmer
+    HY = "hy"  # Armenian
+    KA = "ka"  # Georgian
+    DV = "dv"  # Dhivehi
+    UG = "ug"  # Uighur
+    MY = "my"  # Burmese
+
     @property
     def locales(self) -> Dict[str, Dict[str, str]]:
         """Returns all locales for a given language."""
@@ -337,5 +356,82 @@ _LOCALES: Dict[LanguageIso, Dict[str, Dict[str, str]]] = {
         "zh-HK": {"name": "中文（香港）", "en": "Chinese Traditional (Hong Kong)"},
         "zh-SG": {"name": "中文（新加坡）", "en": "Chinese Simplified (Singapore)"},
         "zh-TW": {"name": "中文（台灣）", "en": "Chinese Traditional (Taiwan)"},
+    },
+    LanguageIso.TL: {
+        "tl": {"name": "Tagalog", "en": "Tagalog"},
+        "tl-PH": {"name": "Tagalog (Pilipinas)", "en": "Tagalog (Philippines)"},
+    },
+    LanguageIso.HT: {
+        "ht": {"name": "Kreyòl Ayisyen", "en": "Haitian Creole"},
+        "ht-HT": {"name": "Kreyòl Ayisyen (Ayiti)", "en": "Haitian Creole (Haiti)"},
+    },
+    LanguageIso.EU: {
+        "eu": {"name": "Euskara", "en": "Basque"},
+        "eu-ES": {"name": "Euskara (Espainia)", "en": "Basque (Spain)"},
+    },
+    LanguageIso.SR: {
+        "sr": {"name": "српски", "en": "Serbian"},
+        "sr-RS": {"name": "српски (Србија)", "en": "Serbian (Serbia)"},
+        "sr-BA": {
+            "name": "српски (Босна и Херцеговина)",
+            "en": "Serbian (Bosnia and Herzegovina)",
+        },
+    },
+    LanguageIso.IS: {
+        "is": {"name": "Íslenska", "en": "Icelandic"},
+        "is-IS": {"name": "Íslenska (Ísland)", "en": "Icelandic (Iceland)"},
+    },
+    LanguageIso.SI: {
+        "si": {"name": "සිංහල", "en": "Sinhala"},
+        "si-LK": {"name": "සිංහල (ශ්‍රී ලංකා)", "en": "Sinhala (Sri Lanka)"},
+    },
+    LanguageIso.OR: {
+        "or": {"name": "ଓଡ଼ିଆ", "en": "Oriya"},
+        "or-IN": {"name": "ଓଡ଼ିଆ (ଭାରତ)", "en": "Oriya (India)"},
+    },
+    LanguageIso.LO: {
+        "lo": {"name": "ລາວ", "en": "Lao"},
+        "lo-LA": {"name": "ລາວ (ລາວ)", "en": "Lao (Laos)"},
+    },
+    LanguageIso.KU: {
+        "ku": {"name": "Kurdî", "en": "Kurdish"},
+        "ku-TR": {"name": "Kurdî (Tirkiye)", "en": "Kurdish (Turkey)"},
+        # Additional regions might be included if needed
+    },
+    LanguageIso.PS: {
+        "ps": {"name": "پښتو", "en": "Pashto"},
+        "ps-AF": {"name": "پښتو (افغانستان)", "en": "Pashto (Afghanistan)"},
+    },
+    LanguageIso.AM: {
+        "am": {"name": "አማርኛ", "en": "Amharic"},
+        "am-ET": {"name": "አማርኛ (ኢትዮጵያ)", "en": "Amharic (Ethiopia)"},
+    },
+    LanguageIso.SD: {
+        "sd": {"name": "سنڌي", "en": "Sindhi"},
+        "sd-PK": {"name": "سنڌي (پاکستان)", "en": "Sindhi (Pakistan)"},
+    },
+    LanguageIso.KM: {
+        "km": {"name": "ភាសាខ្មែរ", "en": "Khmer"},
+        "km-KH": {"name": "ភាសាខ្មែរ (កម្ពុជា)", "en": "Khmer (Cambodia)"},
+    },
+    LanguageIso.HY: {
+        "hy": {"name": "հայերեն", "en": "Armenian"},
+        "hy-AM": {"name": "հայերեն (Հայաստան)", "en": "Armenian (Armenia)"},
+    },
+    LanguageIso.KA: {
+        "ka": {"name": "ქართული", "en": "Georgian"},
+        "ka-GE": {"name": "ქართული (საქართველო)", "en": "Georgian (Georgia)"},
+    },
+    LanguageIso.DV: {
+        "dv": {"name": "ދިވެހި", "en": "Dhivehi"},
+        "dv-MV": {"name": "ދިވެހި (ދިވެހިރާއްޖެ)", "en": "Dhivehi (Maldives)"},
+    },
+    LanguageIso.UG: {
+        "ug": {"name": "ئۇيغۇرچە", "en": "Uighur"},
+        "ug-CN": {"name": "ئۇيغۇرچە (جۇڭگو)", "en": "Uighur (China)"},
+    },
+    LanguageIso.MY: {
+        "my": {"name": "မြန်မာစာ", "en": "Burmese"},
+        "my-MM": {"name": "မြန်မာစာ (မြန်မာ)", "en": "Burmese (Myanmar)"},
     },
 }

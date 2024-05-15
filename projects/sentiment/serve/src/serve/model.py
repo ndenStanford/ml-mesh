@@ -98,11 +98,8 @@ class ServedSentModel(ServedModel):
         except (
             LanguageDetectionException,
             LanguageFilterException,
-        ) as language_exception:
-            # self.uvicorn_error_logger.error(language_exception)
-            raise OnclusiveHTTPException(
-                status_code=422, detail=language_exception.message
-            )
+        ):
+            raise OnclusiveHTTPException(status_code=204)
         # Prepare the response attributes
         attributes = {
             "label": sentiment.get("label"),
