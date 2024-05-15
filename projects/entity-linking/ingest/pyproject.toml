@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "Entity linking ingest"
+version = "0.1.0"
+description = "Ingesting and building vector store for entity linking data"
+authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+torch = "1.12.1"
+numpy = "1.24.4"
+redis = "^5.0.0"
+pydantic = {version = "^1.10.13", extras = ["dotenv"]}
+types-redis = "^4.6.0.20240425"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
