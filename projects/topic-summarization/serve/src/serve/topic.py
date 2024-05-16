@@ -33,7 +33,7 @@ class TopicHandler:
         Output:
             topic summary & impact(dict): dict[str,str]
         """
-        claude_alias = settings.PROMPT_ALIAS["claude_topic"]
+        topic_alias = settings.TOPIC_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
@@ -50,7 +50,7 @@ class TopicHandler:
 
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.PROMPT_API, claude_alias, settings.DEFAULT_MODEL
+                settings.PROMPT_API, topic_alias, settings.DEFAULT_MODEL
             ),
             headers=headers,
             json=input_dict,
@@ -68,7 +68,7 @@ class TopicHandler:
         Output:
             summary & theme(dict): dict[str,str]
         """
-        claude_alias = settings.PROMPT_ALIAS["claude_summary"]
+        summary_alias = settings.SUMMARY_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
@@ -85,7 +85,7 @@ class TopicHandler:
 
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.PROMPT_API, claude_alias, settings.DEFAULT_MODEL
+                settings.PROMPT_API, summary_alias, settings.DEFAULT_MODEL
             ),
             headers=headers,
             json=input_dict,
@@ -119,7 +119,7 @@ class TopicHandler:
                 final_topic[category][suffix] = value
             else:
                 category = key
-                if category not in final_topic:
+                if category not in final_topic and value != "N/A":
                     final_topic[category] = {"summary": value}
         return final_topic
 

@@ -22,9 +22,9 @@ def mock_responses():
 
     # The value for each key in the inner JSON object
     value_dict = {
-        "risk_Summary": "Not mentioned",
-        "risk_Theme": "Not mentioned",
-        "risk_Impact": "Not mentioned",
+        "risk_summary": "Not mentioned",
+        "risk_theme": "Not mentioned",
+        "risk_impact": "Not mentioned",
         "summary": "Not mentioned",
         "theme": "Not mentioned",
     }

@@ -41,11 +41,8 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    PROMPT_ALIAS: dict = {
-        "claude_topic": "ml-topic-summarization-claude",
-        "gpt_topic": "ml-topic-summarization-gpt",
-        "claude_summary": "ml-multi-articles-summary-claude",
-    }
+    TOPIC_ALIAS: str = "ml-topic-summarization-claude"
+    SUMMARY_ALIAS: str = "ml-multi-articles-summary-claude"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
 
     model_settings = ServerModelSettings()
@@ -53,9 +50,9 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
     for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():
         category_dict = {
-            f"{category_key}_Summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
-            f"{category_key}_Theme": f"An overall theme for {category_value}",
-            f"{category_key}_Impact": f"The impact level of {category_value}",
+            f"{category_key}_summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
+            f"{category_key}_theme": f"An overall theme for {category_value}",
+            f"{category_key}_impact": f"The impact level of {category_value}",
         }
         TOPIC_RESPONSE_SCHEMA.update(category_dict)
 
