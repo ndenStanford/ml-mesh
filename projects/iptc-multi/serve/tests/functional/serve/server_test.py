@@ -49,8 +49,8 @@ def test_model_server_bio():
             {
                 "data": {
                     "namespace": "iptc-multi",
-                    "attributes": {"content": "mathemetics"},  # noqa
-                    "parameters": {"language": "en"},
+                    "attributes": {"content": "crime"},  # noqa
+                    "parameters": {},
                 }
             },
             {
@@ -61,29 +61,19 @@ def test_model_server_bio():
                     "attributes": {
                         "iptc_topic": [
                             {
-                                "label": "science and technology",
-                                "score": 0.994,
-                                "mediatopic_id": "13000000",
+                                "label": "crime, law and justice > crime > homicide",
+                                "score": 0.995,
+                                "mediatopic_id": "20000099",
                             },
                             {
-                                "label": "science and technology > natural science",
-                                "score": 0.993,
-                                "mediatopic_id": "20000717",
+                                "label": "crime, law and justice",
+                                "score": 0.985,
+                                "mediatopic_id": "02000000",
                             },
                             {
-                                "label": "science and technology > natural science > biology",
-                                "score": 0.47,
-                                "mediatopic_id": "20000719",
-                            },
-                            {
-                                "label": "science and technology > natural science > astronomy",
-                                "score": 0.186,
-                                "mediatopic_id": "20000718",
-                            },
-                            {
-                                "label": "science and technology > natural science > physics",
-                                "score": 0.114,
-                                "mediatopic_id": "20000731",
+                                "label": "crime, law and justice > crime",
+                                "score": 0.971,
+                                "mediatopic_id": "20000082",
                             },
                         ]
                     },

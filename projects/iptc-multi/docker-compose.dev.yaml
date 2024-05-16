@@ -47,6 +47,15 @@ services:
     hostname: onclusiveml
     networks:
       - onclusive-net
+    depends_on:
+      serve-iptc-00000000:
+        condition: service_healthy
+      serve-iptc-02000000:
+        condition: service_healthy
+      serve-iptc-20000082:
+        condition: service_healthy
+      serve-iptc-20000121:
+        condition: service_healthy
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/iptc-multi/v1/live]
       interval: 10s
@@ -136,7 +145,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug]
+    profiles: [debug, functional]
     command:
       - /bin/sh
       - -c
@@ -185,7 +194,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug]
+    profiles: [debug, functional]
     command:
       - /bin/sh
       - -c
@@ -234,7 +243,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug]
+    profiles: [debug, functional]
     command:
       - /bin/sh
       - -c
@@ -284,7 +293,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    profiles: [debug]
+    profiles: [debug, functional]
     command:
       - /bin/sh
       - -c
@@ -351,7 +360,6 @@ services:
       - onclusive-net
 
   # functional tests
-  # - include REST model server process
   serve-functional:
     volumes:
       - type: bind
