@@ -245,6 +245,21 @@
             ]
         },
         {
+            "name": "entity linking ingest",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/entity-linking/ingest/",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
             "name": "entity linking serve",
             "type": "debugpy",
             "request": "attach",
@@ -435,21 +450,6 @@
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/apps/prompt/backend/",
-                    "remoteRoot": "."
-                }
-            ]
-        },
-        {
-            "name": "entity linking ingest",
-            "type": "debugpy",
-            "request": "attach",
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/projects/entity-linking/ingest/",
                     "remoteRoot": "."
                 }
             ]

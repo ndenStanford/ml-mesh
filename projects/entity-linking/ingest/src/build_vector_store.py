@@ -96,7 +96,11 @@ def build_vector_store(settings: BaseSettings) -> None:
         embeddings_file=settings.EMBEDDINGS_FILE, index_file=settings.INDEX_FILE
     )
     loader = DataLoader(dataset=wiki_embeddings)
-    client = from_url(url=settings.REDIS_CONNECTION_STRING)
+    try:
+        client = from_url(url=settings.REDIS_CONNECTION_STRING)
+    except ValueError as e:
+        print(f"REDIS_CONNECTION_STRING is not valid: {e}")
+        raise
     create_redis_index(
         vector_dimensions=wiki_embeddings.embeddings.shape[1],
         client=client,
