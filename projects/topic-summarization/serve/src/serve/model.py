@@ -82,7 +82,6 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
-        trend_found = None
         start_time = None
         end_time = None
         if not content:
@@ -94,15 +93,14 @@ class ServedTopicModel(ServedModel):
             # to work for integration tests
             end_time = pd.Timestamp(datetime.now())
             start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-            trending = False
+            trend_found = None
             if trend_detection:
-                trending, inflection_point = self.trend_detector.single_topic_trend(
+                trend_found, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
                 )
-            if not trend_detection or trending:
+            if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
-                if trending:
-                    trend_found = True
+                if trend_found:
                     start_time = inflection_point
                     end_time = start_time + pd.Timedelta(days=1)
 
@@ -115,7 +113,6 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id
                 )
             else:
-                trend_found = False
                 topic = None
                 impact_category = None
         else:
