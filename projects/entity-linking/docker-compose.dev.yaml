@@ -3,6 +3,68 @@ version : '3.9'
 
 services:
   # =============================================
+  # INGEST
+  # =============================================
+
+  ingest:
+    volumes:
+      - type: bind
+        source: ingest/
+        target: /projects/entity-linking/ingest
+      - type: bind
+        source: ${HOME}/data/el_embeddings/
+        target: /projects/entity-linking/artifacts
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.build_vector_store]
+    profiles: [ingest]
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/artifacts/index.txt}
+      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/artifacts/embeddings.pt}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  ingest-debug:
+    volumes:
+      - type: bind
+        source: ingest
+        target: /projects/entity-linking/ingest
+      - type: bind
+        source: ${HOME}/data/el_embeddings/
+        target: /projects/entity-linking/artifacts
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debug}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.build_vector_store]
+    ports:
+      - 5678:5678
+    profiles: [debug]
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/artifacts/index.txt}
+      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/artifacts/embeddings.pt}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
   # TRAIN
   # =============================================
 
