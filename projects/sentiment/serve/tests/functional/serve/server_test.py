@@ -179,7 +179,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 422,
+                "status": 204,
             },
         ),
         # Test case for a correct but unsupported language code
@@ -197,7 +197,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 422,
+                "status": 204,
             },
         ),
         # Test case for Chinese
