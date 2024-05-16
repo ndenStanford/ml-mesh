@@ -84,6 +84,7 @@ class ServedTopicModel(ServedModel):
         content = inputs.content
         start_time = None
         end_time = None
+        trend_found = None
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -93,7 +94,6 @@ class ServedTopicModel(ServedModel):
             # to work for integration tests
             end_time = pd.Timestamp(datetime.now())
             start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-            trend_found = None
             if trend_detection:
                 trend_found, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
