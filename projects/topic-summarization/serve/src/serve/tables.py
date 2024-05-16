@@ -6,13 +6,16 @@ from typing import Dict, Optional, Union
 
 # 3rd party libraries
 from dyntastic import Dyntastic
+from pydantic import Field, validator
 
 # Internal libraries
-from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-from pydantic import Field, validator
+from onclusiveml.serving.serialization.topic_summarization.v1 import (
+    ImpactCategoryLabel,
+)
 
 # Source
 from src.settings import get_settings
+
 
 settings = get_settings()
 
