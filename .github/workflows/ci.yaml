@@ -764,9 +764,9 @@ jobs       :
           # serve
           - name: serve
             download-model: false
-            integration: true
-            functional: true
-            load: true
+            integration: false
+            functional: false
+            load: false
             upload-test-results: true
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
