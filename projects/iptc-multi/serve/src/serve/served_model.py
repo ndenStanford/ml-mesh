@@ -46,7 +46,6 @@ class ServedIPTCMultiModel(ServedModel):
         "10000000",
         "20000209",
     }
-    CRITICAL_MODELS_TO_BE_LIVE = {"00000000"}
 
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
@@ -62,10 +61,10 @@ class ServedIPTCMultiModel(ServedModel):
         self.ready = True
 
     def are_all_models_live(self) -> bool:
-        """Check the liveness of all/critical models by sending a test request to each model's endpoint.
+        """Check the liveness of all models by sending a test request to each model's endpoint.
 
         Returns:
-            bool: True if all/critical models are live and responsive, False otherwise.
+            bool: True if all models are live and responsive, False otherwise.
         """
         all_models_live = True
         for model_id in AVAILABLE_MODELS.keys():
@@ -77,19 +76,18 @@ class ServedIPTCMultiModel(ServedModel):
                 response_schema = current_model(
                     client, content=self.SAMPLE_INFERENCE_CONTENT
                 )
-                if not response_schema.attributes.iptc:
+                if response_schema.attributes.iptc is None:
                     logger.error(
                         f"Error while inferencing the IPTC model {model_id}: empty attributes"
                     )
-                    if self._should_return_failure(model_id):
-                        all_models_live = False
+                    all_models_live = False
+                    break
             except Exception as e:
                 logger.error(
                     f"Error while inferencing the IPTC model {model_id}: {str(e)}"
                 )
-                if self._should_return_failure(model_id):
-                    all_models_live = False
-                    # do not break here to check all models
+                all_models_live = False
+                break
         return all_models_live
 
     def _calculate_probability_with_decay(self, model_id: str) -> float:
@@ -134,17 +132,6 @@ class ServedIPTCMultiModel(ServedModel):
         if should_check:
             self.last_checked[model_id] = time.time()
         return should_check
-
-    def _should_return_failure(self, model_id: str) -> bool:
-        """Determines whether to return False on the failutre of a model_id.
-
-        Args:
-            model_id (str): The ID of the model.
-
-        Returns:
-            bool: True if the faiure should return, False otherwise.
-        """
-        return model_id in self.CRITICAL_MODELS_TO_BE_LIVE
 
     def _get_model_id_from_label(self, label: str) -> str:
         """Retrieve the model ID corresponding to a given label.
