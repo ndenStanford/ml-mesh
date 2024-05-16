@@ -1,6 +1,7 @@
 """Topic Summarization v1 data schemas."""
 
 # Standard Library
+from datetime import datetime
 from typing import List, Optional
 
 # Internal libraries
@@ -63,6 +64,8 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     topic: Topic
     impact_category: Optional[ImpactCategoryLabel]
     trend_found: Optional[bool] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
