@@ -36,21 +36,6 @@ def mock_responses():
     return mock_response
 
 
-# @pytest.fixture
-# def mock_responses_aggregate():
-#     """Mock response for request.post."""
-#     mock_response = MagicMock()
-
-#     # build mock sample
-#     keys = ["summary", "theme", "impact", "summary", "information", "reason"]
-#     # Manually construct the inner JSON string
-#     inner_json = {key: "Not mentionned" for key in keys}
-
-#     # Create the final string
-#     mock_response.content = json.dumps(inner_json)
-#     return mock_response
-
-
 @pytest.fixture
 def mock_reponses_production_tool():
     """Mock response for production tool query profile."""

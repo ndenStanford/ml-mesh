@@ -9,8 +9,6 @@ from typing import List, Dict, Union
 import requests
 import json
 
-# from multiprocessing import Pool, cpu_count
-
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
@@ -36,7 +34,6 @@ class TopicHandler:
             topic summary & impact(dict): dict[str,str]
         """
         claude_alias = settings.PROMPT_ALIAS["claude_topic"]
-        # gpt_alias = settings.PROMPT_ALIAS["gpt_topic"]
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
@@ -137,9 +134,6 @@ class TopicHandler:
             merged_result (dict): dict
         """
         article = self.pre_process(article)
-        # grouped_article = self.group(article)
-        # topic_result = self.topic_aggregate(grouped_article)
-        # summary_result = self.summary_aggregate(grouped_article)
         topic_result = self.topic_inference(article)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article)
