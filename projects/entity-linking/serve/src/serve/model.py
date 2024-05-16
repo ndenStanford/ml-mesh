@@ -118,46 +118,59 @@ class ServedBelaModel(ServedModel):
             text_list = [entity["text"] for entity in entities]
             print ('text list: ',text_list)
             for sentence_idx, entry in enumerate(output):
-                print("sentence index: ",sentence_idx)
-                entity_score_map = dict(zip(entry['entities'], entry['el_scores']))
-                entity_ner_map = dict(zip(entry['entities'], entry['md_scores']))
-                for idx, entity_id in enumerate(entry['entities']):
-                    start_offset = entry['offsets'][idx]
-                    entity_length = entry['lengths'][idx]
-                    end_offset = start_offset + entity_length
-                    entity_text = str(content[sentence_idx][start_offset:end_offset])
-                    print('ENTITY TEXT: ',entity_text)
-                    if entity_text in text_list:
-                        print('YYYAYYYY')
-                        index = text_list.index(entity_text)
+                try:
+                    print("sentence index: ",sentence_idx)
+                    entity_score_map = dict(zip(entry['entities'], entry['el_scores']))
+                    entity_ner_map = dict(zip(entry['entities'], entry['md_scores']))
+                    for idx, entity_id in enumerate(entry['entities']):
+                        start_offset = entry['offsets'][idx]
+                        entity_length = entry['lengths'][idx]
+                        end_offset = start_offset + entity_length
+                        entity_text = str(content[sentence_idx][start_offset:end_offset])
+                        print('ENTITY TEXT: ',entity_text)
+                        if entity_text in text_list:
+                            print('YYYAYYYY')
+                            index = text_list.index(entity_text)
+                            entity_with_link = {
+                                "entity_type": entities[index]["entity_type"],
+                                "text": entity_text,
+                                "salience_score": entities[index]["salience_score"],
+                                "sentence_indexes": [sentence_idx],
+                                "wiki_link": "https://www.wikidata.org/wiki/"+entity_id, 
+                                "wiki_score": entity_score_map.get(entity_id, None)
+                            }
+                            entities_with_links.append(entity_with_link)
+                except KeyError as e:
+                    raise KeyError(f"KeyError occurred: {e}")
+                except IndexError as e:
+                    raise IndexError(f"IndexError occurred: {e}")
+                except Exception as e:
+                    raise Exception(f"An unexpected error occurred: {e}")
+        else: 
+            for sentence_idx, entry in enumerate(output):
+                try:
+                    entity_score_map = dict(zip(entry['entities'], entry['el_scores']))
+                    entity_ner_map = dict(zip(entry['entities'], entry['md_scores']))
+                    for idx, entity_id in enumerate(entry['entities']):
+                        start_offset = entry['offsets'][idx]
+                        entity_length = entry['lengths'][idx]
+                        end_offset = start_offset + entity_length
+                        entity_text = str(content[sentence_idx][start_offset:end_offset])
                         entity_with_link = {
-                            "entity_type": entities[index]["entity_type"],
+                            "entity_type": "UNK",
                             "text": entity_text,
-                            "salience_score": entities[index]["salience_score"],
-                            "sentence_indexes": [sentence_idx],
-                            "wiki_link": "https://www.wikidata.org/wiki/"+entity_id, 
+                            "salience_score": entity_ner_map.get(entity_id, None),
+                            "sentence_indexes": [sentence_idx],  
+                            "wiki_link": "https://www.wikidata.org/wiki/"+entity_id,  
                             "wiki_score": entity_score_map.get(entity_id, None)
                         }
                         entities_with_links.append(entity_with_link)
-
-        else: 
-            for sentence_idx, entry in enumerate(output):
-                entity_score_map = dict(zip(entry['entities'], entry['el_scores']))
-                entity_ner_map = dict(zip(entry['entities'], entry['md_scores']))
-                for idx, entity_id in enumerate(entry['entities']):
-                    start_offset = entry['offsets'][idx]
-                    entity_length = entry['lengths'][idx]
-                    end_offset = start_offset + entity_length
-                    entity_text = str(content[sentence_idx][start_offset:end_offset])
-                    entity_with_link = {
-                        "entity_type": "UNK",
-                        "text": entity_text,
-                        "salience_score": entity_ner_map.get(entity_id, None),
-                        "sentence_indexes": [sentence_idx],  
-                        "wiki_link": "https://www.wikidata.org/wiki/"+entity_id,  
-                        "wiki_score": entity_score_map.get(entity_id, None)
-                    }
-                    entities_with_links.append(entity_with_link)
+                except KeyError as e:
+                    raise KeyError(f"KeyError occurred: {e}")
+                except IndexError as e:
+                    raise IndexError(f"IndexError occurred: {e}")
+                except Exception as e:
+                    raise Exception(f"An unexpected error occurred: {e}")
 
             print('ENTITIES WITH LINKS1: ', entities_with_links)
         
