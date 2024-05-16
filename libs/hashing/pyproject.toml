@@ -11,6 +11,9 @@ python = "3.8.16"
 core = {path = "../core"}
 nlp = {path = "../nlp"}
 nltk = "^3.8.1"
+jieba = "^0.42.1"
+spacy = "3.7.4"
+konoha = {version = "^5.0.0", extras = ["all"]}
 numpy = "1.22.0"
 scipy = "1.7.3"
 
