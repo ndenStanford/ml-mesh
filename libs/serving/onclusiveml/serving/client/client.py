@@ -13,7 +13,6 @@ import onclusiveml.serving.serialization.ner.v1 as ner_v1
 import onclusiveml.serving.serialization.sentiment.v1 as sentiment_v1
 import onclusiveml.serving.serialization.topic.v1 as topic_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
-from onclusiveml.models.iptc.class_dict import AVAILABLE_MODELS
 from onclusiveml.serving.client._bind import bind
 
 
@@ -43,11 +42,75 @@ class OnclusiveApiClient:
         self.host = host
         self.api_key_header = api_key_header
         self.api_key = api_key
+        # Created from onclusiveml.models.iptc.class_dict.AVAILABLE_MODELS
+        # to remove models lib dependencies
+        self.available_iptc_models = [
+            "00000000",
+            "01000000",
+            "16000000",
+            "02000000",
+            "03000000",
+            "04000000",
+            "05000000",
+            "06000000",
+            "07000000",
+            "09000000",
+            "10000000",
+            "11000000",
+            "12000000",
+            "13000000",
+            "14000000",
+            "15000000",
+            "17000000",
+            "20000209",
+            "20000170",
+            "20000385",
+            "20000148",
+            "20000139",
+            "20000717",
+            "20000756",
+            "20000742",
+            "20000735",
+            "20000106",
+            "20000129",
+            "20000121",
+            "20000082",
+            "20000464",
+            "20000446",
+            "20000493",
+            "20000538",
+            "20000565",
+            "20000056",
+            "20000065",
+            "20000053",
+            "20000822",
+            "20000002",
+            "20000038",
+            "20000045",
+            "20000430",
+            "20000424",
+            "20000441",
+            "20000657",
+            "20000705",
+            "20000697",
+            "20000593",
+            "20000574",
+            "20000638",
+            "20000621",
+            "20000587",
+            "20000649",
+            "20000780",
+            "20000808",
+            "20000802",
+            "20000775",
+            "20000799",
+            "20000788",
+        ]
         self.setup_iptc_bindings()
 
     def setup_iptc_bindings(self) -> None:
-        """Dynamically create bindings for each model ID based on ID_TO_TOPIC."""
-        for model_id, _ in AVAILABLE_MODELS.items():
+        """Dynamically create bindings for each model."""
+        for model_id in self.available_iptc_models:
             namespace = f"iptc-{model_id}"
             setattr(
                 self,
