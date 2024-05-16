@@ -2,7 +2,7 @@
 # isort: skip_file
 # black:skip_file
 """Prediction model."""
-print("start")
+
 # Standard Library
 from typing import Type, Optional
 from datetime import datetime
@@ -136,7 +136,7 @@ class ServedTopicModel(ServedModel):
             try:
                 client.save()
             except Exception:
-                raise TopicSummaryInsertionException(query_string=query_string)
+                raise TopicSummaryInsertionException(dynamodb_dict=dynamodb_dict)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),

@@ -87,8 +87,8 @@ class DynamoDBSettings(OnclusiveBaseSettings):
     """DynamoDB Settings."""
 
     AWS_DEFAULT_REGION: str = "us-east-1"
-    DYNAMODB_HOST: Optional[str] = "http://dynamodb:8000"  # None
-    EMPTY_FIELD_TEXT = "N/A"
+    DYNAMODB_HOST: Optional[str] = "http://dynamodb:8000"
+    EMPTY_FIELD_TEXT: Optional[str] = "N/A"
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):

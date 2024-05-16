@@ -6,16 +6,13 @@ from typing import Dict, Optional, Union
 
 # 3rd party libraries
 from dyntastic import Dyntastic
-from pydantic import Field, validator
 
 # Internal libraries
-from onclusiveml.serving.serialization.topic_summarization.v1 import (
-    ImpactCategoryLabel,
-)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+from pydantic import Field, validator
 
 # Source
 from src.settings import get_settings
-
 
 settings = get_settings()
 
@@ -30,7 +27,7 @@ class TopicSummaryDynamoDB(Dyntastic):
 
     topic_summary_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     topic_id: int
-    trending: bool
+    trending: Optional[bool]
     topic: Optional[
         Dict[str, Optional[Union[str, Dict[str, str]]]]
     ] = settings.EMPTY_FIELD_TEXT
