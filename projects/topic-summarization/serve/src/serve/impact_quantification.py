@@ -111,8 +111,12 @@ class ImpactQuantification:
         series_topic_es = remove_weekends(series_topic_es)
         series_topic = np.array([i["doc_count"] for i in series_topic_es])
 
-        if abs(len(series_global_es) - len(series_topic_es)) == 1:
-            series_global_es = series_global_es[1:]
+        # if there is mismatch between both queries, remove unique elements from global
+        if abs(len(series_global_es) - len(series_topic_es)) > 0:
+            topic_keys = set(item["key"] for item in series_topic_es)
+            series_global_es = [
+                item for item in series_global_es if item["key"] in topic_keys
+            ]
         # calculate global ratio
         global_ratio = series_topic / series_global
         # Decomposes trend

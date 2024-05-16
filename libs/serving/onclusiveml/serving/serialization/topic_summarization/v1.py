@@ -44,16 +44,16 @@ class Analysis(JsonApiSchema):
 class Topic(JsonApiSchema):
     """Topic analysis schema."""
 
-    opportunities: Optional[Analysis] = Analysis()
-    risk: Optional[Analysis] = Analysis()
-    threats: Optional[Analysis] = Analysis()
-    company: Optional[Analysis] = Analysis()
-    brand: Optional[Analysis] = Analysis()
-    ceo: Optional[Analysis] = Analysis()
-    customer: Optional[Analysis] = Analysis()
-    stock: Optional[Analysis] = Analysis()
-    industry: Optional[Analysis] = Analysis()
-    environment: Optional[Analysis] = Analysis()
+    opportunities: Analysis = Analysis()
+    risk: Analysis = Analysis()
+    threats: Analysis = Analysis()
+    company: Analysis = Analysis()
+    brand: Analysis = Analysis()
+    ceo: Analysis = Analysis()
+    customer: Analysis = Analysis()
+    stock: Analysis = Analysis()
+    industry: Analysis = Analysis()
+    environment: Analysis = Analysis()
     summary: str
     theme: str
 

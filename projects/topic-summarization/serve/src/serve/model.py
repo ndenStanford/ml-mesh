@@ -121,11 +121,6 @@ class ServedTopicModel(ServedModel):
         else:
             topic = self.model.aggregate(content)
             impact_category = None
-        print("--------")
-        print("--------")
-        print(topic)
-        print("--------")
-        print("--------")
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
