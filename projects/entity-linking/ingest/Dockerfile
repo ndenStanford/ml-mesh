@@ -43,10 +43,10 @@ USER root
 
 RUN poetry install --no-interaction --with dev
 
-# switch user
-USER ${USER}
-
 # --- debugger stage
 FROM builder as debugger
+
+# hadolint ignore=DL3002
+USER root
 
 RUN poetry install --no-interaction --with debug
