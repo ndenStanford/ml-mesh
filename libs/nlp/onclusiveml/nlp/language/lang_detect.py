@@ -33,12 +33,15 @@ def detect_language(content: str, language: Optional[str] = None) -> LanguageIso
 
 
 def filter_language(
-    supported_languages: List[LanguageIso], raise_if_none: Optional[bool] = True
+    supported_languages: List[LanguageIso],
+    detectable_languages: List[LanguageIso],
+    raise_if_none: Optional[bool] = True,
 ) -> Callable:
     """Decorator that filters supported language for a given function.
 
     Args:
         supported_languages (List[LanguageIso]): List of supported LanguageIso's
+        detectable_languages (List[LanguageIso]): List of detectable LanguageIso's
         raise_if_none (bool): raises error if language is not supported
     Returns:
         Callable: callable
@@ -57,6 +60,9 @@ def filter_language(
     """
     supported_language_iso_values = [
         supported_language.value for supported_language in supported_languages
+    ]
+    detectable_language_iso_values = [
+        detectable_language.value for detectable_language in detectable_languages
     ]
 
     def decorator(func: Callable) -> Callable:
@@ -77,7 +83,7 @@ def filter_language(
                 if raise_if_none:
                     raise LanguageDetectionException(
                         original_language=language,
-                        supported_language_iso_values=supported_language_iso_values,
+                        detectable_language_iso_values=detectable_language_iso_values,
                     )
                 else:
                     return None

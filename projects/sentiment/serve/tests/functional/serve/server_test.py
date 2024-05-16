@@ -188,7 +188,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 "data": {
                     "namespace": "sentiment",
                     "attributes": {
-                        "content": "Ĉi tiu estas testo en ne subtenata lingvo.",
+                        "content": "Dit is 'n toets in 'n nie-ondersteunde taal.",
                         "entities": [],
                     },
                     "parameters": {

@@ -20,5 +20,5 @@ class LanguageDetectionException(OnclusiveException):
     message_format = (
         "The language reference '{original_language}' could not be mapped, or the language could "
         "not be inferred from the content. Supported references are: "
-        "{supported_language_iso_values}."
+        "{detectable_language_iso_values}."
     )

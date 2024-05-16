@@ -84,7 +84,11 @@ class EntityLinkingServedModel(ServedModel):
             attributes={"entities": output},
         )
 
-    @filter_language(supported_languages=list(LanguageIso), raise_if_none=True)
+    @filter_language(
+        supported_languages=list(LanguageIso),
+        detectable_languages=list(LanguageIso),
+        raise_if_none=True,
+    )
     def _predict(
         self,
         content: str,
