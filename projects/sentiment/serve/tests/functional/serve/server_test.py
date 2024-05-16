@@ -179,7 +179,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 204,
+                "status": 422,
             },
         ),
         # Test case for a correct but unsupported language code
@@ -197,7 +197,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 204,
+                "status": 422,
             },
         ),
         # Test case for Chinese
@@ -258,7 +258,7 @@ def test_new_language_cases(payload, expected_response):
 
     if response.status_code != 200:
         assert response.status_code == expected_response.get("status", 500)
-        assert response.text == ""
+        assert response.json() == ""
     else:
         assert response.status_code == 200
         assert response.json() == expected_response

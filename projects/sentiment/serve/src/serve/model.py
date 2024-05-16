@@ -9,7 +9,6 @@ from pydantic import BaseModel
 # Internal libraries
 from onclusiveml.models.sentiment import CompiledSent
 from onclusiveml.nlp.language import filter_language
-from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
@@ -117,7 +116,6 @@ class ServedSentModel(ServedModel):
 
     @filter_language(
         supported_languages=settings.supported_languages,
-        detectable_languages=list(LanguageIso),
         raise_if_none=True,
     )
     def _sentiment_analysis(
