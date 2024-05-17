@@ -43,7 +43,7 @@ class OnclusiveApiClient:
         self.api_key_header = api_key_header
         self.api_key = api_key
         # Created from onclusiveml.models.iptc.class_dict.AVAILABLE_MODELS
-        # to remove models lib dependencies
+        # to avoid models lib dependencies from serving
         self.available_iptc_models = [
             "00000000",
             "01000000",
