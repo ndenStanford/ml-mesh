@@ -48,8 +48,7 @@
                     "localRoot": "${workspaceFolder}/projects/topic-summarization/serve",
                     "remoteRoot": "."
                 }
-            ],
-            "justMyCode": false
+            ]
         },
         {
             "name": "topic summarization backfill",
@@ -139,8 +138,7 @@
                     "localRoot": "${workspaceFolder}/projects/summarization/serve",
                     "remoteRoot": "."
                 }
-            ],
-            "justMyCode": false
+            ]
         },
         {
             "name": "sentiment train",
@@ -350,8 +348,7 @@
                     "localRoot": "${workspaceFolder}/projects/iptc/serve",
                     "remoteRoot": "."
                 }
-            ],
-            "justMyCode": false
+            ]
         },
         {
             "name": "iptc register",
@@ -396,8 +393,7 @@
                     "localRoot": "${workspaceFolder}/projects/iptc/compile",
                     "remoteRoot": "."
                 }
-            ],
-            "justMyCode": false
+            ]
         },
         {
             "name": "gch summarization backfill",
