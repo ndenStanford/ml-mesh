@@ -6,7 +6,7 @@ services:
   # INGEST
   # =============================================
 
-  ingest:
+  ingest-build-vector-store:
     volumes:
       - type: bind
         source: ingest/
@@ -25,7 +25,57 @@ services:
         COMPONENT: ingest
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, src.example_querying]
+    command: [python, -m, src.build_vector_store]
+    profiles: [ingest]
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/artifacts/index.txt}
+      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/artifacts/embeddings.pt}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  ingest-drop-index:
+    volumes:
+      - type: bind
+        source: ingest/
+        target: /projects/entity-linking/ingest
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
+    command: [python, -m, src.drop_index]
+    profiles: [ingest]
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/artifacts/index.txt}
+      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/artifacts/embeddings.pt}
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  ingest-run-example:
+    volumes:
+      - type: bind
+        source: ingest/
+        target: /projects/entity-linking/ingest
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/ingest/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: ingest
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
+    command: [python, -m, src.exmaple_querying]
     profiles: [ingest]
     environment:
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
@@ -53,7 +103,7 @@ services:
         COMPONENT: ingest
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.example_querying]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.build_vector_store]
     ports:
       - 5678:5678
     profiles: [debug]

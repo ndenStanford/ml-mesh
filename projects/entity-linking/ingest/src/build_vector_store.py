@@ -1,5 +1,5 @@
 # type: ignore
-"""Create index."""
+"""Create index and build vector store."""
 
 # Standard Library
 from typing import List
@@ -83,7 +83,7 @@ def write_to_redis_index(client: Redis, loader: DataLoader) -> None:
     pipe = client.pipeline()
     for idx, obj in loader:
         pipe.hset(name=idx[0], mapping={"embedding": obj[0]})
-    pipe.execute()
+        pipe.execute()
 
 
 def build_vector_store(settings: BaseSettings) -> None:
