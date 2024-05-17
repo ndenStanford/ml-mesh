@@ -179,7 +179,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 400,
+                "status": 422,
                 "detail": "The language reference 'xyz' could not be mapped",
             },
         ),
@@ -198,7 +198,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 400,
+                "status": 422,
                 "detail": "The language 'LanguageIso.AF' that was looked up from 'af'",
             },
         ),
