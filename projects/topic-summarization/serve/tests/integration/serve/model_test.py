@@ -12,8 +12,6 @@ from src.serve.schema import PredictRequestSchema
 from src.serve.model import ServedTopicModel
 from src.serve.tables import TopicSummaryDynamoDB
 
-# from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-
 settings = get_settings()
 
 
