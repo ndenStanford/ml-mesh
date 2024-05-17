@@ -38,7 +38,7 @@ def run_querying_example(settings: BaseSettings, k: int) -> None:
     )
     query_params = {
         "query_vector": np.random.rand(wiki_embeddings.embeddings.shape[1])
-        .astype(np.float16)
+        .astype(np.float32)
         .tobytes()
     }
     print(client.ft(settings.INDEX_NAME).search(query, query_params).docs)

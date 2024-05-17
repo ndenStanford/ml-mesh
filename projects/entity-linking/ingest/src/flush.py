@@ -1,5 +1,5 @@
 # type: ignore
-"""Drop index."""
+"""Flush database."""
 
 # 3rd party libraries
 from redis import from_url
@@ -15,4 +15,4 @@ if __name__ == "__main__":
     except ValueError as e:
         print(f"REDIS_CONNECTION_STRING is not valid: {e}")
         raise
-    client.ft(index_name=settings.INDEX_NAME).dropindex(delete_documents=True)
+    client.flushdb()
