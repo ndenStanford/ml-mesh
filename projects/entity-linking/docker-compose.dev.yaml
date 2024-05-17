@@ -64,6 +64,9 @@ services:
       - type: bind
         source: ingest/
         target: /projects/entity-linking/ingest
+      - type: bind
+        source: ${HOME}/data/el_embeddings/
+        target: /projects/entity-linking/artifacts
     build:
       context: ../../
       dockerfile: projects/entity-linking/ingest/Dockerfile
@@ -75,7 +78,7 @@ services:
         COMPONENT: ingest
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, src.exmaple_querying]
+    command: [python, -m, src.example_querying]
     profiles: [ingest]
     environment:
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
