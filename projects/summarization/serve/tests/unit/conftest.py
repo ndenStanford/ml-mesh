@@ -16,7 +16,7 @@ def settings():
 
 
 @pytest.fixture(scope="function")
-def summarization_served_model(settings) -> FastAPI:
+def summarization_model(settings) -> FastAPI:
     """App fixture."""
     # Source
     return SummarizationServedModel(name=settings.model_name)

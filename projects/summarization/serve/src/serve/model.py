@@ -63,13 +63,16 @@ class SummarizationServedModel(ServedModel):
         try:
             alias = settings.PROMPT_DICT[lang][target_lang]["alias"]
         except KeyError:
-            logger.errror("Summarization language not supported.")
+            logger.error("Summarization language not supported.")
+            return ""
 
         input_dict = {"input": {"desired_length": desired_length, "content": text}}
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
         q = requests.post(
-            "{}/api/v1/prompts/{}/generate".format(settings.PROMPT_API, alias),
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
+                settings.PROMPT_API, alias, settings.SUMMARIZATION_DEFAULT_MODEL
+            ),
             headers=headers,
             json=input_dict,
         )

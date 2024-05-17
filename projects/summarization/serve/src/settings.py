@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     # OpenAI api key
     OPENAI_API_KEY: str = ""
     # Prompt url
-    PROMPT_API: str = "https://internal.api.ml.dev.onclusive.org"
+    PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     SUMMARIZATION_DEFAULT_MODEL: str = "gpt-4-1106-preview"
 
