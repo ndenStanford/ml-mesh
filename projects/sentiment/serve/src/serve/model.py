@@ -98,8 +98,10 @@ class ServedSentModel(ServedModel):
         except (
             LanguageDetectionException,
             LanguageFilterException,
-        ):
-            raise OnclusiveHTTPException(status_code=204)
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=400, detail=language_exception.message
+            )
         # Prepare the response attributes
         attributes = {
             "label": sentiment.get("label"),

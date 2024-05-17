@@ -75,7 +75,7 @@ class EntityLinkingServedModel(ServedModel):
         ) as language_exception:
             self.uvicorn_error_logger.error(language_exception)
             raise OnclusiveHTTPException(
-                status_code=422, detail=language_exception.message
+                status_code=400, detail=language_exception.message
             )
 
         return PredictResponseSchema.from_data(

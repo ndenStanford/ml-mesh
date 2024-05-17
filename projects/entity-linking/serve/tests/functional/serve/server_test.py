@@ -177,5 +177,5 @@ def test_model_server_prediction_invalid_language(
         json=payload,
     )
 
-    assert response.status_code == 422
+    assert response.status_code == 400
     assert response.json()["detail"].startswith(expected_error_detail)
