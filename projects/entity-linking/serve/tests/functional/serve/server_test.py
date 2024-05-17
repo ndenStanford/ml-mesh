@@ -53,24 +53,22 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
-                                "entity_type": "UNK",
-                                "text": "CEO",
-                                "salience_score": 0.24852901697158813,
+                                "entity_text": "CEO",
+                                "score": 0.24852901697158813,
                                 "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                                "wiki_score": 0.48496711254119873
+                                "wiki_score": 0.48496711254119873,
                             },
                             {
-                                "entity_type": "UNK",
-                                "text": "Apple",
-                                "salience_score": 0.7043066024780273,
+                                "entity_text": "Apple",
+                                "score": 0.7043066024780273,
                                 "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.9504453539848328
-                            }
+                                "wiki_score": 0.9504453539848328,
+                            },
                         ]
-                    }
-                }
+                    },
+                },
             },
         ),
         (
@@ -90,24 +88,22 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
-                                "entity_type": "UNK",
-                                "text": "CEO",
-                                "salience_score": 0.46443355083465576,
+                                "entity_text": "CEO",
+                                "score": 0.46443355083465576,
                                 "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                                "wiki_score": 0.6950671076774597
+                                "wiki_score": 0.6950671076774597,
                             },
                             {
-                                "entity_type": "UNK",
-                                "text": "Apple",
-                                "salience_score": 0.79751056432724,
+                                "entity_text": "Apple",
+                                "score": 0.79751056432724,
                                 "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.9626907706260681
-                            }
+                                "wiki_score": 0.9626907706260681,
+                            },
                         ]
-                    }
-                }
+                    },
+                },
             },
         ),
         (
@@ -115,7 +111,9 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
-                    "attributes": {"content": "Steve Jobs was CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla."},  # noqa
+                    "attributes": {
+                        "content": "Steve Jobs was CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla."  # noqa
+                    },  # noqa
                     "parameters": {"lang": "en"},
                 }
             },
@@ -127,56 +125,36 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
-                                "entity_type": "UNK",
-                                "text": "Steve Jobs",
-                                "salience_score": 0.438759982585907,
+                                "entity_text": "Steve Jobs",
+                                "score": 0.8623836040496826,
                                 "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q19837",
-                                "wiki_score": 0.931149959564209
+                                "wiki_score": 0.9862053990364075,
                             },
                             {
-                                "entity_type": "UNK",
-                                "text": "CEO",
-                                "salience_score": 0.2891087830066681,
-                                "sentence_indexes": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                                "wiki_score": 0.5837497115135193
-                            },
-                            {
-                                "entity_type": "UNK",
-                                "text": "Apple",
-                                "salience_score": 0.7522366046905518,
+                                "entity_text": "Apple",
+                                "score": 0.6849206686019897,
                                 "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.9569951295852661
+                                "wiki_score": 0.9424868822097778,
                             },
                             {
-                                "entity_type": "UNK",
-                                "text": "Elon Musk",
-                                "salience_score": 0.3659305274486542,
-                                "sentence_indexes": [2],
+                                "entity_text": "Elon Musk",
+                                "score": 0.8932482004165649,
+                                "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q317521",
-                                "wiki_score": 0.8962705135345459
+                                "wiki_score": 0.9890680909156799,
                             },
                             {
-                                "entity_type": "UNK",
-                                "text": "CEO",
-                                "salience_score": 0.28305891156196594,
-                                "sentence_indexes": [2],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                                "wiki_score": 0.578008234500885
-                            },
-                            {
-                                "entity_type": "UNK",
-                                "text": "Tesla",
-                                "salience_score": 0.7223825454711914,
-                                "sentence_indexes": [2],
+                                "entity_text": "Tesla",
+                                "score": 0.6265523433685303,
+                                "sentence_indexes": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q478214",
-                                "wiki_score": 0.9659820199012756
-                            }
+                                "wiki_score": 0.9453710317611694,
+                            },
                         ]
-                    }
-                }
+                    },
+                },
             },
         ),
         (
@@ -185,78 +163,52 @@ def test_model_server_readiness(test_client):
                     "identifier": None,
                     "namespace": "entity-linking",
                     "attributes": {
-                        "content": "Elon Musk is the CEO of Tesla. Hello, nothing to see here. Steve Jobs was CEO of Apple.",
-                        "entities": [
-                            {
-                                "entity_type": "Pers",
-                                "text": "Elon Musk",
-                                "salience_score": 0.9259419441223145,
-                                "sentence_indexes": [0],
-                            },
-                            {
-                                "entity_type": "ORG",
-                                "text": "Tesla",
-                                "salience_score": 0.9259419441223145,
-                                "sentence_indexes": [0],
-                            },
-                            {
-                                "entity_type": "Pers",
-                                "text": "Steve Jobs",
-                                "salience_score": 0.9259419441223145,
-                                "sentence_indexes": [2],
-                            },
-                            {
-                                "entity_type": "ORG",
-                                "text": "Apple",
-                                "salience_score": 0.9259419441223145,
-                                "sentence_indexes": [2],
-                            },
-                        ]},  # noqa
+                        "content": "Steve Jobs was the CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla. That is it.",  # noqa
+                        "mention_offsets": [[0], [26], [61], [85]],
+                        "mention_lengths": [[10], [5], [9], [5]],
+                        "entities": [[0], [0], [0], [0]],
+                    },
                     "parameters": {"lang": "en"},
                 }
             },
             {
-                'version': 1,
-                'data': {
-                    'identifier': None,
-                    'namespace': 'entity-linking',
-                    'attributes': {
-                        'entities': [
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
                             {
-                                'entity_type': 'Pers',
-                                'text': 'Elon Musk',
-                                'salience_score': 0.9259419441223145,
-                                'sentence_indexes': [0],
-                                'wiki_link': 'https://www.wikidata.org/wiki/Q317521',
-                                'wiki_score': 0.9352254867553711
+                                "entity_text": "Steve Jobs",
+                                "score": None,
+                                "sentence_indexes": None,
+                                "wiki_link": "https://www.wikidata.org/wiki/Q19837",
+                                "wiki_score": 0.4764402770996094,
                             },
                             {
-                                'entity_type': 'ORG',
-                                'text': 'Tesla',
-                                'salience_score': 0.9259419441223145,
-                                'sentence_indexes': [0],
-                                'wiki_link': 'https://www.wikidata.org/wiki/Q478214',
-                                'wiki_score': 0.9614943265914917
+                                "entity_text": "Apple",
+                                "score": None,
+                                "sentence_indexes": None,
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                                "wiki_score": 0.36141754150390625,
                             },
                             {
-                                'entity_type': 'Pers',
-                                'text': 'Steve Jobs',
-                                'salience_score': 0.9259419441223145,
-                                'sentence_indexes': [2],
-                                'wiki_link': 'https://www.wikidata.org/wiki/Q19837',
-                                'wiki_score': 0.8936492800712585
+                                "entity_text": "Elon Musk",
+                                "score": None,
+                                "sentence_indexes": None,
+                                "wiki_link": "https://www.wikidata.org/wiki/Q317521",
+                                "wiki_score": 0.48770980834960936,
                             },
                             {
-                                'entity_type': 'ORG',
-                                'text': 'Apple',
-                                'salience_score': 0.9259419441223145,
-                                'sentence_indexes': [2],
-                                'wiki_link': 'https://www.wikidata.org/wiki/Q312',
-                                'wiki_score': 0.9717069268226624
-                            }
+                                "entity_text": "Tesla",
+                                "score": None,
+                                "sentence_indexes": None,
+                                "wiki_link": "https://www.wikidata.org/wiki/Q478214",
+                                "wiki_score": 0.35195270538330076,
+                            },
                         ]
-                    }
-                }
+                    },
+                },
             },
         ),
     ],

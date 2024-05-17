@@ -1,4 +1,5 @@
-defaults:
+---
+defaults           :
   - config
   - datamodule: joint_el_datamodule
   - task/transform: joint_el_xlmr_transform_large
@@ -6,7 +7,7 @@ defaults:
   - task/optim: adamw
   - trainer: gpu_1_host
 
-task:
+task               :
   _target_: onclusiveml.models.bela.task.joint_el_task.JointELTask
   only_train_disambiguation: true
   embeddings_path: /fsx/movb/data/matcha/en/en_embeddings.pt
@@ -14,18 +15,18 @@ task:
     lr: 1e-05
   use_gpu_index: true
 
-datamodule:
+datamodule         :
   train_path: /fsx/movb/data/matcha/en/wiki_train.txt
   val_path: /fsx/movb/data/matcha/en/wiki_eval.txt
-  test_path: /fsx/movb/data/matcha/en/wiki_test.txt 
-  ent_catalogue_idx_path:  /fsx/movb/data/matcha/en/en_xlm_ent_idx.txt
-  
+  test_path: /fsx/movb/data/matcha/en/wiki_test.txt
+  ent_catalogue_idx_path: /fsx/movb/data/matcha/en/en_xlm_ent_idx.txt
+
   batch_size: 64
 
-trainer:
+trainer            :
   max_epochs: 4
   val_check_interval: 500
 
 
 checkpoint_callback:
-    monitor: valid_recall_at_1
+  monitor: valid_recall_at_1

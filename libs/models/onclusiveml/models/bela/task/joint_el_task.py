@@ -3,28 +3,31 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Standard Library
+import datetime
 import logging
+import os
 from collections import OrderedDict
 from typing import Any, Dict, NamedTuple, Optional, Tuple, Union
 
-import faiss
-import faiss.contrib.torch_utils
-import hydra
+# ML libs
 import torch
 import torch.nn as nn
 
+# 3rd party libraries
+import faiss
+import faiss.contrib.torch_utils
+import hydra
+import numpy as np
 from pytorch_lightning import LightningModule
 
+# Internal libraries
 from onclusiveml.models.bela.conf import (
     DataModuleConf,
     ModelConf,
     OptimConf,
     TransformConf,
 )
-
-import datetime
-import os
-import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -187,22 +190,18 @@ class MentionScoresHead(nn.Module):
         start_logprobs = logits[:, :, 0].squeeze(-1)
         end_logprobs = logits[:, :, 1].squeeze(-1)
         mention_logprobs = logits[:, :, 2].squeeze(-1)
-
         # impossible to choose masked tokens as starts/ends of spans
         start_logprobs[mask_ctxt != 1] = float("-inf")
         end_logprobs[mask_ctxt != 1] = float("-inf")
         mention_logprobs[mask_ctxt != 1] = float("-inf")
-
         # take sum of log softmaxes:
         # log p(mention) = log p(start_pos && end_pos) = log p(start_pos) + log p(end_pos)
         # DIM: (bs, starts, ends)
         mention_scores = start_logprobs.unsqueeze(2) + end_logprobs.unsqueeze(1)
-
         # (bs, starts, ends)
         mention_cum_scores = torch.zeros(
             mention_scores.size(), dtype=mention_scores.dtype
         ).to(device)
-
         # add ends
         mention_logprobs_end_cumsum = torch.zeros(
             mask_ctxt.size(0), dtype=mention_scores.dtype
@@ -210,7 +209,6 @@ class MentionScoresHead(nn.Module):
         for i in range(mask_ctxt.size(1)):
             mention_logprobs_end_cumsum += mention_logprobs[:, i]
             mention_cum_scores[:, :, i] += mention_logprobs_end_cumsum.unsqueeze(-1)
-
         # subtract starts
         mention_logprobs_start_cumsum = torch.zeros(
             mask_ctxt.size(0), dtype=mention_scores.dtype
@@ -220,10 +218,8 @@ class MentionScoresHead(nn.Module):
             mention_cum_scores[
                 :, (i + 1), :
             ] -= mention_logprobs_start_cumsum.unsqueeze(-1)
-
         # DIM: (bs, starts, ends)
         mention_scores += mention_cum_scores
-
         # DIM: (starts, ends, 2) -- tuples of [start_idx, end_idx]
         mention_bounds = torch.stack(
             [
@@ -240,10 +236,8 @@ class MentionScoresHead(nn.Module):
         mention_sizes = (
             mention_bounds[:, :, 1] - mention_bounds[:, :, 0] + 1
         )  # (+1 as ends are inclusive)
-
         # Remove invalids (startpos > endpos, endpos > seqlen) and renormalize
         # DIM: (bs, starts, ends)
-
         # valid mention starts mask
         select_indices = torch.cat(
             [
@@ -258,7 +252,6 @@ class MentionScoresHead(nn.Module):
         token_starts_mask = torch.zeros(mask_ctxt.size(), dtype=mask_ctxt.dtype)
         token_starts_mask[select_indices[:, 0], select_indices[:, 1]] = 1
         token_starts_mask[:, 0] = 0
-
         # valid mention ends mask
         select_indices = torch.cat(
             [
@@ -273,7 +266,6 @@ class MentionScoresHead(nn.Module):
         token_ends_mask = torch.zeros(mask_ctxt.size(), dtype=mask_ctxt.dtype)
         token_ends_mask[select_indices[:, 0], select_indices[:, 1]] = 1
         token_ends_mask[:, 0] = 0
-
         # valid mention starts*ends mask
         valid_starts_ends_mask = torch.bmm(
             token_starts_mask.unsqueeze(2), token_ends_mask.unsqueeze(1)
@@ -284,7 +276,6 @@ class MentionScoresHead(nn.Module):
             & torch.gt(mask_ctxt.unsqueeze(2), 0)
             & torch.gt(valid_starts_ends_mask, 0)
         )
-
         # DIM: (bs, starts, ends)
         # 0 is not a valid
         mention_scores[~valid_mask] = float("-inf")  # invalids have logprob=-inf (p=0)
@@ -325,7 +316,6 @@ class MentionScoresHead(nn.Module):
         """
         batch_num_selected = selected.sum(1)
         max_num_selected = batch_num_selected.max()
-
         # (bsz, 2)
         repeat_freqs = torch.stack(
             [batch_num_selected, max_num_selected - batch_num_selected], dim=-1
@@ -345,7 +335,6 @@ class MentionScoresHead(nn.Module):
             left_align_mask = left_align_mask.repeat_interleave(repeat_freqs)
             # (bsz, max_num_selected)
             left_align_mask = left_align_mask.view(-1, max_num_selected)
-
         # reshape to (bsz, max_num_selected, *)
         input_reshape = (
             torch.empty(left_align_mask.size() + input_t.size()[2:])
@@ -397,7 +386,6 @@ class MentionScoresHead(nn.Module):
         )
         # (bsz, num_cand_mentions)
         top_mention_pos_mask = torch.sigmoid(top_mention_logits) > threshold
-
         # (total_possible_mentions, 2)
         #   tuples of [index of batch, index into mention_bounds] of what mentions to include
         mention_pos = mention_pos[
@@ -476,7 +464,6 @@ class JointELTask(LightningModule):
         use_gpu_index: bool = False,
     ):
         super().__init__()
-
         # encoder setup
         self.encoder_conf = model
         self.optim_conf = optim
@@ -527,7 +514,7 @@ class JointELTask(LightningModule):
             return
         # resetting call_configure_sharded_model_hook attribute so that we could configure model
         self.call_configure_sharded_model_hook = False
-        
+
         self.embeddings = torch.load(self.embeddings_path)
         self.embedding_dim = len(self.embeddings[0])
         self.embeddings.requires_grad = False
@@ -602,7 +589,6 @@ class JointELTask(LightningModule):
             assert self.faiss_index_path is not None
             self.faiss_index = faiss.read_index(self.faiss_index_path)
 
-
     def sim_score(self, mentions_repr, entities_repr):
         # bs x emb_dim , bs x emb_dim
         scores = torch.sum(mentions_repr * entities_repr, 1)
@@ -632,14 +618,12 @@ class JointELTask(LightningModule):
         self, mentions_repr, mention_offsets, mention_lengths, entities_ids
     ):
         device = mentions_repr.get_device()
-
         # flat mentions and entities indices (mentions_num x embedding_dim)
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
         flat_entities_ids = entities_ids[mention_lengths != 0]
 
         if flat_mentions_repr.shape[0] == 0:
             return None
-
         # obtain positive entities representations
         if self.use_gpu_index:
             entities_repr = torch.stack(
@@ -650,10 +634,8 @@ class JointELTask(LightningModule):
             ).to(device)
         else:
             entities_repr = self.embeddings[flat_entities_ids.to("cpu")].to(device)
-
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
-
         # retrieve candidates indices
         if self.use_gpu_index:
             (
@@ -668,14 +650,10 @@ class JointELTask(LightningModule):
             neg_cand_repr = torch.from_numpy(neg_cand_repr).to(device)
 
         else:
-            (
-                _,
-                neg_cand_indices,
-            ) = self.faiss_index.search(
+            (_, neg_cand_indices,) = self.faiss_index.search(
                 flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
                 self.n_retrieve_candidates,
             )
-
             # get candidates embeddings
             neg_cand_repr = (
                 self.embeddings[neg_cand_indices.flatten()]
@@ -688,22 +666,18 @@ class JointELTask(LightningModule):
             )
 
             neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
-
         # compute scores (bs x n_retrieve_candidates)
         neg_cand_scores = torch.bmm(
             flat_mentions_repr.unsqueeze(1), neg_cand_repr.transpose(1, 2)
         ).squeeze(1)
-
         # zero score for the positive entities
         neg_cand_scores[
             neg_cand_indices.eq(
                 flat_entities_ids.unsqueeze(1).repeat([1, self.n_retrieve_candidates])
             )
         ] = float("-inf")
-
         # append positive scores to neg scores (bs x (1 + n_retrieve_candidates))
         scores = torch.hstack([pos_scores.unsqueeze(1), neg_cand_scores])
-
         # cosntruct targets
         targets = torch.tensor([0] * neg_cand_scores.shape[0]).to(device)
 
@@ -745,13 +719,11 @@ class JointELTask(LightningModule):
             .sum(-1)
             == 0
         ).nonzero()
-
         # (bs, total_possible_spans)
         gold_mention_binary = torch.zeros(
             mention_logits.size(), dtype=mention_logits.dtype
         ).to(device)
         gold_mention_binary[gold_mention_pos_idx[:, 0], gold_mention_pos_idx[:, 2]] = 1
-
         # prune masked spans
         mask = mention_logits != float("-inf")
         masked_mention_logits = mention_logits[mask]
@@ -787,7 +759,6 @@ class JointELTask(LightningModule):
             el_loss: sum of entity linking loss over all predicted mentions
         """
         device = text_encodings.get_device()
-
         # get predicted mention_offsets and mention_bounds by MD model
         (
             chosen_mention_logits,
@@ -805,27 +776,23 @@ class JointELTask(LightningModule):
         mention_lengths = (
             chosen_mention_bounds[:, :, 1] - chosen_mention_bounds[:, :, 0] + 1
         )
-
         # get mention representations for predicted mentions
         mentions_repr = self.span_encoder(
             text_encodings, mention_offsets, mention_lengths
         )
 
         mention_lengths[mention_offsets == 0] = 0
-
         # flat mentions and entities indices (mentions_num x embedding_dim)
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
         flat_mentions_scores = torch.sigmoid(
             chosen_mention_logits[mention_lengths != 0]
         )
         flat_mentions_repr = flat_mentions_repr[flat_mentions_scores > 0]
-
         # cand_scores, cand_indices = self.faiss_index.search(
         #     flat_mentions_repr.detach().cpu().numpy(), 1
         # )
         # cand_scores = torch.from_numpy(cand_scores)
         # cand_indices = torch.from_numpy(cand_indices)
-
         cand_scores, cand_indices = self.faiss_index.search(
             flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
             1,
@@ -833,7 +800,6 @@ class JointELTask(LightningModule):
         if self.use_gpu_index:
             cand_scores = torch.from_numpy(cand_scores)
             cand_indices = torch.from_numpy(cand_indices)
-
         # iterate over predicted and gold mentions to create targets for
         # predicted mentions
         targets = []
@@ -900,7 +866,6 @@ class JointELTask(LightningModule):
         gold_mention_lengths = batch["mention_lengths"]  # bs x max_mentions_num
         entities_ids = batch["entities"]  # bs x max_mentions_num
         tokens_mapping = batch["tokens_mapping"]  # bs x max_tokens_in_input x 2
-
         # mention representations (bs x max_mentions_num x embedding_dim)
         text_encodings, mentions_repr = self(
             text_inputs, text_pad_mask, gold_mention_offsets, gold_mention_lengths
@@ -957,11 +922,9 @@ class JointELTask(LightningModule):
         entities_ids,
     ):
         device = mentions_repr.device
-
         # flat mentions and entities indices (mentions_num x embedding_dim)
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
         flat_entities_ids = entities_ids[mention_lengths != 0]
-
         # obtain positive entities representations
         # entities_repr = self.embeddings[flat_entities_ids.to("cpu")].to(device)
         if self.use_gpu_index:
@@ -973,13 +936,10 @@ class JointELTask(LightningModule):
             ).to(device)
         else:
             entities_repr = self.embeddings[flat_entities_ids.to("cpu")].to(device)
-
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
-
         # candidates to retrieve
         n_retrieve_candidates = max(self.eval_compure_recall_at)
-
         # retrieve negative candidates ids and scores
         neg_cand_scores, neg_cand_indices = self.faiss_index.search(
             flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
@@ -987,22 +947,18 @@ class JointELTask(LightningModule):
         )
         neg_cand_scores = torch.from_numpy(neg_cand_scores).to(device)
         neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
-
         # zero score for the positive entities
         neg_cand_scores[
             neg_cand_indices.eq(
                 flat_entities_ids.unsqueeze(1).repeat([1, n_retrieve_candidates])
             )
         ] = float("-inf")
-
         # append positive scores to neg scores
         scores = torch.hstack([pos_scores.unsqueeze(1), neg_cand_scores])
-
         # cosntruct targets
         targets = torch.tensor([0] * neg_cand_scores.shape[0]).to(device)
 
         loss = self.disambiguation_loss(scores, targets)
-
         # compute recall at (1, 10, 100)
         flat_entities_ids = flat_entities_ids.cpu().tolist()
         neg_cand_indices = neg_cand_indices.cpu().tolist()
@@ -1033,7 +989,6 @@ class JointELTask(LightningModule):
         tokens_mapping,
     ):
         device = text_inputs.device
-
         # encode query and contexts
         _, last_layer = self.encoder(text_inputs)
         text_encodings = last_layer
@@ -1065,13 +1020,11 @@ class JointELTask(LightningModule):
         )
 
         mention_lengths[mention_offsets == 0] = 0
-
         # flat mentions and entities indices (mentions_num x embedding_dim)
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
 
         mentions_scores = torch.sigmoid(chosen_mention_logits)
         # flat_mentions_repr = flat_mentions_repr[flat_mentions_scores > 0]
-
         # retrieve candidates top-1 ids and scores
         cand_scores, cand_indices = self.faiss_index.search(
             flat_mentions_repr.detach().cpu().numpy().astype(np.float32), 1
@@ -1079,7 +1032,6 @@ class JointELTask(LightningModule):
 
         if self.train_el_classifier:
             # flat_entities_repr = self.embeddings[cand_indices.squeeze(1)].to(device)
-
             if self.use_gpu_index:
                 flat_entities_repr = torch.stack(
                     [
@@ -1145,7 +1097,7 @@ class JointELTask(LightningModule):
         return el_targets, el_predictions
 
     def _eval_step(self, batch, batch_idx):
-        
+
         text_inputs = batch["input_ids"]  # bs x mention_len
         text_pad_mask = batch["attention_mask"]
         mention_offsets = batch["mention_offsets"]  # bs x max_mentions_num

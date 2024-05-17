@@ -1,4 +1,5 @@
+---
 # @package _group_
-_target_: onclusiveml.models.bela.transforms.joint_el_transform.JointELTransform
-model_path: xlm-roberta-large
+_target_   : onclusiveml.models.bela.transforms.joint_el_transform.JointELTransform
+model_path : xlm-roberta-large
 max_seq_len: 256

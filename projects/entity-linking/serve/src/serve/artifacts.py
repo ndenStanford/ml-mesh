@@ -15,6 +15,7 @@ class BelaModelArtifacts(object):
         self, settings: OnclusiveBaseSettings, remove_model_prefix: bool = True
     ):
         """Utility class that reads in the model card and assembles model artifact local paths.
+
         Note:
             Assumes that the neptune file attribute paths have been mapped to relative local paths
             (e.g. as the `TrackedModelVersion.download_directory_from_model_version` method does)
@@ -43,10 +44,11 @@ class BelaModelArtifacts(object):
         )
         # obtain directory for embedding from model card
         self.model_embeddings_directory = os.path.join(
-            self.model_artifact_directory, self.model_card["model_params"]["embeddings_filename"]
+            self.model_artifact_directory,
+            self.model_card["model_params"]["embeddings_filename"],
         )
         # obtain directory for index from model card
         self.model_index_directory = os.path.join(
-            self.model_artifact_directory, self.model_card["model_params"]["index_filename"]
+            self.model_artifact_directory,
+            self.model_card["model_params"]["index_filename"],
         )
-

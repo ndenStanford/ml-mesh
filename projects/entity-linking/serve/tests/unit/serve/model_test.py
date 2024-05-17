@@ -1,16 +1,13 @@
 """Model test."""
 
-# Standard Library
-from unittest.mock import patch, MagicMock
-
 # 3rd party libraries
 import pytest
-from pytest_unordered import unordered
+
+# Internal libraries
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException
 
 # Source
-from src.serve.model import ServedBelaModel
 from src.serve.schemas import PredictRequestSchema, PredictResponseSchema
-from onclusiveml.serving.rest.serve import OnclusiveHTTPException
 
 
 def test_model_bio(entity_linking_model):
@@ -42,11 +39,11 @@ def test_model_bio(entity_linking_model):
                 "text": "Apple",
                 "salience_score": 0.9259419441223145,
                 "sentence_indexes": [0],
-            }
-        ]
+            },
+        ],
     },
     {
-        "version": 1,  
+        "version": 1,
         "namespace": "entity-linking",
         "data": {
             "identifier": None,
@@ -59,7 +56,7 @@ def test_model_bio(entity_linking_model):
                         "salience_score": 0.24852901697158813,
                         "sentence_indexes": [0],
                         "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                        "wiki_score": 0.48496711254119873
+                        "wiki_score": 0.48496711254119873,
                     },
                     {
                         "entity_type": "ORG",
@@ -67,14 +64,17 @@ def test_model_bio(entity_linking_model):
                         "salience_score": 0.7043066024780273,
                         "sentence_indexes": [0],
                         "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                        "wiki_score": 0.9504453539848328
-                    }
+                        "wiki_score": 0.9504453539848328,
+                    },
                 ]
-            }
-        }
-    }
+            },
+        },
+    },
 )
+
+
 def test_predict(mock_served_model, payload, expected_output):
+    """Testing model predictions."""
     predict_request = PredictRequestSchema(
         data={
             "identifier": None,
@@ -85,20 +85,21 @@ def test_predict(mock_served_model, payload, expected_output):
     )
 
     predict_response = PredictResponseSchema(
-        version= 1,
+        version=1,
         data={
             "identifier": None,
             "namespace": "entity-linking",
             "attributes": expected_output,
-        }
+        },
     )
 
     response = mock_served_model.predict(predict_request)
 
-    assert response.version ==  expected_output["version"]
+    assert response.version == expected_output["version"]
     assert response.data.identifier == expected_output["data"]["identifier"]
     assert response.data.namespace == expected_output["data"]["namespace"]
     assert response == predict_response
+
 
 @pytest.mark.parametrize(
     "payload,expected_error_detail",
@@ -114,12 +115,14 @@ def test_predict(mock_served_model, payload, expected_output):
                     "parameters": {"lang": "invalid_language"},
                 }
             },
-            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",
+            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa
         )
     ],
 )
-def test_model_prediction_invalid_language(mock_served_model_with_exception, payload, expected_error_detail):
-
+def test_model_prediction_invalid_language(
+    mock_served_model_with_exception, payload, expected_error_detail  # noqa
+):
+    """Testing invalid language test."""
     predict_request = PredictRequestSchema(**payload)
 
     with pytest.raises(OnclusiveHTTPException) as exc_info:

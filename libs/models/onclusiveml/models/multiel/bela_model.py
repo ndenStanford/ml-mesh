@@ -1,20 +1,18 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
+"""Bela Model script."""
 
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-from pathlib import Path
-import yaml
-from hydra.experimental import compose, initialize_config_module
-import hydra
-import torch
-from tqdm import tqdm
+# Standard Library
 import json
+from pathlib import Path
+from typing import Any, Dict, List, Tuple, Union
+
+# ML libs
+import torch
+
+# 3rd party libraries
 import faiss
-import logging
-
-from typing import Union, List, Dict, Any, Tuple
-
+import hydra
+from hydra.experimental import compose, initialize_config_module
+from tqdm import tqdm
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -24,8 +22,9 @@ logger = get_default_logger(__name__, level=20)
 
 
 def load_file(path: Union[str, Path]) -> List[Dict[str, Any]]:
+    """Load the files."""
     all_data = []
-    with open(path, 'rt') as fd:
+    with open(path, "rt") as fd:
         for line in tqdm(fd):
             data = json.loads(line)
             all_data.append(data)
@@ -38,10 +37,7 @@ def convert_sp_to_char_offsets(
     sp_lengths: List[int],
     sp_tokens_boundaries: List[List[int]],
 ) -> Tuple[List[int], List[int]]:
-    """
-    Function convert sentecepiece offsets and lengths to character level
-    offsets and lengths for a given `text`.
-    """
+    """Convert sentecepiece offsets and lengths to character level offsets and lengths for a given `text`."""  # noqa
     char_offsets: List[int] = []
     char_lengths: List[int] = []
     text_utf8_chars: List[str] = [char for char in text]
@@ -54,7 +50,6 @@ def convert_sp_to_char_offsets(
         sp_offset = sp_offset - 1
         char_offset = sp_tokens_boundaries[sp_offset][0]
         char_end = sp_tokens_boundaries[sp_offset + sp_length - 1][1]
-
         # sp token boundaries include whitespaces, so remove them
         while text_utf8_chars[char_offset].isspace():
             char_offset += 1
@@ -67,14 +62,25 @@ def convert_sp_to_char_offsets(
 
 
 class BelaModel:
+    """BelaModel."""
+
     def __init__(
         self,
         checkpoint_path,
         config_name="joint_el_mel",
         embeddings_path=None,
         ent_catalogue_idx_path=None,
-        device="cuda:0"
+        device="cuda:0",
     ):
+        """Initialize the model with specified parameters.
+
+        Args:
+            checkpoint_path (str): Path to the checkpoint file.
+            config_name (str, optional): Name of the configuration. Defaults to "joint_el_mel".
+            embeddings_path (str, optional): Path to the embeddings file. Defaults to None.
+            ent_catalogue_idx_path (str, optional): Path to the entity catalogue index file. Defaults to None.
+            device (str, optional): Device to use for computations. Defaults to "cuda:0".
+        """  # noqa
         self.device = torch.device(device)
 
         logger.info("Create task")
@@ -82,15 +88,19 @@ class BelaModel:
             cfg = compose(config_name=config_name)
             cfg.task.load_from_checkpoint = checkpoint_path
             cfg.task.embeddings_path = embeddings_path or cfg.task.embeddings_path
-            cfg.datamodule.ent_catalogue_idx_path = ent_catalogue_idx_path or  cfg.datamodule.ent_catalogue_idx_path
+            cfg.datamodule.ent_catalogue_idx_path = (
+                ent_catalogue_idx_path or cfg.datamodule.ent_catalogue_idx_path
+            )
             cfg.datamodule.train_path = None
             cfg.datamodule.val_path = None
             cfg.datamodule.test_path = None
 
-        self.checkpoint_path = checkpoint_path           
-        self.transform = hydra.utils.instantiate(cfg.task.transform)        
+        self.checkpoint_path = checkpoint_path
+        self.transform = hydra.utils.instantiate(cfg.task.transform)
         datamodule = hydra.utils.instantiate(cfg.datamodule, transform=self.transform)
-        self.task = hydra.utils.instantiate(cfg.task, datamodule=datamodule, _recursive_=False)
+        self.task = hydra.utils.instantiate(
+            cfg.task, datamodule=datamodule, _recursive_=False
+        )
 
         self.task.setup("train")
         self.task = self.task.eval()
@@ -104,6 +114,12 @@ class BelaModel:
             self.ent_idx.append(ent)
 
     def create_gpu_index(self, gpu_id=0):
+        """Create a GPU-based Faiss index.
+
+        Args:
+            self: The instance of the class.
+            gpu_id (int, optional): The ID of the GPU to use. Defaults to 0.
+        """
         flat_config = faiss.GpuIndexFlatConfig()
         flat_config.device = gpu_id
         flat_config.useFloat16 = True
@@ -117,11 +133,26 @@ class BelaModel:
         self,
         query: torch.Tensor,
     ):
+        """Search for nearest neighbors in the Faiss index.
+
+        Args:
+            self: The instance of the class.
+            query (torch.Tensor): Tensor containing query vectors.
+        """
         scores, indices = self.faiss_index.search(query, k=1)
 
         return scores.squeeze(-1).to(self.device), indices.squeeze(-1).to(self.device)
 
-    def process_batch(self, texts): 
+    def process_batch(self, texts):
+        """Process a batch of texts for mention and entity extraction.
+
+        Args:
+            self: The instance of the class.
+            texts (list): A list of strings representing the texts to process.
+
+        Returns:
+            list: A list of dictionaries representing the extracted mentions and entities.
+        """
         batch: Dict[str, Any] = {"texts": texts}
         model_inputs = self.transform(batch)
 
@@ -160,21 +191,16 @@ class BelaModel:
             mentions_repr = self.task.span_encoder(
                 text_encodings, mention_offsets, mention_lengths
             )
-
             # flat mentions and entities indices (mentions_num x embedding_dim)
             flat_mentions_repr = mentions_repr[mention_lengths != 0]
             mentions_scores = torch.sigmoid(chosen_mention_logits)
-
             # retrieve candidates top-1 ids and scores
-            cand_scores, cand_indices = self.lookup(
-                flat_mentions_repr.detach()
+            cand_scores, cand_indices = self.lookup(flat_mentions_repr.detach())
+
+            entities_repr = self.embeddings[cand_indices.to(self.embeddings.device)].to(
+                self.device
             )
 
-            entities_repr = self.embeddings[cand_indices.to(self.embeddings.device)].to(self.device)
-
-            chosen_mention_limits: List[int] = (
-                chosen_mention_mask.int().sum(-1).detach().cpu().tolist()
-            )
             flat_mentions_scores = mentions_scores[mention_lengths != 0].unsqueeze(-1)
             cand_scores = cand_scores.unsqueeze(-1)
 
@@ -203,9 +229,11 @@ class BelaModel:
                     if md_score >= self.task.md_threshold:
                         ex_sp_offsets.append(offset.detach().cpu().item())
                         ex_sp_lengths.append(length.detach().cpu().item())
-                        ex_entities.append(self.ent_idx[cand_indices[cand_idx].detach().cpu().item()])
-                        ex_md_scores.append(md_score.item())       
-                        ex_el_scores.append(el_scores[cand_idx].item())     
+                        ex_entities.append(
+                            self.ent_idx[cand_indices[cand_idx].detach().cpu().item()]
+                        )
+                        ex_md_scores.append(md_score.item())
+                        ex_el_scores.append(el_scores[cand_idx].item())
                     cand_idx += 1
 
             char_offsets, char_lengths = convert_sp_to_char_offsets(
@@ -228,7 +256,21 @@ class BelaModel:
 
         return predictions
 
-    def process_disambiguation_batch(self, texts, mention_offsets, mention_lengths, entities):
+    def process_disambiguation_batch(
+        self, texts, mention_offsets, mention_lengths, entities
+    ):
+        """Process a batch for entity disambiguation.
+
+        Args:
+            self: The instance of the class.
+            texts (list): A list of strings representing the original texts.
+            mention_offsets (list): A list of lists containing mention offsets for each text.
+            mention_lengths (list): A list of lists containing mention lengths for each text.
+            entities (list): A list of lists containing entity IDs for each mention.
+
+        Returns:
+            list: A list of dictionaries representing predictions for each text.
+        """
         batch: Dict[str, Any] = {
             "texts": texts,
             "mention_offsets": mention_offsets,
@@ -240,7 +282,6 @@ class BelaModel:
         token_ids = model_inputs["input_ids"].to(self.device)
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
-        tokens_mapping = model_inputs["tokens_mapping"].to(self.device)
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()
 
         with torch.no_grad():
@@ -254,14 +295,13 @@ class BelaModel:
 
             flat_mentions_repr = mentions_repr[mention_lengths != 0]
             # retrieve candidates top-1 ids and scores
-            cand_scores, cand_indices = self.lookup(
-                flat_mentions_repr.detach()
-            )
+            cand_scores, cand_indices = self.lookup(flat_mentions_repr.detach())
             predictions = []
             cand_idx = 0
             example_idx = 0
             for offsets, lengths in zip(
-                mention_offsets, mention_lengths,
+                mention_offsets,
+                mention_lengths,
             ):
                 ex_sp_offsets = []
                 ex_sp_lengths = []
@@ -271,8 +311,12 @@ class BelaModel:
                     if length != 0:
                         ex_sp_offsets.append(offset.detach().cpu().item())
                         ex_sp_lengths.append(length.detach().cpu().item())
-                        ex_entities.append(self.ent_idx[cand_indices[cand_idx].detach().cpu().item()])
-                        ex_dis_scores.append(cand_scores[cand_idx].detach().cpu().item())           
+                        ex_entities.append(
+                            self.ent_idx[cand_indices[cand_idx].detach().cpu().item()]
+                        )
+                        ex_dis_scores.append(
+                            cand_scores[cand_idx].detach().cpu().item()
+                        )
                         cand_idx += 1
 
                 char_offsets, char_lengths = convert_sp_to_char_offsets(
@@ -282,64 +326,105 @@ class BelaModel:
                     sp_tokens_boundaries[example_idx],
                 )
 
-                predictions.append({
-                    "offsets": char_offsets,
-                    "lengths": char_lengths,
-                    "entities": ex_entities,
-                    "scores": ex_dis_scores
-                })
-                example_idx+= 1
+                predictions.append(
+                    {
+                        "offsets": char_offsets,
+                        "lengths": char_lengths,
+                        "entities": ex_entities,
+                        "scores": ex_dis_scores,
+                    }
+                )
+                example_idx += 1
 
         return predictions
 
     def get_predictions(self, test_data, batch_size=256):
+        """Get predictions for a dataset using batch processing.
+
+        Args:
+            self: The instance of the class.
+            test_data (list): A list of dictionaries representing the test data.
+            batch_size (int, optional): The size of each processing batch. Defaults to 256.
+
+        Returns:
+            list: A list of dictionaries representing disambiguation predictions for the test data.
+        """
         all_predictions = []
-        for batch_start in tqdm(range(0,len(test_data),batch_size)):
-            batch = test_data[batch_start:batch_start+batch_size]
-            texts = [example['original_text'] for example in batch]
+        for batch_start in tqdm(range(0, len(test_data), batch_size)):
+            batch = test_data[batch_start : batch_start + batch_size]  # noqa
+            texts = [example["original_text"] for example in batch]
             predictions = self.process_batch(texts)
             all_predictions.extend(predictions)
         return all_predictions
 
     def get_disambiguation_predictions(self, test_data, batch_size=256):
-        all_predictions = []
-        for batch_start in tqdm(range(0,len(test_data),batch_size)):
-            batch = test_data[batch_start:batch_start+batch_size]
-            texts = [example['original_text'] for example in batch]
-            mention_offsets = [[offset for _,_,_,_,offset,_ in example['gt_entities']] for example in batch]
-            mention_lengths = [[length for _,_,_,_,_,length in example['gt_entities']] for example in batch]
-            entities = [[0 for _,_,_,_,_,_ in example['gt_entities']] for example in batch]
+        """Get disambiguation predictions for a dataset using batch processing.
 
-            predictions = self.process_disambiguation_batch(texts, mention_offsets, mention_lengths, entities)
+        Args:
+            self: The instance of the class.
+            test_data (list): A list of dictionaries representing the test data.
+            batch_size (int, optional): The size of each processing batch. Defaults to 256.
+
+        Returns:
+            list: A list of dictionaries representing disambiguation predictions for the test data.
+        """
+        all_predictions = []
+        for batch_start in tqdm(range(0, len(test_data), batch_size)):
+            batch = test_data[batch_start : batch_start + batch_size]  # noqa
+            texts = [example["original_text"] for example in batch]
+            mention_offsets = [
+                [offset for _, _, _, _, offset, _ in example["gt_entities"]]
+                for example in batch
+            ]
+            mention_lengths = [
+                [length for _, _, _, _, _, length in example["gt_entities"]]
+                for example in batch
+            ]
+            entities = [
+                [0 for _, _, _, _, _, _ in example["gt_entities"]] for example in batch
+            ]
+
+            predictions = self.process_disambiguation_batch(
+                texts, mention_offsets, mention_lengths, entities
+            )
             all_predictions.extend(predictions)
         return all_predictions
 
     @staticmethod
     def compute_scores(data, predictions, md_threshold=0.2, el_threshold=0.05):
+        """Compute evaluation scores based on predicted and ground truth entities.
+
+        Args:
+            data (list): A list of dictionaries representing data examples.
+            predictions (list): A list of dictionaries representing predictions for each data example.
+            md_threshold (float, optional): Threshold for matching score of predicted entities. Defaults to 0.2.
+            el_threshold (float, optional): Threshold for linking score of predicted entities. Defaults to 0.05.
+        """  # noqa
         tp, fp, support = 0, 0, 0
         tp_boe, fp_boe, support_boe = 0, 0, 0
-
         predictions_per_example = []
         for example, example_predictions in zip(data, predictions):
 
             example_targets = {
-                (offset,length):ent_id
-                for _,_,ent_id,_,offset,length in example['gt_entities']
+                (offset, length): ent_id
+                for _, _, ent_id, _, offset, length in example["gt_entities"]
             }
 
             example_predictions = {
-                (offset, length):ent_id
+                (offset, length): ent_id
                 for offset, length, ent_id, md_score, el_score in zip(
-                    example_predictions['offsets'],
-                    example_predictions['lengths'],
-                    example_predictions['entities'],
-                    example_predictions['md_scores'],
-                    example_predictions['el_scores'],
+                    example_predictions["offsets"],
+                    example_predictions["lengths"],
+                    example_predictions["entities"],
+                    example_predictions["md_scores"],
+                    example_predictions["el_scores"],
                 )
-                if (el_score > el_threshold and md_score > md_threshold) 
+                if (el_score > el_threshold and md_score > md_threshold)
             }
 
-            predictions_per_example.append((len(example_targets), len(example_predictions)))
+            predictions_per_example.append(
+                (len(example_targets), len(example_predictions))
+            )
 
             for pos, ent in example_targets.items():
                 support += 1
@@ -361,12 +446,14 @@ class BelaModel:
                     fp_boe += 1
 
         def safe_division(a, b):
+            """Division with case for division by zero."""
             if b == 0:
                 return 0
             else:
                 return a / b
 
         def compute_f1_p_r(tp, fp, fn):
+            """F1 scores computing."""
             precision = safe_division(tp, (tp + fp))
             recall = safe_division(tp, (tp + fn))
             f1 = safe_division(2 * tp, (2 * tp + fp + fn))

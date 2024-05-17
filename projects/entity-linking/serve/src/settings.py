@@ -7,7 +7,7 @@ from typing import Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field, SecretStr
+from pydantic import BaseSettings, Field
 
 # Internal libraries
 from onclusiveml.serving.params import ServingBaseParams  # noqa
@@ -17,7 +17,6 @@ from onclusiveml.tracking import (
     TrackedImageSpecs,
     TrackedModelSpecs,
 )
-from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
 
 class TrackedTrainedModelSpecs(TrackedModelSpecs):

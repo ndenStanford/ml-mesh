@@ -3,10 +3,17 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Optional
+# Standard Library
 import os
+from typing import Optional
+
+# ML libs
 import torch.nn as nn
+
+# 3rd party libraries
 import sentencepiece as spm
+
+# Source
 from .sentencepiece_pb2 import SentencePieceText
 
 
@@ -18,9 +25,11 @@ class SPMTransform(nn.Module):
         add_special_tokens: bool = True,
     ):
         super().__init__()
-        sp_model_path = sp_model_path or os.path.join(os.path.dirname(__file__), "../data/sp_model")
+        sp_model_path = sp_model_path or os.path.join(
+            os.path.dirname(__file__), "../data/sp_model"
+        )
         self.processor = spm.SentencePieceProcessor(sp_model_path)
-        self.sep_token = '</s>'
+        self.sep_token = "</s>"
         self.unk_token_id = 3
         self.max_seq_len = max_seq_len
         self.add_special_tokens = add_special_tokens
@@ -40,7 +49,7 @@ class SPMTransform(nn.Module):
 
             token_ids_with_offsets = []
             if self.add_special_tokens:
-                token_ids_with_offsets.append((0,0,0))
+                token_ids_with_offsets.append((0, 0, 0))
             for idx, piece in enumerate(spt.pieces):
                 if piece.id != 0:
                     token_id = piece.id + 1
@@ -48,18 +57,27 @@ class SPMTransform(nn.Module):
                     token_id = self.unk_token_id
                 if idx == 0:
                     # if we process first token, append leading whitespacess count to the sp token length
-                    token_ids_with_offsets.append((token_id, current_offset, current_offset + len(piece.surface) + leading_whitespaces_count))
+                    token_ids_with_offsets.append(
+                        (
+                            token_id,
+                            current_offset,
+                            current_offset
+                            + len(piece.surface)
+                            + leading_whitespaces_count,
+                        )
+                    )
                     current_offset += len(piece.surface) + leading_whitespaces_count
                 else:
-                    token_ids_with_offsets.append((token_id, current_offset, current_offset + len(piece.surface)))
+                    token_ids_with_offsets.append(
+                        (token_id, current_offset, current_offset + len(piece.surface))
+                    )
                     current_offset += len(piece.surface)
-
                 # take into account special tokens
                 if idx == self.max_seq_len - 3:
                     break
 
             if self.add_special_tokens:
-                token_ids_with_offsets.append((2,current_offset,0))
+                token_ids_with_offsets.append((2, current_offset, 0))
 
             output.append(token_ids_with_offsets)
         return output

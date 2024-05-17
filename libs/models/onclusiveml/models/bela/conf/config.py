@@ -3,12 +3,15 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Standard Library
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import Any, List
 
+# 3rd party libraries
 # @manual "//github/facebookresearch/hydra:hydra"
 from hydra.core.config_store import ConfigStore
 from omegaconf import MISSING
+
 
 defaults = [
     "_self_",
@@ -35,6 +38,7 @@ class MainConfig:
     trainer: Any = MISSING
     test_only: bool = False
     checkpoint_callback: Any = MISSING
+
 
 cs = ConfigStore.instance()
 

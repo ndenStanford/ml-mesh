@@ -3,15 +3,23 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Standard Library
 import json
 import logging
 import mmap
 from typing import List, Optional
 
+# ML libs
 import torch
+
+# 3rd party libraries
 from pytorch_lightning import LightningDataModule
 
-from onclusiveml.models.bela.transforms.joint_el_transform import JointELTransform
+# Internal libraries
+from onclusiveml.models.bela.transforms.joint_el_transform import (
+    JointELTransform,
+)
+
 
 logger = logging.getLogger()
 
@@ -125,7 +133,6 @@ class ElMatchaDataset(torch.utils.data.Dataset):
                 gt_entities.append((offset, length, self.ent_catalogue[entity]))
 
         gt_entities = sorted(gt_entities)
-
         # blink predicts
         blink_predicts = None
         blink_scores = None
@@ -143,14 +150,14 @@ class ElMatchaDataset(torch.utils.data.Dataset):
                         candidates_scores.append(score)
                 blink_predicts.append(candidates)
                 blink_scores.append(candidates_scores)
-
         # MD model predicts
         md_pred_offsets = example.get("md_pred_offsets")
         md_pred_lengths = example.get("md_pred_lengths")
         md_pred_scores = example.get("md_pred_scores")
 
         result = {
-            "data_example_id": example.get("document_id") or example.get("data_example_id", ""),
+            "data_example_id": example.get("document_id")
+            or example.get("data_example_id", ""),
             "text": example["original_text"] if self.use_raw_text else example["text"],
             "gt_entities": gt_entities,
             "blink_predicts": blink_predicts,
@@ -208,17 +215,23 @@ class JointELDataModule(LightningDataModule):
                 use_raw_text=use_raw_text,
                 use_augmentation=use_augmentation,
                 augmentation_frequency=augmentation_frequency,
-            ) if train_path else None,
+            )
+            if train_path
+            else None,
             "valid": ElMatchaDataset(
                 val_path,
                 self.ent_catalogue,
                 use_raw_text=use_raw_text,
-            ) if val_path else None,
+            )
+            if val_path
+            else None,
             "test": ElMatchaDataset(
                 test_path,
                 self.ent_catalogue,
                 use_raw_text=use_raw_text,
-            ) if test_path else None,
+            )
+            if test_path
+            else None,
         }
 
     def train_dataloader(self):

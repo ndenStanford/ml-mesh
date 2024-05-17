@@ -1,4 +1,5 @@
-defaults:
+---
+defaults           :
   - config
   - datamodule: joint_el_datamodule
   - task/transform: joint_el_xlmr_transform
@@ -6,7 +7,7 @@ defaults:
   - task/optim: adamw
   - trainer: gpu_1_host
 
-task:
+task               :
   _target_: onclusiveml.models.bela.task.joint_el_task.JointELTask
   embeddings_path: /fsx/movb/data/matcha/en/embeddings_500K.pt
   optim:
@@ -16,13 +17,13 @@ task:
   # trained on 1st par of wikipedia
   # load_from_checkpoint: "/data/home/movb/work/BELA/outputs/2022-03-01/10-48-13/lightning_logs/version_0/checkpoints/checkpoint_best.ckpt"
   # fine-tuned on AIDA
-  load_from_checkpoint: "/data/home/movb/work/BELA/outputs/2022-04-12/02-07-45/lightning_logs/version_0/checkpoints/checkpoint_best.ckpt"
-  train_saliency: False
-  use_gpu_index: True
+  load_from_checkpoint: /data/home/movb/work/BELA/outputs/2022-04-12/02-07-45/lightning_logs/version_0/checkpoints/checkpoint_best.ckpt
+  train_saliency: false
+  use_gpu_index: true
   transform:
     max_seq_len: 256
 
-datamodule:
+datamodule         :
   # train_path: /fsx/movb/data/matcha/en/wiki_train_1st_par.txt
   # val_path: /fsx/movb/data/matcha/en/wiki_eval_1st_par.txt
   # test_path: /fsx/movb/data/matcha/en/wiki_test_1st_par.txt
@@ -34,8 +35,8 @@ datamodule:
   batch_size: 12
   use_raw_text: false
 
-trainer:
+trainer            :
   max_epochs: 30
 
 checkpoint_callback:
-    monitor: valid_f1
+  monitor: valid_f1

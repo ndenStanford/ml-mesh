@@ -3,13 +3,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Standard Library
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
+# ML libs
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 
+# Internal libraries
 from onclusiveml.models.bela.transforms.hf_transform import HFTransform
 from onclusiveml.models.bela.transforms.spm_transform import SPMTransform
 
@@ -35,7 +38,6 @@ def insert_spaces(text: str) -> Tuple[str, List[int]]:
     """
     out_str: str = ""
     insertions: List[int] = []
-
     # In the beginning of the string we assume we just read some space
     state: ReadState = ReadState.ReadSpace
     for idx, char in enumerate(utf8_chars(text)):
@@ -361,7 +363,6 @@ class JointELCollate(torch.nn.Module):
         return model_inputs
 
 
-
 class JointELTransform(HFTransform):
     def __init__(
         self,
@@ -379,10 +380,10 @@ class JointELTransform(HFTransform):
     ):
         super().__init__(model_path=model_path)
 
-        if 'xlm' in model_path:
+        if "xlm" in model_path:
             self.bos_idx = self.tokenizer.bos_token_id
             self.eos_idx = self.tokenizer.eos_token_id
-        elif 'bert' in model_path:
+        elif "bert" in model_path:
             self.bos_idx = self.tokenizer.cls_token_id
             self.eos_idx = self.tokenizer.sep_token_id
         self.max_seq_len = max_seq_len
@@ -420,9 +421,7 @@ class JointELTransform(HFTransform):
         torch.jit.isinstance(entities, List[List[int]])
 
         texts_pieces = [token for tokens in texts for token in tokens]
-        texts_pieces_token_ids: List[List[int]] = super().forward(
-            texts_pieces
-        )
+        texts_pieces_token_ids: List[List[int]] = super().forward(texts_pieces)
 
         (
             token_ids,
@@ -524,7 +523,9 @@ class JointELXlmrRawTextTransform(SPMTransform):
             sp_tokens_boundaries_column=sp_tokens_boundaries_column,
         )
 
-    def _calculate_alpha_num_boundaries(self, texts: List[str]) -> List[List[List[int]]]:
+    def _calculate_alpha_num_boundaries(
+        self, texts: List[str]
+    ) -> List[List[List[int]]]:
         """Returns for each text, a list of lists of start and end indices of alpha-numeric substrings (~=words)."""
         alpha_num_boundaries: List[List[List[int]]] = []
         for text in texts:
@@ -573,7 +574,6 @@ class JointELXlmrRawTextTransform(SPMTransform):
                         and end >= ex_sp_token_boundaries[word_sp_end][1]
                     ):
                         word_sp_end += 1
-
                     # check if end token <= max_seq_len - 2 (take into account EOS and BOS tokens)
                     if word_sp_end <= self.max_seq_len - 2:
                         # shift word_sp_start and word_sp_end by 1 taking into account EOS
@@ -630,7 +630,6 @@ class JointELXlmrRawTextTransform(SPMTransform):
                 ):
                     token_idx += 1
                 example_sp_lengths.append(token_idx - token_start_idx + 1)
-
             # take into account BOS token and shift offsets by 1
             # also remove all pairs that go beyond max_seq_length - 1
             shifted_example_sp_offsets: List[int] = []
@@ -752,12 +751,16 @@ class JointELXlmrRawTextTransform(SPMTransform):
 
         word_boundaries = self._calculate_alpha_num_boundaries(texts)
 
-        sp_tokens_with_indices: List[List[Tuple[int, int, int]]] = super().forward(texts)
+        sp_tokens_with_indices: List[List[Tuple[int, int, int]]] = super().forward(
+            texts
+        )
         sp_token_ids: List[List[int]] = [
             [sp_token for sp_token, _, _ in tokens] for tokens in sp_tokens_with_indices
         ]
         # append bos and eos tokens
-        sp_token_ids = [[self.bos_idx] + tokens + [self.eos_idx] for tokens in sp_token_ids]
+        sp_token_ids = [
+            [self.bos_idx] + tokens + [self.eos_idx] for tokens in sp_token_ids
+        ]
         sp_token_boundaries: List[List[List[int]]] = [
             [[start, end] for _, start, end in tokens]
             for tokens in sp_tokens_with_indices

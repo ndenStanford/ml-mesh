@@ -3,10 +3,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Standard Library
 from collections import defaultdict
 from functools import lru_cache
 
-from onclusiveml.models.bela.evaluation.model_eval import ModelEval
+# Internal libraries
 from onclusiveml.models.bela.transforms.spm_transform import SPMTransform
 
 
@@ -130,43 +131,3 @@ def merge_predictions(example_predictions):
         )
 
     return filtered_example_predictions
-
-
-def get_predictions_using_windows(model_eval: ModelEval, test_data, batch_size=1024, window_length=254, window_overlap=10, do_merge_predictions=True):
-    extended_examples = []
-
-    for example in test_data:
-        assert "document_id" in example or "data_example_id" in example
-        document_id = example.get("document_id") or example["data_example_id"]
-        text = example["original_text"]
-        windows = get_windows(text, window_length, window_overlap)
-        for idx, (start_pos, end_pos) in enumerate(windows):
-            new_text = text[start_pos:end_pos]
-            extended_examples.append(
-                {
-                    "document_id": document_id,
-                    "original_text": new_text,
-                    "gt_entities": example["gt_entities"],
-                    "window_idx": idx,
-                    "window_start": start_pos,
-                    "window_end": end_pos,
-                }
-            )
-
-    all_predictions = model_eval.get_predictions(
-        extended_examples, batch_size=batch_size
-    )
-    predictions_dict = group_predictions_by_example(all_predictions, extended_examples)
-
-    predictions = []
-    for example in test_data:
-        assert "document_id" in example or "data_example_id" in example
-        document_id = example.get("document_id") or example["data_example_id"]
-        text = example["original_text"]
-        example_predictions = predictions_dict[document_id]
-        if do_merge_predictions:
-            example_predictions = merge_predictions(example_predictions)
-        example_predictions = convert_predictions_to_dict(example_predictions)
-        predictions.append(example_predictions)
-
-    return predictions

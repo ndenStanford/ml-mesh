@@ -1,4 +1,5 @@
+---
 # @package _group_
-_target_: onclusiveml.models.bela.datamodule.joint_el_datamodule.JointELDataModule
+_target_  : onclusiveml.models.bela.datamodule.joint_el_datamodule.JointELDataModule
 batch_size: 64
-drop_last: True
+drop_last : true

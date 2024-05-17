@@ -1,3 +1,4 @@
+---
 # @package _group_
-_target_: onclusiveml.models.bela.models.hf_encoder.HFEncoder
+_target_  : onclusiveml.models.bela.models.hf_encoder.HFEncoder
 model_path: bert-large-cased
