@@ -3991,7 +3991,7 @@ def test_payload_o2():
                 "keywords": ["O2"],
             },
             "parameters": {
-                "country": "UK",
+                "country": "GBR",
                 "channel": "channel",
                 "query": "sample query",
             },

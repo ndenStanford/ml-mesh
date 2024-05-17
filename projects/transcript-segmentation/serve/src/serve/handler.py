@@ -10,7 +10,6 @@ from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 # Source
 from src.serve.offset import OffsetEnum
@@ -24,11 +23,10 @@ logger = get_default_logger(__name__)
 class TranscriptSegmentationHandler:
     """Transcript Segmentation using prompt backend."""
 
-    sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
     country_offsets = {
-        "uk": OffsetEnum.UK.value,
+        "gbr": OffsetEnum.GBR.value,
         "fra": OffsetEnum.FRA.value,
-        "es": OffsetEnum.ES.value,
+        "esp": OffsetEnum.ESP.value,
     }
     related_segment_key: str
 
@@ -300,7 +298,7 @@ class TranscriptSegmentationHandler:
             "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_ad_alias,
-                settings.default_model,
+                settings.default_model_ad,
             ),
             headers=headers,
             json=payload,
@@ -361,7 +359,9 @@ class TranscriptSegmentationHandler:
 
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.prompt_api_url, settings.prompt_alias, settings.default_model
+                settings.prompt_api_url,
+                settings.prompt_alias,
+                settings.default_model_segmentation,
             ),
             headers=headers,
             json=payload,
