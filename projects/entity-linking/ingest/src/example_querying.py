@@ -29,10 +29,10 @@ def run_querying_example(settings: BaseSettings) -> None:
         embeddings_file=settings.EMBEDDINGS_FILE, index_file=settings.INDEX_FILE
     )
     query = (
-        Query("*=>[KNN 5 @embedding $query_vector as score]")
+        Query("*=>[KNN 10 @embedding $query_vector as score]")
         .sort_by("score")
         .return_fields("id", "score")
-        .paging(0, 2)
+        .paging(0, 5)
         .dialect(2)
     )
     query_params = {
@@ -40,7 +40,7 @@ def run_querying_example(settings: BaseSettings) -> None:
         .astype(np.float32)
         .tobytes()
     }
-    client.ft(settings.INDEX_NAME).search(query, query_params).docs
+    print(client.ft(settings.INDEX_NAME).search(query, query_params).docs)
 
 
 if __name__ == "__main__":
