@@ -8,13 +8,11 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
-from prophet import Prophet
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
-from onclusiveml.serving.serialization.topic_summarization.v1 import (
-    ImpactCategoryLabel,
-)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+from prophet import Prophet
 
 # Source
 from src.serve.utils import (
@@ -25,7 +23,6 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
-
 
 # from settings import get_settings
 
@@ -111,12 +108,26 @@ class ImpactQuantification:
         series_topic_es = remove_weekends(series_topic_es)
         series_topic = np.array([i["doc_count"] for i in series_topic_es])
 
-        # if there is mismatch between both queries, remove unique elements from global
-        if abs(len(series_global_es) - len(series_topic_es)) > 0:
-            topic_keys = set(item["key"] for item in series_topic_es)
-            series_global_es = [
-                item for item in series_global_es if item["key"] in topic_keys
-            ]
+        # if there is mismatch between both queries, add unique elements from global to topic
+        if len(series_global_es) != len(series_topic_es):
+            # Extract the keys from series_topic_es
+            topic_keys = {d["key"] for d in series_topic_es}
+
+            # Iterate over global and add missing keys to topic
+            for d in series_global_es:
+                if d["key"] not in topic_keys:
+                    series_topic_es.append(
+                        {
+                            "key_as_string": d["key_as_string"],
+                            "key": d["key"],
+                            "doc_count": 0,
+                            "weekday_index": d["weekday_index"],
+                        }
+                    )
+
+            # Sort series_topic_es by the "key"
+            series_topic_es = sorted(series_topic_es, key=lambda d: d["key"])
+
         # calculate global ratio
         global_ratio = series_topic / series_global
         # Decomposes trend
