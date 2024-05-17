@@ -59,7 +59,7 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  ingest-run-example:
+  ingest-run-querying-example:
     volumes:
       - type: bind
         source: ingest/
