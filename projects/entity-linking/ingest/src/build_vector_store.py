@@ -40,7 +40,7 @@ class WikiEmbeddings(Dataset):
     def __getitem__(self, idx: int) -> tuple:
         return (
             self.index[idx],
-            self.embeddings[idx].numpy().astype(np.float16()).tobytes(),
+            self.embeddings[idx].numpy().astype(np.float16).tobytes(),
         )
 
 
