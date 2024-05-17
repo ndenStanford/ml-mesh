@@ -9,6 +9,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 
 # 3rd party libraries
+import numpy as np
 from pydantic import BaseSettings
 from redis import from_url
 from redis.client import Redis
@@ -37,7 +38,10 @@ class WikiEmbeddings(Dataset):
         return len(self.index)
 
     def __getitem__(self, idx: int) -> tuple:
-        return self.index[idx], self.embeddings[idx].numpy().tobytes()
+        return (
+            self.index[idx],
+            self.embeddings[idx].numpy().astype(np.float16()).tobytes(),
+        )
 
 
 def create_redis_index(
