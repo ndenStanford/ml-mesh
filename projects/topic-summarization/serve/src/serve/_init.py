@@ -11,7 +11,6 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.serve.tables import TopicSummaryDynamoDB
 
-
 logger = get_default_logger(__name__)
 
 
@@ -25,5 +24,5 @@ def _create_table(table: Type[Dyntastic]) -> None:
     """Create Tables."""
     try:
         table.create_table()
-    except ClientError:
-        logger.info("Table already exists, skipping creation ...")
+    except ClientError as e:
+        logger.info("Table creation failed with error: {}".format(e))

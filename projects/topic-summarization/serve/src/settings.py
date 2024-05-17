@@ -87,7 +87,7 @@ class DynamoDBSettings(OnclusiveBaseSettings):
     """DynamoDB Settings."""
 
     AWS_DEFAULT_REGION: str = "us-east-1"
-    DYNAMODB_HOST: Optional[str] = "http://dynamodb:8000"
+    DYNAMODB_HOST: Optional[str] = None
     EMPTY_FIELD_TEXT: Optional[str] = "N/A"
 
 
