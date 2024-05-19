@@ -81,7 +81,6 @@ class DynamoDBSettings(OnclusiveBaseSettings):
 
     AWS_DEFAULT_REGION: str = "us-east-1"
     DYNAMODB_HOST: Optional[str] = None
-    EMPTY_FIELD_TEXT: Optional[str] = "N/A"
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):

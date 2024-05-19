@@ -11,6 +11,7 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.serve.tables import TopicSummaryDynamoDB
 
+
 logger = get_default_logger(__name__)
 
 
