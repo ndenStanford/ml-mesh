@@ -433,5 +433,9 @@ _LOCALES: Dict[LanguageIso, Dict[str, Dict[str, str]]] = {
     LanguageIso.MY: {
         "my": {"name": "မြန်မာစာ", "en": "Burmese"},
         "my-MM": {"name": "မြန်မာစာ (မြန်မာ)", "en": "Burmese (Myanmar)"},
+    LanguageIso.PA: {
+        "pa": {"name": "ਪੰਜਾਬੀ", "en": "Panjabi"},
+        "pa-IN": {"name": "ਪੰਜਾਬੀ (ਭਾਰਤ)", "en": "Panjabi (India)"},
+        "pa-PK": {"name": "پنجابی (پاکستان)", "en": "Panjabi (Pakistan)"},
     },
 }
