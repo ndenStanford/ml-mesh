@@ -21,7 +21,13 @@ class FeatureStoreParams(BaseSettings):
     Subclassing from BaseSettings allows for configuring parameters via environment variables.
     """
 
-    pass
+    feast_config_bucket: str
+    config_file: str = "feature_store.yaml"
+    local_config_dir: str = "local-config-dir"
+    redshift_database: str
+    redshift_schema: str = "feast"
+    redshift_table: str
+    redshift_timestamp_field: str = "event_timestamp"
 
 
 class FeastRepoBuilder:

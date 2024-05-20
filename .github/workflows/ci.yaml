@@ -448,7 +448,7 @@ jobs       :
   # gch-summarization
 
   run-gch-summarization-project:
-    name: GCH-Sum. Project
+    name: GCH Sum. Project
     uses: ./.github/workflows/_projects.yaml
     needs: [run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -478,6 +478,16 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-neuron: false
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
 
     with:
@@ -518,6 +528,17 @@ jobs       :
         components:
           # NOTE: list of project components to run
 
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+
           # serve
           - name: serve
             download-model: true
@@ -527,6 +548,17 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-neuron: true
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
 
     with:
       project: entity-linking
@@ -541,6 +573,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -593,6 +626,15 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
 
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
     with:
       project: sentiment
       environment: prod
@@ -637,6 +679,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
 
           # register
           - name: register
@@ -646,6 +689,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
 
           # train
           - name: train
@@ -654,7 +698,10 @@ jobs       :
             functional: false
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-20.04
+            runner-kind: custom
+            self-hosted-runner-type: g4dn.2xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-neuron: false
 
           # compile
           - name: compile
@@ -664,6 +711,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
 
           # serve
           - name: serve
@@ -674,7 +722,8 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-neuron: true
     with:
       project: iptc
       environment: prod
@@ -688,6 +737,8 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -729,6 +780,15 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
           # serve
           - name: serve
             download-model: true
@@ -762,6 +822,65 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
+  # content-scoring
+
+  run-content-scoring-project:
+    name: Content Scoring Project
+    uses: ./.github/workflows/_projects.yaml
+    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    strategy:
+      max-parallel: 10
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
+      matrix:
+        components:
+          # NOTE: list of project components to run
+
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # compile
+          - name: compile
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # SERVE
+          - name: serve
+            download-model: false
+            integration: true
+            functional: true
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+    with:
+      project: content-scoring
+      environment: prod
+      component: ${{ matrix.components.name }}
+      tag: ${{ needs.run-repository-state.outputs.tag }}
+      download-model: ${{ matrix.components.download-model }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+
   # lsh
 
   run-lsh-project:
@@ -783,6 +902,16 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
 
     with:
       project: lsh
@@ -829,6 +958,18 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
 
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+
+
           # serve
           - name: serve
             download-model: true
@@ -838,6 +979,17 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-neuron: false
+
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
 
     with:
@@ -884,8 +1036,7 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            runner-kind: ubuntu-20.04
 
     with:
       project: transcript-segmentation
@@ -909,6 +1060,8 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+      PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
 
   # topic-summarization
 
@@ -927,7 +1080,16 @@ jobs       :
           - name: serve
             download-model: false
             integration: true
-            functional: true
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-20.04
+
+          # backfill
+          - name: backfill
+            download-model: false
+            integration: false
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
@@ -954,164 +1116,11 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
-
-  # ===============================================
-  # REGISTER FEATURES
-  # ===============================================
-
-  run-register-pipelines:
-    name: Register features
-    uses: ./.github/workflows/_register-features.yaml
-    needs:
-      - run-repository-state
-      - run-keywords-project
-      - run-summarization-project
-      - run-gch-summarization-project
-      - run-sentiment-project
-      - run-ner-project
-      - run-lsh-project
-      - run-iptc-project
-      - run-topic-project
-      - run-get-core-dependencies-versions
-
-
-    strategy:
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      matrix:
-        models:
-          - project: iptc
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-
-          - project: topic
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-    with:
-      environment: prod
-      project: ${{ matrix.models.project }}
-      tag: ${{ matrix.models.tag }}
-      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
-      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main'}}
-      pull-request: ${{ github.event_name == 'pull_request' }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
-  # ===============================================
-  # TRAIN MODELS
-  # ===============================================
-
-  run-train-pipelines:
-    name: Train Model
-    uses: ./.github/workflows/_train-model.yaml
-    needs:
-      - run-repository-state
-      - run-keywords-project
-      - run-summarization-project
-      - run-gch-summarization-project
-      - run-sentiment-project
-      - run-ner-project
-      - run-lsh-project
-      - run-iptc-project
-      - run-topic-project
-      - run-register-pipelines
-      - get-target-branch-name
-      - run-get-core-dependencies-versions
-
-    strategy:
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      matrix:
-        models:
-          - project: keywords
-            sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: ner
-            sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: iptc
-            sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-          - project: gch-summarization
-            sagemaker-runner-type: ml.m4.xlarge
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-
-    with:
-      environment: prod
-      project: ${{ matrix.models.project }}
-      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
-      tag: ${{ matrix.models.tag }}
-      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
-      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      pull-request: ${{ github.event_name == 'pull_request' }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
-
-  # ===============================================
-  # COMPILE MODELS
-  # ===============================================
-
-  run-compilation-pipelines:
-    name: Compile Model
-    uses: ./.github/workflows/_compile-model.yaml
-    needs:
-      - run-repository-state
-      - run-keywords-project
-      - run-summarization-project
-      - run-sentiment-project
-      - run-ner-project
-      - run-lsh-project
-      - run-iptc-project
-      - run-train-pipelines
-      - get-target-branch-name
-
-    strategy:
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      matrix:
-        models:
-          - project: keywords
-            self-hosted-runner-type: inf1.2xlarge
-            runner-kind: custom
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-
-          - project: ner
-            self-hosted-runner-type: inf1.2xlarge
-            runner-kind: custom
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-
-          - project: sentiment
-            self-hosted-runner-type: inf1.2xlarge
-            runner-kind: custom
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-
-          - project: iptc
-            self-hosted-runner-type: inf1.6xlarge
-            runner-kind: custom
-            tag: ${{ needs.run-repository-state.outputs.tag }}
-
-    with:
-      environment: prod
-      runner-kind: ${{ matrix.models.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
-      project: ${{ matrix.models.project }}
-      tag: ${{ matrix.models.tag }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      pull-request: ${{ github.event_name == 'pull_request' }}
-      upload-compiled-model: true
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+      MEDIA_CLIENT_ID: ${{ secrets.MEDIA_CLIENT_ID }}
+      MEDIA_CLIENT_SECRET: ${{ secrets.MEDIA_CLIENT_SECRET }}
+      ELASTICSEARCH_KEY: ${{ secrets.ELASTICSEARCH_KEY }}
+      PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
 
   # ===============================================
   # APPS
@@ -1156,3 +1165,6 @@ jobs       :
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

@@ -3,13 +3,21 @@
 # Standard Library
 from typing import Any
 
+# 3rd party libraries
+from pydantic import BaseSettings
+
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.logging.constants import OnclusiveService
-from onclusiveml.data.feature_store import FeastRepoBuilder
+from onclusiveml.data.feature_store import FeastRepoBuilder, FeatureStoreParams
 
 # Source
-from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]
+from src.settings import (  # type: ignore[attr-defined]
+    FeatureRegistrationParams,
+    IptcFirstLevelFeatureRegistrationParams,
+    IptcSecondLevelFeatureRegistrationParams,
+    IptcThirdLevelFeatureRegistrationParams,
+)
 
 
 logger = get_default_logger(name=__name__, service=OnclusiveService.IPTC_REGISTER.value)
@@ -18,6 +26,35 @@ logger = get_default_logger(name=__name__, service=OnclusiveService.IPTC_REGISTE
 def main() -> None:
     """Register features."""
     feature_registration_params = FeatureRegistrationParams()
+    iptc_first_level_feature_registration_params = (
+        IptcFirstLevelFeatureRegistrationParams()
+    )
+    register(feature_registration_params, iptc_first_level_feature_registration_params)
+    iptc_second_level_feature_registration_params = (
+        IptcSecondLevelFeatureRegistrationParams()
+    )
+    register(feature_registration_params, iptc_second_level_feature_registration_params)
+    iptc_third_level_feature_registration_params = (
+        IptcThirdLevelFeatureRegistrationParams()
+    )
+    register(feature_registration_params, iptc_third_level_feature_registration_params)
+
+
+def register(
+    feature_registration_params: FeatureStoreParams,
+    iptc_level_feature_registration_params: BaseSettings,
+) -> None:
+    """Register features."""
+    feature_registration_params.entity_name = (
+        iptc_level_feature_registration_params.entity_name
+    )
+    feature_registration_params.feature_view_name = (
+        iptc_level_feature_registration_params.feature_view_name
+    )
+    feature_registration_params.redshift_table = (
+        iptc_level_feature_registration_params.redshift_table
+    )
+    feature_registration_params.fields = iptc_level_feature_registration_params.fields
 
     logger.info("Creating feast-repo builder...")
     feast_repo_builder = FeastRepoBuilder(feature_registration_params)

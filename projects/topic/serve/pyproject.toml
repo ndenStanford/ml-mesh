@@ -8,7 +8,7 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 core = {path = "../../../libs/core"}
-models = {path = "../../../libs/models"}
+models = {path = "../../../libs/models", extras = ["topic"]}
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 
@@ -18,6 +18,9 @@ pytest-mock = "3.10.0"
 pytest-order = "1.1.0"
 requests-toolbelt = "^1.0.0"
 greenlet = "2.0.0"
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
 
 [build-system]
 requires = ["poetry-core"]

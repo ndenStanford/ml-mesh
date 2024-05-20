@@ -2,7 +2,7 @@
 
 PWD=$(shell pwd)
 AWS_REGION?=us-east-1
-AWS_ACCOUNT_ID?=063759612765
+AWS_ACCOUNT_ID?=690763002009
 OWNER?=onclusiveml
 PLATFORM?=linux/amd64
 COMPONENT?=serve
@@ -10,7 +10,9 @@ DEBUG?=true
 IMAGE_TAG?=latest
 TARGET_BUILD_STAGE?=development
 USE_DOCKER_CACHE?=false
-WITH_DOCKER?=false
+WITHOUT_DOCKER?=false
+START_CMD?=
+UNIT_TEST_CMD?=
 DOCKER_FLAGS?=
 PORT?=8888
 ENVIRONMENT?=dev
@@ -44,7 +46,8 @@ ALL_LIBS:= \
 	nlp \
 	serving \
 	tracking \
-	hashing
+	hashing \
+	training
 
 # all projects
 ALL_PROJECTS:= \

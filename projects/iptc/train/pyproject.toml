@@ -7,13 +7,22 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-torch = "1.9.1"
-transformers = "4.17.0"
-core = {path = "../../../libs/core"}
+torch = "1.12.1"
+transformers = "4.33.1"
+accelerate="0.20.3"
 tracking = {path = "../../../libs/tracking"}
+data = {path = "../../../libs/data"}
+train = {path = "../../../libs/training"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
+
+[[tool.poetry.source]]
+name = "pipy-nvidia"
+url = "https://pypi.nvidia.com"
 
 [build-system]
 requires = ["poetry-core"]

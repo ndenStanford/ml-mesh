@@ -13,6 +13,8 @@ from onclusiveml.core.logging import (
     get_default_logger,
 )
 from onclusiveml.models.iptc import CompiledIPTC
+from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
+from onclusiveml.models.iptc.test_samples import TEST_SAMPLES
 
 # Source
 from src.settings import CompilationTestSettings, IOSettings
@@ -62,3 +64,21 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
             test_files[test_file_reference] = json.load(test_file)
 
     return test_files
+
+
+@pytest.fixture(scope="module")
+def test_samples():
+    """Test samples fixtures."""
+    return TEST_SAMPLES
+
+
+@pytest.fixture(scope="module")
+def class_dict():
+    """Class dict fixtures."""
+    return CLASS_DICT
+
+
+@pytest.fixture(scope="module")
+def id_to_topic():
+    """Id to topic fixtures."""
+    return ID_TO_TOPIC

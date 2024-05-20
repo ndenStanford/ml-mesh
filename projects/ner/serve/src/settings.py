@@ -10,6 +10,7 @@ from neptune.types.mode import Mode
 from pydantic import BaseSettings, Field
 
 # Internal libraries
+from onclusiveml.serving.params import ServingBaseParams
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
@@ -35,8 +36,15 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
+class DownloadSettings(ServingBaseParams):
+    """Download settings."""
+
+    wait_seconds_after_download: int = 0
+
+
 class GlobalSettings(
     ServerModelSettings,
+    DownloadSettings,
     TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,

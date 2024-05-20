@@ -28,11 +28,11 @@ WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     """Trained model settings."""
 
-    project: str = "onclusive/iptc"
-    model: str = "IPTC-TRAINED"
+    project: str = "onclusive/iptc-00000000"
+    model: str = "IP00000000-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "IPTC-TRAINED-32"
+    with_id: str = "IP00000000-TRAINED-1"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
@@ -45,8 +45,8 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
     """Compiled model settings."""
 
-    project: str = "onclusive/iptc"
-    model: str = "IPTC-COMPILED"
+    project: str = "onclusive/iptc-00000000"
+    model: str = "IP00000000-COMPILED"
 
     class Config:
         env_prefix = "compiled_"

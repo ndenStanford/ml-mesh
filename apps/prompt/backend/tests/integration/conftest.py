@@ -1,47 +1,40 @@
 """Conftest."""
 
 # Standard Library
-from typing import Any, Generator
+import logging
+from typing import Generator
 
 # 3rd party libraries
 import pytest
 from fastapi import FastAPI
+from github.GithubException import UnknownObjectException
 from starlette.testclient import TestClient
 
 # Source
-from src.model.schemas import ModelSchema
-from src.model.tables import ModelTable
-from src.prompt.schemas import PromptTemplateSchema
-from src.prompt.tables import PromptTemplateTable
+from src._init import init
+from src.project.tables import Project
+from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
 
 
 settings = get_settings()
 
+
+TEST_PROJECTS = [
+    Project(alias="integration-test-1"),
+    Project(alias="integration-test-2"),
+]
+
+
 TEST_PROMPTS = [
-    PromptTemplateSchema(template="template1", alias="t1"),
-    PromptTemplateSchema(template="template2", alias="t2"),
-    PromptTemplateSchema(template="template3", alias="t3"),
-    PromptTemplateSchema(template="template4", alias="t4"),
+    PromptTemplate(
+        alias="prompt1", template="Hello! How are you?", project="integration-test-1"
+    ),
+    PromptTemplate(
+        alias="prompt2", template="What's happening?", project="integration-test-2"
+    ),
+    PromptTemplate(alias="prompt3", template="Bonjour!", project="integration-test-2"),
 ]
-
-TEST_MODELS = [
-    ModelSchema(model_name="model-1", parameters=settings.OPENAI_PARAMETERS),
-    ModelSchema(model_name="model-2", parameters=settings.OPENAI_PARAMETERS),
-    ModelSchema(model_name="model-3", parameters=settings.OPENAI_PARAMETERS),
-    ModelSchema(model_name="model-4", parameters=settings.OPENAI_PARAMETERS),
-]
-
-
-@pytest.fixture(scope="session")
-def init_prompt_tables() -> Generator[None, None, None]:
-    """Initializes dynamodb tables."""
-    if not PromptTemplateTable.exists():
-        PromptTemplateTable.create_table(
-            read_capacity_units=1, write_capacity_units=1, wait=True
-        )
-    yield
-    PromptTemplateTable.delete_table()
 
 
 @pytest.fixture(scope="session")
@@ -50,30 +43,27 @@ def app() -> FastAPI:
     # Source
     from src.app import app
 
+    init()
     return app
 
 
 @pytest.fixture(scope="session")
-def init_model_tables() -> Generator[None, None, None]:  # noqa: F811
-    """Initializes dynamodb tables."""
-    if not ModelTable.exists():
-        ModelTable.create_table(
-            read_capacity_units=1, write_capacity_units=1, wait=True
-        )
-    yield
-    ModelTable.delete_table()
-
-
-@pytest.fixture(scope="session")
-def test_client(
-    app: FastAPI, init_prompt_tables: Any, init_model_tables: Any
-) -> Generator[TestClient, None, None]:
+def test_client(app: FastAPI) -> Generator[TestClient, None, None]:
     """Instanciates test client."""
     yield TestClient(app=app)
 
 
-@pytest.fixture(scope="module")
-def create_prompts(test_client):
+@pytest.fixture(scope="session")
+def create_projects(test_client):
+    """Create template for integration tests."""
+    res = []
+    for project in TEST_PROJECTS:
+        res.append(project.save())
+    return res
+
+
+@pytest.fixture(scope="session")
+def create_prompts(create_projects, test_client):
     """Create template for integration tests."""
     res = []
     for template in TEST_PROMPTS:
@@ -81,10 +71,15 @@ def create_prompts(test_client):
     return res
 
 
-@pytest.fixture(scope="module")
-def create_models(test_client):
-    """Create model_name for integration tests."""
-    res = []
-    for model_name in TEST_MODELS:
-        res.append(model_name.save())
-    return res
+def pytest_sessionfinish(session, exitstatus):
+    """Cleanup tests."""
+    for template in TEST_PROMPTS:
+        try:
+            template.delete()
+        except UnknownObjectException:
+            logging.info("path does not exist.")
+    for project in TEST_PROJECTS:
+        try:
+            project.delete()
+        except UnknownObjectException:
+            logging.info("path does not exist.")

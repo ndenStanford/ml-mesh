@@ -67,5 +67,7 @@ def cast(
     """
     if t not in type(obj).__bases__:
         raise BaseClassNotFound(base=str(t), derived=type(obj))
+
     data = {k: getattr(obj, k) for k in t.schema().get("properties").keys()}
+
     return t(**data)

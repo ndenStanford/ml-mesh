@@ -1,23 +1,39 @@
 """Service initialization."""
 # isort: skip_file
 
+# Internal libraries
+from onclusiveml.data.query_profile import MediaAPISettings
+
 # Standard Library
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSettings
+from onclusiveml.core.base import (
+    OnclusiveFrozenSettings,
+    OnclusiveBaseSettings,
+)
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
-
-# Source
-from src.serve.category_storage import Category_list
+from pydantic import SecretStr, Field
+from typing import Dict, List
 
 
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "topic-summarization"
-    CATEGORY_LIST: list = Category_list
+    IMPACT_CATEGORIES: Dict[str, str] = {
+        "opportunities": "Opportunities",
+        "risk": "Risk detection",
+        "threats": "Threats for the brand",
+        "company": "Company or spokespersons",
+        "brand": "Brand Reputation",
+        "ceo": "CEO Reputation",
+        "customer": "Customer Response",
+        "stock": "Stock Price Impact",
+        "industry": "Industry trends",
+        "environment": "Environmental, social and governance",
+    }
 
 
 class PromptBackendAPISettings(OnclusiveFrozenSettings):
@@ -25,22 +41,78 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    PROMPT_ALIAS: dict = {
-        "single_topic": "ml-topic-summarization-single-analysis",
-        "topic_aggregate": "ml-topic-summarization-aggregation",
-        "single_summary": "ml-multi-articles-summarization",
-        "summary_aggregate": "ml-articles-summary-aggregation",
+    TOPIC_ALIAS: str = "ml-topic-summarization-claude"
+    SUMMARY_ALIAS: str = "ml-multi-articles-summary-claude"
+    DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+
+    model_settings = ServerModelSettings()
+
+    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
+    for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():
+        category_dict = {
+            f"{category_key}_summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
+            f"{category_key}_theme": f"An overall theme for {category_value}",
+            f"{category_key}_impact": f"The impact level of {category_value}",
+        }
+        TOPIC_RESPONSE_SCHEMA.update(category_dict)
+
+    SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
+        "summary": "Your synthesized summary based on all the summaries I provided",
+        "theme": "The theme for your consolidated summary",
     }
+
+
+class ElasticsearchSettings(OnclusiveBaseSettings):
+    """Elasticsearch Settings."""
+
+    ELASTICSEARCH_KEY: SecretStr = Field(
+        default="...", env="ELASTICSEARCH_KEY", exclude=True
+    )
+    es_index: List = [
+        "crawler",
+        "crawler-4-2024.03",
+        "crawler-4-2024.02",
+        "crawler-4-2024.01",
+    ]
+
+
+class TrendSummarizationSettings(OnclusiveBaseSettings):
+    """Trend Summarization Settings."""
+
+    # No of documents to collect for summarization
+    NUM_DOCUMENTS: int = 5
+    # Lookback days to assess trend
+    trend_lookback_days: int = 14
+    # Number of documents per interval
+    trend_time_interval: str = "12h"
+    # Document scale threshold to run trend detection
+    TOPIC_DOCUMENT_THRESHOLD: float = 0.01
+
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class ImpactQuantificationSettings(OnclusiveBaseSettings):
+    """Impact Quantification Settings."""
+
+    impact_lookback_days: int = 125
+    time_interval: str = "24h"
+    local_raio_cutoff = 0.01
+    global_local_comparison_ratio_cutoff = 1
+    mf_tau_cutoff = 0.8
 
 
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    MediaAPISettings,
+    ElasticsearchSettings,
+    ImpactQuantificationSettings,
+    TrendSummarizationSettings,
 ):
     """Global server settings."""
-
-    ARTICLE_GROUP_SIZE = 8  # how many articles are handled together
 
 
 @lru_cache

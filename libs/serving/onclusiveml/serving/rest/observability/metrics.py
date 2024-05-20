@@ -5,7 +5,9 @@ from prometheus_client import Counter, Gauge, Histogram
 
 
 INFO = Gauge(
-    "fastapi_app_info", "FastAPI application information.", ["app_name", "pod_name"]
+    "fastapi_app_info",
+    "FastAPI application information.",
+    ["app_name", "pod_name"],
 )
 REQUESTS = Counter(
     "fastapi_requests_total",

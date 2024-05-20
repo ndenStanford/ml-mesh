@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import Tuple
+from typing import List, Tuple
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
@@ -79,18 +79,18 @@ class TrackedTopicBaseModelCard(TrackedModelCard):
 class DataFetchParams(FeatureStoreParams):
     """Feature registration inputs."""
 
-    feast_config_bucket: str
-    config_file: str
-    local_config_dir: str
     entity_name: str
     entity_join_key: str
     feature_view_name: str
-    redshift_database: str
-    redshift_schema: str
-    redshift_table: str
-    redshift_timestamp_field: str
     dataset_upload_bucket: str
     dataset_upload_dir: str
+    save_artifact: bool = False
+    n_records_sample: int
+    n_records_full: int
+    filter_columns: List[str] = []
+    filter_values: List[str] = []
+    comparison_operators: List[str] = []
+    non_nullable_columns: List[str] = ["content"]
 
     class Config:
         env_file = "config/dev.env"

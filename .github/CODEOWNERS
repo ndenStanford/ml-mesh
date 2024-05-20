@@ -7,6 +7,8 @@
 # libraries
 
 /libs @airpr/mlops-engineers @ndenStanford
+/libs/training @airpr/mlops-engineers @weshallsin
+/libs/data @airpr/mlops-engineers @weshallsin @ndenStanford
 
 ## MLE owns the project implementation
 

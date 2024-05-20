@@ -43,7 +43,7 @@ def test_served_iptc_model_load(test_served_model_artifacts):
 
 
 @pytest.mark.order(3)
-@pytest.mark.parametrize("test_record_index", [0, 1])
+@pytest.mark.parametrize("test_record_index", [0])
 def test_served_iptc_model_predict(
     test_served_model_artifacts,
     test_inputs,

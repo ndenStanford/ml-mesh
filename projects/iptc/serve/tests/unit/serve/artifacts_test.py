@@ -16,8 +16,8 @@ from src.serve.artifacts import ServedModelArtifacts
     [
         (
             False,
-            "models/IPTC-COMPILED-6/models/model_card",
-            "models/IPTC-COMPILED-6/model/some/other/dir",
+            "models/IP00000000-COMPILED-8/models/model_card",
+            "models/IP00000000-COMPILED-8/model/some/other/dir",
         ),  # TODO: add test case for remove_model_prefix=True
     ],
 )

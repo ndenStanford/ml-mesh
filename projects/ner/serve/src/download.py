@@ -2,6 +2,7 @@
 
 # Standard Library
 import os
+from time import sleep
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -46,6 +47,12 @@ def download_model(settings: BaseSettings) -> None:
         )
     # shutdown client
     mv.stop()
+    # wait - only needed in combination with entity-linking
+    logger.info(
+        f"Download completed/skipped. Waiting for {settings.wait_seconds_after_download} seconds..."
+    )
+    sleep(settings.wait_seconds_after_download)
+    logger.info("Waiting completed.")
 
 
 if __name__ == "__main__":

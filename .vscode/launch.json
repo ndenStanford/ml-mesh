@@ -1,0 +1,443 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "transcript segmentation serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/transcript-segmentation/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "topic summarization serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/topic-summarization/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "topic summarization backfill",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/topic-summarization/backfill",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "topic backfill",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/topic/backfill",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "topic register",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/topic/register",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "topic train",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/topic/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "topic serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/topic/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "summarization serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/summarization/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "sentiment train",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/sentiment/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "sentiment serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/sentiment/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "sentiment compile",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/sentiment/compile",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "ner train",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/ner/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "ner serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/ner/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "ner compile",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/ner/compile",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "ner backfill",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/ner/backfill",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "lsh serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/lsh/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "entity linking serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/entity-linking/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "keywords train",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/keywords/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "keywords serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/keywords/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "keywords compile",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/keywords/compile",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "iptc train",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/iptc/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "iptc serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/iptc/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "iptc register",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/iptc/register",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "iptc ingest",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/iptc/ingest",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "iptc compile",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/iptc/compile",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "gch summarization backfill",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/gch-summarization/backfill",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "gch summarization train",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/gch-summarization/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "gch summarization serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/gch-summarization/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "prompt backend",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/apps/prompt/backend/",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+    ]
+}
