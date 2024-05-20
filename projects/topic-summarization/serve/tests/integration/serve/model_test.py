@@ -10,8 +10,6 @@ from src.settings import get_settings
 from src.serve.schema import PredictRequestSchema
 from src.serve.model import ServedTopicModel
 
-# from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-
 settings = get_settings()
 
 

@@ -338,4 +338,9 @@ _LOCALES: Dict[LanguageIso, Dict[str, Dict[str, str]]] = {
         "zh-SG": {"name": "中文（新加坡）", "en": "Chinese Simplified (Singapore)"},
         "zh-TW": {"name": "中文（台灣）", "en": "Chinese Traditional (Taiwan)"},
     },
+    LanguageIso.PA: {
+        "pa": {"name": "ਪੰਜਾਬੀ", "en": "Panjabi"},
+        "pa-IN": {"name": "ਪੰਜਾਬੀ (ਭਾਰਤ)", "en": "Panjabi (India)"},
+        "pa-PK": {"name": "پنجابی (پاکستان)", "en": "Panjabi (Pakistan)"},
+    },
 }
