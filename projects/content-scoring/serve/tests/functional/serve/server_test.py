@@ -3,7 +3,6 @@
 # 3rd party libraries
 import pytest
 import requests
-import sklearn
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (

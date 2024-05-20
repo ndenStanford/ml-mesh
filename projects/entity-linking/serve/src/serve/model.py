@@ -18,7 +18,7 @@ from onclusiveml.nlp.language.lang_exception import (
 from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
-from src.serve.artifacts import BelaModelArtifacts
+from src.serve.artifacts import ServedModelArtifacts
 from src.serve.schemas import (
     BioResponseSchema,
     PredictRequestSchema,
@@ -37,11 +37,11 @@ class ServedBelaModel(ServedModel):
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
-    def __init__(self, served_model_artifacts: BelaModelArtifacts):
+    def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initialize the served Content Scoring model with its artifacts.
 
         Args:
-            served_model_artifacts (BelaModelArtifacts): Served model artifact
+            served_model_artifacts (ServedModelArtifacts): Served model artifact
         """
         self.served_model_artifacts = served_model_artifacts
         self._model = None

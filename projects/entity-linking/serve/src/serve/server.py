@@ -5,7 +5,7 @@ from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer
 
 # Source
-from src.serve.artifacts import BelaModelArtifacts
+from src.serve.artifacts import ServedModelArtifacts
 from src.serve.model import ServedBelaModel  # type: ignore[attr-defined]
 from src.settings import get_settings
 
@@ -13,7 +13,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def get_model_server(artifacts: BelaModelArtifacts) -> ModelServer:
+def get_model_server(artifacts: ServedModelArtifacts) -> ModelServer:
     """Utility method for prepping a fully configured model server instance ready to serve.
 
     Returns:

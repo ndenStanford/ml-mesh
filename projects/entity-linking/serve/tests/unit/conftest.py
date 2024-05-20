@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from onclusiveml.serving.rest.serve import OnclusiveHTTPException
 
 # Source
-from src.serve.artifacts import BelaModelArtifacts
+from src.serve.artifacts import ServedModelArtifacts
 from src.serve.model import ServedBelaModel
 from src.settings import get_settings
 
@@ -33,7 +33,7 @@ def model_server(settings, entity_linking_model) -> FastAPI:
 @patch("builtins.open")
 def artifacts(mock_open, mock_json, settings):
     """Model artifacts fixture."""
-    return BelaModelArtifacts(settings)
+    return ServedModelArtifacts(settings)
 
 
 @pytest.fixture(scope="function")
