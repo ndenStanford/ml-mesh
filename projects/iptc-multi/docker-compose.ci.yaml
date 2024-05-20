@@ -86,6 +86,3 @@ services:
 
 networks:
   onclusive-net:
-
-volumes :
-  backfill-volume:
