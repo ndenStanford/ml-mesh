@@ -25,7 +25,9 @@ def run_querying_example(
     Args:
         settings (pydantic.BaseSettings): Pydantic settings
         k (int): Number of neighbours
-        query_index (str): Optional query index in form of wikidata item identifier, default None
+        query_index (str): Optional query index in form of wikidata item identifier,\
+            If no `query_index` is provided, defaults None to and the random vector is\
+            created with embeddings dimemsions, float32 dtype. It is then converted to bytes.
     """
     try:
         client = from_url(url=settings.REDIS_CONNECTION_STRING)
@@ -63,4 +65,6 @@ def run_querying_example(
 
 if __name__ == "__main__":
     settings = get_settings()
-    run_querying_example(settings=settings, k=5)  # query_index="Q99" California
+    run_querying_example(
+        settings=settings, k=5, query_index="Q99"
+    )  # query_index="Q99" California
