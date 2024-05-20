@@ -616,6 +616,7 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui
+    profiles: [backfill]
     ports:
       - 9000:9000
     environment:
