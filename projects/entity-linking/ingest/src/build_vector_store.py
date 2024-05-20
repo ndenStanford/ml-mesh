@@ -78,7 +78,7 @@ def create_redis_index(
 
 
 def write_to_redis_index(client: Redis, loader: DataLoader) -> None:
-    """Write the data from loader to the redis index.
+    """Write the data from loader to the redis index if the key doesn't exist.
 
     Args:
         client (redis.client.Redis): Redis client
@@ -86,8 +86,9 @@ def write_to_redis_index(client: Redis, loader: DataLoader) -> None:
     """
     pipe = client.pipeline()
     for idx, obj in loader:
-        pipe.hset(name=idx[0], mapping={"embedding": obj[0]})
-        pipe.execute()
+        if not client.exists(idx[0]):
+            pipe.hset(name=idx[0], mapping={"embedding": obj[0]})
+            pipe.execute()
 
 
 def build_vector_store(settings: BaseSettings) -> None:
