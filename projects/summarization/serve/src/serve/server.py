@@ -1,8 +1,5 @@
 """Model server getter."""
 
-# 3rd party libraries
-from fastapi import FastAPI
-
 # Internal libraries
 from onclusiveml.serving.rest.observability import Instrumentator
 from onclusiveml.serving.rest.serve import ModelServer
@@ -17,7 +14,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def get_model_server() -> FastAPI:
+def get_model_server() -> ModelServer:
     """Instanciates model server.
 
     Args:
