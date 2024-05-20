@@ -86,7 +86,7 @@ def write_to_redis_index(client: Redis, loader: DataLoader) -> None:
     """
     with client.pipeline() as pipe:
         for idx, obj in loader:
-            pipe.hsetnx(name=idx[0], mapping={"embedding": obj[0]})
+            pipe.hsetnx(name=idx[0], key="embedding", value=obj[0])
             pipe.execute()
 
 
