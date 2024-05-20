@@ -14,7 +14,7 @@ from pydantic import BaseSettings
 from redis import from_url
 from redis.client import Redis
 from redis.commands.search.field import VectorField
-from redis.exceptions import ResponseError
+from redis.exceptions import ConnectionError, ResponseError
 
 # Source
 from src.settings import get_settings
@@ -84,10 +84,9 @@ def write_to_redis_index(client: Redis, loader: DataLoader) -> None:
         client (redis.client.Redis): Redis client
         loader (torch.utils.data.DataLoader): Dataset in pytorch DataLoader
     """
-    pipe = client.pipeline()
-    for idx, obj in loader:
-        if not client.exists(idx[0]):
-            pipe.hset(name=idx[0], mapping={"embedding": obj[0]})
+    with client.pipeline() as pipe:
+        for idx, obj in loader:
+            pipe.hsetnx(name=idx[0], mapping={"embedding": obj[0]})
             pipe.execute()
 
 
@@ -103,8 +102,12 @@ def build_vector_store(settings: BaseSettings) -> None:
     loader = DataLoader(dataset=wiki_embeddings)
     try:
         client = from_url(url=settings.REDIS_CONNECTION_STRING)
+        client.ping()
     except ValueError as e:
-        print(f"REDIS_CONNECTION_STRING is not valid: {e}")
+        print(f"REDIS_CONNECTION_STRING is not valid: {e}.")
+        raise
+    except ConnectionError as e:
+        print(f"Couldn't connect to Redis: {e}.")
         raise
     create_redis_index(
         vector_dimensions=wiki_embeddings.embeddings.shape[1],
