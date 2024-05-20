@@ -57,7 +57,7 @@ def test_request_schema_parameters_extra():
 
 
 @pytest.mark.parametrize(
-    "entity_type, entity_text, score, sentence_index, wiki_link",
+    "entity_text, score, sentence_index, wiki_link, wiki_score",
     [("Company name", 0.9, 0, "link", 0.459234)],
 )
 def test_response_attribute_schema(
