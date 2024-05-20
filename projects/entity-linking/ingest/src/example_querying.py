@@ -11,6 +11,7 @@ from redis import from_url
 from redis.commands.search.query import Query
 
 # Source
+from src.build_vector_store import WikiEmbeddings
 from src.settings import get_settings
 
 
@@ -62,4 +63,4 @@ def run_querying_example(
 
 if __name__ == "__main__":
     settings = get_settings()
-    run_querying_example(settings=settings, k=5)
+    run_querying_example(settings=settings, k=5)  # query_index="Q99" California
