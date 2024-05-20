@@ -10,7 +10,6 @@ python = "3.8.16"
 
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
-nlp =  {path = "../../../libs/nlp"}
 fuzzywuzzy = "0.18.0"
 
 [tool.poetry.group.dev.dependencies]

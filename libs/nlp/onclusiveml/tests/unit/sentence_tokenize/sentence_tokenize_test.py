@@ -171,6 +171,28 @@ def test_tokenize_ja():
     ]
 
 
+def test_tokenize_pa():
+    """Test SentenceTokenizer class for tokenizing Punjabi text into a list of sentences.
+
+    Returns:
+        None
+    """
+    text = """ਐਲੋਨ ਰੀਵ ਮਸਕ ਦਾ ਜਨਮ 28 ਜੂਨ, 1971 ਨੂੰ ਪ੍ਰਿਟੋਰੀਆ, ਦੱਖਣੀ ਅਫਰੀਕਾ ਵਿੱਚ ਹੋਇਆ ਸੀ। \
+    ਉਹ ਏਰੋਲ ਮਸਕ, ਇੱਕ ਅਮੀਰ ਦੱਖਣੀ ਅਫ਼ਰੀਕੀ ਇੰਜੀਨੀਅਰ ਅਤੇ ਅਫ਼ਰੀਕਨੇਰ ਅਤੇ ਐਂਗਲੋ-ਦੱਖਣੀ ਅਫ਼ਰੀਕੀ ਮੂਲ ਦੇ ਰੀਅਲ \
+    ਅਸਟੇਟ ਡਿਵੈਲਪਰ ਦਾ ਪੁੱਤਰ ਹੈ, ਜਿਸਦਾ ਜ਼ੈਂਬੀਆ ਵਿੱਚ ਇੱਕ ਪੰਨੇ ਦੀ ਖਾਨ ਵਿੱਚ ਸ਼ੇਅਰ ਸੀ, \
+    ਅਤੇ ਇੱਕ ਪੋਸ਼ਣ ਵਿਗਿਆਨੀ ਅਤੇ ਕੈਨੇਡੀਅਨ ਮਾਏ ਹੈਲਡੇਮੈਨ। 1979 ਵਿੱਚ ਆਪਣੇ ਮਾਤਾ-ਪਿਤਾ ਦੇ ਤਲਾਕ ਤੋਂ ਬਾਅਦ, \
+    ਉਹ ਆਪਣੇ ਪਿਤਾ ਨਾਲ ਰਹਿਣ ਲੱਗਾ। 12 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ, ਉਸਨੇ ਆਪਣਾ ਪਹਿਲਾ ਵੀਡੀਓ \
+    ਗੇਮ ਪ੍ਰੋਗਰਾਮ $500 ਦੇ ਬਰਾਬਰ ਵੇਚਿਆ"""
+    tokenizer = SentenceTokenizer()
+    res = tokenizer.tokenize(content=text, language="pa")
+    assert res["sentences"] == [
+        "ਐਲੋਨ ਰੀਵ ਮਸਕ ਦਾ ਜਨਮ 28 ਜੂਨ, 1971 ਨੂੰ ਪ੍ਰਿਟੋਰੀਆ, ਦੱਖਣੀ ਅਫਰੀਕਾ ਵਿੱਚ ਹੋਇਆ ਸੀ",
+        "     ਉਹ ਏਰੋਲ ਮਸਕ, ਇੱਕ ਅਮੀਰ ਦੱਖਣੀ ਅਫ਼ਰੀਕੀ ਇੰਜੀਨੀਅਰ ਅਤੇ ਅਫ਼ਰੀਕਨੇਰ ਅਤੇ ਐਂਗਲੋ-ਦੱਖਣੀ ਅਫ਼ਰੀਕੀ ਮੂਲ ਦੇ ਰੀਅਲ     ਅਸਟੇਟ ਡਿਵੈਲਪਰ ਦਾ ਪੁੱਤਰ ਹੈ, ਜਿਸਦਾ ਜ਼ੈਂਬੀਆ ਵਿੱਚ ਇੱਕ ਪੰਨੇ ਦੀ ਖਾਨ ਵਿੱਚ ਸ਼ੇਅਰ ਸੀ,     ਅਤੇ ਇੱਕ ਪੋਸ਼ਣ ਵਿਗਿਆਨੀ ਅਤੇ ਕੈਨੇਡੀਅਨ ਮਾਏ ਹੈਲਡੇਮੈਨ",  # noqa: E501
+        " 1979 ਵਿੱਚ ਆਪਣੇ ਮਾਤਾ-ਪਿਤਾ ਦੇ ਤਲਾਕ ਤੋਂ ਬਾਅਦ,     ਉਹ ਆਪਣੇ ਪਿਤਾ ਨਾਲ ਰਹਿਣ ਲੱਗਾ",
+        " 12 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ, ਉਸਨੇ ਆਪਣਾ ਪਹਿਲਾ ਵੀਡੀਓ     ਗੇਮ ਪ੍ਰੋਗਰਾਮ $500 ਦੇ ਬਰਾਬਰ ਵੇਚਿਆ",
+    ]
+
+
 def test_tokenize_unknown_language():
     """Test SentenceTokenizer with an unknown language should default to English tokenization."""
     text = """This is a sample English text. It contains multiple sentences."""

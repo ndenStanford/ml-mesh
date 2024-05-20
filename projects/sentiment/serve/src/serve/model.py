@@ -1,14 +1,19 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
+from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.models.sentiment import CompiledSent
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
@@ -76,18 +81,28 @@ class ServedSentModel(ServedModel):
         Returns:
             PredictResponseSchema: Response containing extracted entities
         """
-        # content and configuration from payload
         attributes = payload.attributes
         parameters = payload.parameters
-        # score the model
+        # Check if entities are provided and prepare them
         entities = attributes.entities
         if entities:
             entities = [dict(e) for e in entities]
-
-        sentiment = self.model(
-            sentences=attributes.content, entities=entities, **parameters.dict()
-        )
-
+        # Execute sentiment analysis in a language-aware context
+        try:
+            sentiment = self._sentiment_analysis(
+                content=attributes.content,
+                entities=entities,
+                language=parameters.language,
+                additional_params=parameters.dict(),
+            )
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=422, detail=language_exception.message
+            )
+        # Prepare the response attributes
         attributes = {
             "label": sentiment.get("label"),
             "negative_prob": sentiment.get("negative_prob"),
@@ -100,6 +115,30 @@ class ServedSentModel(ServedModel):
             namespace=settings.model_name,
             attributes=attributes,
         )
+
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _sentiment_analysis(
+        self,
+        content: str,
+        language: str,
+        entities: Optional[List[Dict[str, Any]]],
+        additional_params: dict,
+    ) -> Dict[str, Any]:
+        """Perform sentiment analysis considering language restrictions.
+
+        Args:
+            content (str): The text content to analyze.
+            entities (Optional[List[Dict[str, Any]]]): Detected entities to consider in analysis.
+            language (str): The language of the text.
+            additional_params (dict): Additional parameters for model configuration.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing sentiment analysis results.
+        """
+        return self.model(sentences=content, entities=entities, **additional_params)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
