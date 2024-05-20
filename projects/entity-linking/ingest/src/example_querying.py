@@ -1,5 +1,5 @@
 # type: ignore
-"""Querying exmaple."""
+"""Querying example."""
 
 # Standard Library
 from typing import Optional
