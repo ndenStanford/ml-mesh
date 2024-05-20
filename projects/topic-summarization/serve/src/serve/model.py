@@ -135,8 +135,8 @@ class ServedTopicModel(ServedModel):
 
             try:
                 client.save()
-            except Exception:
-                raise TopicSummaryInsertionException(dynamodb_dict=dynamodb_dict)
+            except Exception as e:
+                raise TopicSummaryInsertionException(dynamodb_dict=dynamodb_dict, e=e)
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
