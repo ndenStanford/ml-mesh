@@ -38,15 +38,6 @@ logger = get_default_logger(__name__)
 class ServedIPTCMultiModel(ServedModel):
     """Served IPTC Multi model."""
 
-    SAMPLE_INFERENCE_CONTENT = "Test Content"
-    HISTORICALLY_HIGH_INFERENCED_MODELS = {
-        "00000000",
-        "01000000",
-        "04000000",
-        "10000000",
-        "20000209",
-    }
-
     predict_request_model: Type[BaseModel] = PredictRequestSchema
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
@@ -54,6 +45,10 @@ class ServedIPTCMultiModel(ServedModel):
     def __init__(self) -> None:
         super().__init__(name="iptc-multi")
         self.last_checked: Dict[str, float] = {}
+        self.sample_inference_content = settings.sample_inference_content
+        self.historically_high_inferenced_models = (
+            settings.historically_high_inferenced_models
+        )
 
     def load(self) -> None:
         """Initializes the OnclusiveApiClient and sets the model state to ready."""
@@ -74,7 +69,7 @@ class ServedIPTCMultiModel(ServedModel):
             current_model = self._get_current_model(client, model_id)
             try:
                 response_schema = current_model(
-                    client, content=self.SAMPLE_INFERENCE_CONTENT
+                    client, content=settings.sample_inference_content
                 )
                 if response_schema.attributes.iptc is None:
                     logger.error(
@@ -108,7 +103,7 @@ class ServedIPTCMultiModel(ServedModel):
         last_time = self.last_checked.get(model_id, now)
         elapsed = now - last_time
         base_probability = (
-            0.5 if model_id in self.HISTORICALLY_HIGH_INFERENCED_MODELS else 0.1
+            0.5 if model_id in settings.historically_high_inferenced_models else 0.1
         )
         time_factor = min(1, elapsed / 3600)
         decayed_probability = min(

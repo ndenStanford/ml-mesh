@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Union
+from typing import List, Set, Union
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -23,6 +23,14 @@ class ServerModelSettings(ServingParams):
     model_endpoint_template: str = "serve-iptc-{}:8000"
     model_endpoint_secure: bool = False
     test_model_sequence: List[str] = []
+    sample_inference_content: str = "Test Content"
+    historically_high_inferenced_models: Set[str] = {
+        "00000000",
+        "01000000",
+        "04000000",
+        "10000000",
+        "20000209",
+    }
 
     class Config:
         env_prefix = "server_model_settings_"
