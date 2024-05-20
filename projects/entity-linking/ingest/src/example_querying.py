@@ -25,7 +25,7 @@ def run_querying_example(
     Args:
         settings (pydantic.BaseSettings): Pydantic settings
         k (int): Number of neighbours
-        query_index (str): Optional query index in form of wikidata item identifier,\
+        query_index (Optional[str]): Optional query index in form of wikidata item identifier,\
             If no `query_index` is provided, defaults None to and the random vector is\
             created with embeddings dimemsions, float32 dtype. It is then converted to bytes.
     """
