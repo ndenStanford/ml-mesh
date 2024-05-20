@@ -151,7 +151,7 @@ class ServedBelaModel(ServedModel):
                         entity_with_link = {
                             "entity_text": entity_text,
                             "score": entity_ner_map.get(entity_id, None),
-                            "sentence_indexes": [sentence_idx],
+                            "sentence_index": [sentence_idx],
                             "wiki_link": "https://www.wikidata.org/wiki/" + entity_id,
                             "wiki_score": entity_score_map.get(entity_id, None),
                         }

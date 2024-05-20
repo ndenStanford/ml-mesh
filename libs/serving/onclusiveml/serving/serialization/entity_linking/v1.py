@@ -27,7 +27,7 @@ class PredictResponseEntity(JsonApiSchema):
 
     entity_text: Optional[str] = None
     score: Optional[float] = None
-    sentence_indexes: Optional[Union[int, List[int]]] = None
+    sentence_index: Optional[Union[int, List[int]]] = None
     wiki_link: Optional[str] = None
     wiki_score: Optional[float] = None
 
