@@ -6,7 +6,7 @@ services:
   # INGEST
   # =============================================
 
-  ingest-build-vector-store:
+  ingest:
     volumes:
       - type: bind
         source: ingest/
@@ -59,7 +59,7 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  ingest-run-querying-example:
+  ingest-querying-example:
     volumes:
       - type: bind
         source: ingest/
@@ -106,7 +106,7 @@ services:
         COMPONENT: ingest
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.example_querying]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.build_vector_store]
     ports:
       - 5678:5678
     profiles: [debug]

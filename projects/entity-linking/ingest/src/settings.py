@@ -2,6 +2,7 @@
 
 # Standard Library
 from functools import lru_cache
+from typing import List
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -12,6 +13,7 @@ class EmbeddingsSettings(BaseSettings):
 
     INDEX_FILE: str
     EMBEDDINGS_FILE: str
+    EMBEDDINGS_SHAPE: List = [16470856, 300]
 
 
 class VectorDBSettings(BaseSettings):
