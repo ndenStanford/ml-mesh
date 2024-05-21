@@ -39,9 +39,6 @@ class BELA:
         self.embeddings_path = os.path.join(self.repo, "embeddings.pt")
         self.ent_catalogue_idx_path = os.path.join(self.repo, "index.txt")
         self.checkpoint_path = os.path.join(self.repo, self.checkpoint_name_path)
-        print("embeddings_path: ", self.embeddings_path)
-        print("ent_catalogue: ", self.ent_catalogue_idx_path)
-        print("checkpoint_path: ", self.checkpoint_path)
         self._load_model()
 
     def _load_model(self) -> None:

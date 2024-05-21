@@ -1,7 +1,6 @@
 """Model."""
 
 # Standard Library
-import datetime
 from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
@@ -97,7 +96,6 @@ class ServedBelaModel(ServedModel):
         mention_lengths = getattr(attributes, "mention_lengths", None)
 
         try:
-            start_time = datetime.datetime.now()
             output = self._predict(
                 content=content,
                 language=lang,
@@ -105,9 +103,6 @@ class ServedBelaModel(ServedModel):
                 mention_offsets=mention_offsets,
                 mention_lengths=mention_lengths,
             )
-            end_time = datetime.datetime.now()
-            latency = (end_time - start_time).total_seconds()
-            print("Latency:", latency)
         except (
             LanguageDetectionException,
             LanguageFilterException,
