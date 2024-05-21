@@ -33,7 +33,8 @@ def detect_language(content: str, language: Optional[str] = None) -> LanguageIso
 
 
 def filter_language(
-    supported_languages: List[LanguageIso], raise_if_none: Optional[bool] = True
+    supported_languages: List[LanguageIso],
+    raise_if_none: Optional[bool] = True,
 ) -> Callable:
     """Decorator that filters supported language for a given function.
 
@@ -78,7 +79,6 @@ def filter_language(
                     raise LanguageDetectionException(
                         original_language=language,
                         supported_language_iso_values=supported_language_iso_values,
-                        supported_language_isos=supported_languages,
                     )
                 else:
                     return None
@@ -90,7 +90,7 @@ def filter_language(
                     raise LanguageFilterException(
                         original_language=language,
                         language_iso=language_iso,
-                        supported_language_isos=supported_languages,
+                        supported_language_iso_values=supported_language_iso_values,
                     )
 
         return wrapper
