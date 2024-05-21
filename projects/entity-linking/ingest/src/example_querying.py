@@ -62,7 +62,7 @@ def run_querying_example(
             np.random.rand(settings.EMBEDDINGS_SHAPE[1]).astype(np.float32).tobytes()
         )
     query_params = {"query_vector": query_vector}
-    print(client.ft(settings.INDEX_NAME).search(query, query_params).docs, sep="\n")
+    print(*client.ft(settings.INDEX_NAME).search(query, query_params).docs, sep="\n")
 
 
 if __name__ == "__main__":
