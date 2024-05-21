@@ -45,7 +45,7 @@ def run_querying_example(
     )
     if query_index:
         wiki_embeddings, _ = get_embeddings(
-            embeddings_file=settings.EMBEDDINGS_FILE, index_file=settings.IDNEX_FILE
+            embeddings_file=settings.EMBEDDINGS_FILE, index_file=settings.INDEX_FILE
         )
         if query_index not in wiki_embeddings.index:
             raise ValueError(
@@ -70,5 +70,5 @@ if __name__ == "__main__":
     run_querying_example(
         settings=settings,
         k=5,
-        # query_index="Q99",
+        query_index="Q99",
     )  # query_index="Q99" California
