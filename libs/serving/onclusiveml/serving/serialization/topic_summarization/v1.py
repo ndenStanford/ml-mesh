@@ -35,8 +35,7 @@ class ImpactCategoryLabel(str, OnclusiveEnum):
 class Analysis(JsonApiSchema):
     """Analysis of each topic."""
 
-    name: Optional[str] = None
-    analysis: Optional[str] = None
+    summary: Optional[str] = None
     theme: Optional[str] = None
     impact: Optional[ImpactCategoryLabel] = None
 
