@@ -10,7 +10,6 @@ from fuzzywuzzy import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 
 # Source
 from src.serve.offset import OffsetEnum
@@ -24,7 +23,6 @@ logger = get_default_logger(__name__)
 class TranscriptSegmentationHandler:
     """Transcript Segmentation using prompt backend."""
 
-    sentence_tokenizer: SentenceTokenizer = SentenceTokenizer()
     country_offsets = {
         "gbr": OffsetEnum.GBR.value,
         "fra": OffsetEnum.FRA.value,
