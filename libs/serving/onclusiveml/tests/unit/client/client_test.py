@@ -46,34 +46,6 @@ def test_client_getiitem(host, api_key, api):
         (
             "example.com",
             "",
-            "entity_linking",
-            {
-                "content": "Onclusive is a media monitoring company",
-                "lang": "en",
-                "entities": [],
-            },
-            {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "entity-linking",
-                    "attributes": {
-                        "entities": [
-                            {
-                                "entity_type": "ORG",
-                                "entity_text": "Onclusive",
-                                "score": 0.9571336805820465,
-                                "sentence_index": 0,
-                                "wiki_link": None,
-                            }
-                        ]
-                    },
-                },
-            },
-        ),
-        (
-            "example.com",
-            "",
             "ner",
             {
                 "content": "Onclusive is a media monitoring company",
