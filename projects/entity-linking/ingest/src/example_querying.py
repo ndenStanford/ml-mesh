@@ -7,12 +7,13 @@ from typing import Optional
 # 3rd party libraries
 import numpy as np
 from pydantic import BaseSettings
-from redis import from_url
 from redis.commands.search.query import Query
 
 # Source
-from src.build_vector_store import WikiEmbeddings
 from src.settings import get_settings
+from src.utils.client import get_client
+from src.utils.embeddings import get_embeddings
+from src.utils.index import get_index
 
 
 def run_querying_example(
@@ -26,14 +27,15 @@ def run_querying_example(
         settings (pydantic.BaseSettings): Pydantic settings
         k (int): Number of neighbours
         query_index (Optional[str]): Optional query index in form of wikidata item identifier,\
-            If no `query_index` is provided, defaults None to and the random vector is\
+            If no `query_index` is provided, defaults to None and the random vector is\
             created with embeddings dimemsions, float32 dtype. It is then converted to bytes.
     """
-    try:
-        client = from_url(url=settings.REDIS_CONNECTION_STRING)
-    except ValueError as e:
-        print(f"REDIS_CONNECTION_STRING is not valid: {e}")
-        raise
+    client = get_client(url=settings.REDIS_CONNECTION_STRING)
+    get_index(
+        client=client,
+        index_name=settings.INDEX_NAME,
+        vector_dimensions=settings.EMBEDDINGS_SHAPE[1],
+    )
     query = (
         Query(f"*=>[KNN {k} @embedding $query_vector as score]")
         .sort_by("score")
@@ -42,8 +44,8 @@ def run_querying_example(
         .dialect(2)
     )
     if query_index:
-        wiki_embeddings = WikiEmbeddings(
-            embeddings_file=settings.EMBEDDINGS_FILE, index_file=settings.INDEX_FILE
+        wiki_embeddings, _ = get_embeddings(
+            embeddings_file=settings.EMBEDDINGS_FILE, index_file=settings.IDNEX_FILE
         )
         if query_index not in wiki_embeddings.index:
             raise ValueError(
@@ -66,5 +68,7 @@ def run_querying_example(
 if __name__ == "__main__":
     settings = get_settings()
     run_querying_example(
-        settings=settings, k=5, query_index="Q99"
+        settings=settings,
+        k=5,
+        # query_index="Q99",
     )  # query_index="Q99" California
