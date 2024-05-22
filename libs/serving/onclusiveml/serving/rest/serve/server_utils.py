@@ -9,7 +9,12 @@ import requests
 from fastapi import APIRouter, status
 
 # Internal libraries
-from onclusiveml.core.logging import INFO, OnclusiveService
+from onclusiveml.core.logging import (
+    INFO,
+    OnclusiveLogMessageFormat,
+    OnclusiveService,
+    get_default_logger,
+)
 from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.serving.rest.serve.constants import (
     DEFAULT_MODEL_SERVER_LOGGING_CONFIG,
@@ -29,6 +34,8 @@ from onclusiveml.serving.rest.serve.server_models import (
 
 
 TEST_MODEL_NAME = "no_model"
+
+logger = get_default_logger(__name__)
 
 
 def get_model_server_urls(
@@ -138,8 +145,13 @@ def get_liveness_router(
         if test_inference:
             model.sample_inference()
 
-        if betterstack_settings.enable:
+        if not betterstack_settings.enable:
+            return LivenessProbeResponse()
 
+        if betterstack_settings.enable_multi_model_check:
+            if model.are_all_models_live():
+                requests.post(betterstack_settings.full_url)
+        else:
             requests.post(betterstack_settings.full_url)
 
         return LivenessProbeResponse()
