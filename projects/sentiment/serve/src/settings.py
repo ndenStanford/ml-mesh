@@ -109,7 +109,6 @@ class ServerModelSettings(ServingParams):
 
     model_name: str = "sentiment"
     model_directory: Union[str, Path] = "."
-    api_version: str = "v2"
 
 
 class GlobalSettings(
