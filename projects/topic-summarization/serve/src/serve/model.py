@@ -127,7 +127,7 @@ class ServedTopicModel(ServedModel):
             query_string = query_profile.query
             dynamodb_dict = {
                 "topic_id": topic_id,
-                "trending": trending,
+                "trending": trend_found,
                 "query_id": inputs.query_id,
                 "query_string": query_string,
                 "topic": topic,
@@ -146,7 +146,7 @@ class ServedTopicModel(ServedModel):
             attributes={
                 "topic": topic,
                 "impact_category": impact_category,
-                "trend_found": trend_found,
+                "trending": trend_found,
                 "start_time": start_time,
                 "end_time": end_time,
             },

@@ -63,7 +63,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
 
     topic: Optional[Topic] = None
     impact_category: Optional[ImpactCategoryLabel]
-    trend_found: Optional[bool] = None
+    trending: Optional[bool] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
 
