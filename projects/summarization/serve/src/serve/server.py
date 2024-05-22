@@ -17,8 +17,8 @@ settings = get_settings()
 def get_model_server() -> ModelServer:
     """Instanciates model server.
 
-    Args:
-        settings (BaseSettings): application settings.
+    Returns:
+        ModelServer: A model server instance.
     """
     model_server = ModelServer(
         configuration=settings, model=SummarizationServedModel(name=settings.model_name)

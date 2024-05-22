@@ -6,6 +6,7 @@ from typing import Dict, Type
 
 # 3rd party libraries
 import requests
+from fastapi import HTTPException, status
 from pydantic import BaseModel
 
 # Internal libraries
@@ -64,7 +65,10 @@ class SummarizationServedModel(ServedModel):
             alias = settings.PROMPT_DICT[lang][target_lang]["alias"]
         except KeyError:
             logger.error("Summarization language not supported.")
-            return ""
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Unsupported language",
+            )
 
         input_dict = {"input": {"desired_length": desired_length, "content": text}}
         headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
