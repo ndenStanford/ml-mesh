@@ -97,7 +97,6 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
-
         output_content = json.loads(q.content)
 
         return output_content

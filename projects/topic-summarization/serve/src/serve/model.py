@@ -16,6 +16,8 @@ from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
 from onclusiveml.core.logging import get_default_logger
+from src.serve.tables import TopicSummaryDynamoDB
+from src.serve.exceptions import TopicSummaryInsertionException
 
 # Source
 from src.serve.schema import (
@@ -85,6 +87,8 @@ class ServedTopicModel(ServedModel):
         start_time = None
         end_time = None
         trend_found = None
+        save_report_dynamodb = inputs.save_report_dynamodb
+
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -118,6 +122,24 @@ class ServedTopicModel(ServedModel):
         else:
             topic = self.model.aggregate(content)
             impact_category = None
+
+        if save_report_dynamodb:
+            query_string = query_profile.query
+            dynamodb_dict = {
+                "topic_id": topic_id,
+                "trending": trending,
+                "query_id": inputs.query_id,
+                "query_string": query_string,
+                "topic": topic,
+                "impact_category": impact_category,
+            }
+            client = TopicSummaryDynamoDB(**dynamodb_dict)
+
+            try:
+                client.save()
+            except Exception as e:
+                raise TopicSummaryInsertionException(dynamodb_dict=dynamodb_dict, e=e)
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,

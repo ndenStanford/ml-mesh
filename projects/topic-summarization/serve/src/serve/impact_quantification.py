@@ -1,6 +1,7 @@
 """Impact quantification."""
 
 # Standard Library
+from datetime import datetime
 from typing import Dict, List
 
 # 3rd party libraries
@@ -8,13 +9,11 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
-from prophet import Prophet
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
-from onclusiveml.serving.serialization.topic_summarization.v1 import (
-    ImpactCategoryLabel,
-)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+from prophet import Prophet
 
 # Source
 from src.serve.utils import (
@@ -25,7 +24,6 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
-
 
 # from settings import get_settings
 
@@ -89,7 +87,7 @@ class ImpactQuantification:
         """
         query = query_profile.es_query(MediaAPISettings())
 
-        end_time = pd.Timestamp.now()
+        end_time = pd.Timestamp(datetime.now())
         start_time = end_time - pd.Timedelta(days=settings.impact_lookback_days)
         # ========== Profile (global) ==========
         # Global count of all documents from ES
