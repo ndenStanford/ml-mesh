@@ -76,7 +76,7 @@ def test_model_server_bio():
                 }
             },
             {
-                "version": 1,
+                "version": 2,
                 "data": {
                     "identifier": None,
                     "namespace": "sentiment",
@@ -134,7 +134,7 @@ def test_model_server_prediction(payload, expected_response):
                 }
             },
             {
-                "version": 1,
+                "version": 2,
                 "data": {
                     "identifier": None,
                     "namespace": "sentiment",
@@ -226,7 +226,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "version": 1,
+                "version": 2,
                 "data": {
                     "identifier": None,
                     "attributes": {
