@@ -7,16 +7,13 @@ from typing import Dict, Optional, Union
 
 # 3rd party libraries
 from dyntastic import Dyntastic
-from pydantic import Field
 
 # Internal libraries
-from onclusiveml.serving.serialization.topic_summarization.v1 import (
-    ImpactCategoryLabel,
-)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
+from pydantic import Field
 
 # Source
 from src.settings import get_settings
-
 
 settings = get_settings()
 
@@ -33,7 +30,9 @@ class TopicSummaryDynamoDB(Dyntastic):
     timestamp: datetime = datetime.now()
     topic_id: int
     trending: Optional[bool] = None
-    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]] = None
+    topic: Optional[
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]
+    ] = None
     impact_category: Optional[ImpactCategoryLabel] = None
     query_id: Optional[str] = None
     query_string: str

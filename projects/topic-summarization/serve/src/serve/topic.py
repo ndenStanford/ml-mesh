@@ -113,13 +113,15 @@ class TopicHandler:
         processed_article = [remove_whitespace(remove_html(text)) for text in article]
         return processed_article
 
-    def post_process(self, topic_result: Dict[str, str]) -> Dict[str, Dict[str, str]]:
+    def post_process(
+        self, topic_result: Dict[str, str]
+    ) -> Dict[str, Dict[str, Union[str, ImpactCategoryLabel]]]:
         """Transfer the topic inference output to multi-layer json."""
-        final_topic: Dict[str, Dict[str, str]] = {}
+        final_topic: Dict[str, Dict[str, Union[str, ImpactCategoryLabel]]] = {}
         for key, value in topic_result.items():
             if "_" in key:
                 prefix, suffix = key.split("_")
-                category = prefix  # impact_category[prefix]
+                category = prefix
                 if category not in final_topic:
                     final_topic[category] = {}
                 final_topic[category][suffix] = value
@@ -135,7 +137,7 @@ class TopicHandler:
 
     def aggregate(
         self, article: List[str]
-    ) -> Dict[str, Union[Dict[str, str], str, None]]:
+    ) -> Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]:
         """Aggregate topic & summary results together.
 
         Args:
@@ -147,7 +149,9 @@ class TopicHandler:
         topic_result = self.topic_inference(article)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article)
-        merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
+        merged_result: Dict[
+            str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]
+        ] = {}
         merged_result.update(topic_final_result)
         merged_result.update(summary_result)
         return merged_result
