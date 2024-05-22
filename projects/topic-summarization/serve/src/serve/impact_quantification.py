@@ -25,9 +25,6 @@ from src.serve.utils import (
 )
 from src.settings import get_settings
 
-# from settings import get_settings
-
-
 settings = get_settings()
 
 
