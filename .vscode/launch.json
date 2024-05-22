@@ -5,6 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "iptc multi serve",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/iptc-multi/serve",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
             "name": "transcript segmentation serve",
             "type": "debugpy",
             "request": "attach",
