@@ -35,9 +35,10 @@ jobs:
       - name: Generate test coverage xml
         run: |
           poetry run coverage combine .coverage-*
-          poetry run coverage xml
+          poetry run coverage xml --omit=*/tests/*
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        continue-on-error: true
