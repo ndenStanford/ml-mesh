@@ -5,6 +5,8 @@ services:
   # =============================================
   # SERVE
   # =============================================
+
+  # serving image
   serve:
     volumes:
       - type: bind
@@ -42,7 +44,7 @@ services:
       PROMETHEUS_MULTIPROC_DIR: /tmp
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
@@ -85,7 +87,7 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
@@ -96,6 +98,7 @@ services:
     networks:
       - onclusive-net
 
+  # unit tests
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
@@ -117,6 +120,7 @@ services:
     networks:
       - onclusive-net
 
+  # integration tests
   serve-integration:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
