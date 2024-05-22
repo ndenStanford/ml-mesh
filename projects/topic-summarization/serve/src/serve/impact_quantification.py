@@ -1,3 +1,4 @@
+# isort: skip_file
 """Impact quantification."""
 
 # Standard Library
@@ -9,11 +10,13 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
+from prophet import Prophet
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
-from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-from prophet import Prophet
+from onclusiveml.serving.serialization.topic_summarization.v1 import (
+    ImpactCategoryLabel,
+)
 
 # Source
 from src.serve.utils import (
