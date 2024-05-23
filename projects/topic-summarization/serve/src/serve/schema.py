@@ -10,6 +10,7 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import (
     PredictResponseAttributeSchemaV1,
 )
 
+
 # Source
 from src.settings import get_settings
 

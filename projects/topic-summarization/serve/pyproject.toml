@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "topic-detection-serve"
+name = "topic-summarization-serve"
 version = "0.1.0"
-description = "Implementation topic-detection API"
+description = "Implementation topic-summarization API"
 authors = ["Yuzhou Gao <yuzhou.gao@onclusive.com>"]
 packages = [{include = "src"}]
 
@@ -24,6 +24,7 @@ holidays = "0.24"
 pymannkendall = "1.4.3"
 elasticsearch = "7.17"
 statsmodels = "0.13.2"
+dyntastic = "^0.14.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
