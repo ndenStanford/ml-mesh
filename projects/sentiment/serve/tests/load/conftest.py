@@ -37,13 +37,13 @@ def test_served_model_artifacts(settings):
 @pytest.fixture
 def test_model_bio_endpoint_url():
     """Model bio endpoint URL fixture."""
-    return "/sentiment/v1/bio"
+    return "/sentiment/v2/bio"
 
 
 @pytest.fixture
 def test_model_predict_endpoint_url():
     """Model predict endpoint URL fixture."""
-    return "/sentiment/v1/predict"
+    return "/sentiment/v2/predict"
 
 
 @pytest.fixture
