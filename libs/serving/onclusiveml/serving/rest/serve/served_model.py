@@ -50,6 +50,10 @@ class ServedModel(object):
         """Customizable sample inference."""
         pass
 
+    def are_all_models_live(self) -> bool:
+        """Customizable multi model liveness check."""
+        return True
+
     def predict(
         self, payload: predict_request_model
     ) -> Union[Dict, predict_response_model]:

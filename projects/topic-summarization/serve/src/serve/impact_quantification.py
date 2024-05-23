@@ -1,6 +1,7 @@
 """Impact quantification."""
 
 # Standard Library
+from datetime import datetime
 from typing import Dict, List
 
 # 3rd party libraries
@@ -89,7 +90,7 @@ class ImpactQuantification:
         """
         query = query_profile.es_query(MediaAPISettings())
 
-        end_time = pd.Timestamp.now()
+        end_time = pd.Timestamp(datetime.now())
         start_time = end_time - pd.Timedelta(days=settings.impact_lookback_days)
         # ========== Profile (global) ==========
         # Global count of all documents from ES

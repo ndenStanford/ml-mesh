@@ -17,6 +17,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     trend_detection: Optional[bool] = True
     query_id: Optional[str] = None
     media_api_version: Optional[str] = "1"
+    save_report_dynamodb: bool = False
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
