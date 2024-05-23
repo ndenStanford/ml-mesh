@@ -74,6 +74,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.03",
         "crawler-4-2024.02",
         "crawler-4-2024.01",
+        "crawler",
     ]
 
 
