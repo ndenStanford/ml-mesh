@@ -7,8 +7,10 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
+
+# hadolint ignore=DL3002
+USER root
 
 # setup workspace
 WORKDIR "/"
@@ -17,18 +19,16 @@ WORKDIR "/"
 # hadolint ignore=DL3045
 COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
-WORKDIR "${HOME}"
+# copy libraries
+COPY --chown=${USER}:users libs/core/ libs/core/
+COPY --chown=${USER}:users libs/tracking/ libs/tracking/
 
-# hadolint ignore=DL3002
-USER root
+WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-
-# switch user
-USER ${USER}
 
 # --- production stage
 FROM builder as production
@@ -38,15 +38,9 @@ FROM builder as development
 
 WORKDIR "${HOME}"
 
-# hadolint ignore=DL3002
-USER root
-
 RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
 FROM builder as debugger
-
-# hadolint ignore=DL3002
-USER root
 
 RUN poetry install --no-interaction --with debug
