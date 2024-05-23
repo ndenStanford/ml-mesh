@@ -10,19 +10,12 @@ import torch
 
 # 3rd party libraries
 import faiss
+import hydra
+from hydra.experimental import compose, initialize_config_module
 from tqdm import tqdm
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.bela.conf.load_config import config
-from onclusiveml.models.bela.conf.pydantic_config import MainConfig
-from onclusiveml.models.bela.datamodule.joint_el_datamodule import (
-    JointELDataModule,
-)
-from onclusiveml.models.bela.task.joint_el_task import JointELTask
-from onclusiveml.models.bela.transforms.joint_el_transform import (
-    JointELXlmrRawTextTransform,
-)
 
 
 logger = get_default_logger(__name__, level=20)
@@ -91,51 +84,25 @@ class BelaModel:
         self.device = torch.device(device)
 
         logger.info("Create task")
-        # Load configuration using Pydantic
-        cfg: MainConfig = config
-        print("CFG: ", cfg)
-
-        cfg.task.load_from_checkpoint = checkpoint_path
-        print("checkpoint_path: ", cfg.task.load_from_checkpoint)
-        cfg.task.embeddings_path = embeddings_path or cfg.task.embeddings_path
-        cfg.datamodule.ent_catalogue_idx_path = (
-            ent_catalogue_idx_path or cfg.datamodule.ent_catalogue_idx_path
-        )
-        print("embeddings_path: ", cfg.task.embeddings_path)
-        cfg.datamodule.train_path = None
-        cfg.datamodule.val_path = None
-        cfg.datamodule.test_path = None
+        with initialize_config_module("onclusiveml/models/bela/conf"):
+            cfg = compose(config_name=config_name)
+            cfg.task.load_from_checkpoint = checkpoint_path
+            cfg.task.embeddings_path = embeddings_path or cfg.task.embeddings_path
+            cfg.datamodule.ent_catalogue_idx_path = (
+                ent_catalogue_idx_path or cfg.datamodule.ent_catalogue_idx_path
+            )
+            cfg.datamodule.train_path = None
+            cfg.datamodule.val_path = None
+            cfg.datamodule.test_path = None
 
         self.checkpoint_path = checkpoint_path
-        print("CHECKING transform: ", cfg.task.transform)
-        #     self.model=HFEncoder(model_path = cfg.task.model.model_path)
-        self.transform = JointELXlmrRawTextTransform(
-            max_seq_len=cfg.task.transform.max_seq_len
+        self.transform = hydra.utils.instantiate(cfg.task.transform)
+        datamodule = hydra.utils.instantiate(cfg.datamodule, transform=self.transform)
+        print("TASK1: ", cfg.task)
+        self.task = hydra.utils.instantiate(
+            cfg.task, datamodule=datamodule, _recursive_=False
         )
-        print("CHECKING transform2: ", self.transform)
-        print("CHECKING datamodule: ", cfg.datamodule)
-        datamodule = JointELDataModule(
-            transform=self.transform,
-            batch_size=cfg.datamodule.batch_size,
-            train_path=cfg.datamodule.train_path,
-            val_path=cfg.datamodule.val_path,
-            test_path=cfg.datamodule.test_path,
-            ent_catalogue_idx_path=cfg.datamodule.ent_catalogue_idx_path,
-        )
-        print("CHECKING datamodule2: ", datamodule)
-        print("CHECKING task: ", cfg.task)
-        self.task = JointELTask(
-            transform=self.transform,
-            model=cfg.task.model,
-            datamodule=datamodule,
-            optim=cfg.task.optim,
-            only_train_disambiguation=cfg.task.only_train_disambiguation,
-            train_saliency=cfg.task.train_saliency,
-            embeddings_path=cfg.task.embeddings_path,
-            use_gpu_index=cfg.task.use_gpu_index,
-            load_from_checkpoint=cfg.task.load_from_checkpoint,
-        )
-        print("CHECKING task2: ", self.task)
+        print("TASK1: ", self.task)
 
         self.task.setup("train")
         self.task = self.task.eval()

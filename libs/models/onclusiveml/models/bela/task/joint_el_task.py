@@ -26,6 +26,7 @@ from onclusiveml.models.bela.conf import (
     OptimConf,
     TransformConf,
 )
+from onclusiveml.models.bela.models.hf_encoder import HFEncoder
 
 
 logger = logging.getLogger(__name__)
@@ -517,9 +518,8 @@ class JointELTask(LightningModule):
         self.embedding_dim = len(self.embeddings[0])
         self.embeddings.requires_grad = False
 
-        self.encoder = hydra.utils.instantiate(
-            self.encoder_conf,
-        )
+        self.encoder = HFEncoder(model_path=self.encoder_conf.model_path)
+        #     self.encoder = self.encoder_conf
 
         self.project_encoder_op = nn.Identity()
         if self.encoder.embedding_dim != self.embedding_dim:
@@ -576,7 +576,19 @@ class JointELTask(LightningModule):
             if len(saliency_encoder_state) > 0 and self.train_saliency:
                 self.saliency_encoder.load_state_dict(saliency_encoder_state)
 
-        self.optimizer = hydra.utils.instantiate(self.optim_conf, self.parameters())
+        print("OPTIM: ", self.optim_conf)
+
+        #   self.optimizer = hydra.utils.instantiate(self.optim_conf, self.parameters())
+        optimizer = torch.optim.AdamW(
+            self.parameters(),
+            lr=self.optim_conf.lr,
+            betas=self.optim_conf.betas,
+            eps=self.optim_conf.eps,
+            weight_decay=self.optim_conf.weight_decay,
+            amsgrad=self.optim_conf.amsgrad,
+        )
+
+        print("OPTIM2: ", optimizer)
 
         if self.use_gpu_index:
             logger.info(f"Setup GPU index")
