@@ -84,6 +84,9 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
+        start_time = None
+        end_time = None
+        trend_found = None
         save_report_dynamodb = inputs.save_report_dynamodb
 
         if not content:
@@ -95,14 +98,13 @@ class ServedTopicModel(ServedModel):
             # to work for integration tests
             end_time = pd.Timestamp(datetime.now())
             start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-            trending = False
             if trend_detection:
-                trending, inflection_point = self.trend_detector.single_topic_trend(
+                trend_found, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
                 )
-            if not trend_detection or trending:
+            if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
-                if trending:
+                if trend_found:
                     start_time = inflection_point
                     end_time = start_time + pd.Timedelta(days=1)
 
@@ -125,7 +127,7 @@ class ServedTopicModel(ServedModel):
             query_string = query_profile.query
             dynamodb_dict = {
                 "topic_id": topic_id,
-                "trending": trending,
+                "trending": trend_found,
                 "query_id": inputs.query_id,
                 "query_string": query_string,
                 "topic": topic,
@@ -141,7 +143,13 @@ class ServedTopicModel(ServedModel):
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"topic": topic, "impact_category": impact_category},
+            attributes={
+                "topic": topic,
+                "impact_category": impact_category,
+                "trending": trend_found,
+                "start_time": start_time,
+                "end_time": end_time,
+            },
         )
 
     def bio(self) -> BioResponseSchema:

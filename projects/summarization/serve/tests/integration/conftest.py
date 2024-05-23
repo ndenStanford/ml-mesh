@@ -2,25 +2,31 @@
 
 # 3rd party libraries
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 # Source
-from src._init import _setup_prompts
-from src.app import create_app
+from src.serve.model import SummarizationServedModel
+from src.serve.server import get_model_server
+from src.settings import get_settings
 
 
-@pytest.fixture(scope="session")
-def app():
-    """Test app.
+@pytest.fixture(scope="function")
+def settings():
+    """Settings fixture."""
+    return get_settings()
 
-    NOTE: A bit of a hack to get the promt to initialize in the test pipeline.
-    """
-    _setup_prompts()
-    return create_app()
+
+@pytest.fixture(scope="function")
+def summarization_model(settings) -> FastAPI:
+    """App fixture."""
+    # Source
+    return SummarizationServedModel(name=settings.model_name)
 
 
 @pytest.fixture
-def test_client(app):
-    """Test client."""
-    client = TestClient(app)
-    yield client
+def test_client():
+    """Test client fixture."""
+    model_server = get_model_server()
+
+    return TestClient(model_server)
