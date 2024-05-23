@@ -24,9 +24,7 @@ def mock_responses():
     value_dict = {
         "risk_summary": "Not mentioned",
         "risk_theme": "Not mentioned",
-        "risk_impact": "Not mentioned",
-        "summary": "Not mentioned",
-        "theme": "Not mentioned",
+        "risk_impact": "low",
     }
     # Manually construct the inner JSON string
     value_str = json.dumps(value_dict)
