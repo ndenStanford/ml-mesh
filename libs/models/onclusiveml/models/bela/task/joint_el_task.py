@@ -15,7 +15,6 @@ import torch.nn as nn
 # 3rd party libraries
 import faiss
 import faiss.contrib.torch_utils
-import hydra
 import numpy as np
 from pytorch_lightning import LightningModule
 
@@ -576,8 +575,6 @@ class JointELTask(LightningModule):
             if len(saliency_encoder_state) > 0 and self.train_saliency:
                 self.saliency_encoder.load_state_dict(saliency_encoder_state)
 
-        print("OPTIM: ", self.optim_conf)
-
         #   self.optimizer = hydra.utils.instantiate(self.optim_conf, self.parameters())
         optimizer = torch.optim.AdamW(
             self.parameters(),
@@ -587,8 +584,6 @@ class JointELTask(LightningModule):
             weight_decay=self.optim_conf.weight_decay,
             amsgrad=self.optim_conf.amsgrad,
         )
-
-        print("OPTIM2: ", optimizer)
 
         if self.use_gpu_index:
             logger.info(f"Setup GPU index")

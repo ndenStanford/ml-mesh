@@ -93,27 +93,21 @@ class BelaModel:
         logger.info("Create task")
         # Load configuration using Pydantic
         cfg: MainConfig = config
-        print("CFG: ", cfg)
 
         cfg.task.load_from_checkpoint = checkpoint_path
-        print("checkpoint_path: ", cfg.task.load_from_checkpoint)
         cfg.task.embeddings_path = embeddings_path or cfg.task.embeddings_path
         cfg.datamodule.ent_catalogue_idx_path = (
             ent_catalogue_idx_path or cfg.datamodule.ent_catalogue_idx_path
         )
-        print("embeddings_path: ", cfg.task.embeddings_path)
         cfg.datamodule.train_path = None
         cfg.datamodule.val_path = None
         cfg.datamodule.test_path = None
 
         self.checkpoint_path = checkpoint_path
-        print("CHECKING transform: ", cfg.task.transform)
         #     self.model=HFEncoder(model_path = cfg.task.model.model_path)
         self.transform = JointELXlmrRawTextTransform(
             max_seq_len=cfg.task.transform.max_seq_len
         )
-        print("CHECKING transform2: ", self.transform)
-        print("CHECKING datamodule: ", cfg.datamodule)
         datamodule = JointELDataModule(
             transform=self.transform,
             batch_size=cfg.datamodule.batch_size,
@@ -122,8 +116,6 @@ class BelaModel:
             test_path=cfg.datamodule.test_path,
             ent_catalogue_idx_path=cfg.datamodule.ent_catalogue_idx_path,
         )
-        print("CHECKING datamodule2: ", datamodule)
-        print("CHECKING task: ", cfg.task)
         self.task = JointELTask(
             transform=self.transform,
             model=cfg.task.model,
@@ -135,7 +127,6 @@ class BelaModel:
             use_gpu_index=cfg.task.use_gpu_index,
             load_from_checkpoint=cfg.task.load_from_checkpoint,
         )
-        print("CHECKING task2: ", self.task)
 
         self.task.setup("train")
         self.task = self.task.eval()
