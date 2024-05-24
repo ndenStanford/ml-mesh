@@ -122,6 +122,43 @@ class ServedBelaModel(ServedModel):
         entities: Optional[List[Dict[str, Any]]],
     ) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
+        return self._get_entity_linking(content=content, entities=entities)
+
+    def _generate_offsets(
+        self, text: str, entities: List[Dict[str, Any]]
+    ) -> Tuple[List[str], List[int], List[int], List[int]]:
+        """Generate a component of query to be consumed by the entity fish endpoint.
+
+        Args:
+            text (str): text to be wiki linked
+            entities (List[Dict[str, Any]]):
+                entities within text recognized by an external NER model
+        """
+        unique_entity_text = list(
+            set(entity.get("entity_text", entity.get("text")) for entity in entities)
+        )
+        entities_offsets = []
+        entities_list = []
+        mention_offsets = []
+        mention_lengths = []
+        for entity_text in unique_entity_text:
+            matched_entities = list(re.finditer(entity_text, text))
+            spans = [m.span() for m in matched_entities]
+            for span in spans:
+                offset_start, offset_end = span
+                length = offset_end - offset_start
+                entities_list.append(entity_text)
+                entities_offsets.append(0)
+                mention_offsets.append(offset_start)
+                mention_lengths.append(length)
+        return entities_list, entities_offsets, mention_offsets, mention_lengths
+
+    def _get_entity_linking(
+        self,
+        content: str,
+        entities: Optional[List[Dict[str, Any]]],
+    ) -> List[Dict[str, Any]]:
+        """Get entity linking prediction."""
         entities_with_links = []
         if entities:
             (
@@ -182,32 +219,3 @@ class ServedBelaModel(ServedModel):
             except Exception as e:
                 raise Exception(f"An unexpected error occurred: {e}")
         return entities_with_links
-
-    def _generate_offsets(
-        self, text: str, entities: List[Dict[str, Any]]
-    ) -> Tuple[List[str], List[int], List[int], List[int]]:
-        """Generate a component of query to be consumed by the entity fish endpoint.
-
-        Args:
-            text (str): text to be wiki linked
-            entities (List[Dict[str, Any]]):
-                entities within text recognized by an external NER model
-        """
-        unique_entity_text = list(
-            set(entity.get("entity_text", entity.get("text")) for entity in entities)
-        )
-        entities_offsets = []
-        entities_list = []
-        mention_offsets = []
-        mention_lengths = []
-        for entity_text in unique_entity_text:
-            matched_entities = list(re.finditer(entity_text, text))
-            spans = [m.span() for m in matched_entities]
-            for span in spans:
-                offset_start, offset_end = span
-                length = offset_end - offset_start
-                entities_list.append(entity_text)
-                entities_offsets.append(0)
-                mention_offsets.append(offset_start)
-                mention_lengths.append(length)
-        return entities_list, entities_offsets, mention_offsets, mention_lengths
