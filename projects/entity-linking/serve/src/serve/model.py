@@ -114,7 +114,10 @@ class ServedBelaModel(ServedModel):
             attributes={"entities": entities_with_links},
         )
 
-    @filter_language(supported_languages=list(LanguageIso), raise_if_none=True)
+    @filter_language(
+        supported_languages=list(LanguageIso),
+        raise_if_none=True,
+    )
     def _predict(
         self,
         content: str,
