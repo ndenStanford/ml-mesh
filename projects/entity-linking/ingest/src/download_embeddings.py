@@ -17,8 +17,8 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def download_model(settings: BaseSettings) -> None:
-    """Download model."""
+def download_embeddings(settings: BaseSettings) -> None:
+    """Download emeddings."""
     logger = get_default_logger(__name__)
     # model registry reference to the desired model version
     # initialize client for specific model version
@@ -49,4 +49,4 @@ def download_model(settings: BaseSettings) -> None:
 
 
 if __name__ == "__main__":
-    download_model(settings)
+    download_embeddings(settings)
