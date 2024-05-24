@@ -45,6 +45,24 @@ def test_model_server_bio():
 @pytest.mark.parametrize(
     "payload, expected_response",
     [
+        # Test case for an unsupported language (invalid language code)
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "ner",
+                    "attributes": {
+                        "content": "House prices were unchanged last month, defying predictions of another drop, but they are unlikely to have troughed just yet."  # noqa
+                    },
+                    "parameters": {"language": "xyz"},
+                }
+            },
+            {
+                "status": 422,
+                "detail": "The language reference 'xyz' could not be mapped",
+            },
+        ),
+        # Test case for English (no entity)
         (
             {
                 "data": {
@@ -65,6 +83,7 @@ def test_model_server_bio():
                 },
             },
         ),
+        # Test case for Korean (with entities)
         (
             {
                 "data": {
@@ -104,6 +123,7 @@ def test_model_server_bio():
                 },
             },
         ),
+        # Test case for English (with entities)
         (
             {
                 "data": {
