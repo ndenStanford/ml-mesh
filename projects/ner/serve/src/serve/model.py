@@ -91,7 +91,7 @@ class ServedNERModel(ServedModel):
         Returns:
             List[List[Dict[str, Any]]]: List of extracted named entities in dictionary format.
         """
-        return self.model(documents=content, language=language, **additional_params)
+        return self.model(documents=content, **additional_params)
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded NER model.
