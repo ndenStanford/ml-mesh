@@ -5,7 +5,7 @@ Implementation of the Sentiment model backfill container.
 For details on how to run and maintain the `sentiment` project `backfill` component, please refer
 to the
 - [the project README](../README.md)
-- [the project backfill doc](../../docs/05_backfill.md)
+- [the project backfill doc](../../../docs/05_backfill.md)
 
 using
 
