@@ -180,6 +180,6 @@ def test_model_server_prediction(payload, expected_response):
         json=payload,
     )
 
-    assert response.status_code == 200
+    assert response.status_code == expected_response["status"]
     # TODO: assert score close to expected
     assert response.json() == expected_response
