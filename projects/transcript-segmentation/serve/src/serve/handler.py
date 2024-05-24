@@ -88,7 +88,7 @@ class TranscriptSegmentationHandler:
 
         first_portion = " ".join(segment_split[:window_threshold]).lstrip(">")
 
-        search_last_portion = window_threshold >= 20
+        search_last_portion = window_threshold >= settings.WINDOW_THRESHOLD
         if search_last_portion:
             last_portion = " ".join(segment_split[-window_threshold:]).lstrip(">")
         max_similarity_start = 0
