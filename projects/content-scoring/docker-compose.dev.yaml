@@ -149,22 +149,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
-    environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: content-scoring-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      PROMETHEUS_MULTIPROC_DIR: /tmp
-      NEURON_RT_NUM_CORES: 1
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/content-scoring
-      NEPTUNE_MODEL_ID: SCORING-COMPILED
+    env_file: serve/config/dev.env
     profiles: [serve, functional, load]
     ports:
       - 8000:8000
@@ -202,10 +187,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
-      NEPTUNE_PROJECT: onclusive/content-scoring
-      NEPTUNE_MODEL_ID: SCORING-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: SCORING-COMPILED-1
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks: [onclusive-net]
 
@@ -224,13 +206,7 @@ services:
         source: serve/tests
         target: /projects/content-scoring/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/content-scoring
-      NEPTUNE_MODEL_ID: SCORING-COMPILED
+    env_file: serve/config/dev.env
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -253,12 +229,7 @@ services:
         target: /projects/content-scoring/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/SCORING-COMPILED-1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      NEPTUNE_PROJECT: onclusive/content-scoring
-      NEPTUNE_MODEL_ID: SCORING-COMPILED
+    env_file: serve/config/dev.env
     profiles: [functional]
     hostname: onclusiveml
     networks:
