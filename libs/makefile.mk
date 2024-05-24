@@ -31,4 +31,6 @@ libs.test-all: $(foreach I, $(ALL_LIBS), libs.test/$(I)) # run full test suite f
 
 libs.install-all: $(foreach I, $(ALL_LIBS), libs.install/$(I)) # install library dependencies
 
+libs.lock-all: $(foreach I, $(ALL_LIBS), libs.lock/$(I)) # install library dependencies
+
 libs.coverage-unit-all: $(foreach I, $(ALL_LIBS), libs.coverage-unit/$(I))

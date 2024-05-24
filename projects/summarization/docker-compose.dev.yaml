@@ -5,6 +5,8 @@ services:
   # =============================================
   # SERVE
   # =============================================
+
+  # serving image
   serve:
     volumes:
       - type: bind
@@ -24,13 +26,25 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '8888', --reload, --log-level, debug]
+    command: [python, -m, src.serve.__main__]
     profiles: [serve]
     ports:
       - 8888:8888
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: summarization-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+      PROMETHEUS_MULTIPROC_DIR: /tmp
+      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
+      ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+      DOCS_URL: /summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
@@ -53,14 +67,27 @@ services:
         COMPONENT: serve
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '8888', --reload]
     profiles: [debug]
+    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
     ports:
       - 5678:5678
       - 8888:8888
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/summarization/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/summarization/serve/tests
     environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: summarization-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
+      ONCLUSIVEML_SERVING_API_VERSION: v1
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
@@ -71,6 +98,7 @@ services:
     networks:
       - onclusive-net
 
+  # unit tests
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
@@ -92,6 +120,7 @@ services:
     networks:
       - onclusive-net
 
+  # integration tests
   serve-integration:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]

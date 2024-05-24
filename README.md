@@ -33,15 +33,17 @@ An overview of developer utilities and existing images on can be found [here](./
 
 - **ingest**: if the data needed for training is external to Onclusive, an ingest step is needed to
 bring data into our internal storage.
-  - [see here](./projects/docs/00_ingest.md) for this component's doc
+  - [see here](./docs/00_ingest.md) for this component's doc
 - **register**: register features to be used in training component.
-  - [see here](./projects/docs/01_register.md) for this component's doc
+  - [see here](./docs/01_register.md) for this component's doc
 - **train**: model training and registering to internal model registry.
-  - [see here](./projects/docs/02_train.md) for this component's doc
+  - [see here](./docs/02_train.md) for this component's doc
 - **compile**: model compilation (optimized for serving) and registering to internal model registry
-  - [see here](./projects/docs/03_compile.md) for this component's doc
+  - [see here](./docs/03_compile.md) for this component's doc
 - **serve**: model served as a REST API.
-  - [see here](./projects/docs/04_serve.md) for this component's doc
+  - [see here](./docs/04_serve.md) for this component's doc
+- **backfill**: backfilling.
+  - [see here](./docs/05_backfill.md) for this component's doc
 
 Strict abstraction boundaries help express the invariant and logical consistency of each component
 behaviour (input, processing and output). This allows us to create well defined patterns that can
