@@ -45,12 +45,27 @@ def test_model_server_bio():
 @pytest.mark.parametrize(
     "payload, expected_response",
     [
+        # Test case for an unsupported language (invalid language code)
         (
             {
                 "data": {
                     "namespace": "iptc-multi",
                     "attributes": {"content": "crime"},  # noqa
-                    "parameters": {},
+                    "parameters": {"language": "xyz"},
+                }
+            },
+            {
+                "status": 422,
+                "detail": "The language reference 'xyz' could not be mapped",
+            },
+        ),
+        # Test case for an supported language
+        (
+            {
+                "data": {
+                    "namespace": "iptc-multi",
+                    "attributes": {"content": "crime"},  # noqa
+                    "parameters": {"language": "en"},
                 }
             },
             {
@@ -79,7 +94,7 @@ def test_model_server_bio():
                     },
                 },
             },
-        )
+        ),
     ],
 )
 def test_model_server_prediction(payload, expected_response):
