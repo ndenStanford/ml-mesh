@@ -29,11 +29,9 @@ services:
     ports:
       - 8888:8888
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -59,11 +57,9 @@ services:
       - 5678:5678
       - 8888:8888
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -83,11 +79,9 @@ services:
         source: serve/tests
         target: /projects/summarization/serve/tests
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -104,11 +98,9 @@ services:
         source: serve/tests
         target: /projects/summarization/serve/tests
     environment:
-      ENVIRONMENT: dev
-      DOCS_URL: /docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      PROMPT_API: http://prompt-backend:4000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
         condition: service_healthy
