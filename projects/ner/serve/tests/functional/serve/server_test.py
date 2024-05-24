@@ -199,9 +199,7 @@ def test_model_server_prediction(payload, expected_response):
         ),
     ],
 )
-def test_model_server_prediction_invalid_language(
-    test_client, payload, expected_error_detail
-):
+def test_model_server_prediction_invalid_language(payload, expected_error_detail):
     """Tests the language validation of the predict endpoint of a running ModelServer instance."""
     response = requests.post(
         "http://serve:8000/ner/v1/predict",
