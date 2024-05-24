@@ -124,6 +124,7 @@ class GlobalSettings(
     TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    NERSettings,
 ):
     """Global server settings."""
 
