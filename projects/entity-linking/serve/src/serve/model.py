@@ -1,7 +1,8 @@
 """Model."""
 
 # Standard Library
-from typing import Any, Dict, List, Optional, Type
+import re
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -92,16 +93,12 @@ class ServedBelaModel(ServedModel):
         content = attributes.content
         lang = parameters.lang
         entities = getattr(attributes, "entities", None)
-        mention_offsets = getattr(attributes, "mention_offsets", None)
-        mention_lengths = getattr(attributes, "mention_lengths", None)
 
         try:
-            output = self._predict(
+            entities_with_links = self._predict(
                 content=content,
                 language=lang,
                 entities=entities,
-                mention_offsets=mention_offsets,
-                mention_lengths=mention_lengths,
             )
         except (
             LanguageDetectionException,
@@ -110,53 +107,6 @@ class ServedBelaModel(ServedModel):
             raise OnclusiveHTTPException(
                 status_code=422, detail=language_exception.message
             )
-        entities_with_links = []
-
-        if entities:
-            for sentence_idx, entry in enumerate(output):
-                try:
-                    entity_score_map = dict(zip(entry["entities"], entry["scores"]))
-                    for idx, entity_id in enumerate(entry["entities"]):
-                        start_offset = entry["offsets"][idx]
-                        entity_length = entry["lengths"][idx]
-                        end_offset = start_offset + entity_length
-                        entity_text = str(content[start_offset:end_offset])
-                        entity_with_link = {
-                            "entity_text": entity_text,
-                            "wiki_link": "https://www.wikidata.org/wiki/" + entity_id,
-                            "wiki_score": entity_score_map.get(entity_id, None) / 100,
-                        }
-                        entities_with_links.append(entity_with_link)
-                except KeyError as e:
-                    raise KeyError(f"KeyError occurred: {e}")
-                except IndexError as e:
-                    raise IndexError(f"IndexError occurred: {e}")
-                except Exception as e:
-                    raise Exception(f"An unexpected error occurred: {e}")
-        else:
-            for sentence_idx, entry in enumerate(output):
-                try:
-                    entity_score_map = dict(zip(entry["entities"], entry["el_scores"]))
-                    entity_ner_map = dict(zip(entry["entities"], entry["md_scores"]))
-                    for idx, entity_id in enumerate(entry["entities"]):
-                        start_offset = entry["offsets"][idx]
-                        entity_length = entry["lengths"][idx]
-                        end_offset = start_offset + entity_length
-                        entity_text = str(content[start_offset:end_offset])
-                        entity_with_link = {
-                            "entity_text": entity_text,
-                            "score": entity_ner_map.get(entity_id, None),
-                            "sentence_index": [sentence_idx],
-                            "wiki_link": "https://www.wikidata.org/wiki/" + entity_id,
-                            "wiki_score": entity_score_map.get(entity_id, None),
-                        }
-                        entities_with_links.append(entity_with_link)
-                except KeyError as e:
-                    raise KeyError(f"KeyError occurred: {e}")
-                except IndexError as e:
-                    raise IndexError(f"IndexError occurred: {e}")
-                except Exception as e:
-                    raise Exception(f"An unexpected error occurred: {e}")
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
@@ -169,19 +119,95 @@ class ServedBelaModel(ServedModel):
         self,
         content: str,
         language: str,
-        entities: Optional[List[List[Optional[int]]]],
-        mention_offsets: Optional[List[List[Optional[int]]]],
-        mention_lengths: Optional[List[List[Optional[int]]]],
+        entities: Optional[List[Dict[str, Any]]],
     ) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
-        if mention_offsets and mention_lengths and entities:
-            list_texts = [content for i in range(len(mention_offsets))]
-            return self.model.process_disambiguation_batch(
-                list_text=list_texts,
-                mention_offsets=mention_offsets,
-                mention_lengths=mention_lengths,
-                entities=entities,
+        entities_with_links = []
+        if entities:
+            (
+                unique_entities_list,
+                entities_offsets,
+                mention_offsets,
+                mention_lengths,
+            ) = self._generate_offsets(text=content, entities=entities)
+            output = self.model.process_disambiguation_batch(
+                list_text=[content],
+                mention_offsets=[mention_offsets],
+                mention_lengths=[mention_lengths],
+                entities=[entities_offsets],
             )
+            for entity in entities:
+                try:
+                    if entity["entity_text"] in unique_entities_list:
+                        index = unique_entities_list.index(
+                            entity["entity_text"]
+                        )  # noqa
+                        entity_with_link = entity
+                        entity_with_link["wiki_link"] = (
+                            "https://www.wikidata.org/wiki/"
+                            + output[0]["entities"][index]
+                        )
+                        entities_with_links.append(entity_with_link)
+                except KeyError as e:
+                    raise KeyError(f"KeyError occurred: {e}")
+                except IndexError as e:
+                    raise IndexError(f"IndexError occurred: {e}")
+                except Exception as e:
+                    raise Exception(f"An unexpected error occurred: {e}")
+
         else:
             list_texts = [content]
-            return self.model.process_batch(list_text=list_texts)
+            output = self.model.process_batch(list_text=list_texts)
+            try:
+                entity_ner_map = dict(
+                    zip(output[0]["entities"], output[0]["md_scores"])
+                )
+                for idx, entity_id in enumerate(output[0]["entities"]):
+                    start_offset = output[0]["offsets"][idx]
+                    entity_length = output[0]["lengths"][idx]
+                    end_offset = start_offset + entity_length
+                    entity_text = str(content[start_offset:end_offset])
+                    entity_with_link = {
+                        "entity_type": None,
+                        "entity_text": entity_text,
+                        "score": entity_ner_map.get(entity_id, None),
+                        "sentence_index": [0],
+                        "wiki_link": "https://www.wikidata.org/wiki/" + entity_id,
+                    }
+                    entities_with_links.append(entity_with_link)
+            except KeyError as e:
+                raise KeyError(f"KeyError occurred: {e}")
+            except IndexError as e:
+                raise IndexError(f"IndexError occurred: {e}")
+            except Exception as e:
+                raise Exception(f"An unexpected error occurred: {e}")
+        return entities_with_links
+
+    def _generate_offsets(
+        self, text: str, entities: List[Dict[str, Any]]
+    ) -> Tuple[List[str], List[int], List[int], List[int]]:
+        """Generate a component of query to be consumed by the entity fish endpoint.
+
+        Args:
+            text (str): text to be wiki linked
+            entities (List[Dict[str, Any]]):
+                entities within text recognized by an external NER model
+        """
+        unique_entity_text = list(
+            set(entity.get("entity_text", entity.get("text")) for entity in entities)
+        )
+        entities_offsets = []
+        entities_list = []
+        mention_offsets = []
+        mention_lengths = []
+        for entity_text in unique_entity_text:
+            matched_entities = list(re.finditer(entity_text, text))
+            spans = [m.span() for m in matched_entities]
+            for span in spans:
+                offset_start, offset_end = span
+                length = offset_end - offset_start
+                entities_list.append(entity_text)
+                entities_offsets.append(0)
+                mention_offsets.append(offset_start)
+                mention_lengths.append(length)
+        return entities_list, entities_offsets, mention_offsets, mention_lengths

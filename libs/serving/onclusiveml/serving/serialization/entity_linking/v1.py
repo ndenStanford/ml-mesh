@@ -1,7 +1,7 @@
 """Entity linking v1 data schemas."""
 
 # Standard Library
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -11,9 +11,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     content: str
-    entities: Optional[List[List[Optional[int]]]] = None
-    mention_offsets: Optional[List[List[Optional[int]]]] = None
-    mention_lengths: Optional[List[List[Optional[int]]]] = None
+    entities: Optional[List[Dict[str, Any]]] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
@@ -25,11 +23,11 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
 class PredictResponseEntity(JsonApiSchema):
     """Prediction entity."""
 
+    entity_type: Optional[str] = None
     entity_text: Optional[str] = None
     score: Optional[float] = None
     sentence_index: Optional[Union[int, List[int]]] = None
     wiki_link: Optional[str] = None
-    wiki_score: Optional[float] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):

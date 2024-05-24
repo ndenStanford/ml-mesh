@@ -53,18 +53,18 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
+                                "entity_type": None,
                                 "entity_text": "CEO",
                                 "score": 0.24852901697158813,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                                "wiki_score": 0.48496711254119873,
                             },
                             {
+                                "entity_type": None,
                                 "entity_text": "Apple",
                                 "score": 0.7043066024780273,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.9504453539848328,
                             },
                         ]
                     },
@@ -88,18 +88,18 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
+                                "entity_type": None,
                                 "entity_text": "CEO",
                                 "score": 0.46443355083465576,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                                "wiki_score": 0.6950671076774597,
                             },
                             {
+                                "entity_type": None,
                                 "entity_text": "Apple",
                                 "score": 0.79751056432724,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.9626907706260681,
                             },
                         ]
                     },
@@ -125,32 +125,32 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
+                                "entity_type": None,
                                 "entity_text": "Steve Jobs",
                                 "score": 0.8623836040496826,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q19837",
-                                "wiki_score": 0.9862053990364075,
                             },
                             {
+                                "entity_type": None,
                                 "entity_text": "Apple",
                                 "score": 0.6849206686019897,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.9424868822097778,
                             },
                             {
+                                "entity_type": None,
                                 "entity_text": "Elon Musk",
                                 "score": 0.8932482004165649,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q317521",
-                                "wiki_score": 0.9890680909156799,
                             },
                             {
+                                "entity_type": None,
                                 "entity_text": "Tesla",
                                 "score": 0.6265523433685303,
                                 "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q478214",
-                                "wiki_score": 0.9453710317611694,
                             },
                         ]
                     },
@@ -164,9 +164,36 @@ def test_model_server_readiness(test_client):
                     "namespace": "entity-linking",
                     "attributes": {
                         "content": "Steve Jobs was the CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla. That is it.",  # noqa
-                        "mention_offsets": [[0], [26], [61], [85]],
-                        "mention_lengths": [[10], [5], [9], [5]],
-                        "entities": [[0], [0], [0], [0]],
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Steve Jobs",
+                                "score": 0.9995638926823934,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q19837",
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Apple",
+                                "score": 0.999211311340332,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Elon Musk",
+                                "score": 0.9523038864135742,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q317521",
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Tesla",
+                                "score": 0.9936597347259521,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q478214",
+                            },
+                        ],
                     },
                     "parameters": {"lang": "en"},
                 }
@@ -179,32 +206,32 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
+                                "entity_type": "PER",
                                 "entity_text": "Steve Jobs",
-                                "score": None,
-                                "sentence_index": None,
+                                "score": 0.9995638926823934,
+                                "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q19837",
-                                "wiki_score": 0.4764402770996094,
                             },
                             {
+                                "entity_type": "ORG",
                                 "entity_text": "Apple",
-                                "score": None,
-                                "sentence_index": None,
+                                "score": 0.999211311340332,
+                                "sentence_index": [0],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                                "wiki_score": 0.36141754150390625,
                             },
                             {
+                                "entity_type": "PER",
                                 "entity_text": "Elon Musk",
-                                "score": None,
-                                "sentence_index": None,
+                                "score": 0.9523038864135742,
+                                "sentence_index": [2],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q317521",
-                                "wiki_score": 0.48770980834960936,
                             },
                             {
+                                "entity_type": "ORG",
                                 "entity_text": "Tesla",
-                                "score": None,
-                                "sentence_index": None,
+                                "score": 0.9936597347259521,
+                                "sentence_index": [2],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q478214",
-                                "wiki_score": 0.35195270538330076,
                             },
                         ]
                     },
