@@ -45,23 +45,6 @@ def test_model_server_bio():
 @pytest.mark.parametrize(
     "payload, expected_response",
     [
-        # Test case for an unsupported language (invalid language code)
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "ner",
-                    "attributes": {
-                        "content": "House prices were unchanged last month, defying predictions of another drop, but they are unlikely to have troughed just yet."  # noqa
-                    },
-                    "parameters": {"language": "xyz"},
-                }
-            },
-            {
-                "status": 422,
-                "detail": "The language reference 'xyz' could not be mapped",
-            },
-        ),
         # Test case for English (no entity)
         (
             {
@@ -180,6 +163,50 @@ def test_model_server_prediction(payload, expected_response):
         json=payload,
     )
 
-    assert response.status_code == expected_response["status"]
+    assert response.status_code == 200
     # TODO: assert score close to expected
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload,expected_error_detail",
+    [
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "ner",
+                    "attributes": {
+                        "content": "Irrelevant content because of invalid message value (nonsense)."
+                    },
+                    "parameters": {"language": "invalid_language"},
+                }
+            },
+            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "ner",
+                    "attributes": {
+                        "content": "Second example of irrelevant content because of invalid message value (empty string)."  # noqa: E501
+                    },
+                    "parameters": {"language": ""},
+                }
+            },
+            "The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+    ],
+)
+def test_model_server_prediction_invalid_language(
+    test_client, payload, expected_error_detail
+):
+    """Tests the language validation of the predict endpoint of a running ModelServer instance."""
+    response = requests.post(
+        "http://serve:8000/ner/v1/predict",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"].startswith(expected_error_detail)
