@@ -1,14 +1,19 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
+from typing import Any, Dict, List, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.models.gch_summarization import TrainedSummarization
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
@@ -82,17 +87,53 @@ class ServedSummarizationModel(ServedModel):
         attributes = payload.attributes
         parameters = payload.parameters
 
-        output = self.model(text=attributes.content, language=parameters.language)
+        try:
+            # score the model
+            output = self._predict(
+                content=attributes.content,
+                language=parameters.language,
+                additional_params=parameters.dict(),
+            )
 
-        attributes = {
-            "summary": output,
-        }
+            attributes = {
+                "summary": output,
+            }
+
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=422, detail=language_exception.message
+            )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes=attributes,
         )
+
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _predict(
+        self,
+        content: str,
+        language: str,
+        additional_params: dict,
+    ) -> List[List[Dict[str, Any]]]:
+        """Generate text summary considering language and additional parameters.
+
+        Args:
+            content (str): The text content to summarize.
+            language (str): The language of the text.
+            additional_params (dict): Additional parameters for model configuration.
+
+        Returns:
+            summary (str): Generated summary.
+        """
+        return self.model(text=content, language=language, **additional_params)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
