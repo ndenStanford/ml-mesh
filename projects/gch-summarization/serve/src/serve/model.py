@@ -92,7 +92,6 @@ class ServedSummarizationModel(ServedModel):
             output = self._predict(
                 content=attributes.content,
                 language=parameters.language,
-                additional_params=parameters.dict(),
             )
 
             attributes = {
@@ -117,23 +116,17 @@ class ServedSummarizationModel(ServedModel):
         supported_languages=settings.supported_languages,
         raise_if_none=True,
     )
-    def _predict(
-        self,
-        content: str,
-        language: str,
-        additional_params: dict,
-    ) -> List[List[Dict[str, Any]]]:
+    def _predict(self, content: str, language: str) -> List[List[Dict[str, Any]]]:
         """Generate text summary considering language and additional parameters.
 
         Args:
             content (str): The text content to summarize.
             language (str): The language of the text.
-            additional_params (dict): Additional parameters for model configuration.
 
         Returns:
             summary (str): Generated summary.
         """
-        return self.model(text=content, language=language, **additional_params)
+        return self.model(text=content, language=language)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
