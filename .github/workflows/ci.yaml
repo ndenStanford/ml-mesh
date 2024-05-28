@@ -547,7 +547,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: g4dn.xlarge
+            self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: true
 
