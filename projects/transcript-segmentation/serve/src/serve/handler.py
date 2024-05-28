@@ -371,7 +371,8 @@ class TranscriptSegmentationHandler:
         if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
             offset = self.country_offsets.get(country.lower())
             if offset:
-                offset_start_buffer = offset_end_buffer = offset
+                offset_start_buffer = offset["start_offset"]
+                offset_end_buffer = offset["end_offset"]
 
         # post process
         (
