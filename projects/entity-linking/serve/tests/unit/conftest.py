@@ -58,12 +58,19 @@ def mock_served_model(artifacts):
     mock_model._predict = MagicMock(
         return_value=[
             {
-                "entities": ["Q484876", "Q312"],
-                "el_scores": [0.5, 0.6],
-                "md_scores": [0.7, 0.8],
-                "offsets": [0, 22],
-                "lengths": [10, 5],
-            }
+                "entity_type": "Pers",
+                "entity_text": "CEO",
+                "score": 0.24852901697158813,
+                "sentence_index": [0],
+                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+            },
+            {
+                "entity_type": "ORG",
+                "entity_text": "Apple",
+                "score": 0.7043066024780273,
+                "sentence_index": [0],
+                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+            },
         ]
     )
     return mock_model

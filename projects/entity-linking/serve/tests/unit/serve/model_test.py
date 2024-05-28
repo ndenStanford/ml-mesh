@@ -24,56 +24,49 @@ def test_model_bio(entity_linking_model):
     }
 
 
-(
-    {
-        "content": "Steve Jobs was CEO of Apple",
-        "entities": [
+@pytest.mark.parametrize(
+    "payload, expected_response",
+    [
+        (
             {
-                "entity_type": "Pers",
-                "text": "Steve Jobs",
-                "salience_score": 0.9259419441223145,
-                "sentence_index": [0],
-            },
-            {
-                "entity_type": "ORG",
-                "text": "Apple",
-                "salience_score": 0.9259419441223145,
-                "sentence_index": [0],
-            },
-        ],
-    },
-    {
-        "version": 1,
-        "namespace": "entity-linking",
-        "data": {
-            "identifier": None,
-            "namespace": "entity-linking",
-            "attributes": {
+                "content": "Steve Jobs was CEO of Apple",
                 "entities": [
                     {
                         "entity_type": "Pers",
-                        "text": "CEO",
-                        "salience_score": 0.24852901697158813,
+                        "entity_text": "Steve Jobs",
+                        "   score": 0.9259419441223145,
                         "sentence_index": [0],
-                        "wiki_link": "https://www.wikidata.org/wiki/Q484876",
-                        "wiki_score": 0.48496711254119873,
                     },
                     {
                         "entity_type": "ORG",
-                        "text": "Apple",
-                        "salience_score": 0.7043066024780273,
+                        "entity_text": "Apple",
+                        "score": 0.9259419441223145,
+                        "sentence_index": [0],
+                    },
+                ],
+            },
+            {
+                "entities": [
+                    {
+                        "entity_type": "Pers",
+                        "entity_text": "CEO",
+                        "score": 0.24852901697158813,
+                        "sentence_index": [0],
+                        "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+                    },
+                    {
+                        "entity_type": "ORG",
+                        "entity_text": "Apple",
+                        "score": 0.7043066024780273,
                         "sentence_index": [0],
                         "wiki_link": "https://www.wikidata.org/wiki/Q312",
-                        "wiki_score": 0.9504453539848328,
                     },
                 ]
             },
-        },
-    },
+        ),
+    ],
 )
-
-
-def test_predict(mock_served_model, payload, expected_output):
+def test_predict(mock_served_model, payload, expected_response):
     """Testing model predictions."""
     predict_request = PredictRequestSchema(
         data={
@@ -84,20 +77,17 @@ def test_predict(mock_served_model, payload, expected_output):
         }
     )
 
+    response = mock_served_model.predict(predict_request)
+
     predict_response = PredictResponseSchema(
         version=1,
         data={
             "identifier": None,
             "namespace": "entity-linking",
-            "attributes": expected_output,
+            "attributes": expected_response,
         },
     )
 
-    response = mock_served_model.predict(predict_request)
-
-    assert response.version == expected_output["version"]
-    assert response.data.identifier == expected_output["data"]["identifier"]
-    assert response.data.namespace == expected_output["data"]["namespace"]
     assert response == predict_response
 
 
