@@ -51,6 +51,15 @@ def served_model(entity_linking_model):
 
 
 @pytest.fixture
+def mock_served_model_empty(artifacts):
+    """Served model prediciton fixture."""
+    mock_model = ServedBelaModel(served_model_artifacts=artifacts)
+
+    mock_model._predict = MagicMock(return_value=[])
+    return mock_model
+
+
+@pytest.fixture
 def mock_served_model(artifacts):
     """Served model prediciton fixture."""
     mock_model = ServedBelaModel(served_model_artifacts=artifacts)

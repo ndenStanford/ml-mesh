@@ -29,6 +29,43 @@ def test_model_bio(entity_linking_model):
     [
         (
             {
+                "content": "House prices were unchanged last month, defying predictions of another drop, but they are unlikely to have troughed just yet.",  # noqa
+                "entities": [],
+            },
+            {"entities": []},
+        ),
+    ],
+)
+def test_predict_empty_return(mock_served_model_empty, payload, expected_response):
+    """Testing model predictions."""
+    predict_request = PredictRequestSchema(
+        data={
+            "identifier": None,
+            "namespace": "entity-linking",
+            "attributes": payload,
+            "parameters": {"lang": "en"},
+        }
+    )
+
+    response = mock_served_model_empty.predict(predict_request)
+
+    predict_response = PredictResponseSchema(
+        version=1,
+        data={
+            "identifier": None,
+            "namespace": "entity-linking",
+            "attributes": expected_response,
+        },
+    )
+
+    assert response == predict_response
+
+
+@pytest.mark.parametrize(
+    "payload, expected_response",
+    [
+        (
+            {
                 "content": "Steve Jobs was CEO of Apple",
                 "entities": [
                     {
