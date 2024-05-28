@@ -124,12 +124,15 @@ class BetterStackSettings(ServingBaseParams):
             to
         full_url (str): The full url of the betterstack service we want to submit a liveness pulse
             to, including the api_token. See `assemble_betterstack_url` for details.
+        enable_multi_model_check (bool): A switch for enabling/disabling betetrstack multi-model
+            heartbeat check.
     """
 
     enable: bool = False
     api_token: SecretStr = Field("dummy_api_token", exclude=True)
     base_url: str = "https://uptime.betterstack.com/api/v1/heartbeat/"
     full_url: str = ""
+    enable_multi_model_check: bool = False
 
     class Config:
         env_prefix = f"{ServingBaseParams.Config.env_prefix}betterstack_"

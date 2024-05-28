@@ -16,6 +16,8 @@ from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
 from onclusiveml.core.logging import get_default_logger
+from src.serve.tables import TopicSummaryDynamoDB
+from src.serve.exceptions import TopicSummaryInsertionException
 
 # Source
 from src.serve.schema import (
@@ -82,6 +84,10 @@ class ServedTopicModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         content = inputs.content
+        start_time = None
+        end_time = None
+        trend_found = None
+        save_report_dynamodb = inputs.save_report_dynamodb
 
         if not content:
             topic_id = inputs.topic_id
@@ -92,14 +98,13 @@ class ServedTopicModel(ServedModel):
             # to work for integration tests
             end_time = pd.Timestamp(datetime.now())
             start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
-            trending = False
             if trend_detection:
-                trending, inflection_point = self.trend_detector.single_topic_trend(
+                trend_found, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile, topic_id, start_time, end_time
                 )
-            if not trend_detection or trending:
+            if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
-                if trending:
+                if trend_found:
                     start_time = inflection_point
                     end_time = start_time + pd.Timedelta(days=1)
 
@@ -118,10 +123,33 @@ class ServedTopicModel(ServedModel):
             topic = self.model.aggregate(content)
             impact_category = None
 
+        if save_report_dynamodb:
+            query_string = query_profile.query
+            dynamodb_dict = {
+                "topic_id": topic_id,
+                "trending": trend_found,
+                "query_id": inputs.query_id,
+                "query_string": query_string,
+                "topic": topic,
+                "impact_category": impact_category,
+            }
+            client = TopicSummaryDynamoDB(**dynamodb_dict)
+
+            try:
+                client.save()
+            except Exception as e:
+                raise TopicSummaryInsertionException(dynamodb_dict=dynamodb_dict, e=e)
+
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"topic": topic, "impact_category": impact_category},
+            attributes={
+                "topic": topic,
+                "impact_category": impact_category,
+                "trending": trend_found,
+                "start_time": start_time,
+                "end_time": end_time,
+            },
         )
 
     def bio(self) -> BioResponseSchema:
