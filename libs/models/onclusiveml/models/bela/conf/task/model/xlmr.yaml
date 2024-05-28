@@ -1,4 +1,0 @@
----
-# @package _group_
-_target_  : onclusiveml.models.bela.models.hf_encoder.HFEncoder
-model_path: xlm-roberta-base

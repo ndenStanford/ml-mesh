@@ -1,4 +1,0 @@
----
-# @package _group_
-_target_  : onclusiveml.models.bela.task.joint_el_task.JointELTask
-datamodule:
