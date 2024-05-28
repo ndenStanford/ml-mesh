@@ -549,7 +549,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
-            self-hosted-runner-neuron: true
+            self-hosted-runner-neuron: false
 
           # backfill
           - name: backfill
