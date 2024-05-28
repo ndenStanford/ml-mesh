@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 # 3rd party libraries
 import requests
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -88,20 +88,21 @@ class TranscriptSegmentationHandler:
 
         first_portion = " ".join(segment_split[:window_threshold]).lstrip(">")
 
-        search_last_portion = False
-        if window_threshold >= settings.WINDOW_THRESHOLD:
-            search_last_portion = True
+        search_last_portion = window_threshold >= settings.WINDOW_THRESHOLD
+        if search_last_portion:
             last_portion = " ".join(segment_split[-window_threshold:]).lstrip(">")
         max_similarity_start = 0
         max_similarity_end = 0
         best_portion_start = []
         best_portion_end: List[Dict[str, Any]] = []
 
-        for i in range(len(word_transcript_filtered) - (window_threshold - 1)):
+        word_transcript_len = len(word_transcript_filtered)
+
+        for i in range(word_transcript_len - window_threshold + 1):
             candidate_list = word_transcript_filtered[
                 i : i + window_threshold  # noqa: E203
             ]
-            candidate = " ".join([word["w"].lstrip(">") for word in candidate_list])
+            candidate = " ".join(word["w"].lstrip(">") for word in candidate_list)
             candidate = candidate.replace(" .", ".")
 
             similarity_start = fuzz.ratio(candidate, first_portion)
@@ -115,13 +116,13 @@ class TranscriptSegmentationHandler:
                 max_similarity_start = similarity_start
                 best_portion_start = candidate_list
 
-            if search_last_portion:
-                if (
-                    similarity_end > max_similarity_end
-                    and best_portion_start != candidate_list
-                ):
-                    max_similarity_end = similarity_end
-                    best_portion_end = candidate_list
+            if (
+                search_last_portion
+                and similarity_end > max_similarity_end
+                and best_portion_start != candidate_list
+            ):
+                max_similarity_end = similarity_end
+                best_portion_end = candidate_list
 
         start_time = best_portion_start[0]["ts"]
         end_time = (

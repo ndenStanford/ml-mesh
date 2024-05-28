@@ -10,7 +10,7 @@ python = "3.8.16"
 
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
-fuzzywuzzy = "0.18.0"
+rapidfuzz = "3.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
