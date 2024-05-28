@@ -105,7 +105,7 @@ services:
       - serve-vol:/projects/entity-linking/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
-    profiles: [serve]
+    profiles: [serve, functional, load]
     environment:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
