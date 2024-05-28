@@ -96,6 +96,7 @@ services:
       start_period: 30s
       timeout: 300s
 
+  # download
   serve-download-model:
     volumes:
       - serve-vol:/projects/entity-linking/serve/models
