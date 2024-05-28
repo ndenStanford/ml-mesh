@@ -70,32 +70,26 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    profiles: [serve, functional]
+    profiles: [serve, functional, load]
     ports:
-      - 9000:9000
+      - 8000:8000
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
       ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       PROMETHEUS_MULTIPROC_DIR: /tmp
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/entity-linking
       NEPTUNE_MODEL_ID: EL-TRAINED
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:9000/entity-linking/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/entity-linking/v1/ready]
       interval: 80s
       retries: 10
       start_period: 30s
@@ -136,11 +130,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 9000
+      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20
       NEPTUNE_PROJECT: onclusive/entity-linking
@@ -165,11 +156,8 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/entity-linking
       NEPTUNE_MODEL_ID: EL-TRAINED
@@ -202,11 +190,8 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       ONCLUSIVEML_SERVING_API_VERSION: v1
       NEPTUNE_PROJECT: onclusive/entity-linking
       NEPTUNE_MODEL_ID: EL-TRAINED
