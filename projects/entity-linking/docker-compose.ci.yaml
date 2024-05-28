@@ -51,6 +51,16 @@ services:
   serve:
     volumes:
       - serve-vol:/projects/entity-linking/serve/models
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     deploy:
@@ -171,6 +181,16 @@ services:
   serve-functional:
     volumes:
       - serve-vol:/projects/entity-linking/serve/models
+    build:
+      context: ../../
+      dockerfile: projects/entity-linking/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: entity-linking
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
