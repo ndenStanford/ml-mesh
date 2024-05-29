@@ -457,16 +457,13 @@ class TrackedModelVersion(ModelVersion):
         )
 
         neptune_attribute = self[neptune_attribute_path]
-        logger.debug(f"downloading file from neptune attribute: {neptune_attribute}")
 
         if self.is_likely_s3_backed_file(neptune_attribute):
-            logger.debug("is likely s3")
             self.download_tracked_file_from_s3(
                 neptune_attribute_path=neptune_attribute_path,
                 local_file_path=local_file_path,
             )
         else:
-            logger.debug("is not likely s3")
             neptune_attribute.download(local_file_path)
 
         logger.debug(
@@ -501,7 +498,6 @@ class TrackedModelVersion(ModelVersion):
         else:
             try:
                 neptune_artifact = neptune_attribute.fetch_files_list()[0]
-                logger.debug(f"trying to understand: {neptune_artifact }")
 
                 if neptune_artifact.metadata["location"].startswith("s3://"):
                     return True
@@ -540,11 +536,8 @@ class TrackedModelVersion(ModelVersion):
         s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
         # extract the underlying s3 file's prefix as required by boto3's download_file method
         neptune_attribute = self[neptune_attribute_path]
-        logger.debug(f"s3 neptune_attribute {neptune_attribute}")
         neptune_artifact = neptune_attribute.fetch_files_list()[0]
-        logger.debug(f"s3 neptune_artifact {neptune_artifact}")
         tracked_file_s3_uri = neptune_artifact.metadata["location"]
-        logger.debug(f"supposed tracked_file_s3_uri {tracked_file_s3_uri}")
         tracked_file_s3_prefix = tracked_file_s3_uri.replace(f"s3://{s3_bucket}/", "")
 
         s3_client = self.get_s3_bucket_client(s3_bucket)
@@ -782,7 +775,6 @@ class TrackedModelVersion(ModelVersion):
             neptune_attribute_path_i,
             local_file_path_i,
         ) in neptune_attribute_and_local_paths:
-            logger.debug(f"neptune_attribute_path_i: {neptune_attribute_path_i}")
             self.download_file_from_model_version(
                 neptune_attribute_path=neptune_attribute_path_i,
                 local_file_path=local_file_path_i,

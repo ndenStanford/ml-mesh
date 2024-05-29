@@ -76,7 +76,7 @@ services:
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: no
       ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
@@ -103,7 +103,7 @@ services:
       - serve-vol:/projects/entity-linking/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
-    profiles: [serve, functional, load]
+    profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
