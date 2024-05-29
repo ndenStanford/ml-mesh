@@ -8,10 +8,10 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from kats.consts import TimeSeriesData
 from kats.detectors.cusum_detection import CUSUMDetector
-from pandas import Timestamp
 
 # Internal libraries
 from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from pandas import Timestamp
 
 # Source
 from src.serve.utils import (  # query_translation,
@@ -20,7 +20,6 @@ from src.serve.utils import (  # query_translation,
     topic_profile_query,
 )
 from src.settings import get_settings
-
 
 settings = get_settings()
 
@@ -80,9 +79,6 @@ class TrendDetection:
             trend_time_interval = override_trend_time_interval
         else:
             trend_time_interval = settings.trend_time_interval
-
-        print(topic_document_threshold)
-        print(trend_time_interval)
 
         query = query_profile.es_query(MediaAPISettings())
         # Profile query

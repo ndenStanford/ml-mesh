@@ -103,7 +103,6 @@ class ServedTopicModel(ServedModel):
                 trend_lookback_days = parameter_input.override_trend_lookback_days
             else:
                 trend_lookback_days = settings.trend_lookback_days
-            print(trend_lookback_days)
 
             start_time = end_time - pd.Timedelta(days=trend_lookback_days)
             if trend_detection:
