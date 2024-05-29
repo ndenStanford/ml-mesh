@@ -1,7 +1,7 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
 # 3rd party libraries
 import pandas as pd
@@ -56,6 +56,8 @@ class TrendDetection:
         topic_id: str,
         start_time: pd.datetime,
         end_time: pd.datetime,
+        override_topic_document_threshold: Optional[float] = None,
+        override_trend_time_interval: Optional[int] = None,
     ) -> Tuple[bool, Union[Timestamp, None]]:
         """Trend detection for single topic and keyword.
 
@@ -64,16 +66,29 @@ class TrendDetection:
             topic_id (str): topic id
             start_time (pd.datetime): start time range of documents to be collected
             end_time (pd.datetime): end time range of documents to be collected
+            override_topic_document_threshold (float): override default document threshold value
+            override_trend_time_interval(int): override default time range when measuring trend
         Output:
             Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """
+        if override_topic_document_threshold:
+            topic_document_threshold = override_topic_document_threshold
+        else:
+            topic_document_threshold = settings.TOPIC_DOCUMENT_THRESHOLD
+
+        if override_trend_time_interval:
+            trend_time_interval = override_trend_time_interval
+        else:
+            trend_time_interval = settings.trend_time_interval
+
+        print(topic_document_threshold)
+        print(trend_time_interval)
+
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results_all_profile_query = self.es.search(
             index=settings.es_index,
-            body=all_profile_query(
-                query, start_time, end_time, settings.trend_time_interval
-            ),
+            body=all_profile_query(query, start_time, end_time, trend_time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
         results_all_profile_query_no_weekends = remove_weekends(
             results_all_profile_query
@@ -83,7 +98,7 @@ class TrendDetection:
         results_topic_profile_query = self.es.search(
             index=settings.es_index,
             body=topic_profile_query(
-                query, start_time, end_time, topic_id, settings.trend_time_interval
+                query, start_time, end_time, topic_id, trend_time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         if len(results_topic_profile_query) > 0:
@@ -97,7 +112,7 @@ class TrendDetection:
             return False, None
 
         if df_single_topic["doc_count"].sum() >= (
-            settings.TOPIC_DOCUMENT_THRESHOLD * df_all_topic["doc_count"].sum()
+            topic_document_threshold * df_all_topic["doc_count"].sum()
         ):
             # total number of instances of topic must be 3% of total number of documents
             df_single_topic["time"] = pd.to_datetime(df_single_topic["key_as_string"])
