@@ -1,3 +1,4 @@
+# isort: skip_file
 """Topic summarization table."""
 
 # Standard Library
@@ -17,7 +18,6 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import (
 # Source
 from src.settings import get_settings
 
-
 settings = get_settings()
 
 
@@ -33,7 +33,9 @@ class TopicSummaryDynamoDB(Dyntastic):
     timestamp: datetime = datetime.now()
     topic_id: int
     trending: Optional[bool] = None
-    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]] = None
+    topic: Optional[
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]
+    ] = None
     impact_category: Optional[ImpactCategoryLabel] = None
     query_id: Optional[str] = None
     query_string: str

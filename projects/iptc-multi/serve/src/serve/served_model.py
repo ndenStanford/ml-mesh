@@ -19,8 +19,13 @@ from onclusiveml.models.iptc.class_dict import (
     DROP_LIST,
     TOPIC_TO_ID,
 )
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
 from onclusiveml.serving.client import OnclusiveApiClient
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.schemas import (
@@ -374,6 +379,34 @@ class ServedIPTCMultiModel(ServedModel):
 
         return processed
 
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _predict(
+        self, content: str, language: str, levels: List[str], current_index: int = 0
+    ) -> List[Dict[str, Any]]:
+        """Aggregated prediction method that filters unsupported languages.
+
+        Args:
+            content (str): The content to be analyzed.
+            language (str): The language of the text.
+            levels (List[str]): A list of model identifiers that define the hierarchy of
+            predictions.
+            current_index (int, optional): The current index in the levels list to process.
+            Defaults to 0.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries, each containing 'label', 'score',
+                                and 'mediatopic_id' for each processed topic.
+        """
+        combined_prediction = self._get_combined_prediction(
+            content=content, levels=levels
+        )
+        processed_predictions = self._process_combined_predictions(combined_prediction)
+        iptc_topics = self._postprocess_predictions(processed_predictions)
+        return iptc_topics
+
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Topic Multi-model prediction based on dynamic response labels.
 
@@ -381,10 +414,20 @@ class ServedIPTCMultiModel(ServedModel):
             payload (PredictRequestSchema): Prediction request payload.
         """
         inputs = payload.attributes
+        parameters = payload.parameters
 
-        combined_prediction = self._get_combined_prediction(inputs.content, ["root"])
-        processed_predictions = self._process_combined_predictions(combined_prediction)
-        iptc_topics = self._postprocess_predictions(processed_predictions)
+        # Execute predictions in a language-aware context
+        try:
+            iptc_topics = self._predict(
+                content=inputs.content, language=parameters.language, levels=["root"]
+            )
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=422, detail=language_exception.message
+            )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),

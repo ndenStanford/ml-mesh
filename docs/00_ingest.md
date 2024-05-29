@@ -21,6 +21,7 @@ Specs defined in the `config/prod.env` are used only during CI processes.
 
 Projects implementing a `ingest` component are
 - **`iptc`** :key::memo:
+- **`entity-linking`** :key::memo:
 
 ### 2.1 Environment variables :deciduous_tree:
 

@@ -1,3 +1,4 @@
+# isort: skip_file
 """Impact quantification."""
 
 # Standard Library
@@ -26,10 +27,6 @@ from src.serve.utils import (
     topic_profile_query,
 )
 from src.settings import get_settings
-
-
-# from settings import get_settings
-
 
 settings = get_settings()
 
@@ -100,8 +97,7 @@ class ImpactQuantification:
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
         series_global_es = remove_weekends(series_global_es)
-        series_global = np.array([i["doc_count"] for i in series_global_es])
-        # Global count of all documents of a topic  from ES
+        # Global count of all documents of a topic from ES
         series_topic_es = self.es.search(
             index=settings.es_index,
             body=topic_global_query(
@@ -110,7 +106,25 @@ class ImpactQuantification:
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
         series_topic_es = remove_weekends(series_topic_es)
+        # if there is mismatch between both queries, add unique elements from global to topic
+        if len(series_global_es) != len(series_topic_es):
+            # Extract the keys from series_topic_es
+            topic_keys = {d["key"] for d in series_topic_es}
+            # Iterate over global and add missing keys to topic
+            for d in series_global_es:
+                if d["key"] not in topic_keys:
+                    series_topic_es.append(
+                        {
+                            "key_as_string": d["key_as_string"],
+                            "key": d["key"],
+                            "doc_count": 0,
+                            "weekday_index": d["weekday_index"],
+                        }
+                    )
+            # Sort series_topic_es by the "key"
+            series_topic_es = sorted(series_topic_es, key=lambda d: d["key"])
         series_topic = np.array([i["doc_count"] for i in series_topic_es])
+        series_global = np.array([i["doc_count"] for i in series_global_es])
         # calculate global ratio
         global_ratio = series_topic / series_global
         # Decomposes trend
