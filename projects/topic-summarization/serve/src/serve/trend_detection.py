@@ -88,10 +88,16 @@ class TrendDetection:
             index=settings.es_index,
             body=all_profile_query(query, start_time, end_time, trend_time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
-        results_all_profile_query_no_weekends = remove_weekends(
-            results_all_profile_query
-        )
-        df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends).iloc[:-1]
+        if len(results_all_profile_query) > 0:
+            results_all_profile_query_no_weekends = remove_weekends(
+                results_all_profile_query
+            )
+            if len(results_all_profile_query_no_weekends) == 0:
+                return False, None
+            df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends).iloc[:-1]
+        else:
+            return False, None
+
         # profile topic query
         results_topic_profile_query = self.es.search(
             index=settings.es_index,
