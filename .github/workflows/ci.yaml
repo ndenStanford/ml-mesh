@@ -1167,6 +1167,48 @@ jobs       :
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
 
   # ===============================================
+  # TRAIN MODELS
+  # ===============================================
+
+  run-train-pipelines:
+    name: Train Model
+    uses: ./.github/workflows/_train-model.yaml
+    needs:
+      - run-repository-state
+      - run-entity-linking-project
+
+    strategy:
+      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
+      matrix:
+        models:
+          - project: entity-linking
+            sagemaker-runner-type: ml.p3.2xlarge
+            trained-project: onclusive/entity-linking
+            trained-model: EL-TRAINED
+            tag: ${{ needs.run-repository-state.outputs.tag }}
+            wait: true
+
+    with:
+      environment: prod
+      project: ${{ matrix.models.project }}
+      sagemaker-runner-type: ${{ matrix.models.sagemaker-runner-type }}
+      tag: ${{ matrix.models.tag }}
+      trained-project: ${{ matrix.models.trained-project }}
+      trained-model: ${{ matrix.models.trained-model }}
+      wait: ${{ matrix.models.wait }}
+      python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
+      poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      pull-request: ${{ github.event_name == 'pull_request' }}
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+  # ===============================================
   # APPS
   # ===============================================
 
