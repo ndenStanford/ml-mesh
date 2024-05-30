@@ -8,6 +8,13 @@ from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.serving.rest.serve.params import ServingParams
+
+
+class ServerModelSettings(ServingParams):
+    """Serve model parameters."""
+
+    model_name: str = "translation"
 
 
 class Boto3ClientSettings(OnclusiveBaseSettings):
@@ -20,13 +27,12 @@ class Boto3ClientSettings(OnclusiveBaseSettings):
 class ModelSettings(OnclusiveBaseSettings):
     """Model Settings."""
 
-    formality: str = "FORMAL"
     profanity: str = "MASK"
     model_name: str = "translation"
-    api_version: int = 1
 
 
 class GlobalSettings(
+    ServerModelSettings,
     Boto3ClientSettings,
     ModelSettings,
 ):

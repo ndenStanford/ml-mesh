@@ -28,7 +28,7 @@ def settings():
 def translation_model(settings) -> FastAPI:
     """App fixture."""
     # Source
-    return TranslationModel(name=settings.model_name)
+    return TranslationModel()
 
 
 @pytest.fixture(scope="function")
@@ -40,7 +40,7 @@ def model_server(settings, translation_model) -> FastAPI:
 @pytest.fixture
 def mock_served_model_with_exception(settings):
     """Served model exceptions fixture."""
-    mock_model = TranslationModel(name=settings.model_name)
+    mock_model = TranslationModel()
 
     def _mock_predict(*args, **kwargs):
         raise OnclusiveHTTPException(

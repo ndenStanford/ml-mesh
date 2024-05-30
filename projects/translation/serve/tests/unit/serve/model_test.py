@@ -11,7 +11,7 @@ from onclusiveml.serving.rest.serve import OnclusiveHTTPException
 
 # Source
 from src.serve.model import TranslationModel
-from src.serve.schemas import PredictRequestSchema
+from src.serve.schemas import PredictRequestSchema, PredictResponseSchema
 from src.settings import get_settings
 
 
@@ -45,20 +45,22 @@ def test_model_bio(translation_model):
                         "target_lang": "fr",
                     },
                     "parameters": {
-                        "lang": "invalid_language",
+                        "lang": "en",
                         "brievety": False,
+                        "lang_detect": False,
+                        "translation": True,
                     },
                 }
             },
-            {
-                "translation": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
-            },
+            "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
             {
                 "version": 1,
                 "data": {
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
+                        "original_language": "en",
+                        "target_language": "fr",
                         "translation": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
@@ -85,7 +87,7 @@ def test_model_predict(
         brievety=parameters["brievety"],
     )
 
-    assert response == expected_response
+    assert response == PredictResponseSchema(**expected_response)
 
 
 @pytest.mark.parametrize(
@@ -103,6 +105,8 @@ def test_model_predict(
                     "parameters": {
                         "lang": "invalid_language",
                         "brievety": False,
+                        "lang_detect": False,
+                        "translation": True,
                     },
                 }
             },
@@ -121,3 +125,15 @@ def test_model_prediction_invalid_language(
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == expected_error_detail
+
+
+@patch("src.serve.model.detect_language")
+def test_detect_language(mock_detect_language, translation_model):
+    """Test _detect_language method."""
+    mock_detect_language.return_value = "en"
+    content = "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade."  # noqa
+
+    detected_language = translation_model._detect_language(content)
+
+    mock_detect_language.assert_called_once_with(content=content)
+    assert detected_language == "en"

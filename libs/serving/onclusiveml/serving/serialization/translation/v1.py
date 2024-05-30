@@ -17,13 +17,17 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
-    lang: str = "en"
+    lang: Optional[str] = None
     brievety: bool = False
+    lang_detect: bool = False
+    translation: bool = False
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
+    original_language: Optional[str] = None
+    target_language: Optional[str] = None
     translation: Optional[str] = None
 
 

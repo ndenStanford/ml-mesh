@@ -2,14 +2,14 @@
 
 # Standard Library
 import re
-from typing import Any, Dict, Type
+from typing import Any, Dict, Optional, Type
 
 # 3rd party libraries
 import boto3
 from pydantic import BaseModel
 
 # Internal libraries
-from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language import detect_language, filter_language
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
@@ -36,10 +36,13 @@ class TranslationModel(ServedModel):
     predict_response_model: Type[BaseModel] = PredictResponseSchema
     bio_response_model: Type[BaseModel] = BioResponseSchema
 
+    def __init__(self) -> None:
+        super().__init__(name="translation")
+
     def bio(self) -> BioResponseSchema:
         """Model bio."""
         return BioResponseSchema.from_data(
-            version=settings.api_version,
+            version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={"model_name": self.name},
         )
@@ -58,29 +61,53 @@ class TranslationModel(ServedModel):
         target_language = attributes.target_lang
         original_language = parameters.lang
         brievety = parameters.brievety
+        lang_detect = parameters.lang_detect
+        translation = parameters.translation
 
         content = self.pre_process(content)
 
-        try:
-            output = self._predict(
-                content=content,
-                original_language=original_language,
-                target_language=target_language,
-                brievety=brievety,
-            )
-        except (
-            LanguageDetectionException,
-            LanguageFilterException,
-        ) as language_exception:
-            raise OnclusiveHTTPException(
-                status_code=422, detail=language_exception.message
+        if lang_detect is True:
+            original_language = self._detect_language(
+                content=content, language=original_language
             )
 
-        return PredictResponseSchema.from_data(
-            version=settings.api_version,
-            namespace=settings.model_name,
-            attributes=output,
-        )
+        print("GOOOT HERE")
+
+        if translation is True:
+            try:
+                output = self._predict(
+                    content=content,
+                    language=original_language,
+                    target_language=target_language,
+                    brievety=brievety,
+                )
+            except (
+                LanguageDetectionException,
+                LanguageFilterException,
+            ) as language_exception:
+                raise OnclusiveHTTPException(
+                    status_code=422, detail=language_exception.message
+                )
+
+            return PredictResponseSchema.from_data(
+                version=int(settings.api_version[1:]),
+                namespace=settings.model_name,
+                attributes={
+                    "original_language": original_language,
+                    "target_language": target_language,
+                    "translation": output,
+                },
+            )
+        else:
+            return PredictResponseSchema.from_data(
+                version=int(settings.api_version[1:]),
+                namespace=settings.model_name,
+                attributes={"original_language": original_language},
+            )
+
+    def _detect_language(self, content: str, language: Optional[str]) -> str:
+        """Language detection."""
+        return detect_language(content=content)
 
     @filter_language(
         supported_languages=list(LanguageIso),
@@ -89,7 +116,7 @@ class TranslationModel(ServedModel):
     def _predict(
         self,
         content: str,
-        original_language: str,
+        language: str,
         target_language: str,
         brievety: bool = False,
     ) -> Dict[str, Any]:
@@ -109,7 +136,7 @@ class TranslationModel(ServedModel):
                 try:
                     response = client.translate_text(
                         Text=content,
-                        SourceLanguageCode=original_language,
+                        SourceLanguageCode=language,
                         TargetLanguageCode=target_language,
                         Settings={
                             "Formality": settings.formallity,
@@ -124,21 +151,26 @@ class TranslationModel(ServedModel):
                     )
             else:
                 try:
+                    print("content test: ", content)
+                    print("langauge: ", language)
+                    print("target_language: ", target_language)
                     response = client.translate_text(
                         Text=content,
-                        SourceLanguageCode=original_language,
+                        SourceLanguageCode=language,
                         TargetLanguageCode=target_language,
                         Settings={
-                            "Formality": settings.formallity,
                             "Profanity": settings.profanity,
                         },
                     )
+                    print("GOOOT HERE2")
+
                 except Exception as e:
                     raise OnclusiveHTTPException(
                         status_code=422,
                         detail=e,
                     )
-            return {"translation": response["TranslatedText"]}
+            print("RESPONSE: ", response)
+            return response["TranslatedText"]
         else:
             raise OnclusiveHTTPException(
                 status_code=422,
