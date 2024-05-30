@@ -54,7 +54,7 @@ def test_generate_from_prompt_template(model_alias, prompt_alias, create_prompts
     ],
 )
 @pytest.mark.order(12)
-def test_generate_from_default_model(model_alias, prompt_alias, create_prompts, app):
+def test_generate_from_default_model(prompt_alias, create_prompts, app):
     """Test generate prompt from template."""
     response = F.generate_from_default_model(prompt_alias, **dict())
     assert isinstance(
