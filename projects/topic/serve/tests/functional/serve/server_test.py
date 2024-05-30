@@ -79,6 +79,36 @@ def test_model_server_bio():
                     },
                 },
             },
+            {
+                "data": {
+                    "namespace": "topic",
+                    "attributes": {
+                        "content": "London is a wonderful city. John is a terrible man.",
+                    },
+                    "parameters": {
+                        "language": "xyz",
+                    },
+                }
+            },
+            {
+                "status": 204,
+                "detail": "The language reference 'xyz' could not be mapped",
+            },
+            {
+                "data": {
+                    "namespace": "topic",
+                    "attributes": {
+                        "content": "Dit is 'n toets in 'n nie-ondersteunde taal.",
+                    },
+                    "parameters": {
+                        "language": "af",
+                    },
+                }
+            },
+            {
+                "status": 204,
+                "detail": "The language 'LanguageIso.AF' that was looked up from 'af'",
+            },
         )
     ],
 )
@@ -88,7 +118,10 @@ def test_model_server_prediction(payload, expected_response):
         "http://serve:8000/topic/v1/predict",
         json=payload,
     )
-
-    assert response.status_code == 200
-    # TODO: assert score close to expected
-    assert response.json() == expected_response
+    if response.status_code != 200:
+        assert response.status_code == expected_response.get("status", 500)
+        assert response.text == ""
+    else:
+        assert response.status_code == 200
+        # TODO: assert score close to expected
+        assert response.json() == expected_response

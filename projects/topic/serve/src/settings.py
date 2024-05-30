@@ -3,19 +3,26 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
 from pydantic import BaseSettings, Field
 
 # Internal libraries
+from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TrackedModelSpecs,
+    TrackedParams,
 )
+
+
+TOPIC_SUPPORTED_LANGUAGE = [
+    LanguageIso.EN,  # English
+]
 
 
 class TrackedTrainedModelSpecs(TrackedModelSpecs):
@@ -35,11 +42,18 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
+class TopicSettings(TrackedParams):
+    """Topic settings."""
+
+    supported_languages: List[LanguageIso] = TOPIC_SUPPORTED_LANGUAGE
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedTrainedModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    TopicSettings,
 ):
     """Global server settings."""
 
