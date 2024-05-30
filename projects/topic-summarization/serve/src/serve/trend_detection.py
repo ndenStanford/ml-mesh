@@ -103,6 +103,8 @@ class TrendDetection:
             results_topic_profile_query_no_weekends = remove_weekends(
                 results_topic_profile_query
             )
+            if len(results_topic_profile_query_no_weekends) == 0:
+                return False, None
             df_single_topic = pd.DataFrame(
                 results_topic_profile_query_no_weekends
             ).iloc[:-1]
