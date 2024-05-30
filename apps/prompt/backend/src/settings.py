@@ -48,6 +48,11 @@ class Settings(OnclusiveBaseSettings):
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
 
+    DEFAULT_MODELS: dict = {
+        "english-summarization": "gpt-4",
+        "ml-articles-summary-aggregation": "gpt-4-turbo-2024-04-09",
+    }
+
     CORS_ORIGIN: List[str] = ["*"]
 
     # Github configuration
