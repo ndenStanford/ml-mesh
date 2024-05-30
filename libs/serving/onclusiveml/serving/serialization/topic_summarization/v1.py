@@ -27,6 +27,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     override_topic_document_threshold: Optional[float] = None
     override_trend_time_interval: Optional[str] = None
     override_trend_lookback_days: Optional[int] = None
+    override_document_collector_end_date: Optional[int] = None
     """Prediction request paramaters data."""
 
 
