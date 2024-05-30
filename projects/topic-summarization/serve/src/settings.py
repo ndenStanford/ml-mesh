@@ -15,7 +15,7 @@ from onclusiveml.core.base import (
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class ServerModelSettings(ServingParams):
@@ -41,29 +41,22 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    PROMPT_ALIAS: dict = {
-        "single_topic": "ml-topic-summarization-single-analysis",
-        "topic_aggregation": "ml-topic-summarization-aggregation",
-        "single_summary": "ml-multi-articles-summarization",
-        "summary_aggregation": "ml-articles-summary-aggregation",
-    }
+    TOPIC_ALIAS: str = "ml-topic-summarization-claude"
+    SUMMARY_ALIAS: str = "ml-multi-articles-summary-claude"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
-    SINGLE_TOPIC_OUTPUT_SCHEMA: Dict[str, str] = {
-        "content": "For each article, what it talks about the target category",
-        "summary": "An overall summary for the content about target category, based on all the input articles.",  # noqa: E501
-    }
-    TOPIC_AGGREGATION_OUTPUT_SCHEMA: Dict[str, str] = {
-        "information": "The distinct information in each summary",
-        "theme": "The theme for the target category, based on the one-paragraph summary",
-        "impact": "The impact level of this target category",
-        "summary": "An overall summary for the content about target category, based on all the input summaries",  # noqa: E501
-        "change": "if the content suggests a significant change in the target category",
-        "reason": "The reason for this impact level",
-    }
-    SINGLE_SUMMARY_OUTPUT_SCHEMA: Dict[str, str] = {
-        "summary": "The summary you generate for these articles"
-    }
-    SUMMARY_AGGREGATION_OUTPUT_SCHEMA: Dict[str, str] = {
+
+    model_settings = ServerModelSettings()
+
+    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
+    for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():
+        category_dict = {
+            f"{category_key}_summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
+            f"{category_key}_theme": f"An overall theme for {category_value}",
+            f"{category_key}_impact": f"The impact level of {category_value}",
+        }
+        TOPIC_RESPONSE_SCHEMA.update(category_dict)
+
+    SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
         "theme": "The theme for your consolidated summary",
     }
@@ -76,11 +69,20 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         default="...", env="ELASTICSEARCH_KEY", exclude=True
     )
     es_index: List = [
-        "crawler",
+        "crawler-4-2024.05",
+        "crawler-4-2024.04",
         "crawler-4-2024.03",
         "crawler-4-2024.02",
         "crawler-4-2024.01",
+        "crawler",
     ]
+
+
+class DynamoDBSettings(OnclusiveBaseSettings):
+    """DynamoDB Settings."""
+
+    AWS_DEFAULT_REGION: str = "us-east-1"
+    DYNAMODB_HOST: Optional[str] = None
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):
@@ -116,13 +118,11 @@ class GlobalSettings(
     TrackedImageSpecs,
     MediaAPISettings,
     ElasticsearchSettings,
+    DynamoDBSettings,
     ImpactQuantificationSettings,
     TrendSummarizationSettings,
 ):
     """Global server settings."""
-
-    ARTICLE_GROUP_SIZE: int = 8  # how many articles are handled together
-    MULTIPROCESS_WORKER: int = 5
 
 
 @lru_cache

@@ -22,29 +22,15 @@ def mock_responses():
 
     # The value for each key in the inner JSON object
     value_dict = {
-        "summary": "Not mentioned",
-        "theme": "Not mentioned",
+        "risk_summary": "Not mentioned",
+        "risk_theme": "Not mentioned",
+        "risk_impact": "low",
     }
     # Manually construct the inner JSON string
     value_str = json.dumps(value_dict)
 
     # Create the final string
     mock_response.content = value_str
-    return mock_response
-
-
-@pytest.fixture
-def mock_responses_aggregate():
-    """Mock response for request.post."""
-    mock_response = MagicMock()
-
-    # build mock sample
-    keys = ["summary", "theme", "impact", "summary", "information", "reason"]
-    # Manually construct the inner JSON string
-    inner_json = {key: "Not mentionned" for key in keys}
-
-    # Create the final string
-    mock_response.content = json.dumps(inner_json)
     return mock_response
 
 
