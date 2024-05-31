@@ -62,7 +62,7 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     if prompt_alias in settings.DEFAULT_MODELS.keys():
         model_alias = settings.DEFAULT_MODELS[prompt_alias]
     else:
-        model_alias = "anthropic.claude-3-haiku-20240307-v1:0"
+        model_alias = settings.DEFAULT_MODELS["default"]
     llm = LanguageModel.get(model_alias)
     # setting output parser
     prompt.fields = kwargs.get("output")
