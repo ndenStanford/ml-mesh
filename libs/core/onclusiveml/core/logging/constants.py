@@ -58,6 +58,7 @@ class OnclusiveService(OnclusiveEnum):
     IPTC_TRAIN = "iptc-train"
     IPTC_COMPILE = "iptc-compile"
     IPTC_SERVE = "iptc-serve"
+    IPTC_MULTI_CLIENT = "iptc-multi-client"
 
     # APPS
     # --- summarization
