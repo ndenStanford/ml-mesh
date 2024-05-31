@@ -79,6 +79,8 @@ def test_model_server_bio():
                     },
                 },
             },
+        ),
+        (
             {
                 "data": {
                     "namespace": "topic",
@@ -94,6 +96,8 @@ def test_model_server_bio():
                 "status": 204,
                 "detail": "The language reference 'xyz' could not be mapped",
             },
+        ),
+        (
             {
                 "data": {
                     "namespace": "topic",
@@ -109,7 +113,7 @@ def test_model_server_bio():
                 "status": 204,
                 "detail": "The language 'LanguageIso.AF' that was looked up from 'af'",
             },
-        )
+        ),
     ],
 )
 def test_model_server_prediction(payload, expected_response):
