@@ -207,4 +207,4 @@ def test_model_server_prediction_invalid_language(payload, expected_error_detail
     )
 
     assert response.status_code == 204
-    assert response.json()["detail"].startswith(expected_error_detail)
+    assert response.text == ""
