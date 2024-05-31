@@ -69,10 +69,12 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         default="...", env="ELASTICSEARCH_KEY", exclude=True
     )
     es_index: List = [
+        "crawler-4-2024.05",
         "crawler-4-2024.04",
         "crawler-4-2024.03",
         "crawler-4-2024.02",
         "crawler-4-2024.01",
+        "crawler",
     ]
 
 

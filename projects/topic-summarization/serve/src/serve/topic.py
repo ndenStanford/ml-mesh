@@ -12,6 +12,7 @@ import json
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
 # Source
 from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
@@ -24,6 +25,12 @@ impact_category = model_settings.IMPACT_CATEGORIES
 
 class TopicHandler:
     """Topic summarization with prompt backend."""
+
+    impact_map: Dict[str, ImpactCategoryLabel] = {
+        "low": ImpactCategoryLabel.LOW,
+        "medium": ImpactCategoryLabel.MID,
+        "high": ImpactCategoryLabel.HIGH,
+    }
 
     def topic_inference(self, articles: List[str]) -> Dict[str, str]:
         """LLM inference function for the articles.
@@ -106,13 +113,15 @@ class TopicHandler:
         processed_article = [remove_whitespace(remove_html(text)) for text in article]
         return processed_article
 
-    def post_process(self, topic_result: Dict[str, str]) -> Dict[str, Dict[str, str]]:
+    def post_process(
+        self, topic_result: Dict[str, str]
+    ) -> Dict[str, Dict[str, Union[str, ImpactCategoryLabel]]]:
         """Transfer the topic inference output to multi-layer json."""
-        final_topic: Dict[str, Dict[str, str]] = {}
+        final_topic: Dict[str, Dict[str, Union[str, ImpactCategoryLabel]]] = {}
         for key, value in topic_result.items():
             if "_" in key:
                 prefix, suffix = key.split("_")
-                category = impact_category[prefix]
+                category = prefix
                 if category not in final_topic:
                     final_topic[category] = {}
                 final_topic[category][suffix] = value
@@ -120,11 +129,15 @@ class TopicHandler:
                 category = key
                 if category not in final_topic and value != "N/A":
                     final_topic[category] = {"summary": value}
+        for key in final_topic:
+            impact_value = final_topic[key]["impact"].lower()
+            final_topic[key]["impact"] = self.impact_map[impact_value]
+
         return final_topic
 
     def aggregate(
         self, article: List[str]
-    ) -> Dict[str, Union[Dict[str, str], str, None]]:
+    ) -> Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]:
         """Aggregate topic & summary results together.
 
         Args:
@@ -136,7 +149,9 @@ class TopicHandler:
         topic_result = self.topic_inference(article)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article)
-        merged_result: Dict[str, Union[Dict[str, str], str, None]] = {}
+        merged_result: Dict[
+            str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]
+        ] = {}
         merged_result.update(topic_final_result)
         merged_result.update(summary_result)
         return merged_result
