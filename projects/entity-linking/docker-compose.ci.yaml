@@ -149,6 +149,8 @@ services:
 
   # integration tests
   serve-integration:
+    volumes:
+      - serve-vol:/projects/entity-linking/serve/models
     build:
       context: ../../
       dockerfile: projects/entity-linking/serve/Dockerfile
