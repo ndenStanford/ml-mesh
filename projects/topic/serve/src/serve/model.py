@@ -1,7 +1,7 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Any, Dict, Type
+from typing import Tuple, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -110,7 +110,7 @@ class ServedTopicModel(ServedModel):
         supported_languages=settings.supported_languages,
         raise_if_none=True,
     )
-    def _topic_predict(self, content: str, language: str) -> Dict[str, Any]:
+    def _topic_predict(self, content: str, language: str) -> Tuple:
         """Perform topic prediction considering language restrictions.
 
         Args:
