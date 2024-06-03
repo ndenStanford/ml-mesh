@@ -11,14 +11,10 @@ from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
 
 class TransformSettings(OnclusiveBaseSettings):
-    _target_ = "onclusiveml.models.bela.transforms.joint_el_transform.JointELXlmrRawTextTransform"
     max_seq_len: int = 256
 
 
 class DataModuleSettings(OnclusiveBaseSettings):
-    _target_: str = (
-        "onclusiveml.models.bela.datamodule.joint_el_datamodule.JointELDataModule"
-    )
     batch_size: int = 24
     drop_last: bool = True
     train_path: Optional[str] = "/fsx/movb/data/matcha/mel/train.1st.txt"
@@ -29,7 +25,6 @@ class DataModuleSettings(OnclusiveBaseSettings):
 
 
 class OptimSettings(OnclusiveBaseSettings):
-    _target_: str = "torch.optim.AdamW"
     lr: float = 1e-05
     betas: list = [0.9, 0.999]
     eps: float = 1e-08
@@ -38,7 +33,6 @@ class OptimSettings(OnclusiveBaseSettings):
 
 
 class ModelSettings(OnclusiveBaseSettings):
-    _target_: str = "onclusiveml.models.bela.models.hf_encoder.HFEncoder"
     model_path: str = "xlm-roberta-large"
 
 
@@ -62,7 +56,6 @@ class TrainerSettings(OnclusiveBaseSettings):
 
 
 class CheckpointCallbackSettings(OnclusiveBaseSettings):
-    _target_: str = "pytorch_lightning.callbacks.ModelCheckpoint"
     monitor: str = "valid_f1"
     mode: str = "max"
     save_last: bool = True
@@ -73,9 +66,6 @@ class CheckpointCallbackSettings(OnclusiveBaseSettings):
 
 
 class TaskSettings(OnclusiveBaseSettings):
-    _target_: str = Field(
-        default="onclusiveml.models.bela.task.joint_el_task.JointELTask"
-    )
     only_train_disambiguation: bool = Field(default=False)
     train_saliency: bool = Field(default=False)
     embeddings_path: str = Field(default="/fsx/movb/data/matcha/mel/embeddings_new.pt")
