@@ -542,12 +542,6 @@ class TrackedModelVersion(ModelVersion):
 
         s3_client = self.get_s3_bucket_client(s3_bucket)
 
-        logger.debug(f"neptune_artifact: {neptune_artifact}")
-        logger.debug(f"S3 bucket: {s3_bucket}")
-        logger.debug(f"Tracked file S3 URI: {tracked_file_s3_uri}")
-        logger.debug(f"Tracked file S3 prefix: {tracked_file_s3_prefix}")
-        logger.debug(f"Local file path: {local_file_path}")
-
         logger.debug(
             f"Downloading file {tracked_file_s3_prefix} to local path {local_file_path}"
         )
