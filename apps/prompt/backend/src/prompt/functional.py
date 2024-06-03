@@ -55,14 +55,14 @@ def generate_from_prompt(
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
-    """Generates chat message from input prompt and default model."""
+    """Generates chat message from input prompt alias and default model."""
     # get langchain objects
     prompt = PromptTemplate.get(prompt_alias)
 
-    if prompt_alias in settings.DEFAULT_MODELS.keys():
-        model_alias = settings.DEFAULT_MODELS[prompt_alias]
-    else:
-        model_alias = settings.DEFAULT_MODELS["default"]
+    model_alias = settings.DEFAULT_MODELS.get(
+        prompt_alias, settings.DEFAULT_MODELS["default"]
+    )
+
     llm = LanguageModel.get(model_alias)
     # setting output parser
     prompt.fields = kwargs.get("output")
