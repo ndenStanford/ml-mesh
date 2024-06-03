@@ -36,8 +36,19 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
+class ServedModelSettings(BaseSettings):
+    """BELA initialization parameters."""
+
+    md_threshold: float = 0.2
+    el_threshold: float = 0.4
+    checkpoint_name: str = "wiki"
+    device: str = "cuda:0"
+    config_name: str = "joint_el_mel_new"
+
+
 class GlobalSettings(
     ServerModelSettings,
+    ServedModelSettings,
     TrackedTrainedModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,

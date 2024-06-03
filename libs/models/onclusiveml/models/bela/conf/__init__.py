@@ -3,20 +3,20 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class TransformConf:
+class TransformSettings:
     pass
 
 
 @dataclass
-class DataModuleConf:
+class DataModuleSettings:
     pass
 
 
 @dataclass
-class OptimConf:
+class OptimSettings:
     pass
 
 
 @dataclass
-class ModelConf:
+class ModelSettings:
     pass

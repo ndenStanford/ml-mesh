@@ -20,10 +20,10 @@ from pytorch_lightning import LightningModule
 
 # Internal libraries
 from onclusiveml.models.bela.conf import (
-    DataModuleConf,
-    ModelConf,
-    OptimConf,
-    TransformConf,
+    DataModuleSettings,
+    ModelSettings,
+    OptimSettings,
+    TransformSettings,
 )
 from onclusiveml.models.bela.models.hf_encoder import HFEncoder
 
@@ -443,10 +443,10 @@ class MentionScoresHead(nn.Module):
 class JointELTask(LightningModule):
     def __init__(
         self,
-        transform: TransformConf,
-        model: ModelConf,
-        datamodule: DataModuleConf,
-        optim: OptimConf,
+        transform: TransformSettings,
+        model: ModelSettings,
+        datamodule: DataModuleSettings,
+        optim: OptimSettings,
         embeddings_path: str,
         faiss_index_path: Optional[str] = None,
         n_retrieve_candidates: int = 10,

@@ -69,11 +69,11 @@ class ServedBelaModel(ServedModel):
         # Load model artifacts into ready CompiledContentScoring instance
         content_model_directory = self.served_model_artifacts.model_artifact_directory
         self._model = BELA(
-            md_threshold=0.2,
-            el_threshold=0.4,
-            checkpoint_name="wiki",
-            device="cuda:0",
-            config_name="joint_el_mel_new",
+            md_threshold=settings.md_threshold,
+            el_threshold=settings.el_threshold,
+            checkpoint_name=settings.checkpoint_name,
+            device=settings.device,
+            config_name=settings.config_name,
             repo=content_model_directory,
         )
         # Load model card JSON file into dict

@@ -11,12 +11,12 @@ from pydantic import BaseModel, Field
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
 
-class TransformConf(OnclusiveBaseSettings):
+class TransformSettings(OnclusiveBaseSettings):
     _target_ = "onclusiveml.models.bela.transforms.joint_el_transform.JointELXlmrRawTextTransform"
     max_seq_len: int = 256
 
 
-class DataModuleConf(OnclusiveBaseSettings):
+class DataModuleSettings(OnclusiveBaseSettings):
     _target_: str = (
         "onclusiveml.models.bela.datamodule.joint_el_datamodule.JointELDataModule"
     )
@@ -26,10 +26,10 @@ class DataModuleConf(OnclusiveBaseSettings):
     val_path: Optional[str] = "/fsx/movb/data/matcha/mel/eval.1st.txt"
     test_path: Optional[str] = "/fsx/movb/data/matcha/mel/test.1st.txt"
     ent_catalogue_idx_path: str = "/fsx/movb/data/matcha/mel/index_new.txt"
-    transform: TransformConf = TransformConf()
+    transform: TransformSettings = TransformSettings()
 
 
-class OptimConf(OnclusiveBaseSettings):
+class OptimSettings(OnclusiveBaseSettings):
     _target_: str = "torch.optim.AdamW"
     lr: float = 1e-05
     betas: list = [0.9, 0.999]
@@ -38,12 +38,12 @@ class OptimConf(OnclusiveBaseSettings):
     amsgrad: bool = False
 
 
-class ModelConf(OnclusiveBaseSettings):
+class ModelSettings(OnclusiveBaseSettings):
     _target_: str = "onclusiveml.models.bela.models.hf_encoder.HFEncoder"
     model_path: str = "xlm-roberta-large"
 
 
-class TrainerConf(OnclusiveBaseSettings):
+class TrainerSettings(OnclusiveBaseSettings):
     gpus: int = 8
     num_nodes: int = 1
     max_epochs: int = 3
@@ -62,7 +62,7 @@ class TrainerConf(OnclusiveBaseSettings):
         extra = "allow"
 
 
-class CheckpointCallbackConf(OnclusiveBaseSettings):
+class CheckpointCallbackSettings(OnclusiveBaseSettings):
     _target_: str = "pytorch_lightning.callbacks.ModelCheckpoint"
     monitor: str = "valid_f1"
     mode: str = "max"
@@ -73,7 +73,7 @@ class CheckpointCallbackConf(OnclusiveBaseSettings):
     save_weights_only: bool = True
 
 
-class TaskConf(OnclusiveBaseSettings):
+class TaskSettings(OnclusiveBaseSettings):
     _target_: str = Field(
         default="onclusiveml.models.bela.task.joint_el_task.JointELTask"
     )
@@ -85,12 +85,12 @@ class TaskConf(OnclusiveBaseSettings):
         default="/checkpoints/movb/bela/2023-01-13-023711/0/lightning_logs/version_4144/checkpoints/last.ckpt"
     )
 
-    optim: OptimConf = OptimConf()
-    transform: TransformConf = TransformConf()
-    model: ModelConf = ModelConf()
+    optim: OptimSettings = OptimSettings()
+    transform: TransformSettings = TransformSettings()
+    model: ModelSettings = ModelSettings()
     datamodule: Optional[Any] = None
-    trainer: TrainerConf = TrainerConf()
-    checkpoint_callback: CheckpointCallbackConf = CheckpointCallbackConf()
+    trainer: TrainerSettings = TrainerSettings()
+    checkpoint_callback: CheckpointCallbackSettings = CheckpointCallbackSettings()
     _recursive_: Optional[bool] = False
 
 
@@ -99,9 +99,9 @@ class GlobalSettings(
 ):
     """Global server settings."""
 
-    task: Optional[TaskConf] = TaskConf()
-    datamodule: Optional[DataModuleConf] = DataModuleConf()
-    trainer: Optional[TrainerConf] = TrainerConf()
+    task: Optional[TaskSettings] = TaskSettings()
+    datamodule: Optional[DataModuleSettings] = DataModuleSettings()
+    trainer: Optional[TrainerSettings] = TrainerSettings()
 
     class Config:
         extra = "allow"
