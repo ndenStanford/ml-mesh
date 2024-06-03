@@ -1,9 +1,6 @@
 # Standard Library
 from dataclasses import dataclass, field
 
-# Source
-from . import config
-
 
 @dataclass
 class TransformConf:

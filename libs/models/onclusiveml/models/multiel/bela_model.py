@@ -14,8 +14,7 @@ from tqdm import tqdm
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.bela.conf.load_config import config
-from onclusiveml.models.bela.conf.pydantic_config import MainConfig
+from onclusiveml.models.bela.conf.config import get_settings
 from onclusiveml.models.bela.datamodule.joint_el_datamodule import (
     JointELDataModule,
 )
@@ -92,7 +91,7 @@ class BelaModel:
 
         logger.info("Create task")
         # Load configuration using Pydantic
-        cfg: MainConfig = config
+        cfg = get_settings()
 
         cfg.task.load_from_checkpoint = checkpoint_path
         cfg.task.embeddings_path = embeddings_path or cfg.task.embeddings_path

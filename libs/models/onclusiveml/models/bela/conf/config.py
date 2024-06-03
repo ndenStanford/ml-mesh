@@ -1,29 +1,35 @@
+"""Configuration BELA model script."""
+
 # Standard Library
+from functools import lru_cache
 from typing import Any, Optional
 
 # 3rd party libraries
 from pydantic import BaseModel, Field
 
+# Internal libraries
+from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
-class TransformConf(BaseModel):
+
+class TransformConf(OnclusiveBaseSettings):
     _target_ = "onclusiveml.models.bela.transforms.joint_el_transform.JointELXlmrRawTextTransform"
     max_seq_len: int = 256
 
 
-class DataModuleConf(BaseModel):
+class DataModuleConf(OnclusiveBaseSettings):
     _target_: str = (
         "onclusiveml.models.bela.datamodule.joint_el_datamodule.JointELDataModule"
     )
     batch_size: int = 24
     drop_last: bool = True
-    train_path: Optional[str] = None
-    val_path: Optional[str] = None
-    test_path: Optional[str] = None
-    ent_catalogue_idx_path: str
-    transform: TransformConf = None
+    train_path: Optional[str] = "/fsx/movb/data/matcha/mel/train.1st.txt"
+    val_path: Optional[str] = "/fsx/movb/data/matcha/mel/eval.1st.txt"
+    test_path: Optional[str] = "/fsx/movb/data/matcha/mel/test.1st.txt"
+    ent_catalogue_idx_path: str = "/fsx/movb/data/matcha/mel/index_new.txt"
+    transform: TransformConf = TransformConf()
 
 
-class OptimConf(BaseModel):
+class OptimConf(OnclusiveBaseSettings):
     _target_: str = "torch.optim.AdamW"
     lr: float = 1e-05
     betas: list = [0.9, 0.999]
@@ -32,12 +38,12 @@ class OptimConf(BaseModel):
     amsgrad: bool = False
 
 
-class ModelConf(BaseModel):
+class ModelConf(OnclusiveBaseSettings):
     _target_: str = "onclusiveml.models.bela.models.hf_encoder.HFEncoder"
     model_path: str = "xlm-roberta-large"
 
 
-class TrainerConf(BaseModel):
+class TrainerConf(OnclusiveBaseSettings):
     gpus: int = 8
     num_nodes: int = 1
     max_epochs: int = 3
@@ -56,7 +62,7 @@ class TrainerConf(BaseModel):
         extra = "allow"
 
 
-class CheckpointCallbackConf(BaseModel):
+class CheckpointCallbackConf(OnclusiveBaseSettings):
     _target_: str = "pytorch_lightning.callbacks.ModelCheckpoint"
     monitor: str = "valid_f1"
     mode: str = "max"
@@ -67,7 +73,7 @@ class CheckpointCallbackConf(BaseModel):
     save_weights_only: bool = True
 
 
-class TaskConf(BaseModel):
+class TaskConf(OnclusiveBaseSettings):
     _target_: str = Field(
         default="onclusiveml.models.bela.task.joint_el_task.JointELTask"
     )
@@ -75,7 +81,9 @@ class TaskConf(BaseModel):
     train_saliency: bool = Field(default=False)
     embeddings_path: str = Field(default="/fsx/movb/data/matcha/mel/embeddings_new.pt")
     use_gpu_index: bool = Field(default=True)
-    load_from_checkpoint: str
+    load_from_checkpoint: str = Field(
+        default="/checkpoints/movb/bela/2023-01-13-023711/0/lightning_logs/version_4144/checkpoints/last.ckpt"
+    )
 
     optim: OptimConf = OptimConf()
     transform: TransformConf = TransformConf()
@@ -86,10 +94,20 @@ class TaskConf(BaseModel):
     _recursive_: Optional[bool] = False
 
 
-class MainConfig(BaseModel):
-    task: Optional[TaskConf] = None
-    datamodule: Optional[DataModuleConf] = None
-    trainer: Optional[TrainerConf] = None
+class GlobalSettings(
+    OnclusiveBaseSettings,
+):
+    """Global server settings."""
+
+    task: Optional[TaskConf] = TaskConf()
+    datamodule: Optional[DataModuleConf] = DataModuleConf()
+    trainer: Optional[TrainerConf] = TrainerConf()
 
     class Config:
         extra = "allow"
+
+
+@lru_cache
+def get_settings() -> GlobalSettings:
+    """Returns instantiated global settings class."""
+    return GlobalSettings()
