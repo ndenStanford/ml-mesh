@@ -3,10 +3,8 @@
 # Standard Library
 import os
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
+from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
@@ -17,7 +15,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def download_model(settings: BaseSettings) -> None:
+def download_model(settings: OnclusiveBaseSettings) -> None:
     """Download compiled model."""
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version

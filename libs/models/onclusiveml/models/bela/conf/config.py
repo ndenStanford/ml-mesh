@@ -94,7 +94,7 @@ class TaskSettings(OnclusiveBaseSettings):
     _recursive_: Optional[bool] = False
 
 
-class GlobalSettings(
+class MainConfig(
     OnclusiveBaseSettings,
 ):
     """Global server settings."""
@@ -105,9 +105,3 @@ class GlobalSettings(
 
     class Config:
         extra = "allow"
-
-
-@lru_cache
-def get_settings() -> GlobalSettings:
-    """Returns instantiated global settings class."""
-    return GlobalSettings()
