@@ -34,11 +34,6 @@ class ServerModelSettings(ServingParams):
 
     model_name: str = "entity-linking"
     model_directory: Union[str, Path] = "."
-
-
-class ServedModelSettings(BaseSettings):
-    """BELA initialization parameters."""
-
     md_threshold: float = 0.2
     el_threshold: float = 0.4
     checkpoint_name: str = "wiki"
@@ -48,7 +43,6 @@ class ServedModelSettings(BaseSettings):
 
 class GlobalSettings(
     ServerModelSettings,
-    ServedModelSettings,
     TrackedTrainedModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
