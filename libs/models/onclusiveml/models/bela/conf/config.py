@@ -1,7 +1,6 @@
 """Configuration BELA model script."""
 
 # Standard Library
-from functools import lru_cache
 from typing import Any, Optional
 
 # 3rd party libraries
