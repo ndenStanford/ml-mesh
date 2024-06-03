@@ -71,8 +71,6 @@ class TranslationModel(ServedModel):
                 content=content, language=original_language
             )
 
-        print("GOOOT HERE")
-
         if translation is True:
             try:
                 output = self._predict(
@@ -162,7 +160,6 @@ class TranslationModel(ServedModel):
                             "Profanity": settings.profanity,
                         },
                     )
-                    print("GOOOT HERE2")
 
                 except Exception as e:
                     raise OnclusiveHTTPException(
