@@ -11,7 +11,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     content: str
-    target_lang: str
+    target_lang: Optional[str] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):

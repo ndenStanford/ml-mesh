@@ -67,9 +67,17 @@ class TranslationModel(ServedModel):
         content = self.pre_process(content)
 
         if lang_detect is True:
-            original_language = self._detect_language(
-                content=content, language=original_language
-            )
+            try:
+                iso_language = self._detect_language(
+                    content=content, language=original_language
+                )
+                if iso_language:
+                    original_language = iso_language.value
+            except (LanguageDetectionException,) as language_exception:
+                raise LanguageDetectionException(
+                    status_code=422,
+                    detail=language_exception.message,
+                )
 
         if translation is True:
             try:
@@ -103,7 +111,7 @@ class TranslationModel(ServedModel):
                 attributes={"original_language": original_language},
             )
 
-    def _detect_language(self, content: str, language: Optional[str]) -> str:
+    def _detect_language(self, content: str, language: Optional[str]) -> LanguageIso:
         """Language detection."""
         return detect_language(content=content)
 
@@ -149,9 +157,6 @@ class TranslationModel(ServedModel):
                     )
             else:
                 try:
-                    print("content test: ", content)
-                    print("langauge: ", language)
-                    print("target_language: ", target_language)
                     response = client.translate_text(
                         Text=content,
                         SourceLanguageCode=language,
@@ -166,7 +171,6 @@ class TranslationModel(ServedModel):
                         status_code=422,
                         detail=e,
                     )
-            print("RESPONSE: ", response)
             return response["TranslatedText"]
         else:
             raise OnclusiveHTTPException(

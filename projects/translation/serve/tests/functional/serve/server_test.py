@@ -74,7 +74,154 @@ def test_model_server_bio():
                     },
                 },
             },
-        )
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "وبما أن هذا مجرد اختبار للكشف عن اللغة، فأنا أكتب كل ما يجول في خاطري، وأرجو أن يكون الأمر على ما يرام مع من سيتحقق منه لاحقاً.",  # noqa
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": False,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "original_language": "ar",
+                        "target_language": None,
+                        "translation": None,  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "As this is just a test to detect the language, I am writing anything going through my mind, I hope it is fine with whoever will check it out later on.",  # noqa
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": False,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "original_language": "en",
+                        "target_language": None,
+                        "translation": None,  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": False,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "original_language": "ja",
+                        "target_language": None,
+                        "translation": None,  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
+                        "target_lang": "en",
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": True,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "original_language": "ja",
+                        "target_language": "en",
+                        "translation": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
+                        "target_lang": "ja",
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": True,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "original_language": "en",
+                        "target_language": "ja",
+                        "translation": "これは言語を検出するためのテストで、頭の中にあることは何でも書いているので、後で誰かがチェックしても問題にならないことを願っています。",  # noqa
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
@@ -85,3 +232,39 @@ def test_model_server_prediction(test_client, payload, expected_response):
     )
     assert response.status_code == 200
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload,expected_error_detail",
+    [
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "Irrelevant message as we want to test the language detection.",  # noqa
+                    },
+                    "parameters": {
+                        "lang": "",
+                        "brievety": False,
+                        "lang_detect": False,
+                        "translation": True,
+                    },
+                }
+            },
+            "The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+    ],
+)
+def test_model_server_prediction_invalid_language(
+    test_client, payload, expected_error_detail
+):
+    """Tests the language validation of the predict endpoint of a running ModelServer instance."""
+    response = test_client.post(
+        "/translation/v1/predict",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"].startswith(expected_error_detail)
