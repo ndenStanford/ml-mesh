@@ -1,7 +1,7 @@
 """Project."""
 
 # Standard Library
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
@@ -103,16 +103,22 @@ def list_prompts():
 
 
 @router.post("/{alias}/generate/model/{model}", status_code=status.HTTP_200_OK)
-def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str, Any]):
+def generate_text_from_prompt_template(
+    alias: str,
+    model: str,
+    values: Dict[str, Any],
+    validate_prompt: Optional[bool] = False,
+):
     """Generates text using a prompt template with specific model.
 
     Args:
         alias (str): prompt alias
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
+        validate_prompt (bool): flag to validate prompt
     """
     try:
-        return F.generate_from_prompt_template(alias, model, **values)
+        return F.generate_from_prompt_template(alias, model, validate_prompt, **values)
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
