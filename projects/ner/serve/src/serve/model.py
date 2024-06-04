@@ -121,7 +121,7 @@ class ServedNERModel(ServedModel):
                 LanguageFilterException,
             ) as language_exception:
                 raise OnclusiveHTTPException(
-                    status_code=422, detail=language_exception.message
+                    status_code=204, detail=language_exception.message
                 )
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
