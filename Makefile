@@ -47,7 +47,8 @@ ALL_LIBS:= \
 	serving \
 	tracking \
 	hashing \
-	training
+	training \
+	llm
 
 # all projects
 ALL_PROJECTS:= \

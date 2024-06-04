@@ -7,6 +7,9 @@ from typing import Any, Dict
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
+# Internal libraries
+from onclusiveml.llm.prompt_validator import PromptInjectionException
+
 # Source
 from src.project.tables import Project
 from src.prompt import functional as F
@@ -108,4 +111,10 @@ def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str,
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    return F.generate_from_prompt_template(alias, model, **values)
+    try:
+        return F.generate_from_prompt_template(alias, model, **values)
+    except PromptInjectionException as e:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail=str(e),
+        )

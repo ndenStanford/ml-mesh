@@ -9,6 +9,7 @@ from langchain.memory import ConversationBufferMemory
 
 # Internal libraries
 from onclusiveml.core.retry import retry
+from onclusiveml.llm.prompt_validator import PromptInjectionValidator
 
 # Source
 from src.extensions.redis import redis
@@ -18,6 +19,7 @@ from src.settings import get_settings
 
 
 settings = get_settings()
+validator = PromptInjectionValidator()
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
@@ -37,6 +39,11 @@ def generate_from_prompt_template(
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
 
+    print(prompt.as_langchain())
+
+    validate_input = prompt.as_langchain().messages[0].prompt.template
+    validate_input = validate_input.format(**inputs)
+    validator.validate_prompt(validate_input)
     return chain.invoke(inputs)
 
 
