@@ -83,6 +83,7 @@ class ServedTopicModel(ServedModel):
         """
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
+        parameter_input = payload.parameters
         content = inputs.content
         start_time = None
         end_time = None
@@ -97,16 +98,30 @@ class ServedTopicModel(ServedModel):
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
             # to work for integration tests
             end_time = pd.Timestamp(datetime.now())
-            start_time = end_time - pd.Timedelta(days=settings.trend_lookback_days)
+
+            if parameter_input.override_trend_lookback_days:
+                trend_lookback_days = parameter_input.override_trend_lookback_days
+            else:
+                trend_lookback_days = settings.trend_lookback_days
+
+            start_time = end_time - pd.Timedelta(days=trend_lookback_days)
             if trend_detection:
                 trend_found, inflection_point = self.trend_detector.single_topic_trend(
-                    query_profile, topic_id, start_time, end_time
+                    query_profile,
+                    topic_id,
+                    start_time,
+                    end_time,
+                    parameter_input.override_topic_document_threshold,
+                    parameter_input.override_trend_time_interval,
                 )
             if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
                 if trend_found:
-                    start_time = inflection_point
-                    end_time = start_time + pd.Timedelta(days=1)
+                    start_time = inflection_point  # - pd.Timedelta(days=1)
+                    if parameter_input.override_document_collector_end_date:
+                        end_time = inflection_point + pd.Timedelta(
+                            days=parameter_input.override_document_collector_end_date
+                        )
 
                 # collect documents of profile
                 content = self.document_collector.get_documents(
@@ -147,8 +162,6 @@ class ServedTopicModel(ServedModel):
                 "topic": topic,
                 "impact_category": impact_category,
                 "trending": trend_found,
-                "start_time": start_time,
-                "end_time": end_time,
             },
         )
 

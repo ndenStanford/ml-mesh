@@ -55,7 +55,7 @@ def test_model_server_bio():
                 }
             },
             {
-                "status": 422,
+                "status": 204,
                 "detail": "The language reference 'xyz' could not be mapped",
             },
         ),
