@@ -20,7 +20,7 @@ from onclusiveml.tracking import (
 )
 
 
-SUPPORTED_LANGUAGE = [
+SUPPORTED_LANGUAGES = [
     LanguageIso.EN,  # English
 ]
 
@@ -45,7 +45,7 @@ class ServerModelSettings(ServingParams):
 class TopicSettings(TrackedParams):
     """Topic settings."""
 
-    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGE
+    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
 class GlobalSettings(
