@@ -91,6 +91,7 @@ class ServerModelSettings(ServingParams):
     min_score_cutoff: float = 0.01
     model_endpoint_template: str = "serve-iptc-{}:8000"
     model_endpoint_secure: bool = False
+    model_endpoint_api_key: str = ""
     test_model_sequence: List[str] = []
     sample_inference_content: str = "Test Content"
     historically_high_inferenced_models: Set[str] = {
