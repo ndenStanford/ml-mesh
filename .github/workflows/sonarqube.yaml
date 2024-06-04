@@ -3,7 +3,7 @@ name: SonarQube
 on  :
   push:
     branches:
-      - ML-764-reintegrate-sonarqube-as-optional-check
+      - develop
 jobs:
   build:
     name: Build
