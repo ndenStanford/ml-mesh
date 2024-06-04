@@ -52,12 +52,9 @@ def test_model_server_bio():
                     "namespace": "translation",
                     "attributes": {
                         "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
-                        "target_lang": "fr",
                     },
                     "parameters": {
-                        "lang": "en",
-                        "brievety": False,
-                        "lang_detect": False,
+                        "targetlanguage": "fr",
                         "translation": True,
                     },
                 }
@@ -68,9 +65,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "en",
-                        "target_language": "fr",
-                        "translation": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                        "sourcelanguage": "en",
+                        "targetlanguage": "fr",
+                        "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
             },
@@ -84,9 +81,6 @@ def test_model_server_bio():
                         "content": "وبما أن هذا مجرد اختبار للكشف عن اللغة، فأنا أكتب كل ما يجول في خاطري، وأرجو أن يكون الأمر على ما يرام مع من سيتحقق منه لاحقاً.",  # noqa
                     },
                     "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
                         "translation": False,
                     },
                 }
@@ -97,9 +91,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "ar",
-                        "target_language": None,
-                        "translation": None,  # noqa
+                        "sourcelanguage": "ar",
+                        "targetlanguage": None,
+                        "translatedtext": None,  # noqa
                     },
                 },
             },
@@ -113,9 +107,6 @@ def test_model_server_bio():
                         "content": "As this is just a test to detect the language, I am writing anything going through my mind, I hope it is fine with whoever will check it out later on.",  # noqa
                     },
                     "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
                         "translation": False,
                     },
                 }
@@ -126,9 +117,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "en",
-                        "target_language": None,
-                        "translation": None,  # noqa
+                        "sourcelanguage": "en",
+                        "targetlanguage": None,
+                        "translatedtext": None,  # noqa
                     },
                 },
             },
@@ -142,9 +133,6 @@ def test_model_server_bio():
                         "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
                     },
                     "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
                         "translation": False,
                     },
                 }
@@ -155,9 +143,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "ja",
-                        "target_language": None,
-                        "translation": None,  # noqa
+                        "sourcelanguage": "ja",
+                        "targetlanguage": None,
+                        "translatedtext": None,
                     },
                 },
             },
@@ -169,12 +157,9 @@ def test_model_server_bio():
                     "namespace": "translation",
                     "attributes": {
                         "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
-                        "target_lang": "en",
                     },
                     "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
+                        "targetlanguage": "en",
                         "translation": True,
                     },
                 }
@@ -185,9 +170,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "ja",
-                        "target_language": "en",
-                        "translation": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
+                        "sourcelanguage": "ja",
+                        "targetlanguage": "en",
+                        "translatedtext": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
                     },
                 },
             },
@@ -199,12 +184,9 @@ def test_model_server_bio():
                     "namespace": "translation",
                     "attributes": {
                         "content": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
-                        "target_lang": "ja",
                     },
                     "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
+                        "targetlanguage": "ja",
                         "translation": True,
                     },
                 }
@@ -215,39 +197,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "en",
-                        "target_language": "ja",
-                        "translation": "これは言語を検出するためのテストで、頭の中にあることは何でも書いているので、後で誰かがチェックしても問題にならないことを願っています。",  # noqa
-                    },
-                },
-            },
-        ),
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "translation",
-                    "attributes": {
-                        "content": "由于这只是一个检测语言的测试，我写的都是自己的想法，希望以后谁来检查都没问题。",  # noqa
-                        "target_lang": "fr",
-                    },
-                    "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
-                        "translation": False,
-                    },
-                }
-            },
-            {
-                "version": 1,
-                "data": {
-                    "identifier": None,
-                    "namespace": "translation",
-                    "attributes": {
-                        "original_language": None,
-                        "target_language": None,
-                        "translation": None,  # noqa
+                        "sourcelanguage": "en",
+                        "targetlanguage": "ja",
+                        "translatedtext": "これは言語を検出するためのテストで、頭の中にあることは何でも書いているので、後で誰かがチェックしても問題にならないことを願っています。",  # noqa
                     },
                 },
             },
@@ -274,55 +226,15 @@ def test_model_server_prediction(test_client, payload, expected_response):
                     "namespace": "translation",
                     "attributes": {
                         "content": "Irrelevant message as we want to test the language detection.",  # noqa
-                        "target_lang": "fr",
                     },
                     "parameters": {
-                        "lang": "",
-                        "brievety": False,
-                        "lang_detect": False,
+                        "sourcelanguage": "invalid language",
+                        "targetlanguage": "fr",
                         "translation": True,
                     },
                 }
             },
-            "The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
-        ),
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "translation",
-                    "attributes": {
-                        "content": "Irrelevant message as we want to test the language detection.",  # noqa
-                        "target_lang": "fr",
-                    },
-                    "parameters": {
-                        "lang": "invalid_language",
-                        "brievety": False,
-                        "lang_detect": False,
-                        "translation": True,
-                    },
-                }
-            },
-            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
-        ),
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "translation",
-                    "attributes": {
-                        "content": "由于这只是一个检测语言的测试，我写的都是自己的想法，希望以后谁来检查都没问题。",  # noqa
-                        "target_lang": "fr",
-                    },
-                    "parameters": {
-                        "lang": None,
-                        "brievety": False,
-                        "lang_detect": True,
-                        "translation": True,
-                    },
-                }
-            },
-            "The language reference 'None' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+            "The language reference 'invalid language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
         ),
     ],
 )

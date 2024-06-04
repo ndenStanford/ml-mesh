@@ -11,24 +11,22 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
     content: str
-    target_lang: Optional[str] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
     """Prediction request paramaters data."""
 
-    lang: Optional[str] = None
-    brievety: bool = False
-    lang_detect: bool = False
+    sourcelanguage: Optional[str] = None
+    targetlanguage: Optional[str] = None
     translation: bool = False
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    original_language: Optional[str] = None
-    target_language: Optional[str] = None
-    translation: Optional[str] = None
+    sourcelanguage: Optional[str] = None
+    targetlanguage: Optional[str] = None
+    translatedtext: Optional[str] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

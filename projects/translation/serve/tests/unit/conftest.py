@@ -50,18 +50,3 @@ def mock_served_model_with_exception(settings):
 
     mock_model._predict = MagicMock(side_effect=_mock_predict)
     return mock_model
-
-
-@pytest.fixture
-def mock_served_model_with_second_exception(settings):
-    """Model artifacts fixture."""
-    mock_model = TranslationModel(name=settings.model_name)
-
-    def _mock_predict(*args, **kwargs):
-        raise OnclusiveHTTPException(
-            status_code=422,
-            detail="The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa
-        )
-
-    mock_model._predict = MagicMock(side_effect=_mock_predict)
-    return mock_model

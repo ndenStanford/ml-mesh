@@ -42,12 +42,10 @@ def test_model_bio(translation_model):
                     "namespace": "translation",
                     "attributes": {
                         "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
-                        "target_lang": "fr",
                     },
                     "parameters": {
-                        "lang": "en",
-                        "brievety": False,
-                        "lang_detect": False,
+                        "sourcelanguage": "en",
+                        "targetlanguage": "fr",
                         "translation": True,
                     },
                 }
@@ -59,9 +57,9 @@ def test_model_bio(translation_model):
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "original_language": "en",
-                        "target_language": "fr",
-                        "translation": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                        "sourcelanguage": "en",
+                        "targetlanguage": "fr",
+                        "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
             },
@@ -82,9 +80,8 @@ def test_model_predict(
 
     mock_predict.assert_called_with(
         content=attributes["content"],
-        original_language=parameters["lang"],
-        target_language=attributes["target_lang"],
-        brievety=parameters["brievety"],
+        language=parameters["sourcelanguage"],
+        targetlanguage=parameters["targetlanguage"],
     )
 
     assert response == PredictResponseSchema(**expected_response)
@@ -100,12 +97,10 @@ def test_model_predict(
                     "namespace": "translation",
                     "attributes": {
                         "content": "Irrelevant content because of invalid message value (nonsense).",  # noqa
-                        "target_lang": "fr",
                     },
                     "parameters": {
-                        "lang": "invalid_language",
-                        "brievety": False,
-                        "lang_detect": False,
+                        "sourcelanguage": "invalid_language",
+                        "targetlanguage": "fr",
                         "translation": True,
                     },
                 }
@@ -133,7 +128,7 @@ def test_detect_language(mock_detect_language, translation_model):
     mock_detect_language.return_value = "en"
     content = "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade."  # noqa
 
-    detected_language = translation_model._detect_language(content)
+    detected_language = translation_model._detect_language(content, language=None)
 
     mock_detect_language.assert_called_once_with(content=content)
     assert detected_language == "en"

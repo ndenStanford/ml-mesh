@@ -58,21 +58,18 @@ class TranslationModel(ServedModel):
         parameters = payload.data.parameters
 
         content = attributes.content
-        target_language = attributes.target_lang
-        original_language = parameters.lang
-        brievety = parameters.brievety
-        lang_detect = parameters.lang_detect
+        targetlanguage = parameters.targetlanguage
+        sourcelanguage = parameters.sourcelanguage
         translation = parameters.translation
 
         content = self.pre_process(content)
+        translatedtext = None
 
-        if lang_detect is True:
+        if not sourcelanguage:
             try:
-                iso_language = self._detect_language(
-                    content=content, language=original_language
-                )
+                iso_language = self._detect_language(content=content, language=None)
                 if iso_language:
-                    original_language = iso_language.value
+                    sourcelanguage = iso_language.value
             except LanguageDetectionException as language_exception:
                 raise LanguageDetectionException(
                     status_code=422,
@@ -83,9 +80,8 @@ class TranslationModel(ServedModel):
             try:
                 output = self._predict(
                     content=content,
-                    language=original_language,
-                    target_language=target_language,
-                    brievety=brievety,
+                    language=sourcelanguage,
+                    targetlanguage=targetlanguage,
                 )
             except (
                 LanguageDetectionException,
@@ -94,22 +90,17 @@ class TranslationModel(ServedModel):
                 raise OnclusiveHTTPException(
                     status_code=422, detail=language_exception.message
                 )
+            translatedtext = output
 
-            return PredictResponseSchema.from_data(
-                version=int(settings.api_version[1:]),
-                namespace=settings.model_name,
-                attributes={
-                    "original_language": original_language,
-                    "target_language": target_language,
-                    "translation": output,
-                },
-            )
-        else:
-            return PredictResponseSchema.from_data(
-                version=int(settings.api_version[1:]),
-                namespace=settings.model_name,
-                attributes={"original_language": original_language},
-            )
+        return PredictResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=settings.model_name,
+            attributes={
+                "sourcelanguage": sourcelanguage,
+                "targetlanguage": targetlanguage,
+                "translatedtext": translatedtext,
+            },
+        )
 
     def _detect_language(self, content: str, language: Optional[str]) -> LanguageIso:
         """Language detection."""
@@ -123,8 +114,7 @@ class TranslationModel(ServedModel):
         self,
         content: str,
         language: str,
-        target_language: str,
-        brievety: bool = False,
+        targetlanguage: str,
     ) -> Dict[str, Any]:
         """Language filtered prediction."""
         if len(content) < 10000:
@@ -138,39 +128,21 @@ class TranslationModel(ServedModel):
                     status_code=422,
                     detail=e,
                 )
-            if brievety:
-                try:
-                    response = client.translate_text(
-                        Text=content,
-                        SourceLanguageCode=language,
-                        TargetLanguageCode=target_language,
-                        Settings={
-                            "Formality": settings.formallity,
-                            "Profanity": settings.profanity,
-                            "Brevity": "ON",
-                        },
-                    )
-                except Exception as e:
-                    raise OnclusiveHTTPException(
-                        status_code=422,
-                        detail=e,
-                    )
-            else:
-                try:
-                    response = client.translate_text(
-                        Text=content,
-                        SourceLanguageCode=language,
-                        TargetLanguageCode=target_language,
-                        Settings={
-                            "Profanity": settings.profanity,
-                        },
-                    )
+            try:
+                response = client.translate_text(
+                    Text=content,
+                    SourceLanguageCode=language,
+                    TargetLanguageCode=targetlanguage,
+                    Settings={
+                        "Profanity": settings.profanity,
+                    },
+                )
 
-                except Exception as e:
-                    raise OnclusiveHTTPException(
-                        status_code=422,
-                        detail=e,
-                    )
+            except Exception as e:
+                raise OnclusiveHTTPException(
+                    status_code=422,
+                    detail=e,
+                )
             return response["TranslatedText"]
         else:
             raise OnclusiveHTTPException(
