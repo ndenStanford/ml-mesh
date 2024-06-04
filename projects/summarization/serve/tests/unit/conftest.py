@@ -2,20 +2,21 @@
 
 # 3rd party libraries
 import pytest
-from fastapi.testclient import TestClient
+from fastapi import FastAPI
 
 # Source
-from src.app import create_app
+from src.serve.model import SummarizationServedModel
+from src.settings import get_settings
 
 
-@pytest.fixture(scope="session")
-def app():
+@pytest.fixture(scope="function")
+def settings():
+    """Settings fixture."""
+    return get_settings()
+
+
+@pytest.fixture(scope="function")
+def summarization_model(settings) -> FastAPI:
     """App fixture."""
-    return create_app()
-
-
-@pytest.fixture
-def test_client(app):
-    """Test client fixture."""
-    client = TestClient(app)
-    yield client
+    # Source
+    return SummarizationServedModel(name=settings.model_name)

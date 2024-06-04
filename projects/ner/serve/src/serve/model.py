@@ -1,14 +1,19 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
+from typing import Any, Dict, List, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.models.ner import CompiledNER
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
@@ -66,6 +71,28 @@ class ServedNERModel(ServedModel):
 
         self.ready = True
 
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _predict(
+        self,
+        content: str,
+        language: str,
+        additional_params: dict,
+    ) -> List[List[Dict[str, Any]]]:
+        """Make NER predictions considering language and additional parameters.
+
+        Args:
+            content (str): The text content to analyze.
+            language (str): The language of the text.
+            additional_params (dict): Additional parameters for model configuration.
+
+        Returns:
+            List[List[Dict[str, Any]]]: List of extracted named entities in dictionary format.
+        """
+        return self.model(documents=content, **additional_params)
+
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Make predictions using the loaded NER model.
 
@@ -82,10 +109,20 @@ class ServedNERModel(ServedModel):
         if attributes.content == "":
             entities_list: list = [[]]
         else:
-            # score the model
-            entities_list = self.model(
-                documents=[attributes.content], **parameters.dict()
-            )
+            try:
+                # score the model
+                entities_list = self._predict(
+                    content=[attributes.content],
+                    language=parameters.language,
+                    additional_params=parameters.dict(),
+                )
+            except (
+                LanguageDetectionException,
+                LanguageFilterException,
+            ) as language_exception:
+                raise OnclusiveHTTPException(
+                    status_code=204, detail=language_exception.message
+                )
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,

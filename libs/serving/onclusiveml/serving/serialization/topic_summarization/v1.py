@@ -1,7 +1,8 @@
 """Topic Summarization v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from datetime import datetime
+from typing import List, Optional
 
 # Internal libraries
 from onclusiveml.core.base.utils import OnclusiveEnum
@@ -17,9 +18,16 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     trend_detection: Optional[bool] = True
     query_id: Optional[str] = None
     media_api_version: Optional[str] = "1"
+    save_report_dynamodb: bool = False
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
+    """Prediction request parameter data."""
+
+    override_topic_document_threshold: Optional[float] = None
+    override_trend_time_interval: Optional[str] = None
+    override_trend_lookback_days: Optional[int] = None
+    override_document_collector_end_date: Optional[int] = None
     """Prediction request paramaters data."""
 
 
@@ -31,11 +39,38 @@ class ImpactCategoryLabel(str, OnclusiveEnum):
     HIGH = "high"
 
 
+class Analysis(JsonApiSchema):
+    """Analysis of each topic."""
+
+    summary: Optional[str] = None
+    theme: Optional[str] = None
+    impact: Optional[ImpactCategoryLabel] = None
+
+
+class Topic(JsonApiSchema):
+    """Topic analysis schema."""
+
+    opportunities: Analysis = Analysis()
+    risk: Analysis = Analysis()
+    threats: Analysis = Analysis()
+    company: Analysis = Analysis()
+    brand: Analysis = Analysis()
+    ceo: Analysis = Analysis()
+    customer: Analysis = Analysis()
+    stock: Analysis = Analysis()
+    industry: Analysis = Analysis()
+    environment: Analysis = Analysis()
+    summary: str
+    theme: str
+
+
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 
-    topic: Optional[Dict[str, Optional[Union[str, Dict[str, str]]]]]
+    topic: Optional[Topic] = None
     impact_category: Optional[ImpactCategoryLabel]
+    trending: Optional[bool] = None
+    timestamp: datetime = datetime.now()
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
