@@ -73,7 +73,7 @@ class TranslationModel(ServedModel):
                 )
                 if iso_language:
                     original_language = iso_language.value
-            except (LanguageDetectionException,) as language_exception:
+            except LanguageDetectionException as language_exception:
                 raise LanguageDetectionException(
                     status_code=422,
                     detail=language_exception.message,
