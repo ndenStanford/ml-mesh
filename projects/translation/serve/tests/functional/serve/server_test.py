@@ -222,6 +222,36 @@ def test_model_server_bio():
                 },
             },
         ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "由于这只是一个检测语言的测试，我写的都是自己的想法，希望以后谁来检查都没问题。",  # noqa
+                        "target_lang": "fr",
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": False,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "original_language": None,
+                        "target_language": None,
+                        "translation": None,  # noqa
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
@@ -244,6 +274,7 @@ def test_model_server_prediction(test_client, payload, expected_response):
                     "namespace": "translation",
                     "attributes": {
                         "content": "Irrelevant message as we want to test the language detection.",  # noqa
+                        "target_lang": "fr",
                     },
                     "parameters": {
                         "lang": "",
@@ -254,6 +285,44 @@ def test_model_server_prediction(test_client, payload, expected_response):
                 }
             },
             "The language reference '' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "Irrelevant message as we want to test the language detection.",  # noqa
+                        "target_lang": "fr",
+                    },
+                    "parameters": {
+                        "lang": "invalid_language",
+                        "brievety": False,
+                        "lang_detect": False,
+                        "translation": True,
+                    },
+                }
+            },
+            "The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "由于这只是一个检测语言的测试，我写的都是自己的想法，希望以后谁来检查都没问题。",  # noqa
+                        "target_lang": "fr",
+                    },
+                    "parameters": {
+                        "lang": None,
+                        "brievety": False,
+                        "lang_detect": True,
+                        "translation": True,
+                    },
+                }
+            },
+            "The language reference 'None' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
         ),
     ],
 )
