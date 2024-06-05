@@ -1,4 +1,4 @@
-"""Entity linking v1 data schemas."""
+"""Translation v1 data schemas."""
 
 # Standard Library
 from typing import Optional
