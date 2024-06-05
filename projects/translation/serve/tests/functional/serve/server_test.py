@@ -204,6 +204,32 @@ def test_model_server_bio():
                 },
             },
         ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "由于这只是一个检测语言的测试，我写的都是自己的想法，希望以后谁来检查都没问题。",  # noqa
+                    },
+                    "parameters": {
+                        "translation": False,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "sourcelanguage": "Language not found",
+                        "targetlanguage": None,
+                        "translatedtext": None,  # noqa
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):

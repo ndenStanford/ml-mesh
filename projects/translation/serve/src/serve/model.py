@@ -70,6 +70,8 @@ class TranslationModel(ServedModel):
                 iso_language = self._detect_language(content=content, language=None)
                 if iso_language:
                     sourcelanguage = iso_language.value
+                else:
+                    sourcelanguage = "Language not found"
             except LanguageDetectionException as language_exception:
                 raise LanguageDetectionException(
                     status_code=422,
