@@ -57,9 +57,10 @@ jobs:
 
       - name: Setup Poetry
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        uses: abatilo/actions-poetry@v2
+        uses: snok/install-poetry@v1
         with:
-          poetry-version: ${{ inputs.poetry-version }}
+          version: ${{ inputs.poetry-version }}
+          virtualenvs-create: false
 
       - name: Install lib dependencies
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
