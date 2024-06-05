@@ -44,7 +44,7 @@ def mock_served_model_with_exception(settings):
 
     def _mock_predict(*args, **kwargs):
         raise OnclusiveHTTPException(
-            status_code=422,
+            status_code=204,
             detail="The language reference 'invalid_language' could not be mapped, or the language could not be inferred from the content.",  # noqa
         )
 

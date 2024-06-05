@@ -74,7 +74,7 @@ class TranslationModel(ServedModel):
                     sourcelanguage = "Language not found"
             except LanguageDetectionException as language_exception:
                 raise LanguageDetectionException(
-                    status_code=422,
+                    status_code=204,
                     detail=language_exception.message,
                 )
 
@@ -90,7 +90,7 @@ class TranslationModel(ServedModel):
                 LanguageFilterException,
             ) as language_exception:
                 raise OnclusiveHTTPException(
-                    status_code=422, detail=language_exception.message
+                    status_code=204, detail=language_exception.message
                 )
             translatedtext = output
 
@@ -127,7 +127,7 @@ class TranslationModel(ServedModel):
                 )
             except Exception as e:
                 raise OnclusiveHTTPException(
-                    status_code=422,
+                    status_code=204,
                     detail=e,
                 )
             try:
@@ -142,12 +142,12 @@ class TranslationModel(ServedModel):
 
             except Exception as e:
                 raise OnclusiveHTTPException(
-                    status_code=422,
+                    status_code=204,
                     detail=e,
                 )
             return response["TranslatedText"]
         else:
             raise OnclusiveHTTPException(
-                status_code=422,
+                status_code=204,
                 detail="Article too long",
             )

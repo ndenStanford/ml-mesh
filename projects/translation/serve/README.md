@@ -85,7 +85,7 @@ curl -X 'POST' 'http://0.0.0.0:8000/translation/v1/predict' \
     }'
 ```
 
-Will generate a `422` error code response describing the language lookup related issue in detail:
+Will generate a `204` error code response describing the language lookup related issue in detail:
 
 ```
 "The language reference 'invalid language' could not be mapped, or the language could not be inferred from the content."
