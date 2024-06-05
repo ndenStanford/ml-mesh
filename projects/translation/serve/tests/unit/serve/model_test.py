@@ -44,8 +44,8 @@ def test_model_bio(translation_model):
                         "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
                     },
                     "parameters": {
-                        "sourcelanguage": "en",
-                        "targetlanguage": "fr",
+                        "source_language": "en",
+                        "target_language": "fr",
                         "translation": True,
                     },
                 }
@@ -57,8 +57,8 @@ def test_model_bio(translation_model):
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "en",
-                        "targetlanguage": "fr",
+                        "source_language": "en",
+                        "target_language": "fr",
                         "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
@@ -80,8 +80,8 @@ def test_model_predict(
 
     mock_predict.assert_called_with(
         content=attributes["content"],
-        language=parameters["sourcelanguage"],
-        targetlanguage=parameters["targetlanguage"],
+        language=parameters["source_language"],
+        target_language=parameters["target_language"],
     )
 
     assert response == PredictResponseSchema(**expected_response)
@@ -99,8 +99,8 @@ def test_model_predict(
                         "content": "Irrelevant content because of invalid message value (nonsense).",  # noqa
                     },
                     "parameters": {
-                        "sourcelanguage": "invalid_language",
-                        "targetlanguage": "fr",
+                        "source_language": "invalid_language",
+                        "target_language": "fr",
                         "translation": True,
                     },
                 }

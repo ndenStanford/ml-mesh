@@ -41,7 +41,7 @@ curl -X 'POST' 'http://0.0.0.0:8000/translation/v1/predict' \
                 "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium."  # noqa
             },
             "parameters": {
-                "targetlanguage": "fr",
+                "target_language": "fr",
                 "translation": True,
             },
         }
@@ -56,8 +56,8 @@ This should return a response along the lines of
         "identifier": None,
         "namespace": "translation",
         "attributes": {
-            "sourcelanguage": "en",
-            "targetlanguage": "fr",
+            "source_language": "en",
+            "target_language": "fr",
             "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
         },
     },
@@ -77,8 +77,8 @@ curl -X 'POST' 'http://0.0.0.0:8000/translation/v1/predict' \
                 "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium."  # noqa
             },
             "parameters": {
-                "sourcelanguage": ""
-                "targetlanguage": "fr",
+                "source_language": ""
+                "target_language": "fr",
                 "translation": True,
             },
         }

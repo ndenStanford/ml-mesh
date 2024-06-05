@@ -54,7 +54,7 @@ def test_model_server_bio():
                         "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
                     },
                     "parameters": {
-                        "targetlanguage": "fr",
+                        "target_language": "fr",
                         "translation": True,
                     },
                 }
@@ -65,8 +65,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "en",
-                        "targetlanguage": "fr",
+                        "source_language": "en",
+                        "target_language": "fr",
                         "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
@@ -91,8 +91,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "ar",
-                        "targetlanguage": None,
+                        "source_language": "ar",
+                        "target_language": None,
                         "translatedtext": None,  # noqa
                     },
                 },
@@ -117,8 +117,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "en",
-                        "targetlanguage": None,
+                        "source_language": "en",
+                        "target_language": None,
                         "translatedtext": None,  # noqa
                     },
                 },
@@ -143,8 +143,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "ja",
-                        "targetlanguage": None,
+                        "source_language": "ja",
+                        "target_language": None,
                         "translatedtext": None,
                     },
                 },
@@ -159,7 +159,7 @@ def test_model_server_bio():
                         "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
                     },
                     "parameters": {
-                        "targetlanguage": "en",
+                        "target_language": "en",
                         "translation": True,
                     },
                 }
@@ -170,8 +170,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "ja",
-                        "targetlanguage": "en",
+                        "source_language": "ja",
+                        "target_language": "en",
                         "translatedtext": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
                     },
                 },
@@ -186,7 +186,7 @@ def test_model_server_bio():
                         "content": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
                     },
                     "parameters": {
-                        "targetlanguage": "ja",
+                        "target_language": "ja",
                         "translation": True,
                     },
                 }
@@ -197,8 +197,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "en",
-                        "targetlanguage": "ja",
+                        "source_language": "en",
+                        "target_language": "ja",
                         "translatedtext": "これは言語を検出するためのテストで、頭の中にあることは何でも書いているので、後で誰かがチェックしても問題にならないことを願っています。",  # noqa
                     },
                 },
@@ -223,8 +223,8 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "sourcelanguage": "Language not found",
-                        "targetlanguage": None,
+                        "source_language": "Language not found",
+                        "target_language": None,
                         "translatedtext": None,  # noqa
                     },
                 },
@@ -254,8 +254,8 @@ def test_model_server_prediction(test_client, payload, expected_response):
                         "content": "Irrelevant message as we want to test the language detection.",  # noqa
                     },
                     "parameters": {
-                        "sourcelanguage": "invalid language",
-                        "targetlanguage": "fr",
+                        "source_language": "invalid language",
+                        "target_language": "fr",
                         "translation": True,
                     },
                 }

@@ -58,20 +58,20 @@ class TranslationModel(ServedModel):
         parameters = payload.data.parameters
 
         content = attributes.content
-        targetlanguage = parameters.targetlanguage
-        sourcelanguage = parameters.sourcelanguage
+        target_language = parameters.target_language
+        source_language = parameters.source_language
         translation = parameters.translation
 
         content = self.pre_process(content)
         translatedtext = None
 
-        if not sourcelanguage:
+        if not source_language:
             try:
                 iso_language = self._detect_language(content=content, language=None)
                 if iso_language:
-                    sourcelanguage = iso_language.value
+                    source_language = iso_language.value
                 else:
-                    sourcelanguage = "Language not found"
+                    source_language = "Language not found"
             except LanguageDetectionException as language_exception:
                 raise LanguageDetectionException(
                     status_code=204,
@@ -82,8 +82,8 @@ class TranslationModel(ServedModel):
             try:
                 output = self._predict(
                     content=content,
-                    language=sourcelanguage,
-                    targetlanguage=targetlanguage,
+                    language=source_language,
+                    target_language=target_language,
                 )
             except (
                 LanguageDetectionException,
@@ -98,8 +98,8 @@ class TranslationModel(ServedModel):
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
             attributes={
-                "sourcelanguage": sourcelanguage,
-                "targetlanguage": targetlanguage,
+                "source_language": source_language,
+                "target_language": target_language,
                 "translatedtext": translatedtext,
             },
         )
@@ -116,7 +116,7 @@ class TranslationModel(ServedModel):
         self,
         content: str,
         language: str,
-        targetlanguage: str,
+        target_language: str,
     ) -> Dict[str, Any]:
         """Language filtered prediction."""
         if len(content) < 10000:
@@ -134,7 +134,7 @@ class TranslationModel(ServedModel):
                 response = client.translate_text(
                     Text=content,
                     SourceLanguageCode=language,
-                    TargetLanguageCode=targetlanguage,
+                    TargetLanguageCode=target_language,
                     Settings={
                         "Profanity": settings.profanity,
                     },
