@@ -26,7 +26,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
 
     source_language: Optional[str] = None
     target_language: Optional[str] = None
-    translatedtext: Optional[str] = None
+    translated_text: Optional[str] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

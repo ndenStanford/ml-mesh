@@ -67,7 +67,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "en",
                         "target_language": "fr",
-                        "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                        "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
             },
@@ -93,7 +93,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "ar",
                         "target_language": None,
-                        "translatedtext": None,  # noqa
+                        "translated_text": None,  # noqa
                     },
                 },
             },
@@ -119,7 +119,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "en",
                         "target_language": None,
-                        "translatedtext": None,  # noqa
+                        "translated_text": None,  # noqa
                     },
                 },
             },
@@ -145,7 +145,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "ja",
                         "target_language": None,
-                        "translatedtext": None,
+                        "translated_text": None,
                     },
                 },
             },
@@ -172,7 +172,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "ja",
                         "target_language": "en",
-                        "translatedtext": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
+                        "translated_text": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
                     },
                 },
             },
@@ -199,7 +199,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "en",
                         "target_language": "ja",
-                        "translatedtext": "これは言語を検出するためのテストで、頭の中にあることは何でも書いているので、後で誰かがチェックしても問題にならないことを願っています。",  # noqa
+                        "translated_text": "これは言語を検出するためのテストで、頭の中にあることは何でも書いているので、後で誰かがチェックしても問題にならないことを願っています。",  # noqa
                     },
                 },
             },
@@ -225,7 +225,7 @@ def test_model_server_bio():
                     "attributes": {
                         "source_language": "Language not found",
                         "target_language": None,
-                        "translatedtext": None,  # noqa
+                        "translated_text": None,  # noqa
                     },
                 },
             },

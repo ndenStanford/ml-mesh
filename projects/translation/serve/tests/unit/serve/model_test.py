@@ -59,7 +59,7 @@ def test_model_bio(translation_model):
                     "attributes": {
                         "source_language": "en",
                         "target_language": "fr",
-                        "translatedtext": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                        "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
             },

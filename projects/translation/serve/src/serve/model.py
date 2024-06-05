@@ -63,7 +63,7 @@ class TranslationModel(ServedModel):
         translation = parameters.translation
 
         content = self.pre_process(content)
-        translatedtext = None
+        translated_text = None
 
         if not source_language:
             try:
@@ -92,7 +92,7 @@ class TranslationModel(ServedModel):
                 raise OnclusiveHTTPException(
                     status_code=204, detail=language_exception.message
                 )
-            translatedtext = output
+            translated_text = output
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
@@ -100,7 +100,7 @@ class TranslationModel(ServedModel):
             attributes={
                 "source_language": source_language,
                 "target_language": target_language,
-                "translatedtext": translatedtext,
+                "translated_text": translated_text,
             },
         )
 
