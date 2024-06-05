@@ -88,9 +88,9 @@ class MainConfig(
 ):
     """Global server settings."""
 
-    task: Optional[TaskSettings] = TaskSettings()
-    datamodule: Optional[DataModuleSettings] = DataModuleSettings()
-    trainer: Optional[TrainerSettings] = TrainerSettings()
+    task: TaskSettings = TaskSettings()
+    datamodule: DataModuleSettings = DataModuleSettings()
+    trainer: TrainerSettings = TrainerSettings()
 
     class Config:
         extra = "allow"
