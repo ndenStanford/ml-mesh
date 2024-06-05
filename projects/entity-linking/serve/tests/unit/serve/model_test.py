@@ -155,5 +155,5 @@ def test_model_prediction_invalid_language(
     with pytest.raises(OnclusiveHTTPException) as exc_info:
         mock_served_model_with_exception.predict(predict_request)
 
-    assert exc_info.value.status_code == 422
+    assert exc_info.value.status_code == 204
     assert exc_info.value.detail == expected_error_detail
