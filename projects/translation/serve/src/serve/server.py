@@ -13,11 +13,7 @@ settings = get_settings()
 
 
 def get_model_server() -> ModelServer:
-    """Instanciates model server.
-
-    Args:
-        settings (BaseSettings): application settings.
-    """
+    """Instanciates model server."""
     translation_served_model = TranslationModel()
 
     model_server = ModelServer(configuration=settings, model=translation_served_model)
