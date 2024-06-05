@@ -20,7 +20,7 @@ class ServerModelSettings(ServingParams):
 class Boto3ClientSettings(OnclusiveBaseSettings):
     """App base settings."""
 
-    region_name: str = "us-east-1"
+    region_name: str = "us-east-2"
     service_name: str = "translate"
 
 
