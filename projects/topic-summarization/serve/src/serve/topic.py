@@ -53,8 +53,6 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
-        # output_content = json.loads(q.content)
-        # return output_content
         return q
 
     def topic_inference(self, articles: List[str]) -> Dict[str, str]:
@@ -79,17 +77,6 @@ class TopicHandler:
             "output": settings.TOPIC_RESPONSE_SCHEMA,
         }
 
-        # headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
-
-        # q = requests.post(
-        #     "{}/api/v2/prompts/{}/generate/model/{}".format(
-        #         settings.PROMPT_API, topic_alias, settings.DEFAULT_MODEL
-        #     ),
-        #     headers=headers,
-        #     json=input_dict,
-        # )
-
-        # output_content = json.loads(q.content)
         try:
             q = self.call_api(topic_alias_claude, settings.DEFAULT_MODEL, input_dict)
             output_content = json.loads(q.content)
@@ -124,17 +111,6 @@ class TopicHandler:
             },
             "output": settings.SUMMARY_RESPONSE_SCHEMA,
         }
-
-        # headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
-
-        # q = requests.post(
-        #     "{}/api/v2/prompts/{}/generate/model/{}".format(
-        #         settings.PROMPT_API, summary_alias, settings.DEFAULT_MODEL
-        #     ),
-        #     headers=headers,
-        #     json=input_dict,
-        # )
-        # output_content = json.loads(q.content)
 
         try:
             q = self.call_api(summary_alias_claude, settings.DEFAULT_MODEL, input_dict)
