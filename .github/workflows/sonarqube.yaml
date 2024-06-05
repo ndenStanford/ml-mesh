@@ -2,6 +2,12 @@
 name: SonarQube
 on  :
   workflow_call:
+    inputs:
+      region:
+        required: false
+        default: us-east-1
+        type: string
+        description: Image ECR repo region.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
