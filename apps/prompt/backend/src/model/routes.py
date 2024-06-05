@@ -1,11 +1,14 @@
 """Model."""
 
 # Standard Library
-from typing import List
+from typing import List, Optional
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
+
+# Internal libraries
+from onclusiveml.llm.prompt_validator import PromptInjectionException
 
 # Source
 from src.model.tables import LanguageModel
@@ -48,6 +51,12 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str):
+def generate(alias: str, prompt: str, validate_prompt: Optional[bool] = False):
     """Generates text using a prompt template."""
-    return {"generated": F.generate_from_prompt(prompt, alias)}
+    try:
+        return {"generated": F.generate_from_prompt(prompt, alias, validate_prompt)}
+    except PromptInjectionException as e:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail=str(e),
+        )

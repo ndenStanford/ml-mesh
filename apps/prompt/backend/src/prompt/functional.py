@@ -52,10 +52,11 @@ def generate_from_prompt_template(
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
-    prompt: str,
-    model_alias: str,
+    prompt: str, model_alias: str, validate_prompt: bool
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
+    if validate_prompt:
+        validator.validate_prompt(prompt)
     llm = LanguageModel.get(model_alias).as_langchain()
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
     return conversation.predict(input=prompt)
