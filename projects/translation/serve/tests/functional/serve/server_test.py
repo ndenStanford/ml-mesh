@@ -159,6 +159,7 @@ def test_model_server_bio():
                         "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
                     },
                     "parameters": {
+                        "source_language": "ja",
                         "target_language": "en",
                         "translation": True,
                     },
