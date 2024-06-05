@@ -108,7 +108,7 @@ class ServedIPTCMultiModel(ServedModel):
         last_time = self.last_checked.get(model_id, now)
         elapsed = now - last_time
         base_probability = (
-            0.5 if model_id in settings.historically_high_inferenced_models else 0.1
+            0.3 if model_id in settings.historically_high_inferenced_models else 0.1
         )
         time_factor = min(1, elapsed / 3600)
         decayed_probability = min(
@@ -175,7 +175,7 @@ class ServedIPTCMultiModel(ServedModel):
         """
         return self.model(
             host=self._endpoint(model_id),
-            api_key="",
+            api_key=settings.model_endpoint_api_key,
             secure=settings.model_endpoint_secure,
         )
 
@@ -248,8 +248,8 @@ class ServedIPTCMultiModel(ServedModel):
         if current_index >= len(levels):
             return combined_prediction
 
-        label = levels[current_index]
-        model_id = self._get_model_id_from_label(label)
+        current_label = levels[current_index]
+        model_id = self._get_model_id_from_label(current_label)
         client = self._create_client(model_id)
 
         try:
@@ -274,7 +274,9 @@ class ServedIPTCMultiModel(ServedModel):
                         content, deeper_levels, current_index + 1
                     )
                     for deeper_label, deeper_score in deeper_predictions.items():
-                        combined_prediction[deeper_label] = deeper_score
+                        combined_prediction[deeper_label] = (
+                            deeper_score * combined_score
+                        )
 
         except Exception as e:
             logger.error(f"Error with Topic API: {e}")

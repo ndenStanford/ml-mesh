@@ -86,9 +86,10 @@ jobs:
           python-version: ${{ inputs.python-version }}
 
       - name: Setup Poetry
-        uses: abatilo/actions-poetry@v2
+        uses: snok/install-poetry@v1
         with:
-          poetry-version: ${{ inputs.poetry-version }}
+          version: ${{ inputs.poetry-version }}
+          virtualenvs-create: false
 
       - name: Install mesh dependencies
         run: poetry install --with ci
