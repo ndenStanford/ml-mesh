@@ -4,9 +4,9 @@ ARG IMAGE_TAG
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
 ARG IMAGE_NAME
+ARG PROJECT_DIR="docker/${IMAGE_NAME}"
 
 ENV USER=app
-ENV HOME="docker/${IMAGE_NAME}"
 
 USER root
 
@@ -31,11 +31,11 @@ RUN apt-get update && \
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
- && mkdir -p "${HOME}" \
+ && mkdir -p "${PROJECT_DIR}" \
  && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users "${PROJECT_DIR}" \
  && chown -R ${USER}:users /usr/local \
- && chown -R ${USER}:users "${POETRY_HOME}"
+ && chown -R ${USER}:users "${POETRY_PROJECT_DIR}"
 
 # switch user
 USER ${USER}
@@ -47,9 +47,9 @@ WORKDIR "/"
 ENV PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
+COPY --chown=${USER}:users ${PROJECT_DIR}/poetry.lock ${PROJECT_DIR}/pyproject.toml ./${PROJECT_DIR}/
 
-WORKDIR "${HOME}"
+WORKDIR "${PROJECT_DIR}"
 
 # install production dependencies
 RUN poetry install \
@@ -89,9 +89,9 @@ RUN pip install \
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
+COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
-WORKDIR "${HOME}"
+WORKDIR "${PROJECT_DIR}"
 
 RUN pytest tests/core -ra -vv --capture=no -m compilation
 
@@ -113,11 +113,11 @@ RUN poetry install \
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
+COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
-WORKDIR "${HOME}"
+WORKDIR "${PROJECT_DIR}"
 
-COPY --from=builder-compilation --chown=${USER}:users "/${HOME}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
+COPY --from=builder-compilation --chown=${USER}:users "/${PROJECT_DIR}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
 
 # hadolint ignore=DL3002
 USER root
