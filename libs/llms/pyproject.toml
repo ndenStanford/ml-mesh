@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "llms"
 version = "0.1.0"
-description = "llms utilities"
+description = "LLM utilities"
 authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
