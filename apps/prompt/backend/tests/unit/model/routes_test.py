@@ -44,15 +44,18 @@ def test_get_model(mock_model_get, alias, provider, test_client):
 
 
 @pytest.mark.parametrize(
-    "alias, provider, prompt",
-    [("model-1", "openai", "test prompt"), ("model-2", "bedrock", "hello")],
+    "alias, provider, prompt, validate_prompt",
+    [
+        ("model-1", "openai", "test prompt", False),
+        ("model-2", "bedrock", "hello", True),
+    ],
 )
 @patch("src.prompt.functional.generate_from_prompt")
-def test_generate(mock_generate, alias, provider, prompt, test_client):
+def test_generate(mock_generate, alias, provider, prompt, validate_prompt, test_client):
     """Test get model endpoint."""
     response = test_client.post(
-        f"/api/v2/models/{alias}/generate?prompt={prompt}",
+        f"/api/v2/models/{alias}/generate?prompt={prompt}&validate_prompt={validate_prompt}",
         headers={"x-api-key": "1234"},
     )
-    mock_generate.assert_called_with(prompt, alias)
+    mock_generate.assert_called_with(prompt, alias, validate_prompt)
     assert response.status_code == status.HTTP_200_OK

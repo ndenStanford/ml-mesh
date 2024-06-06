@@ -39,8 +39,6 @@ def generate_from_prompt_template(
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
 
-    print(prompt.as_langchain())
-
     if validate_prompt:
         validate_input = prompt.as_langchain().messages[0].prompt.template
         validate_input = validate_input.format(**inputs)
