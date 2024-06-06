@@ -22,6 +22,12 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
+    """Prediction request parameter data."""
+
+    override_topic_document_threshold: Optional[float] = None
+    override_trend_time_interval: Optional[str] = None
+    override_trend_lookback_days: Optional[int] = None
+    override_document_collector_end_date: Optional[int] = None
     """Prediction request paramaters data."""
 
 
@@ -64,8 +70,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     topic: Optional[Topic] = None
     impact_category: Optional[ImpactCategoryLabel]
     trending: Optional[bool] = None
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    timestamp: datetime = datetime.now()
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
