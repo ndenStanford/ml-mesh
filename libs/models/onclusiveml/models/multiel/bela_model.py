@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.bela.conf.config import MainConfig
+from onclusiveml.models.bela.conf.settings import MainConfig
 from onclusiveml.models.bela.datamodule.joint_el_datamodule import (
     JointELDataModule,
 )
@@ -84,9 +84,10 @@ class BelaModel:
             checkpoint_path (str): Path to the checkpoint file.
             config_name (str, optional): Name of the configuration. Defaults to "joint_el_mel".
             embeddings_path (str, optional): Path to the embeddings file. Defaults to None.
-            ent_catalogue_idx_path (str, optional): Path to the entity catalogue index file. Defaults to None.
+            ent_catalogue_idx_path (str, optional): Path to the entity catalogue
+                                                    index file. Defaults None.
             device (str, optional): Device to use for computations. Defaults to "cuda:0".
-        """  # noqa
+        """
         self.device = torch.device(device)
 
         logger.info("Create task")
