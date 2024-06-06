@@ -11,7 +11,7 @@ from langchain_core.runnables.base import RunnableSequence
 from redis_cache import RedisCache
 
 # Internal libraries
-from onclusiveml.llm.prompt_validator import PromptInjectionException
+from onclusiveml.llms.prompt_validator import PromptInjectionException
 
 # Source
 from src.model.tables import LanguageModel

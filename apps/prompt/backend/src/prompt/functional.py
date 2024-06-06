@@ -9,7 +9,7 @@ from langchain.memory import ConversationBufferMemory
 
 # Internal libraries
 from onclusiveml.core.retry import retry
-from onclusiveml.llm.prompt_validator import PromptInjectionValidator
+from onclusiveml.llms.prompt_validator import PromptInjectionValidator
 
 # Source
 from src.extensions.redis import redis

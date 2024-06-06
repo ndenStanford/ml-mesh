@@ -8,7 +8,7 @@ from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
 # Internal libraries
-from onclusiveml.llm.prompt_validator import PromptInjectionException
+from onclusiveml.llms.prompt_validator import PromptInjectionException
 
 # Source
 from src.project.tables import Project

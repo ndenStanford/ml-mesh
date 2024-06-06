@@ -15,7 +15,9 @@ from optimum.onnxruntime import ORTModelForSequenceClassification
 from pydantic import ValidationError
 
 # Internal libraries
-from onclusiveml.llm.prompt_validator.exceptions import PromptInjectionException
+from onclusiveml.llms.prompt_validator.exceptions import (
+    PromptInjectionException,
+)
 
 
 class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):

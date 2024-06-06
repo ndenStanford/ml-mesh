@@ -4,7 +4,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.llm.prompt_validator import PromptInjectionException
+from onclusiveml.llms.prompt_validator import PromptInjectionException
 
 # Source
 from src.model.constants import ChatModel
