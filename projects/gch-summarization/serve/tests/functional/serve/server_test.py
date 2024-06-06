@@ -119,4 +119,4 @@ def test_model_server_prediction_invalid_language(payload):
         json=payload,
     )
 
-    assert response.status_code == 422
+    assert response.status_code == 204

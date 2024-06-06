@@ -20,7 +20,7 @@ from onclusiveml.tracking import (
 )
 
 
-SUPPORTED_LANGUAGE = [
+SUPPORTED_LANGUAGES = [
     LanguageIso.EN,  # English
     LanguageIso.ES,  # Spanish
     LanguageIso.FR,  # French
@@ -33,7 +33,7 @@ SUPPORTED_LANGUAGE = [
 class GchSummarizationSettings(TrackedParams):
     """NER settings."""
 
-    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGE
+    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
 class TrackedTrainedModelSpecs(TrackedModelSpecs):
