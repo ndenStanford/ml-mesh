@@ -10,6 +10,12 @@ from pydantic import BaseModel, Field
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 
 
+class RedisSetttings(OnclusiveBaseSettings):
+    INDEX_NAME: str = "Wiki_entities"
+    EMBEDDINGS_SHAPE: List = [16470856, 300]
+    REDIS_CONNECTION_STRING: str = ""
+
+
 class TransformSettings(OnclusiveBaseSettings):
     max_seq_len: int = 256
 

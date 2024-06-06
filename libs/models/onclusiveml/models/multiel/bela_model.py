@@ -10,6 +10,7 @@ import torch
 
 # 3rd party libraries
 import faiss
+from redis.commands.search.query import Query
 from tqdm import tqdm
 
 # Internal libraries
@@ -22,6 +23,10 @@ from onclusiveml.models.bela.task.joint_el_task import JointELTask
 from onclusiveml.models.bela.transforms.joint_el_transform import (
     JointELXlmrRawTextTransform,
 )
+
+# Source
+from src.utils.client import get_client
+from src.utils.index import get_index
 
 
 logger = get_default_logger(__name__, level=20)
@@ -89,6 +94,8 @@ class BelaModel:
         """  # noqa
         self.device = torch.device(device)
 
+        self.redis_settings = RedisSettings()
+
         logger.info("Create task")
         # Load configuration using Pydantic
         cfg = MainConfig()
@@ -154,7 +161,7 @@ class BelaModel:
         self.faiss_index = faiss.GpuIndexFlatIP(res, embeddings.shape[1], flat_config)
         self.faiss_index.add(self.embeddings)
 
-    def lookup(
+    def lookup_faiss(
         self,
         query: torch.Tensor,
     ):
@@ -167,6 +174,47 @@ class BelaModel:
         scores, indices = self.faiss_index.search(query, k=1)
 
         return scores.squeeze(-1).to(self.device), indices.squeeze(-1).to(self.device)
+
+    def lookup(
+        self,
+        query: torch.Tensor,
+    ):
+        """Search for nearest neighbors in the Redis index.
+
+        Args:
+            self: The instance of the class.
+            query (torch.Tensor): Tensor containing query vectors.
+        """
+        settings = self.redis_settings
+        # Connect to Redis vector store
+        client = get_client(url=settings.REDIS_CONNECTION_STRING)
+        get_index(
+            client=client,
+            index_name=settings.INDEX_NAME,
+            vector_dimensions=settings.EMBEDDINGS_SHAPE[1],
+        )
+        # Convert query tensor to bytes
+        query_vector = query.numpy().astype(np.float32).tobytes()
+        # Construct the query
+        k = 1
+        query_redis = (
+            Query(f"*=>[KNN {k} @embedding $query_vector as score]")
+            .sort_by("score")
+            .return_fields("id", "score")
+            .paging(0, k)
+            .dialect(2)
+        )
+        # Run the query search
+        query_params = {"query_vector": query_vector}
+        results = client.ft(settings.INDEX_NAME).search(query_redis, query_params).docs
+        # Process results
+        if not results:
+            return torch.empty(0), torch.empty(0)
+
+        scores = torch.tensor([float(doc.score) for doc in results])
+        indices = torch.tensor([int(doc.id) for doc in results])
+
+        return scores.to(self.device), indices.to(self.device)
 
     def process_batch(self, texts):
         """Process a batch of texts for mention and entity extraction.
