@@ -62,7 +62,9 @@ def generate_from_prompt(
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
-def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
+def generate_from_default_model(
+    prompt_alias: str, validate_prompt: bool, **kwargs
+) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""
     # get langchain objects
     prompt = PromptTemplate.get(prompt_alias)
@@ -79,5 +81,10 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
 
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
+
+    if validate_prompt:
+        validate_input = prompt.as_langchain().messages[0].prompt.template
+        validate_input = validate_input.format(**inputs)
+        validator.validate_prompt(validate_input)
 
     return chain.invoke(inputs)

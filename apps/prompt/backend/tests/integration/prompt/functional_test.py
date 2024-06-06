@@ -92,16 +92,18 @@ def test_generate_from_prompt_template_injection(
 
 
 @pytest.mark.parametrize(
-    "prompt_alias",
+    "prompt_alias, validate_prompt",
     [
-        ("prompt1"),
-        ("prompt2"),
+        ("prompt1", False),
+        ("prompt2", False),
     ],
 )
 @pytest.mark.order(12)
-def test_generate_from_default_model(prompt_alias, create_prompts, app):
+def test_generate_from_default_model(
+    prompt_alias, validate_prompt, create_prompts, app
+):
     """Test generate prompt from template."""
-    response = F.generate_from_default_model(prompt_alias, **dict())
+    response = F.generate_from_default_model(prompt_alias, validate_prompt, **dict())
     assert isinstance(
         response,
         dict,

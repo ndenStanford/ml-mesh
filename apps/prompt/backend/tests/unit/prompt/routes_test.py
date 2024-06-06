@@ -115,16 +115,18 @@ def test_generate(mock_generate, alias, model, validate_prompt, values, test_cli
 
 
 @pytest.mark.parametrize(
-    "alias, values",
-    [("prompt-1", {"text": ""})],
+    "alias, values, validate_prompt",
+    [("prompt-1", {"text": ""}, False), ("prompt-2", {"text": ""}, True)],
 )
 @patch("src.prompt.functional.generate_from_default_model")
-def generate_from_default_model(mock_generate, alias, values, test_client):
+def test_generate_from_default_model(
+    mock_generate, alias, values, validate_prompt, test_client
+):
     """Test get model endpoint."""
     response = test_client.post(
-        f"/api/v2/prompts/{alias}/generate",
+        f"/api/v2/prompts/{alias}/generate?validate_prompt={validate_prompt}",
         headers={"x-api-key": "1234"},
         json=values,
     )
-    mock_generate.assert_called_with(alias, **values)
+    mock_generate.assert_called_with(alias, validate_prompt, **values)
     assert response.status_code == status.HTTP_200_OK
