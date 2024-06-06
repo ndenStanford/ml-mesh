@@ -63,7 +63,7 @@ class TopicHandler:
         Output:
             topic summary & impact(dict): dict[str,str]
         """
-        topic_alias_claude = settings.TOPIC_ALIAS
+        topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
         topic_alias_gpt = settings.GPT_TOPIC_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
@@ -77,6 +77,7 @@ class TopicHandler:
             "output": settings.TOPIC_RESPONSE_SCHEMA,
         }
 
+        output_content = None
         try:
             q = self.call_api(topic_alias_claude, settings.DEFAULT_MODEL, input_dict)
             output_content = json.loads(q.content)
@@ -85,8 +86,9 @@ class TopicHandler:
         except Exception as e:
             logging.error(f"Failed with Sonnet in Topic: {e}")
 
-        q = self.call_api(topic_alias_gpt, settings.GPT_MODEL, input_dict)
-        output_content = json.loads(q.content)
+        if (not output_content) or not isinstance(output_content, dict):
+            q = self.call_api(topic_alias_gpt, settings.GPT_MODEL, input_dict)
+            output_content = json.loads(q.content)
 
         return output_content
 
@@ -98,7 +100,7 @@ class TopicHandler:
         Output:
             summary & theme(dict): dict[str,str]
         """
-        summary_alias_claude = settings.SUMMARY_ALIAS
+        summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
         summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
@@ -112,6 +114,7 @@ class TopicHandler:
             "output": settings.SUMMARY_RESPONSE_SCHEMA,
         }
 
+        output_content = None
         try:
             q = self.call_api(summary_alias_claude, settings.DEFAULT_MODEL, input_dict)
             output_content = json.loads(q.content)
@@ -120,8 +123,9 @@ class TopicHandler:
         except Exception as e:
             logging.error(f"Failed with Sonnet in Summary: {e}")
 
-        q = self.call_api(summary_alias_gpt, settings.GPT_MODEL, input_dict)
-        output_content = json.loads(q.content)
+        if (not output_content) or not isinstance(output_content, dict):
+            q = self.call_api(summary_alias_gpt, settings.GPT_MODEL, input_dict)
+            output_content = json.loads(q.content)
 
         return output_content
 
