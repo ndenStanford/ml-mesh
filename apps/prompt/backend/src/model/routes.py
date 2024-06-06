@@ -57,6 +57,6 @@ def generate(alias: str, prompt: str, validate_prompt: Optional[bool] = False):
         return {"generated": F.generate_from_prompt(prompt, alias, validate_prompt)}
     except PromptInjectionException as e:
         raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )

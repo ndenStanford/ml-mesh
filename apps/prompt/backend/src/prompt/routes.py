@@ -121,6 +121,6 @@ def generate_text_from_prompt_template(
         return F.generate_from_prompt_template(alias, model, validate_prompt, **values)
     except PromptInjectionException as e:
         raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
