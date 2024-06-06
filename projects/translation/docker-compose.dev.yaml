@@ -1,0 +1,95 @@
+---
+version : '3.9'
+
+services:
+  # =============================================
+  # SERVE
+  # =============================================
+  serve:
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/translation/serve/src
+    build:
+      context: ../../
+      dockerfile: projects/translation/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: translation
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG:-latest}
+    command: [python, -m, src.serve.__main__]
+    profiles: [serve, functional]
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: dev
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: translation-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
+      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
+      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
+      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/translation/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  serve-unit:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG}
+    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/translation/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/translation/serve/tests
+    environment:
+      ENVIRONMENT: dev
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  serve-functional:
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG:-latest}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    volumes:
+      - type: bind
+        source: serve/src
+        target: /projects/translation/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/translation/serve/tests
+    environment:
+      ENVIRONMENT: dev
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
+      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_API_VERSION: v1
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+networks:
+  onclusive-net:

@@ -124,3 +124,14 @@ def generate_text_from_prompt_template(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
+
+
+@router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
+def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
+    """Generates text using a prompt template with default model.
+
+    Args:
+        alias (str): prompt alias
+        values (Dict[str, Any]): values to fill in template.
+    """
+    return F.generate_from_default_model(alias, **values)
