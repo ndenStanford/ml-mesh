@@ -117,10 +117,14 @@ class ServedTopicModel(ServedModel):
             if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
                 if trend_found:
-                    start_time = inflection_point  # - pd.Timedelta(days=1)
+                    start_time = inflection_point
                     if parameter_input.override_document_collector_end_date:
                         end_time = inflection_point + pd.Timedelta(
                             days=parameter_input.override_document_collector_end_date
+                        )
+                    else:
+                        end_time = inflection_point + pd.Timedelta(
+                            days=settings.DAYS_PAST_INFLECTION_POINT
                         )
 
                 # collect documents of profile
