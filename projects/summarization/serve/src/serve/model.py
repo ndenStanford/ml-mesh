@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import Dict, Type
+from typing import Type
 
 # 3rd party libraries
 import requests
@@ -40,11 +40,6 @@ class SummarizationServedModel(ServedModel):
             namespace=settings.model_name,
             attributes={"model_name": self.name, "model_card": {}},
         )
-
-    @property
-    def headers(self) -> Dict[str, str]:
-        """Request headers."""
-        return {settings.api_key_name: settings.internal_ml_api_key.get_secret_value()}
 
     def inference(
         self,

@@ -29,11 +29,6 @@ def test_model_bio(summarization_model):
     }
 
 
-def test_model_headers(summarization_model):
-    """Test model headers."""
-    assert summarization_model.headers == {"x-api-key": ""}
-
-
 @pytest.mark.parametrize(
     "text, desired_length, language, target_language, expected_summary",
     [

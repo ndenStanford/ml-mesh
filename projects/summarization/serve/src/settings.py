@@ -6,9 +6,10 @@ from pathlib import Path
 from typing import Optional, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings, SecretStr
+from pydantic import BaseSettings
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 
 
@@ -31,7 +32,7 @@ class Settings(BaseSettings):
     # Logging level
     LOGGING_LEVEL: str = "info"
     # documentation endpoint
-    DOCS_URL: Optional[str] = "/summarization/docs"
+    DOCS_URL: Optional[str] = "/docs"
     OPENAPI_URL: Optional[str] = "/summarization/openapi.json"
     # OpenAI api key
     OPENAI_API_KEY: str = ""
@@ -66,13 +67,17 @@ class ServerModelSettings(ServingParams):
 
     model_name: str = "summarization"
     model_directory: Union[str, Path] = "."
+
+
+class ApplicationSettings(OnclusiveBaseSettings):
+    """App base settings."""
+
     enable_metrics: bool = False
     api_version: str = "v1"
     api_key_name: str = "x-api-key"
-    internal_ml_api_key: SecretStr = ""
 
 
-class GlobalSettings(ServerModelSettings, Settings):
+class GlobalSettings(ServerModelSettings, ApplicationSettings, Settings):
     """Global server settings."""
 
 
@@ -80,6 +85,3 @@ class GlobalSettings(ServerModelSettings, Settings):
 def get_settings() -> BaseSettings:
     """Returns instanciated GlobalSettings class."""
     return GlobalSettings()
-
-
-settings = get_settings()
