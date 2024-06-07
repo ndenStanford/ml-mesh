@@ -48,7 +48,7 @@ ALL_LIBS:= \
 	tracking \
 	hashing \
 	training \
-	llm
+	llms
 
 # all projects
 ALL_PROJECTS:= \
