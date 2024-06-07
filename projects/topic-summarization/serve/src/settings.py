@@ -99,6 +99,8 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     trend_time_interval: str = "12h"
     # Document scale threshold to run trend detection
     TOPIC_DOCUMENT_THRESHOLD: float = 0.01
+    # number of days to look past the inflection point when collecting documents (at 00:00)
+    DAYS_PAST_INFLECTION_POINT: int = 2
 
     class Config:
         env_file = "config/dev.env"
