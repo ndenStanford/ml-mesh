@@ -41,7 +41,7 @@ RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-USER "${USER}""
+USER app
 
 # --- production stage
 FROM builder as production
@@ -64,7 +64,7 @@ RUN poetry install \
 
 COPY --chown=${USER}:users "${PROJECT_DIR}/tests" ./tests
 
-USER "${USER}""
+USER app
 
 # --- debugger stage
 FROM builder as debugger
