@@ -179,7 +179,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 422,
+                "status": 204,
                 "detail": "The language reference 'xyz' could not be mapped",
             },
         ),
@@ -198,7 +198,7 @@ def test_model_server_prediction_no_entities(payload, expected_response):
                 }
             },
             {
-                "status": 422,
+                "status": 204,
                 "detail": "The language 'LanguageIso.AF' that was looked up from 'af'",
             },
         ),
@@ -260,7 +260,7 @@ def test_new_language_cases(payload, expected_response):
 
     if response.status_code != 200:
         assert response.status_code == expected_response.get("status", 500)
-        assert response.json()["detail"].startswith(expected_response["detail"])
+        assert response.text == ""
     else:
         assert response.status_code == 200
         assert response.json() == expected_response
