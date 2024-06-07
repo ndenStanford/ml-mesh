@@ -158,12 +158,15 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/gch-summarization
       NEPTUNE_MODEL_ID: SUM-TRAINED
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     profiles: [debug]
     command:
       - /bin/sh
       - -c
       - |
-        python -m src.util.download
+        python -m src.download
         python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
     ports:
       - 5678:5678

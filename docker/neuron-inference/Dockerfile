@@ -37,11 +37,8 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && chown -R ${USER}:users /usr/local \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
-# switch user
-USER ${USER}
-
 # setup workspace
-
+ 
 WORKDIR "/"
 
 ENV PATH="/opt/aws/neuron/bin:$PATH"
@@ -53,7 +50,7 @@ WORKDIR "${PROJECT_DIR}"
 
 # install production dependencies
 RUN poetry install \
-    --only main \
+--only main \
     --no-root \
     --no-interaction \
     --no-ansi \
@@ -61,6 +58,9 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
+    
+# switch user
+USER ${USER}
 
 # --- production stage
 FROM builder as production
@@ -100,6 +100,9 @@ FROM builder as development
 
 ARG NEURON_COMPILE_OUTPUT_DIR
 
+# hadolint ignore=DL3002
+USER root
+
 # install development dependencies
 RUN poetry install \
     --only dev \
@@ -118,9 +121,6 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 WORKDIR "${PROJECT_DIR}"
 
 COPY --from=builder-compilation --chown=${USER}:users "/${PROJECT_DIR}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
-
-# hadolint ignore=DL3002
-USER root
 
 RUN echo "${NEURON_COMPILE_OUTPUT_DIR}" \
     && chown -R "${USER}:users" "${NEURON_COMPILE_OUTPUT_DIR}" \
