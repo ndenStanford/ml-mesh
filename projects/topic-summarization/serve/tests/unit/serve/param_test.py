@@ -44,6 +44,20 @@ def test_handler_summary(mock_post, article_input, mock_responses):
 
 
 @patch("requests.post")
+def test_claude_gpt_switch(
+    mock_post, mock_claude_fail_output, mock_responses, article_input
+):
+    """Test prompt routing logic."""
+    mock_claude_response = mock_claude_fail_output
+    mock_gpt_response = mock_responses
+    mock_post.side_effect = [mock_claude_response, mock_gpt_response]
+    gpt_inference = _service.topic_inference(
+        articles=article_input,
+    )
+    assert isinstance(gpt_inference, dict)
+
+
+@patch("requests.post")
 def test_handler_aggregate(mock_post, article_input, mock_responses):
     """Test the aggregate function in handler."""
     mock_post.return_value = mock_responses
