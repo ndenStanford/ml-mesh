@@ -20,7 +20,7 @@ from pytorch_lightning import LightningModule
 
 # Internal libraries
 from onclusiveml.models.bela.models.hf_encoder import HFEncoder
-from onclusiveml.models.bela.setttings import BelaSettings
+from onclusiveml.models.bela.settings import BelaSettings
 
 
 logger = logging.getLogger(__name__)

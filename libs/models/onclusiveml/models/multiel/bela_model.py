@@ -17,7 +17,7 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.bela.datamodule.joint_el_datamodule import (
     JointELDataModule,
 )
-from onclusiveml.models.bela.settings import BelaSetttings
+from onclusiveml.models.bela.settings import BelaSettings
 from onclusiveml.models.bela.task.joint_el_task import JointELTask
 from onclusiveml.models.bela.transforms.joint_el_transform import (
     JointELXlmrRawTextTransform,
@@ -92,7 +92,7 @@ class BelaModel:
 
         logger.info("Create task")
         # Load configuration using Pydantic
-        settings = BelaSetttings()
+        settings = BelaSettings()
 
         settings.task.load_from_checkpoint = checkpoint_path
         settings.task.embeddings_path = embeddings_path or settings.task.embeddings_path
