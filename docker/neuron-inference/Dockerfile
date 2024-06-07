@@ -38,7 +38,6 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
 # setup workspace
- 
 WORKDIR "/"
 
 ENV PATH="/opt/aws/neuron/bin:$PATH"
@@ -58,7 +57,7 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-    
+
 # switch user
 USER ${USER}
 
