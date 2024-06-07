@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.bela.conf.config import MainConfig
+from onclusiveml.models.bela.conf.config import MainConfig, RedisSettings
 from onclusiveml.models.bela.datamodule.joint_el_datamodule import (
     JointELDataModule,
 )
@@ -23,10 +23,8 @@ from onclusiveml.models.bela.task.joint_el_task import JointELTask
 from onclusiveml.models.bela.transforms.joint_el_transform import (
     JointELXlmrRawTextTransform,
 )
-
-# Source
-from src.utils.client import get_client
-from src.utils.index import get_index
+from onclusiveml.models.bela.utils.client import get_client
+from onclusiveml.models.bela.utils.index import get_index
 
 
 logger = get_default_logger(__name__, level=20)
@@ -140,6 +138,14 @@ class BelaModel:
         self.embeddings = self.task.embeddings
         self.faiss_index = self.task.faiss_index
 
+        # Connect to Redis vector store
+        self.client = get_client(url=self.redis_settings.REDIS_CONNECTION_STRING)
+        get_index(
+            client=self.client,
+            index_name=self.redis_settings.INDEX_NAME,
+            vector_dimensions=self.redis_settings.EMBEDDINGS_SHAPE[1],
+        )
+
         logger.info("Create ent index")
         self.ent_idx = []
         for ent in datamodule.ent_catalogue.idx:
@@ -185,14 +191,6 @@ class BelaModel:
             self: The instance of the class.
             query (torch.Tensor): Tensor containing query vectors.
         """
-        settings = self.redis_settings
-        # Connect to Redis vector store
-        client = get_client(url=settings.REDIS_CONNECTION_STRING)
-        get_index(
-            client=client,
-            index_name=settings.INDEX_NAME,
-            vector_dimensions=settings.EMBEDDINGS_SHAPE[1],
-        )
         # Convert query tensor to bytes
         query_vector = query.numpy().astype(np.float32).tobytes()
         # Construct the query
@@ -206,7 +204,11 @@ class BelaModel:
         )
         # Run the query search
         query_params = {"query_vector": query_vector}
-        results = client.ft(settings.INDEX_NAME).search(query_redis, query_params).docs
+        results = (
+            self.client.ft(self.redis_settings.INDEX_NAME)
+            .search(query_redis, query_params)
+            .docs
+        )
         # Process results
         if not results:
             return torch.empty(0), torch.empty(0)
