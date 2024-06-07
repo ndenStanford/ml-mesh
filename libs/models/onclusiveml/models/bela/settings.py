@@ -83,7 +83,7 @@ class TaskSettings(OnclusiveBaseSettings):
     _recursive_: Optional[bool] = False
 
 
-class MainConfig(
+class BelaSettings(
     OnclusiveBaseSettings,
 ):
     """Global server settings."""
@@ -91,6 +91,10 @@ class MainConfig(
     task: TaskSettings = TaskSettings()
     datamodule: DataModuleSettings = DataModuleSettings()
     trainer: TrainerSettings = TrainerSettings()
+    transform: TransformSettings = TransformSettings()
+    optim: OptimSettings = OptimSettings()
+    model: ModelSettings = ModelSettings()
+    checkpoint_callback: CheckpointCallbackSettings = CheckpointCallbackSettings()
 
     class Config:
         extra = "allow"
