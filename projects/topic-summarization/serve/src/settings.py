@@ -41,9 +41,12 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    TOPIC_ALIAS: str = "ml-topic-summarization-claude"
-    SUMMARY_ALIAS: str = "ml-multi-articles-summary-claude"
+    CLAUDE_TOPIC_ALIAS: str = "ml-topic-summarization-claude"
+    GPT_TOPIC_ALIAS: str = "ml-topic-summarization-gpt"
+    CLAUDE_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-claude"
+    GPT_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-gpt"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+    GPT_MODEL: str = "gpt-4-turbo-2024-04-09"
 
     model_settings = ServerModelSettings()
 
