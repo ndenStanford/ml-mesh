@@ -123,7 +123,9 @@ class ServedTopicModel(ServedModel):
                             days=parameter_input.override_document_collector_end_date
                         )
                     else:
-                        end_time = inflection_point + pd.Timedelta(days=2)
+                        end_time = inflection_point + pd.Timedelta(
+                            days=settings.DAYS_PAST_INFLECTION_POINT
+                        )
 
                 # collect documents of profile
                 content = self.document_collector.get_documents(
