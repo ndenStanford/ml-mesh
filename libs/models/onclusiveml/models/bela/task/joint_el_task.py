@@ -585,15 +585,6 @@ class JointELTask(LightningModule):
             amsgrad=self.optim_conf.amsgrad,
         )
 
-        if self.use_gpu_index:
-            logger.info(f"Setup GPU index")
-            self.setup_gpu_index()
-            # self.embeddings = None
-        else:
-            logger.info(f"Setup CPU index")
-            assert self.faiss_index_path is not None
-            self.faiss_index = faiss.read_index(self.faiss_index_path)
-
     def sim_score(self, mentions_repr, entities_repr):
         # bs x emb_dim , bs x emb_dim
         scores = torch.sum(mentions_repr * entities_repr, 1)
