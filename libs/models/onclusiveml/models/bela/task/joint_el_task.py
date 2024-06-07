@@ -19,7 +19,7 @@ import numpy as np
 from pytorch_lightning import LightningModule
 
 # Internal libraries
-from onclusiveml.models.bela.conf import (
+from onclusiveml.models.bela.conf.setttings import (
     DataModuleSettings,
     ModelSettings,
     OptimSettings,
