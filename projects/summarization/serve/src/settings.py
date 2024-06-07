@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     # Logging level
     LOGGING_LEVEL: str = "info"
     # documentation endpoint
-    DOCS_URL: Optional[str] = "/docs"
+    DOCS_URL: Optional[str] = "/summarization/docs"
     OPENAPI_URL: Optional[str] = "/summarization/openapi.json"
     # OpenAI api key
     OPENAI_API_KEY: str = ""

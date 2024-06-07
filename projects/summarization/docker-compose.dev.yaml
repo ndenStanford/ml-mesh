@@ -44,7 +44,7 @@ services:
       PROMETHEUS_MULTIPROC_DIR: /tmp
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: https://internal.api.ml.dev.onclusive.org
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
@@ -87,7 +87,7 @@ services:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: https://internal.api.ml.dev.onclusive.org
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
@@ -112,7 +112,7 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: https://internal.api.ml.dev.onclusive.org
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
@@ -134,7 +134,7 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ENVIRONMENT: dev
-      DOCS_URL: /docs
+      DOCS_URL: /summarization/docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       PROMPT_API: https://internal.api.ml.dev.onclusive.org
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
