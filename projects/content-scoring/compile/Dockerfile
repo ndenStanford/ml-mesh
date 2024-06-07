@@ -50,11 +50,11 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
 WORKDIR "${PROJECT_DIR}"
 
-RUN poetry install --no-interaction --with dev
-
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
 USER root
+
+RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
 FROM builder as debugger

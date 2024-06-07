@@ -35,7 +35,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${PROJECT_DIR}" \
  && chown -R ${USER}:users /usr/local \
- && chown -R ${USER}:users "${POETRY_PROJECT_DIR}"
+ && chown -R ${USER}:users "${POETRY_HOME}"
 
 # switch user
 USER ${USER}
