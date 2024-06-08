@@ -116,9 +116,6 @@ class TrendDetection:
             ).iloc[:-1]
         else:
             return False, None
-        print("----")
-        print(results_topic_profile_query_no_weekends)
-        print("----")
         if df_single_topic["doc_count"].sum() >= (
             topic_document_threshold * df_all_topic["doc_count"].sum()
         ):

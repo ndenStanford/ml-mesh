@@ -1,14 +1,19 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
+from typing import Tuple, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.models.topic import TrainedTopic
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
@@ -78,9 +83,18 @@ class ServedTopicModel(ServedModel):
         """
         # content and configuration from payload
         attributes = payload.attributes
-
-        topic_prediction = self.model(text=attributes.content)
-
+        parameters = payload.parameters
+        try:
+            topic_prediction = self._topic_predict(
+                content=attributes.content, language=parameters.language
+            )
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=204, detail=language_exception.message
+            )
         attributes = {
             "topic_id": str(topic_prediction[0][0]),
             "topic_representation": [i[0] for i in topic_prediction[1]],
@@ -91,6 +105,22 @@ class ServedTopicModel(ServedModel):
             namespace=settings.model_name,
             attributes=attributes,
         )
+
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _topic_predict(self, content: str, language: str) -> Tuple:
+        """Perform topic prediction considering language restrictions.
+
+        Args:
+            content (str): The text content to analyze.
+            language (str): The language of the text.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing topic prediction results.
+        """
+        return self.model(text=content)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.

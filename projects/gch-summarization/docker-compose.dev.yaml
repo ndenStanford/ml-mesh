@@ -330,6 +330,7 @@ services:
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
       NEPTUNE_PROJECT: onclusive/gch-summarization
       NEPTUNE_MODEL_ID: SUM-TRAINED
+    profiles: [load]
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -577,6 +578,7 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    profiles: [backfill]
     depends_on:
       - kafka
 
