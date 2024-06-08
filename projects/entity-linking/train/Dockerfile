@@ -7,7 +7,8 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
+# hadolint ignore=DL3002
+USER root
 
 # setup workspace
 WORKDIR "/"
@@ -21,8 +22,6 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share
-
-USER app
 
 # install - poetry requirements
 # hadolint ignore=DL3045
