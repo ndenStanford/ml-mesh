@@ -276,7 +276,6 @@ def topic_profile_documents_query(
             }
         },
     }
-    print(query)
     return query
 
 
