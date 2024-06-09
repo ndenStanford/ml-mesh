@@ -19,16 +19,12 @@ import numpy as np
 from pytorch_lightning import LightningModule
 
 # Internal libraries
-from onclusiveml.models.bela.conf import (
-    DataModuleSettings,
-    ModelSettings,
-    OptimSettings,
-    TransformSettings,
-)
 from onclusiveml.models.bela.models.hf_encoder import HFEncoder
+from onclusiveml.models.bela.settings import BelaSettings
 
 
 logger = logging.getLogger(__name__)
+settings = BelaSettings()
 
 
 class ClassificationMetrics(NamedTuple):
@@ -443,10 +439,10 @@ class MentionScoresHead(nn.Module):
 class JointELTask(LightningModule):
     def __init__(
         self,
-        transform: TransformSettings,
-        model: ModelSettings,
-        datamodule: DataModuleSettings,
-        optim: OptimSettings,
+        transform: settings.transform,
+        model: settings.model,
+        datamodule: settings.datamodule,
+        optim: settings.optim,
         embeddings_path: str,
         faiss_index_path: Optional[str] = None,
         n_retrieve_candidates: int = 10,
@@ -519,7 +515,6 @@ class JointELTask(LightningModule):
 
         self.encoder = HFEncoder(model_path=self.encoder_conf.model_path)
         #     self.encoder = self.encoder_conf
-
         self.project_encoder_op = nn.Identity()
         if self.encoder.embedding_dim != self.embedding_dim:
             self.project_encoder_op = nn.Sequential(
@@ -574,7 +569,6 @@ class JointELTask(LightningModule):
             )
             if len(saliency_encoder_state) > 0 and self.train_saliency:
                 self.saliency_encoder.load_state_dict(saliency_encoder_state)
-
         #   self.optimizer = hydra.utils.instantiate(self.optim_conf, self.parameters())
         optimizer = torch.optim.AdamW(
             self.parameters(),

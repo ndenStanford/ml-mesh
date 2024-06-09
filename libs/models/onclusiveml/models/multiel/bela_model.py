@@ -15,10 +15,10 @@ from tqdm import tqdm
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.models.bela.conf.settings import MainConfig
 from onclusiveml.models.bela.datamodule.joint_el_datamodule import (
     JointELDataModule,
 )
+from onclusiveml.models.bela.settings import BelaSettings
 from onclusiveml.models.bela.task.joint_el_task import JointELTask
 from onclusiveml.models.bela.transforms.joint_el_transform import (
     JointELXlmrRawTextTransform,
@@ -97,40 +97,40 @@ class BelaModel:
 
         logger.info("Create task")
         # Load configuration using Pydantic
-        cfg = MainConfig()
+        settings = BelaSettings()
 
-        cfg.task.load_from_checkpoint = checkpoint_path
-        cfg.task.embeddings_path = embeddings_path or cfg.task.embeddings_path
-        cfg.datamodule.ent_catalogue_idx_path = (
-            ent_catalogue_idx_path or cfg.datamodule.ent_catalogue_idx_path
+        settings.task.load_from_checkpoint = checkpoint_path
+        settings.task.embeddings_path = embeddings_path or settings.task.embeddings_path
+        settings.datamodule.ent_catalogue_idx_path = (
+            ent_catalogue_idx_path or settings.datamodule.ent_catalogue_idx_path
         )
-        cfg.datamodule.train_path = None
-        cfg.datamodule.val_path = None
-        cfg.datamodule.test_path = None
+        settings.datamodule.train_path = None
+        settings.datamodule.val_path = None
+        settings.datamodule.test_path = None
 
         self.checkpoint_path = checkpoint_path
-        #     self.model=HFEncoder(model_path = cfg.task.model.model_path)
+        #     self.model=HFEncoder(model_path = settings.task.model.model_path)
         self.transform = JointELXlmrRawTextTransform(
-            max_seq_len=cfg.task.transform.max_seq_len
+            max_seq_len=settings.task.transform.max_seq_len
         )
         datamodule = JointELDataModule(
             transform=self.transform,
-            batch_size=cfg.datamodule.batch_size,
-            train_path=cfg.datamodule.train_path,
-            val_path=cfg.datamodule.val_path,
-            test_path=cfg.datamodule.test_path,
-            ent_catalogue_idx_path=cfg.datamodule.ent_catalogue_idx_path,
+            batch_size=settings.datamodule.batch_size,
+            train_path=settings.datamodule.train_path,
+            val_path=settings.datamodule.val_path,
+            test_path=settings.datamodule.test_path,
+            ent_catalogue_idx_path=settings.datamodule.ent_catalogue_idx_path,
         )
         self.task = JointELTask(
             transform=self.transform,
-            model=cfg.task.model,
+            model=settings.task.model,
             datamodule=datamodule,
-            optim=cfg.task.optim,
-            only_train_disambiguation=cfg.task.only_train_disambiguation,
-            train_saliency=cfg.task.train_saliency,
-            embeddings_path=cfg.task.embeddings_path,
-            use_gpu_index=cfg.task.use_gpu_index,
-            load_from_checkpoint=cfg.task.load_from_checkpoint,
+            optim=settings.task.optim,
+            only_train_disambiguation=settings.task.only_train_disambiguation,
+            train_saliency=settings.task.train_saliency,
+            embeddings_path=settings.task.embeddings_path,
+            use_gpu_index=settings.task.use_gpu_index,
+            load_from_checkpoint=settings.task.load_from_checkpoint,
         )
 
         self.task.setup("train")
