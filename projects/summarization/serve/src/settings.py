@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     # Prompt url
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    SUMMARIZATION_DEFAULT_MODEL: str = "gpt-4-1106-preview"
+    SUMMARIZATION_DEFAULT_MODEL: str = "gpt-4o"
 
     PROMPT_DICT = {
         "en": {

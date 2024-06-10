@@ -49,8 +49,8 @@ class Settings(OnclusiveBaseSettings):
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
 
     DEFAULT_MODELS: dict = {
-        "english-summarization": "gpt-4",
-        "ml-articles-summary-aggregation": "gpt-4-turbo-2024-04-09",
+        "english-summarization": "gpt-4o",
+        "ml-articles-summary-aggregation": "gpt-4o",
         "default": "anthropic.claude-3-haiku-20240307-v1:0",
     }
 
