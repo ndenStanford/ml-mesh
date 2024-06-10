@@ -14,6 +14,7 @@ USER root
 WORKDIR "/"
 
 # create non root user
+# hadolint ignore=SC2086
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && mkdir -p "${PROJECT_DIR}" \
  && mkdir -p "${POETRY_HOME}" \
