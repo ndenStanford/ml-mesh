@@ -271,6 +271,7 @@ services:
       ONCLUSIVEML_SERVING_RUN_TIME: 45s
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
     env_file: serve/config/dev.env
+    profiles: [load]
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -513,6 +514,7 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    profiles: [backfill]
     depends_on:
       - kafka
 
