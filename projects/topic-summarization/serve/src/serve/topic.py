@@ -8,6 +8,7 @@ from typing import List, Dict, Union
 # 3rd party libraries
 import requests
 import json
+import logging
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -32,6 +33,28 @@ class TopicHandler:
         "high": ImpactCategoryLabel.HIGH,
     }
 
+    def call_api(
+        self, prompt_alias: str, model_name: str, input_dict: Dict
+    ) -> requests.Response:
+        """Call prompt backend api.
+
+        Args:
+            prompt_alias(str): the prompt
+            model_name(str): gpt or claude
+            input_dict(Dict): processed articles
+        Output:
+            summary & impact(dict): dict[str,str]
+        """
+        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+        q = requests.post(
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
+                settings.PROMPT_API, prompt_alias, model_name
+            ),
+            headers=headers,
+            json=input_dict,
+        )
+        return q
+
     def topic_inference(self, articles: List[str]) -> Dict[str, str]:
         """LLM inference function for the articles.
 
@@ -40,7 +63,8 @@ class TopicHandler:
         Output:
             topic summary & impact(dict): dict[str,str]
         """
-        topic_alias = settings.TOPIC_ALIAS
+        topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
+        topic_alias_gpt = settings.GPT_TOPIC_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
@@ -53,17 +77,18 @@ class TopicHandler:
             "output": settings.TOPIC_RESPONSE_SCHEMA,
         }
 
-        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+        output_content = None
+        try:
+            q = self.call_api(topic_alias_claude, settings.DEFAULT_MODEL, input_dict)
+            output_content = json.loads(q.content)
+            if not isinstance(output_content, dict):
+                raise ValueError("Claude topic response is not a valid dict")
+        except Exception as e:
+            logging.error(f"Failed with Sonnet in Topic: {e}")
 
-        q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.PROMPT_API, topic_alias, settings.DEFAULT_MODEL
-            ),
-            headers=headers,
-            json=input_dict,
-        )
-
-        output_content = json.loads(q.content)
+        if (not output_content) or not isinstance(output_content, dict):
+            q = self.call_api(topic_alias_gpt, settings.GPT_MODEL, input_dict)
+            output_content = json.loads(q.content)
 
         return output_content
 
@@ -75,7 +100,8 @@ class TopicHandler:
         Output:
             summary & theme(dict): dict[str,str]
         """
-        summary_alias = settings.SUMMARY_ALIAS
+        summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
+        summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
@@ -88,16 +114,18 @@ class TopicHandler:
             "output": settings.SUMMARY_RESPONSE_SCHEMA,
         }
 
-        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+        output_content = None
+        try:
+            q = self.call_api(summary_alias_claude, settings.DEFAULT_MODEL, input_dict)
+            output_content = json.loads(q.content)
+            if not isinstance(output_content, dict):
+                raise ValueError("Claude summary response is not a valid dict")
+        except Exception as e:
+            logging.error(f"Failed with Sonnet in Summary: {e}")
 
-        q = requests.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.PROMPT_API, summary_alias, settings.DEFAULT_MODEL
-            ),
-            headers=headers,
-            json=input_dict,
-        )
-        output_content = json.loads(q.content)
+        if (not output_content) or not isinstance(output_content, dict):
+            q = self.call_api(summary_alias_gpt, settings.GPT_MODEL, input_dict)
+            output_content = json.loads(q.content)
 
         return output_content
 
