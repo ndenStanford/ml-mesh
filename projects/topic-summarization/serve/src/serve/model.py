@@ -89,7 +89,7 @@ class ServedTopicModel(ServedModel):
         end_time = None
         trend_found = None
         save_report_dynamodb = inputs.save_report_dynamodb
-
+        inference_settings = {}
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -114,6 +114,15 @@ class ServedTopicModel(ServedModel):
                     parameter_input.override_topic_document_threshold,
                     parameter_input.override_trend_time_interval,
                 )
+                inference_settings["trend_start_time"] = start_time
+                inference_settings["trend_end_time"] = start_time
+                inference_settings[
+                    "override_topic_document_threshold"
+                ] = parameter_input.override_topic_document_threshold
+                inference_settings[
+                    "override_trend_time_interval"
+                ] = parameter_input.override_trend_time_interval
+
             if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
                 if trend_found:
@@ -131,6 +140,9 @@ class ServedTopicModel(ServedModel):
                 content = self.document_collector.get_documents(
                     query_profile, topic_id, start_time, end_time
                 )
+                inference_settings["document_collection_start_time"] = start_time
+                inference_settings["document_collection_end_time"] = end_time
+
                 topic = self.model.aggregate(content)
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
@@ -151,6 +163,7 @@ class ServedTopicModel(ServedModel):
                 "query_string": query_string,
                 "topic": topic,
                 "impact_category": impact_category,
+                "inference_settings": inference_settings,
             }
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 

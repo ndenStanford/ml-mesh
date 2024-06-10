@@ -4,7 +4,7 @@
 # Standard Library
 import uuid
 from datetime import datetime
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Any
 
 # 3rd party libraries
 from dyntastic import Dyntastic
@@ -39,3 +39,4 @@ class TopicSummaryDynamoDB(Dyntastic):
     impact_category: Optional[ImpactCategoryLabel] = None
     query_id: Optional[str] = None
     query_string: str
+    inference_settings: Optional[Dict[str, Any]] = None

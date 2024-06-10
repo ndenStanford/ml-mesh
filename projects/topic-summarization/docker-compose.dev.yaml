@@ -43,6 +43,10 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+      DYNAMODB_HOST: http://dynamodb:8000
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
       MULTIPROCESS_WORKER: 5
     env_file: serve/config/dev.env
     healthcheck:
