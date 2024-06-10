@@ -70,6 +70,9 @@ FROM builder as builder-compilation
 
 ARG NEURON_COMPILE_OUTPUT_DIR
 
+# hadolint ignore=DL3002
+USER root
+
 # install compilation dependencies
 RUN poetry install \
     --only compilation \
