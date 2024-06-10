@@ -25,7 +25,7 @@ validator = PromptInjectionValidator()
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
-    prompt_alias: str, model_alias: str, validate_prompt, **kwargs
+    prompt_alias: str, model_alias: str, validate_prompt: bool, **kwargs
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     # get langchain objects
@@ -50,7 +50,7 @@ def generate_from_prompt_template(
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
-    prompt: str, model_alias: str, validate_prompt: bool
+    prompt: str, model_alias: str, validate_prompt: bool = False
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     if validate_prompt:

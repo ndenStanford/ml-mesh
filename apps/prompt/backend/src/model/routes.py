@@ -1,7 +1,7 @@
 """Model."""
 
 # Standard Library
-from typing import List, Optional
+from typing import List
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
@@ -51,7 +51,7 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str, validate_prompt: Optional[bool] = False):
+def generate(alias: str, prompt: str, validate_prompt: bool = False):
     """Generates text using a prompt template."""
     try:
         return {"generated": F.generate_from_prompt(prompt, alias, validate_prompt)}

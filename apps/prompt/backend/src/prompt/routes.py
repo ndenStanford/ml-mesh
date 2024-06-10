@@ -1,7 +1,7 @@
 """Project."""
 
 # Standard Library
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
@@ -107,7 +107,7 @@ def generate_text_from_prompt_template(
     alias: str,
     model: str,
     values: Dict[str, Any],
-    validate_prompt: Optional[bool] = False,
+    validate_prompt: bool = False,
 ):
     """Generates text using a prompt template with specific model.
 
@@ -128,7 +128,7 @@ def generate_text_from_prompt_template(
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate_text_from_default_model(
-    alias: str, values: Dict[str, Any], validate_prompt: Optional[bool] = False
+    alias: str, values: Dict[str, Any], validate_prompt: bool = False
 ):
     """Generates text using a prompt template with default model.
 
