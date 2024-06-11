@@ -31,10 +31,10 @@ services:
     ports:
       - 8888:8888
     environment:
+      ENVIRONMENT: dev
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ENVIRONMENT: dev
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
       ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
@@ -44,8 +44,9 @@ services:
       PROMETHEUS_MULTIPROC_DIR: /tmp
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_PROMPT_API: http://prompt-backend:4000
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_ENABLE_METRICS: true
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -78,15 +79,16 @@ services:
         source: serve/tests
         target: /projects/summarization/serve/tests
     environment:
+      ENVIRONMENT: dev
       ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: summarization-serve
       ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
       ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
       ONCLUSIVEML_SERVING_API_VERSION: v1
-      ENVIRONMENT: dev
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_PROMPT_API: http://prompt-backend:4000
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_ENABLE_METRICS: true
     depends_on:
       prompt-backend:
         condition: service_healthy
@@ -108,8 +110,9 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ENVIRONMENT: dev
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_PROMPT_API: http://prompt-backend:4000
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_ENABLE_METRICS: true
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -128,8 +131,9 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ENVIRONMENT: dev
-      PROMPT_API: http://prompt-backend:4000
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_PROMPT_API: http://prompt-backend:4000
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_ENABLE_METRICS: true
     depends_on:
       prompt-backend:
         condition: service_healthy
