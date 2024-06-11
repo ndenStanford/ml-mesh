@@ -107,7 +107,6 @@ def generate_text_from_prompt_template(
     alias: str,
     model: str,
     values: Dict[str, Any],
-    validate_prompt: bool = False,
 ):
     """Generates text using a prompt template with specific model.
 
@@ -118,7 +117,7 @@ def generate_text_from_prompt_template(
         validate_prompt (bool): flag to validate prompt
     """
     try:
-        return F.generate_from_prompt_template(alias, model, validate_prompt, **values)
+        return F.generate_from_prompt_template(alias, model, **values)
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -127,9 +126,7 @@ def generate_text_from_prompt_template(
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate_text_from_default_model(
-    alias: str, values: Dict[str, Any], validate_prompt: bool = False
-):
+def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
     """Generates text using a prompt template with default model.
 
     Args:
@@ -138,7 +135,7 @@ def generate_text_from_default_model(
         validate_prompt (bool): flag to validate prompt
     """
     try:
-        return F.generate_from_default_model(alias, validate_prompt, **values)
+        return F.generate_from_default_model(alias, **values)
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

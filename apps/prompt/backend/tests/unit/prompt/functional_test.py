@@ -63,7 +63,9 @@ def test_generate_from_prompt_template(
     mock_prompt_get.return_value = prompt
 
     _ = F.generate_from_prompt_template(
-        prompt_alias, model_alias, validate_prompt, **{"input": {"text": text}}
+        prompt_alias,
+        model_alias,
+        **{"input": {"text": text}, "parameters": {"validate_prompt": validate_prompt}}
     )
 
     mock_conversation_chain_predict.assert_called_with(
@@ -114,7 +116,12 @@ def test_generate_from_prompt_template_injection(
     mock_prompt_get.return_value = prompt
     with pytest.raises(PromptInjectionException):
         _ = F.generate_from_prompt_template(
-            prompt_alias, model_alias, validate_prompt, **{"input": {"text": text}}
+            prompt_alias,
+            model_alias,
+            **{
+                "input": {"text": text},
+                "parameters": {"validate_prompt": validate_prompt},
+            }
         )
 
 
@@ -203,7 +210,8 @@ def test_generate_from_prompt_default_model(
     mock_prompt_get.return_value = prompt
 
     _ = F.generate_from_default_model(
-        prompt_alias, validate_prompt, **{"input": {"text": text}}
+        prompt_alias,
+        **{"input": {"text": text}, "parameters": {"validate_prompt": validate_prompt}}
     )
 
     mock_conversation_chain_predict.assert_called_with(
@@ -254,5 +262,9 @@ def test_generate_from_prompt_default_model_prompt_injection(
     mock_prompt_get.return_value = prompt
     with pytest.raises(PromptInjectionException):
         _ = F.generate_from_default_model(
-            prompt_alias, validate_prompt, **{"input": {"text": text}}
+            prompt_alias,
+            **{
+                "input": {"text": text},
+                "parameters": {"validate_prompt": validate_prompt},
+            }
         )
