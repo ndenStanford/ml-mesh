@@ -24,6 +24,7 @@ COPY --chown=${USER}:users "${PROJECT_DIR}/src" "${PROJECT_DIR}/src"
 
 WORKDIR "${PROJECT_DIR}"
 
+# hadolint ignore=DL3002
 USER root
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
