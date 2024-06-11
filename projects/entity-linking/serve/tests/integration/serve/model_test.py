@@ -5,60 +5,49 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "query",
+    "query, valid_expected_responses",
     [
         (
             {
-                "text": "Apple boosts UK hiring with AI-focused Cambridge office.",
-                "language": {"lang": "en"},
-                "mentions": [],
+                "text": "Hello, nothing to see here. Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium. Arsenal is not so bad either.",  # noqa
                 "entities": [
-                    {"rawName": "Apple", "offsetStart": 0, "offsetEnd": 5},
-                    {"rawName": "UK", "offsetStart": 13, "offsetEnd": 15},
-                    {"rawName": "AI", "offsetStart": 28, "offsetEnd": 30},
-                    {"rawName": "Cambridge", "offsetStart": 39, "offsetEnd": 48},
+                    {
+                        "entity_type": "ORG",
+                        "entity_text": "Tottenham Hotspur Football Club",
+                        "score": 0.9259419441223145,
+                        "sentence_index": 1,
+                    },
+                    {
+                        "entity_type": "ORG",
+                        "entity_text": "Arsenal",
+                        "score": 0.9259419441223145,
+                        "sentence_index": 2,
+                    },
                 ],
-                "nbest": False,
-                "sentence": False,
-            }
+            },
+            [
+                (
+                    ["Tottenham Hotspur Football Club", "Arsenal"],
+                    [0, 0],
+                    [28, 150],
+                    [31, 7],
+                ),
+                (
+                    ["Arsenal", "Tottenham Hotspur Football Club"],
+                    [0, 0],
+                    [150, 28],
+                    [7, 31],
+                ),
+            ],
         )
     ],
 )
-def test__query_wiki(entity_linking_model, query):
+def test__generate_offsets(entity_linking_model, query, valid_expected_responses):
     """Test query wiki."""
-    result = entity_linking_model._query_wiki(query)
+    text = query["text"]
+    entities = query["entities"]
+    result = entity_linking_model._generate_offsets(text, entities)
 
-    assert result["software"] == "entity-fishing"
-    assert isinstance(result["runtime"], int)
-    assert isinstance(result["nbest"], bool)
-    assert result["text"] == query["text"]
-    assert result["language"]["lang"] == query["language"]["lang"]
-    assert isinstance(result["entities"], list)
-
-
-@pytest.mark.parametrize(
-    "content",
-    [
-        "Meta AI has been announced, and it’s coming to Messenger.",
-        "Google AI is a division of Google dedicated to artificial intelligence.",
-    ],
-)
-def test__get_entity_linking(entity_linking_model, content):
-    """Test entity linking query."""
-    result = entity_linking_model._get_entity_linking(content)
-
-    assert isinstance(result, list)
-
-
-@pytest.mark.parametrize(
-    "content,language",
-    [
-        ("Meta AI has been announced, and it’s coming to Messenger.", "en"),
-        # "Google AI is a division of Google dedicated to artificial intelligence.","en"
-    ],
-)
-def test__predict(entity_linking_model, content, language):
-    """Test _predict method."""
-    result = entity_linking_model._predict(content=content, language=language)
-
-    assert isinstance(result, list)
+    assert (
+        result in valid_expected_responses
+    ), f"Result {result} not in expected responses {valid_expected_responses}"
