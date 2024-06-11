@@ -47,20 +47,24 @@ def test_generate_from_prompt_injection_validation(
 
 
 @pytest.mark.parametrize(
-    "model_alias, prompt_alias, validate_prompt",
+    "model_alias, prompt_alias, payload",
     [
-        (ChatModel.CLAUDE_2_1, "prompt1", True),
-        (ChatModel.GPT4_TURBO, "prompt2", False),
+        (ChatModel.CLAUDE_2_1, "prompt1", {"parameters": {"validate_prompt": True}}),
+        (ChatModel.GPT4_TURBO, "prompt2", {"parameters": {"validate_prompt": False}}),
+        (ChatModel.GPT4_TURBO, "prompt3", {"input": {"country": "Norway"}}),
+        (
+            ChatModel.GPT4_TURBO,
+            "prompt3",
+            {"input": {"country": "Norway"}, "parameters": {"validate_prompt": True}},
+        ),
     ],
 )
 @pytest.mark.order(11)
 def test_generate_from_prompt_template(
-    model_alias, prompt_alias, validate_prompt, create_prompts, app
+    model_alias, prompt_alias, payload, create_prompts, app
 ):
     """Test generate prompt from template."""
-    response = F.generate_from_prompt_template(
-        prompt_alias, model_alias, validate_prompt, **dict()
-    )
+    response = F.generate_from_prompt_template(prompt_alias, model_alias, **payload)
     assert isinstance(
         response,
         dict,
@@ -84,26 +88,30 @@ def test_generate_from_prompt_template_injection(
     model_alias, prompt_alias, validate_prompt, text, create_prompts, app
 ):
     """Validate generate prompt from template with injection."""
-    input = {"input": {"country": text}}
+    input = {
+        "input": {"country": text},
+        "parameters": {"validate_prompt": validate_prompt},
+    }
     with pytest.raises(PromptInjectionException):
-        _ = F.generate_from_prompt_template(
-            prompt_alias, model_alias, validate_prompt, **input
-        )
+        _ = F.generate_from_prompt_template(prompt_alias, model_alias, **input)
 
 
 @pytest.mark.parametrize(
-    "prompt_alias, validate_prompt",
+    "prompt_alias, payload",
     [
-        ("prompt1", False),
-        ("prompt2", False),
+        ("prompt1", {"parameters": {"validate_prompt": True}}),
+        ("prompt2", {"parameters": {"validate_prompt": False}}),
+        ("prompt3", {"input": {"country": "Norway"}}),
+        (
+            "prompt3",
+            {"input": {"country": "Norway"}, "parameters": {"validate_prompt": True}},
+        ),
     ],
 )
 @pytest.mark.order(12)
-def test_generate_from_default_model(
-    prompt_alias, validate_prompt, create_prompts, app
-):
+def test_generate_from_default_model(prompt_alias, payload, create_prompts, app):
     """Test generate prompt from template."""
-    response = F.generate_from_default_model(prompt_alias, validate_prompt, **dict())
+    response = F.generate_from_default_model(prompt_alias, **payload)
     assert isinstance(
         response,
         dict,

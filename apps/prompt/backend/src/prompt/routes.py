@@ -134,6 +134,7 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
         values (Dict[str, Any]): values to fill in template.
         validate_prompt (bool): flag to validate prompt
     """
+    print(values)
     try:
         return F.generate_from_default_model(alias, **values)
     except PromptInjectionException as e:
