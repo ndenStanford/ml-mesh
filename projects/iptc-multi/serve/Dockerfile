@@ -27,9 +27,9 @@ WORKDIR "${PROJECT_DIR}"
 USER root
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+rm -rf ~/.cache/pypoetry/cache && \
+rm -rf ~/.cache/pypoetry/artifacts && \
+poetry cache clear pypi --all -q
 
 USER ${USER}
 
@@ -39,6 +39,8 @@ FROM builder as production
 # --- test build stage
 FROM builder as development
 
+USER root
+
 WORKDIR "/"
 
 COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
@@ -47,7 +49,11 @@ WORKDIR "${PROJECT_DIR}"
 
 RUN poetry install --no-interaction --with dev
 
+USER ${USER}
+
 # --- debugger stage
 FROM builder as debugger
+
+USER root
 
 RUN poetry install --no-interaction --with debug
