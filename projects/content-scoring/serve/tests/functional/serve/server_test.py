@@ -3,17 +3,12 @@
 # 3rd party libraries
 import pytest
 import requests
-import sklearn
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import (
     LivenessProbeResponse,
     ReadinessProbeResponse,
 )
-
-
-sklearn_version = sklearn.__version__
-print("Scikit-learn version:", sklearn_version)
 
 
 def test_model_server_root():
