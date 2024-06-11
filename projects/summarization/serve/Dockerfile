@@ -9,8 +9,7 @@ ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 # hadolint ignore=SC2086
 RUN mkdir -p "${PROJECT_DIR}" && \
-    chown -R ${USER}:users "${PROJECT_DIR}" && \
-    chown -R ${USER}:users /home
+chown -R "${USER}:users" "${PROJECT_DIR}"
 
 WORKDIR "/"
 
