@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 # 3rd party libraries
 from pydantic import BaseSettings
@@ -27,7 +27,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     api_version: str = "v1"
     api_key_name: str = "x-api-key"
     # Prompt url
-    prompt_api: str = "http://prompt-backend:4000"
+    prompt_api: Optional[str]
     internal_ml_endpoint_api_key: str = "1234"
     summarization_default_model: str = "gpt-4-1106-preview"
 
@@ -62,4 +62,7 @@ class GlobalSettings(
 @lru_cache
 def get_settings() -> BaseSettings:
     """Returns instanciated global settings class."""
+    settings = GlobalSettings()
+    print("Prompt api", settings.prompt_api)
+    print("Api key", settings.internal_ml_endpoint_api_key)
     return GlobalSettings()
