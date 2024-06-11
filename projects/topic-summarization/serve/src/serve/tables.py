@@ -24,7 +24,7 @@ settings = get_settings()
 class TopicSummaryDynamoDB(Dyntastic):
     """Prediction request data."""
 
-    __table_name__ = "topic_summary"
+    __table_name__ = settings.DYNAMODB_TABLE_NAME
     __hash_key__ = "topic_summary_id"
     __table_region__ = "us-east-2"
     __table_host__ = settings.DYNAMODB_HOST
