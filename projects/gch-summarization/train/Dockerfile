@@ -15,6 +15,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${PROJECT_DIR}" \
  && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users /home \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share
