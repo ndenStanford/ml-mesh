@@ -49,6 +49,8 @@ services:
 
   # serving image
   serve:
+    volumes:
+      - serve-vol:/projects/entity-linking/serve/models
     build:
       context: ../../
       dockerfile: projects/entity-linking/serve/Dockerfile
@@ -61,53 +63,42 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     profiles: [serve, functional]
     ports:
-      - 9000:9000
-    environment:
-      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      - 8000:8000
     env_file: serve/config/${DEPLOYMENT:-prod}.env
-    depends_on:
-      entity-fishing-backend:
-        condition: service_healthy
-      ner-serve:
-        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:9000/entity-linking/v1/ready]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
+      test: [CMD, curl, -f, http://serve:8000/entity-linking/v1/ready]
+      interval: 80s
+      retries: 10
+      start_period: 30s
+      timeout: 600s
 
+  # download
   serve-download-model:
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: entity-linking
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [python, -m, src.download.__main__]
-    profiles: [serve]
     volumes:
-      - entity-fishing-volume:/opt/entity-fishing/data/db
+      - serve-vol:/projects/entity-linking/serve/models
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/${DEPLOYMENT:-prod}.env
-    depends_on:
-      - ner-serve-download-model
     hostname: onclusiveml
-    networks:
-      - onclusive-net
+    networks: [onclusive-net]
 
   # unit tests
   serve-unit:
@@ -125,7 +116,9 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
@@ -133,6 +126,8 @@ services:
 
   # integration tests
   serve-integration:
+    volumes:
+      - serve-vol:/projects/entity-linking/serve/models
     build:
       context: ../../
       dockerfile: projects/entity-linking/serve/Dockerfile
@@ -147,19 +142,18 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
-    depends_on:
-      entity-fishing-backend:
-        condition: service_healthy
-      ner-serve:
-        condition: service_healthy
     networks:
       - onclusive-net
 
   # functional tests
   serve-functional:
+    volumes:
+      - serve-vol:/projects/entity-linking/serve/models
     build:
       context: ../../
       dockerfile: projects/entity-linking/serve/Dockerfile
@@ -173,111 +167,22 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG:-latest}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     environment:
-      ONCLUSIVEML_SERVING_INTERNAL_ML_API_KEY: ''
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     depends_on:
       serve:
         condition: service_healthy
-    networks:
-      - onclusive-net
-
-  # ner serve
-  ner-serve:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    build:
-      context: ../../
-      dockerfile: projects/ner/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: ner
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.serve.__main__]
-    environment:
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    profiles: [serve, integration, functional, load]
-    volumes:
-      - ner-volume:/projects/ner/serve/models
-    ports:
-      - 8000:8000
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-    healthcheck:
-      test: [CMD, curl, -f, http://ner-serve:8000/ner/v1/ready]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
-
-  # ner serve download model
-  ner-serve-download-model:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    build:
-      context: ../../
-      dockerfile: projects/ner/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: ner
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    volumes:
-      - ner-volume:/projects/ner/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [python, -m, src.download]
-    profiles: [serve]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: read-only
-      ONCLUSIVEML_SERVING_WAIT_SECONDS_AFTER_DOWNLOAD: 600
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusiveml
-    networks: [onclusive-net]
-
-  # entity fishing backend
-  entity-fishing-backend:
-    build:
-      context: ../../
-      dockerfile: apps/entity-fishing/backend/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        APP_NAME: entity-fishing
-        APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-fishing-backend:${IMAGE_TAG:-latest}
-    restart: on-failure
-    command: [./gradlew, --no-daemon, run, -x, compileJava, -x, processResources, -x, classes, -d]
-    profiles: [serve, integration, functional, load]
-    volumes:
-      - entity-fishing-volume:/opt/entity-fishing/data/db
-    ports:
-      - 8090:8090
-      - 8091:8091
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 10s || exit 1]
-      interval: 5s
-      retries: 5
-      start_period: 5s
-      timeout: 15s
-    environment:
-      ENVIRONMENT: stage
-    hostname: onclusiveml
     networks:
       - onclusive-net
 
@@ -437,8 +342,5 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-vol:
   serve-vol:
   backfill-vol:
-  ner-volume:
-  entity-fishing-volume:
