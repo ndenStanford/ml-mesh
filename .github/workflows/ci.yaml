@@ -117,7 +117,7 @@ jobs       :
         id: get-target-branch
         with:
           cond: ${{ github.event_name == 'pull_request' }}
-          if_true: ${{ github.base_ref }}
+          if_true: main   # ${{ github.base_ref }}
           if_false: ${{ github.ref_name }}
 
 
