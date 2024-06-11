@@ -7,6 +7,6 @@ from fastapi import FastAPI
 from src.serve.server import get_model_server
 
 
-def test_get_model_server(settings):
+def test_get_model_server(artifacts):
     """Test get model server."""
-    assert isinstance(get_model_server(settings), FastAPI)
+    assert isinstance(get_model_server(artifacts), FastAPI)
