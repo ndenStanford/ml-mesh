@@ -2,7 +2,11 @@
 
 # Standard Library
 import os
+from functools import lru_cache
 from typing import List
+
+# 3rd party libraries
+from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.tracking import (
@@ -76,3 +80,16 @@ class TrackedNERBaseModelCard(TrackedModelCard):
     class Config:
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
+
+
+class GlobalSettings(TrackedNERModelSpecs, TrackedNERBaseModelCard):
+    """Global server settings."""
+
+    model_specs: TrackedNERModelSpecs = TrackedNERModelSpecs()
+    model_card: TrackedNERBaseModelCard = TrackedNERBaseModelCard()
+
+
+@lru_cache
+def get_settings() -> BaseSettings:
+    """Returns instanciated global settings class."""
+    return GlobalSettings()

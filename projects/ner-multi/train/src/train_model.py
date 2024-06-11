@@ -13,20 +13,18 @@ from transformers import pipeline
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
+# Source
+from src.settings import get_settings
+
 
 logger = get_default_logger(__name__)
-
-# Source
-from src.settings import (  # type: ignore[attr-defined]
-    TrackedNERBaseModelCard,
-    TrackedNERModelSpecs,
-)
+settings = get_settings()
 
 
 def main() -> None:
     """Register trained model."""
-    model_specs = TrackedNERModelSpecs()
-    model_card = TrackedNERBaseModelCard()
+    model_specs = settings.model_specs
+    model_card = settings.model_card
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
