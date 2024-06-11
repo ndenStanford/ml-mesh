@@ -5,8 +5,8 @@ import os
 from typing import Dict, List, Union
 
 # ML libs
-from transformers import AutoModelForTokenClassification  # noqa
 from transformers import BertForTokenClassification  # noqa
+from transformers import DistilBertForTokenClassification  # noqa
 from transformers import pipeline
 
 # Internal libraries
