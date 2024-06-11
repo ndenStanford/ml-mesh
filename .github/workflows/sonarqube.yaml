@@ -1,20 +1,6 @@
 ---
 name: SonarQube
 on  :
-  workflow_call:
-    secrets:
-      AWS_ACCOUNT_ID:
-        required: true
-        description: AWS account ID.
-      AWS_ACCESS_KEY_ID:
-        required: true
-        description: AWS access key ID.
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-        description: AWS secret access key.
-      AWS_DEFAULT_REGION:
-        required: true
-        description: AWS account region
   push:
     branches:
       - ML-764-reintegrate-sonarqube-as-optional-check
@@ -40,6 +26,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Clean up Docker
+        run: |
+          docker system prune -af
+          docker volume prune -f
       - name: Clean up unused files
         run: |
           sudo rm -rf /usr/share/dotnet
