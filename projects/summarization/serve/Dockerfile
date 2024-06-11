@@ -8,8 +8,8 @@ ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 RUN mkdir -p "${PROJECT_DIR}" && \
-    chown -R "${USER}:users" "${PROJECT_DIR}" \
-    chown -R "${USER}:users" /home
+    chown -R ${USER}:users "${PROJECT_DIR}" && \
+    chown -R ${USER}:users /home
 
 WORKDIR "/"
 

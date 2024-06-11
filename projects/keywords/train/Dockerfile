@@ -57,8 +57,7 @@ RUN poetry install \
     -v && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${PROJECT_DIR}"
+    poetry cache clear pypi --all -q
 
 COPY --chown=${USER}:users "${PROJECT_DIR}/tests" ./tests
 
