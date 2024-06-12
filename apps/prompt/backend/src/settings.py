@@ -47,13 +47,7 @@ class Settings(OnclusiveBaseSettings):
     AWS_PROFILE: Optional[str] = None
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
-
-    DEFAULT_MODELS: dict = {
-        "english-summarization": "gpt-4o",
-        "ml-articles-summary-aggregation": "gpt-4o",
-        "default": "anthropic.claude-3-haiku-20240307-v1:0",
-    }
-
+    DEFAULT_MODELS: dict
     CORS_ORIGIN: List[str] = ["*"]
 
     # Github configuration
