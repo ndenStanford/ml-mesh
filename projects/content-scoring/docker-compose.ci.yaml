@@ -165,6 +165,10 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: content-scoring-serve
+      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 20
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: yes
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [serve, functional, load]
     ports:
