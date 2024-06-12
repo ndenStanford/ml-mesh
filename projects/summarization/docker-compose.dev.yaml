@@ -31,8 +31,7 @@ services:
     ports:
       - 8888:8888
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
     env_file: serve/config/dev.env
@@ -68,8 +67,7 @@ services:
         source: serve/tests
         target: /projects/summarization/serve/tests
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -91,8 +89,7 @@ services:
         source: serve/tests
         target: /projects/summarization/serve/tests
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
@@ -111,8 +108,7 @@ services:
         source: serve/tests
         target: /projects/summarization/serve/tests
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:

@@ -26,8 +26,7 @@ services:
     environment:
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     depends_on:
       prompt-backend:
@@ -42,8 +41,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
@@ -55,8 +53,7 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      INTERNAL_ML_ENDPOINT_API_KEY: 1234
+      ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     depends_on:
       prompt-backend:
@@ -86,10 +83,12 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DB_HOST: http://dynamodb:8000
+      DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       GITHUB_APP_ID: ${GITHUB_APP_ID:-}
       GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
     depends_on:
       dynamodb:
         condition: service_healthy
