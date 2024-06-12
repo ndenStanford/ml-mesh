@@ -7,11 +7,11 @@ from src.settings import (
 )
 
 
-def test_tracked_sum_model_specs():
-    """Test tracked summarization model settings."""
-    TrackedSummarizationModelSpecs()
-
-
 def test_tracked_sum_model_card():
     """Test tracked summarization model card."""
     TrackedSummarizationModelCard()
+
+
+def test_tracked_sum_model_specs():
+    """Test tracked summarization model settings."""
+    TrackedSummarizationModelSpecs()
