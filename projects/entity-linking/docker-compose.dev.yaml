@@ -233,6 +233,7 @@ services:
       ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
       NEPTUNE_PROJECT: onclusive/entity-linking
       NEPTUNE_MODEL_ID: EL-TRAINED
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     profiles: [serve, integration, functional, load]
     ports:
       - 9000:9000

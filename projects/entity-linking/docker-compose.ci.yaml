@@ -87,6 +87,7 @@ services:
       PROMETHEUS_MULTIPROC_DIR: /tmp
       NEPTUNE_PROJECT: onclusive/entity-linking
       NEPTUNE_MODEL_ID: EL-TRAINED
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     hostname: onclusiveml
     networks:
       - onclusive-net
