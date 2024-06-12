@@ -3,44 +3,35 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional, Union
+from typing import Dict, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings, SecretStr
+from pydantic import BaseSettings
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 
 
-class Settings(BaseSettings):
-    """API configuration."""
+class ServerModelSettings(ServingParams):
+    """Serve model parameters."""
 
-    # Generic settings
-    # API name
-    API_NAME: str = "Summarization Prediction"
-    # API description
-    API_DESCRIPTION: str = ""
-    # API environment
-    ENVIRONMENT: str = "dev"
-    # Betterstack heartbeat key
-    BETTERSTACK_KEY: str = ""
-    # Debug level
-    DEBUG: bool = True
-    # API runtime
-    KUBERNETES_IN_POD: bool = False
-    # Logging level
-    LOGGING_LEVEL: str = "info"
-    # documentation endpoint
-    DOCS_URL: Optional[str] = "/summarization/docs"
-    OPENAPI_URL: Optional[str] = "/summarization/openapi.json"
-    # OpenAI api key
-    OPENAI_API_KEY: str = ""
+    model_name: str = "summarization"
+    model_directory: Union[str, Path] = "."
+
+
+class ApplicationSettings(OnclusiveBaseSettings):
+    """App base settings."""
+
+    enable_metrics: bool = False
+    api_version: str = "v1"
+    api_key_name: str = "x-api-key"
     # Prompt url
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     SUMMARIZATION_DEFAULT_MODEL: str = "gpt-4o"
 
-    PROMPT_DICT = {
+    summarization_prompts: Dict[str, Dict[str, Dict[str, str]]] = {
         "en": {
             "en": {"alias": "ml-summarization-english"},
             "fr": {"alias": "ml-summarization-english-french"},
@@ -61,25 +52,14 @@ class Settings(BaseSettings):
     }
 
 
-class ServerModelSettings(ServingParams):
-    """Serve model parameters."""
-
-    model_name: str = "summarization"
-    model_directory: Union[str, Path] = "."
-    enable_metrics: bool = False
-    api_version: str = "v1"
-    api_key_name: str = "x-api-key"
-    internal_ml_api_key: SecretStr = ""
-
-
-class GlobalSettings(ServerModelSettings, Settings):
+class GlobalSettings(
+    ServerModelSettings,
+    ApplicationSettings,
+):
     """Global server settings."""
 
 
 @lru_cache
 def get_settings() -> BaseSettings:
-    """Returns instanciated GlobalSettings class."""
+    """Returns instanciated global settings class."""
     return GlobalSettings()
-
-
-settings = get_settings()
