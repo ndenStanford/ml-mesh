@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import Dict, Type
+from typing import Type
 
 # 3rd party libraries
 import requests
@@ -41,11 +41,6 @@ class SummarizationServedModel(ServedModel):
             attributes={"model_name": self.name, "model_card": {}},
         )
 
-    @property
-    def headers(self) -> Dict[str, str]:
-        """Request headers."""
-        return {settings.api_key_name: settings.internal_ml_api_key.get_secret_value()}
-
     def inference(
         self,
         text: str,
@@ -62,7 +57,7 @@ class SummarizationServedModel(ServedModel):
             target_lang (str): target language
         """
         try:
-            alias = settings.PROMPT_DICT[lang][target_lang]["alias"]
+            alias = settings.summarization_prompts[lang][target_lang]["alias"]
         except KeyError:
             logger.error("Summarization language not supported.")
             raise HTTPException(
@@ -71,11 +66,11 @@ class SummarizationServedModel(ServedModel):
             )
 
         input_dict = {"input": {"desired_length": desired_length, "content": text}}
-        headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+        headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
 
         q = requests.post(
             "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.PROMPT_API, alias, settings.SUMMARIZATION_DEFAULT_MODEL
+                settings.prompt_api, alias, settings.summarization_default_model
             ),
             headers=headers,
             json=input_dict,

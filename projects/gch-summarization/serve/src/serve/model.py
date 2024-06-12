@@ -81,7 +81,7 @@ class ServedSummarizationModel(ServedModel):
             payload (PredictRequestSchema): The input data for making predictions
 
         Returns:
-            PredictResponseSchema: Response containing summarization prediction
+            PredictResponseSchema: Response containing generated summarization prediction
         """
         # content and configuration from payload
         attributes = payload.attributes
