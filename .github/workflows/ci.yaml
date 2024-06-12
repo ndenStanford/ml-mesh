@@ -1268,7 +1268,6 @@ jobs       :
     needs:
       - run-repository-state
       - run-ner-project
-      - run-register-pipelines
       - get-target-branch-name
       - run-get-core-dependencies-versions
 
