@@ -114,7 +114,6 @@ def generate_text_from_prompt_template(
         alias (str): prompt alias
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
-        validate_prompt (bool): flag to validate prompt
     """
     try:
         return F.generate_from_prompt_template(alias, model, **values)
@@ -132,7 +131,6 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
     Args:
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
-        validate_prompt (bool): flag to validate prompt
     """
     print(values)
     try:

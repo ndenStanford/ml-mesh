@@ -74,6 +74,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
+      VALIDATE_PROMPT_INJECTION: true
     depends_on:
       - dynamodb
       - redisdb
@@ -104,6 +105,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
+      VALIDATE_PROMPT_INJECTION: true
     networks:
       - onclusive-net
 
@@ -131,6 +133,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
+      VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
         condition: service_healthy

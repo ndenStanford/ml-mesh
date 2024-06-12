@@ -51,10 +51,10 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str, validate_prompt: bool = False):
+def generate(alias: str, prompt: str):
     """Generates text using a prompt template."""
     try:
-        return {"generated": F.generate_from_prompt(prompt, alias, validate_prompt)}
+        return {"generated": F.generate_from_prompt(prompt, alias)}
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
