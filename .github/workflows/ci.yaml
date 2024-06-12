@@ -38,7 +38,7 @@ jobs       :
         id: get-environment-name
         with:
           cond: ${{ github.event_name == 'pull_request' }}
-          if_true: dev
+          if_true: prod #dev
           if_false: prod
 
   # ===============================================
