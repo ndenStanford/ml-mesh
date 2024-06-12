@@ -24,7 +24,7 @@ on  :
         type: string
         description: Model identifier for the project
       sagemaker-runner-type:
-        required: true
+        required: false
         default: ml.m4.xlarge # non-gpu
         type: string
         description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
