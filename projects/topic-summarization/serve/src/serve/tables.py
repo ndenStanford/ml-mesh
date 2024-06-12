@@ -4,11 +4,12 @@
 # Standard Library
 import uuid
 from datetime import datetime
-from typing import Dict, Optional, Union, Any
+from typing import Dict, Optional, Union
 
 # 3rd party libraries
 from dyntastic import Dyntastic
 from pydantic import Field
+from decimal import Decimal
 
 # Internal libraries
 from onclusiveml.serving.serialization.topic_summarization.v1 import (
@@ -33,10 +34,13 @@ class TopicSummaryDynamoDB(Dyntastic):
     timestamp: datetime = datetime.now()
     topic_id: int
     trending: Optional[bool] = None
-    topic: Optional[
+    analysis: Optional[
         Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]
     ] = None
     impact_category: Optional[ImpactCategoryLabel] = None
     query_id: Optional[str] = None
     query_string: str
-    inference_settings: Optional[Dict[str, Any]] = None
+    trend_lookback_days: int
+    topic_document_threshold: Decimal
+    trend_time_interval: str
+    days_past_inflection_point: int

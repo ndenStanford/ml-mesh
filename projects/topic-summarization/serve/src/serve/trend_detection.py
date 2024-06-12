@@ -2,7 +2,7 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Optional, Tuple, Union
+from typing import Tuple, Union
 
 # 3rd party libraries
 import pandas as pd
@@ -57,8 +57,8 @@ class TrendDetection:
         topic_id: str,
         start_time: pd.datetime,
         end_time: pd.datetime,
-        override_topic_document_threshold: Optional[float] = None,
-        override_trend_time_interval: Optional[int] = None,
+        topic_document_threshold: float,
+        trend_time_interval: int,
     ) -> Tuple[bool, Union[Timestamp, None]]:
         """Trend detection for single topic and keyword.
 
@@ -67,21 +67,11 @@ class TrendDetection:
             topic_id (str): topic id
             start_time (pd.datetime): start time range of documents to be collected
             end_time (pd.datetime): end time range of documents to be collected
-            override_topic_document_threshold (float): override default document threshold value
-            override_trend_time_interval(int): override default time range when measuring trend
+            topic_document_threshold (float): minimum document threshold scalar
+            trend_time_interval(int): time interaval when measuring trend
         Output:
             Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
         """
-        if override_topic_document_threshold:
-            topic_document_threshold = override_topic_document_threshold
-        else:
-            topic_document_threshold = settings.TOPIC_DOCUMENT_THRESHOLD
-
-        if override_trend_time_interval:
-            trend_time_interval = override_trend_time_interval
-        else:
-            trend_time_interval = settings.trend_time_interval
-
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results_all_profile_query = self.es.search(

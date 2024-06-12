@@ -85,11 +85,8 @@ class ServedTopicModel(ServedModel):
         inputs = payload.attributes
         parameter_input = payload.parameters
         content = inputs.content
-        start_time = None
-        end_time = None
         trend_found = None
         save_report_dynamodb = inputs.save_report_dynamodb
-        inference_settings = {}
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -97,51 +94,59 @@ class ServedTopicModel(ServedModel):
 
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
             # to work for integration tests
-            end_time = pd.Timestamp(datetime.now())
+            trend_end_time = pd.Timestamp(datetime.now())
 
             if parameter_input.override_trend_lookback_days:
                 trend_lookback_days = parameter_input.override_trend_lookback_days
             else:
                 trend_lookback_days = settings.trend_lookback_days
 
-            start_time = end_time - pd.Timedelta(days=trend_lookback_days)
+            trend_start_time = trend_end_time - pd.Timedelta(days=trend_lookback_days)
+
+            if parameter_input.override_topic_document_threshold:
+                topic_document_threshold = (
+                    parameter_input.override_topic_document_threshold
+                )
+            else:
+                topic_document_threshold = settings.TOPIC_DOCUMENT_THRESHOLD
+
+            if parameter_input.override_trend_time_interval:
+                trend_time_interval = parameter_input.override_trend_time_interval
+            else:
+                trend_time_interval = settings.trend_time_interval
+
             if trend_detection:
                 trend_found, inflection_point = self.trend_detector.single_topic_trend(
                     query_profile,
                     topic_id,
-                    start_time,
-                    end_time,
-                    parameter_input.override_topic_document_threshold,
-                    parameter_input.override_trend_time_interval,
+                    trend_start_time,
+                    trend_end_time,
+                    topic_document_threshold,
+                    trend_time_interval,
                 )
-                inference_settings["trend_start_time"] = start_time
-                inference_settings["trend_end_time"] = start_time
-                inference_settings[
-                    "override_topic_document_threshold"
-                ] = parameter_input.override_topic_document_threshold
-                inference_settings[
-                    "override_trend_time_interval"
-                ] = parameter_input.override_trend_time_interval
+
+            doc_start_time = trend_start_time
+            doc_end_time = trend_end_time
+
+            if parameter_input.override_document_collector_end_date:
+                days_past_inflection_point = (
+                    parameter_input.override_document_collector_end_date
+                )
+            else:
+                days_past_inflection_point = settings.DAYS_PAST_INFLECTION_POINT
 
             if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
                 if trend_found:
-                    start_time = inflection_point
-                    if parameter_input.override_document_collector_end_date:
-                        end_time = inflection_point + pd.Timedelta(
-                            days=parameter_input.override_document_collector_end_date
-                        )
-                    else:
-                        end_time = inflection_point + pd.Timedelta(
-                            days=settings.DAYS_PAST_INFLECTION_POINT
-                        )
+                    doc_start_time = inflection_point
+                    doc_end_time = inflection_point + pd.Timedelta(
+                        days=days_past_inflection_point
+                    )
 
                 # collect documents of profile
                 content = self.document_collector.get_documents(
-                    query_profile, topic_id, start_time, end_time
+                    query_profile, topic_id, doc_start_time, doc_end_time
                 )
-                inference_settings["document_collection_start_time"] = start_time
-                inference_settings["document_collection_end_time"] = end_time
 
                 topic = self.model.aggregate(content)
                 impact_category = self.impact_quantifier.quantify_impact(
@@ -161,9 +166,12 @@ class ServedTopicModel(ServedModel):
                 "trending": trend_found,
                 "query_id": inputs.query_id,
                 "query_string": query_string,
-                "topic": topic,
+                "analysis": topic,
                 "impact_category": impact_category,
-                "inference_settings": inference_settings,
+                "trend_lookback_days": trend_lookback_days,
+                "topic_document_threshold": topic_document_threshold,
+                "trend_time_interval": trend_time_interval,
+                "days_past_inflection_point": days_past_inflection_point,
             }
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
