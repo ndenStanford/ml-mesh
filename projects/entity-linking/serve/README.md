@@ -80,7 +80,7 @@ curl -X 'POST' 'http://0.0.0.0:9000/entity-linking/v1/predict' \
     }'
 ```
 
-Will generate a `422` error code response describing the language lookup related issue in detail:
+Will generate a `204` error code response describing the language lookup related issue in detail:
 
 ```
 {
