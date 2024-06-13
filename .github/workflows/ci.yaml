@@ -38,7 +38,7 @@ jobs       :
         id: get-environment-name
         with:
           cond: ${{ github.event_name == 'pull_request' }}
-          if_true: prod #dev
+          if_true: dev
           if_false: prod
 
   # ===============================================
@@ -117,7 +117,7 @@ jobs       :
         id: get-target-branch
         with:
           cond: ${{ github.event_name == 'pull_request' }}
-          if_true: main #${{ github.base_ref }}
+          if_true: ${{ github.base_ref }}
           if_false: ${{ github.ref_name }}
 
 
