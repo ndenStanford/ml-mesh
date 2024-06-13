@@ -35,6 +35,12 @@ def mock_responses():
 
 
 @pytest.fixture
+def mock_claude_fail_output():
+    """Mock response for claude failure."""
+    return None
+
+
+@pytest.fixture
 def mock_reponses_production_tool():
     """Mock response for production tool query profile."""
     mock_response = MagicMock()

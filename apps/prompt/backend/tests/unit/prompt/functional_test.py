@@ -88,3 +88,33 @@ def test_generate_from_prompt(
     _ = F.generate_from_prompt(prompt, model_alias)
 
     mock_conversation_chain_predict.assert_called_with(input=prompt)
+
+
+@pytest.mark.parametrize(
+    "prompt, provider",
+    [
+        ("new prompt", "openai"),
+        ("new prompt", "bedrock"),
+    ],
+)
+@patch.object(LanguageModel, "get")
+@patch.object(ConversationChain, "predict")
+@patch.object(RedisCache, "__call__")
+@patch.object(redis.connection.ConnectionPool, "get_connection")
+@patch("botocore.session.Session")
+def generate_from_default_model(
+    mock_boto_session,
+    mock_redis_get_connection,
+    mock_redis_client,
+    mock_conversation_chain_predict,
+    mock_model_get,
+    prompt,
+    provider,
+):
+    """Test generate from prompt template default models."""
+    mock_redis_get_connection.return_value.retry.call_with_retry.return_value = dict()
+    mock_conversation_chain_predict.return_value = dict()
+
+    _ = F.generate_from_default_model(prompt)
+
+    mock_conversation_chain_predict.assert_called_with(input=prompt)
