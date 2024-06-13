@@ -5,30 +5,26 @@ import os
 from typing import Dict, List, Union
 
 # ML libs
-from transformers import (
-    AutoModelForTokenClassification,
-    BertForTokenClassification,
-    pipeline,
-)
+from transformers import BertForTokenClassification  # noqa
+from transformers import DistilBertForTokenClassification  # noqa
+from transformers import pipeline
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
+# Source
+from src.settings import get_settings
+
 
 logger = get_default_logger(__name__)
-
-# Source
-from src.settings import (  # type: ignore[attr-defined]
-    TrackedNERBaseModelCard,
-    TrackedNERModelSpecs,
-)
+settings = get_settings()
 
 
 def main() -> None:
     """Register trained model."""
-    model_specs = TrackedNERModelSpecs()
-    model_card = TrackedNERBaseModelCard()
+    model_specs = settings.model_specs
+    model_card = settings.model_card
 
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
@@ -36,61 +32,31 @@ def main() -> None:
     model_version = TrackedModelVersion(**model_specs.dict())
     # --- initialize models
     # get pretrained model and tokenizer
-
     # Create pipeline using ner model and tokenizer
-    logger.info("Creating base NER pipeline")
-
-    model_base = BertForTokenClassification.from_pretrained(
-        model_card.ner_model_params_base.huggingface_model_reference, return_dict=False
+    logger.info("Creating NER pipeline")
+    model_class = eval(model_card.ner_model_params.model_class)
+    model = model_class.from_pretrained(
+        model_card.ner_model_params.huggingface_model_reference, return_dict=False
     )
 
     hf_pipeline = pipeline(
-        task=model_card.ner_model_params_base.huggingface_pipeline_task,
-        model=model_base,
-        tokenizer=model_card.ner_model_params_base.huggingface_model_reference,
+        task=model_card.ner_model_params.huggingface_pipeline_task,
+        model=model,
+        tokenizer=model_card.ner_model_params.huggingface_model_reference,
     )
-
-    # Create pipeline using ner model and tokenizer
-    logger.info("Creating Korean & Japanese NER pipeline")
-
-    model_kj = AutoModelForTokenClassification.from_pretrained(
-        model_card.ner_model_params_kj.huggingface_model_reference_kj, return_dict=False
-    )
-
-    hf_pipeline_kj = pipeline(
-        task=model_card.ner_model_params_kj.huggingface_pipeline_task_kj,
-        model=model_kj,
-        tokenizer=model_card.ner_model_params_kj.huggingface_model_reference_kj,
-    )
-
+    # # Create pipeline using ner model and tokenizer
+    # logger.info("Creating Korean & Japanese NER pipeline")
     # ner settings
-    ner_settings_base = model_card.ner_model_params_base.ner_settings.dict()
-    ner_settings_kj = model_card.ner_model_params_kj.ner_settings.dict()
-
-    ner_settings = [ner_settings_base, ner_settings_kj]
-
+    ner_settings = model_card.ner_model_params.ner_settings.dict()
     # --- create prediction files
     logger.info("Making predictions from example inputs")
-    ner_predictions_base: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline(
+    ner_predictions: List[Dict[str, Union[str, float, int]]] = hf_pipeline(
         model_card.model_inputs.sample_documents[0]
     )
-
-    ner_predictions_kj: List[List[Dict[str, Union[str, float, int]]]] = hf_pipeline_kj(
-        model_card.model_inputs.sample_documents[1]
-    )
-
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
-    for sublist in ner_predictions_base:
-        for dictionary in sublist:
-            dictionary["score"] = float(dictionary["score"])
-
-    for sublist in ner_predictions_kj:
-        for dictionary in sublist:
-            dictionary["score"] = float(dictionary["score"])
-
-    ner_predictions = [ner_predictions_base, ner_predictions_kj]
-
+    for dictionary in ner_predictions:
+        dictionary["score"] = float(dictionary["score"])
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
@@ -114,26 +80,11 @@ def main() -> None:
 
     logger.info("Pushing model artifact and assets to s3")
     # model artifact for original
-    hf_pipeline_local_dir = os.path.join(
-        model_card.local_output_dir, "hf_pipeline_base"
-    )
-    hf_pipeline.save_pretrained(hf_pipeline_local_dir)
-
-    hf_pipeline_local_dir_kj = os.path.join(
-        model_card.local_output_dir, "hf_pipeline_kj"
-    )
-    hf_pipeline_kj.save_pretrained(hf_pipeline_local_dir_kj)
+    hf_pipeline.save_pretrained(model_card.local_output_dir)
 
     model_version.upload_directory_to_model_version(
-        local_directory_path=hf_pipeline_local_dir,
-        neptune_attribute_path=model_card.model_artifact_attribute_path
-        + model_card.base_model_subdirectory,
-    )
-
-    model_version.upload_directory_to_model_version(
-        local_directory_path=hf_pipeline_local_dir_kj,
-        neptune_attribute_path=model_card.model_artifact_attribute_path
-        + model_card.kj_model_subdirectory,
+        local_directory_path=model_card.local_output_dir,
+        neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
     # model card
     model_version.upload_config_to_model_version(

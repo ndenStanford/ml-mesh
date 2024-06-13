@@ -43,6 +43,13 @@ services:
         PROJECT: ner
         COMPONENT: train
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    volumes:
+      - type: bind
+        source: train/src
+        target: /projects/ner-multi/train/src
+      - type: bind
+        source: train/config
+        target: /projects/ner-multi/train/config
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG:-latest}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
     ports:
