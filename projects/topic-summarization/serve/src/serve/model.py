@@ -173,6 +173,7 @@ class ServedTopicModel(ServedModel):
                 "topic_document_threshold": topic_document_threshold,
                 "trend_time_interval": trend_time_interval,
                 "days_past_inflection_point": days_past_inflection_point,
+                "content": content,
             }
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 

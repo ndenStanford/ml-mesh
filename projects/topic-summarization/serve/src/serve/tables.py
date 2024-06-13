@@ -4,7 +4,7 @@
 # Standard Library
 import uuid
 from datetime import datetime
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, List
 
 # 3rd party libraries
 from dyntastic import Dyntastic
@@ -44,3 +44,4 @@ class TopicSummaryDynamoDB(Dyntastic):
     topic_document_threshold: Decimal
     trend_time_interval: str
     days_past_inflection_point: int
+    content: Optional[List[str]] = None
