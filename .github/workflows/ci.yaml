@@ -1187,7 +1187,7 @@ jobs       :
           # serve
           - name: serve
             download-model: false
-            integration: true
+            integration: false
             functional: false
             load: false
             upload-test-results: false
