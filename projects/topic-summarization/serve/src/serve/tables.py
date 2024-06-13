@@ -26,12 +26,12 @@ class TopicSummaryDynamoDB(Dyntastic):
     """Prediction request data."""
 
     __table_name__ = settings.DYNAMODB_TABLE_NAME
-    __hash_key__ = "topic_summary_id"
+    __hash_key__ = "id"
     __table_region__ = "us-east-2"
     __table_host__ = settings.DYNAMODB_HOST
 
-    topic_summary_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = datetime.now()
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime
     topic_id: int
     trending: Optional[bool] = None
     analysis: Optional[

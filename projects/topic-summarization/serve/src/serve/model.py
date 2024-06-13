@@ -99,7 +99,7 @@ class ServedTopicModel(ServedModel):
             if parameter_input.override_trend_lookback_days:
                 trend_lookback_days = parameter_input.override_trend_lookback_days
             else:
-                trend_lookback_days = settings.trend_lookback_days
+                trend_lookback_days = settings.TREND_LOOKBACK_DAYS
 
             trend_start_time = trend_end_time - pd.Timedelta(days=trend_lookback_days)
 
@@ -113,7 +113,7 @@ class ServedTopicModel(ServedModel):
             if parameter_input.override_trend_time_interval:
                 trend_time_interval = parameter_input.override_trend_time_interval
             else:
-                trend_time_interval = settings.trend_time_interval
+                trend_time_interval = settings.TREND_TIME_INTERVAL
 
             if trend_detection:
                 trend_found, inflection_point = self.trend_detector.single_topic_trend(
@@ -164,6 +164,7 @@ class ServedTopicModel(ServedModel):
             dynamodb_dict = {
                 "topic_id": topic_id,
                 "trending": trend_found,
+                "timestamp": datetime.now(),
                 "query_id": inputs.query_id,
                 "query_string": query_string,
                 "analysis": topic,
@@ -187,6 +188,7 @@ class ServedTopicModel(ServedModel):
                 "topic": topic,
                 "impact_category": impact_category,
                 "trending": trend_found,
+                "timestamp": datetime.now(),
             },
         )
 

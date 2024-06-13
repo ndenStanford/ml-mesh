@@ -17,8 +17,10 @@ from onclusiveml.data.query_profile import (
     StringQueryProfile,
     ProductionToolsQueryProfile,
 )
+from src.settings import get_settings
 
 _service = TopicHandler()
+settings = get_settings()
 
 
 @patch("requests.post")
@@ -104,7 +106,14 @@ def test_not_trending(
         mock_topic_profile_es_result_not_trending,
     ]
     trend_detector = TrendDetection()
-    res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
+    res = trend_detector.single_topic_trend(
+        profile,
+        topic_id,
+        start_time,
+        end_time,
+        settings.TOPIC_DOCUMENT_THRESHOLD,
+        settings.TREND_TIME_INTERVAL,
+    )
     assert res == (False, None)
 
 
@@ -145,7 +154,14 @@ def test_trending(
         mock_topic_profile_es_result_trending,
     ]
     trend_detector = TrendDetection()
-    res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
+    res = trend_detector.single_topic_trend(
+        profile,
+        topic_id,
+        start_time,
+        end_time,
+        settings.TOPIC_DOCUMENT_THRESHOLD,
+        settings.TREND_TIME_INTERVAL,
+    )
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
 
 
@@ -191,7 +207,14 @@ def test_not_trending_query_id(
         mock_topic_profile_es_result_not_trending,
     ]
     trend_detector = TrendDetection()
-    res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
+    res = trend_detector.single_topic_trend(
+        profile,
+        topic_id,
+        start_time,
+        end_time,
+        settings.TOPIC_DOCUMENT_THRESHOLD,
+        settings.TREND_TIME_INTERVAL,
+    )
     assert res == (False, None)
 
 
@@ -237,7 +260,14 @@ def test_trending_query_id(
         mock_topic_profile_es_result_trending,
     ]
     trend_detector = TrendDetection()
-    res = trend_detector.single_topic_trend(profile, topic_id, start_time, end_time)
+    res = trend_detector.single_topic_trend(
+        profile,
+        topic_id,
+        start_time,
+        end_time,
+        settings.TOPIC_DOCUMENT_THRESHOLD,
+        settings.TREND_TIME_INTERVAL,
+    )
     assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
 
 
