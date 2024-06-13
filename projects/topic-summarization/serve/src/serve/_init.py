@@ -1,3 +1,4 @@
+# isort: skip_file
 # Standard Library
 from typing import Type
 
@@ -11,6 +12,7 @@ from onclusiveml.core.logging import get_default_logger
 # Source
 from src.serve.tables import TopicSummaryDynamoDB
 from src.settings import get_settings
+
 
 logger = get_default_logger(__name__)
 settings = get_settings()
