@@ -4,9 +4,11 @@
 
 * @airpr/mlops-engineers
 
-# libraries
+# Repo governance (pre commits and binary)
 
-.pre-commit-config.yaml @RonsenbergVI @meganeinu7
+bin/ .pre-commit-config.yaml .poetry-version .python-version @RonsenbergVI @meganeinu7
+
+# libraries
 
 /libs @airpr/mlops-engineers @ndenStanford
 /libs/training @airpr/mlops-engineers @weshallsin
