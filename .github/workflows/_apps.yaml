@@ -98,7 +98,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-          context: docker/${{ inputs.app }}
+          context: apps/${{ inputs.app }}
           push: false
           tags: ${{ inputs.tag }}
           cache-from: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.app }}-${{ inputs.tag }}
