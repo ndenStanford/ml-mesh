@@ -2,7 +2,7 @@
 """Trend detection."""
 
 # Standard Library
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 
 # 3rd party libraries
 import pandas as pd
@@ -59,7 +59,12 @@ class TrendDetection:
         end_time: pd.datetime,
         topic_document_threshold: float,
         trend_time_interval: int,
-    ) -> Tuple[bool, Union[Timestamp, None]]:
+    ) -> Tuple[
+        bool,
+        Union[Timestamp, None],
+        Union[List[Union[str, int]], None],
+        Union[List[Union[str, int]], None],
+    ]:
         """Trend detection for single topic and keyword.
 
         Args:
@@ -70,7 +75,12 @@ class TrendDetection:
             topic_document_threshold (float): minimum document threshold scalar
             trend_time_interval(int): time interaval when measuring trend
         Output:
-            Tuple[bool, Union[Timestamp, None]]: bool and timestamp of inflection point
+            Tuple[
+                bool,
+                Union[Timestamp, None],
+                Union[List[Union[str, int]], None],
+                Union[List[Union[str, int]], None],
+            ]: bool and inflection point and doc counts
         """
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
@@ -83,10 +93,10 @@ class TrendDetection:
                 results_all_profile_query
             )
             if len(results_all_profile_query_no_weekends) == 0:
-                return False, None
+                return False, None, None, None
             df_all_topic = pd.DataFrame(results_all_profile_query_no_weekends).iloc[:-1]
         else:
-            return False, None
+            return False, None, None, None
 
         # profile topic query
         results_topic_profile_query = self.es.search(
@@ -100,12 +110,12 @@ class TrendDetection:
                 results_topic_profile_query
             )
             if len(results_topic_profile_query_no_weekends) == 0:
-                return False, None
+                return False, None, None, None
             df_single_topic = pd.DataFrame(
                 results_topic_profile_query_no_weekends
             ).iloc[:-1]
         else:
-            return False, None
+            return False, None, None, None
         if df_single_topic["doc_count"].sum() >= (
             topic_document_threshold * df_all_topic["doc_count"].sum()
         ):
@@ -132,5 +142,15 @@ class TrendDetection:
                 threshold=0.005,
             )
             if len(change_points) > 0:
-                return True, change_points[0].start_time
-        return False, None
+                return (
+                    True,
+                    change_points[0].start_time,
+                    results_all_profile_query_no_weekends,
+                    results_topic_profile_query_no_weekends,
+                )
+        return (
+            False,
+            None,
+            results_all_profile_query_no_weekends,
+            results_topic_profile_query_no_weekends,
+        )

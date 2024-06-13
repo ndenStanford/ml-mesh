@@ -45,3 +45,5 @@ class TopicSummaryDynamoDB(Dyntastic):
     trend_time_interval: str
     days_past_inflection_point: int
     content: Optional[List[str]] = None
+    query_all_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
+    query_topic_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None

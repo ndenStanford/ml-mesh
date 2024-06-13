@@ -116,7 +116,12 @@ class ServedTopicModel(ServedModel):
                 trend_time_interval = settings.TREND_TIME_INTERVAL
 
             if trend_detection:
-                trend_found, inflection_point = self.trend_detector.single_topic_trend(
+                (
+                    trend_found,
+                    inflection_point,
+                    query_all_doc_count,
+                    query_topic_doc_count,
+                ) = self.trend_detector.single_topic_trend(
                     query_profile,
                     topic_id,
                     trend_start_time,
@@ -158,7 +163,6 @@ class ServedTopicModel(ServedModel):
         else:
             topic = self.model.aggregate(content)
             impact_category = None
-
         if save_report_dynamodb:
             query_string = query_profile.query
             dynamodb_dict = {
@@ -174,6 +178,8 @@ class ServedTopicModel(ServedModel):
                 "trend_time_interval": trend_time_interval,
                 "days_past_inflection_point": days_past_inflection_point,
                 "content": content,
+                "query_all_doc_count": query_all_doc_count,
+                "query_topic_doc_count": query_topic_doc_count,
             }
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
