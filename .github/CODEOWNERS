@@ -6,7 +6,10 @@
 
 # Repo governance (pre commits and binary)
 
-bin/ .pre-commit-config.yaml .poetry-version .python-version @RonsenbergVI @meganeinu7
+bin/ @RonsenbergVI @meganeinu7
+.pre-commit-config.yaml @RonsenbergVI @meganeinu7
+.poetry-version @RonsenbergVI @meganeinu7
+.python-version @RonsenbergVI @meganeinu7
 
 # libraries
 
