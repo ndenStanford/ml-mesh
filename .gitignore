@@ -17,6 +17,9 @@ projects/**/serve/models/
 # project component caches
 projects/**/**/projects
 
+# test configurations for data lib
+test-config-dir/
+
 # C extensions
 *.so
 
