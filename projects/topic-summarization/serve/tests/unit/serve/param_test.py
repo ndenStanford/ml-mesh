@@ -114,7 +114,8 @@ def test_not_trending(
         settings.TOPIC_DOCUMENT_THRESHOLD,
         settings.TREND_TIME_INTERVAL,
     )
-    assert res == (False, None)
+    assert res[0] is False
+    assert res[1] is None
 
 
 @patch("requests.put")
@@ -162,7 +163,8 @@ def test_trending(
         settings.TOPIC_DOCUMENT_THRESHOLD,
         settings.TREND_TIME_INTERVAL,
     )
-    assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
+    assert res[0] is True
+    assert res[1] == pd.Timestamp("2024-03-25 12:00:00+0000")
 
 
 @patch("requests.put")
@@ -215,7 +217,8 @@ def test_not_trending_query_id(
         settings.TOPIC_DOCUMENT_THRESHOLD,
         settings.TREND_TIME_INTERVAL,
     )
-    assert res == (False, None)
+    assert res[0] is False
+    assert res[1] is None
 
 
 @patch("requests.put")
@@ -268,7 +271,8 @@ def test_trending_query_id(
         settings.TOPIC_DOCUMENT_THRESHOLD,
         settings.TREND_TIME_INTERVAL,
     )
-    assert res == (True, pd.Timestamp("2024-03-25 12:00:00+0000"))
+    assert res[0] is True
+    assert res[1] == pd.Timestamp("2024-03-25 12:00:00+0000")
 
 
 @patch("requests.put")
