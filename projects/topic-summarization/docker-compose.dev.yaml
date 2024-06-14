@@ -43,6 +43,11 @@ services:
       MEDIA_CLIENT_ID: ${MEDIA_CLIENT_ID}
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
+      DYNAMODB_HOST: http://dynamodb:8000
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ENVIRONMENT: dev
+
       MULTIPROCESS_WORKER: 5
     env_file: serve/config/dev.env
     healthcheck:
@@ -98,6 +103,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ENVIRONMENT: dev
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -142,6 +148,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ENVIRONMENT: dev
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -174,6 +181,8 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ENVIRONMENT: dev
+
     env_file: serve/config/dev.env
     depends_on:
       serve:
