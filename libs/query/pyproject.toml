@@ -1,20 +1,19 @@
 [tool.poetry]
-name = "data"
+name = "query"
 version = "0.1.0"
-description = "Data sources and dataset management tools"
+description = "Elasticsearch and other related query utilities"
 authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>",
             "Jian Tong <jian.tong@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-boto3 = "^1.20.23"
-boto3-type-annotations = "^0.3.1"
-feast = {version = "0.30.2", extras = ["aws"]}
-serving = {path = "../serving"}
-apache-beam = "2.49.0"
 core = {path = "../core"}
-kafka-python = "^2.0.2"
+elasticsearch = ">=7.0.0,<8.0.0"
+hdbscan = "0.8.33"
+umap-learn = "0.5.3"
+transformers = "4.33.1"
+torch = ">=1.12.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
