@@ -96,24 +96,17 @@ class ServedTopicModel(ServedModel):
             # to work for integration tests
             trend_end_time = pd.Timestamp(datetime.now())
 
-            if parameter_input.override_trend_lookback_days:
-                trend_lookback_days = parameter_input.override_trend_lookback_days
-            else:
-                trend_lookback_days = settings.TREND_LOOKBACK_DAYS
-
+            trend_lookback_days = parameter_input.get(
+                "override_trend_lookback_days", settings.TREND_LOOKBACK_DAYS
+            )
             trend_start_time = trend_end_time - pd.Timedelta(days=trend_lookback_days)
 
-            if parameter_input.override_topic_document_threshold:
-                topic_document_threshold = (
-                    parameter_input.override_topic_document_threshold
-                )
-            else:
-                topic_document_threshold = settings.TOPIC_DOCUMENT_THRESHOLD
-
-            if parameter_input.override_trend_time_interval:
-                trend_time_interval = parameter_input.override_trend_time_interval
-            else:
-                trend_time_interval = settings.TREND_TIME_INTERVAL
+            topic_document_threshold = parameter_input.get(
+                "override_topic_document_threshold", settings.TOPIC_DOCUMENT_THRESHOLD
+            )
+            trend_time_interval = parameter_input.get(
+                "override_trend_time_interval", settings.TREND_TIME_INTERVAL
+            )
 
             if trend_detection:
                 (
@@ -133,12 +126,10 @@ class ServedTopicModel(ServedModel):
             doc_start_time = trend_start_time
             doc_end_time = trend_end_time
 
-            if parameter_input.override_document_collector_end_date:
-                days_past_inflection_point = (
-                    parameter_input.override_document_collector_end_date
-                )
-            else:
-                days_past_inflection_point = settings.DAYS_PAST_INFLECTION_POINT
+            days_past_inflection_point = parameter_input.get(
+                "override_document_collector_end_date",
+                settings.DAYS_PAST_INFLECTION_POINT,
+            )
 
             if not trend_detection or trend_found:
                 # if trending, retrieve documents between inflection point and next day
