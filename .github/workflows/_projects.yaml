@@ -216,10 +216,10 @@ jobs:
           context: projects/${{ inputs.project }}/${{ inputs.component }}
           push: false
           tags: ${{ inputs.tag }}
-          cache-from: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag
-            }}
-          cache-to: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag
-            }}
+          cache-from: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }}
+          cache-to: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }}
           build-args: |
             TARGET_BUILD_STAGE="development"
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
