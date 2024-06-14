@@ -70,7 +70,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     topic: Optional[Topic] = None
     impact_category: Optional[ImpactCategoryLabel]
     trending: Optional[bool] = None
-    timestamp: datetime = datetime.now()
+    timestamp: datetime
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):
