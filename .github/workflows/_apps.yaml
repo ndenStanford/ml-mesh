@@ -104,7 +104,8 @@ jobs:
         uses: docker/build-push-action@v5
         if: ${{ inputs.use-s3-cache }}
         with:
-          context: apps/${{ inputs.app }}/${{ inputs.component }}
+          context: .
+          file: apps/${{ inputs.app }}/${{ inputs.component }}/
           push: false
           load: true
           tags: ${{ inputs.tag }}
