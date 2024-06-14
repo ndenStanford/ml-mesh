@@ -186,6 +186,7 @@ jobs:
         if: ${{ inputs.use-s3-cache }}
         with:
           context: docker/${{ inputs.image }}
+          load: true
           push: false
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
