@@ -7,6 +7,9 @@ from typing import Any, Dict
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
+# Internal libraries
+from onclusiveml.llms.prompt_validator import PromptInjectionException
+
 # Source
 from src.project.tables import Project
 from src.prompt import functional as F
@@ -100,7 +103,11 @@ def list_prompts():
 
 
 @router.post("/{alias}/generate/model/{model}", status_code=status.HTTP_200_OK)
-def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str, Any]):
+def generate_text_from_prompt_template(
+    alias: str,
+    model: str,
+    values: Dict[str, Any],
+):
     """Generates text using a prompt template with specific model.
 
     Args:
@@ -108,7 +115,13 @@ def generate_text_from_prompt_template(alias: str, model: str, values: Dict[str,
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
     """
-    return F.generate_from_prompt_template(alias, model, **values)
+    try:
+        return F.generate_from_prompt_template(alias, model, **values)
+    except PromptInjectionException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
@@ -119,4 +132,11 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    return F.generate_from_default_model(alias, **values)
+    print(values)
+    try:
+        return F.generate_from_default_model(alias, **values)
+    except PromptInjectionException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
