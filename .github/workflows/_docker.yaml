@@ -62,6 +62,11 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+      use-s3-cache:
+        type: boolean
+        required: false
+        default: true
+        description: Whether to use s3-backed caching during building and pushing of the images
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -166,21 +171,24 @@ jobs:
           aws-region: ${{ inputs.region }}
 
       - name: Set up Docker Buildx
+        if: ${{ inputs.use-s3-cache }}
         uses: docker/setup-buildx-action@v3
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: |
           make docker.login \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            AWS_REGION=${{ inputs.base-region }}
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          AWS_REGION=${{ inputs.base-region }}
 
       - name: Prebuild image with layer cache
         id: build-and-push
         uses: docker/build-push-action@v5
+        if: ${{ inputs.use-s3-cache }}
         with:
           context: docker/${{ inputs.image }}
           push: false
           tags: ${{ inputs.tag }}
+          platforms: linux/amd64
           cache-from: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }}
           cache-to: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }}
           build-args: |
@@ -189,6 +197,7 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make docker.build/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
