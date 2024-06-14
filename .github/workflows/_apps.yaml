@@ -105,7 +105,7 @@ jobs:
         if: ${{ inputs.use-s3-cache }}
         with:
           context: .
-          file: apps/${{ inputs.app }}/${{ inputs.component }}/
+          file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
           push: false
           load: true
           tags: ${{ inputs.tag }}
