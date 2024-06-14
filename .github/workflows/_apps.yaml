@@ -104,7 +104,7 @@ jobs:
         uses: docker/build-push-action@v5
         if: ${{ inputs.use-s3-cache }}
         with:
-          context: apps/${{ inputs.app }}
+          context: apps/${{ inputs.app }}/${{ inputs.component }}
           push: false
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
@@ -186,7 +186,7 @@ jobs:
         uses: docker/build-push-action@v5
         if: ${{ inputs.use-s3-cache }}
         with:
-          context: apps/${{ inputs.app }}
+          context: apps/${{ inputs.app }}/${{ inputs.component }}
           push: push
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
