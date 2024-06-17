@@ -211,7 +211,6 @@ jobs:
           context: .
           file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
           push: true
-          load: true
           platforms: linux/amd64
           # yamllint disable rule:line-length
           cache-from: |

@@ -395,7 +395,6 @@ jobs:
         with:
           context: .
           file: projects/${{ inputs.project }}/${{ inputs.component }}/Dockerfile
-          load: true
           push: true
           platforms: linux/amd64
           # yamllint disable rule:line-length

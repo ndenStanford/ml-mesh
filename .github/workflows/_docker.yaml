@@ -281,7 +281,6 @@ jobs:
         with:
           context: .
           file: docker/${{ inputs.image }}/Dockerfile
-          load: true
           push: true
           platforms: linux/amd64
           # yamllint disable rule:line-length
