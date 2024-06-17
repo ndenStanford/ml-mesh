@@ -18,7 +18,7 @@ from src.prompt.tables import PromptTemplate
         ("prompt-12", "input: {text}", "integration-test-1"),
     ],
 )
-@pytest.mark.order(12)
+@pytest.mark.order(14)
 def test_save(alias, template, project, app):
     """Test save method."""
     with pytest.raises(DoesNotExist):
@@ -37,7 +37,7 @@ def test_save(alias, template, project, app):
         ("prompt1", "Hello! How are you?", "integration-test-1"),
     ],
 )
-@pytest.mark.order(13)
+@pytest.mark.order(15)
 def test_delete(alias, template, project, app):
     """Test delete method."""
     prompt = PromptTemplate(alias=alias, template=template, project=project)
@@ -51,7 +51,7 @@ def test_delete(alias, template, project, app):
         _ = PromptTemplate.get(alias)
 
 
-@pytest.mark.order(14)
+@pytest.mark.order(16)
 def test_scan_all(create_prompts, app):
     """Test scan."""
     prompts = list(PromptTemplate.scan())
@@ -64,7 +64,7 @@ def test_scan_all(create_prompts, app):
         ("integration-test-2", 2),
     ],
 )
-@pytest.mark.order(15)
+@pytest.mark.order(17)
 def test_scan_project(project, expected, app):
     """Test scan."""
     prompts = list(PromptTemplate.scan(project))
