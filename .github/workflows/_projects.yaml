@@ -243,6 +243,7 @@ jobs:
 
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         uses: nick-fields/retry@v2
+        if: ${{ !inputs.use-s3-cache }}
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
           timeout_minutes: 30
@@ -257,6 +258,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -267,7 +269,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.download-model }}
+        if: ${{ inputs.download-model && !inputs.use-s3-cache }}
         run: |
           make projects.run/${{ inputs.project }} \
             COMPONENT=${{ inputs.component }} \
@@ -283,7 +285,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.integration }}
+        if: ${{ inputs.integration && !inputs.use-s3-cache }}
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -300,7 +302,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.functional }}
+        if: ${{ inputs.functional && !inputs.use-s3-cache }}
         run: |
           make projects.functional/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -317,7 +319,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.load }}
+        if: ${{ inputs.load && !inputs.use-s3-cache}}
         run: |
           make projects.load/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -328,7 +330,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.upload-test-results }}
+        if: ${{ inputs.upload-test-results && !inputs.use-s3-cache }}
         run: |
           make projects.run/${{ inputs.project }} \
             COMPONENT=${{ inputs.component }} \
@@ -346,6 +348,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -357,6 +360,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -365,6 +369,32 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
+
+      - name: Prebuild production image with layer cache
+        id: build-and-push-production
+        uses: docker/build-push-action@v5
+        if: ${{ inputs.use-s3-cache }}
+        with:
+          context: .
+          file: projects/${{ inputs.project }}/${{ inputs.component }}/Dockerfile
+          load: true
+          push: true
+          tags: ${{ inputs.tag }}
+          platforms: linux/amd64
+          # yamllint disable rule:line-length
+          cache-from: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          cache-to: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # yamllint enable rule:line-length
+          build-args: |
+            TARGET_BUILD_STAGE=production
+            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            BASE_IMAGE_TAG=v23.11.3
+            IMAGE_TAG=${{ inputs.tag }}
+            ENVIRONMENT=ci
+            PROJECT=${{ inputs.project }}
+            COMPONENT=${{ inputs.component }}
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'

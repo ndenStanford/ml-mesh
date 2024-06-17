@@ -215,7 +215,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build }}
+        if: ${{ inputs.validate-build && !inputs.use-s3-cache }}
         run: |
           make docker.validate/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -225,6 +225,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ !inputs.use-s3-cache }}
         uses: nick-fields/retry@v2
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
@@ -240,17 +241,43 @@ jobs:
               USE_DOCKER_CACHE=true
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make docker.login \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make docker.deploy/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             ENVIRONMENT="ci"
+
+      - name: Prebuild production image with layer cache
+        id: build-and-push-production
+        uses: docker/build-push-action@v5
+        if: ${{ inputs.use-s3-cache }}
+        with:
+          context: .
+          file: docker/${{ inputs.image }}/Dockerfile
+          load: true
+          push: true
+          tags: ${{ inputs.tag }}
+          platforms: linux/amd64
+          # yamllint disable rule:line-length
+          cache-from: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          cache-to: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          # yamllint enable rule:line-length
+          build-args: |
+            TARGET_BUILD_STAGE=production
+            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            IMAGE_TAG=${{ inputs.tag }}
+            ENVIRONMENT=ci
+            IMAGE_NAME=${{ inputs.image}}
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.image }}'

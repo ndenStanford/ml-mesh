@@ -142,6 +142,7 @@ jobs:
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
         # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -154,6 +155,7 @@ jobs:
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         # if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -194,19 +196,25 @@ jobs:
         uses: docker/build-push-action@v5
         if: ${{ inputs.use-s3-cache }}
         with:
-          context: apps/${{ inputs.app }}/${{ inputs.component }}
+          context: .
+          file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
           push: true
           load: true
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
-          cache-from: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.app }}-${{ inputs.tag }}
-          cache-to: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.app }}-${{ inputs.tag }}
+          # yamllint disable rule:line-length
+          cache-from: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.app }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          cache-to: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.app }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          # yamllint enable rule:line-length
           build-args: |
-            TARGET_BUILD_STAGE="production"
-            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-            BASE_IMAGE_TAG="v23.11.3"
+            TARGET_BUILD_STAGE=production
+            BASE_IMAGE_TAG=v23.11.3
             IMAGE_TAG=${{ inputs.tag }}
-            ENVIRONMENT="ci"
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }} \
-            PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
-            PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
+            ENVIRONMENT=ci
+            APP_NAME=${{ inputs.app }}
+            APP_COMPONENT=${{ inputs.component }}
+            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            PROMPT_REGISTRY_APP_ID=${{ secrets.PROMPT_REGISTRY_APP_ID }}
+            PROMPT_REGISTRY_APP_PRIVATE_KEY=${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}

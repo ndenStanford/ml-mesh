@@ -69,4 +69,7 @@ USER app
 # --- debugger stage
 FROM builder as debugger
 
+# hadolint ignore=DL3002
+USER root
+
 RUN poetry install --no-interaction --with debug
