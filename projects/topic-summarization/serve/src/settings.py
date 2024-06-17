@@ -46,7 +46,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     CLAUDE_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-claude"
     GPT_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-gpt"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
-    GPT_MODEL: str = "gpt-4-turbo-2024-04-09"
+    GPT_MODEL: str = "gpt-4o"
 
     model_settings = ServerModelSettings()
 
@@ -86,6 +86,9 @@ class DynamoDBSettings(OnclusiveBaseSettings):
 
     AWS_DEFAULT_REGION: str = "us-east-1"
     DYNAMODB_HOST: Optional[str] = None
+    # table name should be referencing relevant table when deployed
+    DYNAMODB_TABLE_NAME: str = "topic-summary-dev"
+    ENVIRONMENT: str = "dev"
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):
@@ -94,9 +97,9 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     # No of documents to collect for summarization
     NUM_DOCUMENTS: int = 5
     # Lookback days to assess trend
-    trend_lookback_days: int = 14
+    TREND_LOOKBACK_DAYS: int = 14
     # Number of documents per interval
-    trend_time_interval: str = "12h"
+    TREND_TIME_INTERVAL: str = "12h"
     # Document scale threshold to run trend detection
     TOPIC_DOCUMENT_THRESHOLD: float = 0.01
     # number of days to look past the inflection point when collecting documents (at 00:00)

@@ -5,7 +5,7 @@ from abc import abstractmethod
 from typing import Optional
 
 # Internal libraries
-from onclusiveml.llm.typing import LangchainT
+from onclusiveml.llms.typing import LangchainT
 
 
 class LangchainConvertibleMixin:

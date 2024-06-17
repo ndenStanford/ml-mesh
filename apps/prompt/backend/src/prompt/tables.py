@@ -15,8 +15,8 @@ from langchain.prompts.chat import (
 from pydantic import Field
 
 # Internal libraries
-from onclusiveml.llm.mixins import LangchainConvertibleMixin
-from onclusiveml.llm.typing import LangchainT
+from onclusiveml.llms.mixins import LangchainConvertibleMixin
+from onclusiveml.llms.typing import LangchainT
 
 # Source
 from src.extensions.github import github
