@@ -210,9 +210,10 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ inputs.use-s3-cache }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+        if: ${{ !inputs.use-s3-cache }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Prebuild image with layer cache
@@ -369,6 +370,12 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
+
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        if: ${{ inputs.use-s3-cache }}
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache
         id: build-and-push-production

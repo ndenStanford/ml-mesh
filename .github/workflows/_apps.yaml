@@ -85,7 +85,7 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
-        # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -93,10 +93,10 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ inputs.use-s3-cache }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && !inputs.use-s3-cache }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Prebuild development image with layer cache
@@ -128,8 +128,7 @@ jobs:
             PROMPT_REGISTRY_APP_PRIVATE_KEY=${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
 
       - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        if: ${{ !inputs.use-s3-cache }}
+        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && !inputs.use-s3-cache }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -141,8 +140,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        if: ${{ !inputs.use-s3-cache }}
+        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && !inputs.use-s3-cache }}
         run: |
           make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -154,8 +152,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        # if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
-        if: ${{ !inputs.use-s3-cache }}
+        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration && !inputs.use-s3-cache }}
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -169,8 +166,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        if: ${{ !inputs.use-s3-cache }}
+        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && !inputs.use-s3-cache }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -183,13 +179,18 @@ jobs:
           USE_DOCKER_CACHE=true
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        if: ${{ !inputs.use-s3-cache }}
+        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && !inputs.use-s3-cache}}
         run: |
           make apps.deploy/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           ENVIRONMENT="ci"
+
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        if: ${{ inputs.use-s3-cache }}
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache
         id: build-and-push-production
