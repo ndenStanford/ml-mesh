@@ -1276,3 +1276,43 @@ jobs       :
       PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  # ===============================================
+  # COMPLETION CHECKPOINT
+  # ===============================================
+
+  check:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - get-environment
+      - run-code-quality-checks
+      - run-repository-state
+      - run-get-core-dependencies-versions
+      - get-target-branch-name
+      - run-libs-tests
+      - run-us-east-1-base-docker
+      - run-us-east-1-docker
+      - run-us-east-2-docker
+      - run-keywords-project
+      - run-summarization-project
+      - run-gch-summarization-project
+      - run-entity-linking-project
+      - run-sentiment-project
+      - run-iptc-project
+      - run-iptc-multi-project
+      - run-ner-project
+      - run-content-scoring-project
+      - run-translation-project
+      - run-lsh-project
+      - run-topic-project
+      - run-transcript-segmentation-project
+      - run-topic-summarization-project
+      - run-apps
+    steps:
+      - name: Jobs Completion Check
+        uses: re-actors/alls-green@release/v1
+        with:
+          allowed-failures:
+          allowed-skips:
+          jobs: ${{ toJSON(needs) }}
