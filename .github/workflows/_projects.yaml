@@ -225,19 +225,19 @@ jobs:
           push: false
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
-          cache-from: |
-            type=s3,\
-            region=${{ secrets.AWS_DEFAULT_REGION }},\
-            bucket=ecr-cache-prod,\
-            name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},\
-            access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},\
+          cache-from: >-
+            type=s3,
+            region=${{ secrets.AWS_DEFAULT_REGION }},
+            bucket=ecr-cache-prod,
+            name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},
+            access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},
             secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          cache-to: |
-            type=s3,\
-            region=${{ secrets.AWS_DEFAULT_REGION }},\
-            bucket=ecr-cache-prod,\
-            name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},\
-            access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},\
+          cache-to: >-
+            type=s3,
+            region=${{ secrets.AWS_DEFAULT_REGION }},
+            bucket=ecr-cache-prod,
+            name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},
+            access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},
             secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           build-args: |
             TARGET_BUILD_STAGE=development
