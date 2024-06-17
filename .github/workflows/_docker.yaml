@@ -191,14 +191,14 @@ jobs:
           push: false
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
-          cache-from: >-
+          cache-from: |-
             type=s3,
             region=${{ secrets.AWS_DEFAULT_REGION }},
             bucket=ecr-cache-prod,
             name=${{ inputs.image }}-${{ inputs.tag }},
             access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},
             secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          cache-to: >-
+          cache-to: |-
             type=s3,
             region=${{ secrets.AWS_DEFAULT_REGION }},
             bucket=ecr-cache-prod,
@@ -276,7 +276,7 @@ jobs:
           aws-region: us-east-2
 
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2
+        uses: machulav/ec2-github-runner@v2.3.4
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
