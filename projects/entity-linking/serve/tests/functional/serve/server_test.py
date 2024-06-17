@@ -1,20 +1,13 @@
 """Server functional tests."""
 
-# Standard Library
-import time
-
 # 3rd party libraries
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging import get_default_logger
 from onclusiveml.serving.rest.serve import (
     LivenessProbeResponse,
     ReadinessProbeResponse,
 )
-
-
-logger = get_default_logger(__name__, level=20)
 
 
 def test_model_server_root(test_client):
@@ -540,18 +533,11 @@ def test_model_server_readiness(test_client):
 )
 def test_model_server_prediction(test_client, payload, expected_response):
     """Tests the predict endpoint of a running ModelServer instance."""
-    # Start timing
-    start_time = time.time()
     # Make the POST request
     response = test_client.post(
         "/entity-linking/v1/predict",
         json=payload,
     )
-    # End timing
-    end_time = time.time()
-    # Calculate elapsed time
-    elapsed_time = end_time - start_time
-    logger.info(f"Request time: {elapsed_time:.4f} seconds")
     assert response.status_code == 200
     assert response.json() == expected_response
 
