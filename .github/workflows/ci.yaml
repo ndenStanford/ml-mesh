@@ -1283,6 +1283,7 @@ jobs       :
 
   check:
     runs-on: ubuntu-latest
+    name: Jobs Completion Check
     if: always()
     needs:
       - get-environment
@@ -1310,7 +1311,7 @@ jobs       :
       - run-topic-summarization-project
       - run-apps
     steps:
-      - name: Jobs Completion Check
+      - name: Check Job Statuses
         uses: re-actors/alls-green@release/v1
         with:
           allowed-failures:
