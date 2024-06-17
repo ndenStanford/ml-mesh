@@ -7,6 +7,9 @@ ARG APP_NAME
 ARG APP_COMPONENT
 ARG APP_DIR="/apps/${APP_NAME}/${APP_COMPONENT}"
 
+# hadolint ignore=DL3002
+USER root
+
 RUN mkdir -p "${APP_DIR}" && \
     chown -R "${USER}:users" "${APP_DIR}"
 
@@ -24,8 +27,6 @@ COPY --chown=${USER}:users "${APP_DIR}/src" "${APP_DIR}/src"
 
 WORKDIR "${APP_DIR}"
 
-USER root
-
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
@@ -40,13 +41,13 @@ FROM builder as production
 # --- test build stage
 FROM builder as development
 
+USER root
+
 WORKDIR "/"
 
 COPY --chown=${USER}:users "${APP_DIR}/tests" "${APP_DIR}/tests"
 
 WORKDIR "${APP_DIR}"
-
-USER root
 
 RUN poetry install --no-interaction --with dev
 
