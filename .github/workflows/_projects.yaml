@@ -217,9 +217,11 @@ jobs:
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Login to ECR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         if: ${{ inputs.use-s3-cache }}
         with:
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild image with layer cache
@@ -378,9 +380,11 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Login to ECR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         if: ${{ inputs.use-s3-cache }}
         with:
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache

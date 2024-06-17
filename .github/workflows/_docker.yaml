@@ -182,9 +182,11 @@ jobs:
           AWS_REGION=${{ inputs.base-region }}
 
       - name: Login to ECR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         if: ${{ inputs.use-s3-cache }}
         with:
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild image with layer cache
@@ -249,7 +251,7 @@ jobs:
               USE_DOCKER_CACHE=true
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.use-s3-cache }}
+        if: ${{ !inputs.use-s3-cache }}
         run: |
           make docker.login \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -264,9 +266,11 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Login to ECR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         if: ${{ inputs.use-s3-cache }}
         with:
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache
