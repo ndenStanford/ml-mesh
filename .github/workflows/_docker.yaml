@@ -172,7 +172,7 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ inputs.use-s3-cache }}
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2.10.0
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -193,9 +193,9 @@ jobs:
           platforms: linux/amd64
           # yamllint disable rule:line-length
           cache-from: |
-            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
           cache-to: |
-            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
           # yamllint enable rule:line-length
           build-args: |
             TARGET_BUILD_STAGE=development
