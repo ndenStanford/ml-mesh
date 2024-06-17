@@ -7,31 +7,28 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-ENV HOME="${PROJECT_DIR}"
-
-RUN mkdir -p "${HOME}" && \
-    chown -R "${USER}:users" "${HOME}"
+# hadolint ignore=SC2086
+RUN mkdir -p "${PROJECT_DIR}" && \
+chown -R "${USER}:users" "${PROJECT_DIR}"
 
 WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+COPY --chown=${USER}:users "${PROJECT_DIR}/poetry.lock" "${PROJECT_DIR}/pyproject.toml" ./${PROJECT_DIR}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
 
 # source
-COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
+COPY --chown=${USER}:users "${PROJECT_DIR}/src" "${PROJECT_DIR}/src"
 
-WORKDIR "${HOME}"
+WORKDIR "${PROJECT_DIR}"
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
-
+    poetry cache clear pypi --all
 
 # --- production stage
 FROM builder as production
@@ -41,9 +38,9 @@ FROM builder as development
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
+COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
 
-WORKDIR "${HOME}"
+WORKDIR "${PROJECT_DIR}"
 
 RUN poetry install --no-interaction --with dev
 

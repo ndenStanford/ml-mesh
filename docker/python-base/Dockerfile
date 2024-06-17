@@ -5,8 +5,6 @@ FROM python:${PYTHON_VERSION}-slim as builder
 ARG IMAGE_NAME
 
 ENV USER=app
-ENV HOME="docker/${IMAGE_NAME}"
-
 ENV HOME="/home"
 
 ENV PYTHONUNBUFFERED=1 \
