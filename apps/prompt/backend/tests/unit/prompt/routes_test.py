@@ -104,7 +104,7 @@ def test_list_prompt(mock_prompt_scan, test_client):
 )
 @patch("src.prompt.functional.generate_from_prompt_template")
 def test_generate(mock_generate, alias, model, values, test_client):
-    """Test get model endpoint."""
+    """Test get generate from prompt template endpoint."""
     response = test_client.post(
         f"/api/v2/prompts/{alias}/generate/model/{model}",
         headers={"x-api-key": "1234"},
@@ -116,10 +116,10 @@ def test_generate(mock_generate, alias, model, values, test_client):
 
 @pytest.mark.parametrize(
     "alias, values",
-    [("prompt-1", {"text": ""})],
+    [("prompt-1", {"text": ""}), ("prompt-2", {"text": ""})],
 )
 @patch("src.prompt.functional.generate_from_default_model")
-def generate_from_default_model(mock_generate, alias, values, test_client):
+def test_generate_from_default_model(mock_generate, alias, values, test_client):
     """Test get model endpoint."""
     response = test_client.post(
         f"/api/v2/prompts/{alias}/generate",

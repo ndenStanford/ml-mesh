@@ -7,6 +7,9 @@ from typing import List
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
+# Internal libraries
+from onclusiveml.llms.prompt_validator import PromptInjectionException
+
 # Source
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
@@ -50,4 +53,10 @@ def get_model(alias: str):
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate(alias: str, prompt: str):
     """Generates text using a prompt template."""
-    return {"generated": F.generate_from_prompt(prompt, alias)}
+    try:
+        return {"generated": F.generate_from_prompt(prompt, alias)}
+    except PromptInjectionException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )

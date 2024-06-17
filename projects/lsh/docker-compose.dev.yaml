@@ -25,20 +25,8 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: lsh-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ENVIRONMENT: dev
-      DOCS_URL: /lsh/docs
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      PROMETHEUS_MULTIPROC_DIR: /tmp
-      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+    env_file: serve/config/dev.env
     profiles: [serve, functional]
     ports:
       - 8000:8000
@@ -65,19 +53,8 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
     environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: lsh-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ENVIRONMENT: dev
-      DOCS_URL: /lsh/docs
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+    env_file: serve/config/dev.env
     profiles: [debug]
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.serve.__main__]
     ports:
@@ -96,8 +73,7 @@ services:
         source: serve
         target: /projects/lsh/serve
     profiles: [unit]
-    environment:
-      ENVIRONMENT: dev
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -111,9 +87,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
-    environment:
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -127,9 +101,7 @@ services:
         target: /projects/lsh/serve
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
-    environment:
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
+    env_file: serve/config/dev.env
     profiles: [functional]
     hostname: onclusiveml
     networks:

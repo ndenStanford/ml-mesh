@@ -367,21 +367,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
-    environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      IPTC_MODEL_NAME: iptc-00000000
+    env_file: serve/config/dev.env
     profiles: [serve, functional, load]
     ports:
       - 8000:8000
@@ -414,17 +400,12 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, functional, load]
-
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: IP00000000-COMPILED-4
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
-      IPTC_MODEL_NAME: iptc-00000000
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks: [onclusive-net]
 
@@ -443,22 +424,10 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: iptc-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IPTC-COMPILED-6
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/iptc
-      NEPTUNE_MODEL_ID: IPTC-COMPILED
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: serve/config/dev.env
     profiles: [debug]
     command:
       - /bin/sh
@@ -488,14 +457,7 @@ services:
         source: serve/tests
         target: /projects/iptc/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 20 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      IPTC_MODEL_NAME: iptc-00000000
+    env_file: serve/config/dev.env
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -520,13 +482,7 @@ services:
         target: /projects/iptc/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no, -s]
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      IPTC_MODEL_NAME: iptc-00000000
+    env_file: serve/config/dev.env
     profiles: [integration]
     hostname: onclusiveml
     networks:
@@ -548,13 +504,7 @@ services:
         target: /projects/iptc/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      IPTC_MODEL_NAME: iptc-00000000
+    env_file: serve/config/dev.env
     profiles: [functional]
     hostname: onclusiveml
     networks:
@@ -580,10 +530,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [pytest, tests/load, -ra, -vv, --capture=no]
     environment:
-    # serving params
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
       ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
@@ -591,9 +537,7 @@ services:
       ONCLUSIVEML_SERVING_RESET_STATS: No
       ONCLUSIVEML_SERVING_RUN_TIME: 45s
       ONCLUSIVEML_SERVING_LOGLEVEL: INFO
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      IPTC_MODEL_NAME: iptc-00000000
+    env_file: serve/config/dev.env
     profiles: [load]
     hostname: onclusiveml
     networks:
@@ -619,13 +563,6 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: async
-      NEPTUNE_PROJECT: onclusive/iptc-00000000
-      NEPTUNE_MODEL_ID: IP00000000-COMPILED
-      NEPTUNE_MODEL_VERSION_ID: IP00000000-COMPILED-4
-      IPTC_MODEL_NAME: iptc-00000000
-      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/IP00000000-COMPILED-4
       DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
       DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
@@ -644,6 +581,7 @@ services:
       RUNNER_ARCH: development-arch
       RUNNER_NAME: development-name
       RUNNER_OS: development-os
+    env_file: serve/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
