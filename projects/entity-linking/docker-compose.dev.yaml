@@ -234,6 +234,7 @@ services:
       NEPTUNE_PROJECT: onclusive/entity-linking
       NEPTUNE_MODEL_ID: EL-TRAINED
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      EF_RUNTIME: ${EF_RUNTIME}
     profiles: [serve, integration, functional, load]
     ports:
       - 9000:9000
