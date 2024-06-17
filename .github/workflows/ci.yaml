@@ -1314,6 +1314,4 @@ jobs       :
       - name: Check Job Statuses
         uses: re-actors/alls-green@release/v1
         with:
-          allowed-failures:
-          allowed-skips:
           jobs: ${{ toJSON(needs) }}
