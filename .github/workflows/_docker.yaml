@@ -185,17 +185,22 @@ jobs:
         uses: docker/build-push-action@v5
         if: ${{ inputs.use-s3-cache }}
         with:
-          context: docker/${{ inputs.image }}
+          context: .
+          file: docker/${{ inputs.image }}/Dockerfile
           load: true
           push: false
           tags: ${{ inputs.tag }}
           platforms: linux/amd64
-          cache-from: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }}
-          cache-to: type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }}
+          cache-from: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          cache-to: |
+            type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-prod,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
           build-args: |
-            TARGET_BUILD_STAGE="development"
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
-            IMAGE_TAG="${{ inputs.tag }}"
+            TARGET_BUILD_STAGE=development
+            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            IMAGE_TAG=${{ inputs.tag }}
+            ENVIRONMENT=ci
+            IMAGE_NAME=${{ inputs.image}}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         if: ${{ !inputs.use-s3-cache }}
