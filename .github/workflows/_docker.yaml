@@ -181,6 +181,12 @@ jobs:
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           AWS_REGION=${{ inputs.base-region }}
 
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        if: ${{ inputs.use-s3-cache }}
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
+
       - name: Prebuild image with layer cache
         id: build-and-push
         uses: docker/build-push-action@v4.2.1
@@ -204,6 +210,7 @@ jobs:
             IMAGE_TAG=${{ inputs.tag }}
             ENVIRONMENT=ci
             IMAGE_NAME=${{ inputs.image}}
+            CUDA_VERSION=11.7.1
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         if: ${{ !inputs.use-s3-cache }}
@@ -285,6 +292,7 @@ jobs:
             IMAGE_TAG=${{ inputs.tag }}
             ENVIRONMENT=ci
             IMAGE_NAME=${{ inputs.image}}
+            CUDA_VERSION=11.7.1
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.image }}'

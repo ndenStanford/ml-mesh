@@ -216,6 +216,12 @@ jobs:
         if: ${{ !inputs.use-s3-cache }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Login to ECR
+        uses: docker/login-action@v3
+        if: ${{ inputs.use-s3-cache }}
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
+
       - name: Prebuild image with layer cache
         id: build-and-push
         uses: docker/build-push-action@v4.2.1
