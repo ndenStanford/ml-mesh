@@ -1,17 +1,16 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""Encoder."""
 
 # Standard Library
 from typing import Optional
 
 # ML libs
 import torch.nn as nn
-from transformers import AutoConfig, AutoModel
+from transformers import AutoModel
 
 
 class HFEncoder(nn.Module):
+    """Encoder."""
+
     def __init__(
         self,
         model_path: str = "xlm-roberta-base",
@@ -24,6 +23,7 @@ class HFEncoder(nn.Module):
         self.embedding_dim = self.transformer.encoder.config.hidden_size
 
     def forward(self, input_ids, attention_mask=None):
+        """Forward Encoder."""
         output = self.transformer(input_ids=input_ids, attention_mask=attention_mask)
         last_layer = output["last_hidden_state"]
         sentence_rep = last_layer[:, 0, :]

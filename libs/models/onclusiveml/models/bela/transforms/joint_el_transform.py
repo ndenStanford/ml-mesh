@@ -1,5 +1,4 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""EL Transform."""
 
 # Standard Library
 from enum import Enum
@@ -7,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # ML libs
 import torch
-import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 
 # Internal libraries
@@ -16,24 +14,24 @@ from onclusiveml.models.bela.transforms.spm_transform import SPMTransform
 
 
 class ReadState(Enum):
+    """Storage class."""
+
     ReadAlphaNum = 1
     ReadSpace = 2
     ReadOther = 3
 
 
 def insert_spaces(text: str) -> Tuple[str, List[int]]:
-    """
-    The raw string inputs are sometimes miss spaces between
-    text pieces, like smiles could joint text:
+    """Inserts spaces into a string where necessary to separate alphanumeric and non-alphanumeric characters.
 
-    [smile]Some text.[smile] another text.
+    Args:
+        text (str): The input text to process.
 
-    This function modify text string to separate alphanumeric tokens
-    from any other tokens to make models live easier. The above example
-    will become:
-
-    [smile] Some text . [smile] another text .
-    """
+    Returns:
+        Tuple[str, List[int]]: A tuple containing:
+            - The modified text with additional spaces inserted.
+            - A list of indices where spaces were inserted.
+    """  # noqa
     out_str: str = ""
     insertions: List[int] = []
     # In the beginning of the string we assume we just read some space
@@ -70,6 +68,7 @@ def insert_spaces(text: str) -> Tuple[str, List[int]]:
 
 
 def lower_bound(a: List[int], x: int) -> int:
+    """Finds the index of the first element in a sorted list 'a' that is greater than or equal to 'x' using binary search."""  # noqa
     lo: int = 0
     hi: int = len(a)
     while lo < hi:
@@ -82,6 +81,7 @@ def lower_bound(a: List[int], x: int) -> int:
 
 
 def align_start(start: int, starts: List[int]) -> int:
+    """Aligns a given start position with the closest available position in a list of starts."""  # noqa
     new_start: int = start
     if start not in starts:
         if len(starts) > 0:
@@ -92,6 +92,7 @@ def align_start(start: int, starts: List[int]) -> int:
 
 
 def align_end(end: int, ends: List[int]) -> int:
+    """Aligns a given end position with the closest available position in a list of ends."""  # noqa
     new_end: int = end
     if end not in ends:
         if len(ends) > 0:
@@ -110,12 +111,9 @@ def pieces_to_texts(
     eos_idx: int,
     max_seq_len: int = 256,
 ):
-    """
-    Function takes an array with SP tokenized word tokens and original texts
-    and convert youda tokenized batch to SP tokenized batch. Mention offsets
-    and lengths are also converted with respect to SP tokens.
+    """Function convert youda tokenized batch to SP tokenized batch.
 
-    Inputs:
+    Args:
         1) texts_pieces_token_ids: List with sp tokens per text token
         2) texts: original yoda tokenized texts
         3) texts_mention_offsets: mention offsets in original texts
@@ -124,12 +122,12 @@ def pieces_to_texts(
         6) eos_idx: tokenizer eos index
         7) max_seq_len: tokenizer max sequence length
 
-    Outputs:
+    Returns:
         new_texts_token_ids: List[List[int]] - text batch with sp tokens
         new_seq_lengths: List[int] - sp tokenized texts lengths
         new_mention_offsets: List[List[int]] - converted mention offsets
         new_mention_lengths: List[List[int]] - converted mention lengths
-    """
+    """  # noqa
     new_texts_token_ids: List[List[int]] = []
     new_seq_lengths: List[int] = []
     new_mention_offsets: List[List[int]] = []
@@ -148,7 +146,7 @@ def pieces_to_texts(
         mention_lengths: List[int] = []
 
         for token_ids in texts_pieces_token_ids[
-            pieces_offset : pieces_offset + len(text)
+            pieces_offset : pieces_offset + len(text)  # noqa
         ]:
             token_ids = token_ids[1:-1]
             current_pos = len(text_token_ids)
@@ -188,27 +186,9 @@ def pieces_to_texts(
 
 
 @torch.jit.script
-def pad_tokens_mapping(tokens_mapping: List[List[List[int]]]) -> List[List[List[int]]]:
-    seq_lens: List[int] = []
-    for seq in tokens_mapping:
-        seq_lens.append(len(seq))
-    pad_to_length = max(seq_lens)
-
-    for mapping in tokens_mapping:
-        padding = pad_to_length - len(mapping)
-        if padding >= 0:
-            for _ in range(padding):
-                mapping.append([0, 1])
-        else:
-            for _ in range(-padding):
-                mapping.pop()
-    return tokens_mapping
-
-
-@torch.jit.script
 def pad_tokens_mapping(
     tokens_mapping: List[List[Tuple[int, int]]]
-) -> List[List[Tuple[int, int]]]:
+) -> List[List[Tuple[int, int]]]:  # noqa
     seq_lens: List[int] = []
     for seq in tokens_mapping:
         seq_lens.append(len(seq))
@@ -229,6 +209,7 @@ def pad_tokens_mapping(
 def pad_2d(
     batch: List[List[int]], seq_lens: List[int], pad_idx: int, max_len: int = -1
 ) -> List[List[int]]:
+    """Pads a 2D list of integers (batch) to the maximum length found in seq_lens."""
     pad_to_length = max(seq_lens)
     if max_len > 0:
         pad_to_length = min(pad_to_length, max_len)
@@ -244,6 +225,8 @@ def pad_2d(
 
 
 class JointELCollate(torch.nn.Module):
+    """PyTorch module for collating and padding batched inputs for joint entity linking models."""
+
     def __init__(
         self,
         pad_idx: int = 1,
@@ -275,6 +258,7 @@ class JointELCollate(torch.nn.Module):
         self.insertions_column = insertions_column
 
     def forward(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+        """Perform padding and collation of the input batch according to the specified columns."""  # noqa
         token_ids = batch[self.token_ids_column]
         assert torch.jit.isinstance(token_ids, List[List[int]])
         seq_lens = batch[self.seq_lens_column]
@@ -362,6 +346,8 @@ class JointELCollate(torch.nn.Module):
 
 
 class JointELTransform(HFTransform):
+    """Transformer based on Hugging Face's Transformers library."""
+
     def __init__(
         self,
         model_path: str = "xlm-roberta-base",
@@ -409,6 +395,14 @@ class JointELTransform(HFTransform):
         )
 
     def transform(self, batch: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform input batch into tokenized sequences and related information for joint entity linking.
+
+        Args:
+            batch (Dict[str, Any]): A dictionary containing batched inputs.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing transformed data including tokenized inputs.
+        """
         texts = batch[self.texts_column]
         torch.jit.isinstance(texts, List[List[str]])
         mention_offsets = batch[self.mention_offsets_column]
@@ -456,10 +450,17 @@ class JointELTransform(HFTransform):
         }
 
     def forward(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+        """Transform and collate the input batch into tensors suitable for model input.
+
+        Args:
+            batch (Dict[str, Any]): A dictionary containing batched inputs.
+        """  # noqa
         return self._collate(self.transform(batch))
 
 
 class JointELXlmrRawTextTransform(SPMTransform):
+    """JointELXlmrRawTextTransform instance."""
+
     def __init__(
         self,
         sp_model_path: Optional[str] = None,
@@ -524,7 +525,7 @@ class JointELXlmrRawTextTransform(SPMTransform):
     def _calculate_alpha_num_boundaries(
         self, texts: List[str]
     ) -> List[List[List[int]]]:
-        """Returns for each text, a list of lists of start and end indices of alpha-numeric substrings (~=words)."""
+        """Returns for each text, a list of lists of start and end indices of alpha-numeric substrings (~=words)."""  # noqa
         alpha_num_boundaries: List[List[List[int]]] = []
         for text in texts:
             example_alpha_num_boundaries: List[List[int]] = []
@@ -551,7 +552,18 @@ class JointELXlmrRawTextTransform(SPMTransform):
         sp_token_boundaries: List[List[List[int]]],
         word_boundaries: List[List[List[int]]],
     ) -> List[List[List[int]]]:
-        # Prepare list of possible mention start, ends pairs in terms of SP tokens.
+        """Prepare list of possible mention start, ends pairs in terms of SP tokens.
+
+        Args:
+            sp_token_ids (List[List[int]]): List of lists of SP token IDs.
+            sp_token_boundaries (List[List[List[int]]]): List of lists of SP token boundaries.
+            word_boundaries (List[List[List[int]]]): List of lists of word boundaries.
+
+        Returns:
+            List[List[List[int]]]: A list where each element corresponds to an example, containing lists of token mappings for mentions.
+                Each token mapping list contains pairs [start_token_index, end_token_index] representing possible mention boundaries in terms of SP tokens.
+                The indices are 1-based and adjusted for BOS and EOS tokens.
+        """  # noqa
         if self.mention_boundaries_on_word_boundaries:
             token_mapping: List[List[List[int]]] = []
             for ex_word_boundaries, ex_sp_token_boundaries in zip(
@@ -599,7 +611,18 @@ class JointELXlmrRawTextTransform(SPMTransform):
         char_offsets: List[List[int]],
         char_lengths: List[List[int]],
     ) -> Tuple[List[List[int]], List[List[int]]]:
-        # TODO: Doesn't this do something similar to _calculate_token_mapping?
+        """Convert character-based mention offsets to SP token-based offsets and lengths.
+
+        Args:
+            sp_token_boundaries (List[List[List[int]]]): List of lists of SP token boundaries for each example.
+            char_offsets (List[List[int]]): List of lists of character offsets for each mention in each example.
+            char_lengths (List[List[int]]): List of lists of character lengths for each mention in each example.
+
+        Returns:
+            Tuple[List[List[int]], List[List[int]]]: A tuple containing:
+                - sp_offsets (List[List[int]]): List of lists of SP token offsets for each mention in each example.
+                - sp_lengths (List[List[int]]): List of lists of SP token lengths for each mention in each example.
+        """  # noqa
         sp_offsets: List[List[int]] = []
         sp_lengths: List[List[int]] = []
         for example_char_offsets, example_char_lengths, example_token_boundaries in zip(
@@ -622,7 +645,7 @@ class JointELXlmrRawTextTransform(SPMTransform):
                     token_idx -= 1
                 example_sp_offsets.append(token_idx)
                 token_start_idx = token_idx
-                while (  # Same method for the end token: find the first token that ends before the end of the mention
+                while (  # noqa Same method for the end token: find the first token that ends before the end of the mention
                     token_idx < len(example_token_boundaries)
                     and example_token_boundaries[token_idx][1] < offset + length
                 ):
@@ -704,17 +727,18 @@ class JointELXlmrRawTextTransform(SPMTransform):
         mention_lengths: List[List[int]],
         word_boundaries: List[List[List[int]]],
     ) -> Tuple[List[List[int]], List[List[int]]]:
-        """
-        In some training examples we can face situations where ground
-        truth offsets point to the middle of the word, ex:
-        ```
-        Playlist in "#NuevaPlaylist ➡ Desempo"
-        mente in "simplemente retirarte"
-        ```
-        we can align the offsets to the word boundaries, so in the examples
-        above we will mark `NuevaPlaylist` and `simplemente` as mentions.
-        """
+        """Align mention offsets and lengths to word boundaries in the text.
 
+        Args:
+            mention_offsets (List[List[int]]): List of lists of mention offsets for each example.
+            mention_lengths (List[List[int]]): List of lists of mention lengths for each example.
+            word_boundaries (List[List[List[int]]]): List of lists of word boundaries for each example.
+
+        Returns:
+            Tuple[List[List[int]], List[List[int]]]: A tuple containing:
+                - new_mention_offsets (List[List[int]]): List of lists of aligned mention offsets.
+                - new_mention_lengths (List[List[int]]): List of lists of aligned mention lengths.
+        """  # noqa
         new_mention_offsets: List[List[int]] = []
         new_mention_lengths: List[List[int]] = []
         for ex_mention_offsets, ex_mention_length, ex_word_boundaries in zip(
@@ -740,6 +764,14 @@ class JointELXlmrRawTextTransform(SPMTransform):
         return new_mention_offsets, new_mention_lengths
 
     def transform(self, batch: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform the input batch of text data into tensors suitable for model input.
+
+        Args:
+            batch (Dict[str, Any]): A dictionary containing batched inputs
+
+        Returns:
+            Dict[str, Any]: A dictionary containing transformed tensors ready for model input
+        """
         texts = batch[self.texts_column]
         assert torch.jit.isinstance(texts, List[str])
 
@@ -832,4 +864,5 @@ class JointELXlmrRawTextTransform(SPMTransform):
         return output
 
     def forward(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+        """Forward method."""
         return self._collate(self.transform(batch))
