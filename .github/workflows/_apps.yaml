@@ -93,7 +93,7 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ inputs.use-s3-cache }}
-        uses: docker/setup-buildx-action@v2.10.0
+        uses: docker/setup-buildx-action@v3
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
         # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -101,7 +101,7 @@ jobs:
 
       - name: Prebuild development image with layer cache
         id: build-and-push-developemnt
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4.2.1
         if: ${{ inputs.use-s3-cache }}
         with:
           context: .
@@ -193,7 +193,7 @@ jobs:
 
       - name: Prebuild production image with layer cache
         id: build-and-push-production
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4.2.1
         if: ${{ inputs.use-s3-cache }}
         with:
           context: .
