@@ -199,6 +199,7 @@ jobs:
           load: true
           push: false
           platforms: linux/amd64
+          target: development
           # yamllint disable rule:line-length
           cache-from: |
             type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
@@ -275,6 +276,7 @@ jobs:
           file: docker/${{ inputs.image }}/Dockerfile
           push: true
           platforms: linux/amd64
+          target: production
           # yamllint disable rule:line-length
           cache-from: |
             type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.image }}-${{ inputs.tag }},access_key_id=${{secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}

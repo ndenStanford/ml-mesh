@@ -242,8 +242,9 @@ jobs:
           cache-to: |
             type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # yamllint enable rule:line-length
+          no-cache-filters: debugger
+          target: development
           build-args: |
-            TARGET_BUILD_STAGE=development
             AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
             BASE_IMAGE_TAG=v23.11.3
             IMAGE_TAG=${{ inputs.tag }}
@@ -388,6 +389,7 @@ jobs:
           file: projects/${{ inputs.project }}/${{ inputs.component }}/Dockerfile
           push: true
           platforms: linux/amd64
+          no-cache-filters: debugger
           # yamllint disable rule:line-length
           cache-from: |
             type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.project }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -396,8 +398,8 @@ jobs:
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
           # yamllint enable rule:line-length
+          target: production
           build-args: |
-            TARGET_BUILD_STAGE=production
             AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
             BASE_IMAGE_TAG=v23.11.3
             IMAGE_TAG=${{ inputs.tag }}

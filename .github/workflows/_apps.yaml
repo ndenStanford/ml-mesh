@@ -108,7 +108,7 @@ jobs:
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild development image with layer cache
-        id: build-and-push-developemnt
+        id: build-and-push-development
         uses: docker/build-push-action@v4.2.1
         if: ${{ inputs.use-s3-cache }}
         with:
@@ -117,6 +117,8 @@ jobs:
           load: true
           push: false
           platforms: linux/amd64
+          no-cache-filters: debugger
+          target: development
           # yamllint disable rule:line-length
           cache-from: |
             type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.app }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
@@ -204,6 +206,8 @@ jobs:
           file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
           push: true
           platforms: linux/amd64
+          no-cache-filters: debugger
+          target: production
           # yamllint disable rule:line-length
           cache-from: |
             type=s3,region=${{ secrets.AWS_DEFAULT_REGION }},bucket=ecr-cache-dev,name=${{ inputs.app }}-${{ inputs.component }}-${{ inputs.tag }},access_key_id=${{ secrets.AWS_ACCESS_KEY_ID}},secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}
