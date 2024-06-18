@@ -23,67 +23,13 @@ from onclusiveml.tracking import (
 
 
 EL_SUPPORTED_LANGUAGE = [
-    LanguageIso.AF,  # Afrikaans
     LanguageIso.AR,  # Arabic
-    LanguageIso.BG,  # Bulgarian
-    LanguageIso.BN,  # Bengali
-    LanguageIso.CA,  # Catalan
-    LanguageIso.CS,  # Czech
-    LanguageIso.CY,  # Welsh
-    LanguageIso.DA,  # Danish
-    LanguageIso.DE,  # German
-    LanguageIso.EL,  # Greek
     LanguageIso.EN,  # English
-    LanguageIso.ES,  # Spanish
-    LanguageIso.ET,  # Estonian
-    LanguageIso.FA,  # Farsi (Persian)
-    LanguageIso.FI,  # Finnish
     LanguageIso.FR,  # French
-    LanguageIso.GU,  # Gujarati
-    LanguageIso.HE,  # Hebrew
-    LanguageIso.HI,  # Hindi
-    LanguageIso.HR,  # Croatian
-    LanguageIso.HU,  # Hungarian
-    LanguageIso.ID,  # Indonesian
+    LanguageIso.DE,  # German
     LanguageIso.IT,  # Italian
+    LanguageIso.ES,  # Spanish
     LanguageIso.JA,  # Japanese
-    LanguageIso.KN,  # Kannada
-    LanguageIso.KO,  # Korean
-    LanguageIso.LT,  # Lithuanian
-    LanguageIso.LV,  # Latvian
-    LanguageIso.MK,  # Macedonian
-    LanguageIso.ML,  # Malayalam
-    LanguageIso.MR,  # Marathi
-    LanguageIso.NL,  # Dutch
-    LanguageIso.NO,  # Norwegian (Bokmål)
-    LanguageIso.PA,  # Punjabi
-    LanguageIso.PL,  # Polish
-    LanguageIso.PT,  # Portuguese (Brazil)
-    LanguageIso.RO,  # Romanian
-    LanguageIso.RU,  # Russian
-    LanguageIso.SK,  # Slovak
-    LanguageIso.SL,  # Slovenian
-    LanguageIso.SO,  # Somali
-    LanguageIso.SQ,  # Albanian
-    LanguageIso.SV,  # Swedish
-    LanguageIso.SW,  # Swahili
-    LanguageIso.TA,  # Tamil
-    LanguageIso.TE,  # Telugu
-    LanguageIso.TH,  # Thai
-    LanguageIso.TR,  # Turkish
-    LanguageIso.UK,  # Ukrainian
-    LanguageIso.UR,  # Urdu
-    LanguageIso.VI,  # Vietnamese
-    LanguageIso.ZH,  # Chinese (Simplified)
-    LanguageIso.TL,  # Tagalog
-    LanguageIso.HT,  # Haitian Creole
-    LanguageIso.SR,  # Serbian
-    LanguageIso.IS,  # Icelandic
-    LanguageIso.SI,  # Sinhala
-    LanguageIso.AM,  # Amharic
-    LanguageIso.HY,  # Armenian
-    LanguageIso.KA,  # Georgian
-    LanguageIso.PS,  # Pashto
 ]
 
 
