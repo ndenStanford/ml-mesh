@@ -158,6 +158,7 @@ jobs:
     env:
       DOCKER_BUILDKIT: 1
       COMPOSE_DOCKER_CLI_BUILD: 1
+      BUILDKIT_INLINE_CACHE: 1
 
     steps:
       - name: Check out code
