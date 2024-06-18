@@ -213,7 +213,7 @@ jobs:
           cache-from: |
             type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           cache-to: |
-            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
+            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           # yamllint enable rule:line-length
