@@ -224,14 +224,13 @@ jobs:
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
-      - name: Prebuild image with layer cache
-        id: build-and-push
+      - name: Prebuild development image with layer cache
+        id: build-and-push-development
         uses: docker/build-push-action@v4.2.1
         if: ${{ inputs.use-s3-cache }}
         with:
           context: .
           file: projects/${{ inputs.project }}/${{ inputs.component }}/Dockerfile
-          load: true
           push: false
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
@@ -268,7 +267,6 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.use-s3-cache }}
         run: |
           make projects.unit/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -279,7 +277,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.download-model && !inputs.use-s3-cache }}
+        if: ${{ inputs.download-model }}
         run: |
           make projects.run/${{ inputs.project }} \
             COMPONENT=${{ inputs.component }} \
@@ -295,7 +293,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.integration && !inputs.use-s3-cache }}
+        if: ${{ inputs.integration }}
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -312,7 +310,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.functional && !inputs.use-s3-cache }}
+        if: ${{ inputs.functional }}
         run: |
           make projects.functional/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -329,7 +327,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.load && !inputs.use-s3-cache}}
+        if: ${{ inputs.load }}
         run: |
           make projects.load/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -340,7 +338,7 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ inputs.upload-test-results && !inputs.use-s3-cache }}
+        if: ${{ inputs.upload-test-results }}
         run: |
           make projects.run/${{ inputs.project }} \
             COMPONENT=${{ inputs.component }} \
@@ -379,14 +377,6 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
-
-      - name: Login to ECR
-        uses: docker/login-action@v2
-        if: ${{ inputs.use-s3-cache }}
-        with:
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache
         id: build-and-push-production

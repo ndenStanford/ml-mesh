@@ -174,7 +174,7 @@ jobs:
         if: ${{ inputs.use-s3-cache }}
         uses: docker/setup-buildx-action@v2
 
-      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ !inputs.use-s3-cache }}
         run: |
           make docker.login \
@@ -189,14 +189,13 @@ jobs:
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
-      - name: Prebuild image with layer cache
-        id: build-and-push
+      - name: Prebuild development image with layer cache
+        id: build-and-push-development
         uses: docker/build-push-action@v4.2.1
         if: ${{ inputs.use-s3-cache }}
         with:
           context: .
           file: docker/${{ inputs.image }}/Dockerfile
-          load: true
           push: false
           platforms: linux/amd64
           # yamllint disable rule:line-length
@@ -226,7 +225,7 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build && !inputs.use-s3-cache }}
+        if: ${{ inputs.validate-build }}
         run: |
           make docker.validate/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -265,14 +264,6 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             ENVIRONMENT="ci"
-
-      - name: Login to ECR
-        uses: docker/login-action@v2
-        if: ${{ inputs.use-s3-cache }}
-        with:
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache
         id: build-and-push-production

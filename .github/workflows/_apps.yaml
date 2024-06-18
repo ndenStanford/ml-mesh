@@ -115,7 +115,6 @@ jobs:
           context: .
           file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
           push: false
-          load: true
           platforms: linux/amd64
           # yamllint disable rule:line-length
           cache-from: |
@@ -149,7 +148,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') && !inputs.use-s3-cache }}
+        if: ${{ (inputs.release || steps.files-changed.outputs.this == 'true') }}
         run: |
           make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -161,7 +160,7 @@ jobs:
           ENVIRONMENT="ci"
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration && !inputs.use-s3-cache }}
+        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -194,14 +193,6 @@ jobs:
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           ENVIRONMENT="ci"
-
-      - name: Login to ECR
-        uses: docker/login-action@v2
-        if: ${{ inputs.use-s3-cache }}
-        with:
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
 
       - name: Prebuild production image with layer cache
         id: build-and-push-production
