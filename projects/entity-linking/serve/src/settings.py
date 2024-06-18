@@ -22,14 +22,18 @@ from onclusiveml.tracking import (
 )
 
 
-EL_SUPPORTED_LANGUAGE = [
-    LanguageIso.AR,  # Arabic
+EL_SUPPORTED_LANGUAGES = [
     LanguageIso.EN,  # English
     LanguageIso.FR,  # French
     LanguageIso.DE,  # German
     LanguageIso.IT,  # Italian
     LanguageIso.ES,  # Spanish
+    LanguageIso.CA,  # Catalan
+    LanguageIso.PT,  # Portuguese
+    LanguageIso.ZH,  # Chinese
     LanguageIso.JA,  # Japanese
+    LanguageIso.KO,  # Korean
+    LanguageIso.AR,  # Arabic
 ]
 
 
@@ -58,7 +62,7 @@ class ServerModelSettings(ServingParams):
 class ELSettings(TrackedParams):
     """Sentiment settings."""
 
-    supported_languages: List[LanguageIso] = EL_SUPPORTED_LANGUAGE
+    supported_languages: List[LanguageIso] = EL_SUPPORTED_LANGUAGES
 
 
 class GlobalSettings(
