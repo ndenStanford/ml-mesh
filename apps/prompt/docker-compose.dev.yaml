@@ -98,6 +98,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       AWS_PROFILE: dev
+      VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
         condition: service_healthy
@@ -133,6 +134,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       AWS_PROFILE: dev
+      VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
         condition: service_healthy
@@ -173,6 +175,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       GITHUB_APP_ID: ${GITHUB_APP_ID:-}
       GITHUB_APP_PRIVATE_KEY: ${GITHUB_APP_PRIVATE_KEY:-}
+      VALIDATE_PROMPT_INJECTION: true
     networks:
       - onclusive-net
 
@@ -210,6 +213,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       AWS_PROFILE: dev
+      VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
         condition: service_healthy

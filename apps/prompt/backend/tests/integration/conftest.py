@@ -33,7 +33,11 @@ TEST_PROMPTS = [
     PromptTemplate(
         alias="prompt2", template="What's happening?", project="integration-test-2"
     ),
-    PromptTemplate(alias="prompt3", template="Bonjour!", project="integration-test-2"),
+    PromptTemplate(
+        alias="prompt3",
+        template="Bonjour, quelle est la capitale de la {country}?",
+        project="integration-test-2",
+    ),
 ]
 
 
