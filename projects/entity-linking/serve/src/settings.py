@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
@@ -11,13 +11,80 @@ from pydantic import Field
 
 # Internal libraries
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
+from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.params import ServingBaseParams  # noqa
 from onclusiveml.serving.rest.serve.params import ServingParams  # noqa
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TrackedModelSpecs,
+    TrackedParams,
 )
+
+
+EL_SUPPORTED_LANGUAGE = [
+    LanguageIso.AF,  # Afrikaans
+    LanguageIso.AR,  # Arabic
+    LanguageIso.BG,  # Bulgarian
+    LanguageIso.BN,  # Bengali
+    LanguageIso.CA,  # Catalan
+    LanguageIso.CS,  # Czech
+    LanguageIso.CY,  # Welsh
+    LanguageIso.DA,  # Danish
+    LanguageIso.DE,  # German
+    LanguageIso.EL,  # Greek
+    LanguageIso.EN,  # English
+    LanguageIso.ES,  # Spanish
+    LanguageIso.ET,  # Estonian
+    LanguageIso.FA,  # Farsi (Persian)
+    LanguageIso.FI,  # Finnish
+    LanguageIso.FR,  # French
+    LanguageIso.GU,  # Gujarati
+    LanguageIso.HE,  # Hebrew
+    LanguageIso.HI,  # Hindi
+    LanguageIso.HR,  # Croatian
+    LanguageIso.HU,  # Hungarian
+    LanguageIso.ID,  # Indonesian
+    LanguageIso.IT,  # Italian
+    LanguageIso.JA,  # Japanese
+    LanguageIso.KN,  # Kannada
+    LanguageIso.KO,  # Korean
+    LanguageIso.LT,  # Lithuanian
+    LanguageIso.LV,  # Latvian
+    LanguageIso.MK,  # Macedonian
+    LanguageIso.ML,  # Malayalam
+    LanguageIso.MR,  # Marathi
+    LanguageIso.NL,  # Dutch
+    LanguageIso.NO,  # Norwegian (Bokmål)
+    LanguageIso.PA,  # Punjabi
+    LanguageIso.PL,  # Polish
+    LanguageIso.PT,  # Portuguese (Brazil)
+    LanguageIso.RO,  # Romanian
+    LanguageIso.RU,  # Russian
+    LanguageIso.SK,  # Slovak
+    LanguageIso.SL,  # Slovenian
+    LanguageIso.SO,  # Somali
+    LanguageIso.SQ,  # Albanian
+    LanguageIso.SV,  # Swedish
+    LanguageIso.SW,  # Swahili
+    LanguageIso.TA,  # Tamil
+    LanguageIso.TE,  # Telugu
+    LanguageIso.TH,  # Thai
+    LanguageIso.TR,  # Turkish
+    LanguageIso.UK,  # Ukrainian
+    LanguageIso.UR,  # Urdu
+    LanguageIso.VI,  # Vietnamese
+    LanguageIso.ZH,  # Chinese (Simplified)
+    LanguageIso.TL,  # Tagalog
+    LanguageIso.HT,  # Haitian Creole
+    LanguageIso.SR,  # Serbian
+    LanguageIso.IS,  # Icelandic
+    LanguageIso.SI,  # Sinhala
+    LanguageIso.AM,  # Amharic
+    LanguageIso.HY,  # Armenian
+    LanguageIso.KA,  # Georgian
+    LanguageIso.PS,  # Pashto
+]
 
 
 class TrackedTrainedModelSpecs(TrackedModelSpecs):
@@ -42,9 +109,16 @@ class ServerModelSettings(ServingParams):
     config_name: str = "joint_el_mel_new"
 
 
+class ELSettings(TrackedParams):
+    """Sentiment settings."""
+
+    supported_languages: List[LanguageIso] = EL_SUPPORTED_LANGUAGE
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedTrainedModelSpecs,
+    ELSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
 ):
