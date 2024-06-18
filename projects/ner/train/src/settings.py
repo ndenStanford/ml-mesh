@@ -32,15 +32,17 @@ class Inputs(TrackedParams):
     """Inputs."""
 
     sample_documents: List[str]
-
-    # Custom validator to apply eval to all fields
-    @validator("*", pre=True)
+        
+    # Custom validator to apply eval to string inputs only
+    @validator("sample_documents", pre=True)
     def eval_fields(cls, value: Any) -> Any:
         """Eval input parameters to support Sagemaker estimator constraint."""
-        try:
-            return eval(value)
-        except Exception as e:
-            raise ValueError(f"Error evaluating value {value}: {e}")
+        if isinstance(value, str):
+            try:
+                return eval(value)
+            except Exception as e:
+                raise ValueError(f"Error evaluating value {value}: {e}")
+        return value
 
     class Config:
         env_file = "config/dev.env"
