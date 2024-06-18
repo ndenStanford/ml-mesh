@@ -120,14 +120,10 @@ jobs:
           platforms: linux/amd64
           no-cache-filters: debugger
           target: development
-          # yamllint disable rule:line-length
-          cache-from: |
-            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           cache-to: |
             type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
-          # yamllint enable rule:line-length
           build-args: |
             TARGET_BUILD_STAGE=development
             BASE_IMAGE_TAG=v23.11.3
@@ -209,14 +205,10 @@ jobs:
           platforms: linux/amd64
           no-cache-filters: debugger
           target: production
-          # yamllint disable rule:line-length
           cache-from: |
             type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
-          cache-to: |
-            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
-          # yamllint enable rule:line-length
           build-args: |
             TARGET_BUILD_STAGE=production
             BASE_IMAGE_TAG=v23.11.3
