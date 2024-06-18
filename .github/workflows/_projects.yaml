@@ -6,7 +6,7 @@ on  :
       environment:
         required: true
         type: string
-        description: Environment where code is deployed [prod, stage]
+        description: Environment where code is deployed [prod, dev]
       project:
         required: true
         type: string
@@ -214,7 +214,8 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -223,7 +224,8 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Download model artifact before further tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.download-model }}
@@ -238,7 +240,8 @@ jobs:
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component integration tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.integration }}
@@ -254,7 +257,8 @@ jobs:
             ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component functional tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.functional }}
@@ -270,7 +274,8 @@ jobs:
             ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Run project component load tests | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.load }}
@@ -280,7 +285,8 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Upload project component (load) test results | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         if: ${{ inputs.upload-test-results }}
@@ -297,7 +303,8 @@ jobs:
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -307,7 +314,8 @@ jobs:
             TARGET_BUILD_STAGE="production" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
-            USE_DOCKER_CACHE=true
+            USE_DOCKER_CACHE=true \
+            DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -316,7 +324,8 @@ jobs:
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci" \
+            DEPLOYMENT="${{ inputs.environment }}"
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'

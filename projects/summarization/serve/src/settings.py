@@ -29,7 +29,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     # Prompt url
     prompt_api: str = "http://prompt-backend:4000"
     internal_ml_endpoint_api_key: str = "1234"
-    summarization_default_model: str = "gpt-4-1106-preview"
+    summarization_default_model: str = "gpt-4o"
 
     summarization_prompts: Dict[str, Dict[str, Dict[str, str]]] = {
         "en": {
