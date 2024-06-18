@@ -533,11 +533,11 @@ def test_model_server_readiness(test_client):
 )
 def test_model_server_prediction(test_client, payload, expected_response):
     """Tests the predict endpoint of a running ModelServer instance."""
-    # Make the POST request
     response = test_client.post(
         "/entity-linking/v1/predict",
         json=payload,
     )
+
     assert response.status_code == 200
     assert response.json() == expected_response
 
