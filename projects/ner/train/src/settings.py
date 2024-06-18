@@ -32,7 +32,7 @@ class Inputs(TrackedParams):
     """Inputs."""
 
     sample_documents: List[str]
-        
+    
     # Custom validator to apply eval to string inputs only
     @validator("sample_documents", pre=True)
     def eval_fields(cls, value: Any) -> Any:
