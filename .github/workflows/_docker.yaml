@@ -6,7 +6,7 @@ on  :
       environment:
         required: true
         type: string
-        description: Environment where code is deployed [prod, stage]
+        description: Environment where code is deployed [prod, dev]
       image:
         required: true
         type: string
