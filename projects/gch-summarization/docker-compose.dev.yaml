@@ -133,7 +133,7 @@ services:
       - /bin/sh
       - -c
       - |
-        python -m src.download
+        python -m src.util.download
         python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
     ports:
       - 5678:5678

@@ -8,14 +8,14 @@ ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
 ENV USER=app
+ENV HOME="${PROJECT_DIR}"
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${PROJECT_DIR}" \
+ && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${PROJECT_DIR}" \
+ && chown -R ${USER}:users "${HOME}" \
  && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /home \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share
@@ -27,15 +27,15 @@ WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${PROJECT_DIR}/poetry.lock" "${PROJECT_DIR}/pyproject.toml" ./${PROJECT_DIR}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
 
 # source
-COPY --chown=${USER}:users "${PROJECT_DIR}/src" "${PROJECT_DIR}/src"
+COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
 RUN poetry install --only main --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
@@ -57,9 +57,10 @@ RUN poetry install \
     -v && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+    poetry cache clear pypi --all -q && \
+    chown -R "${USER}:users" "${HOME}"
 
-COPY --chown=${USER}:users "${PROJECT_DIR}/tests" ./tests
+COPY --chown=${USER}:users "${HOME}/tests" ./tests
 
 # --- debugger stage
 FROM builder as debugger

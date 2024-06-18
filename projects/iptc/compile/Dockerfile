@@ -7,22 +7,24 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-RUN mkdir -p "${PROJECT_DIR}" && \
-    chown -R "${USER}:users" "${PROJECT_DIR}"
+ENV HOME="${PROJECT_DIR}"
+
+RUN mkdir -p "${HOME}" && \
+    chown -R "${USER}:users" "${HOME}"
 
 WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${PROJECT_DIR}/poetry.lock" "${PROJECT_DIR}/pyproject.toml" ./${PROJECT_DIR}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
 
 # source
-COPY --chown=${USER}:users "${PROJECT_DIR}/src" "${PROJECT_DIR}/src"
+COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
@@ -31,7 +33,8 @@ USER root
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+    poetry cache clear pypi --all -q && \
+    chown -R "${USER}:users" "${HOME}"
 
 USER "${USER}"
 
@@ -47,9 +50,9 @@ FROM builder as development
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
@@ -59,8 +62,5 @@ RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
 FROM builder as debugger
-
-# hadolint ignore=DL3002
-USER root
 
 RUN poetry install --no-interaction --with debug

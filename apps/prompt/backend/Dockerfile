@@ -7,31 +7,32 @@ ARG APP_NAME
 ARG APP_COMPONENT
 ARG APP_DIR="/apps/${APP_NAME}/${APP_COMPONENT}"
 
-# hadolint ignore=DL3002
-USER root
+RUN mkdir -p "${HOME}" && \
+    chown -R "${USER}:users" "${HOME}"
 
-RUN mkdir -p "${APP_DIR}" && \
-    chown -R "${USER}:users" "${APP_DIR}"
+ENV HOME="${APP_DIR}"
 
 WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${APP_DIR}/poetry.lock" "${APP_DIR}/pyproject.toml" ./${APP_DIR}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
 
 # source
-COPY --chown=${USER}:users "${APP_DIR}/src" "${APP_DIR}/src"
+COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
-WORKDIR "${APP_DIR}"
+WORKDIR "${HOME}"
+
+USER root
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${APP_DIR}"
+    chown -R "${USER}:users" "${HOME}"
 
 USER ${USER}
 
@@ -41,13 +42,13 @@ FROM builder as production
 # --- test build stage
 FROM builder as development
 
-USER root
-
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${APP_DIR}/tests" "${APP_DIR}/tests"
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-WORKDIR "${APP_DIR}"
+WORKDIR "${HOME}"
+
+USER root
 
 RUN poetry install --no-interaction --with dev
 

@@ -4,9 +4,9 @@ ARG IMAGE_TAG
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
 ARG IMAGE_NAME
-ARG PROJECT_DIR="docker/${IMAGE_NAME}"
 
 ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
 
 USER root
 
@@ -31,25 +31,29 @@ RUN apt-get update && \
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
- && mkdir -p "${PROJECT_DIR}" \
+ && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${PROJECT_DIR}" \
+ && chown -R ${USER}:users "${HOME}" \
  && chown -R ${USER}:users /usr/local \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
+# switch user
+USER ${USER}
+
 # setup workspace
+
 WORKDIR "/"
 
 ENV PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users ${PROJECT_DIR}/poetry.lock ${PROJECT_DIR}/pyproject.toml ./${PROJECT_DIR}/
+COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
 # install production dependencies
 RUN poetry install \
---only main \
+    --only main \
     --no-root \
     --no-interaction \
     --no-ansi \
@@ -57,9 +61,6 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-
-# switch user
-USER ${USER}
 
 # --- production stage
 FROM builder as production
@@ -69,9 +70,6 @@ FROM builder as production
 FROM builder as builder-compilation
 
 ARG NEURON_COMPILE_OUTPUT_DIR
-
-# hadolint ignore=DL3002
-USER root
 
 # install compilation dependencies
 RUN poetry install \
@@ -91,9 +89,9 @@ RUN pip install \
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
 RUN pytest tests/core -ra -vv --capture=no -m compilation
 
@@ -101,9 +99,6 @@ RUN pytest tests/core -ra -vv --capture=no -m compilation
 FROM builder as development
 
 ARG NEURON_COMPILE_OUTPUT_DIR
-
-# hadolint ignore=DL3002
-USER root
 
 # install development dependencies
 RUN poetry install \
@@ -118,11 +113,14 @@ RUN poetry install \
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
-COPY --from=builder-compilation --chown=${USER}:users "/${PROJECT_DIR}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
+COPY --from=builder-compilation --chown=${USER}:users "/${HOME}/${NEURON_COMPILE_OUTPUT_DIR}" "${NEURON_COMPILE_OUTPUT_DIR}"
+
+# hadolint ignore=DL3002
+USER root
 
 RUN echo "${NEURON_COMPILE_OUTPUT_DIR}" \
     && chown -R "${USER}:users" "${NEURON_COMPILE_OUTPUT_DIR}" \

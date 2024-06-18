@@ -4,9 +4,9 @@ ARG IMAGE_TAG
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as builder
 
 ARG IMAGE_NAME
-ARG PROJECT_DIR="docker/${IMAGE_NAME}"
 
 ENV USER=app
+ENV HOME="docker/${IMAGE_NAME}"
 
 USER root
 
@@ -31,17 +31,19 @@ RUN apt-get update && \
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${PROJECT_DIR}" \
+ && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${PROJECT_DIR}" \
+ && chown -R ${USER}:users "${HOME}" \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users /usr/local/share \
  && chown -R ${USER}:users /usr/local/include \
  && chown -R ${USER}:users "${POETRY_HOME}"
 
-RUN mkdir -p "${PROJECT_DIR}" && \
-    chown -R "${USER}:users" "${PROJECT_DIR}"
+RUN mkdir -p "${HOME}" && \
+    chown -R "${USER}:users" "${HOME}"
+
+USER ${USER}
 
 # setup workspace
 WORKDIR "/"
@@ -49,12 +51,12 @@ WORKDIR "/"
 ENV PATH="/opt/aws/neuron/bin:${PATH}"
 
 # install - production poetry requirements
-COPY --chown=${USER}:users "${PROJECT_DIR}/poetry.lock" "${PROJECT_DIR}/pyproject.toml" ./${PROJECT_DIR}/
+COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml ./${HOME}/
 
-# copy libraries - ensure relative difference '../..' between PROJECT_DIR app dir and lib as listed in poetry toml
+# copy libraries - ensure relative difference '../..' between home app dir and lib as listed in poetry toml
 COPY --chown=${USER}:users libs/ libs/
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
 
 # install production dependencies
 RUN poetry install \
@@ -71,16 +73,11 @@ RUN pip install \
     --extra-index-url=https://pip.repos.neuron.amazonaws.com/ \
     --no-cache-dir
 
-USER ${USER}
-
 # --- production stage
 FROM builder as production
 
 # --- test build stage
 FROM builder as development
-
-# hadolint ignore=DL3002
-USER root
 
 # install development dependencies
 RUN poetry install \
@@ -94,6 +91,9 @@ RUN poetry install \
 
 WORKDIR "/"
 
-COPY --chown=${USER}:users "${PROJECT_DIR}/tests" "${PROJECT_DIR}/tests"
+COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 
-WORKDIR "${PROJECT_DIR}"
+WORKDIR "${HOME}"
+
+# hadolint ignore=DL3002
+USER root
