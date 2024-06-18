@@ -6,7 +6,7 @@ on  :
       environment:
         required: true
         type: string
-        description: Environment where code is deployed [prod, stage]
+        description: Environment where code is deployed [prod, dev]
       self-hosted-runner-type:
         required: true
         default: inf1.2xlarge
@@ -87,13 +87,13 @@ jobs:
             github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
             ec2-image-id: ${{ inputs.self-hosted-runner-ami }}
             ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-            subnet-id: subnet-0a66725cebe82001d
-            security-group-id: sg-0783d340a2340549a
+            subnet-id: ${{ vars.RUNNER_SUBNET_ID }}
+            security-group-id: ${{ vars.RUNNER_SG_ID }}
             aws-resource-tags: |
               [
                 {"Key": "Name", "Value": "ml-ec2-github-runner"},
                 {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
-                {"Key": "Environment", "Value": "dev"},
+                {"Key": "Environment", "Value": "${{ vars.ENVIRONMENT }}"},
                 {"Key": "Stack", "Value": "mesh"},
                 {"Key": "Billing", "Value": "ML"}
               ]

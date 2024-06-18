@@ -45,7 +45,10 @@ def test_get_model(mock_model_get, alias, provider, test_client):
 
 @pytest.mark.parametrize(
     "alias, provider, prompt",
-    [("model-1", "openai", "test prompt"), ("model-2", "bedrock", "hello")],
+    [
+        ("model-1", "openai", "test prompt"),
+        ("model-2", "bedrock", "hello"),
+    ],
 )
 @patch("src.prompt.functional.generate_from_prompt")
 def test_generate(mock_generate, alias, provider, prompt, test_client):

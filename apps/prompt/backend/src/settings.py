@@ -55,6 +55,9 @@ class Settings(OnclusiveBaseSettings):
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
 
+    # validation
+    VALIDATE_PROMPT_INJECTION: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:

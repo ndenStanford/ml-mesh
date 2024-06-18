@@ -26,18 +26,9 @@ services:
     ports:
       - 8000:8000
     environment:
-      ENVIRONMENT: dev
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: translation-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -60,8 +51,8 @@ services:
         source: serve/tests
         target: /projects/translation/serve/tests
     environment:
-      ENVIRONMENT: dev
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -81,9 +72,8 @@ services:
       ENVIRONMENT: dev
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 8000
       INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
-      ONCLUSIVEML_SERVING_API_VERSION: v1
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net

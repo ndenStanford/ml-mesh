@@ -23,14 +23,34 @@ concurrency:
 jobs       :
 
   # ===============================================
+  # GET ENVIRONMENT NAME
+  # ===============================================
+
+  get-environment:
+    name: Get Environment Name.
+    runs-on: ubuntu-20.04
+    outputs:
+      name: ${{ steps.get-environment-name.outputs.value }}
+    steps:
+
+      - name: Get Environment name
+        uses: haya14busa/action-cond@v1
+        id: get-environment-name
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: dev
+          if_false: prod
+
+  # ===============================================
   # QUALITY CHECKS
   # ===============================================
 
   run-code-quality-checks:
     name: Run Pre-Commit Checks
     uses: ./.github/workflows/_code-quality.yaml
+    needs: [get-environment]
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
       timeout: 10
     secrets:
@@ -45,9 +65,9 @@ jobs       :
   run-repository-state:
     name: Get Repository metadata
     uses: ./.github/workflows/_repository-state.yaml
-    needs: [run-code-quality-checks]
+    needs: [get-environment, run-code-quality-checks]
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       pull-request: ${{ github.event_name == 'pull_request' }}
       base-ref: ${{ github.base_ref }}
       head-ref: ${{ github.ref_name }}
@@ -89,12 +109,12 @@ jobs       :
     name: Get Push/Pull target branch name.
     runs-on: ubuntu-20.04
     outputs:
-      name: ${{ steps.get-environment-name.outputs.value }}
+      name: ${{ steps.get-target-branch.outputs.value }}
     steps:
 
-      - name: Get Environment name
+      - name: Get target branch
         uses: haya14busa/action-cond@v1
-        id: get-environment-name
+        id: get-target-branch
         with:
           cond: ${{ github.event_name == 'pull_request' }}
           if_true: ${{ github.base_ref }}
@@ -162,7 +182,7 @@ jobs       :
   run-us-east-1-base-docker:
     name: Core Image
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 2
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -184,7 +204,7 @@ jobs       :
         self-hosted-runner-neuron: [false]
 
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       image: ${{ matrix.image.name }}
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
@@ -205,7 +225,7 @@ jobs       :
   run-us-east-1-docker:
     name: Adv. Core Image
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
       max-parallel: 1
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -252,7 +272,7 @@ jobs       :
         region: [us-east-1]
 
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       image: ${{ matrix.image.name }}
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
@@ -273,7 +293,7 @@ jobs       :
   run-us-east-2-docker:
     name: KF Core Image
     uses: ./.github/workflows/_docker.yaml
-    needs: [run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
       max-parallel: 1
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -315,7 +335,7 @@ jobs       :
         self-hosted-runner-neuron: [false]
 
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       image: ${{ matrix.image.name }}
       region: ${{ matrix.region }}
       base-region: ${{ matrix.image.base-region }}
@@ -341,7 +361,7 @@ jobs       :
   run-keywords-project:
     name: Keywords Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 5
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -379,7 +399,7 @@ jobs       :
 
     with:
       project: keywords
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -405,7 +425,7 @@ jobs       :
   run-summarization-project:
     name: Sum. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -424,7 +444,7 @@ jobs       :
 
     with:
       project: summarization
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -450,7 +470,7 @@ jobs       :
   run-gch-summarization-project:
     name: GCH Sum. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -492,7 +512,7 @@ jobs       :
 
     with:
       project: gch-summarization
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -520,7 +540,7 @@ jobs       :
   run-entity-linking-project:
     name: Entity Linking Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -564,7 +584,7 @@ jobs       :
 
     with:
       project: entity-linking
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -593,7 +613,7 @@ jobs       :
   run-sentiment-project:
     name: Sentiment Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -640,7 +660,7 @@ jobs       :
 
     with:
       project: sentiment
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -666,7 +686,7 @@ jobs       :
   run-iptc-project:
     name: IPTC Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -729,7 +749,7 @@ jobs       :
             self-hosted-runner-neuron: true
     with:
       project: iptc
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -757,7 +777,7 @@ jobs       :
   run-iptc-multi-project:
     name: IPTC Multi Model Client Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -775,7 +795,7 @@ jobs       :
             self-hosted-runner-neuron: false
     with:
       project: iptc-multi
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -802,7 +822,7 @@ jobs       :
   run-ner-project:
     name: NER multi-model Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -821,7 +841,7 @@ jobs       :
 
     with:
       project: ner
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -847,7 +867,7 @@ jobs       :
   run-content-scoring-project:
     name: Content Scoring Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -884,7 +904,7 @@ jobs       :
 
     with:
       project: content-scoring
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -906,7 +926,7 @@ jobs       :
   run-translation-project:
     name: Translation Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -925,7 +945,7 @@ jobs       :
 
     with:
       project: translation
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -947,7 +967,7 @@ jobs       :
   run-lsh-project:
     name: LSH Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -976,7 +996,7 @@ jobs       :
 
     with:
       project: lsh
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1001,7 +1021,7 @@ jobs       :
   run-topic-project:
     name: Topic Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -1055,7 +1075,7 @@ jobs       :
 
     with:
       project: topic
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1082,7 +1102,7 @@ jobs       :
   run-transcript-segmentation-project:
     name: Transcr. Segm. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -1101,7 +1121,7 @@ jobs       :
 
     with:
       project: transcript-segmentation
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1129,7 +1149,7 @@ jobs       :
   run-topic-summarization-project:
     name: Topic Sum. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -1140,7 +1160,7 @@ jobs       :
           # serve
           - name: serve
             download-model: false
-            integration: true
+            integration: false
             functional: false
             load: false
             upload-test-results: false
@@ -1157,7 +1177,7 @@ jobs       :
 
     with:
       project: topic-summarization
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1190,7 +1210,7 @@ jobs       :
   run-apps:
     name: Web App
     uses: ./.github/workflows/_apps.yaml
-    needs: [run-repository-state, run-libs-tests, get-target-branch-name]
+    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -1215,7 +1235,7 @@ jobs       :
             integration: false
 
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       app: ${{ matrix.apps.name }}
       component: ${{ matrix.apps.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
@@ -1284,3 +1304,43 @@ jobs       :
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+
+      
+  # ===============================================
+  # COMPLETION CHECKPOINT
+  # ===============================================
+
+  check:
+    runs-on: ubuntu-latest
+    name: Jobs Completion Check
+    if: always()
+    needs:
+      - get-environment
+      - run-code-quality-checks
+      - run-repository-state
+      - run-get-core-dependencies-versions
+      - get-target-branch-name
+      - run-libs-tests
+      - run-us-east-1-base-docker
+      - run-us-east-1-docker
+      - run-us-east-2-docker
+      - run-keywords-project
+      - run-summarization-project
+      - run-gch-summarization-project
+      - run-entity-linking-project
+      - run-sentiment-project
+      - run-iptc-project
+      - run-iptc-multi-project
+      - run-ner-project
+      - run-content-scoring-project
+      - run-translation-project
+      - run-lsh-project
+      - run-topic-project
+      - run-transcript-segmentation-project
+      - run-topic-summarization-project
+      - run-apps
+    steps:
+      - name: Check Job Statuses
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
