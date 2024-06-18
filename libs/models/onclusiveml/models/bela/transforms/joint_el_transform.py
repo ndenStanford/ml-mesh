@@ -111,7 +111,7 @@ def pieces_to_texts(
     eos_idx: int,
     max_seq_len: int = 256,
 ):
-    """Function convert youda tokenized batch to SP tokenized batch.
+    """Function converts youda tokenized batch to SP tokenized batch.
 
     Args:
         1) texts_pieces_token_ids: List with sp tokens per text token
@@ -258,7 +258,7 @@ class JointELCollate(torch.nn.Module):
         self.insertions_column = insertions_column
 
     def forward(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
-        """Perform padding and collation of the input batch according to the specified columns."""  # noqa
+        """Performs padding and collation of the input batch according to the specified columns."""  # noqa
         token_ids = batch[self.token_ids_column]
         assert torch.jit.isinstance(token_ids, List[List[int]])
         seq_lens = batch[self.seq_lens_column]
