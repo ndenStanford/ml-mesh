@@ -32,7 +32,7 @@ class Inputs(TrackedParams):
     """Inputs."""
 
     sample_documents: List[str]
-    
+
     @validator("sample_documents", pre=True)
     def eval_fields(cls, value: Any) -> Any:
         """Eval input parameters to support Sagemaker estimator constraint."""
