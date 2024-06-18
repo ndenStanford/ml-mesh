@@ -2,7 +2,7 @@
 # isort: skip_file
 
 # Internal libraries
-from onclusiveml.data.query_profile import MediaAPISettings
+from onclusiveml.query.query_profile import MediaAPISettings
 
 # Standard Library
 from functools import lru_cache

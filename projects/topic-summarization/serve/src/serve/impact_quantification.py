@@ -10,10 +10,10 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
-from prophet import Prophet
+from fbprophet import Prophet
 
 # Internal libraries
-from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.query.query_profile import BaseQueryProfile, MediaAPISettings
 from onclusiveml.serving.serialization.topic_summarization.v1 import (
     ImpactCategoryLabel,
 )

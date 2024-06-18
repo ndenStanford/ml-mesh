@@ -12,7 +12,7 @@ from kats.detectors.cusum_detection import CUSUMDetector
 from pandas import Timestamp
 
 # Internal libraries
-from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.query.query_profile import BaseQueryProfile, MediaAPISettings
 
 # Source
 from src.serve.utils import (  # query_translation,
