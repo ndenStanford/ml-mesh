@@ -115,7 +115,6 @@ jobs:
         with:
           context: .
           file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
-          load: true
           push: false
           platforms: linux/amd64
           no-cache-filters: debugger
