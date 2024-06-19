@@ -3,10 +3,9 @@
 # Standard Library
 import os
 from functools import lru_cache
-from typing import Any, List
 
 # 3rd party libraries
-from pydantic import BaseSettings, validator
+from pydantic import BaseSettings
 
 # Internal libraries
 from onclusiveml.tracking import (
@@ -31,17 +30,7 @@ class TrackedNERModelSpecs(TrackedModelSpecs):
 class Inputs(TrackedParams):
     """Inputs."""
 
-    sample_documents: List[str]
-
-    @validator("sample_documents", pre=True)
-    def eval_fields(cls, value: Any) -> Any:
-        """Eval input parameters to support Sagemaker estimator constraint."""
-        if isinstance(value, str):
-            try:
-                return eval(value)
-            except Exception as e:
-                raise ValueError(f"Error evaluating value {value}: {e}")
-        return value
+    sample_document: str
 
     class Config:
         env_file = "config/dev.env"
