@@ -13,7 +13,11 @@ from onclusiveml.llms.mixins import LangchainConvertibleMixin
 from onclusiveml.llms.typing import LangchainT
 
 # Source
-from src.model.constants import ChatModelProdiver, ModelParameters
+from src.model.constants import (
+    BedrockModelParameters,
+    ChatModelProdiver,
+    OpenaiModelParameters,
+)
 from src.settings import get_settings
 
 
@@ -34,7 +38,12 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
     def as_langchain(self) -> Optional[LangchainT]:
         """Return model as langchain chat model."""
         if self.provider == ChatModelProdiver.OPENAI:
-            return ChatOpenAI(model=self.alias)
+            model_params = OpenaiModelParameters()
+            return ChatOpenAI(
+                model=self.alias,
+                temperature=model_params.temperature,
+                max_tokens=model_params.max_tokens,
+            )
         if self.provider == ChatModelProdiver.BEDROCK:
             boto3.setup_default_session(
                 profile_name=settings.AWS_PROFILE,
@@ -49,6 +58,8 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             return BedrockChat(
                 client=bedrock,
                 model_id=self.alias,
-                model_kwargs=ModelParameters().dict(),
+                model_kwargs=BedrockModelParameters().dict()[
+                    f"params_{self.alias}".lower()
+                ],
             )
         return None

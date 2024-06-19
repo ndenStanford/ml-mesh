@@ -40,10 +40,92 @@ class ChatModelProdiver(str, OnclusiveEnum):
     BEDROCK: str = "bedrock"
 
 
-class ModelParameters(OnclusiveBaseSettings):
-    """Default model parameters."""
+class OpenaiModelParameters(OnclusiveBaseSettings):
+    """OPENAI model parameters."""
 
+    temperature: float = 0.7
     max_tokens: int = 50000
+
+
+class BedrockModelParameters(OnclusiveBaseSettings):
+    """Bedrock model parameters."""
+
+    titan: dict = {
+        "textGenerationConfig": {
+            "temperature": 0.7,
+            "topP": 0.9,
+            "maxTokenCount": 512,
+            "stopSequences": [],
+        }
+    }
+    titan_g1: dict = {
+        "textGenerationConfig": {
+            "temperature": 0.7,
+            "topP": 0.9,
+            "maxTokenCount": 512,
+            "stopSequences": [],
+        }
+    }
+    cluade_2: dict = {
+        "temperature": 0.5,
+        "top_p": 1.0,
+        "top_k": 250,
+        "max_tokens_to_sample": 200,
+        "stop_sequences": [],
+    }
+    cluade_2_1: dict = {
+        "temperature": 0.5,
+        "top_p": 1.0,
+        "top_k": 250,
+        "max_tokens_to_sample": 200,
+        "stop_sequences": [],
+    }
+    claude_3_sonnet: dict = {
+        "temperature": 1.0,
+        "top_p": 0.999,
+        "top_k": 250,
+        "max_tokens": 50000,
+        "stop_sequences": [],
+    }
+    claude_3_haiku: dict = {
+        "temperature": 1.0,
+        "top_p": 0.999,
+        "top_k": 250,
+        "max_tokens": 50000,
+        "stop_sequences": [],
+    }
+    claude_3_instant: dict = {
+        "temperature": 1.0,
+        "top_p": 0.999,
+        "top_k": 250,
+        "max_tokens": 50000,
+        "stop_sequences": [],
+    }
+    llama_2_13b: dict = {"temperature": 0.5, "top_p": 0.9, "max_gen_len": 512}
+    llama_2_70b: dict = {"temperature": 0.5, "top_p": 0.9, "max_gen_len": 512}
+    instruct_7B: dict = {
+        "max_tokens": 512,
+        "temperature": 0.5,
+        "top_p": 0.9,
+        "top_k": 50,
+        "stop": [],
+    }
+    instruct_8_7B: dict = {
+        "max_tokens": 512,
+        "temperature": 0.5,
+        "top_p": 0.9,
+        "top_k": 50,
+        "stop": [],
+    }
+    mistral_large: dict = {
+        "max_tokens": 8192,
+        "temperature": 0.7,
+        "top_p": 1.0,
+        "stop": [],
+    }
+
+    class Config:
+        env_prefix = "params_"
 
 
 # DEFAULT models
