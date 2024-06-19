@@ -1284,11 +1284,8 @@ jobs       :
             trained-model: NER-TRAINED
             # yamllint disable-line
             parameters: >-
-              """{
-                  "MODEL_CLASS": "BertForTokenClassification", \
-                  "HUGGINGFACE_MODEL_REFERENCE": "dslim/bert-base-NER", \
-                  "SAMPLE_DOCUMENT": "Google HQ is in Mountain View, CA" \
-              }"""
+              "{\"MODEL_CLASS\":\"BertForTokenClassification\",\"HUGGINGFACE_MODEL_REFERENCE\":\"dslim/bert-base-NER\",\"SAMPLE_DOCUMENT\":\"Google HQ is
+              in Mountain View, CA\"}"
 
     with:
       environment: prod
