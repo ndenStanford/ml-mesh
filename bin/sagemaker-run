@@ -119,7 +119,7 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
 )
 @click.option(
     '--parameters',
-    type=str,
+    type=dict,
     default=None,
     show_default=True,
     help="""[Optional]: Any parameters associated with the training."""
@@ -144,7 +144,7 @@ def project_train(
     wait: bool,
     trained_project: Optional[str],
     trained_model: Optional[str],
-    parameters: str,
+    parameters: dict,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
