@@ -121,7 +121,7 @@ jobs:
           no-cache-filters: debugger
           target: development
           cache-to: |
-            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:buildcache
+            type=inline
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           build-args: |
@@ -206,7 +206,7 @@ jobs:
           no-cache-filters: debugger
           target: production
           cache-from: |
-            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:buildcache
+            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           tags: |
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
           build-args: |
