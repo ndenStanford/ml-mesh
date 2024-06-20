@@ -12,6 +12,10 @@ services:
       dockerfile: projects/topic/register/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
@@ -66,6 +70,10 @@ services:
       dockerfile: projects/topic/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
@@ -105,6 +113,10 @@ services:
       dockerfile: projects/topic/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
@@ -238,6 +250,10 @@ services:
       dockerfile: projects/topic/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic

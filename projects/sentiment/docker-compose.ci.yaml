@@ -12,6 +12,10 @@ services:
       dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -52,6 +56,10 @@ services:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -145,6 +153,10 @@ services:
       dockerfile: projects/sentiment/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -298,6 +310,10 @@ services:
       dockerfile: projects/sentiment/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment

@@ -12,6 +12,10 @@ services:
       dockerfile: projects/gch-summarization/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-production}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-train:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: gch-summarization
@@ -58,6 +62,10 @@ services:
       dockerfile: projects/gch-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: gch-summarization
@@ -228,6 +236,10 @@ services:
       dockerfile: projects/gch-summarization/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-backfill:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: gch-summarization

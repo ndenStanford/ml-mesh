@@ -209,47 +209,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Set up Docker Buildx
-        if: ${{ inputs.use-cache }}
-        uses: docker/setup-buildx-action@v2
-
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.use-cache }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
-
-      - name: Login to ECR
-        uses: docker/login-action@v2
-        if: ${{ inputs.use-cache }}
-        with:
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
-
-      - name: Prebuild development image with layer cache
-        id: build-and-push-development
-        uses: docker/build-push-action@v4.2.1
-        if: ${{ inputs.use-cache }}
-        with:
-          context: .
-          file: projects/${{ inputs.project }}/${{ inputs.component }}/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
-          platforms: linux/amd64
-          target: development
-          cache-to: |
-            type=inline
-          build-args: |
-            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-            BASE_IMAGE_TAG=v23.11.3
-            IMAGE_TAG=${{ inputs.tag }}
-            ENVIRONMENT=ci
-            PROJECT=${{ inputs.project }}
-            COMPONENT=${{ inputs.component }}
 
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         uses: nick-fields/retry@v2
-        if: ${{ !inputs.use-cache }}
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
           timeout_minutes: 30
@@ -261,7 +225,8 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
-            DEPLOYMENT="${{ inputs.environment }}"
+            DEPLOYMENT="${{ inputs.environment }}" \
+            USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -353,7 +318,6 @@ jobs:
             DEPLOYMENT="${{ inputs.environment }}"
 
       - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.use-cache }}
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -362,10 +326,10 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
             USE_DOCKER_CACHE=true \
-            DEPLOYMENT="${{ inputs.environment }}"
+            DEPLOYMENT="${{ inputs.environment }}" \
+            USE_DOCKER_CACHE=${{ inputs.use-cache }}
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        if: ${{ !inputs.use-cache }}
         run: |
           make projects.deploy/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -374,28 +338,6 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
-
-      - name: Prebuild production image with layer cache
-        id: build-and-push-production
-        uses: docker/build-push-action@v4.2.1
-        if: ${{ inputs.use-cache }}
-        with:
-          context: .
-          file: projects/${{ inputs.project }}/${{ inputs.component }}/Dockerfile
-          push: true
-          platforms: linux/amd64
-          cache-from: |
-            type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
-          tags: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.project }}-${{ inputs.component }}:${{ inputs.tag }}
-          target: production
-          build-args: |
-            AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-            BASE_IMAGE_TAG=v23.11.3
-            IMAGE_TAG=${{ inputs.tag }}
-            ENVIRONMENT=ci
-            PROJECT=${{ inputs.project }}
-            COMPONENT=${{ inputs.component }}
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'

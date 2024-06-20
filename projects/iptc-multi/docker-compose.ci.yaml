@@ -13,6 +13,10 @@ services:
       dockerfile: projects/iptc-multi/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
+      cache-to:
+        - type=inline
+      cache-from:
+        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-multi-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc-multi
