@@ -51,7 +51,7 @@ def main() -> None:
     # --- create prediction files
     logger.info("Making predictions from example inputs")
     ner_predictions: List[Dict[str, Union[str, float, int]]] = hf_pipeline(
-        model_card.model_inputs.sample_documents[0]
+        model_card.model_inputs.sample_document
     )
     # Convert score's value from np.float32 to just float
     # Reason for this is because float32 types are not JSON serializable
@@ -62,7 +62,7 @@ def main() -> None:
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
         (
-            model_card.model_inputs.sample_documents,
+            model_card.model_inputs.sample_document,
             model_card.model_test_files.inputs,
         ),
         (
