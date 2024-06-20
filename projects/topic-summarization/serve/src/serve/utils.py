@@ -34,10 +34,10 @@ def all_profile_query(
                                 }
                             },
                         }
-                    }
+                    },
+                    translated_boolean_query,
                 ],
                 "filter": [
-                    translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                     {"term": {"lang": "en"}},
                 ],
@@ -168,10 +168,10 @@ def all_profile_boolean_query(
                                 }
                             },
                         }
-                    }
+                    },
+                    translated_boolean_query,
                 ],
                 "filter": [
-                    translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                 ],
             }
@@ -217,10 +217,10 @@ def topic_profile_query(
                                 }
                             },
                         }
-                    }
+                    },
+                    translated_boolean_query,
                 ],
                 "filter": [
-                    translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                     {"term": {"lang": "en"}},
                 ],
@@ -266,10 +266,10 @@ def topic_profile_documents_query(
                                 }
                             },
                         }
-                    }
+                    },
+                    translated_boolean_query,
                 ],
                 "filter": [
-                    translated_boolean_query,
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                     {"term": {"lang": "en"}},
                 ],
