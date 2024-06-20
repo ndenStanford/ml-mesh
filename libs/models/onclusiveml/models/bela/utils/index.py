@@ -1,9 +1,6 @@
 # type: ignore
 """Redis index."""
 
-# ML libs
-from torch.utils.data import DataLoader
-
 # 3rd party libraries
 from redis.client import Redis
 from redis.commands.search.field import VectorField
@@ -39,16 +36,3 @@ def get_index(client: Redis, index_name: str, vector_dimensions: int) -> None:
         )
         # create index
         client.ft(index_name=index_name).create_index(fields=schema)
-
-
-def write_to_index(client: Redis, loader: DataLoader) -> None:
-    """Write the data from loader to the redis index if the key doesn't exist.
-
-    Args:
-        client (redis.client.Redis): Redis client
-        loader (torch.utils.data.DataLoader): Dataset in pytorch DataLoader
-    """
-    with client.pipeline() as pipe:
-        for idx, obj in loader:
-            pipe.hsetnx(name=idx[0], key="embedding", value=obj[0])
-            pipe.execute()

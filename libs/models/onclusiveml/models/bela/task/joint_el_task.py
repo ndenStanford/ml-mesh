@@ -621,18 +621,6 @@ class JointELTask(LightningModule):
             amsgrad=self.optim_conf.amsgrad,
         )
 
-<<<<<<< ML-1328-integrate-vb-el
-=======
-        if self.use_gpu_index:
-            logger.info("Setup GPU index")
-            self.setup_gpu_index()
-            # self.embeddings = None
-        else:
-            logger.info("Setup CPU index")
-            assert self.faiss_index_path is not None
-            self.faiss_index = faiss.read_index(self.faiss_index_path)
-
->>>>>>> develop
     def sim_score(self, mentions_repr, entities_repr):
         """Similarity scores."""
         # bs x emb_dim , bs x emb_dim

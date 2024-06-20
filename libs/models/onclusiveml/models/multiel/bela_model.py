@@ -136,7 +136,9 @@ class BelaModel:
         self.task = self.task.to(self.device)
         self.embeddings = self.task.embeddings
         # Connect to Redis vector store
-        self.client = get_client(url=settings.redis.REDIS_CONNECTION_STRING)
+        self.client = get_client(
+            url=settings.redis.REDIS_CONNECTION_STRING.get_secret_value()
+        )
 
         get_index(
             client=self.client,
@@ -211,18 +213,13 @@ class BelaModel:
                 .search(query_redis, query_params)
                 .docs
             )
+            scores = torch.tensor(
+                [float(doc.score) for doc in results], device=self.device
+            )
+            indices = [doc.id for doc in results]
 
-            if results:
-                scores = torch.tensor(
-                    [float(doc.score) for doc in results], device=self.device
-                )
-                indices = [doc.id for doc in results]
-
-                results_scores.append(scores)
-                results_indices.append(indices)
-            else:
-                results_scores.append(torch.tensor([0.0], device=self.device))
-                results_indices.append([""])
+            results_scores.append(scores)
+            results_indices.append(indices)
         # Combine results into single tensors
         combined_scores = torch.cat(results_scores).unsqueeze(
             -1
