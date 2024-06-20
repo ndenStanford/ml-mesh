@@ -24,6 +24,13 @@ class ReadState(Enum):
 def insert_spaces(text: str) -> Tuple[str, List[int]]:
     """Inserts spaces into a string where necessary to separate alphanumeric and non-alphanumeric characters.
 
+    The raw string inputs are sometimes miss spaces between
+    text pieces, like smiles could joint text:
+    [smile]Some text.[smile] another text.
+    This function modify text string to separate alphanumeric tokens
+    from any other tokens to make models live easier. The above example
+    will become: [smile] Some text . [smile] another text .
+
     Args:
         text (str): The input text to process.
 
@@ -112,6 +119,10 @@ def pieces_to_texts(
     max_seq_len: int = 256,
 ):
     """Function converts youda tokenized batch to SP tokenized batch.
+
+    Function takes an array with SP tokenized word tokens and original texts
+    and convert youda tokenized batch to SP tokenized batch. Mention offsets
+    and lengths are also converted with respect to SP tokens.
 
     Args:
         1) texts_pieces_token_ids: List with sp tokens per text token
@@ -728,6 +739,15 @@ class JointELXlmrRawTextTransform(SPMTransform):
         word_boundaries: List[List[List[int]]],
     ) -> Tuple[List[List[int]], List[List[int]]]:
         """Align mention offsets and lengths to word boundaries in the text.
+
+        In some training examples we can face situations where ground
+        truth offsets point to the middle of the word, ex:
+        ```
+        Playlist in "#NuevaPlaylist ➡ Desempo"
+        mente in "simplemente retirarte"
+        ```
+        we can align the offsets to the word boundaries, so in the examples
+        above we will mark `NuevaPlaylist` and `simplemente` as mentions.
 
         Args:
             mention_offsets (List[List[int]]): List of lists of mention offsets for each example.

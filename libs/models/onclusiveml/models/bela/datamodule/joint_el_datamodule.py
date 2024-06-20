@@ -49,7 +49,11 @@ class EntityCatalogue:
 
 
 class ElMatchaDataset(torch.utils.data.Dataset):
-    """Memory mapped dataset for EL in Matcha format."""
+    """Memory mapped dataset for EL in Matcha format.
+
+    Each example in this dataset contains several mentions.
+    We laso filter out mentions, that are not present in entity catalogue.
+    """
 
     def __init__(
         self,
@@ -285,6 +289,15 @@ class JointELDataModule(LightningDataModule):
 
         This method processes a batch of data samples, extracting relevant
         information and transforming it into a format suitable for model input.
+        Example fields:
+            - "text": List[str] - post tokens
+            - "gt_entities": List[Tuple[int, int, int]] - GT entities in text,
+                offset, length, entity id
+            - "blink_predicts": List[List[int]] - list of entity ids for each MD prediction
+            - "blink_scores": List[List[float]] - list of BLINK scores
+            - "md_pred_offsets": List[int] - mention offsets predicted by MD
+            - "md_pred_lengths": List[int] - mention lengths
+            - "md_pred_scores": List[float] - MD scores
 
         Args:
             batch (list): A list of data samples to be collated. Each sample is
