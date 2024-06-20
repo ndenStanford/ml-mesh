@@ -14,7 +14,7 @@ redis = "4.5.5"
 python-redis-cache = "2.1.2"
 PyGithub = "2.2.0"
 dyntastic = "^0.14.0"
-llm = {path = "../../../libs/llm"}
+llms = {path = "../../../libs/llms"}
 typing-inspect = "0.8.0"
 typing-extensions = "4.5.0"
 xxhash = "3.4.1"
