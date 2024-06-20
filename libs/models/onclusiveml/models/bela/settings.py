@@ -4,7 +4,7 @@
 from typing import Any, List, Optional
 
 # 3rd party libraries
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 # Internal libraries
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
@@ -18,10 +18,14 @@ class RedisSetttings(OnclusiveBaseSettings):
 
 
 class TransformSettings(OnclusiveBaseSettings):
+    """Transformation configuration settings."""
+
     max_seq_len: int = 256
 
 
 class DataModuleSettings(OnclusiveBaseSettings):
+    """Datamodule configuration settings."""
+
     batch_size: int = 24
     drop_last: bool = True
     train_path: Optional[str] = "/fsx/movb/data/matcha/mel/train.1st.txt"
@@ -32,6 +36,8 @@ class DataModuleSettings(OnclusiveBaseSettings):
 
 
 class OptimSettings(OnclusiveBaseSettings):
+    """Optimizer configuration settings."""
+
     lr: float = 1e-05
     betas: list = [0.9, 0.999]
     eps: float = 1e-08
@@ -40,10 +46,14 @@ class OptimSettings(OnclusiveBaseSettings):
 
 
 class ModelSettings(OnclusiveBaseSettings):
+    """Model configuration settings."""
+
     model_path: str = "xlm-roberta-large"
 
 
 class TrainerSettings(OnclusiveBaseSettings):
+    """Trainer configuration settings."""
+
     gpus: int = 8
     num_nodes: int = 1
     max_epochs: int = 3
@@ -63,6 +73,8 @@ class TrainerSettings(OnclusiveBaseSettings):
 
 
 class CheckpointCallbackSettings(OnclusiveBaseSettings):
+    """Checkpoint Callback configuration settings."""
+
     monitor: str = "valid_f1"
     mode: str = "max"
     save_last: bool = True
@@ -73,12 +85,14 @@ class CheckpointCallbackSettings(OnclusiveBaseSettings):
 
 
 class TaskSettings(OnclusiveBaseSettings):
+    """Task configuration settings."""
+
     only_train_disambiguation: bool = Field(default=False)
     train_saliency: bool = Field(default=False)
     embeddings_path: str = Field(default="/fsx/movb/data/matcha/mel/embeddings_new.pt")
     use_gpu_index: bool = Field(default=True)
     load_from_checkpoint: str = Field(
-        default="/checkpoints/movb/bela/2023-01-13-023711/0/lightning_logs/version_4144/checkpoints/last.ckpt"
+        default="/checkpoints/movb/bela/2023-01-13-023711/0/lightning_logs/version_4144/checkpoints/last.ckpt"  # noqa
     )
 
     optim: OptimSettings = OptimSettings()
