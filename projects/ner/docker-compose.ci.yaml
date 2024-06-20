@@ -12,9 +12,9 @@ services:
       dockerfile: projects/ner/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-production}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -63,9 +63,9 @@ services:
       dockerfile: projects/ner/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -160,9 +160,9 @@ services:
       dockerfile: projects/ner/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -315,9 +315,9 @@ services:
       dockerfile: projects/ner/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}

@@ -12,9 +12,9 @@ services:
       dockerfile: projects/keywords/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -54,9 +54,9 @@ services:
       context: ../../
       dockerfile: projects/keywords/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -153,9 +153,9 @@ services:
       dockerfile: projects/keywords/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}

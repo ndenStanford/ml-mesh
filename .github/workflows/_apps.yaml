@@ -154,28 +154,3 @@ jobs:
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           ENVIRONMENT="ci"
-
-      # - name: Prebuild production image with layer cache
-      #   id: build-and-push-production
-      #   uses: docker/build-push-action@v4.2.1
-      #   if: ${{ inputs.use-cache }}
-      #   with:
-      #     context: .
-      #     file: apps/${{ inputs.app }}/${{ inputs.component }}/Dockerfile
-      #     push: true
-      #     platforms: linux/amd64
-      #     target: production
-      #     cache-from: |
-      #       type=registry,ref=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
-      #     tags: |
-      #       ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ inputs.app }}-${{ inputs.component }}:${{ inputs.tag }}
-      #     build-args: |
-      #       TARGET_BUILD_STAGE=production
-      #       BASE_IMAGE_TAG=v23.11.3
-      #       IMAGE_TAG=${{ inputs.tag }}
-      #       ENVIRONMENT=ci
-      #       APP_NAME=${{ inputs.app }}
-      #       APP_COMPONENT=${{ inputs.component }}
-      #       AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-      #       PROMPT_REGISTRY_APP_ID=${{ secrets.PROMPT_REGISTRY_APP_ID }}
-      #       PROMPT_REGISTRY_APP_PRIVATE_KEY=${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}

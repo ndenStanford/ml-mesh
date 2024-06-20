@@ -13,9 +13,9 @@ services:
       dockerfile: projects/lsh/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/lsh-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -82,9 +82,9 @@ services:
       dockerfile: projects/lsh/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/lsh-backfill:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}

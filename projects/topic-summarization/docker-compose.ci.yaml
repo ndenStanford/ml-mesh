@@ -11,9 +11,9 @@ services:
       dockerfile: projects/topic-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -204,9 +204,9 @@ services:
       dockerfile: projects/topic-summarization/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}

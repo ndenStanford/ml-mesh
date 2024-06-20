@@ -13,9 +13,9 @@ services:
       dockerfile: projects/iptc/ingest/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -61,9 +61,9 @@ services:
       dockerfile: projects/iptc/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -108,9 +108,9 @@ services:
       dockerfile: projects/iptc/register/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -156,9 +156,9 @@ services:
       context: ../../
       dockerfile: projects/iptc/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
@@ -273,9 +273,9 @@ services:
       dockerfile: projects/iptc/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}

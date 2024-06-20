@@ -12,8 +12,8 @@ services:
       dockerfile: projects/content-scoring/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-production}
       network: host
-      cache-to: type=inline
-      cache-from: type=registry
+      cache_to: type=inline
+      cache_from: type=registry
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: content-scoring
@@ -61,8 +61,8 @@ services:
       dockerfile: projects/content-scoring/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to: type=inline
-      cache-from: type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
+      cache_to: type=inline
+      cache_from: type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: content-scoring
@@ -162,9 +162,9 @@ services:
       dockerfile: projects/content-scoring/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache-to:
+      cache_to:
         - type=inline
-      cache-from:
+      cache_from:
         - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
