@@ -1,6 +1,7 @@
 """Init."""
 
 # Internal libraries
+from onclusiveml.core.base.enum import OnclusiveEnum
 from onclusiveml.core.base.exception import OnclusiveException
 from onclusiveml.core.base.pydantic import (
     OnclusiveBaseSchema,
@@ -8,7 +9,6 @@ from onclusiveml.core.base.pydantic import (
     OnclusiveFrozenSchema,
     OnclusiveFrozenSettings,
 )
-from onclusiveml.core.base.utils import OnclusiveEnum
 
 
 __all__ = [

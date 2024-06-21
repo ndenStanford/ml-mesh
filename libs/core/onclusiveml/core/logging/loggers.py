@@ -70,7 +70,7 @@ def get_default_logger(
 
     # if no handler is specified, create a configured one using handler util
     if handler is None:
-        handler = get_default_handler(**log_settings.dict())
+        handler = get_default_handler(**log_settings.model_dump())
 
     logger.addHandler(handler)
 

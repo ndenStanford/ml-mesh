@@ -125,7 +125,7 @@ class OnclusiveJSONFormatter(OnclusiveFormatter):
         Returns:
             json_record (str): The JSON string version of the log record.
         """
-        json_record = self.log_record_data_model.from_orm(record).json()
+        json_record = self.log_record_data_model.from_orm(record).model_dump_json()
 
         return json_record
 

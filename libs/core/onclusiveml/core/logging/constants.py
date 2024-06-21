@@ -4,7 +4,7 @@
 import logging
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveEnum
 
 
 DEBUG = logging.DEBUG
