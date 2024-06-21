@@ -10,7 +10,6 @@ from pydantic import BaseModel
 # Internal libraries
 from onclusiveml.models.multiel import BELA
 from onclusiveml.nlp.language import filter_language
-from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
@@ -115,7 +114,7 @@ class ServedBelaModel(ServedModel):
         )
 
     @filter_language(
-        supported_languages=list(LanguageIso),
+        supported_languages=settings.supported_languages,
         raise_if_none=True,
     )
     def _predict(

@@ -1,10 +1,7 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""Entity Linking Tasks."""
 
 # Standard Library
-import datetime
 import logging
-import os
 from collections import OrderedDict
 from typing import Any, Dict, NamedTuple, Optional, Tuple, Union
 
@@ -28,6 +25,8 @@ settings = BelaSettings()
 
 
 class ClassificationMetrics(NamedTuple):
+    """Classification metrics."""
+
     f1: float
     precision: float
     recall: float
@@ -47,6 +46,8 @@ class ClassificationMetrics(NamedTuple):
 
 
 class ClassificationHead(nn.Module):
+    """Neural network classification head."""
+
     def __init__(
         self,
         ctxt_output_dim=768,
@@ -65,6 +66,7 @@ class ClassificationHead(nn.Module):
         )
 
     def forward(self, mentions_repr, entities_repr, md_scores, dis_scores):
+        """Forward of the classification head."""
         features = [
             mentions_repr,
             entities_repr,
@@ -78,6 +80,12 @@ class ClassificationHead(nn.Module):
 
 
 class SaliencyClassificationHead(nn.Module):
+    """neural network classification head for saliency-based entity linking tasks.
+
+    Args:
+        ctxt_output_dim (int): The dimension of the context representations for CLS tokens, mentions, and entities. Default is 768.
+    """  # noqa
+
     def __init__(
         self,
         ctxt_output_dim=768,
@@ -97,6 +105,7 @@ class SaliencyClassificationHead(nn.Module):
     def forward(
         self, cls_tokens_repr, mentions_repr, entities_repr, md_scores, dis_scores
     ):
+        """Forward of the saliency-based classification head."""
         cls_mention_dot_product = torch.sum(
             cls_tokens_repr * mentions_repr, 1
         ).unsqueeze(-1)
@@ -124,6 +133,8 @@ class SaliencyClassificationHead(nn.Module):
 
 
 class SpanEncoder(nn.Module):
+    """Spans encoder (mentions)."""
+
     def __init__(
         self,
         mention_aggregation="linear",
@@ -146,6 +157,7 @@ class SpanEncoder(nn.Module):
             raise NotImplementedError()
 
     def forward(self, text_encodings, mention_offsets, mention_lengths):
+        """Forward of span encoder."""
         idx = (
             torch.arange(mention_offsets.shape[0])
             .unsqueeze(1)
@@ -163,6 +175,8 @@ class SpanEncoder(nn.Module):
 
 
 class MentionScoresHead(nn.Module):
+    """Module for predicting scores and boundaries of mentions."""
+
     def __init__(
         self,
         encoder_output_dim=768,
@@ -173,9 +187,7 @@ class MentionScoresHead(nn.Module):
         self.bound_classifier = nn.Linear(encoder_output_dim, 3)
 
     def forward(self, text_encodings, mask_ctxt, tokens_mapping):
-        """
-        Retuns scores for *inclusive* mention boundaries
-        """
+        """Retuns scores for *inclusive* mention boundaries."""
         device = text_encodings.device
         # (bs, seqlen, 3)
         logits = self.bound_classifier(text_encodings)
@@ -296,8 +308,9 @@ class MentionScoresHead(nn.Module):
         pad_idx: Union[int, float] = 0,
         left_align_mask: Optional[torch.Tensor] = None,
     ):
-        """
-        Left-aligns all ``selected" values in input_t, which is a batch of examples.
+        """Reshape tensors.
+
+        Left-aligns all `selected` values in `input_t`, which is a batch of examples.
             - input_t: >=2D tensor (N, M, *)
             - selected: 2D torch.Bool tensor, 2 dims same size as first 2 dims of `input_t` (N, M)
             - pad_idx represents the padding to be used in the output
@@ -307,7 +320,19 @@ class MentionScoresHead(nn.Module):
             input_t  = [[1,2,3,4],[5,6,7,8]]
             selected = [[0,1,0,1],[1,1,0,1]]
             output   = [[2,4,0],[5,6,8]]
-        """
+
+        Args:
+            input_t (torch.Tensor): Input tensor of shape (N, M, *), where N is the batch size, M is the sequence length,
+                                    and * denotes any number of additional dimensions.
+            selected (torch.Tensor): Boolean tensor of shape (N, M) indicating positions to select in each example.
+            pad_idx (Union[int, float], optional): Value to fill in the padded regions of the output tensor. Default is 0.
+            left_align_mask (torch.Tensor, optional): Precomputed alignment mask corresponding to `selected` on the input.
+                                                      If provided, should have shape (N, max_num_selected).
+
+        Returns:
+            torch.Tensor: Reshaped tensor of shape (N, max_num_selected, *).
+            torch.Tensor: Left alignment mask of shape (N, max_num_selected) indicating the alignment of selected values.
+        """  # noqa
         batch_num_selected = selected.sum(1)
         max_num_selected = batch_num_selected.max()
         # (bsz, 2)
@@ -325,7 +350,7 @@ class MentionScoresHead(nn.Module):
             left_align_mask[:, 0] = 1
             # (bsz x 2,): [1,0,1,0,...]
             left_align_mask = left_align_mask.view(-1)
-            # (bsz x max_num_selected,): [1 xrepeat_freqs[0],0 x(M-repeat_freqs[0]),1 xrepeat_freqs[1],0 x(M-repeat_freqs[1]),...]
+            # noqa (bsz x max_num_selected,): [1 xrepeat_freqs[0],0 x(M-repeat_freqs[0]),1 xrepeat_freqs[1],0 x(M-repeat_freqs[1]),...]
             left_align_mask = left_align_mask.repeat_interleave(repeat_freqs)
             # (bsz, max_num_selected)
             left_align_mask = left_align_mask.view(-1, max_num_selected)
@@ -346,10 +371,9 @@ class MentionScoresHead(nn.Module):
         num_cand_mentions: int,
         threshold: float,
     ):
-        """
-            Prunes mentions based on mention scores/logits (by either
-            `threshold` or `num_cand_mentions`, whichever yields less candidates)
-        Inputs:
+        """Prunes mentions based on mention scores/logits.
+
+        Args:
             mention_logits: torch.FloatTensor (bsz, num_total_mentions)
             mention_bounds: torch.IntTensor (bsz, num_total_mentions)
             num_cand_mentions: int
@@ -359,7 +383,7 @@ class MentionScoresHead(nn.Module):
             torch.IntTensor(bsz, max_num_pred_mentions, 2): top mention boundaries
             torch.BoolTensor(bsz, max_num_pred_mentions): mask on top mentions
             torch.BoolTensor(bsz, total_possible_mentions): mask for reshaping from total possible mentions -> max # pred mentions
-        """
+        """  # noqa
         # (bsz, num_cand_mentions); (bsz, num_cand_mentions)
         num_cand_mentions = min(num_cand_mentions, mention_logits.shape[1])
         top_mention_logits, mention_pos = mention_logits.topk(
@@ -418,10 +442,11 @@ class MentionScoresHead(nn.Module):
     def filter_by_mention_size(
         self, mention_scores: torch.Tensor, mention_bounds: torch.Tensor
     ):
-        """
-        Filter all mentions > maximum mention length
-        mention_scores: torch.FloatTensor (bsz, num_mentions)
-        mention_bounds: torch.LongTensor (bsz, num_mentions, 2)
+        """Filter all mentions > maximum mention length.
+
+        Args:
+            mention_scores: torch.FloatTensor (bsz, num_mentions)
+            mention_bounds: torch.LongTensor (bsz, num_mentions, 2)
         """
         # (bsz, num_mentions)
         mention_bounds_mask = (
@@ -437,6 +462,8 @@ class MentionScoresHead(nn.Module):
 
 
 class JointELTask(LightningModule):
+    """LightningModule for Joint Entity Linking Task."""
+
     def __init__(
         self,
         transform: settings.transform,
@@ -485,13 +512,23 @@ class JointELTask(LightningModule):
 
     @staticmethod
     def _get_encoder_state(state, encoder_name):
+        """Extracts the state dictionary of a specific encoder from a larger model state.
+
+        Args:
+            state (dict): The state dictionary of the entire model.
+            encoder_name (str): The prefix or name of the encoder whose state is to be extracted.
+
+        Returns:
+            OrderedDict: A dictionary containing the state of the encoder.
+        """
         encoder_state = OrderedDict()
         for key, value in state["state_dict"].items():
             if key.startswith(encoder_name):
-                encoder_state[key[len(encoder_name) + 1 :]] = value
+                encoder_state[key[len(encoder_name) + 1 :]] = value  # noqa
         return encoder_state
 
     def setup_gpu_index(self):
+        """Sets up a GPU-based FAISS index for efficient similarity search using embeddings."""
         gpu_id = self.local_rank
 
         flat_config = faiss.GpuIndexFlatConfig()
@@ -504,6 +541,11 @@ class JointELTask(LightningModule):
         self.faiss_index.add(self.embeddings)
 
     def setup(self, stage: str):
+        """Sets up the model and components based on the stage (phase) of training.
+
+        Args:
+            stage (str): The current stage of training. Can be "test" or other stages.
+        """
         if stage == "test":
             return
         # resetting call_configure_sharded_model_hook attribute so that we could configure model
@@ -569,8 +611,8 @@ class JointELTask(LightningModule):
             )
             if len(saliency_encoder_state) > 0 and self.train_saliency:
                 self.saliency_encoder.load_state_dict(saliency_encoder_state)
-        #   self.optimizer = hydra.utils.instantiate(self.optim_conf, self.parameters())
-        optimizer = torch.optim.AdamW(
+
+        self.optimizer = torch.optim.AdamW(
             self.parameters(),
             lr=self.optim_conf.lr,
             betas=self.optim_conf.betas,
@@ -580,15 +622,16 @@ class JointELTask(LightningModule):
         )
 
         if self.use_gpu_index:
-            logger.info(f"Setup GPU index")
+            logger.info("Setup GPU index")
             self.setup_gpu_index()
             # self.embeddings = None
         else:
-            logger.info(f"Setup CPU index")
+            logger.info("Setup CPU index")
             assert self.faiss_index_path is not None
             self.faiss_index = faiss.read_index(self.faiss_index_path)
 
     def sim_score(self, mentions_repr, entities_repr):
+        """Similarity scores."""
         # bs x emb_dim , bs x emb_dim
         scores = torch.sum(mentions_repr * entities_repr, 1)
         return scores
@@ -600,6 +643,7 @@ class JointELTask(LightningModule):
         mention_offsets,
         mention_lengths,
     ):
+        """Forward pass of the JointELTask model."""
         # encode query and contexts
         _, last_layer = self.encoder(text_inputs, attention_mask)
         text_encodings = last_layer
@@ -611,11 +655,23 @@ class JointELTask(LightningModule):
         return text_encodings, mentions_repr
 
     def configure_optimizers(self):
+        """Optimizer."""
         return self.optimizer
 
     def _disambiguation_training_step(
         self, mentions_repr, mention_offsets, mention_lengths, entities_ids
     ):
+        """Performs a single training step for disambiguation in entity linking.
+
+        Args:
+            mentions_repr (torch.Tensor): Representations of mentions extracted from text.
+            mention_offsets (torch.Tensor): Offsets indicating positions of mentions in text.
+            mention_lengths (torch.Tensor): Lengths of mentions.
+            entities_ids (torch.Tensor): Indices of entities corresponding to mentions.
+
+        Returns:
+            torch.Tensor or None: The computed loss tensor if training data is available, otherwise None.
+        """  # noqa
         device = mentions_repr.get_device()
         # flat mentions and entities indices (mentions_num x embedding_dim)
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
@@ -693,6 +749,22 @@ class JointELTask(LightningModule):
         entities_ids,
         tokens_mapping,
     ):
+        """Performs a single training step for mention detection.
+
+        Args:
+            text_encodings (torch.Tensor): Encodings of the input text.
+            text_pad_mask (torch.Tensor): Mask indicating valid positions in text_encodings.
+            gold_mention_offsets (torch.Tensor): Offsets indicating positions of gold mentions.
+            gold_mention_lengths (torch.Tensor): Lengths of gold mentions.
+            entities_ids (torch.Tensor): Indices of entities corresponding to mentions.
+            tokens_mapping (torch.Tensor): Mapping from mentions to tokens in text.
+
+        Returns:
+            tuple: A tuple containing:
+                - torch.Tensor: Loss tensor for mention detection.
+                - torch.Tensor: Logits predicting mention boundaries.
+                - torch.Tensor: Predicted mention bounds.
+        """
         device = text_encodings.get_device()
 
         mention_logits, mention_bounds = self.mention_encoder(
@@ -744,9 +816,9 @@ class JointELTask(LightningModule):
         entities_ids,
         tokens_mapping,
     ):
-        """
-            Train "rejection" head.
-        Inputs:
+        """Train "rejection" head.
+
+        Args:
             text_encodings: last layer output of text encoder
             mention_logits: mention scores produced by mention detection head
             mention_bounds: mention bounds (start, end (inclusive)) by MD head
@@ -754,8 +826,9 @@ class JointELTask(LightningModule):
             gold_mention_lengths: ground truth mention lengths
             entities_ids: entity ids for ground truth mentions
             tokens_mapping: sentencepiece to text token mapping
+
         Returns:
-            el_loss: sum of entity linking loss over all predicted mentions
+            el_loss: sum of entity linking loss over all predicted mentions.
         """
         device = text_encodings.get_device()
         # get predicted mention_offsets and mention_bounds by MD model
@@ -855,10 +928,7 @@ class JointELTask(LightningModule):
         return el_loss
 
     def training_step(self, batch, batch_idx):
-        """
-        This receives queries, each with mutliple contexts.
-        """
-
+        """This receives queries, each with mutliple contexts."""
         text_inputs = batch["input_ids"]  # bs x mention_len
         text_pad_mask = batch["attention_mask"]
         gold_mention_offsets = batch["mention_offsets"]  # bs x max_mentions_num
@@ -1150,6 +1220,7 @@ class JointELTask(LightningModule):
 
     @staticmethod
     def calculate_classification_metrics(targets, predictions):
+        """Calculate classification metrics based on targets and predictions for entity linking tasks."""  # noqa
         tp, fp, support = 0, 0, 0
         boe_tp, boe_fp, boe_support = 0, 0, 0
         for example_targets, example_predictions in zip(targets, predictions):
@@ -1232,6 +1303,7 @@ class JointELTask(LightningModule):
         return metrics
 
     def _eval_epoch_end(self, outputs, log_prefix="valid"):
+        """Perform evaluation at the end of an epoch based on the provided outputs."""
         if self.only_train_disambiguation:
             metrics = self._compute_disambiguation_metrics(outputs, log_prefix)
         else:
@@ -1242,20 +1314,24 @@ class JointELTask(LightningModule):
         self.log_dict(metrics, on_epoch=True, sync_dist=True)
 
     def validation_step(self, batch, batch_idx):
+        """Validation."""
         return self._eval_step(batch, batch_idx)
 
     def validation_epoch_end(self, valid_outputs):
+        """Aggregate and compute validation metrics."""
         self._eval_epoch_end(valid_outputs)
 
     def test_step(self, batch, batch_idx):
+        """Performs a single step of testing on a batch of data."""
         return self._eval_step(batch, batch_idx)
 
     def test_epoch_end(self, test_outputs):
+        """Aggregate and compute test metrics."""
         self._eval_epoch_end(test_outputs, "test")
 
     def on_load_checkpoint(self, checkpoint: Dict[str, Any]) -> None:
-        """
-        This hook will be called before loading state_dict from a checkpoint.
+        """This hook will be called before loading state_dict from a checkpoint.
+
         setup("fit") will build the model before loading state_dict
 
         Args:
