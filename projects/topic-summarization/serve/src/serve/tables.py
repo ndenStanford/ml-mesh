@@ -4,11 +4,11 @@
 # Standard Library
 import uuid
 from datetime import datetime
-from typing import Dict, Optional, Union, List
+from typing import Dict, Optional, Union, List, Any
 
 # 3rd party libraries
 from dyntastic import Dyntastic
-from pydantic import Field
+from pydantic import Field, validator
 from decimal import Decimal
 
 # Internal libraries
@@ -47,3 +47,9 @@ class TopicSummaryDynamoDB(Dyntastic):
     content: Optional[List[str]] = None
     query_all_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
     query_topic_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
+
+    @validator("query_all_doc_count", "query_topic_doc_count", "trending", pre=False)
+    @classmethod
+    def serialize_fields(cls, fields: Any) -> str:
+        """Serialize certain fields as string objects."""
+        return str(fields)
