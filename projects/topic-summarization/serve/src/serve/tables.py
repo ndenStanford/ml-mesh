@@ -54,7 +54,7 @@ class TopicSummaryDynamoDB(Dyntastic):
         """Serialize certain fields as string objects."""
         return str(fields)
 
-    @validator("query_all_doc_count", "query_topic_doc_count", "trending", pre=False)
+    @validator("query_all_doc_count", "query_topic_doc_count", "trending", pre=True)
     @classmethod
     def deserialize_fields(cls, fields: Any) -> str:
         """Deserialize certain fields to their evaluated object."""
