@@ -114,7 +114,7 @@ class ServedNERModel(ServedModel):
                 entities_list = self._predict(
                     content=[attributes.content],
                     language=parameters.language,
-                    additional_params=parameters.dict(),
+                    additional_params=parameters.model_dump(),
                 )
             except (
                 LanguageDetectionException,

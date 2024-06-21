@@ -1,10 +1,10 @@
 """Logging params."""
 
 # 3rd party libraries
-from pydantic import validator
+from pydantic import field_validator
 
 # Internal libraries
-from onclusiveml.core.base.params import Params
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging.constants import (
     DEBUG,
     VALID_LOG_LEVELS,
@@ -13,7 +13,7 @@ from onclusiveml.core.logging.constants import (
 )
 
 
-class OnclusiveLogSettings(Params):
+class OnclusiveLogSettings(OnclusiveBaseSettings):
     """Environment variable entrypoint for `get_default_logger` method inputs."""
 
     service: str = OnclusiveService.DEFAULT.value
@@ -21,7 +21,7 @@ class OnclusiveLogSettings(Params):
     fmt_level: str = OnclusiveLogMessageFormat.SIMPLE.name
     json_format: bool = False
 
-    @validator("level")
+    @field_validator("level")
     def validate_level(value: int) -> int:
         """Validates the log level value against log levels defined in the `constants` module."""
         if value not in VALID_LOG_LEVELS:
@@ -32,7 +32,7 @@ class OnclusiveLogSettings(Params):
 
         return value
 
-    @validator("fmt_level")
+    @field_validator("fmt_level")
     def check_fmt_level(value: str) -> str:
         """Validates the log message formatting level against OnclusiveLogMessageFormat fields."""
         valid_log_message_formats = OnclusiveLogMessageFormat.list(names=True)

@@ -27,7 +27,7 @@ def download_uncompiled_model() -> None:
     )
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
     # get base model version assets to local disk
     base_model_card: Dict = base_model_version.download_config_from_model_version(
         neptune_attribute_path="model/model_card"

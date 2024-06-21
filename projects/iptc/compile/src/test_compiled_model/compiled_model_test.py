@@ -41,7 +41,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     for test_sample_index in range(total_sample_size):
 
         compiled_pred = compiled_iptc(test_files["inputs"][test_sample_index])
-        compiled_predictions = [iptc.dict() for iptc in compiled_pred][0]
+        compiled_predictions = [iptc.model_dump() for iptc in compiled_pred][0]
         expected_predictions_prob = test_files["predictions"]["probs"][
             test_sample_index
         ]
@@ -87,5 +87,5 @@ def compiled_model_entity_iptc_test(  # type: ignore[no-untyped-def]
     model_id = extract_model_id(model_specs.project)
     test_sample_content, test_sample_response = test_samples[model_id]
     compiled_pred = compiled_iptc(test_sample_content)
-    compiled_predictions = [iptc.dict() for iptc in compiled_pred][0]
+    compiled_predictions = [iptc.model_dump() for iptc in compiled_pred][0]
     assert compiled_predictions["label"] == test_sample_response["label"]

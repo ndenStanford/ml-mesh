@@ -65,7 +65,7 @@ def predict_ner(
         response = invoke_ner(content, url, api_key, language)
 
         if response.status_code == 200:
-            result = response.json()
+            result = response.model_dump_json()
             entities = [
                 entity["entity_text"]
                 for entity in result.get("data", {})
@@ -87,7 +87,7 @@ def predict_ner(
         response = invoke_ner(content, url, api_key, language)
 
         if response.status_code == 200:
-            result = response.json()
+            result = response.model_dump_json()
             entities = [
                 entity["entity_text"]
                 for entity in result.get("data", {})

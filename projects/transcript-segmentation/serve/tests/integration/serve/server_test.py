@@ -37,7 +37,7 @@ def test_server_liveness(test_client):
     liveness_response = test_client.get("/transcript-segmentation/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.model_dump_json() == LivenessProbeResponse().model_dump()
 
 
 @pytest.mark.order(6)
@@ -46,4 +46,4 @@ def test_server_readiness(test_client):
     readiness_response = test_client.get("/transcript-segmentation/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.model_dump_json() == ReadinessProbeResponse().model_dump()

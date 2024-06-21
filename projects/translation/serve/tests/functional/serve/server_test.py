@@ -23,7 +23,7 @@ def test_model_server_liveness():
     liveness_response = requests.get("http://serve:8000/translation/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.model_dump_json() == LivenessProbeResponse().model_dump()
 
 
 def test_model_server_readiness():
@@ -31,7 +31,7 @@ def test_model_server_readiness():
     readiness_response = requests.get("http://serve:8000/translation/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.model_dump_json() == ReadinessProbeResponse().model_dump()
 
 
 def test_model_server_bio():
@@ -39,7 +39,10 @@ def test_model_server_bio():
     readiness_response = requests.get("http://serve:8000/translation/v1/bio")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json()["data"]["attributes"].get("model_name") is not None
+    assert (
+        readiness_response.model_dump_json()["data"]["attributes"].get("model_name")
+        is not None
+    )
 
 
 @pytest.mark.parametrize(
@@ -240,7 +243,7 @@ def test_model_server_prediction(test_client, payload, expected_response):
         json=payload,
     )
     assert response.status_code == 200
-    assert response.json() == expected_response
+    assert response.model_dump_json() == expected_response
 
 
 @pytest.mark.parametrize(

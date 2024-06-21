@@ -5,10 +5,10 @@ from enum import Enum
 from typing import Dict
 
 # 3rd party libraries
-from pydantic import root_validator
+from pydantic import root_field_validator
 
 # Internal libraries
-from onclusiveml.core.base.params import Params
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging import (  # noqa:F401
     CRITICAL,
     DEBUG,
@@ -49,7 +49,7 @@ class TrackingLibraryLogSettings(OnclusiveLogSettings):
         env_prefix = "onclusiveml_tracking_logger_"
 
 
-class TrackingLibraryBackendSettings(Params):
+class TrackingLibraryBackendSettings(OnclusiveBaseSettings):
     """Entrypoint to configure the tracking library's S3 storage backend behaviour \
     via environment variables.
 
@@ -67,7 +67,7 @@ class TrackingLibraryBackendSettings(Params):
     class Config:
         env_prefix = "onclusiveml_tracking_backend_"
 
-    @root_validator
+    @root_field_validator
     def validate_s3_storage_settings(cls, values: Dict) -> Dict:
         """Validates the S3 storage backend configuration contained in the `values` dictionary.
 

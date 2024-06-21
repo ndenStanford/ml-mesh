@@ -33,7 +33,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # initialize registered model on neptune ai
-    model_version = TrackedModelVersion(**model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
     # --- initialize models
     # get pretrained model and tokenizer
 
@@ -64,8 +64,8 @@ def main() -> None:
     )
 
     # ner settings
-    ner_settings_base = model_card.ner_model_params_base.ner_settings.dict()
-    ner_settings_kj = model_card.ner_model_params_kj.ner_settings.dict()
+    ner_settings_base = model_card.ner_model_params_base.ner_settings.model_dump()
+    ner_settings_kj = model_card.ner_model_params_kj.ner_settings.model_dump()
 
     ner_settings = [ner_settings_base, ner_settings_kj]
 
@@ -137,7 +137,7 @@ def main() -> None:
     )
     # model card
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     model_version.stop()

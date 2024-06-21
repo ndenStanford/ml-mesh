@@ -4,7 +4,7 @@
 from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
-from pydantic import Field, SecretStr, root_validator
+from pydantic import Field, SecretStr, root_field_validator
 
 # Internal libraries
 from onclusiveml.core.logging import INFO, OnclusiveService
@@ -99,7 +99,7 @@ class UvicornSettings(ServingBaseParams):
     port: int = 8000
     host: str = "0.0.0.0"
     log_config: Optional[Union[str, Dict]] = Field(
-        default_factory=lambda: get_logging_config(**LogConfigSettings().dict())
+        default_factory=lambda: get_logging_config(**LogConfigSettings().model_dump())
     )
     reload: bool = False
     reload_dirs: Optional[Union[List[str], str]] = None
@@ -138,7 +138,7 @@ class BetterStackSettings(ServingBaseParams):
         env_prefix = f"{ServingBaseParams.Config.env_prefix}betterstack_"
         env_file_encoding = "utf-8"
 
-    @root_validator
+    @root_field_validator
     def assemble_betterstack_url(cls, values: Dict) -> Dict:
         """Assembles the full_url field using the two fields.
 

@@ -60,7 +60,7 @@ def predict_entity_linking(content: str, language: str = "en") -> Optional[str]:
         response = invoke_el(content, url, api_key, language)
 
         if response.status_code == 200:
-            result = response.json()
+            result = response.model_dump_json()
             wiki_link = (
                 result.get("data", {})
                 .get("attributes", {})
@@ -83,7 +83,7 @@ def predict_entity_linking(content: str, language: str = "en") -> Optional[str]:
         response = invoke_el(content, url, api_key, language)
 
         if response.status_code == 200:
-            result = response.json()
+            result = response.model_dump_json()
             wiki_link = (
                 result.get("data", {})
                 .get("attributes", {})

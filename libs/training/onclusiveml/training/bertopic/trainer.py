@@ -161,7 +161,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
             sample_topics = self.predict(sample_docs, sample_embeddings)
 
             super(OnclusiveModelTrainer, self).__call__(
-                [sample_docs, self.model_card.model_params.dict(), sample_topics],
+                [sample_docs, self.model_card.model_params.model_dump(), sample_topics],
                 [
                     self.model_card.model_test_files.inputs,
                     self.model_card.model_test_files.inference_params,

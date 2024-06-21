@@ -51,7 +51,7 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         }
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
-        settings_dict = settings.dict()
+        settings_dict = settings.model_dump()
         settings_dict["client_secret"] = settings.client_secret.get_secret_value()
         settings_dict["client_id"] = settings.client_id.get_secret_value()
         settings_dict["grant_type"] = settings.grant_type

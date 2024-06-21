@@ -167,7 +167,7 @@ class LoadTestCriteria(object):
             # generate evaluated criterion for the original criterion and its evaluation & persist
             evaluated_criterion_kwargs = {
                 **{"passed": criterion_passed},
-                **criterion.dict(),
+                **criterion.model_dump(),
             }
             evaluated_criterion = EvaluatedCriterion(**evaluated_criterion_kwargs)
             evaluated_criteria.append(evaluated_criterion)

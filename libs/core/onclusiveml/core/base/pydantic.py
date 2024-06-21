@@ -4,10 +4,17 @@
 from typing import Type
 
 # 3rd party libraries
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseModel, PlainSerializer, SecretStr
+from pydantic_settings import BaseSettings
+from typing_extensions import Annotated
 
 # Internal libraries
 from onclusiveml.core.base.exception import BaseClassNotFound
+
+
+OnclusiveSecretStr = Annotated[
+    SecretStr, PlainSerializer(lambda x: x.get_secret_value(), return_type=str)
+]
 
 
 class OnclusiveBaseSettings(BaseSettings):
@@ -15,8 +22,8 @@ class OnclusiveBaseSettings(BaseSettings):
 
     class Config:
         extra = "forbid"
-        strict = True
-        arbitrary_types_allowed = False
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
 
 
 class OnclusiveFrozenSettings(OnclusiveBaseSettings):
@@ -27,13 +34,12 @@ class OnclusiveFrozenSettings(OnclusiveBaseSettings):
     """
 
     class Config:
-        allow_mutation = False
         # make the service type immutable and hashable
         frozen = True
         validate_default = True
 
 
-class OnclusiveBaseSchema(BaseModel):
+class OnclusiveBaseModel(BaseModel):
     """Base for all data models."""
 
     class Config:
@@ -42,22 +48,20 @@ class OnclusiveBaseSchema(BaseModel):
         validate_assignment = True
         #
         extra = "forbid"
-        # all attributes with leading underscore are private and therefore
-        # are mutable and not included in serialization
-        underscore_attrs_are_private = True
+        from_attributes = True
 
 
-class OnclusiveFrozenSchema(OnclusiveBaseSchema):
+class OnclusiveFrozenModel(OnclusiveBaseModel):
     """Immutable data model."""
 
     class Config:
         # make the frozen schema immutable and hashable
-        allow_mutation = False
         frozen = True
+        arbitrary_types_allowed = True
 
 
 def cast(
-    obj: OnclusiveBaseSettings, t: Type[OnclusiveBaseSchema]
+    obj: OnclusiveBaseSettings, t: Type[OnclusiveBaseSettings]
 ) -> OnclusiveBaseSettings:
     """Cast pydantic settings to parent class.
 

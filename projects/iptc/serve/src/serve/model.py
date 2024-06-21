@@ -83,11 +83,13 @@ class ServedIPTCModel(ServedModel):
             iptc_list: list = []
         else:
             # score the model
-            iptc_list = self.model(input_data=attributes.content, **parameters.dict())
+            iptc_list = self.model(
+                input_data=attributes.content, **parameters.model_dump()
+            )
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"iptc": [iptc.dict() for iptc in iptc_list]},
+            attributes={"iptc": [iptc.model_dump() for iptc in iptc_list]},
         )
 
     def bio(self) -> BioResponseSchema:

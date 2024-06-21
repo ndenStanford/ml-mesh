@@ -35,12 +35,12 @@ def test_create_prompt(
     mock_project_get.return_value = Project(alias=project)
     # api call
     response = test_client.post(
-        "/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.dict()
+        "/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.model_dump()
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
     mock_prompt_save.assert_called_once()
-    assert response.json() == prompt.dict()
+    assert response.model_dump_json() == prompt.model_dump()
 
 
 @pytest.mark.parametrize(
@@ -63,7 +63,7 @@ def test_delete_prompt(
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == prompt.dict()
+    assert response.model_dump_json() == prompt.model_dump()
     mock_prompt_delete.assert_called_once()
     mock_prompt_get.assert_called_with(alias)
 
@@ -84,7 +84,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == prompt.dict()
+    assert response.model_dump_json() == prompt.model_dump()
     mock_prompt_get.assert_called_with(alias)
 
 

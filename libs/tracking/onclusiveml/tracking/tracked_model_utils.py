@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Tuple
 
 # 3rd party libraries
-from pydantic import BaseSettings, Field, SecretStr, validator
+from pydantic import BaseSettings, Field, SecretStr, field_validator
 
 
 class TrackedParams(BaseSettings):
@@ -91,7 +91,7 @@ class ModelTypes(Enum):
 class TrackedModelCard(TrackedParams):
     """A common interface for specfying model resources on neptune ai."""
 
-    model_type: str  # 'base', 'trained' or 'compiled'; see validator below
+    model_type: str  # 'base', 'trained' or 'compiled'; see field_validator below
     # the path to the model artifact attribute. passing this path to the MODEL_INITIALIZER should
     # re-create the model
     model_artifact_attribute_path: str = "model/model_artifacts"
@@ -113,7 +113,7 @@ class TrackedModelCard(TrackedParams):
     # the path to the dataset used in model training
     training_data_attribute_path: str = "data/train"
 
-    @validator("model_type")
+    @field_validator("model_type")
     def check_model_type(v: str) -> str:
         """Check model type."""
         if v not in ModelTypes.get_valid_range():

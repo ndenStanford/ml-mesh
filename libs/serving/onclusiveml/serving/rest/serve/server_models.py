@@ -4,7 +4,7 @@
 from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, root_field_validator
 
 
 class ServedModelMethods(BaseModel):
@@ -30,7 +30,7 @@ class ModelServerURLs(BaseModel):
     redoc: Optional[str] = ""
     openapi: Optional[str] = ""
 
-    @root_validator
+    @root_field_validator
     def check_non_root_urls(cls, values: Dict) -> Dict:
         """Checks that each url indeed starts with the root url."""
         root_url = values["root"]

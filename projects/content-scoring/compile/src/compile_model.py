@@ -34,7 +34,7 @@ def main() -> None:
     )
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
 
     base_model_card: Dict = (  # noqa
         base_model_version.download_config_from_model_version(  # noqa

@@ -100,7 +100,8 @@ def test_get(mock_dyntastic_get, mock_github_read, alias, template, project):
 
     mock_github_read.assert_called_with(os.path.join(project, alias))
     assert (
-        result == PromptTemplate(alias=alias, project=project, template=template).dict()
+        result
+        == PromptTemplate(alias=alias, project=project, template=template).model_dump()
     )
 
 

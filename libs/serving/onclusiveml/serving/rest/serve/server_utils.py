@@ -89,7 +89,7 @@ def get_model_server_urls(
 def get_root_router(
     model: ServedModel,
     api_version: str = "v1",
-    api_config: Dict = FastAPISettings().dict(),
+    api_config: Dict = FastAPISettings().model_dump(),
 ) -> Callable:
     """Utility for a consistent api root endpoint."""
     root_router = APIRouter()

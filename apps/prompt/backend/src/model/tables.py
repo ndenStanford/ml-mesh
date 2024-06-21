@@ -49,6 +49,6 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             return BedrockChat(
                 client=bedrock,
                 model_id=self.alias,
-                model_kwargs=ModelParameters().dict(),
+                model_kwargs=ModelParameters().model_dump(),
             )
         return None

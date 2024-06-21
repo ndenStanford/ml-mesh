@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Type
 # 3rd party libraries
 from locust import HttpUser
 from locust.main import load_locustfile
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, field_validator, root_field_validator
 
 # Internal libraries
 from onclusiveml.serving.params import ServingBaseParams
@@ -46,7 +46,7 @@ class LoadTestingParams(ServingBaseParams):
     # log level of underlying locust processes
     loglevel: str = "INFO"
 
-    @root_validator
+    @root_field_validator
     def validate_client_behaviour_configurations(cls, values: Dict) -> Dict:
         """Validate client behaviour configurations."""
         if not values["locustfile"] and not values["user_classes"]:
@@ -127,8 +127,8 @@ class ValidMeasurements(Enum):
         return valid_measurements
 
 
-class BaseMeasurementValidator(BaseModel):
-    """Base measurement validator.
+class BaseMeasurementfield_validator(BaseModel):
+    """Base measurement field_validator.
 
     A parent params class meant for subclassing that implements validating a measurement name
     against the range of valid measurement names defined in ValidMeasurements.
@@ -136,7 +136,7 @@ class BaseMeasurementValidator(BaseModel):
 
     name: str
 
-    @validator("name")
+    @field_validator("name")
     def check_valid_measurement(cls, value: str) -> str:
         """Check name against valid measurements."""
         if value not in ValidMeasurements.list():
@@ -148,8 +148,8 @@ class BaseMeasurementValidator(BaseModel):
         return value
 
 
-class BaseEndpointTypeValidator(BaseModel):
-    """Base endpoint type validator.
+class BaseEndpointTypefield_validator(BaseModel):
+    """Base endpoint type field_validator.
 
     A parent params class meant for subclassing that implements validating a endpoint type
     against the range of valid endpoint types defined in ValidEndpointTypes.
@@ -159,7 +159,7 @@ class BaseEndpointTypeValidator(BaseModel):
     endpoint_url: str
     endpoint_id: str = ""
 
-    @validator("endpoint_type")
+    @field_validator("endpoint_type")
     def check_valid_endpoint_type(cls, value: str) -> str:
         """Checks that endpoint type is valid."""
         if value not in ValidEndpointTypes.list():
@@ -170,7 +170,7 @@ class BaseEndpointTypeValidator(BaseModel):
 
         return value
 
-    @root_validator
+    @root_field_validator
     def set_request_id(cls, values: Dict) -> Dict:
         """Sets the request id."""
         values["endpoint_id"] = f"{values['endpoint_type']}_{values['endpoint_url']}"
@@ -178,7 +178,7 @@ class BaseEndpointTypeValidator(BaseModel):
         return values
 
 
-class Measurement(BaseMeasurementValidator):
+class Measurement(BaseMeasurementfield_validator):
     """Simple params class implementing a measurement.
 
     Has:
@@ -216,7 +216,7 @@ class Measurements(BaseModel):
     failures_percent: Measurement
 
 
-class EndpointReport(BaseEndpointTypeValidator):
+class EndpointReport(BaseEndpointTypefield_validator):
     """Simple params wrapper around the Measurements params class."""
 
     measurements: Measurements
@@ -237,12 +237,11 @@ class TestReport(BaseModel):
     end_time: str
 
 
-class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
+class Criterion(BaseEndpointTypefield_validator, BaseMeasurementfield_validator):
     """Utility class to define load testing success criteria."""
 
     threshold: float
     ensure_lower: bool = True
-
     # if True, failing this criterion as part of an EnvironmentCriteria assessment will fail the
     # entire test; otherwise, failing will simply emit a warning
     hard: bool = True
@@ -305,7 +304,7 @@ class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
             # measurement
             all_measurements = endpoint_report.measurements
 
-            test_measurement_dict: Dict = all_measurements.dict().get(self.name)
+            test_measurement_dict: Dict = all_measurements.model_dump().get(self.name)
 
             if test_measurement_dict is None:
                 raise ValueError(

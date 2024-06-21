@@ -264,7 +264,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             super(OnclusiveModelTrainer, self).__call__(
                 [
                     sample_docs,
-                    self.model_card.model_params.dict(),
+                    self.model_card.model_params.model_dump(),
                     {
                         "probs": sample_predictions[0].tolist(),
                         "labels": sample_predictions[1].tolist(),

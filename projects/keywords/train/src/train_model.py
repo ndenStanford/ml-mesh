@@ -26,7 +26,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # initialize registered model on neptune ai
-    model_version = TrackedModelVersion(**model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
     # --- initialize models
     # get specified huggingface transformer pipeline
     hf_pipeline = pipeline(
@@ -39,7 +39,7 @@ def main() -> None:
     # keybert model
     # list of tuples (ngram/word, prob)
     keyword_extraction_settings = (
-        model_card.model_params.keyword_extraction_settings.dict()
+        model_card.model_params.keyword_extraction_settings.model_dump()
     )
 
     keybert_predictions: List[Tuple[str, float]] = keybert_model.extract_keywords(
@@ -65,7 +65,7 @@ def main() -> None:
     )
     # # model card
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     model_version.stop()

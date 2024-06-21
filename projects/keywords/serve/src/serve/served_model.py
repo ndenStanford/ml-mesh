@@ -58,7 +58,7 @@ class ServedKeywordsModel(ServedModel):
         documents = [input.document for input in inputs]
         # score the model
         predicted_documents = self.model.extract_keywords(
-            docs=documents, **configuration.dict()
+            docs=documents, **configuration.model_dump()
         )
         # assemble validated response model instance
         predicted_payload_list = []

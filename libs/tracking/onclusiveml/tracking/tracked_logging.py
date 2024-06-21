@@ -6,5 +6,5 @@ from onclusiveml.tracking.tracking_settings import TrackingLibraryLogSettings
 
 
 tracking_library_logger = get_default_logger(
-    __name__, **TrackingLibraryLogSettings().dict()
+    __name__, **TrackingLibraryLogSettings().model_dump()
 )

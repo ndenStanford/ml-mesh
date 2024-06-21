@@ -30,8 +30,10 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # Initialize registered model on Neptune AI
-    model_version = TrackedModelVersion(**model_specs.dict())
-    uncompiled_model_version = TrackedModelVersion(**uncompiled_model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
+    uncompiled_model_version = TrackedModelVersion(
+        **uncompiled_model_specs.model_dump()
+    )
     # Load data
     X_dict = uncompiled_model_version.download_config_from_model_version(
         neptune_attribute_path=model_card.model_test_files.inputs
@@ -64,7 +66,7 @@ def main() -> None:
     )
 
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     for (test_file, test_file_attribute_path) in [

@@ -1,4 +1,4 @@
-"""Prompt injection validator."""
+"""Prompt injection field_validator."""
 
 # Standard Library
 import json
@@ -33,7 +33,7 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             print(
                 f"This is a warning. __init__ failed to validate:\n{json.dumps(data, indent=4)}"
             )
-            print(f"This is the original exception:\n{pve.json()}")
+            print(f"This is the original exception:\n{pve.model_dump_json()}")
 
     @classmethod
     def parse_obj(cls: Any, obj: Any) -> Any:
@@ -44,7 +44,7 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             print(
                 f"This is a warning. parse_obj failed to validate:\n{json.dumps(obj, indent=4)}"
             )
-            print(f"This is the original exception:\n{pve.json()}")
+            print(f"This is the original exception:\n{pve.model_dump_json()}")
             return None
 
     @classmethod
@@ -68,11 +68,11 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             )
         except ValidationError as pve:
             print(f"This is a warning. parse_raw failed to validate:\n{b}")
-            print(f"This is the original exception:\n{pve.json()}")
+            print(f"This is the original exception:\n{pve.model_dump_json()}")
             return None
 
 
-class PromptInjectionValidator:
+class PromptInjectionfield_validator:
     """Prompt Injection validation class to detect if prompts have been tampered with."""
 
     def __init__(

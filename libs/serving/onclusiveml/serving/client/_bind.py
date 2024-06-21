@@ -110,7 +110,10 @@ def bind(**kwargs: Dict[str, Any]) -> Callable:
         def execute(self) -> ResponseSchema:
             """Execute API query."""
             response = requests.request(
-                self.method, self.url, headers=self.headers, json=self.request.dict()
+                self.method,
+                self.url,
+                headers=self.headers,
+                json=self.request.model_dump(),
             )
             _, Response = self.schemas
             if response.status_code >= 300:

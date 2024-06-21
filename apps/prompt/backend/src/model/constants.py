@@ -1,8 +1,7 @@
 """Constants."""
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveEnum
 
 
 class ChatModel(str, OnclusiveEnum):

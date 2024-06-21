@@ -93,7 +93,7 @@ class ServedSentModel(ServedModel):
                 content=attributes.content,
                 entities=entities,
                 language=parameters.language,
-                additional_params=parameters.dict(),
+                additional_params=parameters.model_dump(),
             )
         except (
             LanguageDetectionException,

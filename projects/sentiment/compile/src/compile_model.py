@@ -33,7 +33,7 @@ def compile_model() -> None:
     )
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(
         "model/model_card"
@@ -49,12 +49,12 @@ def compile_model() -> None:
     sent_pipeline_compilation_settings = SentPipelineCompilationSettings()
     logger.debug(
         f"Using the following sent pipeline compilation settings: "
-        f"{sent_pipeline_compilation_settings.dict()}. Compiling ..."
+        f"{sent_pipeline_compilation_settings.model_dump()}. Compiling ..."
     )
 
     compiled_sent_pipeline = CompiledPipeline.from_pipeline(
         pipeline=base_model_pipeline,
-        **sent_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
+        **sent_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
 
     compiled_sent = CompiledSent(compiled_sent_pipeline)

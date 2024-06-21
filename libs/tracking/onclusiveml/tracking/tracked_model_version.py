@@ -5,7 +5,7 @@ import json
 import os
 from datetime import datetime as dt
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, Generator, List, Tuple, Union
 
 # 3rd party libraries
 import boto3
@@ -78,7 +78,9 @@ class TrackedModelVersion(ModelVersion):
 
         # only update the parameters that are specified in this method's kwargs
         logger.debug("Backend configuration found. Updating specified params.")
-        s3_storage_backend_updated_dict = self.s3_storage_backend_config.dict().copy()
+        s3_storage_backend_updated_dict = (
+            self.s3_storage_backend_config.model_dump().copy()
+        )
         s3_storage_backend_updated_dict.update(kwargs)
         self.s3_storage_backend_config = TrackingLibraryBackendSettings(
             **s3_storage_backend_updated_dict
@@ -553,9 +555,7 @@ class TrackedModelVersion(ModelVersion):
         )
 
     @classmethod
-    def _extract_data_attributes(
-        cls, value: Any
-    ) -> Union[FileAttributeType, ArtifactAttributeType, Dict]:
+    def _extract_data_attributes(cls, value: Any) -> Generator:
         """Utility function to unravel a ModelVersion structure attribute dict.
 
         Args:

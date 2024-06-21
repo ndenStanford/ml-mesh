@@ -83,7 +83,7 @@ def test_measurements():
 def test_endpoint_report():
     """Tests the initialization of an EndpointReport instance.
 
-    Also checks for the setting of the endpoint_id field via the root_validator.
+    Also checks for the setting of the endpoint_id field via the root_field_validator.
     """
     test_endpoint_report = EndpointReport(
         endpoint_type="GET",

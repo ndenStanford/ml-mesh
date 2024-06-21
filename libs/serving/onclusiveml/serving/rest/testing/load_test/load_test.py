@@ -240,7 +240,7 @@ class LoadTest(object):
             gevent.spawn_later(self.run_time_in_sec, timelimit_stop)
 
         try:
-            logger.info(f"Starting Locust with settings {self.settings.dict()} ")
+            logger.info(f"Starting Locust with settings {self.settings.model_dump()} ")
 
             self.env.create_local_runner()
             gevent.spawn(stats_printer(self.env.stats))
