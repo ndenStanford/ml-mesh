@@ -13,14 +13,13 @@ locust = "2.16.1"
 requests = "2.31.0"
 httpx = "^0.25.0"
 prometheus-client = "^0.17.1"
-opentelemetry-instrumentation-fastapi = "^0.38b0"
-opentelemetry-instrumentation-logging = "^0.38b0"
+opentelemetry-instrumentation-fastapi = "0.40b0"
+opentelemetry-instrumentation-logging = "0.40b0"
 opentelemetry-exporter-otlp = "^1.17.0"
 opentelemetry-api = "^1.17.0"
 opentelemetry-sdk = "^1.17.0"
 core = {path = "../core"}
 types-requests = "^2.31.0.2"
-pydantic = "^1.10.4"
 urllib3 = "^1.26.16"
 
 [tool.poetry.group.dev.dependencies]
