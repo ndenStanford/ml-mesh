@@ -13,9 +13,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/keywords-train:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: keywords
@@ -55,9 +55,9 @@ services:
       dockerfile: projects/keywords/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: keywords
@@ -154,9 +154,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: keywords

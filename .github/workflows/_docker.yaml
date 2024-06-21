@@ -185,6 +185,7 @@ jobs:
         run: |
           make docker.build/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}"
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
@@ -196,6 +197,7 @@ jobs:
         run: |
           make docker.validate/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}"
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             PLATFORM=linux/amd64 \
@@ -210,6 +212,7 @@ jobs:
           command: |
             make docker.build/${{ inputs.image }} \
               AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+              DEPLOYMENT="${{ inputs.environment }}"
               IMAGE_TAG="${{ inputs.tag }}" \
               TARGET_BUILD_STAGE="production" \
               PLATFORM=linux/amd64 \

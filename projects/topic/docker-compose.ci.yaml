@@ -13,9 +13,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-register,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-register
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
@@ -71,9 +71,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-train,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
@@ -114,9 +114,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-serve,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic
@@ -251,9 +251,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-backfill,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-backfill
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic

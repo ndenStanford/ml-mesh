@@ -14,9 +14,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-ingest,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-ingest
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
@@ -62,9 +62,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-train,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
@@ -109,9 +109,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-register,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-register
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
@@ -157,9 +157,9 @@ services:
       dockerfile: projects/iptc/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-compile,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
@@ -274,9 +274,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-serve,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=iptc-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc

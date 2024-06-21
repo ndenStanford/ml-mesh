@@ -13,9 +13,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -57,9 +57,9 @@ services:
       dockerfile: projects/sentiment/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -154,9 +154,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -311,9 +311,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment

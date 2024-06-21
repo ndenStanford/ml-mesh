@@ -13,9 +13,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-production}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-train,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
@@ -64,9 +64,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-compile,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
@@ -161,9 +161,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-serve,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner
@@ -316,9 +316,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-backfill,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=ner-backfill
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: ner

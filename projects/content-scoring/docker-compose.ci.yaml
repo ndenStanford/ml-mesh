@@ -12,8 +12,10 @@ services:
       dockerfile: projects/content-scoring/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-production}
       network: host
-      cache_to: type=inline
-      cache_from: type=registry
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=content-scoring-train,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=content-scoring-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: content-scoring
@@ -61,8 +63,10 @@ services:
       dockerfile: projects/content-scoring/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
-      cache_to: type=inline
-      cache_from: type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-compile:${IMAGE_TAG}
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=content-scoring-compile,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=content-scoring-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: content-scoring
@@ -163,9 +167,9 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=inline
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=content-scoring-serve,mode=max
       cache_from:
-        - type=registry,ref=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/content-scoring-serve:${IMAGE_TAG}
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=content-scoring-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: content-scoring
