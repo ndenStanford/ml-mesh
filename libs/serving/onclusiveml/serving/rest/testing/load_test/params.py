@@ -131,7 +131,7 @@ class ValidMeasurements(Enum):
         return valid_measurements
 
 
-class BaseMeasurementfield_validator(OnclusiveBaseModel):
+class BaseMeasurementValidator(OnclusiveBaseModel):
     """Base measurement field_validator.
 
     A parent params class meant for subclassing that implements validating a measurement name
@@ -152,7 +152,7 @@ class BaseMeasurementfield_validator(OnclusiveBaseModel):
         return value
 
 
-class BaseEndpointTypefield_validator(BaseModel):
+class BaseEndpointTypeValidator(BaseModel):
     """Base endpoint type field_validator.
 
     A parent params class meant for subclassing that implements validating a endpoint type
@@ -182,7 +182,7 @@ class BaseEndpointTypefield_validator(BaseModel):
         return values
 
 
-class Measurement(BaseMeasurementfield_validator):
+class Measurement(BaseMeasurementValidator):
     """Simple params class implementing a measurement.
 
     Has:
@@ -220,7 +220,7 @@ class Measurements(OnclusiveBaseModel):
     failures_percent: Measurement
 
 
-class EndpointReport(BaseEndpointTypefield_validator):
+class EndpointReport(BaseEndpointTypeValidator):
     """Simple params wrapper around the Measurements params class."""
 
     measurements: Measurements
@@ -241,7 +241,7 @@ class TestReport(OnclusiveBaseModel):
     end_time: str
 
 
-class Criterion(BaseEndpointTypefield_validator, BaseMeasurementfield_validator):
+class Criterion(BaseEndpointTypeValidator, BaseMeasurementValidator):
     """Utility class to define load testing success criteria."""
 
     threshold: float
