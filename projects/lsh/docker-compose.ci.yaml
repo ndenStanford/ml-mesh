@@ -14,7 +14,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=lsh-serve,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=lsh-serve,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=lsh-serve
       args:
@@ -83,7 +83,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=lsh-backfill,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=lsh-backfill,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=lsh-backfill
       args:

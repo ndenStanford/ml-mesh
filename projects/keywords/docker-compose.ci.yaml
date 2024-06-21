@@ -13,7 +13,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train
       args:
@@ -55,7 +55,7 @@ services:
       dockerfile: projects/keywords/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile
       args:
@@ -154,7 +154,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve
       args:

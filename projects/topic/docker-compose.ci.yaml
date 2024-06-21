@@ -13,7 +13,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-register,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-register,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-register
       args:
@@ -71,7 +71,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-train,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-train,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-train
       args:
@@ -114,7 +114,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-serve,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-serve,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-serve
       args:
@@ -251,7 +251,7 @@ services:
       target: ${TARGET_BUILD_STAGE:-development}
       network: host
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-backfill,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-backfill,mode=min
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-backfill
       args:
