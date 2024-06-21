@@ -9,7 +9,7 @@ python = "3.8.16"
 click = "8.1.0"
 core = {path = "libs/core"}
 pytest = "7.2.0"
-
+pytype = "2024.4.11"
 
 [tool.poetry.group.ci.dependencies]
 boto3 = "^1.28.29"
