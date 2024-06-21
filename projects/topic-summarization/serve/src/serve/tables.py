@@ -56,7 +56,7 @@ class TopicSummaryDynamoDB(Dyntastic):
 
     @validator("query_all_doc_count", "query_topic_doc_count", "trending", pre=True)
     @classmethod
-    def deserialize_fields(cls, fields: Any) -> str:
+    def deserialize_fields(cls, fields: Union[str, Any]) -> Any:
         """Deserialize certain fields to their evaluated object."""
         if isinstance(fields, str):
             return eval(fields)
