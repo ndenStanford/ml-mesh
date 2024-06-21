@@ -226,7 +226,6 @@ jobs:
               TARGET_BUILD_STAGE="development" \
               PLATFORM=linux/amd64 \
               ENVIRONMENT="ci" \
-              DEPLOYMENT="${{ inputs.environment }}" \
               USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
@@ -322,7 +321,6 @@ jobs:
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            DEPLOYMENT="${{ inputs.environment }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="production" \
             PLATFORM=linux/amd64 \

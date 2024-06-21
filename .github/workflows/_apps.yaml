@@ -102,7 +102,7 @@ jobs:
           AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }} \
           PROMPT_REGISTRY_APP_ID=${{ secrets.PROMPT_REGISTRY_APP_ID }} \
           PROMPT_REGISTRY_APP_PRIVATE_KEY=${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }} \
-          DEPLOYMENT="${{ inputs.environment }}"
+          DEPLOYMENT="${{ inputs.environment }}" \
           IMAGE_TAG=${{ inputs.tag }} \
           TARGET_BUILD_STAGE=development \
           PLATFORM=linux/amd64 \
@@ -142,7 +142,7 @@ jobs:
           AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }} \
           PROMPT_REGISTRY_APP_ID=${{ secrets.PROMPT_REGISTRY_APP_ID }} \
           PROMPT_REGISTRY_APP_PRIVATE_KEY=${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }} \
-          DEPLOYMENT="${{ inputs.environment }}"
+          DEPLOYMENT="${{ inputs.environment }}" \
           IMAGE_TAG=${{ inputs.tag }} \
           TARGET_BUILD_STAGE=production \
           PLATFORM=linux/amd64 \
