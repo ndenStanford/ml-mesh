@@ -5,10 +5,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List, Set, Union
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
@@ -118,6 +116,6 @@ class GlobalSettings(
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()

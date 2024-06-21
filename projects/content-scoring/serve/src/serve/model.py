@@ -3,10 +3,8 @@
 # Standard Library
 from typing import Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.models.content_scoring import CompiledContentScoring
 from onclusiveml.serving.rest.serve import ServedModel
 
@@ -27,14 +25,14 @@ class ServedContentScoringModel(ServedModel):
     """Served Content Scoring model.
 
     Attributes:
-        predict_request_model (Type[BaseModel]):  Request model for prediction
-        predict_response_model (Type[BaseModel]): Response model for prediction
-        bio_response_model (Type[BaseModel]): Response model for bio
+        predict_request_model (Type[OnclusiveBaseModel]):  Request model for prediction
+        predict_response_model (Type[OnclusiveBaseModel]): Response model for prediction
+        bio_response_model (Type[OnclusiveBaseModel]): Response model for bio
     """
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initialize the served Content Scoring model with its artifacts.

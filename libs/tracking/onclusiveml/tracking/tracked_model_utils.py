@@ -4,14 +4,20 @@
 from enum import Enum
 from typing import Tuple
 
-# 3rd party libraries
-from pydantic import BaseSettings, Field, SecretStr, field_validator
+# Internal libraries
+from onclusiveml.core.base import (
+    Field,
+    OnclusiveBaseSettings,
+    SecretStr,
+    field_validator,
+)
 
 
-class TrackedParams(BaseSettings):
+class TrackedParams(OnclusiveBaseSettings):
     """Base class for all parameter classes in the tracking library.
 
-    Subclassing from BaseSettings allows for configuring parameters via environment variables.
+    Subclassing from OnclusiveBaseSettings allows
+    for configuring parameters via environment variables.
     """
 
     pass

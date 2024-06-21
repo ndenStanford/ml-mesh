@@ -3,10 +3,8 @@
 # Standard Library
 from typing import Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.models.iptc import CompiledIPTC
 from onclusiveml.serving.rest.serve import ServedModel
 
@@ -27,14 +25,14 @@ class ServedIPTCModel(ServedModel):
     """Served IPTC model.
 
     Attributes:
-        predict_request_model (Type[BaseModel]):  Request model for prediction
-        predict_response_model (Type[BaseModel]): Response model for prediction
-        bio_response_model (Type[BaseModel]): Response model for bio
+        predict_request_model (Type[OnclusiveBaseModel]):  Request model for prediction
+        predict_response_model (Type[OnclusiveBaseModel]): Response model for prediction
+        bio_response_model (Type[OnclusiveBaseModel]): Response model for bio
     """
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initalize the served IPTC model with its artifacts.

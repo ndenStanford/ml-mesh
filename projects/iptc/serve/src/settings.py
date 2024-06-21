@@ -7,9 +7,10 @@ from typing import Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field
+from pydantic import Field
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
@@ -45,6 +46,6 @@ class GlobalSettings(
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()

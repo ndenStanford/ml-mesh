@@ -4,10 +4,8 @@
 import re
 from typing import Any, Dict, List, Optional, Tuple, Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.models.multiel import BELA
 from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.lang_exception import (
@@ -32,9 +30,9 @@ settings = get_settings()
 class ServedBelaModel(ServedModel):
     """Entity linking model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initialize the served Content Scoring model with its artifacts.

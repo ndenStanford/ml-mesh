@@ -4,10 +4,8 @@
 from logging import getLogger
 from typing import Dict, Union
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.serving.rest.serve.server_models import (
     ProtocolV1RequestModel,
     ProtocolV1ResponseModel,
@@ -23,9 +21,9 @@ class ServedModel(object):
     Roughly follows the kserve.Model implementation.
     """
 
-    predict_request_model: BaseModel = ProtocolV1RequestModel
-    predict_response_model: BaseModel = ProtocolV1ResponseModel
-    bio_response_model: BaseModel = ServedModelBioModel
+    predict_request_model: OnclusiveBaseModel = ProtocolV1RequestModel
+    predict_response_model: OnclusiveBaseModel = ProtocolV1ResponseModel
+    bio_response_model: OnclusiveBaseModel = ServedModelBioModel
 
     def __init__(self, name: str) -> None:
 

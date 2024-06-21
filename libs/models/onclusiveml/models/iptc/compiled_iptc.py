@@ -12,10 +12,10 @@ import torch
 # 3rd party libraries
 import regex
 from nptyping import NDArray
-from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
 from onclusiveml.nlp import preprocess
@@ -71,7 +71,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class PostProcessOutput(BaseModel):
+class PostProcessOutput(OnclusiveBaseModel):
     """output data structure."""
 
     label: str

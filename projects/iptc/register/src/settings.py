@@ -3,10 +3,8 @@
 # Standard Library
 from typing import List, Optional, Tuple
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.data.feature_store import FeatureStoreParams
 
 
@@ -27,7 +25,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
         env_file_encoding = "utf-8"
 
 
-class IptcFirstLevelFeatureRegistrationParams(BaseSettings):
+class IptcFirstLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
 
     entity_name: str
@@ -41,7 +39,7 @@ class IptcFirstLevelFeatureRegistrationParams(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-class IptcSecondLevelFeatureRegistrationParams(BaseSettings):
+class IptcSecondLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
 
     entity_name: str
@@ -55,7 +53,7 @@ class IptcSecondLevelFeatureRegistrationParams(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-class IptcThirdLevelFeatureRegistrationParams(BaseSettings):
+class IptcThirdLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
 
     entity_name: str
