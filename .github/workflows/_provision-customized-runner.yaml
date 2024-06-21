@@ -100,6 +100,11 @@ jobs:
           attempt_limit: 3
           attempt_delay: 10
 
+      - name: Free space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+
   customize-runner:
     name: Customize self-hosted EC2 runner
     runs-on: ${{ needs.provision-runner.outputs.label }}
