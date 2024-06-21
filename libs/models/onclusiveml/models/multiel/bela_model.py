@@ -10,6 +10,8 @@ import torch
 
 # 3rd party libraries
 import faiss
+import numpy as np
+from redis.commands.search.query import Query
 from tqdm import tqdm
 
 # Internal libraries
@@ -22,9 +24,12 @@ from onclusiveml.models.bela.task.joint_el_task import JointELTask
 from onclusiveml.models.bela.transforms.joint_el_transform import (
     JointELXlmrRawTextTransform,
 )
+from onclusiveml.models.bela.utils.client import get_client
+from onclusiveml.models.bela.utils.index import get_index
 
 
 logger = get_default_logger(__name__, level=20)
+settings = BelaSettings()
 
 
 def load_file(path: Union[str, Path]) -> List[Dict[str, Any]]:
@@ -92,8 +97,6 @@ class BelaModel:
 
         logger.info("Create task")
         # Load configuration using Pydantic
-        settings = BelaSettings()
-
         settings.task.load_from_checkpoint = checkpoint_path
         settings.task.embeddings_path = embeddings_path or settings.task.embeddings_path
         settings.datamodule.ent_catalogue_idx_path = (
@@ -132,7 +135,16 @@ class BelaModel:
         self.task = self.task.eval()
         self.task = self.task.to(self.device)
         self.embeddings = self.task.embeddings
-        self.faiss_index = self.task.faiss_index
+        # Connect to Redis vector store
+        self.client = get_client(
+            url=settings.redis.REDIS_CONNECTION_STRING.get_secret_value()
+        )
+
+        get_index(
+            client=self.client,
+            index_name=settings.redis.INDEX_NAME,
+            vector_dimensions=settings.redis.EMBEDDINGS_SHAPE[1],
+        )
 
         logger.info("Create ent index")
         self.ent_idx = []
@@ -155,7 +167,7 @@ class BelaModel:
         self.faiss_index = faiss.GpuIndexFlatIP(res, embeddings.shape[1], flat_config)
         self.faiss_index.add(self.embeddings)
 
-    def lookup(
+    def lookup_faiss(
         self,
         query: torch.Tensor,
     ):
@@ -168,6 +180,53 @@ class BelaModel:
         scores, indices = self.faiss_index.search(query, k=1)
 
         return scores.squeeze(-1).to(self.device), indices.squeeze(-1).to(self.device)
+
+    def lookup(self, query: torch.Tensor, ef_runtime: int = 200):
+        """Search for nearest neighbors in the Redis index.
+
+        Args:
+            query (torch.Tensor): Tensor containing query vectors.
+            ef_runtime (int): EF Runtime parameter for HNSW.
+        """
+        results_scores = []
+        results_indices = []
+        # Ensure the tensor is on the CPU before converting to numpy
+        query_vectors = query.cpu().numpy().astype(np.float32)
+        ef_runtime = settings.redis.EF_RUNTIME
+        for single_query_vector in query_vectors:
+            single_query_vector_bytes = single_query_vector.tobytes()
+            # Construct the query
+            k = 1
+            query_redis = (
+                Query(
+                    f"*=>[KNN {k} @embedding $query_vector as score]=>{{$EF_RUNTIME: {ef_runtime}}}"
+                )
+                .sort_by("score")
+                .return_fields("id", "score")
+                .paging(0, k)
+                .dialect(2)
+            )
+            # Run the query search
+            query_params = {"query_vector": single_query_vector_bytes}
+            results = (
+                self.client.ft(settings.redis.INDEX_NAME)
+                .search(query_redis, query_params)
+                .docs
+            )
+            scores = torch.tensor(
+                [float(doc.score) for doc in results], device=self.device
+            )
+            indices = [doc.id for doc in results]
+
+            results_scores.append(scores)
+            results_indices.append(indices)
+        # Combine results into single tensors
+        combined_scores = torch.cat(results_scores).unsqueeze(
+            -1
+        )  # Adding an extra dimension to match expected output
+        combined_indices = sum(results_indices, [])  # Flatten the list of lists
+
+        return combined_scores, combined_indices
 
     def process_batch(self, texts):
         """Process a batch of texts for mention and entity extraction.
@@ -222,22 +281,7 @@ class BelaModel:
             mentions_scores = torch.sigmoid(chosen_mention_logits)
             # retrieve candidates top-1 ids and scores
             cand_scores, cand_indices = self.lookup(flat_mentions_repr.detach())
-
-            entities_repr = self.embeddings[cand_indices.to(self.embeddings.device)].to(
-                self.device
-            )
-
-            flat_mentions_scores = mentions_scores[mention_lengths != 0].unsqueeze(-1)
             cand_scores = cand_scores.unsqueeze(-1)
-
-            el_scores = torch.sigmoid(
-                self.task.el_encoder(
-                    flat_mentions_repr,
-                    entities_repr,
-                    flat_mentions_scores,
-                    cand_scores,
-                )
-            ).squeeze(1)
 
         predictions = []
         cand_idx = 0
@@ -249,17 +293,13 @@ class BelaModel:
             ex_sp_lengths = []
             ex_entities = []
             ex_md_scores = []
-            ex_el_scores = []
             for offset, length, md_score in zip(offsets, lengths, md_scores):
                 if length != 0:
                     if md_score >= self.task.md_threshold:
                         ex_sp_offsets.append(offset.detach().cpu().item())
                         ex_sp_lengths.append(length.detach().cpu().item())
-                        ex_entities.append(
-                            self.ent_idx[cand_indices[cand_idx].detach().cpu().item()]
-                        )
+                        ex_entities.append(cand_indices[cand_idx])
                         ex_md_scores.append(md_score.item())
-                        ex_el_scores.append(el_scores[cand_idx].item())
                     cand_idx += 1
 
             char_offsets, char_lengths = convert_sp_to_char_offsets(
@@ -275,7 +315,6 @@ class BelaModel:
                     "lengths": char_lengths,
                     "entities": ex_entities,
                     "md_scores": ex_md_scores,
-                    "el_scores": ex_el_scores,
                 }
             )
             example_idx += 1
@@ -337,9 +376,7 @@ class BelaModel:
                     if length != 0:
                         ex_sp_offsets.append(offset.detach().cpu().item())
                         ex_sp_lengths.append(length.detach().cpu().item())
-                        ex_entities.append(
-                            self.ent_idx[cand_indices[cand_idx].detach().cpu().item()]
-                        )
+                        ex_entities.append(cand_indices[cand_idx])
                         ex_dis_scores.append(
                             cand_scores[cand_idx].detach().cpu().item()
                         )
@@ -438,14 +475,13 @@ class BelaModel:
 
             example_predictions = {
                 (offset, length): ent_id
-                for offset, length, ent_id, md_score, el_score in zip(
+                for offset, length, ent_id, md_score in zip(
                     example_predictions["offsets"],
                     example_predictions["lengths"],
                     example_predictions["entities"],
                     example_predictions["md_scores"],
-                    example_predictions["el_scores"],
                 )
-                if (el_score > el_threshold and md_score > md_threshold)
+                if (md_score > md_threshold)
             }
 
             predictions_per_example.append(
