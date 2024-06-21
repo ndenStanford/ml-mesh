@@ -69,6 +69,7 @@ repos                   :
       verbose: true
       args: ["--config=pytype.toml"]
       additional_dependencies: []
+      files: ^(apps|projects|tests)/.*\.py$
       exclude: ^(docker/)
 
 
