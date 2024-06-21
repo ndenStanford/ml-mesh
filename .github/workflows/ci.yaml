@@ -76,7 +76,7 @@ jobs       :
     with:
       environment: ${{ needs.get-environment.outputs.name }}
       pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
-      timeout: 10
+      timeout: 20
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
