@@ -48,13 +48,27 @@ class TopicSummaryDynamoDB(Dyntastic):
     query_all_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
     query_topic_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
 
-    @validator("query_all_doc_count", "query_topic_doc_count", "trending", pre=False)
+    @validator(
+        "query_all_doc_count",
+        "query_topic_doc_count",
+        "trending",
+        "analysis",
+        "content",
+        pre=False,
+    )
     @classmethod
     def serialize_fields(cls, fields: Any) -> str:
         """Serialize certain fields as string objects."""
         return str(fields)
 
-    @validator("query_all_doc_count", "query_topic_doc_count", "trending", pre=True)
+    @validator(
+        "query_all_doc_count",
+        "query_topic_doc_count",
+        "trending",
+        "analysis",
+        "content",
+        pre=True,
+    )
     @classmethod
     def deserialize_fields(cls, fields: Union[str, Any]) -> Any:
         """Deserialize certain fields to their evaluated object."""
