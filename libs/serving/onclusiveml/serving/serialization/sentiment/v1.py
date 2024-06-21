@@ -4,11 +4,11 @@
 from typing import Dict, List, Optional
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSchema
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.serialization import JsonApiSchema
 
 
-class InputEntity(OnclusiveBaseSchema):
+class InputEntity(OnclusiveBaseModel):
     """Input entity information from sentiment result.
 
     Attributes:

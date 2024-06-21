@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
+from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
 
 
 class TestSettings(OnclusiveBaseSettings):
@@ -15,7 +15,7 @@ class TestSettings(OnclusiveBaseSettings):
     setting2: int
 
 
-class TestModel(OnclusiveBaseSchema):
+class TestModel(OnclusiveBaseModel):
     """Test model."""
 
     attribute1: int
