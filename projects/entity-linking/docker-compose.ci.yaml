@@ -73,6 +73,8 @@ services:
     profiles: [serve, functional]
     ports:
       - 8000:8000
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
