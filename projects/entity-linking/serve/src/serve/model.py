@@ -128,7 +128,7 @@ class ServedBelaModel(ServedModel):
 
     def _generate_offsets(
         self, text: str, entities: List[Dict[str, Any]]
-    ) -> Tuple[List[str], List[int], List[int], List[int]]:
+    ) -> Tuple[List[Optional[str]], List[int], List[int], List[int]]:
         """Generate a component of query to be consumed by the entity fish endpoint.
 
         Args:
