@@ -92,7 +92,7 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2.10.0
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
         # if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -103,7 +103,7 @@ jobs:
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }} \
+          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
           PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
           DEPLOYMENT="${{ inputs.environment }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
