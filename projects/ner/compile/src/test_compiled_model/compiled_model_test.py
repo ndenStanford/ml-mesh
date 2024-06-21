@@ -6,17 +6,11 @@ from typing import List
 
 # 3rd party libraries
 import pandas as pd
-import pytest
 
-
-test_sample_indices = [0, 1, 2, 3]
-languages = ["en", "ja"]
-# Generate the parameter combinations using a list comprehension
-parametrize_values = [
-    (index, language, languages.index(language))
-    for language in languages
-    for index in test_sample_indices
-]
+# Source
+from src.settings import (
+    UncompiledTrackedModelSpecs,  # type: ignore[attr-defined]
+)
 
 
 def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
@@ -46,16 +40,12 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
     return df_sorted
 
 
-@pytest.mark.parametrize("test_sample_index, language, lang_index", parametrize_values)
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
     io_settings,
     compiled_ner,
     test_files,
     test_files_predictions,
-    test_sample_index,
-    language,
-    lang_index,
     compilation_test_settings,
 ):
     """Perform regression testing for the compiled NER model.
@@ -66,23 +56,21 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compiled_ner: Compiled NER model instance
         test_files: Dictionary containing test input
         test_files_predictions: List of expected predictions for test sample
-        test_sample_index (int): Index of the test sample being processed.
-        language (str): Language of the sample text.
-        lang_index (int): Index of sample texts where each list is specific language
         compilation_test_settings: Compilation settings
     """
-    compiled_predictions = compiled_ner(
-        [test_files["inputs"][lang_index][test_sample_index]], language=language
-    )
+    # modified logic that tests only 1 sample given the model either English or multilingual
+    project_to_language = {"onclusive/ner": "en", "onclusive/ner-multilingual": "ja"}
+    model_specs = UncompiledTrackedModelSpecs()
+    project = model_specs.project
+    language = project_to_language[project]
+    compiled_predictions = compiled_ner([test_files["inputs"]], language=language)
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler
     compiled_predictions_dict = [obj._asdict() for obj in compiled_predictions[0]]
 
     # Create copies of the lists of dictionaries
     compiled_predictions_list_copy = [dict(d) for d in compiled_predictions_dict]
-    test_sample_list = [
-        dict(d) for d in test_files_predictions[lang_index][test_sample_index]
-    ]
+    test_sample_list = [dict(d) for d in test_files_predictions[project]]
     test_sample_list_copy = [dict(d) for d in test_sample_list]
 
     # Function to remove '##' from entity_text
@@ -121,9 +109,9 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         ) as compiled_predictions_file:
             all_compiled_predictions = json.load(compiled_predictions_file)
     except (FileExistsError, FileNotFoundError):
-        all_compiled_predictions = [[], []]
+        all_compiled_predictions = []
 
-    all_compiled_predictions[lang_index].append(compiled_predictions_dict)
+    all_compiled_predictions.append(compiled_predictions_dict)
 
     with open(
         io_settings.test.test_files["predictions"], "w"
