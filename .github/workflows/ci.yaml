@@ -75,7 +75,7 @@ jobs       :
     needs: [run-get-core-dependencies-versions, get-environment]
     with:
       environment: ${{ needs.get-environment.outputs.name }}
-      pull-request: false # run pre commit suite on all files, but retain toggle logic in _code-quality flow for now
+      pull-request: ${{ github.event_name == 'pull_request' }}
       timeout: 20
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
     secrets:
