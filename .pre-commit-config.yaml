@@ -63,15 +63,12 @@ repos                   :
     - id: pytype
       name: pytype
       entry: pytype
-      language: python
+      language: system
       types: [python]
       require_serial: true
+      pass_filenames: false
       verbose: true
-      args: ["--config=pytype.toml"]
-      additional_dependencies: []
-      files: ^(apps|projects|tests)/.*\.py$
-      exclude: ^(docker/)
-
+      args: ["--config=pyproject.toml"]
 
   # isort
   - repo: https://github.com/pycqa/isort
