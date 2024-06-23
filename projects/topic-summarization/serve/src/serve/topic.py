@@ -92,6 +92,41 @@ class TopicHandler:
 
         return output_content
 
+    def entity_query_extract(self, boolean_query: str) -> str:
+        """Extract entity from boolean query.
+
+        Args:
+            boolean_query(str): boolean query
+        Output:
+            entity_list (str): entity list represented by string
+        """
+        entity_query_alias_claude = settings.CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS
+        entity_query_alias_gpt = settings.GPT_QUERY_ENTITY_EXTRACTION_ALIAS
+
+        input_dict = {
+            "input": {
+                "query": boolean_query,
+            },
+            "output": settings.ENTITY_RESPONSE_SCHEMA,
+        }
+
+        output_content = None
+        try:
+            q = self.call_api(
+                entity_query_alias_claude, settings.HAIKU_CLAUDE_MODEL, input_dict
+            )
+            entity_list = q.content
+            if not isinstance(output_content, dict):
+                raise ValueError("Claude topic response is not a valid string")
+        except Exception as e:
+            logging.error(f"Failed with Claude in Topic: {e}")
+
+        if (not output_content) or not isinstance(output_content, dict):
+            q = self.call_api(entity_query_alias_gpt, settings.GPT_MODEL, input_dict)
+            entity_list = q.content
+
+        return entity_list
+
     def summary_inference(self, articles: List[str]) -> Dict[str, str]:
         """LLM summary inference function for the articles.
 
@@ -164,7 +199,7 @@ class TopicHandler:
         return final_topic
 
     def aggregate(
-        self, article: List[str]
+        self, article: List[str], boolean_query: str
     ) -> Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]:
         """Aggregate topic & summary results together.
 
@@ -174,7 +209,10 @@ class TopicHandler:
             merged_result (dict): dict
         """
         article = self.pre_process(article)
-        topic_result = self.topic_inference(article)
+        if boolean_query is not None:
+            entity_list = self.entity_query_extract(boolean_query)
+
+        topic_result = self.topic_inference(article, entity_list)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article)
         merged_result: Dict[
