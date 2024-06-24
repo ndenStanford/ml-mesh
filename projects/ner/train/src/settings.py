@@ -7,13 +7,13 @@ from typing import List
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedNERModelSpecs(TrackedModelSpecs):
+class TrackedNERModelSpecs(TrackedModelSettings):
     """Tracked NER model specs."""
 
     project: str = "onclusive/ner"

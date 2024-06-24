@@ -7,13 +7,13 @@ from typing import Dict, List, Optional
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # Settings classes
-class TrackedDocumentUncompiledContentScoringSpecs(TrackedModelSpecs):
+class TrackedDocumentUncompiledContentScoringSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and DATA suite."""
 
     project: str = "onclusive/content-scoring"
@@ -25,7 +25,7 @@ class TrackedDocumentUncompiledContentScoringSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class TrackedDocumentContentScoringSpecs(TrackedModelSpecs):
+class TrackedDocumentContentScoringSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/content-scoring"

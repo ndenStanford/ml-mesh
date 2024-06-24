@@ -12,7 +12,7 @@ from pydantic import Field
 from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
@@ -25,7 +25,7 @@ UPLOAD = "upload"
 WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
-class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+class UncompiledTrackedModelSettings(TrackedModelSettings):
     """Trained model settings."""
 
     project: str = "onclusive/sentiment"
@@ -42,7 +42,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class CompiledTrackedModelSpecs(TrackedModelSpecs):
+class CompiledTrackedModelSettings(TrackedModelSettings):
     """Compiled model settings."""
 
     project: str = "onclusive/sentiment"
@@ -203,7 +203,7 @@ class CompiledSentTrackedModelCard(TrackedModelCard):
     model_type: str = "compiled"
     # --- custom fields
     # uncompiled model reference
-    uncompiled_model: UncompiledTrackedModelSpecs = UncompiledTrackedModelSpecs()
+    uncompiled_model: UncompiledTrackedModelSettings = UncompiledTrackedModelSettings()
     # model compilation params
     sent_model_compilation_settings: PipelineCompilationSettings = (
         SentPipelineCompilationSettings()

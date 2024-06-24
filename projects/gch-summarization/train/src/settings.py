@@ -7,13 +7,13 @@ from typing import List
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedSummarizationModelSpecs(TrackedModelSpecs):
+class TrackedSummarizationModelSpecs(TrackedModelSettings):
     """Tracked summarization model specs."""
 
     project: str = "onclusive/gch-summarization"

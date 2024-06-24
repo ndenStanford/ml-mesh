@@ -17,7 +17,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
@@ -96,7 +96,7 @@ class NERSettings(TrackedParams):
     supported_languages: List[LanguageIso] = NER_SUPPORTED_LANGUAGE
 
 
-class TrackedCompiledModelSpecs(TrackedModelSpecs):
+class TrackedCompiledModelSpecs(TrackedModelSettings):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather

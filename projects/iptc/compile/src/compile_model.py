@@ -19,7 +19,7 @@ from onclusiveml.tracking import TrackedModelVersion
 from src.settings import (  # type: ignore[attr-defined]
     IOSettings,
     IPTCPipelineCompilationSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
 )
 
 
@@ -33,7 +33,7 @@ def main() -> None:
     )
 
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
+    base_model_specs = UncompiledTrackedModelSettings()
     base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(

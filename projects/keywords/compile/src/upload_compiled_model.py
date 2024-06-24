@@ -13,9 +13,9 @@ from onclusiveml.tracking import TrackedModelVersion
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompiledKeywordsTrackedModelCard,
-    CompiledTrackedModelSpecs,
+    CompiledTrackedModelSettings,
     IOSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
 )
 
 
@@ -28,7 +28,7 @@ def upload_compiled_model() -> None:
         level=io_settings.log_level,
     )
     # --- upload compiled model
-    compiled_model_specs = CompiledTrackedModelSpecs()
+    compiled_model_specs = CompiledTrackedModelSettings()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.model_dump())
 
     # upload model card - holds all settings
@@ -62,7 +62,7 @@ def upload_compiled_model() -> None:
     )
     # --- update uncompiled model
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
+    base_model_specs = UncompiledTrackedModelSettings()
     base_model_version = TrackedModelVersion(
         **base_model_specs.model_dump(exclude={"mode"})
     )

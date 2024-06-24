@@ -6,13 +6,13 @@ import os
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedEntityLinkingModelSpecs(TrackedModelSpecs):
+class TrackedEntityLinkingModelSpecs(TrackedModelSettings):
     """Tracked entity-linking model settings."""
 
     project: str = "onclusive/entity-linking"

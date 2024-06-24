@@ -19,7 +19,7 @@ from sklearn.model_selection import train_test_split
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
-from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
 )
@@ -43,14 +43,14 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
 
     def __init__(
         self,
-        tracked_model_specs: TrackedModelSpecs,
+        tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
         data_fetch_params: FeatureStoreParams,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
-            tracked_model_specs (TrackedModelSpecs): Specifications for tracked model on neptune.
+            tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
             data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
 

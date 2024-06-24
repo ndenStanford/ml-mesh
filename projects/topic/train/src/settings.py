@@ -8,13 +8,13 @@ from typing import List, Tuple
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedTopicModelSpecs(TrackedModelSpecs):
+class TrackedTopicModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/organic-topic"

@@ -5,10 +5,10 @@ from neptune.types.mode import Mode
 from pydantic import Field
 
 # Internal libraries
-from onclusiveml.tracking import TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelSettings
 
 
-class TrackedCompiledModelSpecs(TrackedModelSpecs):
+class TrackedCompiledModelSpecs(TrackedModelSettings):
     """Tracked model specs."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather

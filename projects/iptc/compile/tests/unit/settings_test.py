@@ -3,7 +3,7 @@
 # Source
 from src.settings import (
     CompiledIPTCTrackedModelCard,
-    CompiledTrackedModelSpecs,
+    CompiledTrackedModelSettings,
     IOSettings,
 )
 
@@ -15,7 +15,7 @@ def test_io_settings():
 
 def test_compiled_tracked_model_specs():
     """Compiled tracked model settings."""
-    CompiledTrackedModelSpecs()
+    CompiledTrackedModelSettings()
 
 
 def test_compiled_iptc_tracked_model_card():

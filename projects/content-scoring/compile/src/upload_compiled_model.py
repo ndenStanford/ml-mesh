@@ -11,9 +11,9 @@ from onclusiveml.tracking import TrackedModelVersion
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompiledContentScoringTrackedModelCard,
-    CompiledTrackedModelSpecs,
+    CompiledTrackedModelSettings,
     IOSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
 )
 
 
@@ -26,8 +26,8 @@ def main() -> None:
         level=io_settings.log_level,
     )
     # --- upload compiled model
-    base_model_specs = UncompiledTrackedModelSpecs()
-    compiled_model_specs = CompiledTrackedModelSpecs()
+    base_model_specs = UncompiledTrackedModelSettings()
+    compiled_model_specs = CompiledTrackedModelSettings()
     compiled_model_version = TrackedModelVersion(**compiled_model_specs.model_dump())
 
     compiled_model_card = CompiledContentScoringTrackedModelCard()

@@ -20,7 +20,7 @@ from onclusiveml.tracking import TrackedModelVersion
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     IOSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
 )
 
 
@@ -33,7 +33,7 @@ def main() -> None:
         level=io_settings.log_level,
     )
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
+    base_model_specs = UncompiledTrackedModelSettings()
     base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
 
     base_model_card: Dict = (  # noqa

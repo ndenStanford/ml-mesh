@@ -3,7 +3,7 @@
 # Source
 from src.settings import (
     CompiledSentTrackedModelCard,
-    CompiledTrackedModelSpecs,
+    CompiledTrackedModelSettings,
     IOSettings,
 )
 
@@ -15,7 +15,7 @@ def test_io_settings():
 
 def test_compiled_tracked_model_specs():
     """Test compiled tracked model settings."""
-    CompiledTrackedModelSpecs()
+    CompiledTrackedModelSettings()
 
 
 def test_compiled_ner_tracked_model_card():

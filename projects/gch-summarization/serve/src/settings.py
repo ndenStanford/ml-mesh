@@ -16,7 +16,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
@@ -37,7 +37,7 @@ class GchSummarizationSettings(TrackedParams):
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
-class TrackedTrainedModelSpecs(TrackedModelSpecs):
+class TrackedTrainedModelSpecs(TrackedModelSettings):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather

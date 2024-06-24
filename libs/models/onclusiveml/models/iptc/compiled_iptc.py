@@ -19,7 +19,7 @@ from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
 from onclusiveml.nlp import preprocess
-from onclusiveml.tracking import TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelSettings
 
 
 logger = get_default_logger(__name__, level=20)
@@ -60,7 +60,7 @@ def extract_number_from_label(label: str) -> int:
         raise ValueError(f"Invalid label format: {label}")
 
 
-class CompiledTrackedModelSpecs(TrackedModelSpecs):
+class CompiledTrackedModelSettings(TrackedModelSettings):
     """Compiled model settings."""
 
     project: str = "onclusive/iptc-00000000"
@@ -92,7 +92,7 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.model_spec = CompiledTrackedModelSpecs()
+        self.model_spec = CompiledTrackedModelSettings()
         if self.model_spec.project == "onclusive/iptc":
             self.model_id = "00000000"
         else:

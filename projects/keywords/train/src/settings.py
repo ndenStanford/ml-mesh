@@ -7,13 +7,13 @@ from typing import List, Tuple, Union
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedKeywordModelSpecs(TrackedModelSpecs):
+class TrackedKeywordModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/keywords"

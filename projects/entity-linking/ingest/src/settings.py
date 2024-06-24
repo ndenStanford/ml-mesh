@@ -10,7 +10,7 @@ from neptune.types.mode import Mode
 
 # Internal libraries
 from onclusiveml.core.base import Field, OnclusiveBaseSettings
-from onclusiveml.tracking import TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelSettings
 
 
 class EmbeddingsSettings(OnclusiveBaseSettings):
@@ -28,7 +28,7 @@ class VectorDBSettings(OnclusiveBaseSettings):
     REDIS_CONNECTION_STRING: str = ""
 
 
-class TrackedTrainedModelSpecs(TrackedModelSpecs):
+class TrackedTrainedModelSpecs(TrackedModelSettings):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather

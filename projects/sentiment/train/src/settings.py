@@ -7,13 +7,13 @@ from typing import List
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedSentModelSpecs(TrackedModelSpecs):
+class TrackedSentModelSpecs(TrackedModelSettings):
     """Tracked sentiment model settings."""
 
     project: str = "onclusive/sentiment"

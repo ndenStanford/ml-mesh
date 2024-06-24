@@ -8,13 +8,13 @@ from typing import List
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedParams,
 )
 
 
 # --- settings classes
-class TrackedIPTCModelSpecs(TrackedModelSpecs):
+class TrackedIPTCModelSpecs(TrackedModelSettings):
     """Tracked iptc model settings."""
 
     project: str = "onclusive/iptc-00000000"
