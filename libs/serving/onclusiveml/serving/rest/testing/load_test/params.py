@@ -7,13 +7,10 @@ from typing import Any, Dict, List, Optional, Type
 # 3rd party libraries
 from locust import HttpUser
 from locust.main import load_locustfile
+from pydantic import root_field_validator
 
 # Internal libraries
-from onclusiveml.core.base import (
-    OnclusiveBaseModel,
-    field_validator,
-    root_field_validator,
-)
+from onclusiveml.core.base import OnclusiveBaseModel, field_validator
 from onclusiveml.serving.params import ServingBaseParams
 
 
