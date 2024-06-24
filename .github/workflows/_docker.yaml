@@ -173,7 +173,7 @@ jobs:
           aws-region: ${{ inputs.region }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |

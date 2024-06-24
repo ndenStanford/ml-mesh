@@ -165,8 +165,3 @@ jobs:
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
