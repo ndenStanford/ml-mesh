@@ -1,29 +1,82 @@
-"""Helper functions."""
+"""Tracking settings."""
 
-# Standard Library
-from enum import Enum
-from typing import Tuple
+# 3rd party libraries
+from pydantic import field_validator
 
 # Internal libraries
-from onclusiveml.core.base import (
-    Field,
-    OnclusiveBaseSettings,
-    SecretStr,
-    field_validator,
+from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveSecretStr
+from onclusiveml.core.constants import Environment
+from onclusiveml.core.logging import (  # noqa:F401
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    WARNING,
+    OnclusiveLogMessageFormat,
+    OnclusiveLogSettings,
 )
+from onclusiveml.tracking.constants import ModelType
 
 
-class TrackedParams(OnclusiveBaseSettings):
+class TrackingLibraryLogSettings(OnclusiveLogSettings):
+    """Entrypoint to configure logging behaviour of the tracking library for the current session."""
+
+    fmt_level: OnclusiveLogMessageFormat = OnclusiveLogMessageFormat.DETAILED
+    level: int = INFO
+    json_format: bool = True
+
+    class Config:
+        env_prefix = "onclusiveml_tracking_logger_"
+
+
+class TrackingSettings(OnclusiveBaseSettings):
     """Base class for all parameter classes in the tracking library.
 
-    Subclassing from OnclusiveBaseSettings allows
-    for configuring parameters via environment variables.
+    Subclassing from BaseSettings allows for configuring parameters via environment variables.
     """
 
-    pass
+
+class TrackingBackendSettings(TrackingSettings):
+    """Entrypoint to configure the tracking library's S3 storage backend behaviour \
+    via environment variables.
+
+    The values derived by this class's attributes will be used as default values for the
+    identically named TrackedModelVersion class' constructor arguments:
+        - use_s3_backend
+        - environment
+        - s3_bucket_prefix
+        - s3_backend_root
+    """
+
+    use_s3_backend: bool = True
+    environment: Environment = Environment.DEV
+    s3_bucket_prefix: str = "onclusive-model-store-"
+    s3_backend_root: str = "neptune-ai-model-registry"
+
+    class Config:
+        env_prefix = "onclusiveml_tracking_backend_"
+
+    @property
+    def bucket_name(self) -> str:
+        """S3 bucket name."""
+        return f"{self.s3_bucket_prefix}{self.environment}"
+
+    @field_validator("environment")
+    @classmethod
+    def environment_validation(cls, v: str) -> str:
+        """Environment validation."""
+        if v not in Environment.values():
+            raise ValueError(
+                f"Invalid backend storage bucket environment {v}: Must be one"
+                " of the valid options: "
+                f"{Environment.DEV} (development environment)"
+                f"{Environment.STAGE} (staging environment)"
+                f"{Environment.PROD} (production environment)"
+            )
+        return v
 
 
-class TrackedGithubActionsSpecs(TrackedParams):
+class TrackedGithubActionsSpecs(OnclusiveBaseSettings):
     """A class used for capturing the most relevent Github Actions build environment variables.
 
     Generate a CI lineage for any process being executed by Github Actions workflows, e.g. model
@@ -50,14 +103,14 @@ class TrackedGithubActionsSpecs(TrackedParams):
     runner_os: str = "runner_os"
 
 
-class TrackedImageSpecs(TrackedParams):
+class TrackedImageSpecs(OnclusiveBaseSettings):
     """A class to capture the specs of a given docker image."""
 
     docker_image_name: str = "image_name"
     docker_image_tag: str = "image_tag"
 
 
-class TrackedModelSpecs(TrackedParams):
+class TrackedModelSettings(OnclusiveBaseSettings):
     """A utility to specify the neptune ai project and model level resources.
 
     Also includes the parsing of the api token to help instantiate ModelVersion's..
@@ -65,14 +118,15 @@ class TrackedModelSpecs(TrackedParams):
     """
 
     # neptune ai model registry specs
-    project: str = Field(..., env="neptune_project")
-    model: str = Field(..., env="neptune_model_id")
-    api_token: SecretStr = Field(
-        default="api_token", env="neptune_api_token", exclude=True
-    )
+    project: str
+    model: str
+    api_token: OnclusiveSecretStr
+
+    class Config:
+        env_prefix = "onclusiveml_neptune_"
 
 
-class TrackedModelTestFiles(TrackedParams):
+class TrackedModelTestFiles(TrackingSettings):
     """A utility to specifiy the attribute paths of test files supporting regression tests."""
 
     # neptune ai locations of test files
@@ -81,23 +135,10 @@ class TrackedModelTestFiles(TrackedParams):
     predictions: str = "model/test_files/predictions"
 
 
-class ModelTypes(Enum):
-    """Model types."""
-
-    base: str = "base"
-    trained: str = "trained"
-    compiled: str = "compiled"
-
-    @classmethod
-    def get_valid_range(cls) -> Tuple[str, str, str]:
-        """Simple model type validation utility."""
-        return (cls.base.value, cls.trained.value, cls.compiled.value)
-
-
-class TrackedModelCard(TrackedParams):
+class TrackedModelCard(TrackingSettings):
     """A common interface for specfying model resources on neptune ai."""
 
-    model_type: str  # 'base', 'trained' or 'compiled'; see field_validator below
+    model_type: str  # 'base', 'trained' or 'compiled'; see validator below
     # the path to the model artifact attribute. passing this path to the MODEL_INITIALIZER should
     # re-create the model
     model_artifact_attribute_path: str = "model/model_artifacts"
@@ -122,10 +163,10 @@ class TrackedModelCard(TrackedParams):
     @field_validator("model_type")
     def check_model_type(v: str) -> str:
         """Check model type."""
-        if v not in ModelTypes.get_valid_range():
+        if v not in ModelType.values():
             raise ValueError(
                 f"Model type {v} must be one of the following valid options: "
-                f"{ModelTypes.get_valid_range()}"
+                f"{ModelType.values()}"
             )
 
         return v
