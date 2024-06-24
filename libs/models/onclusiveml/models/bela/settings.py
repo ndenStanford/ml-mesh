@@ -1,13 +1,22 @@
 """Configuration BELA model script."""
 
 # Standard Library
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 # 3rd party libraries
-from pydantic import Field
+from pydantic import Field, SecretStr
 
 # Internal libraries
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
+
+
+class RedisSetttings(OnclusiveBaseSettings):
+    """Redis configuration settings."""
+
+    INDEX_NAME: str = "Wiki_entities"
+    EMBEDDINGS_SHAPE: List = [16470856, 300]
+    REDIS_CONNECTION_STRING: SecretStr = Field(..., env="REDIS_CONNECTION_STRING")
+    EF_RUNTIME: int = 200
 
 
 class TransformSettings(OnclusiveBaseSettings):
@@ -109,6 +118,7 @@ class BelaSettings(
     optim: OptimSettings = OptimSettings()
     model: ModelSettings = ModelSettings()
     checkpoint_callback: CheckpointCallbackSettings = CheckpointCallbackSettings()
+    redis: RedisSetttings = RedisSetttings()
 
     class Config:
         extra = "allow"
