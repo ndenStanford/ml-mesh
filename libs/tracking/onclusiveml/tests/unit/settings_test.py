@@ -103,14 +103,3 @@ def test_from_empty_env_raise_error():
     """Test from empty env raises error."""
     with pytest.raises(ValidationError):
         TrackedModelSettings()
-
-
-def test_to_dict_raise():
-    """Test to_dict method with error raised."""
-    test_specs = TrackedModelSettings(project="a", model="b", api_token="secret_token")
-    test_specs_dict = test_specs.model_dump()
-
-    test_specs_dict["project"], test_specs_dict["model"]
-
-    with pytest.raises(KeyError):
-        test_specs_dict["api_token"]

@@ -1,7 +1,7 @@
 """Baseclass for optimizing Onclusive models. Inherited by training and compiling modules."""
 
 # Standard Library
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import List
 
 # Internal libraries
@@ -13,7 +13,7 @@ from onclusiveml.tracking import (
 )
 
 
-class OnclusiveModelOptimizer(metaclass=ABCMeta):
+class OnclusiveModelOptimizer(ABC):
     """Class for training and managing Onclusive models."""
 
     def __init__(
