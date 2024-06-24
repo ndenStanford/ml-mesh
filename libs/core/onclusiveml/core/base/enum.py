@@ -1,17 +1,66 @@
-"""Helpers."""
+"""Enum."""
 
 # Standard Library
 from enum import Enum
-from typing import List
+from typing import List, Optional, TypeVar
+
+
+T = TypeVar("T")
 
 
 class OnclusiveEnum(Enum):
-    """Onclusive enum class."""
+    """Onclusive base enum class."""
 
     @classmethod
-    def list(cls, names: bool = False) -> List[str]:
-        """List enum values or keys."""
-        if not names:
-            return [field.value for field in cls]
-        else:
-            return [field.name for field in cls]
+    def members(cls) -> List[Enum]:
+        """List enum values."""
+        return [field for field in cls]
+
+    @classmethod
+    def contains(cls, value: T) -> bool:
+        """Checks if a l."""
+        return value in cls.members()
+
+    @classmethod
+    def values(cls) -> List[T]:
+        """List enum values."""
+        return [field.value for field in cls]
+
+    @classmethod
+    def from_value(
+        cls, value: T, raises_if_not_found: bool = False
+    ) -> Optional["OnclusiveEnum"]:
+        """Get enum object from value.
+
+        Args:
+            value (T): enum value.
+            raises_if_not_found (bool): if set to `True`, an exception is
+                raised if the value is not found in the enum class.
+        """
+        for member in cls:
+            if value == member.value:
+                return member
+        if raises_if_not_found:
+            raise ValueError(
+                f"The specified value {value} is not in the valid range: "
+                f"{cls.values()}"
+            )
+        return None
+
+
+class OnclusiveStrEnum(str, OnclusiveEnum):
+    """Onclusive string enum class.
+
+    This enum class should be used for str.
+
+    Note:
+        For int Enums, the class enum.IntEnum is available
+            as a python 3.8 built-in class.
+    """
+
+
+class OnclusiveIntEnum(int, OnclusiveEnum):
+    """Onclusive integer enum class.
+
+    This enum class should be used for int enum values.
+    """

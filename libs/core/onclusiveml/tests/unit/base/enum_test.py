@@ -16,4 +16,4 @@ def test_onclusive_enum():
     assert TestEnum.TEST_1.value == 1
     assert TestEnum.TEST_2.value == "two"
 
-    assert TestEnum.list() == [1, "two"]
+    assert TestEnum.values() == [1, "two"]

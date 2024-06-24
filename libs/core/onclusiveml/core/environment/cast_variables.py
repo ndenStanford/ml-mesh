@@ -9,7 +9,7 @@ from onclusiveml.core.logging import (
 
 
 logger = get_default_logger(
-    __name__, fmt_level=OnclusiveLogMessageFormat.DETAILED.name, level=INFO
+    __name__, fmt_level=OnclusiveLogMessageFormat.DETAILED, level=INFO
 )
 
 

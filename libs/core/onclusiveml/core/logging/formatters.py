@@ -6,10 +6,7 @@ from typing import Literal, Optional
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
-from onclusiveml.core.logging.constants import (
-    OnclusiveLogMessageFormat,
-    OnclusiveService,
-)
+from onclusiveml.core.logging.constants import OnclusiveService
 
 
 class OnclusiveLogRecord(OnclusiveBaseModel):
@@ -30,7 +27,7 @@ class OnclusiveLogRecord(OnclusiveBaseModel):
     message: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OnclusiveFormatter(logging.Formatter):
@@ -41,16 +38,14 @@ class OnclusiveFormatter(logging.Formatter):
     def __init__(
         self,
         service: str,
-        fmt: Optional[str] = OnclusiveLogMessageFormat.DEFAULT.value,
+        fmt: Optional[str] = None,
         datefmt: Optional[str] = None,
         style: Literal["%", "{", "$"] = "%",
         validate: bool = True,
     ) -> None:
         super().__init__(fmt, datefmt, style, validate)
 
-        OnclusiveService.validate(service)
-
-        self.service = service
+        self.service = OnclusiveService.from_value(service, raises_if_not_found=True)
 
     def _add_service_attribute(self, record: logging.LogRecord) -> logging.LogRecord:
         """Updates/creates a LogRecord's "service" and "asctime" attribute.
@@ -123,7 +118,9 @@ class OnclusiveJSONFormatter(OnclusiveFormatter):
         Returns:
             json_record (str): The JSON string version of the log record.
         """
-        json_record = self.log_record_data_model.from_orm(record).model_dump()
+        json_record = self.log_record_data_model.model_validate(
+            record
+        ).model_dump_json()
 
         return json_record
 

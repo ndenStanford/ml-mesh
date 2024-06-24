@@ -34,20 +34,20 @@ def test_onclusive_log_record(service):
     "fmt, expected_formatted_message",
     [
         (
-            OnclusiveLogMessageFormat.MESSAGE_ONLY.value,
+            OnclusiveLogMessageFormat.MESSAGE_ONLY,
             "testing message formatting",
         ),
-        (OnclusiveLogMessageFormat.BASIC.value, "INFO - testing message formatting"),
+        (OnclusiveLogMessageFormat.BASIC, "INFO - testing message formatting"),
         (
-            OnclusiveLogMessageFormat.SIMPLE.value,
+            OnclusiveLogMessageFormat.SIMPLE,
             "dummy time stamp - INFO - testing message formatting",
         ),
         (
-            OnclusiveLogMessageFormat.DETAILED.value,
+            OnclusiveLogMessageFormat.DETAILED,
             "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting",  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.DEFAULT.value,
+            OnclusiveLogMessageFormat.DEFAULT,
             "test logger - (testfile.py).test_function(1) - testing message formatting",  # noqa: E501
         ),
     ],
@@ -60,7 +60,7 @@ def test_onclusive_formatter_format(monkeypatch, fmt, expected_formatted_message
 
     monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
 
-    formatter = OnclusiveFormatter(service="test-service", fmt=fmt)
+    formatter = OnclusiveFormatter(service="test-service", fmt=fmt.value)
 
     test_record = logging.LogRecord(
         name="test logger",
@@ -81,24 +81,24 @@ def test_onclusive_formatter_format(monkeypatch, fmt, expected_formatted_message
     "fmt, expected_formatted_message",
     [
         (
-            OnclusiveLogMessageFormat.MESSAGE_ONLY.value,
-            '{"service":"test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing message formatting"}',  # noqa: E501
+            OnclusiveLogMessageFormat.MESSAGE_ONLY,
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"testing message formatting"}',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.BASIC.value,
-            '{"service":"test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing message formatting"}',  # noqa: E501
+            OnclusiveLogMessageFormat.BASIC,
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"INFO - testing message formatting"}',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.SIMPLE.value,
-            '{"service":"test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
+            OnclusiveLogMessageFormat.SIMPLE,
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.DETAILED.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
+            OnclusiveLogMessageFormat.DETAILED,
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.DEFAULT.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
+            OnclusiveLogMessageFormat.DEFAULT,
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"test logger - (testfile.py).test_function(1) - testing message formatting"}',  # noqa: E501
         ),
     ],
 )
@@ -123,4 +123,5 @@ def test_onclusive_json_formatter_format(monkeypatch, fmt, expected_formatted_me
         exc_info=None,
     )
     actual_formatted_message = formatter.format(test_record)
+
     assert actual_formatted_message == expected_formatted_message
