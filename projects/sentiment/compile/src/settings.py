@@ -177,7 +177,7 @@ class SentPipelineCompilationSettings(PipelineCompilationSettings):
     """Sentiment pipeline compilation settings."""
 
     pipeline_name: str = "sent_model"
-    max_length = 128
+    max_length: int = 128
 
     class Config:
         env_prefix = "sent_pipeline_compilation_settings_"

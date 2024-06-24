@@ -170,7 +170,7 @@ class WordPipelineCompilationSettings(PipelineCompilationSettings):
     """Word pipeline compilation settings."""
 
     pipeline_name: str = "word_model"
-    max_length = 20
+    max_length: int = 20
 
     class Config:
         env_prefix = "word_pipeline_compilation_settings_"

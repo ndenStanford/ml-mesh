@@ -18,7 +18,7 @@ class TrackedTopicModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/organic-topic"
-    model = "TOPICS-TRAINED"
+    model: str = "TOPICS-TRAINED"
 
     class Config:
         env_file = "config/dev.env"

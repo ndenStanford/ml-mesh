@@ -240,7 +240,7 @@ class NERPipelineCompilationSettings(PipelineCompilationSettings):
     """
 
     pipeline_name: str = "ner_model"
-    max_length = 128
+    max_length: int = 128
 
     class Config:
         env_prefix = "ner_pipeline_compilation_settings_"

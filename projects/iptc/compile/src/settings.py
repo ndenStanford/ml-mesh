@@ -174,7 +174,7 @@ class IPTCPipelineCompilationSettings(PipelineCompilationSettings):
     """IPTCiment pipeline compilation settings."""
 
     pipeline_name: str = "iptc_model"
-    max_length = 512
+    max_length: int = 512
 
     class Config:
         env_prefix = "iptc_pipeline_compilation_settings_"

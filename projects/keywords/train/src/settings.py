@@ -17,7 +17,7 @@ class TrackedKeywordModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/keywords"
-    model = "KEYWORDS-TRAINED"
+    model: str = "KEYWORDS-TRAINED"
 
     class Config:
         env_file = "config/dev.env"

@@ -16,7 +16,7 @@ class TrackedEntityLinkingModelSpecs(TrackedModelSettings):
     """Tracked entity-linking model settings."""
 
     project: str = "onclusive/entity-linking"
-    model = "EL-TRAINED"
+    model: str = "EL-TRAINED"
 
     class Config:
         env_file = "config/dev.env"

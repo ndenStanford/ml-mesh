@@ -17,7 +17,7 @@ class TrackedSentModelSpecs(TrackedModelSettings):
     """Tracked sentiment model settings."""
 
     project: str = "onclusive/sentiment"
-    model = "SEN-TRAINED"
+    model: str = "SEN-TRAINED"
 
     class Config:
         env_file = "config/dev.env"

@@ -17,7 +17,7 @@ class TrackedNERModelSpecs(TrackedModelSettings):
     """Tracked NER model specs."""
 
     project: str = "onclusive/ner"
-    model = "NER-TRAINED"
+    model: str = "NER-TRAINED"
 
     class Config:
         env_file = "config/dev.env"
