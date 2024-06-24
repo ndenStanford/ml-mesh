@@ -33,19 +33,19 @@ from onclusiveml.serving.rest.testing.load_test.params import (
 get_default_logger(
     name="",
     level=INFO,
-    fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+    fmt_level=OnclusiveLogMessageFormat.DETAILED,
 )
 
 get_default_logger(
     name="locust",
     level=INFO,
-    fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+    fmt_level=OnclusiveLogMessageFormat.DETAILED,
 )
 
 get_default_logger(
     name="locust.stats_logger",
     level=INFO,
-    fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+    fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY,
 )
 
 logger = get_default_logger(__name__, level=INFO, json_format=False)

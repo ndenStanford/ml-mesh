@@ -55,7 +55,7 @@ def test_response_attribute_schema(label, score):
     assert isinstance(attributes.iptc[0].label, str)
     assert isinstance(attributes.iptc[0].score, float)
 
-    assert dict(attributes) == {"iptc": [{"label": label, "score": score}]}
+    assert attributes.model_dump() == {"iptc": [{"label": label, "score": score}]}
 
 
 def test_request_request_attributes_extra():

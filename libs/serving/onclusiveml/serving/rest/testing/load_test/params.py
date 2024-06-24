@@ -1,7 +1,6 @@
 """Settings."""
 
 # Standard Library
-from enum import Enum
 from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
@@ -10,7 +9,7 @@ from locust.main import load_locustfile
 from pydantic import field_validator, model_validator
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseModel
+from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveEnum
 from onclusiveml.serving.params import ServingBaseParams
 
 
@@ -72,7 +71,7 @@ class LoadTestingParams(ServingBaseParams):
         return values
 
 
-class ValidEndpointTypes(Enum):
+class ValidEndpointTypes(OnclusiveEnum):
     """A utility enum subclass to formally list all valid endpoint types."""
 
     get: str = "GET"
@@ -80,17 +79,8 @@ class ValidEndpointTypes(Enum):
     put: str = "PUT"
     delete: str = "DELETE"
 
-    @classmethod
-    def list(cls) -> List[str]:
-        """List enum values."""
-        valid_endpoint_types = [
-            valid_endpoint_type.value for valid_endpoint_type in cls
-        ]
 
-        return valid_endpoint_types
-
-
-class ValidMeasurements(Enum):
+class ValidMeasurements(OnclusiveEnum):
     """Measurements enums.
 
     A utility enum subclass to formally list all valid load test metric names that the load test
@@ -120,13 +110,6 @@ class ValidMeasurements(Enum):
     failures_total: str = "failures_total"
     failures_percent: str = "failures_percent"
 
-    @classmethod
-    def list(cls) -> List[str]:
-        """List values."""
-        valid_measurements = [valid_measurement.value for valid_measurement in cls]
-
-        return valid_measurements
-
 
 class BaseMeasurementValidator(OnclusiveBaseModel):
     """Base measurement field_validator.
@@ -140,10 +123,10 @@ class BaseMeasurementValidator(OnclusiveBaseModel):
     @field_validator("name")
     def check_valid_measurement(cls, value: str) -> str:
         """Check name against valid measurements."""
-        if value not in ValidMeasurements.list():
+        if value not in ValidMeasurements.values():
             raise ValueError(
                 f"Invalid measurement {value}. Must be one of "
-                f"{ValidMeasurements.list()}."
+                f"{ValidMeasurements.values()}."
             )
 
         return value
@@ -163,10 +146,10 @@ class BaseEndpointTypeValidator(OnclusiveBaseModel):
     @field_validator("endpoint_type")
     def check_valid_endpoint_type(cls, value: str) -> str:
         """Checks that endpoint type is valid."""
-        if value not in ValidEndpointTypes.list():
+        if value not in ValidEndpointTypes.values():
             raise ValueError(
                 f"Invalid endpoint type {value}. Must be one of "
-                f"{ValidEndpointTypes.list()}."
+                f"{ValidEndpointTypes.values()}."
             )
 
         return value

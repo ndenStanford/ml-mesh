@@ -42,7 +42,7 @@ def test_load_testing_params_raise_no_locust_file():
         LoadTestingParams()
 
 
-@pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
+@pytest.mark.parametrize("test_measurement", ValidMeasurements.values())
 def test_measurement(test_measurement):
     """Tests initialization of a Measurement instance."""
     Measurement(name=test_measurement, value=0.5)
@@ -149,15 +149,15 @@ def test_test_report():
         failures={},
         num_requests=10,
         num_requests_fail=5,
-        start_time=1,
-        end_time=2,
+        start_time="1",
+        end_time="2",
     )
 
 
 @pytest.mark.parametrize("test_hard", [True, False])
-@pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
+@pytest.mark.parametrize("test_measurement", ValidMeasurements.values())
 @pytest.mark.parametrize("test_ensure_lower", [True, False])
-@pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.list())
+@pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.values())
 def test_criterion(test_measurement, test_endpoint_type, test_ensure_lower, test_hard):
     """Tests the initialization of a Critertion instance.
 
@@ -275,8 +275,8 @@ def test_criterion_was_met_in_report(
         failures={},
         num_requests=10,
         num_requests_fail=5,
-        start_time=1,
-        end_time=2,
+        start_time="1",
+        end_time="2",
     )
 
     criteria = Criterion(
@@ -327,10 +327,10 @@ def test_evaluated_criteria():
     )
 
 
-@pytest.mark.parametrize("test_measurement", ValidMeasurements.list())
+@pytest.mark.parametrize("test_measurement", ValidMeasurements.values())
 @pytest.mark.parametrize("test_ensure_lower", [True, False])
 @pytest.mark.parametrize("test_hard", [True, False])
-@pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.list())
+@pytest.mark.parametrize("test_endpoint_type", ValidEndpointTypes.values())
 def test_environment_criterion(
     test_measurement, test_hard, test_endpoint_type, test_ensure_lower
 ):

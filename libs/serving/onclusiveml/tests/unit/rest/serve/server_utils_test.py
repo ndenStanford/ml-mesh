@@ -205,7 +205,7 @@ def test_get_model_routers(
     assert test_route_response_model_actual == test_response_model_expected
 
 
-@pytest.mark.parametrize("service", OnclusiveService.list())
+@pytest.mark.parametrize("service", OnclusiveService.values())
 @pytest.mark.parametrize("level", LOG_LEVELS)
 @pytest.mark.parametrize("json_format", [True, False])
 def test_get_logging_config(service, level, json_format):
