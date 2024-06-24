@@ -126,11 +126,15 @@ class TranslationModel(ServedModel):
                     region_name=settings.region_name,
                 )
             except Exception as e:
+                print(f"Caught an error: {e}")
                 raise ValueError("failing connection.")
                 raise OnclusiveHTTPException(
                     status_code=204,
                     detail=e,
                 )
+            print("TEXT: ", content)
+            print("SourceLanguageCode: ", language)
+            print("TargetLanguageCode: ", target_language)
             try:
                 response = client.translate_text(
                     Text=content,
@@ -142,6 +146,7 @@ class TranslationModel(ServedModel):
                 )
 
             except Exception as e:
+                print(f"Caught an error: {e}")
                 raise ValueError("wrong translation.")
                 raise OnclusiveHTTPException(
                     status_code=204,
