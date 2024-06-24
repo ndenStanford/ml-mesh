@@ -17,7 +17,7 @@ from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -31,7 +31,7 @@ SUPPORTED_LANGUAGES = [
 ]
 
 
-class GchSummarizationSettings(TrackedParams):
+class GchSummarizationSettings(TrackingSettings):
     """NER settings."""
 
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES

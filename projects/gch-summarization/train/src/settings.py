@@ -8,7 +8,7 @@ from typing import List
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -24,7 +24,7 @@ class TrackedSummarizationModelSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Inputs."""
 
     sample_documents: List[str] = [
@@ -71,7 +71,7 @@ di stupefacenti e portati in carcere.",
         env_file_encoding = "utf-8"
 
 
-class SummarizationSettings(TrackedParams):
+class SummarizationSettings(TrackingSettings):
     """Summarization settings."""
 
     class Config:
@@ -79,7 +79,7 @@ class SummarizationSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class SummarizationModelParams(TrackedParams):
+class SummarizationModelParams(TrackingSettings):
     """summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"

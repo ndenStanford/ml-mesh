@@ -7,7 +7,7 @@ import os
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -23,7 +23,7 @@ class TrackedEntityLinkingModelSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class EntityLinkingSettings(TrackedParams):
+class EntityLinkingSettings(TrackingSettings):
     """Entity linking settings."""
 
     class Config:
@@ -31,7 +31,7 @@ class EntityLinkingSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class EntityLinkingModelParams(TrackedParams):
+class EntityLinkingModelParams(TrackingSettings):
     """Entity linking Model parameters."""
 
     repo: str = "wannaphong/BELA"

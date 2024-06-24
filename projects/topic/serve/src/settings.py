@@ -17,7 +17,7 @@ from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -53,7 +53,7 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
-class TopicSettings(TrackedParams):
+class TopicSettings(TrackingSettings):
     """Topic settings."""
 
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES

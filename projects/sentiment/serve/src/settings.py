@@ -17,7 +17,7 @@ from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -89,7 +89,7 @@ SENT_SUPPORTED_LANGUAGE = [
 ]
 
 
-class SentSettings(TrackedParams):
+class SentSettings(TrackingSettings):
     """Sentiment settings."""
 
     supported_languages: List[LanguageIso] = SENT_SUPPORTED_LANGUAGE

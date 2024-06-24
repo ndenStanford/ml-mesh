@@ -8,11 +8,11 @@ from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
     TrackedModelTestFiles,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
-class TopicModelParams(TrackedParams):
+class TopicModelParams(TrackingSettings):
     """Ground truth specification for model inference mode.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and

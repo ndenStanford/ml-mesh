@@ -8,7 +8,7 @@ from typing import List
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -24,7 +24,7 @@ class TrackedSentModelSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Sentiment input parameters."""
 
     sample_documents: List[str] = [""]
@@ -34,7 +34,7 @@ class Inputs(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class SentSettings(TrackedParams):
+class SentSettings(TrackingSettings):
     """Sentiment settings."""
 
     class Config:
@@ -42,7 +42,7 @@ class SentSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class SentModelParams(TrackedParams):
+class SentModelParams(TrackingSettings):
     """Sentiment Model parameters."""
 
     huggingface_pipeline_task: str = "sentiment-analysis"

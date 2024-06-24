@@ -8,7 +8,7 @@ from typing import List, Tuple, Union
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -24,7 +24,7 @@ class TrackedKeywordModelSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Ground truth inputs for model inference.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
@@ -70,7 +70,7 @@ class Inputs(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class KeywordExtractionSettings(TrackedParams):
+class KeywordExtractionSettings(TrackingSettings):
     """Ground truth specification for model inference mode.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
@@ -86,7 +86,7 @@ class KeywordExtractionSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class KeywordModelParams(TrackedParams):
+class KeywordModelParams(TrackingSettings):
     """Params class specifying the huggingface model being used for the keywords model backend.
 
     Includes `KeywordExtractionSettings`

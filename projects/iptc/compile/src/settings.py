@@ -13,7 +13,7 @@ from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -54,7 +54,7 @@ class CompiledTrackedModelSettings(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class WorkflowOutputDir(TrackedParams):
+class WorkflowOutputDir(TrackingSettings):
     """Workflow output directory."""
 
     outpath: str = "./outputs"
@@ -123,7 +123,7 @@ class IOSettings(object):
         env_file_encoding = "utf-8"
 
 
-class TokenizerSettings(TrackedParams):
+class TokenizerSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details."""
 
     add_special_tokens: bool = True
@@ -134,7 +134,7 @@ class TokenizerSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class ModelTracingSettings(TrackedParams):
+class ModelTracingSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
@@ -156,7 +156,7 @@ class ModelTracingSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class PipelineCompilationSettings(TrackedParams):
+class PipelineCompilationSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details."""
 
     pipeline_name: str
@@ -182,7 +182,7 @@ class IPTCPipelineCompilationSettings(PipelineCompilationSettings):
         env_file_encoding = "utf-8"
 
 
-class CompilationTestSettings(TrackedParams):
+class CompilationTestSettings(TrackingSettings):
     """Compilation test settings."""
 
     regression_atol: float = 1e-02

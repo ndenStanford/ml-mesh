@@ -9,7 +9,7 @@ from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -26,7 +26,7 @@ class TrackedIPTCModelSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class IPTCModelParams(TrackedParams):
+class IPTCModelParams(TrackingSettings):
     """the training argument for huggingface trainer."""
 
     epochs: int = 3

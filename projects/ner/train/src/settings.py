@@ -8,7 +8,7 @@ from typing import List
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -24,7 +24,7 @@ class TrackedNERModelSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Inputs."""
 
     sample_documents: List[List[str]] = [
@@ -49,7 +49,7 @@ class Inputs(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class NERSettings(TrackedParams):
+class NERSettings(TrackingSettings):
     """NER settings."""
 
     class Config:
@@ -57,7 +57,7 @@ class NERSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class NERModelParams(TrackedParams):
+class NERModelParams(TrackingSettings):
     """Ner model settings."""
 
     ner_settings: NERSettings = NERSettings()

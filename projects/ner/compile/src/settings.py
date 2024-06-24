@@ -13,7 +13,7 @@ from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -66,7 +66,7 @@ class CompiledTrackedModelSettings(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class WorkflowOutputDir(TrackedParams):
+class WorkflowOutputDir(TrackingSettings):
     """Parameters for the output directory.
 
     Attributes:
@@ -141,7 +141,7 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(TrackedParams):
+class IOSettings(TrackingSettings):
     """Configuring container file system output locations for all 4 components.
 
     Attributes:
@@ -167,7 +167,7 @@ class IOSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class TokenizerSettings(TrackedParams):
+class TokenizerSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details.
 
     Attributes:
@@ -182,7 +182,7 @@ class TokenizerSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class ModelTracingSettings(TrackedParams):
+class ModelTracingSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
@@ -204,7 +204,7 @@ class ModelTracingSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class PipelineCompilationSettings(TrackedParams):
+class PipelineCompilationSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details.
 
     Attributes:
@@ -248,7 +248,7 @@ class NERPipelineCompilationSettings(PipelineCompilationSettings):
         env_file_encoding = "utf-8"
 
 
-class CompilationTestSettings(TrackedParams):
+class CompilationTestSettings(TrackingSettings):
     """Settings for compilation tests.
 
     Attributes:

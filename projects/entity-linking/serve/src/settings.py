@@ -18,7 +18,7 @@ from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -59,7 +59,7 @@ class ServerModelSettings(ServingParams):
     config_name: str = "joint_el_mel_new"
 
 
-class ELSettings(TrackedParams):
+class ELSettings(TrackingSettings):
     """Sentiment settings."""
 
     supported_languages: List[LanguageIso] = EL_SUPPORTED_LANGUAGES

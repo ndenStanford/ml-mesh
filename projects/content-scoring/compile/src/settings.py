@@ -13,7 +13,7 @@ from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -66,7 +66,7 @@ class CompiledTrackedModelSettings(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class WorkflowOutputDir(TrackedParams):
+class WorkflowOutputDir(TrackingSettings):
     """Parameters for the output directory.
 
     Attributes:
@@ -134,7 +134,7 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(TrackedParams):
+class IOSettings(TrackingSettings):
     """Configuring container file system output locations for all 4 components.
 
     Attributes:
@@ -159,7 +159,7 @@ class IOSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class ModelTracingSettings(TrackedParams):
+class ModelTracingSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket

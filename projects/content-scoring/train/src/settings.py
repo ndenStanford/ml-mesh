@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
@@ -36,7 +36,7 @@ class TrackedDocumentContentScoringSpecs(TrackedModelSettings):
         env_file_encoding = "utf-8"
 
 
-class DocumentContentScoringParams(TrackedParams):
+class DocumentContentScoringParams(TrackingSettings):
     """Ground truth specification for document content-scoring model."""
 
     # LightGBM parameters
