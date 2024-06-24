@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.exception import PromptBackendUpstreamError
+from src.serve.exceptions import PromptBackendError
 from src.serve.handler import TranscriptSegmentationHandler
 from src.serve.schemas import (
     BioResponseSchema,
@@ -65,7 +65,7 @@ class ServedTranscriptSegmentationModel(ServedModel):
                 offset_start_buffer=parameter_input.offset_start_buffer,
                 offset_end_buffer=parameter_input.offset_end_buffer,
             )
-        except PromptBackendUpstreamError as e:
+        except PromptBackendError as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=str(e),

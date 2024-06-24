@@ -12,7 +12,7 @@ from rapidfuzz import fuzz
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.serve.exception import PromptBackendUpstreamError
+from src.serve.exceptions import PromptBackendError
 from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
@@ -367,8 +367,8 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
-        if q.status_code == 502:
-            raise PromptBackendUpstreamError()
+        if q.status_code != 200:
+            raise PromptBackendError(error=q.content)
 
         if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
             offset = self.country_offsets.get(country.lower())
