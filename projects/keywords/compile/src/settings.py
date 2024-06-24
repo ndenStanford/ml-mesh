@@ -181,7 +181,7 @@ class WordPipelineCompilationSettings(PipelineCompilationSettings):
 class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
     """Document pipeline compilation settings."""
 
-    pipeline_name = "document_model"
+    pipeline_name: str = "document_model"
     max_length = 512
 
     class Config:
