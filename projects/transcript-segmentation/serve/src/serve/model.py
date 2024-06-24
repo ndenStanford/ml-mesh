@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.exceptions import PromptBackendUpstreamError
+from src.serve.exception import PromptBackendUpstreamError
 from src.serve.handler import TranscriptSegmentationHandler
 from src.serve.schemas import (
     BioResponseSchema,

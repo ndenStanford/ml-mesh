@@ -12,7 +12,7 @@ from rapidfuzz import fuzz
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.serve.exceptions import PromptBackendUpstreamError
+from src.serve.exception import PromptBackendUpstreamError
 from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
