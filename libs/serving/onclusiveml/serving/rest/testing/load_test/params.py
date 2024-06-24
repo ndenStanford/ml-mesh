@@ -152,7 +152,7 @@ class BaseMeasurementValidator(OnclusiveBaseModel):
         return value
 
 
-class BaseEndpointTypeValidator(BaseModel):
+class BaseEndpointTypeValidator(OnclusiveBaseModel):
     """Base endpoint type field_validator.
 
     A parent params class meant for subclassing that implements validating a endpoint type
