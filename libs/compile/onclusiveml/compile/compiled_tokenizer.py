@@ -14,12 +14,6 @@ from transformers import (
     PreTrainedTokenizerFast,
 )
 
-# Internal libraries
-from onclusiveml.compile.compile_utils import (
-    DelegatedTokenizerAttributes,
-    DelegatedTokenizerMethods,
-)
-
 
 class CompiledTokenizer(object):
     """A wrapper class around huggingface Tokenizer.
@@ -46,18 +40,6 @@ class CompiledTokenizer(object):
         # self.set_all_delegated_tokenizer_methods(tokenizer)
         # the model_max_length should be set to the max length of the compilation
         self.model_max_length = self.tokenization_settings["max_length"]
-
-    def __getattr__(self, name: str) -> Any:
-        """Surfaces selected tokenizer attributes/methods to the CompiledTokenizer instance."""
-        if (
-            name
-            in DelegatedTokenizerMethods.list() + DelegatedTokenizerAttributes.list()
-        ):
-            attribute = self.tokenizer.__getattribute__(name)
-        else:
-            attribute = self.__dict__[attribute]
-
-        return attribute
 
     @classmethod
     def get_tokenization_settings(
