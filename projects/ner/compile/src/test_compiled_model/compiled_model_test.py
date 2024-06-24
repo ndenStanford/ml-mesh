@@ -59,10 +59,9 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compilation_test_settings: Compilation settings
     """
     # modified logic that tests only 1 sample given the model either English or multilingual
-    project_to_language = {"onclusive/ner": "en", "onclusive/ner-multilingual": "ja"}
     model_specs = UncompiledTrackedModelSpecs()
     project = model_specs.project
-    language = project_to_language[project]
+    language = compilation_test_settings.language
     compiled_predictions = compiled_ner([test_files["inputs"]], language=language)
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler

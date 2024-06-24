@@ -242,10 +242,12 @@ class CompilationTestSettings(TrackedParams):
     """Settings for compilation tests.
 
     Attributes:
+        language(str): language of the test input
         regression_atol (float): Relative tolerance for validation
         regression_rtol (float): Absolute tolerance for validation
     """
 
+    language: str = "ja"
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
 
