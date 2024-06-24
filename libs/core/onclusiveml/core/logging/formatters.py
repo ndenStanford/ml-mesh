@@ -4,17 +4,15 @@
 import logging
 from typing import Literal, Optional
 
-# 3rd party libraries
-import pydantic
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.logging.constants import (
     OnclusiveLogMessageFormat,
     OnclusiveService,
 )
 
 
-class OnclusiveLogRecord(pydantic.BaseModel):
+class OnclusiveLogRecord(OnclusiveBaseModel):
     """Standard (base) log format schema for all onclusive python (ML) applications."""
 
     # The asctime attribute is dynamic and depends on the fmt, so needs to be optional if users
@@ -125,7 +123,7 @@ class OnclusiveJSONFormatter(OnclusiveFormatter):
         Returns:
             json_record (str): The JSON string version of the log record.
         """
-        json_record = self.log_record_data_model.from_orm(record).model_dump_json()
+        json_record = self.log_record_data_model.from_orm(record).model_dump()
 
         return json_record
 

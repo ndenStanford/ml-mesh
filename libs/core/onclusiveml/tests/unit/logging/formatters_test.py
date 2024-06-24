@@ -82,15 +82,15 @@ def test_onclusive_formatter_format(monkeypatch, fmt, expected_formatted_message
     [
         (
             OnclusiveLogMessageFormat.MESSAGE_ONLY.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing message formatting"}',  # noqa: E501
+            '{"service":"test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing message formatting"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.BASIC.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing message formatting"}',  # noqa: E501
+            '{"service":"test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing message formatting"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.SIMPLE.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
+            '{"service":"test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing message formatting"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.DETAILED.value,
@@ -123,5 +123,4 @@ def test_onclusive_json_formatter_format(monkeypatch, fmt, expected_formatted_me
         exc_info=None,
     )
     actual_formatted_message = formatter.format(test_record)
-
     assert actual_formatted_message == expected_formatted_message
