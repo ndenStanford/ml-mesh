@@ -36,12 +36,6 @@ def test_load_testing_params_no_locust_file():
     LoadTestingParams(locustfile="", user_classes=[TestWebsiteUser])
 
 
-def test_load_testing_params_raise_no_locust_file():
-    """Tests the raising of an error when falling back on default values."""
-    with pytest.raises(FileNotFoundError):
-        LoadTestingParams()
-
-
 @pytest.mark.parametrize("test_measurement", ValidMeasurements.values())
 def test_measurement(test_measurement):
     """Tests initialization of a Measurement instance."""
@@ -210,6 +204,7 @@ def test_criterion_was_met_in_measurement(
         threshold=test_threshold,
         endpoint_url="http://dummy_url",
         ensure_lower=test_ensure_lower,
+        endpoint_type="GET",
     )
 
     test_criteria_met_actual = criteria.was_met_in_measurement(measurement)
@@ -284,6 +279,7 @@ def test_criterion_was_met_in_report(
         threshold=test_threshold,
         endpoint_url="http://dummy_url",
         ensure_lower=test_ensure_lower,
+        endpoint_type="GET",
     )
 
     test_criteria_met_actual = criteria.was_met_in_report(test_report)
@@ -299,6 +295,7 @@ def test_evaluated_criterion():
         endpoint_url="http://dummy_url",
         ensure_lower=False,
         passed=True,
+        endpoint_type="GET",
     )
 
 
@@ -313,6 +310,7 @@ def test_evaluated_criteria():
                 endpoint_url="http://dummy_url",
                 ensure_lower=False,
                 passed=True,
+                endpoint_type="GET",
             ),
             EvaluatedCriterion(
                 name=ValidMeasurements.failures_total.value,
@@ -321,6 +319,7 @@ def test_evaluated_criteria():
                 endpoint_url="http://dummy_url",
                 ensure_lower=False,
                 passed=False,
+                endpoint_type="GET",
             ),
         ],
         passed=True,

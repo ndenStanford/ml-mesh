@@ -134,7 +134,9 @@ def test_test_served_model_predict(
     # score model & validate outputs
     test_predictions_actual = test_served_model.predict(test_inputs)
 
-    assert test_predictions_actual == test_predictions_expected
+    assert (
+        test_predictions_actual.model_dump() == test_predictions_expected.model_dump()
+    )
 
 
 def test_test_served_model_bio(test_model_name, get_test_served_model):

@@ -157,6 +157,11 @@ class BaseEndpointTypeValidator(OnclusiveBaseModel):
     @model_validator(mode="before")
     def set_request_id(cls, values: Dict) -> Dict:
         """Sets the request id."""
+        print()
+        print("======")
+        print(values)
+        print("======")
+        print()
         values["endpoint_id"] = f"{values['endpoint_type']}_{values['endpoint_url']}"
 
         return values
