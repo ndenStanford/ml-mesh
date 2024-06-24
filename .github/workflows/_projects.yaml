@@ -192,8 +192,8 @@ jobs:
 
       - name: Free space
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
+          sudo rm -rfv /usr/local/lib/android
+          sudo rm -rfv /usr/share/dotnet
 
   deploy:
     name: 'Build, test & deploy: ${{ inputs.project }}-${{ inputs.component }}'
@@ -222,7 +222,7 @@ jobs:
         with:
           driver-opts: network=host
           buildkitd-flags: |
-            --allow-insecure-entitlement network.host
+            '--allow-insecure-entitlement network.host'
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
