@@ -8,6 +8,7 @@ import boto3
 from dyntastic import Dyntastic
 from fastapi import Header
 from langchain_community.chat_models import BedrockChat, ChatOpenAI
+from pydantic import ValidationError
 
 # Internal libraries
 from onclusiveml.llms.mixins import LangchainConvertibleMixin
@@ -40,7 +41,9 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
 
     def as_langchain(self) -> Optional[LangchainT]:
         """Return model as langchain chat model."""
-        model_params_class = MODELS_TO_PARAMS_MAP[self.alias]
+        model_params_class = MODELS_TO_PARAMS_MAP.get(
+            self.alias, MODELS_TO_PARAMS_MAP[ChatModel.CLAUDE_3_HAIKU]
+        )
         if self.provider == ChatModelProdiver.OPENAI:
             return self._handle_openai_provider(model_params_class)
         elif self.provider == ChatModelProdiver.BEDROCK:
@@ -73,7 +76,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             self.model_params = model_params_class()
         else:
             try:
-                self.model_params = model_params_class(**self.model_params)
+                self.model_params = model_params_class(**self.model_params.dict())
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 
@@ -85,7 +88,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             try:
                 if self.alias in [ChatModel.TITAN, ChatModel.TITAN_G1]:
                     self.model_params = TitanParameters(
-                        **model_params_class(**self.model_params).dict()
+                        **model_params_class(**self.model_params.dict()).dict()
                     ).dict()
                 else:
                     self.model_params = model_params_class(**self.model_params).dict()

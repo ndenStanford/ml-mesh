@@ -40,7 +40,11 @@ def test_get_model(mock_model_get, alias, provider, test_client):
     response = test_client.get(f"/api/v2/models/{alias}", headers={"x-api-key": "1234"})
     mock_model_get.assert_called_with(f"{alias}")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"alias": alias, "provider": provider}
+    assert response.json() == {
+        "alias": alias,
+        "model_params": None,
+        "provider": provider,
+    }
 
 
 @pytest.mark.parametrize(
