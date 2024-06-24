@@ -182,15 +182,20 @@ jobs:
           AWS_REGION=${{ inputs.base-region }}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
-        run: |
-          make docker.build/${{ inputs.image }} \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            DEPLOYMENT="${{ inputs.environment }}" \
-            IMAGE_TAG="${{ inputs.tag }}" \
-            TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci" \
-            USE_DOCKER_CACHE=${{ inputs.use-cache }}
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: ${{ inputs.apply-max-attempts }}
+          timeout_minutes: 30
+          retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
+          command: |
+            make docker.build/${{ inputs.image }} \
+              AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+              DEPLOYMENT="${{ inputs.environment }}" \
+              IMAGE_TAG="${{ inputs.tag }}" \
+              TARGET_BUILD_STAGE="development" \
+              PLATFORM=linux/amd64 \
+              ENVIRONMENT="ci" \
+              USE_DOCKER_CACHE=${{ inputs.use-cache }}
 
       - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
         if: ${{ inputs.validate-build }}
@@ -204,20 +209,15 @@ jobs:
             ENVIRONMENT="ci"
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        uses: nick-fields/retry@v2
-        with:
-          max_attempts: ${{ inputs.apply-max-attempts }}
-          timeout_minutes: 30
-          retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
-          command: |
-            make docker.build/${{ inputs.image }} \
-              AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-              DEPLOYMENT="${{ inputs.environment }}" \
-              IMAGE_TAG="${{ inputs.tag }}" \
-              TARGET_BUILD_STAGE="production" \
-              PLATFORM=linux/amd64 \
-              ENVIRONMENT="ci" \
-              USE_DOCKER_CACHE=${{ inputs.use-cache }}
+        run: |
+          make docker.build/${{ inputs.image }} \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="production" \
+            PLATFORM=linux/amd64 \
+            ENVIRONMENT="ci" \
+            USE_DOCKER_CACHE=${{ inputs.use-cache }}
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
         run: |
