@@ -192,8 +192,13 @@ jobs:
 
       - name: Free space
         run: |
-          sudo rm -rfv /usr/local/lib/android
-          sudo rm -rfv /usr/share/dotnet
+          sudo rm -rfv \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/powershell \
+            /usr/share/swift /usr/local/.ghcup \
+            /usr/lib/jvm
 
   deploy:
     name: 'Build, test & deploy: ${{ inputs.project }}-${{ inputs.component }}'
