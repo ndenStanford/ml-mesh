@@ -1,7 +1,12 @@
 """Constants."""
 
+# Standard Library
+from typing import List
+
+# 3rd party libraries
+from pydantic import BaseModel, Field
+
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.utils import OnclusiveEnum
 
 
@@ -40,94 +45,98 @@ class ChatModelProdiver(str, OnclusiveEnum):
     BEDROCK: str = "bedrock"
 
 
-class OpenaiModelParameters(OnclusiveBaseSettings):
-    """OPENAI model parameters."""
+class BaseLLMParameters(BaseModel):
+    """Base LLM parameters."""
 
     temperature: float = 0.7
-    max_tokens: int = 50000
+    max_tokens: int = 3000
 
 
-class BedrockModelParameters(OnclusiveBaseSettings):
-    """Bedrock model parameters."""
+class TextGenerationConfig(BaseLLMParameters):
+    """Text generation config for tital model parameters."""
 
-    titan: dict = {
-        "textGenerationConfig": {
-            "temperature": 0.7,
-            "topP": 0.9,
-            "maxTokenCount": 512,
-            "stopSequences": [],
-        }
-    }
-    titan_g1: dict = {
-        "textGenerationConfig": {
-            "temperature": 0.7,
-            "topP": 0.9,
-            "maxTokenCount": 512,
-            "stopSequences": [],
-        }
-    }
-    cluade_2: dict = {
-        "temperature": 0.5,
-        "top_p": 1.0,
-        "top_k": 250,
-        "max_tokens_to_sample": 200,
-        "stop_sequences": [],
-    }
-    cluade_2_1: dict = {
-        "temperature": 0.5,
-        "top_p": 1.0,
-        "top_k": 250,
-        "max_tokens_to_sample": 200,
-        "stop_sequences": [],
-    }
-    claude_3_sonnet: dict = {
-        "temperature": 1.0,
-        "top_p": 0.999,
-        "top_k": 250,
-        "max_tokens": 50000,
-        "stop_sequences": [],
-    }
-    claude_3_haiku: dict = {
-        "temperature": 1.0,
-        "top_p": 0.999,
-        "top_k": 250,
-        "max_tokens": 50000,
-        "stop_sequences": [],
-    }
-    claude_3_instant: dict = {
-        "temperature": 1.0,
-        "top_p": 0.999,
-        "top_k": 250,
-        "max_tokens": 50000,
-        "stop_sequences": [],
-    }
-    llama_2_13b: dict = {"temperature": 0.5, "top_p": 0.9, "max_gen_len": 512}
-    llama_2_70b: dict = {"temperature": 0.5, "top_p": 0.9, "max_gen_len": 512}
-    instruct_7B: dict = {
-        "max_tokens": 512,
-        "temperature": 0.5,
-        "top_p": 0.9,
-        "top_k": 50,
-        "stop": [],
-    }
-    instruct_8_7B: dict = {
-        "max_tokens": 512,
-        "temperature": 0.5,
-        "top_p": 0.9,
-        "top_k": 50,
-        "stop": [],
-    }
-    mistral_large: dict = {
-        "max_tokens": 8192,
-        "temperature": 0.7,
-        "top_p": 1.0,
-        "stop": [],
-    }
-
-    class Config:
-        env_prefix = "params_"
+    temperature: float = 0.7
+    topP: float = 0.9
+    maxTokenCount: int = 512
+    stopSequences: List[str] = []
 
 
+class TitanParameters(BaseModel):
+    """Tital model parameters."""
+
+    textGenerationConfig: TextGenerationConfig = Field(
+        ..., alias="textGenerationConfig"
+    )
+
+
+class Claude2Parameters(BaseLLMParameters):
+    """Claude2 model parameters."""
+
+    temperature: float = 0.5
+    top_p: float = Field(1.0, alias="topP")
+    top_k: float = Field(250, alias="topK")
+    stop_sequences: List[str] = Field([], alias="stopSequences")
+
+
+class Claude3Parameters(BaseLLMParameters):
+    """Claude3 model parameters."""
+
+    temperature: float = 1.0
+    top_p: float = Field(0.999, alias="topP")
+    top_k: float = Field(250, alias="topK")
+    max_tokens: float = Field(50000, alias="maxTokens")
+    stop_sequences: List[str] = Field([], alias="stopSequences")
+
+
+class LlamaParameters(BaseLLMParameters):
+    """Llama model parameters."""
+
+    temperature: float = 0.5
+    top_p: float = Field(0.9, alias="topP")
+    max_gen_len: float = Field(512, alias="maxTokens")
+
+
+class MistralInstructParameters(BaseLLMParameters):
+    """Mistral instruct model parameters."""
+
+    temperature: float = 0.5
+    top_p: float = Field(0.9, alias="topP")
+    top_k: float = Field(50, alias="topK")
+    max_gen_len: float = Field(512, alias="maxTokens")
+    stop: List[str] = Field([], alias="stopSequences")
+
+
+class MistralLargeParameters(BaseLLMParameters):
+    """Mistral Large model parameters."""
+
+    temperature: float = 0.7
+    top_p: float = Field(0.9, alias="topP")
+    top_k: float = Field(50, alias="topK")
+    max_gen_len: float = Field(512, alias="maxTokens")
+    stop: List[str] = Field([], alias="stopSequences")
+
+
+MODELS_TO_PARAMS_MAP = {
+    ChatModel.GPT3_5: BaseLLMParameters,
+    ChatModel.GPT4: BaseLLMParameters,
+    ChatModel.GPT3_5_TURBO: BaseLLMParameters,
+    ChatModel.GPT4_TURBO: BaseLLMParameters,
+    ChatModel.GPT4_TURBO_PREVIEW: BaseLLMParameters,
+    ChatModel.GPT4_O: BaseLLMParameters,
+    ChatModel.GPT4_1106: BaseLLMParameters,
+    ChatModel.TITAN: TextGenerationConfig,
+    ChatModel.TITAN_G1: TextGenerationConfig,
+    ChatModel.CLAUDE_2: Claude2Parameters,
+    ChatModel.CLAUDE_2_1: Claude2Parameters,
+    ChatModel.CLAUDE_3_SONNET: Claude3Parameters,
+    ChatModel.CLAUDE_3_HAIKU: Claude3Parameters,
+    ChatModel.CLAUDE_3_INSTANT: Claude3Parameters,
+    ChatModel.LLAMA_2_13B: LlamaParameters,
+    ChatModel.LLAMA_2_70B: LlamaParameters,
+    ChatModel.INSTRUCT_7B: MistralInstructParameters,
+    ChatModel.INSTRUCT_8_7B: MistralInstructParameters,
+    ChatModel.MISTRAL_LARGE: MistralLargeParameters,
+}
 # DEFAULT models
 DEFAULT_MODELS = [
     {"alias": ChatModel.CLAUDE_2, "provider": ChatModelProdiver.BEDROCK},

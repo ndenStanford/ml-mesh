@@ -15,10 +15,10 @@ from onclusiveml.llms.typing import LangchainT
 
 # Source
 from src.model.constants import (
-    BedrockModelParameters,
+    MODELS_TO_PARAMS_MAP,
     ChatModel,
     ChatModelProdiver,
-    OpenaiModelParameters,
+    TitanParameters,
 )
 from src.settings import get_settings
 
@@ -40,33 +40,70 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
 
     def as_langchain(self) -> Optional[LangchainT]:
         """Return model as langchain chat model."""
+        model_params_class = MODELS_TO_PARAMS_MAP[self.alias]
         if self.provider == ChatModelProdiver.OPENAI:
-            if self.model_params is None:
-                self.model_params = OpenaiModelParameters()
-            return ChatOpenAI(
-                model=self.alias,
-                temperature=model_params.temperature,
-                max_tokens=model_params.max_tokens,
-            )
-        if self.provider == ChatModelProdiver.BEDROCK:
-            print(self.model_params)
-            if self.model_params is None:
-                self.model_params = BedrockModelParameters().dict()
-                print(self.model_params)
-            boto3.setup_default_session(
-                profile_name=settings.AWS_PROFILE,
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            )
-            bedrock = boto3.client(
-                service_name="bedrock-runtime",
-                region_name=settings.AWS_DEFAULT_REGION,
-                endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
-            )
-            chat_models = dict(map(lambda item: (item.value, item.name), ChatModel))
-            return BedrockChat(
-                client=bedrock,
-                model_id=self.alias,
-                model_kwargs=self.model_params[f"{chat_models[self.alias]}".lower()],
-            )
+            return self._handle_openai_provider(model_params_class)
+        elif self.provider == ChatModelProdiver.BEDROCK:
+            return self._handle_bedrock_provider(model_params_class)
         return None
+
+    def _handle_openai_provider(self, model_params_class) -> Optional[LangchainT]:
+        """Handle the OpenAI provider specifics."""
+        self._initialize_model_params(model_params_class)
+        return ChatOpenAI(
+            model=self.alias,
+            temperature=self.model_params.temperature,
+            max_tokens=self.model_params.max_tokens,
+        )
+
+    def _handle_bedrock_provider(self, model_params_class) -> Optional[LangchainT]:
+        """Handle the Bedrock provider specifics."""
+        self._initialize_bedrock_model_params(model_params_class)
+        self._setup_boto3_session()
+        bedrock = self._create_bedrock_client()
+        return BedrockChat(
+            client=bedrock,
+            model_id=self.alias,
+            model_kwargs=self.model_params,
+        )
+
+    def _initialize_model_params(self, model_params_class):
+        """Initialize the model parameters."""
+        if self.model_params is None:
+            self.model_params = model_params_class()
+        else:
+            try:
+                self.model_params = model_params_class(**self.model_params)
+            except ValidationError as e:
+                raise ValueError(f"Invalid parameters: {e}")
+
+    def _initialize_bedrock_model_params(self, model_params_class):
+        """Initialize the Bedrock model parameters."""
+        if self.model_params is None:
+            self.model_params = model_params_class().dict()
+        else:
+            try:
+                if self.alias in [ChatModel.TITAN, ChatModel.TITAN_G1]:
+                    self.model_params = TitanParameters(
+                        **model_params_class(**self.model_params).dict()
+                    ).dict()
+                else:
+                    self.model_params = model_params_class(**self.model_params).dict()
+            except ValidationError as e:
+                raise ValueError(f"Invalid parameters: {e}")
+
+    def _setup_boto3_session(self):
+        """Setup boto3 session."""
+        boto3.setup_default_session(
+            profile_name=settings.AWS_PROFILE,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
+
+    def _create_bedrock_client(self):
+        """Create a Bedrock client."""
+        return boto3.client(
+            service_name="bedrock-runtime",
+            region_name=settings.AWS_DEFAULT_REGION,
+            endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
+        )
