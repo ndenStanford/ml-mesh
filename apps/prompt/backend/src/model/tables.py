@@ -9,8 +9,8 @@ from dyntastic import Dyntastic
 from langchain_community.chat_models import BedrockChat, ChatOpenAI
 
 # Internal libraries
-from onclusiveml.llm.mixins import LangchainConvertibleMixin
-from onclusiveml.llm.typing import LangchainT
+from onclusiveml.llms.mixins import LangchainConvertibleMixin
+from onclusiveml.llms.typing import LangchainT
 
 # Source
 from src.model.constants import ChatModelProdiver, ModelParameters

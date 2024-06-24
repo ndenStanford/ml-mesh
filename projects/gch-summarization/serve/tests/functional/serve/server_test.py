@@ -18,6 +18,14 @@ def test_model_server_root():
     assert root_response.status_code == 200
 
 
+def test_model_server_bio():
+    """Tests the readiness endpoint of a ModelServer (not running) instance."""
+    readiness_response = requests.get("http://serve:8000/gch-summarization/v1/bio")
+
+    assert readiness_response.status_code == 200
+    assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
+
+
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get("http://serve:8000/gch-summarization/v1/live")
@@ -32,14 +40,6 @@ def test_model_server_readiness():
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().dict()
-
-
-def test_model_server_bio():
-    """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/gch-summarization/v1/bio")
-
-    assert readiness_response.status_code == 200
-    assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
 
 
 @pytest.mark.parametrize(

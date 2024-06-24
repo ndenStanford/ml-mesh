@@ -218,24 +218,10 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    environment:
-      ONCLUSIVEML_SERVING_LOGCONFIG_SERVICE: entity-linking-serve
-      ONCLUSIVEML_SERVING_LOGCONFIG_LEVEL: 10
-      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_APP: src.serve.__main__:model_server
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD: true
-      ONCLUSIVEML_SERVING_UVICORN_RELOAD_DIRS: src/serve/
-      ONCLUSIVEML_SERVING_UVICORN_WORKERS: 1
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      PROMETHEUS_MULTIPROC_DIR: /tmp
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
+    env_file: serve/config/dev.env
     profiles: [serve, integration, functional, load]
     ports:
-      - 9000:9000
+      - 8000:8000
     volumes:
       - type: bind
         source: ${HOME}/data
@@ -247,7 +233,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:9000/entity-linking/v1/ready]
+      test: [CMD, curl, -f, http://serve:8000/entity-linking/v1/ready]
       interval: 60s
       retries: 10
       start_period: 30s
@@ -270,11 +256,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
-      NEPTUNE_MODEL_VERSION_ID: EL-TRAINED-22
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -294,13 +276,7 @@ services:
         source: serve/tests
         target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_HTTP_PORT: 9000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10 # 10=DEBUG
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
+    env_file: serve/config/dev.env
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
@@ -322,12 +298,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     depends_on:
       serve:
@@ -358,12 +329,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    environment:
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-      ONCLUSIVEML_SERVING_UVICORN_PORT: 9000
-      ONCLUSIVEML_SERVING_API_VERSION: v1
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
+    env_file: serve/config/dev.env
     profiles: [functional]
     hostname: onclusiveml
     networks:

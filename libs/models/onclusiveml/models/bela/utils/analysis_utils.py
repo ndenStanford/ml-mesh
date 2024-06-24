@@ -1,5 +1,4 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""Analysis Utils."""
 
 # Standard Library
 from dataclasses import dataclass
@@ -8,6 +7,8 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class Entity:
+    """Entity."""
+
     entity_id: str  # E.g. "Q3312129"
     offset: int
     length: int
@@ -18,14 +19,19 @@ class Entity:
 
     @property
     def mention(self):
-        return self.text[self.offset : self.offset + self.length]
+        """Mentions.
+
+        Returns:
+            str: The substring of `self.text` starting at `self.offset` and having length `self.length`.
+        """  # noqa
+        return self.text[self.offset : self.offset + self.length]  # noqa
 
     @property
     def extended_mention(self):
-        """Mentin in surrounding context (10 chars), with the mention in brackets"""
-        left_context = self.text[max(0, self.offset - 10) : self.offset]
+        """Mention in surrounding context (10 chars), with the mention in brackets."""
+        left_context = self.text[max(0, self.offset - 10) : self.offset]  # noqa
         right_context = self.text[
-            self.offset + self.length : self.offset + self.length + 10
+            self.offset + self.length : self.offset + self.length + 10  # noqa
         ]
         # Add ... if the context is truncated
         if self.offset - 10 > 0:
@@ -35,6 +41,11 @@ class Entity:
         return f"{left_context}[{self.mention}]{right_context}"
 
     def __repr__(self):
+        """Representation.
+
+        Returns:
+            str: A string representation of the Entity object.
+        """
         str_repr = (
             f'Entity<mention="{self.extended_mention}", entity_id={self.entity_id}'
         )
@@ -44,6 +55,7 @@ class Entity:
         return str_repr
 
     def __eq__(self, other):
+        """Determine if two Entity objects are equal."""
         return (
             self.offset == other.offset
             and self.length == other.length
@@ -52,6 +64,8 @@ class Entity:
 
 
 class Sample:
+    """Sample containing text, optional sample ID, ground truth entities, and predicted entities."""
+
     text: str
     sample_id: Optional[str] = None
     ground_truth_entities: Optional[List[Entity]] = None
@@ -71,6 +85,7 @@ class Sample:
             self.compute_scores()
 
     def compute_scores(self):
+        """Scores computing."""
         self.true_positives = [
             predicted_entity
             for predicted_entity in self.predicted_entities
@@ -113,6 +128,7 @@ class Sample:
         ]
 
     def __repr__(self):
+        """Representation."""
         repr_str = f'Sample(text="{self.text[:100]}..."'
         if self.ground_truth_entities is not None:
             repr_str += f", ground_truth_entities={self.ground_truth_entities[:3]}..."
@@ -122,6 +138,7 @@ class Sample:
         return repr_str
 
     def print(self, max_display_length=1000):
+        """Print function."""
         print(f"{self.text[:max_display_length]=}")
         if self.ground_truth_entities is not None:
             print("***************** Ground truth entities *****************")
@@ -195,6 +212,17 @@ def convert_jsonl_data_and_predictions_to_samples(
     md_threshold,
     el_threshold,
 ) -> List[Sample]:
+    """Convert JSONL data and prediction results to a list of Sample objects with computed scores.
+
+    Args:
+        jsonl_data (List[Dict[str, Any]]): The JSONL data containing the input samples.
+        predictions (Dict[str, List]): The predictions for each sample.
+        md_threshold (float): The mention detection score threshold.
+        el_threshold (float): The entity linking score threshold.
+
+    Returns:
+        List[Sample]: A list of Sample objects with populated predicted entities and computed scores.
+    """  # noqa
     samples = convert_jsonl_data_to_samples(jsonl_data)
     for sample, example_predictions in zip(samples, predictions):
         predicted_entities = convert_predictions_to_entities(

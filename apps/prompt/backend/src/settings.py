@@ -47,19 +47,16 @@ class Settings(OnclusiveBaseSettings):
     AWS_PROFILE: Optional[str] = None
     AWS_ACCESS_KEY_ID: Optional[str] = None
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
-
-    DEFAULT_MODELS: dict = {
-        "english-summarization": "gpt-4",
-        "ml-articles-summary-aggregation": "gpt-4-turbo-2024-04-09",
-        "default": "anthropic.claude-3-haiku-20240307-v1:0",
-    }
-
+    DEFAULT_MODELS: dict = {"default": "anthropic.claude-3-haiku-20240307-v1:0"}
     CORS_ORIGIN: List[str] = ["*"]
 
     # Github configuration
     PROMPT_REGISTRY_APP_ID: str
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
+
+    # validation
+    VALIDATE_PROMPT_INJECTION: bool = False
 
 
 @lru_cache
