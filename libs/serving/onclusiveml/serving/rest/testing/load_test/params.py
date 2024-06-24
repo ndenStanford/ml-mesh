@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Type
 # 3rd party libraries
 from locust import HttpUser
 from locust.main import load_locustfile
-from pydantic import root_field_validator
+from pydantic import validator
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel, field_validator
@@ -47,7 +47,7 @@ class LoadTestingParams(ServingBaseParams):
     # log level of underlying locust processes
     loglevel: str = "INFO"
 
-    @root_field_validator
+    @validator
     def validate_client_behaviour_configurations(cls, values: Dict) -> Dict:
         """Validate client behaviour configurations."""
         if not values["locustfile"] and not values["user_classes"]:
@@ -171,7 +171,7 @@ class BaseEndpointTypeValidator(OnclusiveBaseModel):
 
         return value
 
-    @root_field_validator
+    @validator
     def set_request_id(cls, values: Dict) -> Dict:
         """Sets the request id."""
         values["endpoint_id"] = f"{values['endpoint_type']}_{values['endpoint_url']}"

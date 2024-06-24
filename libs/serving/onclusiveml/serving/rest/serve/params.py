@@ -4,7 +4,7 @@
 from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
-from pydantic import Field, SecretStr, root_field_validator
+from pydantic import Field, SecretStr, validator
 
 # Internal libraries
 from onclusiveml.core.logging import INFO, OnclusiveService
@@ -138,7 +138,7 @@ class BetterStackSettings(ServingBaseParams):
         env_prefix = f"{ServingBaseParams.Config.env_prefix}betterstack_"
         env_file_encoding = "utf-8"
 
-    @root_field_validator
+    @validator
     def assemble_betterstack_url(cls, values: Dict) -> Dict:
         """Assembles the full_url field using the two fields.
 
