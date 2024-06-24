@@ -3,8 +3,11 @@
 # Standard Library
 from typing import Any, Dict, List, Optional
 
+# 3rd party libraries
+from pydantic import root_field_validator
+
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseModel, root_field_validator
+from onclusiveml.core.base import OnclusiveBaseModel
 
 
 class ServedModelMethods(OnclusiveBaseModel):

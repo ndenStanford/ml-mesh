@@ -4,10 +4,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging.constants import (
-    VALID_LOG_LEVELS,
-    OnclusiveService,
-)
+from onclusiveml.core.logging.constants import LOG_LEVELS, OnclusiveService
 from onclusiveml.serving.rest.serve import (
     BetterStackSettings,
     ServedModel,
@@ -209,7 +206,7 @@ def test_get_model_routers(
 
 
 @pytest.mark.parametrize("service", OnclusiveService.list())
-@pytest.mark.parametrize("level", VALID_LOG_LEVELS)
+@pytest.mark.parametrize("level", LOG_LEVELS)
 @pytest.mark.parametrize("json_format", [True, False])
 def test_get_logging_config(service, level, json_format):
     """Tests the get_logging_config function."""
