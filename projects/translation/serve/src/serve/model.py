@@ -126,6 +126,7 @@ class TranslationModel(ServedModel):
                     region_name=settings.region_name,
                 )
             except Exception as e:
+                raise ValueError("failing connection.")
                 raise OnclusiveHTTPException(
                     status_code=204,
                     detail=e,
@@ -141,6 +142,7 @@ class TranslationModel(ServedModel):
                 )
 
             except Exception as e:
+                raise ValueError("wrong translation.")
                 raise OnclusiveHTTPException(
                     status_code=204,
                     detail=e,
