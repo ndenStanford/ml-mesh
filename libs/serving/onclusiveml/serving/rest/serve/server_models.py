@@ -4,7 +4,7 @@
 from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
-from pydantic import validator
+from pydantic import model_validator
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
@@ -33,7 +33,7 @@ class ModelServerURLs(OnclusiveBaseModel):
     redoc: Optional[str] = ""
     openapi: Optional[str] = ""
 
-    @validator
+    @model_validator(mode="before")
     def check_non_root_urls(cls, values: Dict) -> Dict:
         """Checks that each url indeed starts with the root url."""
         root_url = values["root"]
