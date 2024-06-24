@@ -4,12 +4,14 @@
 from typing import Type
 
 # 3rd party libraries
+from fastapi import HTTPException, status
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
+from src.serve.exceptions import PromptBackendUpstreamError
 from src.serve.handler import TranscriptSegmentationHandler
 from src.serve.schemas import (
     BioResponseSchema,
@@ -48,20 +50,26 @@ class ServedTranscriptSegmentationModel(ServedModel):
         inputs = payload.attributes
         parameter_input = payload.parameters
 
-        (
-            (start_time_offsetted, end_time_offsetted),
-            (start_time, end_time),
-            title,
-            summary,
-            segment,
-            ad_detect_output,
-        ) = self.model.__call__(
-            word_transcript=inputs.transcript,
-            keywords=inputs.keywords,
-            country=parameter_input.country,
-            offset_start_buffer=parameter_input.offset_start_buffer,
-            offset_end_buffer=parameter_input.offset_end_buffer,
-        )
+        try:
+            (
+                (start_time_offsetted, end_time_offsetted),
+                (start_time, end_time),
+                title,
+                summary,
+                segment,
+                ad_detect_output,
+            ) = self.model.__call__(
+                word_transcript=inputs.transcript,
+                keywords=inputs.keywords,
+                country=parameter_input.country,
+                offset_start_buffer=parameter_input.offset_start_buffer,
+                offset_end_buffer=parameter_input.offset_end_buffer,
+            )
+        except PromptBackendUpstreamError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(e),
+            )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),

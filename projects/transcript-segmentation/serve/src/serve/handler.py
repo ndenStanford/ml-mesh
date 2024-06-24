@@ -12,6 +12,7 @@ from rapidfuzz import fuzz
 from onclusiveml.core.logging import get_default_logger
 
 # Source
+from src.serve.exceptions import PromptBackendUpstreamError
 from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
@@ -306,7 +307,6 @@ class TranscriptSegmentationHandler:
         )
 
         json_response = json.loads(q.content)
-
         # get the time stamp with ads
         advertisement_detect = json_response.get("advertisement_detect").lower()
 
@@ -367,13 +367,14 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
+        if q.status_code == 502:
+            raise PromptBackendUpstreamError()
 
         if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
             offset = self.country_offsets.get(country.lower())
             if offset:
                 offset_start_buffer = offset["start_offset"]
                 offset_end_buffer = offset["end_offset"]
-
         # post process
         (
             (start_time_offsetted, end_time_offsetted),
