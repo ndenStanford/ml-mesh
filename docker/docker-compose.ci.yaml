@@ -11,7 +11,7 @@ services:
       dockerfile: ./docker/python-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=python-base,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=python-base,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=python-base
       args:
@@ -31,7 +31,7 @@ services:
       dockerfile: ./docker/fastapi-serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=fastapi-serve,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=fastapi-serve,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=fastapi-serve
       args:
@@ -51,7 +51,7 @@ services:
       dockerfile: ./docker/gpu-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-base,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-base,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-base
       args:
@@ -88,7 +88,7 @@ services:
       dockerfile: ./docker/gpu-train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-train,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-train,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-train
       args:
@@ -124,7 +124,7 @@ services:
       dockerfile: ./docker/neuron-compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-compile,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-compile,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-compile
       args:
@@ -153,7 +153,7 @@ services:
       dockerfile: ./docker/neuron-inference/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-inference,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-inference,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-inference
       args:
@@ -181,7 +181,7 @@ services:
       dockerfile: ./docker/kubeflow-jupyter/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter
       args:
@@ -201,7 +201,7 @@ services:
       dockerfile: ./docker/kubeflow-torch-cpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-cpu,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-cpu,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-cpu
       args:
@@ -221,7 +221,7 @@ services:
       dockerfile: ./docker/kubeflow-data-science/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science
       args:
@@ -241,7 +241,7 @@ services:
       dockerfile: ./docker/kubeflow-torch-gpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-gpu,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-gpu,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-gpu
       args:
@@ -261,7 +261,7 @@ services:
       dockerfile: ./docker/dask-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=dask-base,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=dask-base,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=dask-base
       args:
@@ -281,7 +281,7 @@ services:
       dockerfile: ./docker/kubeflow-torch-inf/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-inf,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-inf,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-inf
       args:
@@ -301,7 +301,7 @@ services:
       dockerfile: ./docker/beam-backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-backfill,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-backfill,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-backfill
       args:
@@ -323,7 +323,7 @@ services:
       dockerfile: ./docker/beam-worker/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-worker,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-worker,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-worker
       args:

@@ -12,7 +12,7 @@ services:
       dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train
       args:
@@ -56,7 +56,7 @@ services:
       dockerfile: projects/sentiment/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile
       args:
@@ -152,7 +152,7 @@ services:
       dockerfile: projects/sentiment/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve
       args:
@@ -308,7 +308,7 @@ services:
       dockerfile: projects/sentiment/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill
       args:

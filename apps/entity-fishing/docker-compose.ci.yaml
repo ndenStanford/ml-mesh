@@ -8,7 +8,7 @@ services:
       dockerfile: apps/entity-fishing/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=entity-fishing-backend,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=entity-fishing-backend,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=entity-fishing-backend
       args:

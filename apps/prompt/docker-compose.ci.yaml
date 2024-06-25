@@ -11,7 +11,7 @@ services:
       dockerfile: apps/prompt/frontend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend
       args:
@@ -56,7 +56,7 @@ services:
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend
       args:

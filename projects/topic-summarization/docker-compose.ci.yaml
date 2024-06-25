@@ -11,7 +11,7 @@ services:
       dockerfile: projects/topic-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-serve,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-serve,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-serve
       args:
@@ -202,7 +202,7 @@ services:
       dockerfile: projects/topic-summarization/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-backfill,mode=min
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-backfill,mode=max
       cache_from:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-backfill
       args:
