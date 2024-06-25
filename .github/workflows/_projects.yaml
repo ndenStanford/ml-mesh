@@ -244,7 +244,7 @@ jobs:
               TARGET_BUILD_STAGE="development" \
               PLATFORM="linux/amd64" \
               ENVIRONMENT="ci" \
-              USE_DOCKER_CACHE="${{ inputs.use-cache }}"
+              USE_DOCKER_CACHE=${{ inputs.use-cache }}
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -344,7 +344,6 @@ jobs:
             TARGET_BUILD_STAGE="production" \
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
-            USE_DOCKER_CACHE=true \
             DEPLOYMENT="${{ inputs.environment }}" \
             USE_DOCKER_CACHE=${{ inputs.use-cache }}
 

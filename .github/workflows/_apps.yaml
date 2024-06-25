@@ -110,7 +110,7 @@ jobs:
           TARGET_BUILD_STAGE="development" \
           PLATFORM="linux/amd64" \
           ENVIRONMENT="ci" \
-          USE_DOCKER_CACHE="${{ inputs.use-cache }}"
+          USE_DOCKER_CACHE=${{ inputs.use-cache }}
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}

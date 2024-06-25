@@ -224,7 +224,8 @@ jobs:
           make docker.deploy/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci"\
+            DEPLOYMENT="${{ inputs.environment }}"
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.image }}'
