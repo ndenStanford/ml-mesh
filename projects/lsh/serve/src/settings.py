@@ -18,7 +18,7 @@ from onclusiveml.tracking import (
 )
 
 
-LSH_SUPPORTED_LANGUAGES = [
+SUPPORTED_LANGUAGES = [
     LanguageIso.EN,  # English
     LanguageIso.FR,  # French
     LanguageIso.DE,  # German
@@ -42,7 +42,7 @@ class ServerModelSettings(ServingParams):
 class LSHSettings(TrackedParams):
     """LSH settings."""
 
-    supported_languages: List[LanguageIso] = LSH_SUPPORTED_LANGUAGES
+    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
 class GlobalSettings(
