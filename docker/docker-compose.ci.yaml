@@ -10,7 +10,6 @@ services:
       context: ..
       dockerfile: ./docker/python-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=python-base,mode=min
       cache_from:
@@ -31,7 +30,6 @@ services:
       context: ..
       dockerfile: ./docker/fastapi-serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=fastapi-serve,mode=min
       cache_from:
@@ -52,7 +50,6 @@ services:
       context: ..
       dockerfile: ./docker/gpu-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-base,mode=min
       cache_from:
@@ -90,7 +87,6 @@ services:
       context: ..
       dockerfile: ./docker/gpu-train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-train,mode=min
       cache_from:
@@ -127,7 +123,6 @@ services:
       context: ..
       dockerfile: ./docker/neuron-compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-compile,mode=min
       cache_from:
@@ -157,7 +152,6 @@ services:
       context: ..
       dockerfile: ./docker/neuron-inference/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-inference,mode=min
       cache_from:
@@ -186,7 +180,6 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-jupyter/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter,mode=min
       cache_from:
@@ -207,7 +200,6 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-torch-cpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-cpu,mode=min
       cache_from:
@@ -228,7 +220,6 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-data-science/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science,mode=min
       cache_from:
@@ -249,7 +240,6 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-torch-gpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-gpu,mode=min
       cache_from:
@@ -270,7 +260,6 @@ services:
       context: ..
       dockerfile: ./docker/dask-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=dask-base,mode=min
       cache_from:
@@ -291,7 +280,6 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-torch-inf/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-inf,mode=min
       cache_from:
@@ -312,7 +300,6 @@ services:
       context: ..
       dockerfile: ./docker/beam-backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-backfill,mode=min
       cache_from:
@@ -335,7 +322,6 @@ services:
       context: ..
       dockerfile: ./docker/beam-worker/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-worker,mode=min
       cache_from:

@@ -11,7 +11,6 @@ services:
       context: ../../
       dockerfile: projects/gch-summarization/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-production}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gch-summarization-train,mode=min
       cache_from:
@@ -61,7 +60,6 @@ services:
       context: ../../
       dockerfile: projects/gch-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gch-summarization-serve,mode=min
       cache_from:
@@ -235,7 +233,6 @@ services:
       context: ../../
       dockerfile: projects/gch-summarization/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       cache_to:
         - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gch-summarization-backfill,mode=min
       cache_from:
