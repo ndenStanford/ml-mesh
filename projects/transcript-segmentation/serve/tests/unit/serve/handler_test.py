@@ -4,8 +4,12 @@
 # Standard Library
 from unittest.mock import patch
 
+# 3rd party libraries
+import pytest
+
 # Source
 from src.serve.handler import TranscriptSegmentationHandler
+from src.serve.exceptions import PromptBackendError
 
 _service = TranscriptSegmentationHandler()
 
@@ -58,3 +62,25 @@ def test_handler_preprocessing_abbrv(
     """Test preprocessing function where input has abbreviation."""
     res = _service.preprocess_transcript(transcript_input_abbrv)
     assert res == expected_preprocessing_output_abbrv
+
+
+@patch("requests.post")
+def test_handler_exception(
+    mock_post,
+    transcript_input,
+    transcript_keywords,
+    transcript_offset,
+    transcript_country,
+    mock_response_upstream_error,
+):
+    """Test the exception handling."""
+    mock_post.return_value = mock_response_upstream_error
+
+    with pytest.raises(PromptBackendError):
+        _ = _service(
+            word_transcript=transcript_input,
+            keywords=transcript_keywords,
+            offset_start_buffer=transcript_offset[0],
+            offset_end_buffer=transcript_offset[1],
+            country=transcript_country[1],
+        )
