@@ -178,8 +178,8 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
           make docker.login \
-          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          AWS_REGION=${{ inputs.base-region }}
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_REGION=${{ inputs.base-region }}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         uses: nick-fields/retry@v2
@@ -218,6 +218,12 @@ jobs:
             PLATFORM=linux/amd64 \
             ENVIRONMENT="ci" \
             USE_DOCKER_CACHE=${{ inputs.use-cache }}
+
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
+        run: |
+          make docker.login \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
         run: |
