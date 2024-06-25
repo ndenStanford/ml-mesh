@@ -40,7 +40,7 @@ class ServerModelSettings(ServingParams):
 
 
 class LSHSettings(TrackedParams):
-    """Sentiment settings."""
+    """LSH settings."""
 
     supported_languages: List[LanguageIso] = LSH_SUPPORTED_LANGUAGES
 
