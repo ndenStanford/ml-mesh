@@ -116,8 +116,10 @@ def generate_text_from_prompt_template(
         model_params (Dict[str, Any]): Model parameters to override default values.
     """
     try:
+        if model_params is not None:
+            model_params = json.loads(model_params)
         return F.generate_from_prompt_template(
-            alias, model, **values, model_params=json.loads(model_params)
+            alias, model, **values, model_params=model_params
         )
     except PromptInjectionException as e:
         raise HTTPException(

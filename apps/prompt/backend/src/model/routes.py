@@ -55,9 +55,11 @@ def get_model(alias: str):
 def generate(alias: str, prompt: str, model_params: str = Header(None)):
     """Generates text using a prompt template."""
     try:
+        if model_params is not None:
+            model_params = json.loads(model_params)
         return {
             "generated": F.generate_from_prompt(
-                prompt, alias, model_params=json.loads(model_params)
+                prompt, alias, model_params=model_params
             )
         }
     except PromptInjectionException as e:
