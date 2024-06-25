@@ -1,14 +1,19 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
+from typing import List, Type
 
 # 3rd party libraries
 from pydantic import BaseModel
 
 # Internal libraries
 from onclusiveml.hashing.lsh import LshHandler
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.schemas import (
@@ -48,9 +53,17 @@ class ServedLshModel(ServedModel):
         inputs = payload.attributes
         configuration = payload.parameters
 
-        words = self.model.pre_processing(
-            text=inputs.content, lang=configuration.language
-        )
+        try:
+            words = self._predict(
+                content=inputs.content, language=configuration.language
+            )
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=204, detail=language_exception.message
+            )
 
         shingle_list = self.model.k_shingle(words, k=configuration.shingle_list)
         if len(shingle_list) < 1:
@@ -71,6 +84,14 @@ class ServedLshModel(ServedModel):
             namespace=settings.model_name,
             attributes={"signature": signature},
         )
+
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _predict(self, content: str, language: str) -> List[str]:
+        """Language filtering."""
+        return self.model.pre_processing(text=content, lang=language)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
