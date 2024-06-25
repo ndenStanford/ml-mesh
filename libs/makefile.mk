@@ -34,3 +34,5 @@ libs.install-all: $(foreach I, $(ALL_LIBS), libs.install/$(I)) # install library
 libs.lock-all: $(foreach I, $(ALL_LIBS), libs.lock/$(I)) # install library dependencies
 
 libs.coverage-unit-all: $(foreach I, $(COVERED_LIBS), libs.coverage-unit/$(I))
+
+libs.install-covered: $(foreach I, $(COVERED_LIBS), libs.install/$(I)) # install library dependencies for covered libs
