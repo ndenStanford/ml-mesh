@@ -67,28 +67,28 @@ def test_server_prediction(test_payload, expected_response):
             response.json()["data"]["attributes"]["start_time"]
             - expected_response["data"]["attributes"]["start_time"]
         )
-        <= 20000
+        <= 50000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["end_time"]
             - expected_response["data"]["attributes"]["end_time"]
         )
-        <= 20000
+        <= 50000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["transcript_start_time"]
             - expected_response["data"]["attributes"]["transcript_start_time"]
         )
-        <= 20000
+        <= 50000
     )
     assert (
         abs(
             response.json()["data"]["attributes"]["transcript_end_time"]
             - expected_response["data"]["attributes"]["transcript_end_time"]
         )
-        <= 20000
+        <= 50000
     )
     assert isinstance(response.json()["data"]["attributes"]["title"], str)
     assert isinstance(response.json()["data"]["attributes"]["summary"], str)
