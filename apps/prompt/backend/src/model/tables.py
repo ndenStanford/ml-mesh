@@ -1,12 +1,11 @@
 """Language model dynamoDB tables."""
 
 # Standard Library
-from typing import Any, Dict, Optional
+from typing import Optional
 
 # 3rd party libraries
 import boto3
 from dyntastic import Dyntastic
-from fastapi import Header
 from langchain_community.chat_models import BedrockChat, ChatOpenAI
 from pydantic import ValidationError
 
@@ -37,10 +36,11 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
 
     alias: str
     provider: str
-    model_params: Dict[str, Any] = Header(None)
+    model_params: str = None
 
-    def as_langchain(self) -> Optional[LangchainT]:
+    def as_langchain(self, **kwargs) -> Optional[LangchainT]:
         """Return model as langchain chat model."""
+        self.model_params = kwargs.get("model_params", None)
         model_params_class = MODELS_TO_PARAMS_MAP.get(
             self.alias, MODELS_TO_PARAMS_MAP[ChatModel.CLAUDE_3_HAIKU]
         )
@@ -76,7 +76,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             self.model_params = model_params_class()
         else:
             try:
-                self.model_params = model_params_class(**self.model_params.dict())
+                self.model_params = model_params_class(**self.model_params)
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 
@@ -88,7 +88,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             try:
                 if self.alias in [ChatModel.TITAN, ChatModel.TITAN_G1]:
                     self.model_params = TitanParameters(
-                        **model_params_class(**self.model_params.dict()).dict()
+                        **model_params_class(**self.model_params).dict()
                     ).dict()
                 else:
                     self.model_params = model_params_class(**self.model_params).dict()

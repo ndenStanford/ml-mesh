@@ -49,7 +49,10 @@ class BaseLLMParameters(BaseModel):
     """Base LLM parameters."""
 
     temperature: float = 0.7
-    max_tokens: int = 3000
+    max_tokens: int = Field(3000, alias="maxTokens")
+
+    class Config:
+        extra = "forbid"
 
 
 class TextGenerationConfig(BaseLLMParameters):
@@ -74,7 +77,7 @@ class Claude2Parameters(BaseLLMParameters):
 
     temperature: float = 0.5
     top_p: float = Field(1.0, alias="topP")
-    top_k: float = Field(250, alias="topK")
+    top_k: int = Field(250, alias="topK")
     stop_sequences: List[str] = Field([], alias="stopSequences")
 
 
@@ -84,7 +87,7 @@ class Claude3Parameters(BaseLLMParameters):
     temperature: float = 1.0
     top_p: float = Field(0.999, alias="topP")
     top_k: float = Field(250, alias="topK")
-    max_tokens: float = Field(50000, alias="maxTokens")
+    max_tokens: int = Field(50000, alias="maxTokens")
     stop_sequences: List[str] = Field([], alias="stopSequences")
 
 

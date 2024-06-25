@@ -1,11 +1,12 @@
 """Model."""
 
 # Standard Library
+import json
 from typing import List
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, status
 
 # Internal libraries
 from onclusiveml.llms.prompt_validator import PromptInjectionException
@@ -51,10 +52,14 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str):
+def generate(alias: str, prompt: str, model_params: str = Header(None)):
     """Generates text using a prompt template."""
     try:
-        return {"generated": F.generate_from_prompt(prompt, alias)}
+        return {
+            "generated": F.generate_from_prompt(
+                prompt, alias, model_params=json.loads(model_params)
+            )
+        }
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
