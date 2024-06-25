@@ -181,9 +181,9 @@ services:
       dockerfile: ./docker/kubeflow-jupyter/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-jupyter,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-jupyter
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -201,9 +201,9 @@ services:
       dockerfile: ./docker/kubeflow-torch-cpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-cpu,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-cpu,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-cpu
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-cpu
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -221,9 +221,9 @@ services:
       dockerfile: ./docker/kubeflow-data-science/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-data-science,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-data-science
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -241,9 +241,9 @@ services:
       dockerfile: ./docker/kubeflow-torch-gpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-gpu,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-gpu,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-gpu
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-gpu
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -261,9 +261,9 @@ services:
       dockerfile: ./docker/dask-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=dask-base,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=dask-base,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=dask-base
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=dask-base
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -281,9 +281,9 @@ services:
       dockerfile: ./docker/kubeflow-torch-inf/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-inf,mode=max
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-inf,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-2,name=kubeflow-torch-inf
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-inf
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
