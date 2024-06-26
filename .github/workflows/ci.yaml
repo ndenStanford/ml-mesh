@@ -215,7 +215,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.components.use-cache }}
+      use-cache: ${{ matrix.image.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -284,7 +284,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.components.use-cache }}
+      use-cache: ${{ matrix.image.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -348,7 +348,7 @@ jobs       :
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.components.use-cache }}
+      use-cache: ${{ matrix.image.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1291,7 +1291,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      use-cache: ${{ matrix.components.use-cache }}
+      use-cache: ${{ matrix.apps.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
