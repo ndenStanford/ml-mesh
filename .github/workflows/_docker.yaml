@@ -90,8 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     outputs:
-      # run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-      run: true
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
