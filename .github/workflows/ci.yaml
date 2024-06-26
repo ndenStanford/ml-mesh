@@ -304,6 +304,7 @@ jobs       :
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
+            use-cache: false
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -499,6 +500,7 @@ jobs       :
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: false
 
           # backfill
           - name: backfill
@@ -571,6 +573,7 @@ jobs       :
             self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: false
 
           # backfill
           - name: backfill
@@ -726,6 +729,7 @@ jobs       :
             self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: false
 
           # compile
           - name: compile
@@ -1078,7 +1082,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
-
+            use-cache: false
 
           # serve
           - name: serve
@@ -1090,7 +1094,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
-
+            use-cache: false
 
           # backfill
           - name: backfill
