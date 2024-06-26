@@ -2,6 +2,7 @@
 
 # 3rd party libraries
 from pydantic import field_validator
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -45,5 +46,4 @@ class OnclusiveLogSettings(OnclusiveBaseSettings):
 
         return value
 
-    class Config:
-        env_prefix = "onclusiveml_core_logging_config_"
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_core_logging_config_")

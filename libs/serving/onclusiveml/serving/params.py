@@ -1,5 +1,8 @@
 """Settings."""
 
+# 3rd party libraries
+from pydantic_settings import SettingsConfigDict
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveFrozenSettings
 
@@ -7,6 +10,4 @@ from onclusiveml.core.base import OnclusiveFrozenSettings
 class ServingBaseParams(OnclusiveFrozenSettings):
     """Base class implementing the environment variable prefix."""
 
-    class Config:
-        env_prefix = "onclusiveml_serving_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_serving_")

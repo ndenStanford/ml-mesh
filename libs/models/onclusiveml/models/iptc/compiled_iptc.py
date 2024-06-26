@@ -66,10 +66,6 @@ class CompiledTrackedModelSettings(TrackedModelSettings):
     project: str = "onclusive/iptc-00000000"
     model: str = "IP00000000-COMPILED"
 
-    class Config:
-        env_prefix = "compiled_"
-        env_file_encoding = "utf-8"
-
 
 class PostProcessOutput(OnclusiveBaseModel):
     """output data structure."""

@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
 from pydantic import Field, SecretStr
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.logging import INFO, OnclusiveService
@@ -67,9 +68,9 @@ class FastAPISettings(ServingBaseParams):
 
     name: str = "fastapi-app-name"
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}fastapi_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}fastapi_"
+    )
 
 
 class LogConfigSettings(ServingBaseParams):
@@ -79,9 +80,9 @@ class LogConfigSettings(ServingBaseParams):
     level: int = 20  # INFO
     json_format: bool = True
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}logconfig_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}logconfig_"
+    )
 
 
 class UvicornSettings(ServingBaseParams):
@@ -107,9 +108,9 @@ class UvicornSettings(ServingBaseParams):
     reload_excludes: Optional[Union[List[str], str]] = None
     workers: int = 1
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}uvicorn_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}uvicorn_"
+    )
 
 
 class BetterStackSettings(ServingBaseParams):
@@ -132,9 +133,9 @@ class BetterStackSettings(ServingBaseParams):
     base_url: str = "https://uptime.betterstack.com/api/v1/heartbeat/"
     enable_multi_model_check: bool = False
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}betterstack_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}betterstack_"
+    )
 
     @property
     def full_url(self) -> str:

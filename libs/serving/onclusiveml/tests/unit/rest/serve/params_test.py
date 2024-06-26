@@ -25,7 +25,7 @@ from onclusiveml.serving.rest.serve import (
 )
 def test_settings_env_prefix(settings_class, expected_env_prefix):
     """Tests the environment prefixes for all serving.rest settings/params classes."""
-    assert settings_class.Config.env_prefix == expected_env_prefix
+    assert settings_class.model_config["env_prefix"] == expected_env_prefix
 
 
 @pytest.mark.parametrize(

@@ -70,9 +70,6 @@ class TrainerSettings(OnclusiveBaseSettings):
     val_check_interval: int = 3000
     limit_val_batches: int = 500
 
-    class Config:
-        extra = "allow"
-
 
 class CheckpointCallbackSettings(OnclusiveBaseSettings):
     """Checkpoint Callback configuration settings."""
@@ -119,6 +116,3 @@ class BelaSettings(
     model: ModelSettings = ModelSettings()
     checkpoint_callback: CheckpointCallbackSettings = CheckpointCallbackSettings()
     redis: RedisSetttings = RedisSetttings()
-
-    class Config:
-        extra = "allow"

@@ -3,6 +3,9 @@
 # Standard Library
 from typing import List, Optional
 
+# 3rd party libraries
+from pydantic_settings import SettingsConfigDict
+
 # Internal libraries
 from onclusiveml.serving.rest.testing.load_test.params import (
     Criterion,
@@ -105,10 +108,10 @@ class LoadTestCriteria(object):
                     - onclusiveml_serving_criteria_{index}_endpoint_url
                 """
 
-                class Config:
-                    base_prefix = EnvironmentCriterion.__config__.env_prefix
-                    env_prefix = f"{base_prefix}criteria_{criteria_index}_"
-                    env_file_encoding = "utf-8"
+                model_config = SettingsConfigDict(
+                    base_prefix=EnvironmentCriterion.__config__.env_prefix,
+                    env_prefix=f"{EnvironmentCriterion.__config__.env_prefix}criteria_{criteria_index}_",  # noqa: E501
+                )
 
             self.indexed_environment_criteria_classes.append(
                 IndexedEnvironmentCriterion

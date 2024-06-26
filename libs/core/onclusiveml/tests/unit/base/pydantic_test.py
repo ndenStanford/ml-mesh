@@ -40,13 +40,13 @@ def test_settings_type_conversion():
 
 def test_settings_extras():
     """Test object modified behaviour."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         _ = TestSettings(setting1="a", setting2=12, settings3=False)
 
 
 def test_settings_type_validation():
     """Test object modified behaviour."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         _ = TestSettings(setting1=100, setting2="qq")
 
 

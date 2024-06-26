@@ -26,9 +26,6 @@ class OnclusiveLogRecord(OnclusiveBaseModel):
     lineno: int
     message: str
 
-    class Config:
-        from_attributes = True
-
 
 class OnclusiveFormatter(logging.Formatter):
     """Default (base) formatter for onclusve ML apps for non-JSON logs."""
