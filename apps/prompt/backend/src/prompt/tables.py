@@ -75,6 +75,16 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
         self.sha = commit["commit"].sha
         return super(PromptTemplate, self).save()
 
+    def update(self) -> None:
+        """Updates prompt template in github."""
+        commit = github.update(
+            self.path,
+            f"Update prompt {self.alias}",
+            self.template,
+        )
+        self.sha = commit["commit"].sha
+        return super(PromptTemplate, self).save()
+
     def delete(self) -> None:
         """Delete project from database and github."""
         github.rm(self.path, f"Delete prompt {self.alias}")
