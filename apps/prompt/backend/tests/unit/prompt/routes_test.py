@@ -44,6 +44,41 @@ def test_create_prompt(
 
 
 @pytest.mark.parametrize(
+    "alias, new_template, project",
+    [("existing-prompt", "new-template-text", "existing-project")],
+)
+@patch.object(PromptTemplate, "get")
+@patch.object(PromptTemplate, "update")
+def test_update_prompt(
+    mock_prompt_update,
+    mock_prompt_get,
+    alias,
+    new_template,
+    project,
+    test_client,
+):
+    """Test update prompt."""
+    prompt = PromptTemplate(alias=alias, project=project, template="old-template")
+    mock_prompt_get.return_value = prompt
+
+    response = test_client.put(
+        f"/api/v2/prompts/{alias}",
+        headers={"x-api-key": "1234"},
+        json={"template": new_template},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    mock_prompt_get.assert_called_once_with(alias)
+    mock_prompt_update.assert_called_once()
+    assert response.json() == {
+        "alias": alias,
+        "project": project,
+        "template": new_template,
+        "sha": None,
+    }
+
+
+@pytest.mark.parametrize(
     "alias, template, project",
     [("new-prompt", "{text}", "new-project1")],
 )
