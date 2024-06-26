@@ -52,7 +52,7 @@ class ServedLshModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         configuration = payload.parameters
-        shingle_int = configuration.shingle_list
+        shingle_list = configuration.shingle_list
         num_perm = configuration.num_perm
         threshold = configuration.threshold
 
@@ -60,7 +60,7 @@ class ServedLshModel(ServedModel):
             shingle_list = self._predict(
                 content=inputs.content,
                 language=configuration.language,
-                shingle_list=shingle_int,
+                shingle_list=shingle_list,
                 num_perm=num_perm,
                 threshold=threshold,
             )
@@ -98,14 +98,14 @@ class ServedLshModel(ServedModel):
         self,
         content: str,
         language: str,
-        shingle_int: int,
+        shingle_list: int,
         num_perm: int,
         threshold: float,
     ) -> List[str]:
         """Language filtering."""
         words = self.model.pre_processing(text=content, lang=language)
-        shingle_list = self.model.k_shingle(words, k=shingle_int)
-        return shingle_list
+        self.model.k_shingle(words, k=shingle_list)
+        return self.model.k_shingle(words, k=shingle_list)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
