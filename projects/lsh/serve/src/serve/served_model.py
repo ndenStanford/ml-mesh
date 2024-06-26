@@ -104,7 +104,6 @@ class ServedLshModel(ServedModel):
     ) -> List[str]:
         """Language filtering."""
         words = self.model.pre_processing(text=content, lang=language)
-        self.model.k_shingle(words, k=shingle_list)
         return self.model.k_shingle(words, k=shingle_list)
 
     def bio(self) -> BioResponseSchema:
