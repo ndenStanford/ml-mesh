@@ -73,6 +73,8 @@ services:
     profiles: [serve, functional]
     ports:
       - 8000:8000
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
@@ -119,6 +121,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
@@ -145,6 +148,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     networks:
@@ -178,6 +182,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
     depends_on:

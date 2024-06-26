@@ -26,6 +26,18 @@ def mock_response():
             "advertisement_detect": "Yes",
         }
     )
+    mock_response.status_code = 200
+    return mock_response
+
+
+@pytest.fixture
+def mock_response_upstream_error():
+    """Mock response for upstream error."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps(
+        {"message": "An invalid response was received from the upstream server"}
+    )
+    mock_response.status_code = 502
     return mock_response
 
 

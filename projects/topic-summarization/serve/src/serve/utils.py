@@ -23,21 +23,21 @@ def all_profile_query(
         "query": {
             "bool": {
                 "must": [
+                    translated_boolean_query,
+                ],
+                "filter": [
                     {
                         "nested": {
                             "path": "bertopic_topic",
                             "query": {
                                 "bool": {
-                                    "must": [
+                                    "filter": [
                                         {"exists": {"field": "bertopic_topic.topic_id"}}
                                     ]
                                 }
                             },
                         }
-                    }
-                ],
-                "filter": [
-                    translated_boolean_query,
+                    },
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                     {"term": {"lang": "en"}},
                 ],
@@ -157,21 +157,21 @@ def all_profile_boolean_query(
         "query": {
             "bool": {
                 "must": [
+                    translated_boolean_query,
+                ],
+                "filter": [
                     {
                         "nested": {
                             "path": "bertopic_topic",
                             "query": {
                                 "bool": {
-                                    "must": [
+                                    "filter": [
                                         {"exists": {"field": "bertopic_topic.topic_id"}}
                                     ]
                                 }
                             },
                         }
-                    }
-                ],
-                "filter": [
-                    translated_boolean_query,
+                    },
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                 ],
             }
@@ -206,21 +206,21 @@ def topic_profile_query(
         "query": {
             "bool": {
                 "must": [
+                    translated_boolean_query,
+                ],
+                "filter": [
                     {
                         "nested": {
                             "path": "bertopic_topic",
                             "query": {
                                 "bool": {
-                                    "must": [
-                                        {"match": {"bertopic_topic.topic_id": topic_id}}
+                                    "filter": [
+                                        {"term": {"bertopic_topic.topic_id": topic_id}}
                                     ]
                                 }
                             },
                         }
-                    }
-                ],
-                "filter": [
-                    translated_boolean_query,
+                    },
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                     {"term": {"lang": "en"}},
                 ],
@@ -255,21 +255,21 @@ def topic_profile_documents_query(
         "query": {
             "bool": {
                 "must": [
+                    translated_boolean_query,
+                ],
+                "filter": [
                     {
                         "nested": {
                             "path": "bertopic_topic",
                             "query": {
                                 "bool": {
-                                    "must": [
-                                        {"match": {"bertopic_topic.topic_id": topic_id}}
+                                    "filter": [
+                                        {"term": {"bertopic_topic.topic_id": topic_id}}
                                     ]
                                 }
                             },
                         }
-                    }
-                ],
-                "filter": [
-                    translated_boolean_query,
+                    },
                     {"range": {"crawled_on": {"gte": start_time, "lte": end_time}}},
                     {"term": {"lang": "en"}},
                 ],

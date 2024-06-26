@@ -1,5 +1,4 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""Transform."""
 
 # Standard Library
 import os
@@ -16,6 +15,8 @@ from .sentencepiece_pb2 import SentencePieceText
 
 
 class SPMTransform(nn.Module):
+    """Sentence Piece Transformer."""
+
     def __init__(
         self,
         sp_model_path: Optional[str] = None,
@@ -33,6 +34,7 @@ class SPMTransform(nn.Module):
         self.add_special_tokens = add_special_tokens
 
     def forward(self, texts):
+        """Forward Sentence Piece Transformer."""
         output = []
         for text in texts:
             spt = SentencePieceText()
@@ -54,7 +56,7 @@ class SPMTransform(nn.Module):
                 else:
                     token_id = self.unk_token_id
                 if idx == 0:
-                    # if we process first token, append leading whitespacess count to the sp token length
+                    # noqa if we process first token, append leading whitespacess count to the sp token length
                     token_ids_with_offsets.append(
                         (
                             token_id,
