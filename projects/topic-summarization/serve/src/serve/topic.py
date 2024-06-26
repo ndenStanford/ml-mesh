@@ -3,7 +3,7 @@
 
 # Standard Library
 import re
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 # 3rd party libraries
 import requests
@@ -53,29 +53,41 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
+
         return q
 
-    def topic_inference(self, articles: List[str]) -> Dict[str, str]:
+    def topic_inference(
+        self, articles: List[str], entity_list: Optional[str] = None
+    ) -> Dict[str, str]:
         """LLM inference function for the articles.
 
         Args:
             articles(list): list of str
+            entity_list(Optional[str]): string representing a list of entities in the query
         Output:
             topic summary & impact(dict): dict[str,str]
         """
-        topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
-        topic_alias_gpt = settings.GPT_TOPIC_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
         }
 
-        input_dict = {
-            "input": {
-                "articles": processed_article,
-            },
-            "output": settings.TOPIC_RESPONSE_SCHEMA,
-        }
+        if entity_list:
+            topic_alias_claude = settings.CLAUDE_TOPIC_WITH_ENTITY_ALIAS
+            topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_ALIAS
+            input_dict = {
+                "input": {"articles": processed_article, "entity_list": entity_list},
+                "output": settings.TOPIC_RESPONSE_SCHEMA,
+            }
+        else:
+            topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
+            topic_alias_gpt = settings.GPT_TOPIC_ALIAS
+            input_dict = {
+                "input": {
+                    "articles": processed_article,
+                },
+                "output": settings.TOPIC_RESPONSE_SCHEMA,
+            }
 
         output_content = None
         try:
@@ -115,7 +127,7 @@ class TopicHandler:
             q = self.call_api(
                 entity_query_alias_claude, settings.HAIKU_CLAUDE_MODEL, input_dict
             )
-            entity_list = q.content
+            output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
                 raise ValueError("Claude topic response is not a valid string")
         except Exception as e:
@@ -123,31 +135,43 @@ class TopicHandler:
 
         if (not output_content) or not isinstance(output_content, dict):
             q = self.call_api(entity_query_alias_gpt, settings.GPT_MODEL, input_dict)
-            entity_list = q.content
+            output_content = json.loads(q.content)
 
+        entity_list = output_content["entity_list"]
         return entity_list
 
-    def summary_inference(self, articles: List[str]) -> Dict[str, str]:
+    def summary_inference(
+        self, articles: List[str], entity_list: Optional[str] = None
+    ) -> Dict[str, str]:
         """LLM summary inference function for the articles.
 
         Args:
             articles(list): list of str
+            entity_list(Optional[str]): string representing a list of entities in the query
         Output:
             summary & theme(dict): dict[str,str]
         """
-        summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
-        summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
         }
 
-        input_dict = {
-            "input": {
-                "articles": processed_article,
-            },
-            "output": settings.SUMMARY_RESPONSE_SCHEMA,
-        }
+        if entity_list:
+            summary_alias_claude = settings.CLAUDE_SUMMARY_WITH_ENTITY_ALIAS
+            summary_alias_gpt = settings.GPT_SUMMARY_WITH_ENTITY_ALIAS
+            input_dict = {
+                "input": {"articles": processed_article, "entity_list": entity_list},
+                "output": settings.SUMMARY_RESPONSE_SCHEMA,
+            }
+        else:
+            summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
+            summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
+            input_dict = {
+                "input": {
+                    "articles": processed_article,
+                },
+                "output": settings.SUMMARY_RESPONSE_SCHEMA,
+            }
 
         output_content = None
         try:
@@ -199,22 +223,26 @@ class TopicHandler:
         return final_topic
 
     def aggregate(
-        self, article: List[str], boolean_query: str
+        self, article: List[str], boolean_query: Optional[str] = None
     ) -> Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]:
         """Aggregate topic & summary results together.
 
         Args:
             article(list): list of str
+            boolean_query(Optional[str]): boolean query
         Output:
             merged_result (dict): dict
         """
         article = self.pre_process(article)
+
         if boolean_query is not None:
             entity_list = self.entity_query_extract(boolean_query)
+        else:
+            entity_list = None
 
         topic_result = self.topic_inference(article, entity_list)
         topic_final_result = self.post_process(topic_result)
-        summary_result = self.summary_inference(article)
+        summary_result = self.summary_inference(article, entity_list)
         merged_result: Dict[
             str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]
         ] = {}
