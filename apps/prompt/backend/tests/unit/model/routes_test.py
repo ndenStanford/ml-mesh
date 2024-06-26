@@ -42,7 +42,7 @@ def test_get_model(mock_model_get, alias, provider, test_client):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "alias": alias,
-        "model_params": None,
+        "model_parameters": None,
         "provider": provider,
     }
 
@@ -61,5 +61,5 @@ def test_generate(mock_generate, alias, provider, prompt, test_client):
         f"/api/v2/models/{alias}/generate?prompt={prompt}",
         headers={"x-api-key": "1234"},
     )
-    mock_generate.assert_called_with(prompt, alias, model_params=None)
+    mock_generate.assert_called_with(prompt, alias, model_parameters=None)
     assert response.status_code == status.HTTP_200_OK
