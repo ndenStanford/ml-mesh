@@ -52,7 +52,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
 
     def _handle_openai_provider(self, model_params_class) -> Optional[LangchainT]:
         """Handle the OpenAI provider specifics."""
-        self._initialize_model_params(model_params_class)
+        self._initialize_openai_parameters(model_params_class)
         return ChatOpenAI(
             model=self.alias,
             temperature=self.model_parameters.temperature,
@@ -70,8 +70,8 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             model_kwargs=self.model_parameters,
         )
 
-    def _initialize_model_params(self, model_params_class):
-        """Initialize the model parameters."""
+    def _initialize_openai_parameters(self, model_params_class):
+        """Initialize the openai model parameters."""
         if self.model_parameters is None:
             self.model_parameters = model_params_class()
         else:
