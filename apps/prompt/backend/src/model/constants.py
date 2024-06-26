@@ -43,6 +43,7 @@ class ModelParameters(OnclusiveBaseSettings):
     """Default model parameters."""
 
     max_tokens: int = 50000
+    temperature: float = 0.5
 
 
 # DEFAULT models

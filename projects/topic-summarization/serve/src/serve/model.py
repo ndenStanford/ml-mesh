@@ -86,6 +86,8 @@ class ServedTopicModel(ServedModel):
         content = inputs.content
         trend_found = None
         save_report_dynamodb = inputs.save_report_dynamodb
+        query_all_doc_count = None
+        query_topic_doc_count = None
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
