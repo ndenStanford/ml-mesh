@@ -119,7 +119,7 @@ class MistralLargeParameters(BaseLLMParameters):
     stop: List[str] = Field([], alias="stopSequences")
 
 
-MODELS_TO_PARAMS_MAP = {
+MODELS_TO_PARAMETERS = {
     ChatModel.GPT3_5: BaseLLMParameters,
     ChatModel.GPT4: BaseLLMParameters,
     ChatModel.GPT3_5_TURBO: BaseLLMParameters,

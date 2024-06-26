@@ -52,14 +52,14 @@ def get_model(alias: str):
 
 
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
-def generate(alias: str, prompt: str, model_params: str = Header(None)):
+def generate(alias: str, prompt: str, model_parameters: str = Header(None)):
     """Generates text using a prompt template."""
     try:
-        if model_params is not None:
-            model_params = json.loads(model_params)
+        if model_parameters is not None:
+            model_parameters = json.loads(model_parameters)
         return {
             "generated": F.generate_from_prompt(
-                prompt, alias, model_params=model_params
+                prompt, alias, model_parameters=model_parameters
             )
         }
     except PromptInjectionException as e:

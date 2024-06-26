@@ -15,7 +15,7 @@ from onclusiveml.llms.typing import LangchainT
 
 # Source
 from src.model.constants import (
-    MODELS_TO_PARAMS_MAP,
+    MODELS_TO_PARAMETERS,
     ChatModel,
     ChatModelProdiver,
     TitanParameters,
@@ -36,13 +36,13 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
 
     alias: str
     provider: str
-    model_params: str = None
+    model_parameters: str = None
 
     def as_langchain(self, **kwargs) -> Optional[LangchainT]:
         """Return model as langchain chat model."""
-        self.model_params = kwargs.get("model_params", None)
-        model_params_class = MODELS_TO_PARAMS_MAP.get(
-            self.alias, MODELS_TO_PARAMS_MAP[ChatModel.CLAUDE_3_HAIKU]
+        self.model_parameters = kwargs.get("model_parameters", None)
+        model_params_class = MODELS_TO_PARAMETERS.get(
+            self.alias, MODELS_TO_PARAMETERS[ChatModel.CLAUDE_3_HAIKU]
         )
         if self.provider == ChatModelProdiver.OPENAI:
             return self._handle_openai_provider(model_params_class)
@@ -55,8 +55,8 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         self._initialize_model_params(model_params_class)
         return ChatOpenAI(
             model=self.alias,
-            temperature=self.model_params.temperature,
-            max_tokens=self.model_params.max_tokens,
+            temperature=self.model_parameters.temperature,
+            max_tokens=self.model_parameters.max_tokens,
         )
 
     def _handle_bedrock_provider(self, model_params_class) -> Optional[LangchainT]:
@@ -67,31 +67,33 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
         return BedrockChat(
             client=bedrock,
             model_id=self.alias,
-            model_kwargs=self.model_params,
+            model_kwargs=self.model_parameters,
         )
 
     def _initialize_model_params(self, model_params_class):
         """Initialize the model parameters."""
-        if self.model_params is None:
-            self.model_params = model_params_class()
+        if self.model_parameters is None:
+            self.model_parameters = model_params_class()
         else:
             try:
-                self.model_params = model_params_class(**self.model_params)
+                self.model_parameters = model_params_class(**self.model_parameters)
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 
     def _initialize_bedrock_model_params(self, model_params_class):
         """Initialize the Bedrock model parameters."""
-        if self.model_params is None:
-            self.model_params = model_params_class().dict()
+        if self.model_parameters is None:
+            self.model_parameters = model_params_class().dict()
         else:
             try:
                 if self.alias in [ChatModel.TITAN, ChatModel.TITAN_G1]:
-                    self.model_params = TitanParameters(
-                        **model_params_class(**self.model_params).dict()
+                    self.model_parameters = TitanParameters(
+                        **model_params_class(**self.model_parameters).dict()
                     ).dict()
                 else:
-                    self.model_params = model_params_class(**self.model_params).dict()
+                    self.model_parameters = model_params_class(
+                        **self.model_parameters
+                    ).dict()
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 

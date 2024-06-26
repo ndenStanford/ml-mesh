@@ -105,7 +105,7 @@ def list_prompts():
 
 @router.post("/{alias}/generate/model/{model}", status_code=status.HTTP_200_OK)
 def generate_text_from_prompt_template(
-    alias: str, model: str, values: Dict[str, Any], model_params: str = Header(None)
+    alias: str, model: str, values: Dict[str, Any], model_parameters: str = Header(None)
 ):
     """Generates text using a prompt template with specific model.
 
@@ -113,13 +113,13 @@ def generate_text_from_prompt_template(
         alias (str): prompt alias
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
-        model_params (Dict[str, Any]): Model parameters to override default values.
+        model_parameters (Dict[str, Any]): Model parameters to override default values.
     """
     try:
-        if model_params is not None:
-            model_params = json.loads(model_params)
+        if model_parameters is not None:
+            model_parameters = json.loads(model_parameters)
         return F.generate_from_prompt_template(
-            alias, model, **values, model_params=model_params
+            alias, model, **values, model_parameters=model_parameters
         )
     except PromptInjectionException as e:
         raise HTTPException(

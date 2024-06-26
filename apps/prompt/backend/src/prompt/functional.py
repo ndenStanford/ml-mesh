@@ -29,7 +29,7 @@ def generate_from_prompt_template(
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     # get langchain objects
-    model_params = kwargs.get("model_params", None)
+    model_parameters = kwargs.get("model_parameters", None)
     prompt = PromptTemplate.get(prompt_alias)
     llm = LanguageModel.get(model_alias)
     # setting output parser
@@ -37,7 +37,7 @@ def generate_from_prompt_template(
 
     chain = (
         prompt.as_langchain()
-        | llm.as_langchain(model_params=model_params)
+        | llm.as_langchain(model_parameters=model_parameters)
         | prompt.output_parser
     )
 
@@ -55,12 +55,12 @@ def generate_from_prompt_template(
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
-    prompt: str, model_alias: str, model_params=None
+    prompt: str, model_alias: str, model_parameters=None
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     if settings.VALIDATE_PROMPT_INJECTION:
         validator.validate_prompt(prompt)
-    llm = LanguageModel.get(model_alias).as_langchain(model_params=model_params)
+    llm = LanguageModel.get(model_alias).as_langchain(model_parameters=model_parameters)
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
     return conversation.predict(input=prompt)
 
