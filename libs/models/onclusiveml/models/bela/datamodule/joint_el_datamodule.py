@@ -1,5 +1,4 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""EL Datamodule."""
 
 # Standard Library
 import json
@@ -23,10 +22,13 @@ logger = logging.getLogger()
 
 
 def get_seq_lengths(batch: List[List[int]]):
+    """Get sequences lengths."""
     return [len(example) for example in batch]
 
 
 class EntityCatalogue:
+    """Catalogue of common functions for entities."""
+
     def __init__(self, idx_path):
         logger.info(f"Reading entity catalogue index {idx_path}")
         self.idx = {}
@@ -47,10 +49,10 @@ class EntityCatalogue:
 
 
 class ElMatchaDataset(torch.utils.data.Dataset):
-    """
-    A memory mapped dataset for EL in Matcha format
+    """Memory mapped dataset for EL in Matcha format.
+
     Each example in this dataset contains several mentions.
-    We laso filter out mentions, that are not present in entity catalogue
+    We laso filter out mentions, that are not present in entity catalogue.
     """
 
     def __init__(
@@ -67,7 +69,6 @@ class ElMatchaDataset(torch.utils.data.Dataset):
         self.augmentation_frequency = augmentation_frequency
 
         logger.info(f"Downloading file {path}")
-        # TODO: Maybe we should lazily load the file to speed up datamodule instanciation (e.g. in model_eval.py)
         self.file = open(path, mode="r")
         self.mm = mmap.mmap(self.file.fileno(), 0, prot=mmap.PROT_READ)
         self.offsets = []
@@ -169,9 +170,7 @@ class ElMatchaDataset(torch.utils.data.Dataset):
 
 
 class JointELDataModule(LightningDataModule):
-    """
-    Read data from EL datatset and prepare mention/entity pairs tensors
-    """
+    """Read data from EL datatset and prepare mention/entity pairs tensors."""
 
     def __init__(
         self,
@@ -233,6 +232,11 @@ class JointELDataModule(LightningDataModule):
         }
 
     def train_dataloader(self):
+        """Dataloader for the training dataset.
+
+        Returns:
+            torch.utils.data.DataLoader: A DataLoader instance for the training dataset.
+        """
         return torch.utils.data.DataLoader(
             self.datasets["train"],
             batch_size=self.batch_size,
@@ -243,6 +247,11 @@ class JointELDataModule(LightningDataModule):
         )
 
     def val_dataloader(self):
+        """Dataloader for the validation dataset.
+
+        Returns:
+            torch.utils.data.DataLoader: A DataLoader instance for the validation dataset.
+        """
         return torch.utils.data.DataLoader(
             self.datasets["valid"],
             shuffle=False,
@@ -253,6 +262,11 @@ class JointELDataModule(LightningDataModule):
         )
 
     def test_dataloader(self):
+        """Dataloader for the test dataset.
+
+        Returns:
+            torch.utils.data.DataLoader: A DataLoader instance for the test dataset.
+        """
         return torch.utils.data.DataLoader(
             self.datasets["test"],
             shuffle=False,
@@ -263,25 +277,47 @@ class JointELDataModule(LightningDataModule):
         )
 
     def collate_eval(self, batch):
+        """Collates a batch of data for evaluation."""
         return self.collate(batch, False)
 
     def collate_train(self, batch):
+        """Collates a batch of data for training."""
         return self.collate(batch, True)
 
     def collate(self, batch, is_train):
-        """
-        Input:
-            batch: List[Example]
+        """Collates a batch of data for model input.
 
-            Example fields:
-               - "text": List[str] - post tokens
-               - "gt_entities": List[Tuple[int, int, int]] - GT entities in text,
-                    offset, length, entity id
-               - "blink_predicts": List[List[int]] - list of entity ids for each MD prediction
-               - "blink_scores": List[List[float]] - list of BLINK scores
-               - "md_pred_offsets": List[int] - mention offsets predicted by MD
-               - "md_pred_lengths": List[int] - mention lengths
-               - "md_pred_scores": List[float] - MD scores
+        This method processes a batch of data samples, extracting relevant
+        information and transforming it into a format suitable for model input.
+        Example fields:
+            - "text": List[str] - post tokens
+            - "gt_entities": List[Tuple[int, int, int]] - GT entities in text,
+                offset, length, entity id
+            - "blink_predicts": List[List[int]] - list of entity ids for each MD prediction
+            - "blink_scores": List[List[float]] - list of BLINK scores
+            - "md_pred_offsets": List[int] - mention offsets predicted by MD
+            - "md_pred_lengths": List[int] - mention lengths
+            - "md_pred_scores": List[float] - MD scores
+
+        Args:
+            batch (list): A list of data samples to be collated. Each sample is
+                        expected to be a dictionary containing the keys
+                        "data_example_id", "text", and "gt_entities".
+            is_train (bool): A flag indicating whether the data is for training.
+                            This parameter can be used to apply different
+                            preprocessing steps for training and evaluation.
+
+        Returns:
+            dict: A dictionary containing the collated data, including:
+                - data_example_ids (list): A list of example IDs.
+                - input_ids (list): A list of input IDs for the model.
+                - attention_mask (list): A list of attention masks.
+                - mention_offsets (list): A list of mention offsets.
+                - mention_lengths (list): A list of mention lengths.
+                - entities (list): A list of entities.
+                - tokens_mapping (list): A list of token mappings.
+                - sp_tokens_boundaries (list, optional): A list of special token
+                boundaries if present in the model inputs.
         """
         data_example_ids = []
         texts = []
