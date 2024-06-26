@@ -1,7 +1,7 @@
 """Prediction model."""
 
 # Standard Library
-from typing import List, Type
+from typing import Type
 
 # 3rd party libraries
 from pydantic import BaseModel
@@ -57,7 +57,7 @@ class ServedLshModel(ServedModel):
         threshold = configuration.threshold
 
         try:
-            signature = self._predict(
+            shingle_list = self._predict(
                 content=inputs.content,
                 language=configuration.language,
                 shingle_list=shingle_list,
@@ -71,6 +71,18 @@ class ServedLshModel(ServedModel):
             raise OnclusiveHTTPException(
                 status_code=204, detail=language_exception.message
             )
+        if len(shingle_list) < 1:
+            return PredictResponseSchema.from_data(
+                version=int(settings.api_version[1:]),
+                namespace=settings.model_name,
+                attributes={"signature": None},
+            )
+
+        signature = self.model.generate_lsh_signature(
+            shingle_list=shingle_list,
+            num_perm=num_perm,
+            threshold=threshold,
+        )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
@@ -89,23 +101,11 @@ class ServedLshModel(ServedModel):
         shingle_list: int,
         num_perm: int,
         threshold: float,
-    ) -> List[str]:
+    ) -> int:
         """Language filtering."""
         words = self.model.pre_processing(text=content, lang=language)
         shingle_list = self.model.k_shingle(words, k=shingle_list)
-        if not shingle_list:
-            return PredictResponseSchema.from_data(
-                version=int(settings.api_version[1:]),
-                namespace=settings.model_name,
-                attributes={"signature": None},
-            )
-
-        signature = self.model.generate_lsh_signature(
-            shingle_list=shingle_list,
-            num_perm=num_perm,
-            threshold=threshold,
-        )
-        return signature
+        return shingle_list
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
