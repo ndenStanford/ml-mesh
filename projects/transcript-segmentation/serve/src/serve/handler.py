@@ -280,11 +280,14 @@ class TranscriptSegmentationHandler:
         end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
         return paragraph[beg:end]
 
-    def ad_detect(self, paragraph: Optional[str]) -> Optional[bool]:
+    def ad_detect(
+        self, paragraph: Optional[str], keywords: Optional[List[str]]
+    ) -> Optional[bool]:
         """Detect the advertisement inside the selected transcript.
 
         Args:
             paragraph (str): transcript after postprocessing
+            keywords (List[str]): target keywords
 
         Return:
             Optional[bool]: True or False or None
@@ -293,6 +296,7 @@ class TranscriptSegmentationHandler:
         payload = {
             "input": {
                 "paragraph": paragraph,
+                "keywords": keywords,
             },
             "output": settings.ad_detection_output_schema,
         }
@@ -389,7 +393,7 @@ class TranscriptSegmentationHandler:
             offset_end_buffer=offset_end_buffer,
         )
 
-        ad_detect_output = self.ad_detect(segment)
+        ad_detect_output = self.ad_detect(segment, keywords)
 
         return (
             (start_time_offsetted, end_time_offsetted),
