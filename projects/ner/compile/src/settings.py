@@ -39,7 +39,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "NERMULTI-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "NERMULTI-TRAINED-7"
+    with_id: str = "NERMULTI-TRAINED-13"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 

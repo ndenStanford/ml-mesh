@@ -1326,9 +1326,9 @@ jobs       :
     name: Compile Model
     uses: ./.github/workflows/_compile-multi-model.yaml
     needs:
+      - get-environment
       - run-repository-state
       - run-ner-project
-      - run-multi-train-pipelines
       - get-target-branch-name
 
     strategy:
@@ -1356,7 +1356,7 @@ jobs       :
             compiled-model: NER-COMPILED
 
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       runner-kind: ${{ matrix.models.runner-kind }}
       self-hosted-runner-type: ${{ matrix.models.self-hosted-runner-type }}
       project: ${{ matrix.models.project }}
