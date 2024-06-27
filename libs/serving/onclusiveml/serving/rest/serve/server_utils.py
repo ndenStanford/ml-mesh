@@ -86,25 +86,6 @@ def get_model_server_urls(
     return model_server_urls
 
 
-def get_root_router(
-    model: ServedModel,
-    api_version: str = "v1",
-    api_config: Dict = FastAPISettings().model_dump(),
-) -> Callable:
-    """Utility for a consistent api root endpoint."""
-    root_router = APIRouter()
-
-    model_server_urls = get_model_server_urls(
-        api_version=api_version, model_name=model.name
-    )
-
-    @root_router.get(model_server_urls.root, status_code=status.HTTP_200_OK)
-    async def root() -> Dict:
-        return api_config
-
-    return root_router
-
-
 def get_liveness_router(
     model: ServedModel,
     betterstack_settings: BetterStackSettings,

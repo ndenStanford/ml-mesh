@@ -17,7 +17,6 @@ from onclusiveml.serving.rest.serve.server_utils import (
     get_model_predict_router,
     get_model_server_urls,
     get_readiness_router,
-    get_root_router,
 )
 
 
@@ -62,14 +61,6 @@ class ModelServer(FastAPI):
             redoc_url=self.model_server_urls.redoc,
             openapi_url=self.model_server_urls.openapi,
             **{**configuration.fastapi_settings.model_dump(), **kwargs},
-        )
-        # add root endpoint with API meta data
-        self.include_router(
-            get_root_router(
-                api_config=configuration.fastapi_settings,
-                model=self.model,
-                api_version=configuration.api_version,
-            )
         )
         # add default K8s liveness probe endpoint if desired
         if configuration.add_liveness:
