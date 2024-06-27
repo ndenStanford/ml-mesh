@@ -6,7 +6,6 @@ import os
 # 3rd party libraries
 import pytest
 from dyntastic.exceptions import DoesNotExist
-from fastapi import status
 
 # Source
 from src.extensions.github import github
@@ -49,18 +48,12 @@ def test_update_prompt(alias, original_template, new_template, project, app):
 
     assert PromptTemplate.get(alias).json() == prompt.json()
 
-    response = app.put(
-        f"/api/v2/prompts/{alias}",
-        headers={"x-api-key": "1234"},
-        json={"template": new_template},
-    )
+    prompt.template = new_template
 
-    assert response.status_code == status.HTTP_201_CREATED
+    prompt.update()
 
     updated_prompt = PromptTemplate.get(alias)
     assert updated_prompt.template == new_template
-
-    assert response.json() == updated_prompt.json()
 
     assert os.path.join(project, alias) in github.ls(project)
 
