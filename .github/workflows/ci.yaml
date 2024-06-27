@@ -1270,6 +1270,7 @@ jobs       :
     name: Train Multi-model
     uses: ./.github/workflows/_train-multi-model.yaml
     needs:
+      - get-environment
       - run-repository-state
       - run-ner-project
       - get-target-branch-name
@@ -1299,7 +1300,7 @@ jobs       :
               in Mountain View, CA\"}"
 
     with:
-      environment: prod
+      environment: ${{ needs.get-environment.outputs.name }}
       project: ${{ matrix.models.project }}
       tag: ${{ matrix.models.tag }}
       trained-project: ${{ matrix.models.trained-project}}
