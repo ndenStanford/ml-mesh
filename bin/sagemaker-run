@@ -4,6 +4,7 @@ from datetime import datetime as dt
 import click
 import os
 from typing import List, Optional
+import json
 
 from onclusiveml.tracking import TrackedGithubActionsSpecs
 
@@ -116,6 +117,13 @@ IMAGE_URI_TEMPLATE = "{ecr_uri}/{project_name}-{project_component}:{image_tag}"
     show_default=True,
     help="""[Optional]: Whether to wait for the job to complete before continuing."""
 )
+@click.option(
+    '--parameters',
+    type=str,
+    default=None,
+    show_default=True,
+    help="""[Optional]: Any parameters associated with the training."""
+)
 @click.argument(
     'container-entry-point',
     nargs=-1,
@@ -136,6 +144,7 @@ def project_train(
     wait: bool,
     trained_project: Optional[str],
     trained_model: Optional[str],
+    parameters: str,
     container_entry_point: List[str]) -> None:
     """Command line to execute project components and some select docker core images on sagemaker.
 
@@ -181,6 +190,16 @@ def project_train(
     image_uri = IMAGE_URI_TEMPLATE.format(ecr_uri=ecr_uri,project_name=project_name,project_component=project_component,image_tag=image_tag)
     click.echo(f"Using image URI {image_uri}")
 
+    click.echo(f"Using parameters {parameters}")
+    print(f"Using parameters {parameters}")
+
+    test_text = {
+                  "MODEL_CLASS": "DistilBertForTokenClassification",
+                  "HUGGINGFACE_MODEL_REFERENCE": "Davlan/distilbert-base-multilingual-cased-ner-hrl",
+                  "SAMPLE_DOCUMENT": "Google 本社はカリフォルニア州マウンテンビューにあります"
+                }
+    print(f"Using test_text {test_text}")
+
     # dotenv file based train spec
     if run_configuration_dotenv is not None:
         run_configuration_env_vars = dotenv_values(run_configuration_dotenv)
@@ -217,7 +236,8 @@ def project_train(
                     **{'TRAINED_MODEL': trained_model},
                     **{'NEPTUNE_PROJECT': trained_project},
                     **{'NEPTUNE_API_TOKEN':neptune_api_token},
-                    **{'SAVE_ARTIFACT':save_artifact}}
+                    **{'SAVE_ARTIFACT':save_artifact},
+                    **json.loads(parameters)}
 
     click.echo(f"Using run configuration environment variables {all_env_vars}")
 

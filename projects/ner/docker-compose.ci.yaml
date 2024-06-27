@@ -41,6 +41,7 @@ services:
     profiles: [train, unit]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: train/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
