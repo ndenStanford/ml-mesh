@@ -392,7 +392,7 @@ jobs       :
             download-model: true
             integration: true
             functional: true
-            load: true
+            load: false
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
@@ -493,7 +493,7 @@ jobs       :
             download-model: true
             integration: false
             functional: true
-            load: true
+            load: false
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
@@ -645,7 +645,7 @@ jobs       :
             download-model: true
             integration: false
             functional: true
-            load: true
+            load: false
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
@@ -742,7 +742,7 @@ jobs       :
             download-model: true
             integration: true
             functional: true
-            load: true
+            load: false
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
@@ -862,7 +862,7 @@ jobs       :
             download-model: true
             integration: false
             functional: true
-            load: true
+            load: false
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
@@ -1085,7 +1085,7 @@ jobs       :
             download-model: true
             integration: false
             functional: true
-            load: true
+            load: false
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
