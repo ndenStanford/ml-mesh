@@ -24,7 +24,7 @@ on  :
         type: string
         description: Model identifier for the project
       sagemaker-runner-type:
-        required: true
+        required: false
         default: ml.m4.xlarge # non-gpu
         type: string
         description: Which EC2 instance type to use on Sagemaker. See https://aws.amazon.com/sagemaker/pricing/ for options.
@@ -55,6 +55,10 @@ on  :
         default: true
         type: boolean
         description: Indicates whether to wait for the job to complete before continuing.
+      parameters:
+        required: false
+        type: string
+        description: Parameters associated with the training.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -132,7 +136,7 @@ jobs:
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
             --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
-            --aws-environment prod \
+            --aws-environment ${{ inputs.environment }} \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
             --project-name ${{ inputs.project }} \
@@ -143,5 +147,6 @@ jobs:
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
+            --parameters ${{ inputs.parameters }} \
             --wait ${{ inputs.wait }} \
             python -m src.train_model
