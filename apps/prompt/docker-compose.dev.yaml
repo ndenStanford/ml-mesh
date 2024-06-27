@@ -99,7 +99,6 @@ services:
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
-      TEMPERATURE: 0.6
     depends_on:
       dynamodb:
         condition: service_healthy
