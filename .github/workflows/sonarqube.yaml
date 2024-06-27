@@ -4,6 +4,7 @@ on  :
   push:
     branches:
       - develop
+      - chore/include-llms-in-test-coverage
 jobs:
   build:
     name: Build

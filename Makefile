@@ -59,7 +59,8 @@ COVERED_LIBS:= \
 	nlp \
 	serving \
 	tracking \
-	hashing
+	hashing \
+	llms
 
 # all projects
 ALL_PROJECTS:= \
