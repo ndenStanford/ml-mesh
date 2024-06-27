@@ -347,69 +347,6 @@ services:
       serve:
         condition: service_healthy
 
-  # load tests
-  # - include model artifact
-  # - include REST model server process
-  serve-load:
-    volumes:
-      - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [pytest, tests/load, -ra, -vv, --capture=no]
-    environment:
-      # load test params
-      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
-      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
-      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
-      ONCLUSIVEML_SERVING_RESET_STATS: No
-      ONCLUSIVEML_SERVING_RUN_TIME: 45s
-      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
-    env_file: serve/config/dev.env
-    profiles: [load]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-    depends_on:
-      serve:
-        condition: service_healthy
-
-  # utility service: uploading the relevant test results to the model registry
-  serve-upload-results:
-    volumes:
-      - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload]
-    profiles: [serve]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: async
-      ONCLUSIVEML_SERVING_DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve
-      ONCLUSIVEML_SERVING_DOCKER_IMAGE_TAG: ${IMAGE_TAG}
-      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
-      ONCLUSIVEML_SERVING_GITHUB_REPOSITORY: development-repository
-      ONCLUSIVEML_SERVING_GITHUB_ACTOR: development-actor
-      ONCLUSIVEML_SERVING_GITHUB_ENV: development-env
-      ONCLUSIVEML_SERVING_GITHUB_WORKFLOW: development-workflow
-      ONCLUSIVEML_SERVING_GITHUB_JOB: development-job
-      ONCLUSIVEML_SERVING_GITHUB_REF: development-ref
-      ONCLUSIVEML_SERVING_GITHUB_BASE_REF: development-base-ref
-      ONCLUSIVEML_SERVING_GITHUB_HEAD_REF: development-head-ref
-      ONCLUSIVEML_SERVING_GITHUB_SHA: development-sha
-      ONCLUSIVEML_SERVING_GITHUB_EVENT_NAME: development-event-name
-      ONCLUSIVEML_SERVING_GITHUB_RUN_ID: development-run-id
-      ONCLUSIVEML_SERVING_GITHUB_RUN_NUMBER: development-run-number
-      ONCLUSIVEML_SERVING_RUNNER_ARCH: development-arch
-      ONCLUSIVEML_SERVING_RUNNER_NAME: development-name
-      ONCLUSIVEML_SERVING_RUNNER_OS: development-os
-    env_file: serve/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
   # =============================================
   # BACKFILL
   # =============================================
