@@ -104,4 +104,62 @@ def test_model_server_prediction(payload, expected_response):
 
     assert response.status_code == 200
     # TODO: assert score close to expected
-    assert response.model_dump_json() == expected_response
+    assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload, expected_response",
+    [
+        # Test case for an unsupported language (invalid language code)
+        (
+            {
+                "data": {
+                    "namespace": "lsh",
+                    "attributes": {
+                        "content": "Call functions to generate hash signatures for each article"  # noqa
+                    },
+                    "parameters": {
+                        "language": "xyz",
+                        "shingle_list": 5,
+                        "threshold": 0.6,
+                        "num_perm": 128,
+                    },
+                }
+            },
+            {
+                "status": 204,
+                "detail": "The language reference 'xyz' could not be mapped",
+            },
+        ),
+        (
+            {
+                "data": {
+                    "namespace": "lsh",
+                    "attributes": {
+                        "content": "Call functions to generate hash signatures for each article"  # noqa
+                    },
+                    "parameters": {
+                        "language": "af",
+                        "shingle_list": 5,
+                        "threshold": 0.6,
+                        "num_perm": 128,
+                    },
+                }
+            },
+            {
+                "status": 204,
+                "detail": "The language 'LanguageIso.AF' that was looked up from 'af'",
+            },
+        ),
+    ],
+)
+def test_new_language_cases(payload, expected_response):
+    """Tests the sentiment prediction endpoint for new language scenarios."""
+    response = requests.post(
+        "http://serve:8000/lsh/v1/predict",
+        json=payload,
+    )
+
+    assert response.status_code == 204
+    assert response.text == ""
+
