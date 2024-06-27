@@ -1342,7 +1342,7 @@ jobs       :
             tag: ${{ needs.run-repository-state.outputs.tag }}
             uncompiled-project: onclusive/ner-multilingual
             uncompiled-model: NERMULTI-TRAINED
-            uncompiled-with-id: NERMULTI-TRAINED-7
+            uncompiled-with-id: NERMULTI-TRAINED-13
             compiled-project: onclusive/ner-multilingual
             compiled-model: NERMULTI-COMPILED
           - project: ner
