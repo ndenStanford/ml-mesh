@@ -27,7 +27,7 @@ repos                   :
     hooks:
       - id: yamllint
         args: [--strict, -c=.yamllint.yaml]
-        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml|libs/models/onclusiveml/models/bela/)
+        exclude: ^(.pre-commit-config.yaml|.github/dependabot.yaml|apps/entity-fishing/backend/data)
 
 # Autoformat: YAML,docker...
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
@@ -35,7 +35,7 @@ repos                   :
     hooks:
       - id: yamlfmt
         args: [--mapping, '2', --sequence, '4', --offset, '2', --colons]
-        exclude: ^(.pre-commit-config.yaml|apps/entity-fishing/backend/data|.github/dependabot.yaml)
+        exclude: ^(.pre-commit-config.yaml|.github/dependabot.yaml|apps/entity-fishing/backend/data)
 
 
   # =================================
@@ -55,7 +55,7 @@ repos                   :
     hooks:
       - id: flake8
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
-        exclude: ^(libs/serving/onclusiveml/serving/rest/serve/server_utils\.py$|libs/models/onclusiveml/models/bela/)
+        exclude: ^(libs/serving/onclusiveml/serving/rest/serve/server_utils\.py)
 
   # static type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -64,7 +64,7 @@ repos                   :
       - id: mypy
         files: ^(libs|projects)/.*\.py$
         exclude:
-          ^(libs/.*/tests/|projects/.*/tests|projects/.*/test_compiled_model|projects/.*/settings.py|projects/topic-summarization/serve/src/serve/model.py|projects/topic-summarization/backfill/src/__init__.py|projects/entity-linking/backfill/src/backfill/__init__.py|projects/entity-linking/backfill/src/backfill/__main__.py|projects/entity-linking/backfill/src/backfill/pipeline.py|projects/gch-summarization/train/src/train_model.py|projects/gch-summarization/train/src/__init__.py|projects/gch-summarization/serve/src/serve/__init__.py|projects/gch-summarization/serve/src/__init__.py|projects/gch-summarization/serve/src/download.py|projects/gch-summarization/serve/src/serve/__main__.py|projects/gch-summarization/serve/src/serve/artifacts.py|projects/gch-summarization/serve/src/serve/model.py|projects/gch-summarization/serve/src/serve/schemas.py|projects/gch-summarization/serve/src/serve/server.py|projects/content-scoring/train/src/train_model.py|projects/iptc-multi/serve/src/serve/__main__.py|projects/iptc-multi/serve/src/serve/schemas.py|projects/summarization/serve/src/serve/__main__.py|libs/models/onclusiveml/models/bela/|libs/models/onclusiveml/models/multiel/|projects/entity-linking/train/src/train_model.py)
+          ^(libs/.*/tests/|projects/.*/tests|projects/.*/test_compiled_model|projects/.*/settings.py|projects/topic-summarization/serve/src/serve/model.py|projects/topic-summarization/backfill/src/__init__.py|projects/entity-linking/backfill/src/backfill/__init__.py|projects/entity-linking/backfill/src/backfill/__main__.py|projects/entity-linking/backfill/src/backfill/pipeline.py|projects/gch-summarization/train/src/train_model.py|projects/gch-summarization/train/src/__init__.py|projects/gch-summarization/serve/src/serve/__init__.py|projects/gch-summarization/serve/src/__init__.py|projects/gch-summarization/serve/src/download.py|projects/gch-summarization/serve/src/serve/__main__.py|projects/gch-summarization/serve/src/serve/artifacts.py|projects/gch-summarization/serve/src/serve/model.py|projects/gch-summarization/serve/src/serve/schemas.py|projects/gch-summarization/serve/src/serve/server.py|projects/content-scoring/train/src/train_model.py|projects/iptc-multi/serve/src/serve/__main__.py|projects/iptc-multi/serve/src/serve/schemas.py|projects/summarization/serve/src/serve/__main__.py|libs/models/onclusiveml/models/bela/|libs/models/onclusiveml/models/multiel/|projects/entity-linking/train/src/train_model.py|projects/transcript-segmentation/serve/src/serve/exceptions.py)
         args:
           - --explicit-package-bases
           - --no-warn-unused-ignores
@@ -87,7 +87,7 @@ repos                   :
           - --count
           - --add-ignore=D105,D106,D107,D203
         additional_dependencies: [toml, tomli]
-        exclude: ^(bin/|libs/models/onclusiveml/models/bela/)
+        exclude: ^(bin/)
 
   # =================================
   # DOCKER

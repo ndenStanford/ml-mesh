@@ -1,5 +1,4 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""Utils."""
 
 # Standard Library
 from collections import defaultdict
@@ -11,10 +10,25 @@ from onclusiveml.models.bela.transforms.spm_transform import SPMTransform
 
 @lru_cache
 def get_sp_transform():
+    """SPM transform."""
     return SPMTransform(max_seq_len=100000)
 
 
 def get_windows(text, window_length=254, overlap=127):
+    """Extracts windows of text based on token boundaries.
+
+    This function divides the input text into overlapping windows of a specified
+    length, based on token boundaries obtained from a SentencePiece (SP) tokenizer.
+
+    Args:
+        text (str): The input text to be divided into windows.
+        window_length (int, optional): The desired length of each window. Default is 254.
+        overlap (int, optional): The amount of overlap between consecutive windows. Default is 127.
+
+    Returns:
+        list: A list of tuples representing the start and end positions of each window
+              within the original text, based on token boundaries.
+    """
     sp_transform = get_sp_transform()
     tokens = sp_transform([text])[0]
     tokens = tokens[1:-1]
@@ -30,6 +44,7 @@ def get_windows(text, window_length=254, overlap=127):
 
 
 def convert_predictions_to_dict(example_predictions):
+    """Convert predictions into a dict."""
     if len(example_predictions) > 0:
         offsets, lengths, entities, md_scores, el_scores = zip(*example_predictions)
     else:
@@ -44,6 +59,24 @@ def convert_predictions_to_dict(example_predictions):
 
 
 def group_predictions_by_example(all_predictions, extended_examples):
+    """Groups predictions by example and adjusts offsets.
+
+    This function groups predictions based on their associated extended examples
+    and adjusts offsets relative to the original document start position.
+
+    Args:
+        all_predictions (list): A list of predictions, where each prediction is a dictionary
+                                containing keys like "offsets", "lengths", "entities",
+                                "md_scores", and "el_scores".
+        extended_examples (list): A list of extended examples, where each example is a dictionary
+                                  containing keys like "window_start", "document_id", and others
+                                  needed to associate predictions with their original documents.
+
+    Returns:
+        dict: A dictionary where keys are document IDs and values are lists of predictions
+              adjusted for offsets relative to the document start. Each prediction is a tuple
+              containing (offset, length, entity, md_score, el_score).
+    """
     grouped_predictions = defaultdict(list)
     for prediction, extended_example in zip(all_predictions, extended_examples):
         window_start = extended_example["window_start"]
@@ -72,6 +105,20 @@ def group_predictions_by_example(all_predictions, extended_examples):
 
 
 def merge_predictions(example_predictions):
+    """Merges overlapping predictions and filters redundant predictions.
+
+    This function takes a list of predictions and merges overlapping predictions
+    based on their offsets. It also filters redundant predictions by keeping the
+    prediction with the highest confidence score (md_score).
+
+    Args:
+        example_predictions (list): A list of predictions, where each prediction is a tuple
+                                    containing (offset, length, ent_id, md_score, el_score).
+
+    Returns:
+        list: A filtered list of merged predictions, where each prediction tuple contains
+              (offset, length, ent_id, md_score, el_score).
+    """
     filtered_example_predictions = []
 
     current_end = None

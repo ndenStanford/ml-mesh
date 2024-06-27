@@ -24,6 +24,19 @@ settings = get_settings()
 
 
 @patch("requests.post")
+def test_handler_entity_extraction(
+    mock_post, boolean_query_input, mock_responses_entity_extraction
+):
+    """Test the inference function in topic handler."""
+    mock_post.return_value = mock_responses_entity_extraction
+
+    gpt_inference = _service.entity_query_extract(
+        boolean_query=boolean_query_input,
+    )
+    assert isinstance(gpt_inference, str)
+
+
+@patch("requests.post")
 def test_handler_inference(mock_post, article_input, mock_responses):
     """Test the inference function in topic handler."""
     mock_post.return_value = mock_responses
@@ -65,6 +78,26 @@ def test_handler_aggregate(mock_post, article_input, mock_responses):
     mock_post.return_value = mock_responses
     gpt_inference = _service.aggregate(
         article=article_input,
+    )
+    assert isinstance(gpt_inference, dict)
+
+
+@patch("requests.post")
+def test_handler_aggregate_with_boolean_query(
+    mock_post,
+    mock_responses,
+    article_input,
+    mock_responses_entity_extraction,
+    boolean_query_input,
+):
+    """Test prompt routing logic."""
+    mock_post.side_effect = [
+        mock_responses_entity_extraction,
+        mock_responses,
+        mock_responses,
+    ]
+    gpt_inference = _service.aggregate(
+        article=article_input, boolean_query=boolean_query_input
     )
     assert isinstance(gpt_inference, dict)
 
