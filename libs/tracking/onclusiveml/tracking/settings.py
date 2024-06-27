@@ -1,5 +1,8 @@
 """Tracking settings."""
 
+# Standard Library
+from typing import Optional
+
 # 3rd party libraries
 from pydantic import field_validator
 
@@ -120,7 +123,7 @@ class TrackedModelSettings(OnclusiveBaseSettings):
     # neptune ai model registry specs
     project: str
     model: str
-    api_token: OnclusiveSecretStr
+    api_token: Optional[OnclusiveSecretStr] = None
 
     class Config:
         env_prefix = "onclusiveml_neptune_"

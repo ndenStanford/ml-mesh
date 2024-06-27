@@ -172,7 +172,7 @@ develop = false
 [package.dependencies]
 pydantic = "2.7.0"
 pydantic-settings = "2.3.4"
-typing-extensions = "4.6.1"
+typing-extensions = ">=4.6.0"
 
 [package.source]
 type = "directory"
@@ -1448,14 +1448,14 @@ vision = ["Pillow (>=10.0.1,<=15.0)"]
 
 [[package]]
 name = "typing-extensions"
-version = "4.6.1"
-description = "Backported and Experimental Type Hints for Python 3.7+"
+version = "4.12.2"
+description = "Backported and Experimental Type Hints for Python 3.8+"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.6.1-py3-none-any.whl", hash = "sha256:6bac751f4789b135c43228e72de18637e9a6c29d12777023a703fd1a6858469f"},
-    {file = "typing_extensions-4.6.1.tar.gz", hash = "sha256:558bc0c4145f01e6405f4a5fdbd82050bd221b119f4bf72a961a1cfd471349d6"},
+    {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
+    {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
 
 [[package]]

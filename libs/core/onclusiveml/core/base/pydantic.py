@@ -2,7 +2,7 @@
 
 # Standard Library
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Type, Union
+from typing import Any, Iterable, List, Optional, Tuple, Type, Union
 
 # 3rd party libraries
 from pydantic import (
@@ -12,7 +12,13 @@ from pydantic import (
     SecretStr,
     ValidationError,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic.fields import FieldInfo
+from pydantic_settings import (
+    BaseSettings,
+    EnvSettingsSource,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
 from pydantic_settings.sources import (
     ENV_FILE_SENTINEL,
     CliSettingsSource,
@@ -27,6 +33,23 @@ from onclusiveml.core.base.exception import BaseClassNotFound
 OnclusiveSecretStr = Annotated[
     SecretStr, PlainSerializer(lambda x: x.get_secret_value(), return_type=str)
 ]
+
+
+class OnclusiveEnvSettingsSource(EnvSettingsSource):
+    """Custom environement variable settings source."""
+
+    def get_field_value(
+        self, field: FieldInfo, field_name: str
+    ) -> Tuple[Any, str, bool]:
+        """Overrides the get_field_value method to allow for multiple prefixes to cohexist."""
+        if field_name in self.settings_cls.model_fields:
+            env_name = (
+                self.settings_cls._get_base_class(field_name).model_config["env_prefix"]
+                + field_name
+            ).lower()
+            return self.env_vars.get(env_name), field_name, False
+        else:
+            return super().get_field_value(field, field_name)
 
 
 class OnclusiveBaseSettings(BaseSettings):
@@ -89,10 +112,57 @@ class OnclusiveBaseSettings(BaseSettings):
         except ValidationError as e:
             # patch error locations, replacing the field name by the expected environment variable
             env_prefix: str = __pydantic_self__.__class__.model_config["env_prefix"]
+            message: str = "Missing environment variables"
+            env_vars: List[str] = []
             for err in e.errors():
-                env_var = f"{env_prefix}{err['loc'][0].upper()}"
-                err["loc"] = (env_var,)
-            raise ValueError(err)
+                env_var = f"{env_prefix.upper()}{err['loc'][0].upper()}"
+                env_vars.append(env_var)
+            raise ValueError(f"{message}: {str(env_vars)}")
+
+    @classmethod
+    def _get_base_class(cls, field_name: str) -> Type[BaseSettings]:
+        """Returns the base class this class inherited a field from.
+
+        Args:
+            field_name (str): pydantic settings field name
+        """
+        bases: Iterable[BaseSettings] = cls.__bases__
+        for base in bases:
+            try:
+                value = base.model_fields.get(field_name)
+                if value is not None:
+                    return base
+            except Exception:
+                continue
+        return cls
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: Type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> Tuple[PydanticBaseSettingsSource, ...]:
+        """Define the sources and their order for loading the settings values.
+
+        Args:
+            settings_cls: The Settings class.
+            init_settings: The `InitSettingsSource` instance.
+            env_settings: The `EnvSettingsSource` instance.
+            dotenv_settings: The `DotEnvSettingsSource` instance.
+            file_secret_settings: The `SecretsSettingsSource` instance.
+
+        Returns:
+            A tuple containing the sources and their order for loading the settings values.
+        """
+        return (
+            init_settings,
+            OnclusiveEnvSettingsSource(settings_cls),
+            dotenv_settings,
+            file_secret_settings,
+        )
 
 
 class OnclusiveFrozenSettings(OnclusiveBaseSettings):

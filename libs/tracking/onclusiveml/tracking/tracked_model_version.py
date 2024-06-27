@@ -40,16 +40,10 @@ class TrackedModelVersion(ModelVersion):
         # configure s3 storage backend
         self.s3_storage_backend_config = TrackingBackendSettings()
 
-    def get_s3_bucket_client(self, s3_backend_bucket: str) -> Any:
-        """Utility to retrieve S3 bucket client instance.
-
-        Args:
-            s3_backend_bucket (str): Name of the S3 bucket
-
-        Returns:
-            boto3.resource.Bucket: An initialized S3 bucket client
-        """
-        return boto3.resource("s3").Bucket(s3_backend_bucket)
+    @property
+    def s3_client(self) -> Any:
+        """S3 bucket client instance getter."""
+        return boto3.resource("s3").Bucket(self.s3_storage_backend_config.bucket_name)
 
     def derive_model_version_s3_prefix(self, s3_prefix: str = "") -> str:
         """Helper function that assembles the S3 storage prefix for the current model version.
@@ -185,9 +179,6 @@ class TrackedModelVersion(ModelVersion):
         s3_bucket = self.s3_storage_backend_config.bucket_name
         s3_bucket_root = self.s3_storage_backend_config.s3_backend_root
 
-        s3_client = self.get_s3_bucket_client(
-            self.s3_storage_backend_config.bucket_name
-        )
         # assemble full s3 uri for file
         s3_model_version_prefix = self.derive_model_version_s3_prefix(s3_bucket_root)
         s3_file_prefix = f"{s3_model_version_prefix}/{neptune_attribute_path}"
@@ -198,7 +189,7 @@ class TrackedModelVersion(ModelVersion):
             f"{s3_file_prefix}."
         )
 
-        s3_client.upload_file(local_file_path, s3_file_prefix)
+        self.s3_client.upload_file(local_file_path, s3_file_prefix)
 
         logger.debug(
             f"Uploaded file {local_file_path} into S3 bucket {s3_bucket}: "
@@ -484,20 +475,18 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             None
         """
-        s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
+        s3_bucket = self.s3_storage_backend_config.bucket_name
         # extract the underlying s3 file's prefix as required by boto3's download_file method
         neptune_attribute = self[neptune_attribute_path]
         neptune_artifact = neptune_attribute.fetch_files_list()[0]
         tracked_file_s3_uri = neptune_artifact.metadata["location"]
         tracked_file_s3_prefix = tracked_file_s3_uri.replace(f"s3://{s3_bucket}/", "")
 
-        s3_client = self.get_s3_bucket_client(s3_bucket)
-
         logger.debug(
             f"Downloading file {tracked_file_s3_prefix} to local path {local_file_path}"
         )
 
-        s3_client.download_file(tracked_file_s3_prefix, local_file_path)
+        self.s3_client.download_file(tracked_file_s3_prefix, local_file_path)
 
         logger.debug(
             f"Downloaded file {tracked_file_s3_prefix} to local path {local_file_path}"
