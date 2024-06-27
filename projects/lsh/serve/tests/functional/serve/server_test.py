@@ -162,4 +162,3 @@ def test_new_language_cases(payload, expected_response):
 
     assert response.status_code == 204
     assert response.text == ""
-

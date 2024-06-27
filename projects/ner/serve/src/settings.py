@@ -7,7 +7,6 @@ from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import Field
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -90,20 +89,20 @@ NER_SUPPORTED_LANGUAGE = [
 ]
 
 
-class NERSettings(TrackingSettings):
-    """NER settings."""
-
-    supported_languages: List[LanguageIso] = NER_SUPPORTED_LANGUAGE
-
-
-class TrackedCompiledModelSpecs(TrackedModelSettings):
+class NERTrackedModelSettings(TrackedModelSettings):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = Field("NER-COMPILED-12", env="neptune_model_version_id")
+    with_id: str
     # we only need to download from the base model, not upload
-    mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
+    mode: str = Mode.READ_ONLY
+
+
+class NERSettings(TrackingSettings):
+    """NER settings."""
+
+    supported_languages: List[LanguageIso] = NER_SUPPORTED_LANGUAGE
 
 
 class ServerModelSettings(ServingParams):
@@ -120,12 +119,12 @@ class DownloadSettings(ServingBaseParams):
 
 
 class GlobalSettings(
-    ServerModelSettings,
     DownloadSettings,
-    TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     NERSettings,
+    NERTrackedModelSettings,
+    ServerModelSettings,
 ):
     """Global server settings."""
 
