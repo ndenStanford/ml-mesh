@@ -107,34 +107,32 @@ def test_files_predictions() -> Dict[str, List[Dict[str, Union[str, int, float]]
     NOTE: The handler merges inner and outer tags into one tag,
     so modify expected predictions accordingly.
     """
-    result_en = (
-        [
-            {
-                "entity_type": "ORG",
-                "score": 0.9981784820556641,
-                "sentence_index": 0,
-                "entity_text": "Google",
-                "start": 0,
-                "end": 6,
-            },
-            {
-                "entity_type": "LOC",
-                "score": 0.9985500276088715,
-                "sentence_index": 0,
-                "entity_text": "Mountain View",
-                "start": 16,
-                "end": 29,
-            },
-            {
-                "entity_type": "LOC",
-                "score": 0.9993670582771301,
-                "sentence_index": 0,
-                "entity_text": "CA",
-                "start": 31,
-                "end": 33,
-            },
-        ],
-    )
+    result_en = [
+        {
+            "entity_type": "ORG",
+            "score": 0.9981784820556641,
+            "sentence_index": 0,
+            "entity_text": "Google",
+            "start": 0,
+            "end": 6,
+        },
+        {
+            "entity_type": "LOC",
+            "score": 0.9985500276088715,
+            "sentence_index": 0,
+            "entity_text": "Mountain View",
+            "start": 16,
+            "end": 29,
+        },
+        {
+            "entity_type": "LOC",
+            "score": 0.9993670582771301,
+            "sentence_index": 0,
+            "entity_text": "CA",
+            "start": 31,
+            "end": 33,
+        },
+    ]
 
     result_multilingual = [
         {
