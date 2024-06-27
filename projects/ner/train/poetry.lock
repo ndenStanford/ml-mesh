@@ -57,18 +57,18 @@ tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "p
 
 [[package]]
 name = "boto3"
-version = "1.34.131"
+version = "1.34.134"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.34.131-py3-none-any.whl", hash = "sha256:05e388cb937e82be70bfd7eb0c84cf8011ff35cf582a593873ac21675268683b"},
-    {file = "boto3-1.34.131.tar.gz", hash = "sha256:dab8f72a6c4e62b4fd70da09e08a6b2a65ea2115b27dd63737142005776ef216"},
+    {file = "boto3-1.34.134-py3-none-any.whl", hash = "sha256:342782c02ff077aae118c9c61179eed95c585831fba666baacc5588ff04aa6e1"},
+    {file = "boto3-1.34.134.tar.gz", hash = "sha256:f6d6e5b0c9ab022a75373fa16c01f0cd54bc1bb64ef3b6ac64ac7cedd56cbe9c"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.131,<1.35.0"
+botocore = ">=1.34.134,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -77,14 +77,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.131"
+version = "1.34.134"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.34.131-py3-none-any.whl", hash = "sha256:13b011d7b206ce00727dcee26548fa3b550db9046d5a0e90ac25a6e6c8fde6ef"},
-    {file = "botocore-1.34.131.tar.gz", hash = "sha256:502ddafe1d627fcf1e4c007c86454e5dd011dba7c58bd8e8a5368a79f3e387dc"},
+    {file = "botocore-1.34.134-py3-none-any.whl", hash = "sha256:45219e00639755f92569b29f8f279d5dde721494791412c1f7026a3779e8d9f4"},
+    {file = "botocore-1.34.134.tar.gz", hash = "sha256:e29c299599426ed16dd2d4c1e20eef784f96b15e1850ebbc59a3250959285b95"},
 ]
 
 [package.dependencies]
@@ -296,8 +296,8 @@ develop = false
 
 [package.dependencies]
 pydantic = "2.7.0"
-pydantic-settings = "2.2.1"
-typing-extensions = "4.6.1"
+pydantic-settings = "2.3.4"
+typing-extensions = ">=4.6.0"
 
 [package.source]
 type = "directory"
@@ -352,14 +352,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "filelock"
-version = "3.15.3"
+version = "3.15.4"
 description = "A platform independent file lock."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "filelock-3.15.3-py3-none-any.whl", hash = "sha256:0151273e5b5d6cf753a61ec83b3a9b7d8821c39ae9af9d7ecf2f9e2f17404103"},
-    {file = "filelock-3.15.3.tar.gz", hash = "sha256:e1199bf5194a2277273dacd50269f0d87d0682088a3c561c15674ea9005d8635"},
+    {file = "filelock-3.15.4-py3-none-any.whl", hash = "sha256:6ca1fffae96225dab4c6eaf1c4f4f28cd2568d3ec2a44e15a08520504de468e7"},
+    {file = "filelock-3.15.4.tar.gz", hash = "sha256:2207938cbc1844345cb01a5a95524dae30f0ce089eba5b00378295a17e3e90cb"},
 ]
 
 [package.extras]
@@ -381,14 +381,14 @@ files = [
 
 [[package]]
 name = "fsspec"
-version = "2024.6.0"
+version = "2024.6.1"
 description = "File-system specification"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fsspec-2024.6.0-py3-none-any.whl", hash = "sha256:58d7122eb8a1a46f7f13453187bfea4972d66bf01618d37366521b1998034cee"},
-    {file = "fsspec-2024.6.0.tar.gz", hash = "sha256:f579960a56e6d8038a9efc8f9c77279ec12e6299aa86b0769a7e9c46b94527c2"},
+    {file = "fsspec-2024.6.1-py3-none-any.whl", hash = "sha256:3cb443f8bcd2efb31295a5b9fdb02aee81d8452c80d28f97a6d0959e6cee101e"},
+    {file = "fsspec-2024.6.1.tar.gz", hash = "sha256:fad7d7e209dd4c1208e3bbfda706620e0da5142bebbd9c384afb95b07e798e49"},
 ]
 
 [package.extras]
@@ -1165,18 +1165,18 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pydantic-settings"
-version = "2.2.1"
+version = "2.3.4"
 description = "Settings management using Pydantic"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pydantic_settings-2.2.1-py3-none-any.whl", hash = "sha256:0235391d26db4d2190cb9b31051c4b46882d28a51533f97440867f012d4da091"},
-    {file = "pydantic_settings-2.2.1.tar.gz", hash = "sha256:00b9f6a5e95553590434c0fa01ead0b216c3e10bc54ae02e37f359948643c5ed"},
+    {file = "pydantic_settings-2.3.4-py3-none-any.whl", hash = "sha256:11ad8bacb68a045f00e4f862c7a718c8a9ec766aa8fd4c32e39a0594b207b53a"},
+    {file = "pydantic_settings-2.3.4.tar.gz", hash = "sha256:c5802e3d62b78e82522319bbc9b8f8ffb28ad1c988a99311d04f2a6051fca0a7"},
 ]
 
 [package.dependencies]
-pydantic = ">=2.3.0"
+pydantic = ">=2.7.0"
 python-dotenv = ">=0.21.0"
 
 [package.extras]
@@ -1612,14 +1612,14 @@ files = [
 
 [[package]]
 name = "s3transfer"
-version = "0.10.1"
+version = "0.10.2"
 description = "An Amazon S3 Transfer Manager"
 category = "main"
 optional = false
-python-versions = ">= 3.8"
+python-versions = ">=3.8"
 files = [
-    {file = "s3transfer-0.10.1-py3-none-any.whl", hash = "sha256:ceb252b11bcf87080fb7850a224fb6e05c8a776bab8f2b64b7f25b969464839d"},
-    {file = "s3transfer-0.10.1.tar.gz", hash = "sha256:5683916b4c724f799e600f41dd9e10a9ff19871bf87623cc8f491cb4f5fa0a19"},
+    {file = "s3transfer-0.10.2-py3-none-any.whl", hash = "sha256:eca1c20de70a39daee580aef4986996620f365c4e0fda6a86100231d62f1bf69"},
+    {file = "s3transfer-0.10.2.tar.gz", hash = "sha256:0711534e9356d3cc692fdde846b4a1e4b0cb6519971860796e6bc4c7aea00ef6"},
 ]
 
 [package.dependencies]
@@ -1780,17 +1780,18 @@ files = [
 
 [[package]]
 name = "swagger-spec-validator"
-version = "3.0.3"
+version = "3.0.4"
 description = "Validation of Swagger specifications"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "swagger-spec-validator-3.0.3.tar.gz", hash = "sha256:16a5ce08c772824a77b1a4a05efc047d72eef1ed53fb969dfe0a18f437ac30a8"},
-    {file = "swagger_spec_validator-3.0.3-py2.py3-none-any.whl", hash = "sha256:174b5de4ab0899df9a57d35c880aaa515511c4b8b578d9d519b09a9596537055"},
+    {file = "swagger_spec_validator-3.0.4-py2.py3-none-any.whl", hash = "sha256:1a2a4f4f7076479ae7835d892dd53952ccca9414efa172c440c775cf0ac01f48"},
+    {file = "swagger_spec_validator-3.0.4.tar.gz", hash = "sha256:637ac6d865270bfcd07df24605548e6e1f1d9c39adcfd855da37fa3fdebfed4b"},
 ]
 
 [package.dependencies]
+importlib-resources = ">=1.3"
 jsonschema = "*"
 pyyaml = "*"
 typing-extensions = "*"
@@ -2069,14 +2070,14 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.6.1"
-description = "Backported and Experimental Type Hints for Python 3.7+"
+version = "4.12.2"
+description = "Backported and Experimental Type Hints for Python 3.8+"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.6.1-py3-none-any.whl", hash = "sha256:6bac751f4789b135c43228e72de18637e9a6c29d12777023a703fd1a6858469f"},
-    {file = "typing_extensions-4.6.1.tar.gz", hash = "sha256:558bc0c4145f01e6405f4a5fdbd82050bd221b119f4bf72a961a1cfd471349d6"},
+    {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
+    {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
 
 [[package]]
