@@ -121,10 +121,11 @@ jobs:
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
-      - name: Setup node
-        uses: actions/setup-node@v3.8.2
-        with:
-          node-version: 20
+      - name: Install Node
+        run: |
+          sudo yum -y install curl
+          curl -fsSL https://fnm.vercel.app/install | bash
+          fnm use --install-if-missing 20
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
