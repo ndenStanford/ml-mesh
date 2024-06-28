@@ -88,9 +88,9 @@ jobs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: files-changed
         name: Get a list of modified files.
         with:
@@ -152,7 +152,7 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
