@@ -88,10 +88,6 @@ class IngestionSettings(OnclusiveBaseSettings):
             + [("iptc_id", pa.int64()), ("event_timestamp", pa.timestamp("ns"))]
         )
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class GlobalSettings(IngestionSettings):
     """Global server settings."""

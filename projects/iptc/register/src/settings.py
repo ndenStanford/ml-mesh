@@ -3,6 +3,9 @@
 # Standard Library
 from typing import List, Optional, Tuple
 
+# 3rd party libraries
+from pydantic_settings import SettingsConfigDict
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.data.feature_store import FeatureStoreParams
@@ -20,10 +23,6 @@ class FeatureRegistrationParams(FeatureStoreParams):
     entity_join_key: str = "iptc_id"
     register_features: bool = False
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class IptcFirstLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
@@ -33,10 +32,7 @@ class IptcFirstLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     redshift_table: str
     fields: List[Tuple[str, str]]
 
-    class Config:
-        env_prefix = "first_level_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="first_level_")
 
 
 class IptcSecondLevelFeatureRegistrationParams(OnclusiveBaseSettings):
@@ -47,10 +43,7 @@ class IptcSecondLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     redshift_table: str
     fields: List[Tuple[str, str]]
 
-    class Config:
-        env_prefix = "second_level_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="second_level_")
 
 
 class IptcThirdLevelFeatureRegistrationParams(OnclusiveBaseSettings):
@@ -61,7 +54,4 @@ class IptcThirdLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     redshift_table: str
     fields: List[Tuple[str, str]]
 
-    class Config:
-        env_prefix = "third_level_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="third_level_")

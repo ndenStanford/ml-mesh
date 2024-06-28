@@ -16,12 +16,7 @@ from onclusiveml.tracking import (
 class TrackedKeywordModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
-    project: str = "onclusive/keywords"
-    model: str = "KEYWORDS-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    target_model: str = "KEYWORDS-TRAINED"
 
 
 class Inputs(TrackingSettings):
@@ -65,10 +60,6 @@ class Inputs(TrackingSettings):
         vistas en un manera 'razonable' (ver sesgo inductivo).""",
     ]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class KeywordExtractionSettings(TrackingSettings):
     """Ground truth specification for model inference mode.
@@ -80,10 +71,6 @@ class KeywordExtractionSettings(TrackingSettings):
     keyphrase_ngram_range: Tuple[int, int] = (1, 1)
     stop_words: Union[str, List[str]] = "english"
     top_n: int = 3
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class KeywordModelParams(TrackingSettings):
@@ -98,10 +85,6 @@ class KeywordModelParams(TrackingSettings):
     )
     keyword_extraction_settings: KeywordExtractionSettings = KeywordExtractionSettings()
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TrackedKeywordsBaseModelCard(TrackedModelCard):
     """The model card for the base model of the keywords ML project."""
@@ -114,7 +97,3 @@ class TrackedKeywordsBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "keyword_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

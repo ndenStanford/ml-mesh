@@ -19,10 +19,6 @@ class TrackedNERModelSpecs(TrackedModelSettings):
     project: str = "onclusive/ner"
     model: str = "NER-TRAINED"
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class Inputs(TrackingSettings):
     """Inputs."""
@@ -44,27 +40,15 @@ class Inputs(TrackingSettings):
         ],
     ]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class NERSettings(TrackingSettings):
     """NER settings."""
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class NERModelParams(TrackingSettings):
     """Ner model settings."""
 
     ner_settings: NERSettings = NERSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class NERModelParamsBase(NERModelParams):
@@ -98,7 +82,3 @@ class TrackedNERBaseModelCard(TrackedModelCard):
 
     kj_model_subdirectory: str = "/korean_japanese_ner"
     base_model_subdirectory: str = "/base_ner"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

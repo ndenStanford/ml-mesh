@@ -20,10 +20,6 @@ class TrackedTopicModelSpecs(TrackedModelSettings):
     project: str = "onclusive/organic-topic"
     model: str = "TOPICS-TRAINED"
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TopicModelParams(TrackingSettings):
     """Ground truth specification for model inference mode.
@@ -55,10 +51,6 @@ class TopicModelParams(TrackingSettings):
     language: str = "multilingual"
     n_gram_range: Tuple[int, int] = (1, 2)
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TrackedTopicBaseModelCard(TrackedModelCard):
     """The model card for the base model of the keywords ML project."""
@@ -70,10 +62,6 @@ class TrackedTopicBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "topic_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class DataFetchParams(FeatureStoreParams):
@@ -91,7 +79,3 @@ class DataFetchParams(FeatureStoreParams):
     filter_values: List[str] = []
     comparison_operators: List[str] = []
     non_nullable_columns: List[str] = ["content"]
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

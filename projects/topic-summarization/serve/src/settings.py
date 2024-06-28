@@ -122,10 +122,6 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     # number of days to look past the inflection point when collecting documents (at 00:00)
     DAYS_PAST_INFLECTION_POINT: int = 2
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):
     """Impact Quantification Settings."""

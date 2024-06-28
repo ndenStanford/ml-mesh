@@ -20,20 +20,12 @@ class TrackedDocumentUncompiledContentScoringSpecs(TrackedModelSettings):
     model: str = "SCORING-TRAINED"
     with_id: str = "SCORING-TRAINED-14"
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TrackedDocumentContentScoringSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/content-scoring"
     model: str = "SCORING-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class DocumentContentScoringParams(TrackingSettings):
@@ -65,10 +57,6 @@ class DocumentContentScoringParams(TrackingSettings):
         "random_state": 42,
     }
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TrackedDocumentContentScoringModelCard(TrackedModelCard):
     """The model card for the document content-scoring ML project."""
@@ -80,7 +68,3 @@ class TrackedDocumentContentScoringModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "content-scoring_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

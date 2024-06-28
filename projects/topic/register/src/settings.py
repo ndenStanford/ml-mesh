@@ -28,7 +28,3 @@ class FeatureRegistrationParams(FeatureStoreParams):
         ("content", "String"),
     ]
     register_features: bool = False
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

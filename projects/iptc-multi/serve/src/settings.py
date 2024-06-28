@@ -5,6 +5,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List, Set, Union
 
+# 3rd party libraries
+from pydantic_settings import SettingsConfigDict
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.nlp.language.constants import LanguageIso
@@ -101,10 +104,7 @@ class ServerModelSettings(ServingParams):
     }
     supported_languages: List[LanguageIso] = IPTC_SUPPORTED_LANGUAGE
 
-    class Config:
-        env_prefix = "server_model_settings_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="server_model_settings_")
 
 
 class GlobalSettings(

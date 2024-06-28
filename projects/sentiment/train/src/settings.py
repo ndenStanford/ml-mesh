@@ -19,27 +19,15 @@ class TrackedSentModelSpecs(TrackedModelSettings):
     project: str = "onclusive/sentiment"
     model: str = "SEN-TRAINED"
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class Inputs(TrackingSettings):
     """Sentiment input parameters."""
 
     sample_documents: List[str] = [""]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class SentSettings(TrackingSettings):
     """Sentiment settings."""
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class SentModelParams(TrackingSettings):
@@ -49,10 +37,6 @@ class SentModelParams(TrackingSettings):
     huggingface_model_reference: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
 
     sent_settings: SentSettings = SentSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class TrackedSentBaseModelCard(TrackedModelCard):
@@ -66,7 +50,3 @@ class TrackedSentBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "sent_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

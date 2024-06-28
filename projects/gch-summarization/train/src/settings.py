@@ -19,10 +19,6 @@ class TrackedSummarizationModelSpecs(TrackedModelSettings):
     project: str = "onclusive/gch-summarization"
     model: str = "SUM-TRAINED"
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class Inputs(TrackingSettings):
     """Inputs."""
@@ -66,17 +62,9 @@ di cellophane. Sono stati arrestati per detenzione ai fini di spaccio \
 di stupefacenti e portati in carcere.",
     ]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class SummarizationSettings(TrackingSettings):
     """Summarization settings."""
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class SummarizationModelParams(TrackingSettings):
@@ -84,10 +72,6 @@ class SummarizationModelParams(TrackingSettings):
 
     huggingface_pipeline_task: str = "summarization"
     summarization_settings: SummarizationSettings = SummarizationSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class SummarizationModelParamsEn(SummarizationModelParams):
@@ -143,7 +127,3 @@ class TrackedSummarizationModelCard(TrackedModelCard):
     es_model_subdirectory: str = "/spanish_summarization"
     ca_model_subdirectory: str = "/catalan_summarization"
     it_model_subdirectory: str = "/italian_summarization"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
