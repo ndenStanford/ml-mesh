@@ -303,6 +303,12 @@ def test_model_server_readiness(test_client):
                     "attributes": {
                         "entities": [
                             {
+                                "entity_type": "ORG",
+                                "entity_text": "Die Olympischen Sommerspiele Spiele X",
+                                "score": 0.9277721921602885,
+                                "sentence_index": [0],
+                            },
+                            {
                                 "entity_type": "MISC",
                                 "entity_text": "Olympiade",
                                 "score": 0.8323558866977692,

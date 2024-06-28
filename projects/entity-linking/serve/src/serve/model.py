@@ -171,29 +171,34 @@ class ServedBelaModel(ServedModel):
                     mention_offsets,
                     mention_lengths,
                 ) = self._generate_offsets(text=content, entities=[entity])
-                output = self.model.process_disambiguation_batch(
-                    list_text=[content],
-                    mention_offsets=[mention_offsets],
-                    mention_lengths=[mention_lengths],
-                    entities=[entities_offsets],
-                )
-                try:
-                    if entity["entity_text"] in unique_entities_list:
-                        index = unique_entities_list.index(
-                            entity["entity_text"]
-                        )  # noqa
-                        entity_with_link = entity
-                        entity_with_link["wiki_link"] = (
-                            "https://www.wikidata.org/wiki/"
-                            + output[0]["entities"][index]
-                        )
-                        entities_with_links.append(entity_with_link)
-                except KeyError as e:
-                    raise KeyError(f"KeyError occurred: {e}")
-                except IndexError as e:
-                    raise IndexError(f"IndexError occurred: {e}")
-                except Exception as e:
-                    raise Exception(f"An unexpected error occurred: {e}")
+                if not mention_offsets or all(
+                    not mentions for mentions in mention_offsets
+                ):
+                    entities_with_links.append(entity)
+                else:
+                    output = self.model.process_disambiguation_batch(
+                        list_text=[content],
+                        mention_offsets=[mention_offsets],
+                        mention_lengths=[mention_lengths],
+                        entities=[entities_offsets],
+                    )
+                    try:
+                        if entity["entity_text"] in unique_entities_list:
+                            index = unique_entities_list.index(
+                                entity["entity_text"]
+                            )  # noqa
+                            entity_with_link = entity
+                            entity_with_link["wiki_link"] = (
+                                "https://www.wikidata.org/wiki/"
+                                + output[0]["entities"][index]
+                            )
+                            entities_with_links.append(entity_with_link)
+                    except KeyError as e:
+                        raise KeyError(f"KeyError occurred: {e}")
+                    except IndexError as e:
+                        raise IndexError(f"IndexError occurred: {e}")
+                    except Exception as e:
+                        raise Exception(f"An unexpected error occurred: {e}")
 
         else:
             list_texts = [content]
