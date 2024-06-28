@@ -128,6 +128,8 @@ jobs:
           export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           nvm install 20
+          nvm use 20
+          node -v
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
