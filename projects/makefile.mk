@@ -66,6 +66,7 @@ projects.activate/%:
 	poetry shell --directory=projects/$(notdir $@)/$(COMPONENT)
 
 projects.set:
+	export DEPLOYMENT=$(DEPLOYMENT)
 	export IMAGE_TAG=$(IMAGE_TAG)
 	export TARGET_BUILD_STAGE=$(TARGET_BUILD_STAGE)
 	export AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
