@@ -53,7 +53,7 @@ jobs:
         if: ${{ inputs.pull-request }}
         id: pre-commit
         timeout-minutes: ${{ inputs.timeout }}
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
         with:
           extra_args: --verbose --files ${{ steps.files-changed.outputs.all_files }}
 
@@ -61,7 +61,7 @@ jobs:
         if: ${{ !inputs.pull-request || inputs.release }}
         id: pre-commit-all
         timeout-minutes: ${{ inputs.timeout }}
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
         with:
           extra_args: --verbose --all
 
