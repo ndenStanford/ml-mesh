@@ -163,19 +163,20 @@ class ServedBelaModel(ServedModel):
         """Get entity linking prediction."""
         entities_with_links = []
         if entities:
-            (
-                unique_entities_list,
-                entities_offsets,
-                mention_offsets,
-                mention_lengths,
-            ) = self._generate_offsets(text=content, entities=entities)
-            output = self.model.process_disambiguation_batch(
-                list_text=[content],
-                mention_offsets=[mention_offsets],
-                mention_lengths=[mention_lengths],
-                entities=[entities_offsets],
-            )
+
             for entity in entities:
+                (
+                    unique_entities_list,
+                    entities_offsets,
+                    mention_offsets,
+                    mention_lengths,
+                ) = self._generate_offsets(text=content, entities=[entity])
+                output = self.model.process_disambiguation_batch(
+                    list_text=[content],
+                    mention_offsets=[mention_offsets],
+                    mention_lengths=[mention_lengths],
+                    entities=[entities_offsets],
+                )
                 try:
                     if entity["entity_text"] in unique_entities_list:
                         index = unique_entities_list.index(

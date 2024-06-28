@@ -321,6 +321,79 @@ class BelaModel:
 
         return predictions
 
+    def apply_transformation_with_max_mention_pos(
+        self,
+        texts,
+        mention_offsets,
+        mention_lengths,
+        entities,
+        transform,
+        max_mention_token_pos_in_text=192,
+    ):
+        """Apply transformations to a batch of texts with respect to maximum mention position.
+
+        Args:
+            self: The instance of the class.
+            texts (list of str): A list of texts to be processed.
+            mention_offsets (list of list of int): A list of mention offsets for each text.
+            mention_lengths (list of list of int): A list of mention lengths for each text.
+            entities (list of list of int): A list of entity identifiers corresponding to mentions.
+            transform (callable): A transformation function to apply to the texts.
+            max_mention_token_pos_in_text (int, optional): The maximum allowed token position
+                for a mention within a text. Defaults to 192.
+
+        Returns:
+            dict: A dictionary containing the transformed texts, mention offsets,
+                mention lengths, and entities.
+        """
+        old_max_seq_len = transform.max_seq_len
+        transform.max_seq_len = (
+            10000  # temporarily set to a large number to get the full token boundaries
+        )
+
+        new_mention_offsets = []
+        new_mention_lengths = []
+        new_entities = []
+
+        for text, offset, length, ent in zip(
+            texts, mention_offsets[0], mention_lengths[0], entities[0]
+        ):
+            outputs = transform(dict(texts=[text]))
+            sp_token_boundaries = outputs["sp_tokens_boundaries"][0]
+            token_pos = 0
+            while (
+                token_pos < len(sp_token_boundaries)
+                and offset >= sp_token_boundaries[token_pos][1]
+            ):
+                token_pos += 1
+
+            new_text = text
+            new_offset = offset
+            if token_pos > max_mention_token_pos_in_text:
+                shift = sp_token_boundaries[token_pos - max_mention_token_pos_in_text][
+                    0
+                ].item()
+                new_text = text[shift:]
+                new_offset = offset - shift
+
+            assert (
+                text[offset : offset + length]  # noqa
+                == new_text[new_offset : new_offset + length]  # noqa
+            )
+
+            new_mention_offsets.append(new_offset)
+            new_mention_lengths.append(length)
+            new_entities.append(ent)
+
+        transform.max_seq_len = old_max_seq_len
+
+        return {
+            "texts": [new_text],
+            "mention_offsets": [new_mention_offsets],
+            "mention_lengths": [new_mention_lengths],
+            "entities": [new_entities],
+        }
+
     def process_disambiguation_batch(
         self, texts, mention_offsets, mention_lengths, entities
     ):
@@ -342,7 +415,26 @@ class BelaModel:
             "mention_lengths": mention_lengths,
             "entities": entities,
         }
-        model_inputs = self.transform(batch)
+
+        # Log the input batch
+        logger.info(f"Batch: {batch}")
+
+        # Apply transformation with max mention position logic
+        transformed_batch = self.apply_transformation_with_max_mention_pos(
+            texts=batch["texts"],
+            mention_offsets=batch["mention_offsets"],
+            mention_lengths=batch["mention_lengths"],
+            entities=batch["entities"],
+            transform=self.transform,
+        )
+
+        # Log the transformed batch
+        logger.info(f"Transformed Batch: {transformed_batch}")
+
+        model_inputs = self.transform(transformed_batch)
+
+        # Log the transformed inputs
+        logger.info(f"Model inputs: {model_inputs}")
 
         token_ids = model_inputs["input_ids"].to(self.device)
         mention_offsets = model_inputs["mention_offsets"]
