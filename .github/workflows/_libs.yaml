@@ -30,6 +30,14 @@ on  :
         default: true
         type: boolean
         description: If false, only the libs that have been changed are ran, otherwise every lib is ran.
+      apply-max-attempts:
+        type: number
+        default: 2
+        description: Number of attempts to deploy manifests to cluster.
+      apply-retry-wait-seconds:
+        type: number
+        default: 30
+        description: Time (in  seconds) between attempts.
 
 jobs:
   deploy:
@@ -64,7 +72,11 @@ jobs:
 
       - name: Install lib dependencies
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        run: make libs.install/${{ inputs.lib }}
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: ${{ inputs.apply-max-attempts }}
+          retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
+          command: make libs.install/${{ inputs.lib }}
 
       - name: Run unit tests
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
