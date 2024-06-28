@@ -122,7 +122,7 @@ jobs:
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3.8.2
         with:
           node-version: 20
 
