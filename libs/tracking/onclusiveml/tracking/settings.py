@@ -5,6 +5,7 @@ from typing import Optional
 
 # 3rd party libraries
 from pydantic import field_validator
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveSecretStr
@@ -28,8 +29,7 @@ class TrackingLibraryLogSettings(OnclusiveLogSettings):
     level: int = INFO
     json_format: bool = True
 
-    class Config:
-        env_prefix = "onclusiveml_tracking_logger_"
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_tracking_logger_")
 
 
 class TrackingSettings(OnclusiveBaseSettings):
@@ -56,8 +56,7 @@ class TrackingBackendSettings(TrackingSettings):
     s3_bucket_prefix: str = "onclusive-model-store-"
     s3_backend_root: str = "neptune-ai-model-registry"
 
-    class Config:
-        env_prefix = "onclusiveml_tracking_backend_"
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_tracking_backend_")
 
     @property
     def bucket_name(self) -> str:
@@ -124,9 +123,9 @@ class TrackedModelSettings(OnclusiveBaseSettings):
     project: str
     model: str
     api_token: Optional[OnclusiveSecretStr] = None
+    with_id: Optional[str] = None
 
-    class Config:
-        env_prefix = "onclusiveml_neptune_"
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_neptune_")
 
 
 class TrackedModelTestFiles(TrackingSettings):
