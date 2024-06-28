@@ -121,14 +121,10 @@ jobs:
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
-      - name: Install Node
-        run: |
-          sudo yum -y install curl
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-          export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm install --lts
-          node -v
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
