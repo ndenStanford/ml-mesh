@@ -76,6 +76,11 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+      use-cache:
+        type: boolean
+        required: false
+        default: true
+        description: Whether to use docker caching during building and pushing of the images.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -188,9 +193,13 @@ jobs:
     name: 'Build, test & deploy: ${{ inputs.project }}-${{ inputs.component }}'
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
-    timeout-minutes: 30
+    timeout-minutes: 50
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
+    env:
+      DOCKER_BUILDKIT: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -201,6 +210,21 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Free space
+        run: |
+          sudo rm -rfv \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            /usr/local/.ghcup \
+            /usr/lib/jvm \
+            /var/lib/apt/lists/*
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
@@ -213,12 +237,13 @@ jobs:
           retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
           command: |
             make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            IMAGE_TAG="${{ inputs.tag }}" \
-            TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci" \
-            DEPLOYMENT="${{ inputs.environment }}"
+              AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+              DEPLOYMENT="${{ inputs.environment }}" \
+              IMAGE_TAG="${{ inputs.tag }}" \
+              TARGET_BUILD_STAGE="development" \
+              PLATFORM="linux/amd64" \
+              ENVIRONMENT="ci" \
+              USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
       - name: Run project component unit tests | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -226,7 +251,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
 
@@ -235,14 +260,14 @@ jobs:
         run: |
           make projects.run/${{ inputs.project }} \
             COMPONENT=${{ inputs.component }} \
-            TASK=download-model \
+            TASK="download-model" \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
-            PLATFORM=linux/amd64 \
+            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
 
@@ -253,7 +278,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
             MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
             MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
@@ -270,7 +295,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
             MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
             MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
@@ -288,7 +313,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
 
@@ -306,7 +331,7 @@ jobs:
             ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
 
@@ -316,10 +341,10 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="production" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
-            USE_DOCKER_CACHE=true \
-            DEPLOYMENT="${{ inputs.environment }}"
+            DEPLOYMENT="${{ inputs.environment }}" \
+            USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         run: |
@@ -327,7 +352,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
             TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
+            PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
             DEPLOYMENT="${{ inputs.environment }}"
 
@@ -347,7 +372,7 @@ jobs:
           aws-region: us-east-2
 
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2
+        uses: machulav/ec2-github-runner@v2.3.4
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

@@ -48,6 +48,16 @@ class GithubClient(OnclusiveFrozenModel):
             result = contents.decoded_content.decode()
         return result
 
+    def update(self, path: str, commit_message: str, template: str) -> Dict:
+        """Updates a file if it exists."""
+        try:
+            file_contents = self.repo.get_contents(path)
+            return self.repo.update_file(
+                file_contents.path, commit_message, template, file_contents.sha
+            )
+        except Exception as e:
+            raise FileNotFoundError(f"File at path {path} not found: {e}")
+
     def ls(self, path: str) -> List[str]:
         """Recursively list files."""
         contents = self.repo.get_contents(path)

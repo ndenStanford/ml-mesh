@@ -22,6 +22,7 @@ docker.set:
 	export IMAGE_TAG=$(IMAGE_TAG)
 	export TARGET_BUILD_STAGE=$(TARGET_BUILD_STAGE)
 	export AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)
+	export DEPLOYMENT=$(DEPLOYMENT)
 
 docker.build-all: $(foreach I, $(ALL_DOCKER_IMGS), docker.build/$(I)) ## build all images
 
