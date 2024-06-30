@@ -416,9 +416,6 @@ class BelaModel:
             "entities": entities,
         }
 
-        # Log the input batch
-        logger.info(f"Batch: {batch}")
-
         # Apply transformation with max mention position logic
         transformed_batch = self.apply_transformation_with_max_mention_pos(
             texts=batch["texts"],
@@ -428,13 +425,7 @@ class BelaModel:
             transform=self.transform,
         )
 
-        # Log the transformed batch
-        logger.info(f"Transformed Batch: {transformed_batch}")
-
         model_inputs = self.transform(transformed_batch)
-
-        # Log the transformed inputs
-        logger.info(f"Model inputs: {model_inputs}")
 
         token_ids = model_inputs["input_ids"].to(self.device)
         mention_offsets = model_inputs["mention_offsets"]

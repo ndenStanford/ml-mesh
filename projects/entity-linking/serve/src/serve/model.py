@@ -171,10 +171,8 @@ class ServedBelaModel(ServedModel):
                     mention_offsets,
                     mention_lengths,
                 ) = self._generate_offsets(text=content, entities=[entity])
-                if not mention_offsets or all(
-                    not mentions for mentions in mention_offsets
-                ):
-                    entities_with_links.append(entity)
+                if not mention_offsets:
+                    continue
                 else:
                     output = self.model.process_disambiguation_batch(
                         list_text=[content],
