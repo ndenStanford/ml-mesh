@@ -350,15 +350,24 @@ class BelaModel:
             10000  # temporarily set to a large number to get the full token boundaries
         )
 
-        new_mention_offsets = []
-        new_mention_lengths = []
-        new_entities = []
+        transformed_texts = []
+        transformed_mention_offsets = []
+        transformed_mention_lengths = []
+        transformed_entities = []
 
-        for text, offset, length, ent in zip(
-            texts, mention_offsets[0], mention_lengths[0], entities[0]
+        for text, offsets, lengths, ents in zip(
+            texts, mention_offsets, mention_lengths, entities
         ):
+            new_mention_offsets = []
+            new_mention_lengths = []
+            new_entities = []
+
             outputs = transform(dict(texts=[text]))
             sp_token_boundaries = outputs["sp_tokens_boundaries"][0]
+
+            offset = offsets[0]
+            length = lengths[0]
+            ent = ents[0]
             token_pos = 0
             while (
                 token_pos < len(sp_token_boundaries)
@@ -384,13 +393,18 @@ class BelaModel:
             new_mention_lengths.append(length)
             new_entities.append(ent)
 
+            transformed_texts.append(new_text)
+            transformed_mention_offsets.append(new_mention_offsets)
+            transformed_mention_lengths.append(new_mention_lengths)
+            transformed_entities.append(new_entities)
+
         transform.max_seq_len = old_max_seq_len
 
         return {
-            "texts": [new_text],
-            "mention_offsets": [new_mention_offsets],
-            "mention_lengths": [new_mention_lengths],
-            "entities": [new_entities],
+            "texts": transformed_texts,
+            "mention_offsets": transformed_mention_offsets,
+            "mention_lengths": transformed_mention_lengths,
+            "entities": transformed_entities,
         }
 
     def process_disambiguation_batch(
