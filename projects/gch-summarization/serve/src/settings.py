@@ -56,10 +56,10 @@ class ServerModelSettings(ServingParams):
 
 class GlobalSettings(
     ServerModelSettings,
-    TrackedTrainedModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     GchSummarizationSettings,
+    TrackedTrainedModelSpecs,
 ):
     """Global server settings."""
 

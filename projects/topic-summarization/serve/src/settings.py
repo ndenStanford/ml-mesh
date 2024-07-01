@@ -61,7 +61,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     HAIKU_CLAUDE_MODEL: str = "anthropic.claude-3-haiku-20240307-v1:0"
     GPT_MODEL: str = "gpt-4o"
 
-    model_settings = ServerModelSettings()
+    model_settings: ServerModelSettings = ServerModelSettings()
 
     TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
     for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():

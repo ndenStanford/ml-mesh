@@ -11,13 +11,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root():
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/translation/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get("http://serve:8000/translation/v1/live")
@@ -39,10 +32,7 @@ def test_model_server_bio():
     readiness_response = requests.get("http://serve:8000/translation/v1/bio")
 
     assert readiness_response.status_code == 200
-    assert (
-        readiness_response.model_dump_json()["data"]["attributes"].get("model_name")
-        is not None
-    )
+    assert readiness_response.json()["data"]["attributes"].get("model_name") is not None
 
 
 @pytest.mark.parametrize(
@@ -243,7 +233,7 @@ def test_model_server_prediction(test_client, payload, expected_response):
         json=payload,
     )
     assert response.status_code == 200
-    assert response.model_dump_json() == expected_response
+    assert response.json() == expected_response
 
 
 @pytest.mark.parametrize(

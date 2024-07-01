@@ -21,7 +21,7 @@ from onclusiveml.tracking import (
 )
 
 
-SENT_SUPPORTED_LANGUAGE = [
+SUPPORTED_LANGUAGES = [
     LanguageIso.EN,  # English
     LanguageIso.PT,  # Portuguese
     LanguageIso.ES,  # Spanish
@@ -89,10 +89,10 @@ SENT_SUPPORTED_LANGUAGE = [
 ]
 
 
-class SentSettings(TrackingSettings):
-    """Sentiment settings."""
+class SentimentSettings(TrackingSettings):
+    """Sentimentiment settings."""
 
-    supported_languages: List[LanguageIso] = SENT_SUPPORTED_LANGUAGE
+    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
 class TrackedCompiledModelSpecs(TrackedModelSettings):
@@ -114,10 +114,10 @@ class ServerModelSettings(ServingParams):
 
 class GlobalSettings(
     ServerModelSettings,
-    TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    SentSettings,
+    SentimentSettings,
+    TrackedCompiledModelSpecs,
 ):
     """Global server settings."""
 

@@ -84,6 +84,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 

@@ -39,9 +39,9 @@ class ServerModelSettings(ServingParams):
 
 class GlobalSettings(
     ServerModelSettings,
-    TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    TrackedCompiledModelSpecs,
 ):
     """Global server settings."""
 

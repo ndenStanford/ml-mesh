@@ -19,7 +19,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
     redshift_table: str = "iptc"
     entity_name: str = "iptc"
     feature_view_name: str = "iptc_feature_view"
-    fields: Optional[List[Tuple[str, str]]]
+    fields: Optional[List[Tuple[str, str]]] = None
     entity_join_key: str = "iptc_id"
     register_features: bool = False
 

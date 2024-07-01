@@ -197,7 +197,7 @@ class CompilationTestSettings(TrackingSettings):
         env_file_encoding = "utf-8"
 
 
-class CompiledSentTrackedModelCard(TrackedModelCard):
+class CompiledSentimentTrackedModelCard(TrackedModelCard):
     """Compiled sentiment tracked model card."""
 
     model_type: str = "compiled"

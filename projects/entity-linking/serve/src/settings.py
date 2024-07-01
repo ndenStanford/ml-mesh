@@ -53,10 +53,10 @@ class ELSettings(TrackingSettings):
 
 class GlobalSettings(
     ServerModelSettings,
-    TrackedModelSettings,
     ELSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
+    TrackedModelSettings,
 ):
     """Global server settings."""
 

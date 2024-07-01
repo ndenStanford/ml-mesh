@@ -62,7 +62,7 @@ class ServedSummarizationModel(ServedModel):
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
-        # load model artifacts into ready CompiledSent instance
+        # load model artifacts into ready CompiledSentiment instance
         self._model = TrainedSummarization.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
