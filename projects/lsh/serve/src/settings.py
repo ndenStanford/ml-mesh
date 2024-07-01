@@ -12,7 +12,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    TrackedSettings,
+    TrackingSettings,
 )
 
 
@@ -37,7 +37,7 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
-class LSHSettings(TrackedSettings):
+class LSHSettings(TrackingSettings):
     """LSH settings."""
 
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES

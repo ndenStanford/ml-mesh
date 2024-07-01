@@ -142,6 +142,7 @@ services:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -206,8 +207,10 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
+    env_file: register/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
+
   # =============================================
   # COMPILE
   # =============================================
@@ -344,6 +347,7 @@ services:
       UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
       COMPILED_PROJECT: ${COMPILED_PROJECT}
       COMPILED_MODEL: ${COMPILED_MODEL}
+    env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 

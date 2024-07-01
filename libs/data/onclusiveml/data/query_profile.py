@@ -111,7 +111,7 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
 
     version: int
     query_id: str
-    settings = MediaAPISettings()
+    settings: MediaAPISettings = MediaAPISettings()
 
     @property
     def query(self) -> Union[str, None]:
