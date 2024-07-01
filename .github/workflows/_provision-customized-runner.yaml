@@ -81,7 +81,7 @@ jobs:
         id: start-ec2-runner
         uses: Wandalen/wretry.action@master
         with:
-          action: machulav/ec2-github-runner@v2
+          action: machulav/ec2-github-runner@v2.3.4
           with: |
             mode: start
             github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
