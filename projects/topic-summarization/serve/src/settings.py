@@ -43,9 +43,22 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     CLAUDE_TOPIC_ALIAS: str = "ml-topic-summarization-claude"
     GPT_TOPIC_ALIAS: str = "ml-topic-summarization-gpt"
+    CLAUDE_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-claude"
+    GPT_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-gpt"
+
     CLAUDE_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-claude"
     GPT_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-gpt"
+    CLAUDE_SUMMARY_WITH_ENTITY_ALIAS: str = (
+        "ml-topic-summarization-multi-articles-summary-entity-focus-claude"
+    )
+    GPT_SUMMARY_WITH_ENTITY_ALIAS: str = (
+        "ml-topic-summarization-multi-articles-summary-entity-focus-gpt"
+    )
+
+    CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
+    GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+    HAIKU_CLAUDE_MODEL: str = "anthropic.claude-3-haiku-20240307-v1:0"
     GPT_MODEL: str = "gpt-4o"
 
     model_settings = ServerModelSettings()
@@ -62,6 +75,10 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
         "theme": "The theme for your consolidated summary",
+    }
+
+    ENTITY_RESPONSE_SCHEMA: Dict[str, str] = {
+        "entity_list": "a string representing a list of detected entities"
     }
 
 

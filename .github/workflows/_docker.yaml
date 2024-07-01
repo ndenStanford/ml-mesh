@@ -62,6 +62,11 @@ on  :
         type: number
         default: 30
         description: Time (in  seconds) between attempts.
+      use-cache:
+        type: boolean
+        required: false
+        default: true
+        description: Whether to use docker caching during building and pushing of the images.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -150,6 +155,11 @@ jobs:
     timeout-minutes: 50
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
+    env:
+      DOCKER_BUILDKIT: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      BUILDKIT_INLINE_CACHE: 1
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -161,32 +171,28 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.region }}
 
-      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
+      - name: Free space
+        run: |
+          sudo rm -rfv \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            /usr/local/.ghcup \
+            /usr/lib/jvm \
+            /var/lib/apt/lists/*
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
           make docker.login \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_REGION=${{ inputs.base-region }}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
-        run: |
-          make docker.build/${{ inputs.image }} \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            IMAGE_TAG="${{ inputs.tag }}" \
-            TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
-
-      - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build }}
-        run: |
-          make docker.validate/${{ inputs.image }} \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            IMAGE_TAG="${{ inputs.tag }}" \
-            TARGET_BUILD_STAGE="development" \
-            PLATFORM=linux/amd64 \
-            ENVIRONMENT="ci"
-
-      - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
         uses: nick-fields/retry@v2
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
@@ -195,11 +201,34 @@ jobs:
           command: |
             make docker.build/${{ inputs.image }} \
               AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+              DEPLOYMENT="${{ inputs.environment }}" \
               IMAGE_TAG="${{ inputs.tag }}" \
-              TARGET_BUILD_STAGE="production" \
-              PLATFORM=linux/amd64 \
+              TARGET_BUILD_STAGE="development" \
+              PLATFORM="linux/amd64" \
               ENVIRONMENT="ci" \
-              USE_DOCKER_CACHE=true
+              USE_DOCKER_CACHE="${{ inputs.use-cache }}"
+
+      - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
+        if: ${{ inputs.validate-build }}
+        run: |
+          make docker.validate/${{ inputs.image }} \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="development" \
+            PLATFORM="linux/amd64" \
+            ENVIRONMENT="ci"
+
+      - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
+        run: |
+          make docker.build/${{ inputs.image }} \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="production" \
+            PLATFORM="linux/amd64" \
+            ENVIRONMENT="ci" \
+            USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
@@ -212,7 +241,8 @@ jobs:
           make docker.deploy/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
-            ENVIRONMENT="ci"
+            ENVIRONMENT="ci"\
+            DEPLOYMENT="${{ inputs.environment }}"
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.image }}'
@@ -230,7 +260,7 @@ jobs:
           aws-region: us-east-2
 
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v2
+        uses: machulav/ec2-github-runner@v2.3.4
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

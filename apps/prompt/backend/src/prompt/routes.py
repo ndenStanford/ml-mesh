@@ -49,6 +49,32 @@ def create_prompt(prompt: PromptTemplate):
         )
 
 
+@router.put("/{alias}", status_code=status.HTTP_201_CREATED)
+def update_prompt(template: Dict[str, str], alias: str):
+    """Updates prompt in project.
+
+    Args:
+        template (str): updated prompt template.
+        alias (str): prompt alias.
+    """
+    try:
+        prompt = PromptTemplate.get(alias)
+    except DoesNotExist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Prompt {alias} not found in database",
+        )
+    try:
+        prompt.template = template["template"]
+        prompt.update()
+        return prompt
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+
+
 @router.delete("/{alias}", status_code=status.HTTP_200_OK)
 def delete_prompt(alias: str):
     """Deletes project from database.
