@@ -95,12 +95,14 @@ class CompilationTestSettings(TrackingSettings):
     """Settings for compilation tests.
 
     Attributes:
+        language(str): language of the test input
         regression_atol (float): Relative tolerance for validation
         regression_rtol (float): Absolute tolerance for validation
     """
 
     regression_atol: float
     regression_rtol: float
+    language: str = "ja"
 
 
 class CompiledNERTrackedModelCard(TrackedModelCard):
