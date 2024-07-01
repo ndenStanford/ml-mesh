@@ -88,10 +88,17 @@ jobs:
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Clean up Docker
+      - name: Free space
         run: |
-          docker system prune -f
-          docker volume prune -f
+          sudo rm -rfv \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            /usr/local/.ghcup \
+            /usr/lib/jvm \
+            /var/lib/apt/lists/*
 
       - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
