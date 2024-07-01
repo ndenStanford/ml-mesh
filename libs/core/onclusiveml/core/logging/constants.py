@@ -33,6 +33,9 @@ class OnclusiveService(OnclusiveStrEnum):
     # --- lsh
     LSH = "lsh-serve"
 
+    # --- translation
+    TRANSLATION = "translation-serve"
+
     # --- ner
     NER_TRAIN = "ner-train"
     NER_COMPILE = "ner-compile"
