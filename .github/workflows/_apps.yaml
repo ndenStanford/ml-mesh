@@ -88,6 +88,11 @@ jobs:
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Clean up Docker
+        run: |
+          docker system prune -f
+          docker volume prune -f
+
       - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
