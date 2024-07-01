@@ -876,6 +876,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            use-cache: true
 
           # compile
           - name: compile
@@ -885,6 +886,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            use-cache: true
 
     with:
       project: ner
@@ -899,7 +901,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-      use-cache: ${{ matrix.use-cache }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
