@@ -14,6 +14,7 @@ jobs:
       matrix:
         python-version: [3.8.16]
         poetry-version: [1.3.2]
+        lib: [compile, core, data, models, nlp, serving, tracking, hashing, llms]
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -43,8 +44,10 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ matrix.poetry-version }}
-      - name: Install lib dependencies and Generate test coverage for libs
-        run: make libs.coverage-all
+      - name: Install lib dependencies and generate test coverage for libs
+        run: |
+          make libs.install/${{ matrix.lib }}
+          make libs.coverage-unit/${{ matrix.lib }}
       - name: Generate test coverage xml
         run: |
           poetry run coverage combine .coverage-*
