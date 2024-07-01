@@ -182,7 +182,7 @@ class DocumentPipelineCompilationSettings(PipelineCompilationSettings):
     """Document pipeline compilation settings."""
 
     pipeline_name: str = "document_model"
-    max_length = 512
+    max_length: int = 512
 
     class Config:
         env_prefix = "document_pipeline_compilation_settings_"
