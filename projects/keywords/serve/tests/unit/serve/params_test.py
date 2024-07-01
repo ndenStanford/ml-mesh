@@ -86,11 +86,6 @@ def test_keywords_served_model_params():
     ServedModelParams()
 
 
-def test_served_model_params_env_prefix():
-    """Tests the inherited environment variable prefix of the ServedModelParams class."""
-    assert ServedModelParams.__config__.env_prefix == "onclusiveml_serving_"
-
-
 @pytest.mark.parametrize(
     "test_field_name, test_field_value_expected",
     [
@@ -107,7 +102,7 @@ def test_served_model_params_set_fields_via_env_vars(
     KeywordsServingBaseParams) of the ServedModelParams class's fields by initializing an instance
     after setting the corresponding environment variables in the local test scope.
     """
-    prefixed_field_env_var_ref = f"onclusiveml_serving_{test_field_name}"
+    prefixed_field_env_var_ref = f"{test_field_name}"
     os.environ[prefixed_field_env_var_ref] = test_field_value_expected
 
     test_keywords_served_model_params = ServedModelParams()
