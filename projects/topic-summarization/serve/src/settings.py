@@ -96,6 +96,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         "crawler-4-2024.01",
         "crawler",
     ]
+    ES_TIMEOUT: int = 90
 
 
 class DynamoDBSettings(OnclusiveBaseSettings):
