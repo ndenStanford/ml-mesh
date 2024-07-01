@@ -5,7 +5,6 @@ import os
 
 # 3rd party libraries
 import pytest
-from pydantic import ValidationError
 
 # Internal libraries
 from onclusiveml.tracking.settings import (
@@ -101,5 +100,5 @@ def test_from_env(project, model, api_token):
 
 def test_from_empty_env_raise_error():
     """Test from empty env raises error."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         TrackedModelSettings()
