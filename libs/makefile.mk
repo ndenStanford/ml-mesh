@@ -37,5 +37,4 @@ libs.coverage-unit-all: $(foreach I, $(COVERED_LIBS), libs.coverage-unit/$(I))
 
 libs.install-covered: $(foreach I, $(COVERED_LIBS), libs.install/$(I)) # install library dependencies for covered libs
 
-libs.coverage-all: # install dependencies and generate test coverage for all covered libraries
-	$(foreach I,$(COVERED_LIBS),$(MAKE) libs.install/$(I) && $(MAKE) libs.coverage-unit/$(I);)
+libs.coverage-all: $(foreach I, $(COVERED_LIBS), libs.install/$(I) libs.coverage-unit/$(I)) # install dependencies and generate test coverage for all covered libraries
