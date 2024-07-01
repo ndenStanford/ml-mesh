@@ -58,10 +58,10 @@ class BaseLLMParameters(BaseModel):
 class TextGenerationConfig(BaseLLMParameters):
     """Text generation config for tital model parameters."""
 
-    temperature: float = 0.7
-    topP: float = 0.9
-    maxTokenCount: int = 512
-    stopSequences: List[str] = []
+    temperature: float = Field(0.7, alias="temperature")
+    topP: float = Field(0.9, alias="topP")
+    maxTokenCount: int = Field(512, alias="maxTokens")
+    stopSequences: List[str] = Field([], alias="stopSequences")
 
 
 class TitanParameters(BaseModel):
@@ -127,8 +127,8 @@ MODELS_TO_PARAMETERS = {
     ChatModel.GPT4_TURBO_PREVIEW: BaseLLMParameters,
     ChatModel.GPT4_O: BaseLLMParameters,
     ChatModel.GPT4_1106: BaseLLMParameters,
-    ChatModel.TITAN: TextGenerationConfig,
-    ChatModel.TITAN_G1: TextGenerationConfig,
+    ChatModel.TITAN: TitanParameters,
+    ChatModel.TITAN_G1: TitanParameters,
     ChatModel.CLAUDE_2: Claude2Parameters,
     ChatModel.CLAUDE_2_1: Claude2Parameters,
     ChatModel.CLAUDE_3_SONNET: Claude3Parameters,
