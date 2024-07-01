@@ -1,4 +1,5 @@
 """Document Collector."""
+# isort: skip_file
 
 # Standard Library
 from typing import List
