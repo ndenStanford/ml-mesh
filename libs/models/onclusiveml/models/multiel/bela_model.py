@@ -181,12 +181,11 @@ class BelaModel:
 
         return scores.squeeze(-1).to(self.device), indices.squeeze(-1).to(self.device)
 
-    def lookup(self, query: torch.Tensor, ef_runtime: int = 200):
+    def lookup(self, query: torch.Tensor):
         """Search for nearest neighbors in the Redis index.
 
         Args:
             query (torch.Tensor): Tensor containing query vectors.
-            ef_runtime (int): EF Runtime parameter for HNSW.
         """
         results_scores = []
         results_indices = []
