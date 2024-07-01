@@ -42,10 +42,8 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ matrix.poetry-version }}
-      - name: Install lib dependencies
-        run: make libs.install-covered
-      - name: Generate test coverage for libs
-        run: make libs.coverage-unit-all
+      - name: Install lib dependencies and Generate test coverage for libs
+        run: make libs.coverage-all
       - name: Generate test coverage xml
         run: |
           poetry run coverage combine .coverage-*
