@@ -8,14 +8,13 @@ from typing import Dict
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.pydantic import cast
-from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.logging import OnclusiveLogSettings, get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompiledNERTrackedModelCard,
     CompiledTrackedModelSettings,
-    OnclusiveLogSettings,
     TrackedModelSettings,
     get_settings,
 )
