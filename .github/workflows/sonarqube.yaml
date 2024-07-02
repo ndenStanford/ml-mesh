@@ -45,7 +45,7 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install lib dependencies and generate test coverage for libs
         run: |
-          for lib in compile core data models nlp serving tracking hashing llms; do
+          for lib in core compile data models nlp serving tracking hashing llms; do
             make libs.install/$lib
             make libs.coverage-unit/$lib
           done
