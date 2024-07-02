@@ -35,11 +35,11 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
         model (str): Mode of interaction with the model
     """
 
-    project: str = "onclusive/ner"
-    model: str = "NER-TRAINED"
+    project: str = "onclusive/ner-multilingual"
+    model: str = "NERMULTI-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "NER-TRAINED-41"
+    with_id: str = "NERMULTI-TRAINED-13"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
@@ -57,8 +57,8 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
         model (str): The model name
     """
 
-    project: str = "onclusive/ner"
-    model: str = "NER-COMPILED"
+    project: str = "onclusive/ner-multilingual"
+    model: str = "NERMULTI-COMPILED"
 
     class Config:
         env_prefix = "compiled_"
@@ -89,10 +89,7 @@ class WorkflowComponentIOSettings(object):
         workflow_component (str): Name of workflow component
         workflow_component_output_dir (str): The output directory specific to the component
         model_directory (str): The directory for model artifacts
-        model_directory_base (str): The directory for base NER model
-        model_directory_kj (str): The directory for NER model used for korean/japanese
         test_files (dict): Paths to test related files
-
     """
 
     workflow_ouput_dir: str = WorkflowOutputDir().outpath
@@ -111,13 +108,6 @@ class WorkflowComponentIOSettings(object):
 
         self.model_directory: str = os.path.join(
             self.workflow_component_output_dir, "model_artifacts"
-        )
-
-        self.model_directory_base: str = os.path.join(
-            self.workflow_component_output_dir, "model_artifacts/base_ner"
-        )
-        self.model_directory_kj: str = os.path.join(
-            self.workflow_component_output_dir, "model_artifacts/korean_japanese_ner"
         )
 
         self.test_files = {
@@ -252,10 +242,12 @@ class CompilationTestSettings(TrackedParams):
     """Settings for compilation tests.
 
     Attributes:
+        language(str): language of the test input
         regression_atol (float): Relative tolerance for validation
         regression_rtol (float): Absolute tolerance for validation
     """
 
+    language: str = "ja"
     regression_atol: float = 1e-02
     regression_rtol: float = 1e-02
 
