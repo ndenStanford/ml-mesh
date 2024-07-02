@@ -41,7 +41,7 @@ def test_create_prompt(
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
     mock_prompt_save.assert_called_once()
-    assert response.model_dump_json() == prompt.model_dump()
+    assert response.json() == prompt.model_dump()
 
 
 @pytest.mark.parametrize(
@@ -156,7 +156,7 @@ def test_delete_prompt(
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.model_dump_json() == prompt.model_dump()
+    assert response.json() == prompt.model_dump()
     mock_prompt_delete.assert_called_once()
     mock_prompt_get.assert_called_with(alias)
 
@@ -177,7 +177,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.model_dump_json() == prompt.model_dump()
+    assert response.json() == prompt.model_dump()
     mock_prompt_get.assert_called_with(alias)
 
 

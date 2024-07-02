@@ -32,7 +32,7 @@ def test_create_project(mock_project_safe_get, mock_project_save, alias, test_cl
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.model_dump_json() == {"alias": alias}
+    assert response.json() == {"alias": alias}
     mock_project_save.assert_called_once()
     mock_project_safe_get.assert_called_with(alias)
 
@@ -57,7 +57,7 @@ def test_delete_project(mock_project_get, mock_project_delete, alias, test_clien
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.model_dump_json() == {"alias": alias}
+    assert response.json() == {"alias": alias}
     mock_project_delete.assert_called_once()
     mock_project_get.assert_called_with(alias)
 
@@ -91,7 +91,7 @@ def test_get_project(mock_project_get, alias, test_client):
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    response.model_dump_json() == {"alias": alias}
+    response.json() == {"alias": alias}
 
 
 @patch.object(PromptTemplate, "scan")

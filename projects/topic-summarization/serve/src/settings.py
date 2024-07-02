@@ -5,6 +5,7 @@
 from onclusiveml.data.query_profile import MediaAPISettings
 
 # Standard Library
+import itertools
 from functools import lru_cache
 
 # Internal libraries
@@ -62,16 +63,29 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     GPT_MODEL: str = "gpt-4o"
 
     model_settings: ServerModelSettings = ServerModelSettings()
-
-    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
-    for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():
-        category_dict = {
-            f"{category_key}_summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
-            f"{category_key}_theme": f"An overall theme for {category_value}",
-            f"{category_key}_impact": f"The impact level of {category_value}",
-        }
-        TOPIC_RESPONSE_SCHEMA.update(category_dict)
-
+    # fmt: off
+    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = dict(
+        itertools.chain.from_iterable(
+            [
+                [
+                    (
+                        f"{category_key}_summary",
+                        f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
+                    ),
+                    (
+                        f"{category_key}_theme",
+                        f"An overall theme for {category_value}",
+                    ),
+                    (
+                        f"{category_key}_impact",
+                        f"The impact level of {category_value}",
+                    ),
+                ]
+                for category_key, category_value in model_settings.IMPACT_CATEGORIES.items()
+            ]
+        )
+    )
+    # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
         "theme": "The theme for your consolidated summary",

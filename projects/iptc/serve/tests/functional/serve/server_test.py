@@ -23,7 +23,7 @@ def test_model_server_liveness():
     liveness_response = requests.get("http://serve:8000/iptc-00000000/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.model_dump_json() == LivenessProbeResponse().model_dump()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 def test_model_server_readiness():
@@ -31,7 +31,7 @@ def test_model_server_readiness():
     readiness_response = requests.get("http://serve:8000/iptc-00000000/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.model_dump_json() == ReadinessProbeResponse().model_dump()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 def test_model_server_bio():
@@ -39,10 +39,7 @@ def test_model_server_bio():
     readiness_response = requests.get("http://serve:8000/iptc-00000000/v1/bio")
 
     assert readiness_response.status_code == 200
-    assert (
-        readiness_response.model_dump_json()["data"]["attributes"].get("model_card")
-        is not None
-    )
+    assert readiness_response.json()["data"]["attributes"].get("model_card") is not None
 
 
 @pytest.mark.parametrize(
@@ -124,5 +121,5 @@ def test_model_server_prediction(payload, expected_response):
 
     assert response.status_code == 200
     # TODO: assert score close to expected
-    iptc = response.model_dump_json()
+    iptc = response.json()
     assert iptc == expected_response

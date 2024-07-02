@@ -43,7 +43,7 @@ def test_model_server_liveness(test_client):
     liveness_response = test_client.get("/iptc-00000000/v1/live/")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.model_dump_json() == LivenessProbeResponse().model_dump()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 @pytest.mark.order(6)
@@ -52,7 +52,7 @@ def test_model_server_readiness(test_client):
     readiness_response = test_client.get("/iptc-00000000/v1/ready/")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.model_dump_json() == ReadinessProbeResponse().model_dump()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 @pytest.mark.order(6)

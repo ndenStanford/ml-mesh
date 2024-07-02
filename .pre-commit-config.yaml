@@ -42,13 +42,6 @@ repos                   :
   # PYTHON
   # =================================
 
-  # python formatter
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-        files: ^(libs|docker|projects|apps)/.*\.py$
-
   # Lint: Python
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
@@ -56,6 +49,13 @@ repos                   :
       - id: flake8
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
         exclude: ^(libs/serving/onclusiveml/serving/rest/serve/server_utils\.py)
+
+  # python formatter
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+        files: ^(libs|docker|projects|apps)/.*\.py$
 
   # static type checking
   - repo: https://github.com/pre-commit/mirrors-mypy

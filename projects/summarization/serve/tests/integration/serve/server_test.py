@@ -51,7 +51,7 @@ def test_integration_summarization_model(test_client, payload):
     response = test_client.post("/summarization/v1/predict", json=payload)
 
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.model_dump_json()["data"]["attributes"]["summary"]) > 0
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
 
 
 @pytest.mark.parametrize(
@@ -96,4 +96,4 @@ def test_invalid_language(test_client, payload):
     """Test for invalid language."""
     response = test_client.post("/summarization/v1/predict", json=payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert response.model_dump_json()["detail"] == "Unsupported language"
+    assert response.json()["detail"] == "Unsupported language"

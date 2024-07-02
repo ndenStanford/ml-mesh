@@ -80,7 +80,7 @@ def test_model_server_client_no_model(
 
     print(response)
 
-    test_probe_response_model(**response.model_dump_json())
+    test_probe_response_model(**response.json())
 
 
 # --- client - model predict
@@ -145,7 +145,7 @@ def test_model_server_serve_predict(
 
     response = requests.post(model_predict_url, json=test_request_data.model_dump())
 
-    test_response_actual = test_response_model(**response.model_dump_json())
+    test_response_actual = test_response_model(**response.json())
 
     assert test_response_actual == test_response_expected
 
@@ -172,7 +172,7 @@ def test_model_server_serve_bio(
 
     response = requests.get(model_bio_url)
 
-    test_response_actual = test_response_model(**response.model_dump_json())
+    test_response_actual = test_response_model(**response.json())
     test_response_expected = TestBioResponseModel(name=test_model_name)
 
     assert test_response_actual == test_response_expected
