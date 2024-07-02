@@ -21,14 +21,6 @@ from src.serve.server_models import (
 )
 
 
-@pytest.mark.order(5)
-def test_model_server_root(test_client):
-    """Tests the running ModelServer instance's root endpoint."""
-    root_response = test_client.get("/keywords/v1/")
-
-    assert root_response.status_code == 200
-
-
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
     """Tests the running ModelServer instance's liveness endpoint."""

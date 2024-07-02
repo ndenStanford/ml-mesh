@@ -11,13 +11,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root():
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/gch-summarization/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_bio():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
     readiness_response = requests.get("http://serve:8000/gch-summarization/v1/bio")

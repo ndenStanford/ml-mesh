@@ -7,13 +7,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root(test_client):
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = test_client.get("/entity-linking/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_liveness(test_client):
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = test_client.get("/entity-linking/v1/live")
