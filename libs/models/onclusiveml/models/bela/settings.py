@@ -16,7 +16,7 @@ class RedisSetttings(OnclusiveBaseSettings):
     INDEX_NAME: str = "Wiki_entities"
     EMBEDDINGS_SHAPE: List = [16470856, 300]
     REDIS_CONNECTION_STRING: SecretStr = Field(..., env="REDIS_CONNECTION_STRING")
-    EF_RUNTIME: int = 200
+    EF_RUNTIME: int = 1000
 
 
 class TransformSettings(OnclusiveBaseSettings):

@@ -92,6 +92,7 @@ class ServedTopicModel(ServedModel):
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
+            boolean_query = query_profile.query
             trend_detection = inputs.trend_detection
 
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
@@ -154,7 +155,7 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
 
-                topic = self.model.aggregate(content)
+                topic = self.model.aggregate(content, boolean_query)
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
