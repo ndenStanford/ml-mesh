@@ -21,8 +21,7 @@ settings = get_settings()
 def init() -> None:
     """App initialization."""
     logger.info("Creating tables...")
-    if settings.ENVIRONMENT == "dev":
-        _create_table(TopicSummaryDynamoDB)
+    _create_table(TopicSummaryDynamoDB)
 
 
 def _create_table(table: Type[Dyntastic]) -> None:

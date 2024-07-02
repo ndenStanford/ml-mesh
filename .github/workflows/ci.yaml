@@ -202,6 +202,7 @@ jobs       :
         base-region: [us-east-1]
         region: [us-east-1]
         self-hosted-runner-neuron: [false]
+        use-cache: [true]
 
     with:
       environment: ${{ needs.get-environment.outputs.name }}
@@ -215,6 +216,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -270,6 +272,7 @@ jobs       :
 
         base-region: [us-east-1]
         region: [us-east-1]
+        use-cache: [true]
 
     with:
       environment: ${{ needs.get-environment.outputs.name }}
@@ -283,6 +286,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -304,31 +308,37 @@ jobs       :
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
+            use-cache: true
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             base-region: us-east-1
             runner-kind: ubuntu-20.04
+            use-cache: true
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
             base-region: us-east-1
             runner-kind: ubuntu-20.04
+            use-cache: true
 
           # kubeflow-torch-cpu
           - name: kubeflow-torch-cpu
             base-region: us-east-2
             runner-kind: ubuntu-20.04
+            use-cache: true
 
           # kubeflow-data-science
           - name: kubeflow-data-science
             base-region: us-east-2
             runner-kind: ubuntu-20.04
+            use-cache: true
 
           # dask-base
           - name: dask-base
             base-region: us-east-1
             runner-kind: ubuntu-20.04
+            use-cache: true
 
         validate-build: [false]
         region: [us-east-2]
@@ -345,6 +355,7 @@ jobs       :
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.image.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -397,6 +408,8 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
 
+        use-cache: [true]
+
     with:
       project: keywords
       environment: ${{ needs.get-environment.outputs.name }}
@@ -410,6 +423,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -441,6 +455,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            use-cache: true
 
     with:
       project: summarization
@@ -455,6 +470,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -487,6 +503,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # serve
           - name: serve
@@ -499,6 +516,7 @@ jobs       :
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # backfill
           - name: backfill
@@ -509,6 +527,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
     with:
       project: gch-summarization
@@ -525,6 +544,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -559,6 +579,7 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # serve
           - name: serve
@@ -571,6 +592,7 @@ jobs       :
             self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # backfill
           - name: backfill
@@ -581,6 +603,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
     with:
       project: entity-linking
@@ -597,6 +620,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -606,6 +630,7 @@ jobs       :
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
+      REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
 
 
   # sentiment
@@ -658,6 +683,8 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+        use-cache: [true]
+
     with:
       project: sentiment
       environment: ${{ needs.get-environment.outputs.name }}
@@ -671,6 +698,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -703,6 +731,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # register
           - name: register
@@ -713,6 +742,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # train
           - name: train
@@ -725,6 +755,7 @@ jobs       :
             self-hosted-runner-type: g4dn.2xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # compile
           - name: compile
@@ -735,6 +766,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # serve
           - name: serve
@@ -747,6 +779,8 @@ jobs       :
             self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-ami: ami-07b4e00e2c69c3702
             self-hosted-runner-neuron: true
+            use-cache: true
+
     with:
       project: iptc
       environment: ${{ needs.get-environment.outputs.name }}
@@ -762,6 +796,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -793,6 +828,8 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
+
     with:
       project: iptc-multi
       environment: ${{ needs.get-environment.outputs.name }}
@@ -806,6 +843,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -816,10 +854,11 @@ jobs       :
       NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
       INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
 
+
   # ner
 
   run-ner-project:
-    name: NER Project
+    name: NER multi-model Project
     uses: ./.github/workflows/_projects.yaml
     needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -837,6 +876,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            use-cache: true
 
           # compile
           - name: compile
@@ -846,25 +886,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-
-          # backfill
-          - name: backfill
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-20.04
-
-          # serve
-          - name: serve
-            download-model: true
-            integration: false
-            functional: true
-            load: true
-            upload-test-results: true
-            runner-kind: custom
-            self-hosted-runner-type: inf1.xlarge
+            use-cache: true
 
     with:
       project: ner
@@ -879,6 +901,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -929,6 +952,8 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+        use-cache: [true]
+
     with:
       project: content-scoring
       environment: ${{ needs.get-environment.outputs.name }}
@@ -938,6 +963,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -969,6 +995,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            use-cache: true
 
     with:
       project: translation
@@ -976,9 +1003,11 @@ jobs       :
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
+      functional: ${{ matrix.components.functional }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1010,6 +1039,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-neuron: false
 
           # backfill
           - name: backfill
@@ -1020,6 +1050,8 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+
+        use-cache: [true]
 
     with:
       project: lsh
@@ -1033,7 +1065,9 @@ jobs       :
       upload-test-results: ${{ matrix.components.upload-test-results }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1065,6 +1099,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
           # train
           - name: train
@@ -1076,7 +1111,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
-
+            use-cache: true
 
           # serve
           - name: serve
@@ -1088,7 +1123,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
-
+            use-cache: true
 
           # backfill
           - name: backfill
@@ -1099,6 +1134,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            use-cache: true
 
     with:
       project: topic
@@ -1114,6 +1150,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1145,6 +1182,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            use-cache: true
 
     with:
       project: transcript-segmentation
@@ -1159,6 +1197,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1202,6 +1241,8 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
 
+        use-cache: [true]
+
     with:
       project: topic-summarization
       environment: ${{ needs.get-environment.outputs.name }}
@@ -1215,6 +1256,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1261,6 +1303,8 @@ jobs       :
             component: backend
             integration: false
 
+        use-cache: [true]
+
     with:
       environment: ${{ needs.get-environment.outputs.name }}
       app: ${{ matrix.apps.name }}
@@ -1268,6 +1312,7 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1276,3 +1321,42 @@ jobs       :
       PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+  # ===============================================
+  # COMPLETION CHECKPOINT
+  # ===============================================
+
+  check:
+    runs-on: ubuntu-latest
+    name: Jobs Completion Check
+    if: always()
+    needs:
+      - get-environment
+      - run-code-quality-checks
+      - run-repository-state
+      - run-get-core-dependencies-versions
+      - get-target-branch-name
+      - run-libs-tests
+      - run-us-east-1-base-docker
+      - run-us-east-1-docker
+      - run-us-east-2-docker
+      - run-keywords-project
+      - run-summarization-project
+      - run-gch-summarization-project
+      - run-entity-linking-project
+      - run-sentiment-project
+      - run-iptc-project
+      - run-iptc-multi-project
+      - run-ner-project
+      - run-content-scoring-project
+      - run-translation-project
+      - run-lsh-project
+      - run-topic-project
+      - run-transcript-segmentation-project
+      - run-topic-summarization-project
+      - run-apps
+    steps:
+      - name: Check Job Statuses
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}

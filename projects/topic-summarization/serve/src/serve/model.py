@@ -87,25 +87,35 @@ class ServedTopicModel(ServedModel):
         content = inputs.content
         trend_found = None
         save_report_dynamodb = inputs.save_report_dynamodb
+        query_all_doc_count = None
+        query_topic_doc_count = None
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
+            boolean_query = query_profile.query
             trend_detection = inputs.trend_detection
 
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
             # to work for integration tests
             trend_end_time = pd.Timestamp(datetime.now())
 
-            trend_lookback_days = parameter_input.get(
-                "override_trend_lookback_days", settings.TREND_LOOKBACK_DAYS
+            trend_lookback_days = (
+                parameter_input.override_trend_lookback_days
+                if parameter_input.override_trend_lookback_days
+                else settings.TREND_LOOKBACK_DAYS
             )
+
             trend_start_time = trend_end_time - pd.Timedelta(days=trend_lookback_days)
 
-            topic_document_threshold = parameter_input.get(
-                "override_topic_document_threshold", settings.TOPIC_DOCUMENT_THRESHOLD
+            topic_document_threshold = (
+                parameter_input.override_topic_document_threshold
+                if parameter_input.override_topic_document_threshold
+                else settings.TOPIC_DOCUMENT_THRESHOLD
             )
-            trend_time_interval = parameter_input.get(
-                "override_trend_time_interval", settings.TREND_TIME_INTERVAL
+            trend_time_interval = (
+                parameter_input.override_trend_time_interval
+                if parameter_input.override_trend_time_interval
+                else settings.TREND_TIME_INTERVAL
             )
 
             if trend_detection:
@@ -126,9 +136,10 @@ class ServedTopicModel(ServedModel):
             doc_start_time = trend_start_time
             doc_end_time = trend_end_time
 
-            days_past_inflection_point = parameter_input.get(
-                "override_document_collector_end_date",
-                settings.DAYS_PAST_INFLECTION_POINT,
+            days_past_inflection_point = (
+                parameter_input.override_document_collector_end_date
+                if parameter_input.override_document_collector_end_date
+                else settings.DAYS_PAST_INFLECTION_POINT
             )
 
             if not trend_detection or trend_found:
@@ -144,7 +155,7 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
 
-                topic = self.model.aggregate(content)
+                topic = self.model.aggregate(content, boolean_query)
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )

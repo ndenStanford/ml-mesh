@@ -33,7 +33,8 @@ class TrendDetection:
         self.es = Elasticsearch(
             [
                 f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
-            ]
+            ],
+            timeout=settings.ES_TIMEOUT,
         )
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:

@@ -10,7 +10,10 @@ services:
       context: ../../
       dockerfile: projects/translation/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=translate-serve,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=translate-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: translation
@@ -22,6 +25,9 @@ services:
     profiles: [serve, functional]
     ports:
       - 8000:8000
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     hostname: onclusiveml
     networks:
       - onclusive-net
@@ -38,6 +44,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
+    environment:
+      ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     networks:
       - onclusive-net
@@ -45,6 +53,9 @@ services:
   serve-functional:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
     hostname: onclusiveml

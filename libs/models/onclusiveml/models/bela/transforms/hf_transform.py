@@ -1,5 +1,4 @@
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
+"""Transformer."""
 
 # ML libs
 import torch.nn as nn
@@ -7,6 +6,8 @@ from transformers import AutoTokenizer
 
 
 class HFTransform(nn.Module):
+    """Hugging Face Transformer."""
+
     def __init__(
         self,
         model_path: str = "xlm-roberta-base",
@@ -20,6 +21,7 @@ class HFTransform(nn.Module):
         self.add_special_tokens = add_special_tokens
 
     def forward(self, texts):
+        """Hugging Face tokenizer."""
         return self.tokenizer(
             texts,
             return_tensors=None,

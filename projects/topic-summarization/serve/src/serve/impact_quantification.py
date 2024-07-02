@@ -38,7 +38,8 @@ class ImpactQuantification:
         self.es = Elasticsearch(
             [
                 f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
-            ]
+            ],
+            timeout=settings.ES_TIMEOUT,
         )
 
     def decompose_trend(self, series_profile: List[float]) -> np.array:

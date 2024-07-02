@@ -12,6 +12,7 @@ from rapidfuzz import fuzz
 from onclusiveml.core.logging import get_default_logger
 
 # Source
+from src.serve.exceptions import PromptBackendError
 from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
@@ -279,11 +280,14 @@ class TranscriptSegmentationHandler:
         end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
         return paragraph[beg:end]
 
-    def ad_detect(self, paragraph: Optional[str]) -> Optional[bool]:
+    def ad_detect(
+        self, paragraph: Optional[str], keywords: Optional[List[str]]
+    ) -> Optional[bool]:
         """Detect the advertisement inside the selected transcript.
 
         Args:
             paragraph (str): transcript after postprocessing
+            keywords (List[str]): target keywords
 
         Return:
             Optional[bool]: True or False or None
@@ -292,6 +296,7 @@ class TranscriptSegmentationHandler:
         payload = {
             "input": {
                 "paragraph": paragraph,
+                "keywords": keywords,
             },
             "output": settings.ad_detection_output_schema,
         }
@@ -306,7 +311,6 @@ class TranscriptSegmentationHandler:
         )
 
         json_response = json.loads(q.content)
-
         # get the time stamp with ads
         advertisement_detect = json_response.get("advertisement_detect").lower()
 
@@ -367,13 +371,14 @@ class TranscriptSegmentationHandler:
             headers=headers,
             json=payload,
         )
+        if q.status_code != 200:
+            raise PromptBackendError(error=q.content)
 
         if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
             offset = self.country_offsets.get(country.lower())
             if offset:
                 offset_start_buffer = offset["start_offset"]
                 offset_end_buffer = offset["end_offset"]
-
         # post process
         (
             (start_time_offsetted, end_time_offsetted),
@@ -388,7 +393,7 @@ class TranscriptSegmentationHandler:
             offset_end_buffer=offset_end_buffer,
         )
 
-        ad_detect_output = self.ad_detect(segment)
+        ad_detect_output = self.ad_detect(segment, keywords)
 
         return (
             (start_time_offsetted, end_time_offsetted),
