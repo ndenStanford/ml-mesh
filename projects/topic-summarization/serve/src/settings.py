@@ -143,9 +143,9 @@ class ImpactQuantificationSettings(OnclusiveBaseSettings):
 
     impact_lookback_days: int = 125
     time_interval: str = "24h"
-    local_raio_cutoff = 0.01
-    global_local_comparison_ratio_cutoff = 1
-    mf_tau_cutoff = 0.8
+    local_raio_cutoff: float = 0.01
+    global_local_comparison_ratio_cutoff: float = 1
+    mf_tau_cutoff: float = 0.8
 
 
 class GlobalSettings(
