@@ -5,6 +5,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List, Union
 
+# 3rd party libraries
+from neptune.types.mode import Mode
+
 # Internal libraries
 from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
 from onclusiveml.nlp.language.constants import LanguageIso
