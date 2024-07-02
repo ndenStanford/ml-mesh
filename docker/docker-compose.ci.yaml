@@ -11,7 +11,10 @@ services:
       context: ..
       dockerfile: ./docker/python-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=python-base,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=python-base
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -28,7 +31,10 @@ services:
       context: ..
       dockerfile: ./docker/fastapi-serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=fastapi-serve,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=fastapi-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -45,7 +51,10 @@ services:
       context: ..
       dockerfile: ./docker/gpu-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-base,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-base
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         CUDA_VERSION: 11.7.1
@@ -79,7 +88,10 @@ services:
       context: ..
       dockerfile: ./docker/gpu-train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-train,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=gpu-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -112,7 +124,10 @@ services:
       context: ..
       dockerfile: ./docker/neuron-compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-compile,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -138,7 +153,10 @@ services:
       context: ..
       dockerfile: ./docker/neuron-inference/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-inference,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=neuron-inference
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -163,7 +181,10 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-jupyter/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-jupyter,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-jupyter
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -180,7 +201,10 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-torch-cpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-cpu,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-cpu
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -197,7 +221,10 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-data-science/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-data-science,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-data-science
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -214,7 +241,10 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-torch-gpu/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-gpu,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-gpu
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -231,7 +261,10 @@ services:
       context: ..
       dockerfile: ./docker/dask-base/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=dask-base,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=dask-base
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -248,7 +281,10 @@ services:
       context: ..
       dockerfile: ./docker/kubeflow-torch-inf/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-inf,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=kubeflow-torch-inf
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -265,7 +301,10 @@ services:
       context: ..
       dockerfile: ./docker/beam-backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-backfill,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-backfill
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
@@ -284,7 +323,10 @@ services:
       context: ..
       dockerfile: ./docker/beam-worker/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-worker,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=beam-worker
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
