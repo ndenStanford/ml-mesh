@@ -50,17 +50,6 @@ ALL_LIBS:= \
 	training \
 	llms
 
-# libraries included in sonarqube coverage tests
-COVERED_LIBS:= \
-	compile \
-	core \
-	data \
-	models \
-	nlp \
-	serving \
-	tracking \
-	hashing \
-	llms
 
 # all projects
 ALL_PROJECTS:= \
