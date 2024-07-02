@@ -1,7 +1,7 @@
 """Language model dynamoDB tables."""
 
 # Standard Library
-from typing import Optional
+from typing import Any, Optional
 
 # 3rd party libraries
 import boto3
@@ -62,8 +62,7 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
     def _handle_bedrock_provider(self, model_params_class) -> Optional[LangchainT]:
         """Handle the Bedrock provider specifics."""
         self._initialize_bedrock_model_params(model_params_class)
-        self._setup_boto3_session()
-        bedrock = self._create_bedrock_client()
+        bedrock = self.bedrock_client
         return BedrockChat(
             client=bedrock,
             model_id=self.alias,
@@ -97,17 +96,20 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 
-    def _setup_boto3_session(self):
+    @property
+    def boto3_session(self) -> Any:
         """Setup boto3 session."""
         boto3.setup_default_session(
             profile_name=settings.AWS_PROFILE,
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
         )
+        return boto3.Session()
 
-    def _create_bedrock_client(self):
+    @property
+    def bedrock_client(self) -> Any:
         """Create a Bedrock client."""
-        return boto3.client(
+        return self.boto3_session.client(
             service_name="bedrock-runtime",
             region_name=settings.AWS_DEFAULT_REGION,
             endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
