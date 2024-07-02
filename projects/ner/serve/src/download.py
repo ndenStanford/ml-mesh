@@ -27,7 +27,6 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
         api_token=settings.api_token.get_secret_value(),
         project=settings.project,
     )
-
     if not os.path.isdir(settings.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to
         # local

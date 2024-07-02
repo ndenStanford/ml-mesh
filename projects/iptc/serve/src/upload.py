@@ -29,8 +29,12 @@ def main(settings: GlobalSettings) -> None:
     model_version_specs = cast(settings, TrackedCompiledModelSpecs)
     docker_image_specs = cast(settings, TrackedImageSpecs)
     # initialize client for specific model version
-    mv = TrackedModelVersion(**model_version_specs.model_dump())
-
+    mv = TrackedModelVersion(
+        with_id=model_version_specs.with_id,
+        mode=model_version_specs.mode,
+        api_token=model_version_specs.api_token.get_secret_value(),
+        project=model_version_specs.project,
+    )
     test_results_neptune_attribute_path = (
         f"model/test_results/{settings.docker_image_tag}"
     )

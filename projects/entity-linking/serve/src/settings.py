@@ -33,6 +33,12 @@ EL_SUPPORTED_LANGUAGES = [
 ]
 
 
+class EntityLinkinTrackedModelSettings(TrackedModelSettings):
+    """Tracked compiled model settings."""
+
+    mode: str = Mode.READ_ONLY
+
+
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
@@ -56,7 +62,7 @@ class GlobalSettings(
     ELSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    TrackedModelSettings,
+    EntityLinkinTrackedModelSettings,
 ):
     """Global server settings."""
 
