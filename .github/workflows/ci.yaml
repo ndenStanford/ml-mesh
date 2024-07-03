@@ -876,7 +876,6 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
-            use-cache: true
 
           # compile
           - name: compile
