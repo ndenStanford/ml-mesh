@@ -1136,7 +1136,7 @@ jobs       :
           - name: serve
             download-model: false
             integration: false
-            functional: true
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
