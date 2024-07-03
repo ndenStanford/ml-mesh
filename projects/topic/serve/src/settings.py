@@ -45,12 +45,18 @@ class TopicSettings(TrackingSettings):
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
+class TopicTrackedModelSettings(TrackedModelSettings):
+    """Tracked compiled model settings."""
+
+    mode: str = Mode.READ_ONLY
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TopicSettings,
-    TrackedModelSettings,
+    TopicTrackedModelSettings,
 ):
     """Global server settings."""
 

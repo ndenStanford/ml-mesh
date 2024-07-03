@@ -40,12 +40,18 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
+class GchSummarizationTrackedModelSettings(TrackedModelSettings):
+    """Tracked compiled model settings."""
+
+    mode: str = Mode.READ_ONLY
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     GchSummarizationSettings,
-    TrackedModelSettings,
+    GchSummarizationTrackedModelSettings,
 ):
     """Global server settings."""
 
