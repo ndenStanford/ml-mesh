@@ -48,6 +48,14 @@ on  :
         default: true
         type: boolean
         description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
+      apply-max-attempts:
+        type: number
+        default: 2
+        description: Number of attempts to deploy manifests to cluster.
+      apply-retry-wait-seconds:
+        type: number
+        default: 30
+        description: Time (in  seconds) between attempts.
       use-cache:
         type: boolean
         required: false
@@ -66,6 +74,9 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: AWS secret access key
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: Github PAT to allow EC2 instance to connect to Github repository content.
       PROMPT_REGISTRY_APP_ID:
         required: true
         description: Prompt registry app ID.

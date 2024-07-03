@@ -1282,6 +1282,7 @@ jobs       :
       PROMPT_REGISTRY_APP_ID: ${{ secrets.PROMPT_REGISTRY_APP_ID }}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
   # ===============================================
   # COMPLETION CHECKPOINT
