@@ -99,10 +99,7 @@ def test_get(mock_dyntastic_get, mock_github_read, alias, template, project):
     result = PromptTemplate.get(alias)
 
     mock_github_read.assert_called_with(os.path.join(project, alias))
-    assert (
-        result
-        == PromptTemplate(alias=alias, project=project, template=template).model_dump()
-    )
+    assert result == PromptTemplate(alias=alias, project=project, template=template)
 
 
 @patch.object(Dyntastic, "scan")
