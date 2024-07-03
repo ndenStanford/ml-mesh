@@ -39,6 +39,7 @@ EL_SUPPORTED_LANGUAGES = [
 class EntityLinkinTrackedModelSettings(TrackedModelSettings):
     """Tracked compiled model settings."""
 
+    with_id: str
     mode: str = Mode.READ_ONLY
 
 

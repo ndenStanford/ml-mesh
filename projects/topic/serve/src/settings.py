@@ -51,6 +51,7 @@ class TopicSettings(TrackingSettings):
 class TopicTrackedModelSettings(TrackedModelSettings):
     """Tracked compiled model settings."""
 
+    with_id: str
     mode: str = Mode.READ_ONLY
 
 

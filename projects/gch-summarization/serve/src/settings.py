@@ -46,6 +46,7 @@ class ServerModelSettings(ServingParams):
 class GchSummarizationTrackedModelSettings(TrackedModelSettings):
     """Tracked compiled model settings."""
 
+    with_id: str
     mode: str = Mode.READ_ONLY
 
 

@@ -22,7 +22,6 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     # initialize client for specific model version
     mv = TrackedModelVersion(
         with_id=settings.with_id,
-        model=settings.model,
         mode=settings.mode,
         api_token=settings.api_token.get_secret_value(),
         project=settings.project,
