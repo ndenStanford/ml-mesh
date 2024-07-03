@@ -1255,7 +1255,6 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-ami: ami-0af5c083127a8adce
-            self-hosted-runner-neuron: false
 
           - name: prompt
             component: frontend
@@ -1271,6 +1270,9 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      runner-kind: ${{ matrix.components.runner-kind }}
+      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
