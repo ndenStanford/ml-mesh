@@ -122,7 +122,9 @@ def test_model_server_prediction(payload, expected_response):
             {
                 "data": {
                     "namespace": "sentiment",
-                    "attributes": {"content": "AI is a fantastic tool."},
+                    "attributes": {
+                        "content": "London is a wonderful city. John is a terrible man."
+                    },
                     "parameters": {"language": "en"},
                 }
             },
@@ -133,8 +135,8 @@ def test_model_server_prediction(payload, expected_response):
                     "namespace": "sentiment",
                     "attributes": {
                         "label": "positive",
-                        "negative_prob": 0.0256,
-                        "positive_prob": 0.9139,
+                        "negative_prob": 0.4854,
+                        "positive_prob": 0.4794,
                         "entities": None,
                     },
                 },

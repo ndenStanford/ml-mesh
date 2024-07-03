@@ -408,7 +408,6 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/dev.env
     hostname: onclusiveml
     networks: [onclusive-net]
@@ -461,9 +460,9 @@ services:
         source: serve/tests
         target: /projects/iptc/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
-    env_file: serve/config/dev.env
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
       - onclusive-net

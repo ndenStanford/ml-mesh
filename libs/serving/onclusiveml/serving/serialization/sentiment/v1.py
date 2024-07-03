@@ -38,7 +38,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     """
 
     content: str = ""
-    entities: Optional[List[InputEntity]]
+    entities: Optional[List[InputEntity]] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
