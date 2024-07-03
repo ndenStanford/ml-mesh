@@ -1252,14 +1252,15 @@ jobs       :
           - name: prompt
             component: backend
             integration: true
+            runner-kind: custom
+            self-hosted-runner-type: c6i.xlarge
+            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-neuron: false
 
           - name: prompt
             component: frontend
             integration: false
-
-          - name: entity-fishing
-            component: backend
-            integration: false
+            runner-kind: ubuntu-20.04
 
         use-cache: [true]
 
