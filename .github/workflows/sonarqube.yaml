@@ -27,16 +27,19 @@ jobs:
         run: |
           docker system prune -f
           docker volume prune -f
-      - name: Clean up unused files
+      - name: Free up disk space
         run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
           sudo apt-get clean
           sudo apt-get autoremove -y
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo rm -rf /tmp/*
-          sudo rm -rf /var/tmp/*
+          sudo rm -rfv \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            /usr/local/.ghcup \
+            /usr/lib/jvm \
+            /var/lib/apt/lists/* \
       - name: Install test coverage utils
         run: pip install coverage
       - name: Setup Poetry
