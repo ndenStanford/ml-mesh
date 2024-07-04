@@ -133,16 +133,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
-    volumes:
-      - type: bind
-        source: backend/src
-        target: /apps/prompt/backend/src
-      - type: bind
-        source: backend/tests
-        target: /apps/prompt/backend/tests
-      - type: bind
-        source: ~/.aws/
-        target: /apps/prompt/backend/.aws/
     environment:
       ENVIRONMENT: dev
       OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
