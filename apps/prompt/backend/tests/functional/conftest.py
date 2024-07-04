@@ -13,8 +13,7 @@ def url_model_namespace():
 @pytest.fixture
 def url_prompt_namespace():
     """Create prompt namespace url."""
-    return "http://backend:4000/api/v2/ \
-        prompts/english-summarization/generate/model/anthropic.claude-3-sonnet-20240229-v1:0"
+    return "http://backend:4000/api/v2/prompts/english-summarization/generate/model/anthropic.claude-3-sonnet-20240229-v1:0"  # noqa: E501
 
 
 @pytest.fixture
