@@ -174,7 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
@@ -200,7 +200,7 @@ jobs:
     needs: [check-run-criteria, set-runner-specs]
     runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
     timeout-minutes: 50
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
     env:
       DOCKER_BUILDKIT: 1
