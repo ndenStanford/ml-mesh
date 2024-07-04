@@ -192,11 +192,13 @@ jobs       :
           - name: python-base
             validate-build: false
             runner-kind: ubuntu-20.04
+            self-hosted-runner-cuda: false
 
           - name: gpu-base
             validate-build: true
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
+            self-hosted-runner-cuda: true
             runner-kind: custom
 
         base-region: [us-east-1]
@@ -216,6 +218,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
+      self-hosted-runner-cuda: ${{ matrix.image.self-hosted-runner-cuda }}
       use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -237,37 +240,43 @@ jobs       :
           - name: gpu-train
             validate-build: false
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: true
             runner-kind: custom
 
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: true
+            self-hosted-runner-cuda: false
             runner-kind: custom
 
           - name: neuron-inference
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: true
+            self-hosted-runner-cuda: false
             runner-kind: custom
 
           - name: fastapi-serve
             validate-build: false
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             runner-kind: ubuntu-20.04
 
           - name: beam-backfill
             validate-build: false
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             runner-kind: ubuntu-20.04
 
           - name: beam-worker
             validate-build: false
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             runner-kind: ubuntu-20.04
 
         base-region: [us-east-1]
@@ -286,6 +295,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
+      self-hosted-runner-cuda: ${{ matrix.image.self-hosted-runner-cuda }}
       use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -343,6 +353,7 @@ jobs       :
         validate-build: [false]
         region: [us-east-2]
         self-hosted-runner-neuron: [false]
+        self-hosted-runner-cuda: [false]
 
     with:
       environment: ${{ needs.get-environment.outputs.name }}
@@ -355,6 +366,7 @@ jobs       :
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
+      self-hosted-runner-cuda: ${{ matrix.self-hosted-runner-cuda }}
       use-cache: ${{ matrix.image.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -503,6 +515,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
           # serve
@@ -514,7 +527,8 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
+            self-hosted-runner-cuda: true
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -527,6 +541,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
     with:
@@ -544,6 +559,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      self-hosted-runner-cuda: ${{ matrix.components.self-hosted-runner-cuda }}
       use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -577,8 +593,9 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
           # serve
@@ -590,8 +607,9 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: true
             use-cache: true
 
           # backfill
@@ -603,6 +621,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
     with:
@@ -620,6 +639,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      self-hosted-runner-cuda: ${{ matrix.components.self-hosted-runner-cuda }}
       use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -731,6 +751,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
           # register
@@ -742,6 +763,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
           # train
@@ -753,8 +775,9 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0af5c083127a8adce
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: true
             use-cache: true
 
           # compile
@@ -766,6 +789,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            self-hosted-runner-cuda: false
             use-cache: true
 
           # serve
@@ -777,8 +801,9 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-ami: ami-02836a4bc48f2bdfb
             self-hosted-runner-neuron: true
+            self-hosted-runner-cuda: false
             use-cache: true
 
     with:
@@ -796,6 +821,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
+      self-hosted-runner-cuda: ${{ matrix.components.self-hosted-runner-cuda }}
       use-cache: ${{ matrix.components.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}

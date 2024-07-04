@@ -54,6 +54,11 @@ on  :
         default: true
         type: boolean
         description: Whether to install AWS neuron dependencies on self hosted runner. Only relevant if `runner-kind`='custom'.
+      self-hosted-runner-cuda:
+        required: false
+        default: false
+        type: boolean
+        description: Whether to install CUDA dependencies on self hosted runner.
       apply-max-attempts:
         type: number
         default: 2
@@ -116,6 +121,7 @@ jobs:
       self-hosted-runner-ami: ${{ inputs.self-hosted-runner-ami }}
       setup-docker-compose: true
       setup-neuron: ${{ inputs.self-hosted-runner-neuron }}
+      setup-cuda: ${{ inputs.self-hosted-runner-cuda }}
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

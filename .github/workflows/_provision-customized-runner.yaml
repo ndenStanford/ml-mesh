@@ -28,6 +28,11 @@ on  :
         default: true
         type: boolean
         description: Whether to set up neuron driver and runtime OS libraries on the runner.
+      setup-cuda:
+        required: true
+        default: true
+        type: boolean
+        description: Whether to set up CUDA driver on the runner.
       neuron-dkms-version:
         required: false
         default: aws-neuronx-dkms-2.9.4.0
@@ -121,13 +126,14 @@ jobs:
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
-      - name: Install Node
+      - name: Install CUDA
+        if: ${{ inputs.setup-cuda }}
         run: |
-          sudo yum -y install curl
-          curl -fsSL https://rpm.nodesource.com/setup_20.x -o nodesource_setup.sh
-          sudo bash nodesource_setup.sh
-          sudo yum install -y nodejs
-          node -v
+          sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo
+          sudo dnf clean all
+          sudo dnf -y install cuda-toolkit-12-5
+          sudo dnf -y module install nvidia-driver:open-dkms
+          sudo dnf -y module install nvidia-driver:latest-dkms
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
