@@ -14,7 +14,7 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-03e201058e36661a3
+        default: ami-0e993cb10eb6e4046
         type: string
         description: The EC2 AMI of the self hosted runner. Choose ami-03e201058e36661a3 for inferentia, ami-0255b953a852e0cb5 for cpu, or ami-0af5c083127a8adce
           for gpu.
@@ -126,30 +126,22 @@ jobs:
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
-      - name: Install CUDA
-        if: ${{ inputs.setup-cuda }}
-        run: |
-          sudo apt-get install wget
-          wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb
-          sudo dpkg -i cuda-keyring_1.1-1_all.deb
-          sudo apt-get update
-          sudo apt-get -y install cuda-toolkit-12-5
-          sudo apt-get install -y nvidia-driver-555-open
-          sudo apt-get install -y cuda-drivers-555
-
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
         run: |
           echo "Configure Linux for Neuron repository updates"
-          . /etc/os-release
-          sudo tee /etc/apt/sources.list.d/neuron.list > /dev/null <<EOF
-          deb https://apt.repos.neuron.amazonaws.com ${VERSION_CODENAME} main
+          sudo tee /etc/yum.repos.d/neuron.repo > /dev/null <<EOF
+          [neuron]
+          name=Neuron YUM Repository
+          baseurl=https://yum.repos.neuron.amazonaws.com
+          enabled=1
+          metadata_expire=0
           EOF
-          wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB | sudo apt-key add -
-          sudo apt-get update -y
-          sudo apt-get install git kernel-devel-$(uname -r) kernel-headers-$(uname -r) -y
-          sudo apt-get install ${{ inputs.neuron-dkms-version }} -y
-          sudo apt-get install ${{ inputs.neuron-tools-version }} -y
+          sudo rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB
+          sudo yum update -y
+          sudo yum install git kernel-devel-$(uname -r) kernel-headers-$(uname -r) -y
+          sudo yum install ${{ inputs.neuron-dkms-version }} -y
+          sudo yum install ${{ inputs.neuron-tools-version }} -y
           export PATH=/opt/aws/neuron/bin:$PATH
           echo "Available neuron device(s):"
           neuron-ls

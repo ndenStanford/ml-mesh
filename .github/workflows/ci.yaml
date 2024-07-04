@@ -197,7 +197,7 @@ jobs       :
           - name: gpu-base
             validate-build: true
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-073aa92883608980c
             self-hosted-runner-cuda: true
             runner-kind: custom
 
@@ -240,7 +240,7 @@ jobs       :
           - name: gpu-train
             validate-build: false
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-073aa92883608980c
             self-hosted-runner-neuron: false
             self-hosted-runner-cuda: true
             runner-kind: custom
@@ -248,7 +248,7 @@ jobs       :
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-0e993cb10eb6e4046
             self-hosted-runner-neuron: true
             self-hosted-runner-cuda: false
             runner-kind: custom
@@ -256,7 +256,7 @@ jobs       :
           - name: neuron-inference
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-0e993cb10eb6e4046
             self-hosted-runner-neuron: true
             self-hosted-runner-cuda: false
             runner-kind: custom
@@ -527,7 +527,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-073aa92883608980c
             self-hosted-runner-cuda: true
             self-hosted-runner-neuron: false
             use-cache: true
@@ -593,7 +593,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-0e993cb10eb6e4046
             self-hosted-runner-neuron: false
             self-hosted-runner-cuda: false
             use-cache: true
@@ -607,7 +607,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-073aa92883608980c
             self-hosted-runner-neuron: false
             self-hosted-runner-cuda: true
             use-cache: true
@@ -775,7 +775,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-073aa92883608980c
             self-hosted-runner-neuron: false
             self-hosted-runner-cuda: true
             use-cache: true
@@ -801,7 +801,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-03778dc427ac5beda
+            self-hosted-runner-ami: ami-0e993cb10eb6e4046
             self-hosted-runner-neuron: true
             self-hosted-runner-cuda: false
             use-cache: true
