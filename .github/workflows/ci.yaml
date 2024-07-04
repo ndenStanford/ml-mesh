@@ -313,13 +313,15 @@ jobs       :
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             base-region: us-east-1
-            runner-kind: ubuntu-20.04
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            runner-kind: custom
             use-cache: true
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
             base-region: us-east-1
-            runner-kind: ubuntu-20.04
+            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            runner-kind: custom
             use-cache: true
 
           # kubeflow-torch-cpu
