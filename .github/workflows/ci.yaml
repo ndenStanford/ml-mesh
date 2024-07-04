@@ -1318,10 +1318,12 @@ jobs       :
           - name: prompt
             component: frontend
             integration: false
+            functional: false
 
           - name: entity-fishing
             component: backend
             integration: false
+            functional: false
 
         use-cache: [true]
 
@@ -1331,6 +1333,7 @@ jobs       :
       component: ${{ matrix.apps.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
+      functional: ${{ matrix.apps.functional }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       use-cache: ${{ matrix.use-cache }}
     secrets:
