@@ -24,6 +24,11 @@ on  :
         default: true
         type: boolean
         description: Whether to run integrations.
+      functional:
+        required: false
+        default: false
+        type: boolean
+        description: Whether to run functional test suite.
       release:
         required: true
         default: true
@@ -141,6 +146,20 @@ jobs:
         if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
+          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+          PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
+          AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          IMAGE_TAG="${{ inputs.tag }}" \
+          TARGET_BUILD_STAGE="development" \
+          PLATFORM="linux/amd64" \
+          ENVIRONMENT="ci"
+
+      - name: Run app component functional tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
+        run: |
+          make apps.functional/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
           PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \

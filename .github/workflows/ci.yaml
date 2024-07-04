@@ -1313,6 +1313,7 @@ jobs       :
           - name: prompt
             component: backend
             integration: true
+            functional: false
 
           - name: prompt
             component: frontend
