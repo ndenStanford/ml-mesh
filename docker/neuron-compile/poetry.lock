@@ -1050,12 +1050,12 @@ typing-extensions = "*"
 
 [[package]]
 name = "torch-neuron"
-version = "1.12.1.2.5.8.0"
+version = "1.12.1.2.9.74.0"
 description = ""
 optional = false
 python-versions = "*"
 files = [
-    {file = "torch_neuron-1.12.1.2.5.8.0-py3-none-linux_x86_64.whl", hash = "sha256:fd2bb8efd56f9e2fd2ed2608b77c282d7a91558a269a3ecb774aac6d37a2f7d9"},
+    {file = "torch_neuron-1.12.1.2.9.74.0-py3-none-linux_x86_64.whl", hash = "sha256:775653ebc34875a8e9e8794d5878a47f90a7f9df99e2e12e5fd843574ad98f70"},
 ]
 
 [package.dependencies]
@@ -1188,4 +1188,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.8.16"
-content-hash = "526b078e6556019f3bcfcae77a0d12c54a274269a252151d3dd6696c00e8c629"
+content-hash = "aaafd8ca632cc49d0660e77e5e0a48f2ee9057549b07e4e8d2456a8667516ad4"

@@ -1,4 +1,5 @@
 """Document Collector."""
+# isort: skip_file
 
 # Standard Library
 from typing import List
@@ -14,7 +15,6 @@ from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
 from src.serve.utils import topic_profile_documents_query
 from src.settings import get_settings
 
-
 settings = get_settings()
 
 
@@ -25,7 +25,8 @@ class DocumentCollector:
         self.es = Elasticsearch(
             [
                 f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
-            ]
+            ],
+            timeout=settings.ES_TIMEOUT,
         )
 
     def get_documents(
