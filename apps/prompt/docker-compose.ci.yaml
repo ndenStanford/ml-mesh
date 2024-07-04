@@ -205,7 +205,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [backend, integration]
+    profiles: [backend, functional, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -224,7 +224,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [backend, integration]
+    profiles: [backend, functional, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
