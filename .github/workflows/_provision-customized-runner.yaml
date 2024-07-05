@@ -14,7 +14,7 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-02836a4bc48f2bdfb
+        default: ami-08be1e3e6c338b037
         type: string
         description: The EC2 AMI of the self hosted runner. Choose ami-03e201058e36661a3 for inferentia, ami-0255b953a852e0cb5 for cpu, or ami-0af5c083127a8adce
           for gpu.
