@@ -14,7 +14,7 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-0e993cb10eb6e4046
+        default: ami-08be1e3e6c338b037
         type: string
         description: The EC2 AMI of the self hosted runner. Choose ami-03e201058e36661a3 for inferentia, ami-0255b953a852e0cb5 for cpu, or ami-0af5c083127a8adce
           for gpu.
@@ -125,6 +125,14 @@ jobs:
           sudo mkfs -t xfs /dev/nvme1n1 # Create filesystem
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
+
+      - name: Install CUDA
+        if: ${{ inputs.setup-cuda }}
+        run: |
+          sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo
+          sudo dnf clean all
+          sudo dnf -y install cuda-toolkit-12-5
+          sudo dnf -y module install nvidia-driver:open-dkms
 
       - name: Install neuron libraries
         if: ${{ inputs.setup-neuron }}
