@@ -23,7 +23,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     prompt_alias: str = "ml-transcript-segmentation"
     prompt_ad_alias: str = "ml-transcript-segmentation-ad-detection"
     internal_ml_endpoint_api_key: str = "1234"
-    default_model_segmentation: str = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+    default_model_segmentation: str = "anthropic.claude-3-sonnet-20240229-v1:0"
     default_model_ad: str = "gpt-4-0125-preview"
     segmentation_output_schema: Dict[str, str] = {
         "related_segment": "The most descriptive and informative news segment related to the keywords (DO NOT MODIFY THE TEXT IN ANY WAY, INCLUDING SPELLING, PUNCTUATION, ETC.)",  # noqa: E501
