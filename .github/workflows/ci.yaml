@@ -268,7 +268,8 @@ jobs       :
           - name: beam-worker
             validate-build: false
             self-hosted-runner-neuron: false
-            runner-kind: ubuntu-20.04
+            self-hosted-runner-type: m7a.medium
+            runner-kind: custom
 
         base-region: [us-east-1]
         region: [us-east-1]
