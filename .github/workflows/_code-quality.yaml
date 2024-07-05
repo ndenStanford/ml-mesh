@@ -19,7 +19,7 @@ on  :
       poetry-version:
         required: false
         type: string
-        description: Python version.
+        description: Poetry version.
     secrets:
       AWS_DEFAULT_REGION:
         required: true

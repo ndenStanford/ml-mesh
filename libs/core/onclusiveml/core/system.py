@@ -67,7 +67,7 @@ class SystemInfo(metaclass=Singleton):
             `True` if the current python process is running in a docker
             container, `False` otherwise.
         """
-        if os.path.exists("./dockerenv") or os.path.exists("/.dockerinit"):
+        if os.path.exists("/.dockerenv") or os.path.exists("/.dockerinit"):
             return True
 
         try:

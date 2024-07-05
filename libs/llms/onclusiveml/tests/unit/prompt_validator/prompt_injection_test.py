@@ -6,11 +6,11 @@ import pytest
 # Internal libraries
 from onclusiveml.llms.prompt_validator import (
     PromptInjectionException,
-    PromptInjectionfield_validator,
+    PromptInjectionValidator,
 )
 
 
-field_validator = PromptInjectionfield_validator()
+field_validator = PromptInjectionValidator()
 
 
 def test_validate_prompt_valid():

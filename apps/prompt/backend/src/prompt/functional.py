@@ -9,7 +9,7 @@ from langchain.memory import ConversationBufferMemory
 
 # Internal libraries
 from onclusiveml.core.retry import retry
-from onclusiveml.llms.prompt_validator import PromptInjectionfield_validator
+from onclusiveml.llms.prompt_validator import PromptInjectionValidator
 
 # Source
 from src.extensions.redis import redis
@@ -19,7 +19,7 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-field_validator = PromptInjectionfield_validator()
+field_validator = PromptInjectionValidator()
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)

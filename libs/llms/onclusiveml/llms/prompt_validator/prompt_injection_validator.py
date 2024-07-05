@@ -72,7 +72,7 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             return None
 
 
-class PromptInjectionfield_validator:
+class PromptInjectionValidator:
     """Prompt Injection validation class to detect if prompts have been tampered with."""
 
     def __init__(
