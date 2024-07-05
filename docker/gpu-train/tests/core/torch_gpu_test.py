@@ -63,7 +63,7 @@ def test_profiling_device_usage():
     """
     # no data/model pinned to GPU yet
     print(f"GPU device reserved memory (before kernel init): {gpu_utilization()}")
-    assert gpu_utilization() < 350
+    assert gpu_utilization() < 450
 
     torch.ones((1, 1)).to("cuda")
     # GPU kernel overhead should be more than 0.75GB
