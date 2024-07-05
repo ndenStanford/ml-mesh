@@ -19,6 +19,8 @@ def generate_crawler_indices(num_months: int = 5) -> List:
         target_month = current_date.month - i
 
         # Adjust the year and month if needed
+        # while loop can be avoided if using dateutil. But will get issue in updating poetry.lock.
+        # So keep this for now and will update in the future
         while target_month <= 0:
             target_month += 12
             target_year -= 1
