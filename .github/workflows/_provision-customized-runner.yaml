@@ -145,7 +145,7 @@ jobs:
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
-          sudo service docker start
+          sudo service docker restart
           echo "Docker installation file directory:"
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
