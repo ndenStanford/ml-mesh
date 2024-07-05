@@ -2,9 +2,9 @@
 
 # Internal libraries
 # 3rd party libraries
-from datetime import datetime
 
 # Standard Library
+from datetime import datetime
 from typing import List
 
 
