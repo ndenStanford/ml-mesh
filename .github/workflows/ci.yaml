@@ -197,7 +197,7 @@ jobs       :
           - name: gpu-base
             validate-build: true
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-08be1e3e6c338b037
+            self-hosted-runner-ami: ami-02a100850b5468374
             self-hosted-runner-cuda: true
             runner-kind: custom
 
@@ -240,7 +240,7 @@ jobs       :
           - name: gpu-train
             validate-build: false
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-08be1e3e6c338b037
+            self-hosted-runner-ami: ami-02a100850b5468374
             self-hosted-runner-neuron: false
             self-hosted-runner-cuda: true
             runner-kind: custom
@@ -248,7 +248,7 @@ jobs       :
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-08be1e3e6c338b037
+            self-hosted-runner-ami: ami-008fc5112f428914b
             self-hosted-runner-neuron: true
             self-hosted-runner-cuda: false
             runner-kind: custom
@@ -256,7 +256,7 @@ jobs       :
           - name: neuron-inference
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-08be1e3e6c338b037
+            self-hosted-runner-ami: ami-008fc5112f428914b
             self-hosted-runner-neuron: true
             self-hosted-runner-cuda: false
             runner-kind: custom
@@ -419,6 +419,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-ami: ami-008fc5112f428914b
 
         use-cache: [true]
 
@@ -435,6 +436,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -527,7 +529,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-08be1e3e6c338b037
+            self-hosted-runner-ami: ami-02a100850b5468374
             self-hosted-runner-cuda: true
             self-hosted-runner-neuron: false
             use-cache: true
@@ -693,6 +695,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-ami: ami-008fc5112f428914b
 
           # backfill
           - name: backfill
@@ -718,6 +721,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -801,7 +805,7 @@ jobs       :
             upload-test-results: true
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-08be1e3e6c338b037
+            self-hosted-runner-ami: ami-008fc5112f428914b
             self-hosted-runner-neuron: true
             self-hosted-runner-cuda: false
             use-cache: true
