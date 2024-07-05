@@ -199,7 +199,7 @@ jobs:
             AWS_REGION=${{ inputs.base-region }}
 
       - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
           timeout_minutes: 30

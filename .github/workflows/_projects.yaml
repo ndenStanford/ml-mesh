@@ -236,7 +236,7 @@ jobs:
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
           timeout_minutes: 30
