@@ -267,8 +267,9 @@ jobs       :
 
           - name: beam-worker
             validate-build: false
-            self-hosted-runner-neuron: false
             self-hosted-runner-type: m7a.medium
+            self-hosted-runner-ami: ami-07b4e00e2c69c3702
+            self-hosted-runner-neuron: false
             runner-kind: custom
 
         base-region: [us-east-1]
