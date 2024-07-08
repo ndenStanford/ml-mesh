@@ -132,6 +132,7 @@ MODELS_TO_PARAMETERS = {
     ChatModel.TITAN_G1: TitanParameters,
     ChatModel.CLAUDE_2: Claude2Parameters,
     ChatModel.CLAUDE_2_1: Claude2Parameters,
+    ChatModel.CLAUDE_3_5_SONNET: Claude3Parameters,
     ChatModel.CLAUDE_3_SONNET: Claude3Parameters,
     ChatModel.CLAUDE_3_HAIKU: Claude3Parameters,
     ChatModel.CLAUDE_3_INSTANT: Claude3Parameters,
