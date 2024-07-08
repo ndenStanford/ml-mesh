@@ -4,12 +4,12 @@
 import pytest  # noqa
 
 # Internal libraries
-from onclusiveml.query.query_builder import (
+from onclusiveml.queries.query_builder import (
     build_query,
     predict_entity_linking,
     predict_ner,
 )
-from onclusiveml.query.query_builder.settings import get_settings
+from onclusiveml.queries.query_builder.settings import get_settings
 
 
 settings = get_settings()

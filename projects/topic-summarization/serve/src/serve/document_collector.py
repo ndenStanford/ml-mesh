@@ -9,7 +9,7 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 
 # Internal libraries
-from onclusiveml.query.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
 
 # Source
 from src.serve.utils import topic_profile_documents_query

@@ -13,7 +13,7 @@ from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.impact_quantification import ImpactQuantification
 from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
-from onclusiveml.query.query_profile import (
+from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     ProductionToolsQueryProfile,
 )

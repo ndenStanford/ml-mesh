@@ -4,8 +4,8 @@
 import pytest  # noqa
 
 # Internal libraries
-from onclusiveml.query.query_scorer import evaluate_query
-from onclusiveml.query.query_scorer.settings import get_settings
+from onclusiveml.queries.query_scorer import evaluate_query
+from onclusiveml.queries.query_scorer.settings import get_settings
 
 
 settings = get_settings()

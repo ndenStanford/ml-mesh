@@ -13,7 +13,7 @@ from elasticsearch import Elasticsearch
 from prophet import Prophet
 
 # Internal libraries
-from onclusiveml.query.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
 from onclusiveml.serving.serialization.topic_summarization.v1 import (
     ImpactCategoryLabel,
 )

@@ -12,12 +12,12 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics.pairwise import pairwise_distances  # noqa
 
 # Internal libraries
-from onclusiveml.query.query_scorer.clustering import hdbscan_clustering
-from onclusiveml.query.query_scorer.get_articles import (
+from onclusiveml.queries.query_scorer.clustering import hdbscan_clustering
+from onclusiveml.queries.query_scorer.get_articles import (
     get_query_results,
     remove_duplicates,
 )
-from onclusiveml.query.query_scorer.settings import get_settings
+from onclusiveml.queries.query_scorer.settings import get_settings
 
 
 settings = get_settings()

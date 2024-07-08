@@ -4,7 +4,7 @@
 import pytest  # noqa
 
 # Internal libraries
-from onclusiveml.query.query_profile import (
+from onclusiveml.queries.query_profile import (
     MediaAPISettings,
     ProductionToolsQueryProfile,
     StringQueryProfile,

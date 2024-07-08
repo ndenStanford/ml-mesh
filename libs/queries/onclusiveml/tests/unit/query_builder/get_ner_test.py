@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 import pytest  # noqa
 
 # Internal libraries
-from onclusiveml.query.query_builder import predict_ner
+from onclusiveml.queries.query_builder import predict_ner
 
 
 # Mocking the API response for successful case

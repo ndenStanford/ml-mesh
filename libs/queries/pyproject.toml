@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "query"
+name = "queries"
 version = "0.1.0"
 description = "Elasticsearch and other related query utilities"
 authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>",
