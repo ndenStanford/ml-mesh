@@ -13,7 +13,7 @@ core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
 nlp = {path = "../../../libs/nlp"}
 tracking = {path = "../../../libs/tracking"}
-query = {path = "../../../libs/query"}
+queries = {path = "../../../libs/queries", extras = ["scorer"]}
 types-requests = "^2.31.0.2"
 requests = "^2.31.0"
 httpx = "^0.25.0"
