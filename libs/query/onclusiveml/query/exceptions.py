@@ -4,10 +4,10 @@
 from onclusiveml.core.base import OnclusiveException
 
 
-class QueryException(OnclusiveException):
+class QueryESException(OnclusiveException):
     """Query exception."""
 
-    message_format = "Query not found."
+    message_format = "Failed to translate Boolean query to Elastic Search query."
 
 
 class QueryStringException(OnclusiveException):

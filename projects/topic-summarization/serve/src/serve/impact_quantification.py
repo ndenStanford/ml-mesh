@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
-from fbprophet import Prophet
+from prophet import Prophet
 
 # Internal libraries
 from onclusiveml.query.query_profile import BaseQueryProfile, MediaAPISettings
