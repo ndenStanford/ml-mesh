@@ -35,12 +35,6 @@ def main() -> None:
     checkpoint_name_path = f"model_{model_card.model_params.checkpoint_name}.ckpt"
     hf_hub_download(
         repo_id=model_card.model_params.repo,
-        filename=model_card.model_params.embeddings_filename,
-        local_dir=model_card.local_output_dir,
-        cache_dir=model_card.local_cache_dir,
-    )
-    hf_hub_download(
-        repo_id=model_card.model_params.repo,
         filename=model_card.model_params.index_filename,
         local_dir=model_card.local_output_dir,
         cache_dir=model_card.local_cache_dir,
