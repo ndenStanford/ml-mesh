@@ -16,7 +16,7 @@ from src.serve.schemas import PredictRequestSchema
 
 def test_model_bio(summarization_model):
     """Model bio test."""
-    assert summarization_model.bio().dict() == {
+    assert summarization_model.bio().model_dump() == {
         "version": 1,
         "data": {
             "namespace": "summarization",

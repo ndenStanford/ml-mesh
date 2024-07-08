@@ -5,31 +5,32 @@ from typing import List
 
 # 3rd party libraries
 import pytest
-from pydantic import BaseModel
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
+from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.serving.rest.serve import ServedModel
 
 
-class TestRecord(BaseModel):
+class TestRecord(OnclusiveBaseModel):
     """Test model."""
 
     number_of_legs: int
 
 
-class TestPrediction(BaseModel):
+class TestPrediction(OnclusiveBaseModel):
     """Test model."""
 
     animal: str
 
 
-class TestModelPredictRequestModel(BaseModel):
+class TestModelPredictRequestModel(JsonApiSchema):
     """Test model."""
 
     instances: List[TestRecord]
 
 
-class TestModelPredictResponseModel(BaseModel):
+class TestModelPredictResponseModel(JsonApiSchema):
     """Test model."""
 
     predictions: List[TestPrediction]
@@ -133,7 +134,9 @@ def test_test_served_model_predict(
     # score model & validate outputs
     test_predictions_actual = test_served_model.predict(test_inputs)
 
-    assert test_predictions_actual == test_predictions_expected
+    assert (
+        test_predictions_actual.model_dump() == test_predictions_expected.model_dump()
+    )
 
 
 def test_test_served_model_bio(test_model_name, get_test_served_model):

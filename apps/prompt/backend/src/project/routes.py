@@ -5,6 +5,7 @@ from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
 # Source
+from src.project.exceptions import ProjectsExisting
 from src.project.tables import Project
 from src.prompt.tables import PromptTemplate
 
@@ -71,7 +72,7 @@ def list_projects():
     """
     try:
         return Project.scan()
-    except Exception:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),

@@ -21,14 +21,10 @@ class FeatureRegistrationParams(FeatureStoreParams):
     redshift_table: str = "topic"
     redshift_timestamp_field: str = "event_timestamp"
     fields: List[Tuple[str, str]] = [
-        ["topic_1", "String"],
-        ["topic_2", "String"],
-        ["title", "String"],
-        ["language", "String"],
-        ["content", "String"],
+        ("topic_1", "String"),
+        ("topic_2", "String"),
+        ("title", "String"),
+        ("language", "String"),
+        ("content", "String"),
     ]
     register_features: bool = False
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

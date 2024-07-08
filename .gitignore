@@ -247,3 +247,6 @@ projects/ner/serve/projects/ner/serve/nltk_data
 projects/sentiment/compile/projects/sentiment/compile/nltk_data
 projects/sentiment/serve/projects/sentiment/serve/nltk_data
 *.keras
+
+# pytype
+.pytype/

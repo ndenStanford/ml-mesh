@@ -1,8 +1,8 @@
 # type: ignore
 """Create index and build vector store."""
 
-# 3rd party libraries
-from pydantic import BaseSettings
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 # Source
 from src.settings import get_settings
@@ -11,7 +11,7 @@ from src.utils.embeddings import get_embeddings
 from src.utils.index import get_index, write_to_index
 
 
-def build_vector_store(settings: BaseSettings) -> None:
+def build_vector_store(settings: OnclusiveBaseSettings) -> None:
     """Build vector store.
 
     Args:

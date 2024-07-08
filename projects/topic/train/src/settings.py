@@ -8,24 +8,20 @@ from typing import List, Tuple
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
 # --- settings classes
-class TrackedTopicModelSpecs(TrackedModelSpecs):
+class TrackedTopicModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
     project: str = "onclusive/organic-topic"
-    model = "TOPICS-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model: str = "TOPICS-TRAINED"
 
 
-class TopicModelParams(TrackedParams):
+class TopicModelParams(TrackingSettings):
     """Ground truth specification for model inference mode.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
@@ -55,10 +51,6 @@ class TopicModelParams(TrackedParams):
     language: str = "multilingual"
     n_gram_range: Tuple[int, int] = (1, 2)
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TrackedTopicBaseModelCard(TrackedModelCard):
     """The model card for the base model of the keywords ML project."""
@@ -70,10 +62,6 @@ class TrackedTopicBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "topic_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class DataFetchParams(FeatureStoreParams):
@@ -91,7 +79,3 @@ class DataFetchParams(FeatureStoreParams):
     filter_values: List[str] = []
     comparison_operators: List[str] = []
     non_nullable_columns: List[str] = ["content"]
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

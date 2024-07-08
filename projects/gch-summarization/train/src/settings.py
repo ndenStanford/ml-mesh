@@ -7,24 +7,20 @@ from typing import List
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
 # --- settings classes
-class TrackedSummarizationModelSpecs(TrackedModelSpecs):
+class TrackedSummarizationModelSpecs(TrackedModelSettings):
     """Tracked summarization model specs."""
 
     project: str = "onclusive/gch-summarization"
-    model = "SUM-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model: str = "SUM-TRAINED"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Inputs."""
 
     sample_documents: List[str] = [
@@ -66,28 +62,16 @@ di cellophane. Sono stati arrestati per detenzione ai fini di spaccio \
 di stupefacenti e portati in carcere.",
     ]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class SummarizationSettings(TrackedParams):
+class SummarizationSettings(TrackingSettings):
     """Summarization settings."""
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class SummarizationModelParams(TrackedParams):
+class SummarizationModelParams(TrackingSettings):
     """summarization model settings."""
 
     huggingface_pipeline_task: str = "summarization"
     summarization_settings: SummarizationSettings = SummarizationSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class SummarizationModelParamsEn(SummarizationModelParams):
@@ -143,7 +127,3 @@ class TrackedSummarizationModelCard(TrackedModelCard):
     es_model_subdirectory: str = "/spanish_summarization"
     ca_model_subdirectory: str = "/catalan_summarization"
     it_model_subdirectory: str = "/italian_summarization"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

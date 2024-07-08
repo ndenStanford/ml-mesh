@@ -30,7 +30,7 @@ def test_load_model(test_load_test_settings, test_model_criteria):
     )
 
     with open(load_test_report_export_path, "w") as report_file:
-        json.dump(test_report.dict(), report_file)
+        json.dump(test_report.model_dump(), report_file)
     # --- evaluate load test
     # initialize load test criteria
     load_test_criteria = LoadTestCriteria(criteria=test_model_criteria)
@@ -42,7 +42,7 @@ def test_load_model(test_load_test_settings, test_model_criteria):
     )
 
     with open(load_test_evaluation_export_path, "w") as evaluation_file:
-        json.dump(test_evaluation.dict(), evaluation_file)
+        json.dump(test_evaluation.model_dump(), evaluation_file)
     # pass/fail
     load_test_result_actual = load_test_criteria.evaluation.passed
 

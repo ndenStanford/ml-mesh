@@ -4,10 +4,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging.constants import (
-    VALID_LOG_LEVELS,
-    OnclusiveService,
-)
+from onclusiveml.core.logging.constants import LOG_LEVELS, OnclusiveService
 from onclusiveml.serving.rest.serve import (
     BetterStackSettings,
     ServedModel,
@@ -16,7 +13,6 @@ from onclusiveml.serving.rest.serve import (
     get_model_bio_router,
     get_model_predict_router,
     get_readiness_router,
-    get_root_router,
 )
 from onclusiveml.serving.rest.serve.server_models import ServedModelMethods
 from onclusiveml.serving.rest.serve.server_utils import (
@@ -71,8 +67,6 @@ def test_get_model_server_urls(
 @pytest.mark.parametrize(
     "get_router_method, test_api_version, test_route_url_expected",
     [
-        (get_root_router, "v2", get_model_server_urls(api_version="v2").root),
-        (get_root_router, "test", get_model_server_urls(api_version="test").root),
         (
             get_liveness_router,
             "v2",
@@ -100,7 +94,6 @@ def test_get_routers(get_router_method, test_api_version, test_route_url_expecte
 
     Notes:
         Tests the following router creation utility methods
-        - get_root_router
         - get_liveness_router
         - get_readiness_router
         and validates the url paths against the (previously tested) get_model_server_urls outputs
@@ -208,8 +201,8 @@ def test_get_model_routers(
     assert test_route_response_model_actual == test_response_model_expected
 
 
-@pytest.mark.parametrize("service", OnclusiveService.list())
-@pytest.mark.parametrize("level", VALID_LOG_LEVELS)
+@pytest.mark.parametrize("service", OnclusiveService.values())
+@pytest.mark.parametrize("level", LOG_LEVELS)
 @pytest.mark.parametrize("json_format", [True, False])
 def test_get_logging_config(service, level, json_format):
     """Tests the get_logging_config function."""
