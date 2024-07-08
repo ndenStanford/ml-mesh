@@ -9,7 +9,7 @@ import requests
 from pydantic import SecretStr, Field
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
+from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
 from onclusiveml.data.exceptions import (
     QueryException,
     QueryStringException,
@@ -39,7 +39,7 @@ class MediaAPISettings(OnclusiveBaseSettings):
         return self.client_id.get_secret_value()
 
 
-class BaseQueryProfile(OnclusiveBaseSchema):
+class BaseQueryProfile(OnclusiveBaseModel):
     """Base boolean query profile."""
 
     def headers(self, settings: MediaAPISettings) -> Dict:
@@ -51,7 +51,7 @@ class BaseQueryProfile(OnclusiveBaseSchema):
         }
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
-        settings_dict = settings.dict()
+        settings_dict = settings.model_dump()
         settings_dict["client_secret"] = settings.client_secret.get_secret_value()
         settings_dict["client_id"] = settings.client_id.get_secret_value()
         settings_dict["grant_type"] = settings.grant_type
@@ -111,7 +111,7 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
 
     version: int
     query_id: str
-    settings = MediaAPISettings()
+    settings: MediaAPISettings = MediaAPISettings()
 
     @property
     def query(self) -> Union[str, None]:

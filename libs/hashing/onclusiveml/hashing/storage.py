@@ -5,7 +5,7 @@ import random
 import string
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 
 def ordered_storage(config: Dict[str, Any], name: Optional[bytes] = None) -> Any:
@@ -145,7 +145,7 @@ class DictListStorage(OrderedStorage):
         """Return all stored keys."""
         return self._dict.keys()
 
-    def get(self, key: Any) -> List[Any]:
+    def get(self, key: Any) -> Iterable:
         """Retrieve key from storage."""
         return self._dict.get(key, [])
 
@@ -189,7 +189,7 @@ class DictSetStorage(UnorderedStorage, DictListStorage):
     def __init__(self, config: Dict[str, Any]) -> None:
         self._dict = defaultdict(set)
 
-    def get(self, key: Any) -> List[Any]:
+    def get(self, key: Any) -> Iterable:
         """Retrieve key value."""
         return self._dict.get(key, set())
 

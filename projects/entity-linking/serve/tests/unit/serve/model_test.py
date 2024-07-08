@@ -12,7 +12,7 @@ from src.serve.schemas import PredictRequestSchema, PredictResponseSchema
 
 def test_model_bio(entity_linking_model):
     """Model bio test."""
-    assert entity_linking_model.bio().dict() == {
+    assert entity_linking_model.bio().model_dump() == {
         "version": 1,
         "data": {
             "namespace": "entity-linking",

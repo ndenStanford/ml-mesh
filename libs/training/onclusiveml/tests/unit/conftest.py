@@ -6,13 +6,13 @@ import pytest
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedModelTestFiles,
-    TrackedParams,
+    TrackingSettings,
 )
 
 
-class TopicModelParams(TrackedParams):
+class TopicModelParams(TrackingSettings):
     """Ground truth specification for model inference mode.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
@@ -31,13 +31,13 @@ class TrackedTopicBaseModelCard(TrackedModelCard):
 
 
 @pytest.fixture
-def tracked_model_specs() -> TrackedModelSpecs:
-    """Generate TrackedModelSpecs for testing purposes.
+def tracked_model_specs() -> TrackedModelSettings:
+    """Generate TrackedModelSettings for testing purposes.
 
     Returns:
-        TrackedModelSpecs: An instance of TrackedModelSpecs initialized with dummy data.
+        TrackedModelSettings: An instance of TrackedModelSettings initialized with dummy data.
     """
-    return TrackedModelSpecs(
+    return TrackedModelSettings(
         project="project", model="model", api_token="api_token"
     )  # Provide appropriate parameters
 

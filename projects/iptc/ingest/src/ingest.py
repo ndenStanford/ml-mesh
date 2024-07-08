@@ -10,17 +10,19 @@ import pyarrow as pa
 from apache_beam.dataframe.convert import to_pcollection
 from apache_beam.dataframe.io import read_csv
 from apache_beam.io.parquetio import WriteToParquetBatched
-from pydantic import BaseSettings
+
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 # Source
 from src.settings import get_settings  # type: ignore[attr-defined]
 
 
-def ingest(settings: BaseSettings) -> None:
+def ingest(settings: OnclusiveBaseSettings) -> None:
     """Read the opoint data, write to the data lake bucket in .parquet.
 
     Args:
-        settings (BaseSettings): Settings class
+        settings (OnclusiveBaseSettings): Settings class
 
     """
     with beam.Pipeline() as p:

@@ -5,19 +5,13 @@ import json
 import os
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Optional, Union
 
 # ML libs
 from transformers import (
     AutoTokenizer,
     PreTrainedTokenizer,
     PreTrainedTokenizerFast,
-)
-
-# Internal libraries
-from onclusiveml.compile.compile_utils import (
-    DelegatedTokenizerAttributes,
-    DelegatedTokenizerMethods,
 )
 
 
@@ -46,18 +40,6 @@ class CompiledTokenizer(object):
         # self.set_all_delegated_tokenizer_methods(tokenizer)
         # the model_max_length should be set to the max length of the compilation
         self.model_max_length = self.tokenization_settings["max_length"]
-
-    def __getattr__(self, name: str) -> Any:
-        """Surfaces selected tokenizer attributes/methods to the CompiledTokenizer instance."""
-        if (
-            name
-            in DelegatedTokenizerMethods.list() + DelegatedTokenizerAttributes.list()
-        ):
-            attribute = self.tokenizer.__getattribute__(name)
-        else:
-            attribute = self.__dict__[attribute]
-
-        return attribute
 
     @classmethod
     def get_tokenization_settings(
@@ -161,3 +143,35 @@ class CompiledTokenizer(object):
         kwargs.update(self.tokenization_settings)
 
         return self.tokenizer(*args, **kwargs)
+
+    @property
+    def is_fast(self) -> bool:
+        """True if tokenizer is a subclass of `PreTrainedTokenizerFast`."""
+        return self.tokenizer.is_fast
+
+    @property
+    def unk_token_id(self) -> Optional[int]:
+        """Id of the unknown token in the vocabulary.
+
+        Returns `None` if the token has not been set.
+        """
+        return self.tokenizer.unk_token_id
+
+    def convert_ids_to_tokens(
+        self, ids: Union[int, List[int]], skip_special_tokens: bool = False
+    ) -> Union[str, List[str]]:
+        """Inherited method.
+
+        Converts a single index or a sequence of indices in a token or a sequence of tokens,
+        using the vocabulary and added tokens.
+
+        Args:
+            ids (`int` or `List[int]`):
+                The token id (or token ids) to convert to tokens.
+            skip_special_tokens (`bool`, *optional*, defaults to `False`):
+                Whether or not to remove special tokens in the decoding.
+
+        Returns:
+            `str` or `List[str]`: The decoded token(s).
+        """
+        return self.tokenizer.convert_ids_to_tokens(ids, skip_special_tokens)

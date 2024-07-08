@@ -21,7 +21,6 @@ main modules:
       - auto-generation of REST based `fastapi` routers implementing the above two:
         - `get_liveness_router`
         - `get_readiness_router`
-        - `get_root_router`
         - `get_model_predict_router`
         - `get_model_bio_router`
 - `rest.testing`

@@ -16,9 +16,9 @@ from onclusiveml.tracking import TrackedModelVersion
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompiledIPTCTrackedModelCard,
-    CompiledTrackedModelSpecs,
+    CompiledTrackedModelSettings,
     IOSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
 )
 
 
@@ -31,13 +31,14 @@ def main() -> None:
         level=io_settings.log_level,
     )
     # --- upload compiled model
-    compiled_model_specs = CompiledTrackedModelSpecs()
-    compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
+    compiled_model_specs = CompiledTrackedModelSettings()
+    compiled_model_version = TrackedModelVersion(**compiled_model_specs.model_dump())
 
     compiled_model_card = CompiledIPTCTrackedModelCard()
     # upload model card - holds all settings
     compiled_model_version.upload_config_to_model_version(
-        config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
+        config=compiled_model_card.model_dump(),
+        neptune_attribute_path="model/model_card",
     )
     # upload compiled iptc model artifact
     compiled_model_version.upload_directory_to_model_version(
@@ -64,8 +65,8 @@ def main() -> None:
     )
     # --- update uncompiled model
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs(mode=Mode.ASYNC)
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_specs = UncompiledTrackedModelSettings(mode=Mode.ASYNC)
+    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
 
     if base_model_version.exists("model/compiled_model_versions"):
         compiled_model_versions = base_model_version.download_config_from_model_version(

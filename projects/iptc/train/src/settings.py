@@ -8,25 +8,20 @@ from typing import List
 from onclusiveml.data.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
 # --- settings classes
-class TrackedIPTCModelSpecs(TrackedModelSpecs):
+class TrackedIPTCModelSpecs(TrackedModelSettings):
     """Tracked iptc model settings."""
 
     project: str = "onclusive/iptc-00000000"
     model: str = "IP00000000-TRAINED"
 
-    class Config:
-        env_prefix = "trained_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class IPTCModelParams(TrackedParams):
+class IPTCModelParams(TrackingSettings):
     """the training argument for huggingface trainer."""
 
     epochs: int = 3
@@ -48,10 +43,6 @@ class IPTCModelParams(TrackedParams):
     max_length: int = 128
     test_size: float = 0.2
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class DataFetchParams(FeatureStoreParams):
     """Feature registration inputs."""
@@ -70,10 +61,6 @@ class DataFetchParams(FeatureStoreParams):
     comparison_operators: List[str] = []
     non_nullable_columns: List[str] = ["content", "topic_1"]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class TrackedIPTCBaseModelCard(TrackedModelCard):
     """The model card for the base model of the iptc ML project."""
@@ -85,7 +72,3 @@ class TrackedIPTCBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "iptc_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
