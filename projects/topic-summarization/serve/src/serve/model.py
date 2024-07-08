@@ -164,8 +164,9 @@ class ServedTopicModel(ServedModel):
             else:
                 topic = None
                 impact_category = None
+                topic_summary_quality = None
         else:
-            topic = self.model.aggregate(content)
+            topic, topic_summary_quality = self.model.aggregate(content)
             impact_category = None
         if save_report_dynamodb:
             query_string = query_profile.query

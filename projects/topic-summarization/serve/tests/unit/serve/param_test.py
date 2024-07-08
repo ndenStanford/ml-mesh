@@ -79,7 +79,9 @@ def test_handler_aggregate(mock_post, article_input, mock_responses):
     gpt_inference = _service.aggregate(
         article=article_input,
     )
-    assert isinstance(gpt_inference, dict)
+    assert isinstance(gpt_inference, tuple)
+    assert isinstance(gpt_inference[0], dict)
+    assert gpt_inference[1] is None
 
 
 @patch("requests.post")
@@ -88,18 +90,23 @@ def test_handler_aggregate_with_boolean_query(
     mock_responses,
     article_input,
     mock_responses_entity_extraction,
+    mock_responses_summary_theme,
+    mock_responses_summary_quality,
     boolean_query_input,
 ):
     """Test prompt routing logic."""
     mock_post.side_effect = [
         mock_responses_entity_extraction,
         mock_responses,
-        mock_responses,
+        mock_responses_summary_theme,
+        mock_responses_summary_quality,
     ]
     gpt_inference = _service.aggregate(
         article=article_input, boolean_query=boolean_query_input
     )
-    assert isinstance(gpt_inference, dict)
+    assert isinstance(gpt_inference, tuple)
+    assert isinstance(gpt_inference[0], dict)
+    assert isinstance(gpt_inference[1], str)
 
 
 @patch("requests.put")

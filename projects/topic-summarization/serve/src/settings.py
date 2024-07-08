@@ -57,8 +57,8 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         "ml-topic-summarization-multi-articles-summary-entity-focus-gpt"
     )
     SUMMARY_QUALITY_RESPONSE_SCHEMA: Dict[str, str] = {
-        "different_themes": "Does the summary contains different themes. Put either 'yes' pr 'no'.",
-        "entities_related": "Are all parts of the summary related to the entities Put either 'yes' pr 'no'.",  # noqa: E501
+        "different_themes": "Does the summary contains different themes. Put either 'yes' or 'no'.",
+        "entities_related": "Are all parts of the summary related to the entities Put either 'yes' or 'no'.",  # noqa: E501
     }
     CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
     GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
