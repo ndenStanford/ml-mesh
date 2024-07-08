@@ -48,6 +48,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     GPT_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-gpt"
 
     CLAUDE_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-claude"
+    CLAUDE_SUMMARY_QUALITY_ALIAS: str = "ml-topic-summarization-summary-quality"
     GPT_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-gpt"
     CLAUDE_SUMMARY_WITH_ENTITY_ALIAS: str = (
         "ml-topic-summarization-multi-articles-summary-entity-focus-claude"
@@ -55,7 +56,10 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     GPT_SUMMARY_WITH_ENTITY_ALIAS: str = (
         "ml-topic-summarization-multi-articles-summary-entity-focus-gpt"
     )
-
+    SUMMARY_QUALITY_RESPONSE_SCHEMA: Dict[str, str] = {
+        "different_themes": "Does the summary contains different themes. Put either 'yes' pr 'no'.",
+        "entities_related": "Are all parts of the summary related to the entities Put either 'yes' pr 'no'.",  # noqa: E501
+    }
     CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
     GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
