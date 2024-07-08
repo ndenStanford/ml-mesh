@@ -16,6 +16,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
 from typing import Dict, List, Optional
+from src.es_utils import generate_crawler_indices
 
 
 class ServerModelSettings(ServingParams):
@@ -88,14 +89,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     ELASTICSEARCH_KEY: SecretStr = Field(
         default="...", env="ELASTICSEARCH_KEY", exclude=True
     )
-    es_index: List = [
-        "crawler-4-2024.05",
-        "crawler-4-2024.04",
-        "crawler-4-2024.03",
-        "crawler-4-2024.02",
-        "crawler-4-2024.01",
-        "crawler",
-    ]
+    es_index: List = generate_crawler_indices()
     ES_TIMEOUT: int = 90
 
 
