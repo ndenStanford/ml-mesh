@@ -1,7 +1,7 @@
 """Language model dynamoDB tables."""
 
 # Standard Library
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # 3rd party libraries
 import boto3
@@ -16,6 +16,7 @@ from onclusiveml.llms.typing import LangchainT
 # Source
 from src.model.constants import (
     MODELS_TO_PARAMETERS,
+    BaseLLMParameters,
     ChatModel,
     ChatModelProdiver,
     TitanParameters,
@@ -38,30 +39,34 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
     provider: str
     model_parameters: str = None
 
-    def as_langchain(self, **kwargs) -> Optional[LangchainT]:
+    def as_langchain(self, **kwargs: Dict[str, Any]) -> Optional[LangchainT]:
         """Return model as langchain chat model."""
         self.model_parameters = kwargs.get("model_parameters", None)
-        model_params_class = MODELS_TO_PARAMETERS.get(
+        model_parameters_class = MODELS_TO_PARAMETERS.get(
             self.alias, MODELS_TO_PARAMETERS[ChatModel.CLAUDE_3_HAIKU]
         )
         if self.provider == ChatModelProdiver.OPENAI:
-            return self._handle_openai_provider(model_params_class)
+            return self._handle_openai_provider(model_parameters_class)
         elif self.provider == ChatModelProdiver.BEDROCK:
-            return self._handle_bedrock_provider(model_params_class)
+            return self._handle_bedrock_provider(model_parameters_class)
         return None
 
-    def _handle_openai_provider(self, model_params_class) -> Optional[LangchainT]:
+    def _handle_openai_provider(
+        self, model_parameters_class: BaseLLMParameters
+    ) -> Optional[LangchainT]:
         """Handle the OpenAI provider specifics."""
-        self._initialize_openai_parameters(model_params_class)
+        self._initialize_openai_model_parameters(model_parameters_class)
         return ChatOpenAI(
             model=self.alias,
             temperature=self.model_parameters.temperature,
             max_tokens=self.model_parameters.max_tokens,
         )
 
-    def _handle_bedrock_provider(self, model_params_class) -> Optional[LangchainT]:
+    def _handle_bedrock_provider(
+        self, model_parameters_class: BaseLLMParameters
+    ) -> Optional[LangchainT]:
         """Handle the Bedrock provider specifics."""
-        self._initialize_bedrock_model_params(model_params_class)
+        self._initialize_bedrock_model_parameters(model_parameters_class)
         bedrock = self.bedrock_client
         return BedrockChat(
             client=bedrock,
@@ -69,28 +74,32 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             model_kwargs=self.model_parameters,
         )
 
-    def _initialize_openai_parameters(self, model_params_class):
+    def _initialize_openai_model_parameters(
+        self, model_parameters_class: BaseLLMParameters
+    ):
         """Initialize the openai model parameters."""
         if self.model_parameters is None:
-            self.model_parameters = model_params_class()
+            self.model_parameters = model_parameters_class()
         else:
             try:
-                self.model_parameters = model_params_class(**self.model_parameters)
+                self.model_parameters = model_parameters_class(**self.model_parameters)
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 
-    def _initialize_bedrock_model_params(self, model_params_class):
+    def _initialize_bedrock_model_parameters(
+        self, model_parameters_class: BaseLLMParameters
+    ):
         """Initialize the Bedrock model parameters."""
         if self.model_parameters is None:
-            self.model_parameters = model_params_class().dict()
+            self.model_parameters = model_parameters_class().dict()
         else:
             try:
                 if self.alias in [ChatModel.TITAN, ChatModel.TITAN_G1]:
                     self.model_parameters = TitanParameters(
-                        **model_params_class(**self.model_parameters).dict()
+                        **model_parameters_class(**self.model_parameters).dict()
                     ).dict()
                 else:
-                    self.model_parameters = model_params_class(
+                    self.model_parameters = model_parameters_class(
                         **self.model_parameters
                     ).dict()
             except ValidationError as e:
