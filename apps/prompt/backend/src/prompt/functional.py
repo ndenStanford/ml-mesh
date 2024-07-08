@@ -55,7 +55,7 @@ def generate_from_prompt_template(
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt(
-    prompt: str, model_alias: str, model_parameters=None
+    prompt: str, model_alias: str, model_parameters: Dict = None
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     if settings.VALIDATE_PROMPT_INJECTION:
