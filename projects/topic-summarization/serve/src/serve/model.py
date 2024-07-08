@@ -155,7 +155,9 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
 
-                topic = self.model.aggregate(content, boolean_query)
+                topic, topic_summary_quality = self.model.aggregate(
+                    content, boolean_query
+                )
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
@@ -182,6 +184,7 @@ class ServedTopicModel(ServedModel):
                 "content": content,
                 "query_all_doc_count": query_all_doc_count,
                 "query_topic_doc_count": query_topic_doc_count,
+                "topic_summary_quality": topic_summary_quality,
             }
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
@@ -198,6 +201,7 @@ class ServedTopicModel(ServedModel):
                 "impact_category": impact_category,
                 "trending": trend_found,
                 "timestamp": datetime.now(),
+                "topic_summary_quality": topic_summary_quality,
             },
         )
 

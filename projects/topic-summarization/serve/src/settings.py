@@ -63,7 +63,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
     GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
     DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
-    HAIKU_CLAUDE_MODEL: str = "anthropic.claude-3-haiku-20240307-v1:0"
+    HAIKU_CLAUDE_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
     GPT_MODEL: str = "gpt-4o"
 
     model_settings = ServerModelSettings()
@@ -103,7 +103,7 @@ class DynamoDBSettings(OnclusiveBaseSettings):
     AWS_DEFAULT_REGION: str = "us-east-1"
     DYNAMODB_HOST: Optional[str] = None
     # table name should be referencing relevant table when deployed
-    DYNAMODB_TABLE_NAME: str = "topic-summary-dev-1"
+    DYNAMODB_TABLE_NAME: str = "topic-summary-dev-test-4"
     ENVIRONMENT: str = "dev"
 
 
