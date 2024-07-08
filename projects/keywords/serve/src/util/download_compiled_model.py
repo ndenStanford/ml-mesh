@@ -20,7 +20,12 @@ def main() -> None:
     # output directory specs
     model_export_params = ServedModelParams()
     # initialize client for specific model version
-    mv = TrackedModelVersion(**model_version_specs.dict())
+    mv = TrackedModelVersion(
+        with_id=model_version_specs.with_id,
+        mode=model_version_specs.mode,
+        api_token=model_version_specs.api_token.get_secret_value(),
+        project=model_version_specs.project,
+    )
 
     if not os.path.isdir(model_export_params.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to

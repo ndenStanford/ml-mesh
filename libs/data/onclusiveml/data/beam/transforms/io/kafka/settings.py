@@ -25,7 +25,7 @@ class KafkaBaseSettings(OnclusiveBaseSettings):
     @property
     def config(self) -> Dict:
         """Kafka config."""
-        return self.dict(exclude_none=True, by_alias=True)
+        return self.model_dump(exclude_none=True, by_alias=True)
 
 
 class KafkaProducerSettings(KafkaBaseSettings):

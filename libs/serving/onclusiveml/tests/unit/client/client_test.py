@@ -111,4 +111,4 @@ def test_client_requests(mock_request, host, api_key, api, request_json, respons
 
     response = client[api](**request_json)
 
-    assert response.dict() == response_json
+    assert response.model_dump() == response_json

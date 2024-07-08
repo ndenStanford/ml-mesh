@@ -9,7 +9,7 @@ python = "3.8.16"
 click = "8.1.0"
 core = {path = "libs/core"}
 pytest = "7.2.0"
-
+pytype = "2024.4.11"
 
 [tool.poetry.group.ci.dependencies]
 boto3 = "^1.28.29"
@@ -20,3 +20,27 @@ tracking = {path = "libs/tracking"}
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+
+[tool.mypy]
+python_version = "3.8"
+exclude = [
+    '**/**/tests/**/**',
+    '**/*_test.py',
+    '**/test_*.py',
+    '**/**/conftest.py'
+]
+files = [
+    'apps/**/**',
+    'libs/**/**',
+    'projects/**/**',
+]
+check_untyped_defs=true
+disallow_incomplete_defs=true
+disallow_untyped_defs=true
+ignore_missing_imports=true
+no_implicit_optional=true
+strict_optional=true
+warn_redundant_casts=true
+warn_unreachable=true
+warn_unused_ignores=true

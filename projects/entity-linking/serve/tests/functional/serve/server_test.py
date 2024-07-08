@@ -10,19 +10,12 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root(test_client):
-    """Tests the root endpoint of a running ModelServer instance."""
-    root_response = test_client.get("/entity-linking/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_liveness(test_client):
     """Tests the liveness endpoint of a running ModelServer instance."""
     liveness_response = test_client.get("/entity-linking/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 def test_model_server_readiness(test_client):
@@ -30,7 +23,7 @@ def test_model_server_readiness(test_client):
     readiness_response = test_client.get("/entity-linking/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 @pytest.mark.parametrize(

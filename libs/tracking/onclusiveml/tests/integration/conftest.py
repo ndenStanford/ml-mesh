@@ -157,4 +157,4 @@ def test_config_expected():
 @pytest.fixture
 def test_model_card_expected():
     """Model card fixture."""
-    return TrackedModelCard(model_type="base").dict()
+    return TrackedModelCard(model_type="base").model_dump()

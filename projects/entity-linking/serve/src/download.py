@@ -20,7 +20,12 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
     # initialize client for specific model version
-    mv = TrackedModelVersion(with_id=settings.with_id, mode=settings.mode)
+    mv = TrackedModelVersion(
+        with_id=settings.with_id,
+        mode=settings.mode,
+        api_token=settings.api_token.get_secret_value(),
+        project=settings.project,
+    )
 
     if not os.path.isdir(settings.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to

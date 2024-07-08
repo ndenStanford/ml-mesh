@@ -9,7 +9,6 @@ packages = [{include = "src"}]
 python = "3.8.16"
 core = {path = "../../../libs/core"}
 data = {path = "../../../libs/data"}
-typing-extensions = "4.5.0"
 protobuf = "4.23"
 
 [tool.poetry.group.dev.dependencies]

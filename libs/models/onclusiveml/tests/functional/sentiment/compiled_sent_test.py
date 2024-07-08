@@ -9,7 +9,7 @@ from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.models.sentiment import CompiledSentiment
 
 
 logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
@@ -35,7 +35,7 @@ def test_compiled_sent_extract_sentiment_latency(
 ):
     """Test compiled sentiment extract latency."""
     # time compiled sent
-    compiled_sent = CompiledSent(
+    compiled_sent = CompiledSentiment(
         compiled_sent_pipeline=compiled_sent_pipeline,
     )
 

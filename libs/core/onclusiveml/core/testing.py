@@ -4,12 +4,12 @@
 import contextlib
 from typing import Callable, Generator
 
-# 3rd party libraries
-from pydantic import BaseSettings
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 
 def get_override_settings_context_manager(
-    get_settings: Callable[[], BaseSettings]
+    get_settings: Callable[[], OnclusiveBaseSettings]
 ) -> Callable:
     """Override settings context manager.
 

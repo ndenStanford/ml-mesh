@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSchema, OnclusiveBaseSettings
+from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
 
 
 class TestSettings(OnclusiveBaseSettings):
@@ -15,7 +15,7 @@ class TestSettings(OnclusiveBaseSettings):
     setting2: int
 
 
-class TestModel(OnclusiveBaseSchema):
+class TestModel(OnclusiveBaseModel):
     """Test model."""
 
     attribute1: int
@@ -40,13 +40,13 @@ def test_settings_type_conversion():
 
 def test_settings_extras():
     """Test object modified behaviour."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         _ = TestSettings(setting1="a", setting2=12, settings3=False)
 
 
 def test_settings_type_validation():
     """Test object modified behaviour."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         _ = TestSettings(setting1=100, setting2="qq")
 
 

@@ -8,7 +8,7 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 torch = "1.9.1"
-transformers = "4.25.0"
+transformers = "4.25.1"
 core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
 sentencepiece = "^0.1.99"

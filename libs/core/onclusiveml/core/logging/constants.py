@@ -4,7 +4,7 @@
 import logging
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveStrEnum
 
 
 DEBUG = logging.DEBUG
@@ -13,10 +13,10 @@ WARNING = logging.WARNING
 ERROR = logging.ERROR
 CRITICAL = logging.CRITICAL
 
-VALID_LOG_LEVELS = (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+LOG_LEVELS = (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
 
-class OnclusiveService(OnclusiveEnum):
+class OnclusiveService(OnclusiveStrEnum):
     """Standardized onclusive ML app and project service references for JSON logging."""
 
     DEFAULT = "onclusive-ml"
@@ -85,14 +85,14 @@ class OnclusiveService(OnclusiveEnum):
             ValueError: If the `service` is not a value from the list of class attributes., this
                 execption will be raised.
         """
-        if service not in cls.list():
+        if service not in cls.members():
             raise ValueError(
                 f"The specified service reference {service} is not in the valid range: "
-                f"{OnclusiveService.list()}"
+                f"{OnclusiveService.members()}"
             )
 
 
-class OnclusiveLogMessageFormat(OnclusiveEnum):
+class OnclusiveLogMessageFormat(OnclusiveStrEnum):
     """Standardized log message formats."""
 
     MESSAGE_ONLY = "%(message)s"
