@@ -26,7 +26,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # initialize registered model on neptune ai
-    model_version = TrackedModelVersion(**model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
 
     topic_model = BERTopic.load(
         "src/model_artifacts/",
@@ -48,7 +48,10 @@ def main() -> None:
     # testing assets - inputs, inference specs and outputs
     for (test_file, test_file_attribute_path) in [
         (sample_docs, model_card.model_test_files.inputs),
-        (model_card.model_params.dict(), model_card.model_test_files.inference_params),
+        (
+            model_card.model_params.model_dump(),
+            model_card.model_test_files.inference_params,
+        ),
         (sample_topics, model_card.model_test_files.predictions),
     ]:
         model_version.upload_config_to_model_version(
@@ -67,7 +70,7 @@ def main() -> None:
     )
     # # model card
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     model_version.stop()

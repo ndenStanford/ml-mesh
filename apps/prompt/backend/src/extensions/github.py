@@ -1,14 +1,14 @@
 """Github connector."""
 
 # Standard Library
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # 3rd party libraries
 from github import Auth, GithubIntegration
 from pydantic import SecretStr
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSchema
+from onclusiveml.core.base import OnclusiveFrozenModel
 
 # Source
 from src.settings import get_settings
@@ -17,7 +17,7 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-class GithubClient(OnclusiveFrozenSchema):
+class GithubClient(OnclusiveFrozenModel):
     """Github client wrapper class."""
 
     app_id: str
@@ -38,12 +38,12 @@ class GithubClient(OnclusiveFrozenSchema):
         """Creates folder."""
         return self.repo.create_file(path, commit, contents)
 
-    def read(self, path: str) -> str:
+    def read(self, path: str) -> Any:
         """Opens file."""
         contents = self.repo.get_contents(path)
         if isinstance(contents, list):
             return [self.read(content.path) for content in contents]
-        result: Optional[Dict] = None
+        result: str = ""
         if contents.type == "file":
             result = contents.decoded_content.decode()
         return result

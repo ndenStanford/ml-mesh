@@ -6,16 +6,16 @@ from typing import Any
 # 3rd party libraries
 from feast import Entity, FeatureView, Field
 from feast.types import String
-from pydantic import BaseSettings
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     RedshiftSourceCustom,
 )
 
 
-class FeatureStoreParams(BaseSettings):
+class FeatureStoreParams(OnclusiveBaseSettings):
     """Base class for all parameter classes in the featurestore module in data library.
 
     Subclassing from BaseSettings allows for configuring parameters via environment variables.

@@ -40,15 +40,15 @@ def test_onclusive_serving_json_access_log_record():
     [
         (
             OnclusiveServingLogMessageFormat.ACCESS_JSON.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200 OK", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200 OK","client_addr":"test.client.address","request_line":"TEST test_host://test/path HTTP/1","status_code":200,"status_phrase":"OK"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.SIMPLE.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"dummy time stamp - INFO - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200","client_addr":"test.client.address","request_line":"TEST test_host://test/path HTTP/1","status_code":200,"status_phrase":"OK"}',  # noqa: E501
         ),
         (
             OnclusiveLogMessageFormat.DETAILED.value,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200", "client_addr": "test.client.address", "request_line": "TEST test_host://test/path HTTP/1", "status_code": 200, "status_phrase": "OK"}',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - test message: test.client.address - \\"TEST test_host://test/path HTTP/1\\" 200","client_addr":"test.client.address","request_line":"TEST test_host://test/path HTTP/1","status_code":200,"status_phrase":"OK"}',  # noqa: E501
         ),
     ],
 )

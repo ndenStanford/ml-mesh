@@ -3,12 +3,12 @@
 # Standard Library
 from typing import Dict, List, Tuple, Union
 
-# 3rd party libraries
-from pydantic import BaseModel
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 
 
 # --- prediction request models
-class PredictConfiguration(BaseModel):
+class PredictConfiguration(OnclusiveBaseModel):
     """Model class around the kwargs of the `CompiledKeyBERT`'s `extract_keywords` method.
 
     Useful if clients want to run different inference calls configuring
@@ -29,13 +29,13 @@ class PredictConfiguration(BaseModel):
     seed_keywords: Union[List[str], List[List[str]], None] = None
 
 
-class PredictInputDocumentModel(BaseModel):
+class PredictInputDocumentModel(OnclusiveBaseModel):
     """Prediction input document."""
 
     document: str
 
 
-class PredictRequestModel(BaseModel):
+class PredictRequestModel(OnclusiveBaseModel):
     """Prediction request model."""
 
     configuration: PredictConfiguration = PredictConfiguration()
@@ -43,27 +43,27 @@ class PredictRequestModel(BaseModel):
 
 
 # --- prediction response models
-class PredictionExtractedKeyword(BaseModel):
+class PredictionExtractedKeyword(OnclusiveBaseModel):
     """Prediction extracted keyword."""
 
     keyword_token: str
     keyword_score: float
 
 
-class PredictionOutputDocument(BaseModel):
+class PredictionOutputDocument(OnclusiveBaseModel):
     """Prediction output document."""
 
     predicted_document: List[PredictionExtractedKeyword]
 
 
-class PredictResponseModel(BaseModel):
+class PredictResponseModel(OnclusiveBaseModel):
     """Predict response model."""
 
     outputs: List[PredictionOutputDocument]
 
 
 # --- bio response models
-class BioResponseModel(BaseModel):
+class BioResponseModel(OnclusiveBaseModel):
     """Bio response model."""
 
     model_name: str = "keywords-model"

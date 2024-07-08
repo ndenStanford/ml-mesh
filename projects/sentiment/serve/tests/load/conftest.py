@@ -106,7 +106,7 @@ def test_model_predict_user(
             # randomly sample a payload
             payload = random.choice(self.sample_payloads)
 
-            self.client.post(test_model_predict_endpoint_url, json=payload.dict())
+            self.client.post(test_model_predict_endpoint_url, json=payload.model_dump())
 
     return ModelPredictUser
 

@@ -24,7 +24,7 @@ on  :
       poetry-version:
         required: false
         type: string
-        description: Python version.
+        description: Poetry version.
       release:
         required: true
         default: true

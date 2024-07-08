@@ -11,7 +11,6 @@ from typing import Any, Dict, Union
 from transformers.pipelines import Pipeline, pipeline
 
 # Internal libraries
-from onclusiveml.compile.compile_utils import DelegatedPipelineAttributes
 from onclusiveml.compile.compiled_model import CompiledModel
 from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer
 
@@ -170,14 +169,15 @@ class CompiledPipeline(object):
         """
         return self.compiled_pipeline(*args, **kwargs)
 
-    def __getattr__(self, name: str) -> Any:
-        """Surfaces selected pipeline attributes to the CompiledPipeline instance."""
-        if name in DelegatedPipelineAttributes.list():
-            attribute = self.compiled_pipeline.__getattribute__(name)
-        else:
-            attribute = self.__dict__[attribute]
+    @property
+    def tokenizer(self) -> Any:
+        """Pipeline tokenizer."""
+        return self.compiled_pipeline.tokenizer
 
-        return attribute
+    @property
+    def model(self) -> Any:
+        """Pipeline model."""
+        return self.compiled_pipeline.model
 
 
 def compile_pipeline(
