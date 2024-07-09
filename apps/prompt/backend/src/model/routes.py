@@ -7,12 +7,10 @@ from typing import List
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, HTTPException, status
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator import PromptInjectionException
-
 # Source
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
+from src.prompt_validator import PromptInjectionException
 
 
 router = APIRouter(

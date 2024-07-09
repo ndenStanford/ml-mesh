@@ -1,4 +1,4 @@
-"""Prompt injection field_validator."""
+"""Prompt injection validator."""
 
 # Standard Library
 import json
@@ -14,10 +14,8 @@ from langchain_experimental.prompt_injection_identifier import (
 from optimum.onnxruntime import ORTModelForSequenceClassification
 from pydantic import ValidationError
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator.exceptions import (
-    PromptInjectionException,
-)
+# Source
+from src.prompt_validator.exceptions import PromptInjectionException
 
 
 class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
@@ -33,7 +31,7 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             print(
                 f"This is a warning. __init__ failed to validate:\n{json.dumps(data, indent=4)}"
             )
-            print(f"This is the original exception:\n{pve.model_dump_json()}")
+            print(f"This is the original exception:\n{pve.json()}")
 
     @classmethod
     def parse_obj(cls: Any, obj: Any) -> Any:
@@ -44,7 +42,7 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             print(
                 f"This is a warning. parse_obj failed to validate:\n{json.dumps(obj, indent=4)}"
             )
-            print(f"This is the original exception:\n{pve.model_dump_json()}")
+            print(f"This is the original exception:\n{pve.json()}")
             return None
 
     @classmethod
@@ -68,7 +66,7 @@ class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):
             )
         except ValidationError as pve:
             print(f"This is a warning. parse_raw failed to validate:\n{b}")
-            print(f"This is the original exception:\n{pve.model_dump_json()}")
+            print(f"This is the original exception:\n{pve.json()}")
             return None
 
 
