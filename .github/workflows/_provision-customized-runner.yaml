@@ -144,3 +144,15 @@ jobs:
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
+
+      - name: Check cuda
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0d2c0baacebff908c' }}
+        run: |
+          nvcc --version
+          nvidia-smi
+
+      - name: Check neuron
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-061f2e0350e09dbb1' }}
+        run: |
+          neuron-ls
+          ls /dev/neuron* -l
