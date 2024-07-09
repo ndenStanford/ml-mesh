@@ -45,6 +45,7 @@ services:
       DYNAMODB_HOST: http://dynamodb:8000
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
       ENVIRONMENT: dev
 
       MULTIPROCESS_WORKER: 5

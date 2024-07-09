@@ -7,6 +7,7 @@ from typing import Dict, Optional, Union
 # 3rd party libraries
 import requests
 from pydantic import SecretStr, Field
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
@@ -20,9 +21,15 @@ from onclusiveml.queries.exceptions import (
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    client_id: SecretStr = Field(default="...", env="MEDIA_CLIENT_ID", exclude=True)
+    model_config = SettingsConfigDict(env_prefix="MEDIA_", extra="ignore")
+
+    client_id: SecretStr = Field(
+        default="...",
+        exclude=True,
+    )
     client_secret: SecretStr = Field(
-        default="...", env="MEDIA_CLIENT_SECRET", exclude=True
+        default="...",
+        exclude=True,
     )
     grant_type: str = "client_credentials"
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
