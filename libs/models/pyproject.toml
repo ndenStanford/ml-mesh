@@ -12,8 +12,12 @@ nlp = {path = "../nlp"}
 regex = "^2023.6.3"
 beautifulsoup4 = "^4.12.2"
 nptyping = "2.5.0"
-bertopic = {version = "0.15.0", extras = ["topic"]}
-keybert = {version = "0.7.0", extras = ["keywords"]}
+bertopic = {version = "0.15.0", optional = true}
+keybert = {version = "0.7.0", optional = true}
+
+[tool.poetry.extras]
+topic = ["bertopic"]
+keywords = ["keybert"]
 
 [[tool.poetry.source]]
 name = "aws-neuron"

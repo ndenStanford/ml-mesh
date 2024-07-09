@@ -16,6 +16,10 @@ on  :
         default: 30
         type: number
         description: Pre-commit checks timeout in minutes.
+      poetry-version:
+        required: false
+        type: string
+        description: Poetry version.
     secrets:
       AWS_DEFAULT_REGION:
         required: true
@@ -48,6 +52,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version-file: .python-version
+
+      - name: Setup Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ inputs.poetry-version }}
+          virtualenvs-create: false
+
+      - name: Install python dependencies
+        run: |
+          poetry install
 
       - name: Code Quality Checks For Changed Files
         if: ${{ inputs.pull-request }}

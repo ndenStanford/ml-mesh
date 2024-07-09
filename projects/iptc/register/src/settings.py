@@ -4,9 +4,10 @@
 from typing import List, Optional, Tuple
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.data.feature_store import FeatureStoreParams
 
 
@@ -18,16 +19,12 @@ class FeatureRegistrationParams(FeatureStoreParams):
     redshift_table: str = "iptc"
     entity_name: str = "iptc"
     feature_view_name: str = "iptc_feature_view"
-    fields: Optional[List[Tuple[str, str]]]
+    fields: Optional[List[Tuple[str, str]]] = None
     entity_join_key: str = "iptc_id"
     register_features: bool = False
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class IptcFirstLevelFeatureRegistrationParams(BaseSettings):
+class IptcFirstLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
 
     entity_name: str
@@ -35,13 +32,10 @@ class IptcFirstLevelFeatureRegistrationParams(BaseSettings):
     redshift_table: str
     fields: List[Tuple[str, str]]
 
-    class Config:
-        env_prefix = "first_level_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="first_level_")
 
 
-class IptcSecondLevelFeatureRegistrationParams(BaseSettings):
+class IptcSecondLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
 
     entity_name: str
@@ -49,13 +43,10 @@ class IptcSecondLevelFeatureRegistrationParams(BaseSettings):
     redshift_table: str
     fields: List[Tuple[str, str]]
 
-    class Config:
-        env_prefix = "second_level_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="second_level_")
 
 
-class IptcThirdLevelFeatureRegistrationParams(BaseSettings):
+class IptcThirdLevelFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
 
     entity_name: str
@@ -63,7 +54,4 @@ class IptcThirdLevelFeatureRegistrationParams(BaseSettings):
     redshift_table: str
     fields: List[Tuple[str, str]]
 
-    class Config:
-        env_prefix = "third_level_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="third_level_")

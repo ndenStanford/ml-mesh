@@ -7,24 +7,19 @@ from typing import List, Tuple, Union
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
 # --- settings classes
-class TrackedKeywordModelSpecs(TrackedModelSpecs):
+class TrackedKeywordModelSpecs(TrackedModelSettings):
     """Params class for specifying the neptune project and model suite."""
 
-    project: str = "onclusive/keywords"
-    model = "KEYWORDS-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    target_model: str = "KEYWORDS-TRAINED"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Ground truth inputs for model inference.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
@@ -65,12 +60,8 @@ class Inputs(TrackedParams):
         vistas en un manera 'razonable' (ver sesgo inductivo).""",
     ]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class KeywordExtractionSettings(TrackedParams):
+class KeywordExtractionSettings(TrackingSettings):
     """Ground truth specification for model inference mode.
 
     Will be used as ground truth inputs for components downstream of `train` (e.g. `compile` and
@@ -81,12 +72,8 @@ class KeywordExtractionSettings(TrackedParams):
     stop_words: Union[str, List[str]] = "english"
     top_n: int = 3
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class KeywordModelParams(TrackedParams):
+class KeywordModelParams(TrackingSettings):
     """Params class specifying the huggingface model being used for the keywords model backend.
 
     Includes `KeywordExtractionSettings`
@@ -97,10 +84,6 @@ class KeywordModelParams(TrackedParams):
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
     keyword_extraction_settings: KeywordExtractionSettings = KeywordExtractionSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class TrackedKeywordsBaseModelCard(TrackedModelCard):
@@ -114,7 +97,3 @@ class TrackedKeywordsBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "keyword_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

@@ -4,10 +4,13 @@
 from typing import Any, Dict, List, Optional
 
 # 3rd party libraries
-from pydantic import BaseModel, root_validator
+from pydantic import model_validator
+
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 
 
-class ServedModelMethods(BaseModel):
+class ServedModelMethods(OnclusiveBaseModel):
     """Served model methods.
 
     Utility to track the methods that a ServedModel subclass must implement
@@ -18,7 +21,7 @@ class ServedModelMethods(BaseModel):
     bio: str = "bio"
 
 
-class ModelServerURLs(BaseModel):
+class ModelServerURLs(OnclusiveBaseModel):
     """Model server URLs."""
 
     root: str
@@ -30,7 +33,7 @@ class ModelServerURLs(BaseModel):
     redoc: Optional[str] = ""
     openapi: Optional[str] = ""
 
-    @root_validator
+    @model_validator(mode="before")
     def check_non_root_urls(cls, values: Dict) -> Dict:
         """Checks that each url indeed starts with the root url."""
         root_url = values["root"]
@@ -53,31 +56,31 @@ class ModelServerURLs(BaseModel):
         return values
 
 
-class ReadinessProbeResponse(BaseModel):
+class ReadinessProbeResponse(OnclusiveBaseModel):
     """Readiness probe."""
 
     ready: bool = True
 
 
-class LivenessProbeResponse(BaseModel):
+class LivenessProbeResponse(OnclusiveBaseModel):
     """Liveness probe."""
 
     live: bool = True
 
 
-class ProtocolV1RequestModel(BaseModel):
+class ProtocolV1RequestModel(OnclusiveBaseModel):
     """Request model."""
 
     instances: List[Any]
 
 
-class ProtocolV1ResponseModel(BaseModel):
+class ProtocolV1ResponseModel(OnclusiveBaseModel):
     """Response model."""
 
     predictions: List[Any]
 
 
-class ServedModelBioModel(BaseModel):
+class ServedModelBioModel(OnclusiveBaseModel):
     """Served model bio schema."""
 
     name: str

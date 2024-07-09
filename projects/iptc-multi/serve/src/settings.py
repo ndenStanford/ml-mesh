@@ -6,9 +6,10 @@ from pathlib import Path
 from typing import List, Set, Union
 
 # 3rd party libraries
-from pydantic import BaseSettings
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
@@ -103,10 +104,7 @@ class ServerModelSettings(ServingParams):
     }
     supported_languages: List[LanguageIso] = IPTC_SUPPORTED_LANGUAGE
 
-    class Config:
-        env_prefix = "server_model_settings_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(env_prefix="server_model_settings_")
 
 
 class GlobalSettings(
@@ -118,6 +116,6 @@ class GlobalSettings(
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()

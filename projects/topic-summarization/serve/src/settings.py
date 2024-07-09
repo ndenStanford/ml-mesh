@@ -5,6 +5,7 @@
 from onclusiveml.data.query_profile import MediaAPISettings
 
 # Standard Library
+import itertools
 from functools import lru_cache
 
 # Internal libraries
@@ -16,6 +17,7 @@ from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import TrackedGithubActionsSpecs, TrackedImageSpecs
 from pydantic import SecretStr, Field
 from typing import Dict, List, Optional
+from src.es_utils import generate_crawler_indices
 
 
 class ServerModelSettings(ServingParams):
@@ -57,21 +59,34 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
 
     CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-claude"
     GPT_QUERY_ENTITY_EXTRACTION_ALIAS: str = "ml-entity-query-extract-gpt"
-    DEFAULT_MODEL: str = "anthropic.claude-3-sonnet-20240229-v1:0"
+    DEFAULT_MODEL: str = "anthropic.claude-3-5-sonnet-20240620-v1:0"
     HAIKU_CLAUDE_MODEL: str = "anthropic.claude-3-haiku-20240307-v1:0"
     GPT_MODEL: str = "gpt-4o"
 
-    model_settings = ServerModelSettings()
-
-    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = {}
-    for category_key, category_value in model_settings.IMPACT_CATEGORIES.items():
-        category_dict = {
-            f"{category_key}_summary": f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
-            f"{category_key}_theme": f"An overall theme for {category_value}",
-            f"{category_key}_impact": f"The impact level of {category_value}",
-        }
-        TOPIC_RESPONSE_SCHEMA.update(category_dict)
-
+    model_settings: ServerModelSettings = ServerModelSettings()
+    # fmt: off
+    TOPIC_RESPONSE_SCHEMA: Dict[str, str] = dict(
+        itertools.chain.from_iterable(
+            [
+                [
+                    (
+                        f"{category_key}_summary",
+                        f"The summary for the content about {category_value}, based on the input articles",  # noqa: E501
+                    ),
+                    (
+                        f"{category_key}_theme",
+                        f"An overall theme for {category_value}",
+                    ),
+                    (
+                        f"{category_key}_impact",
+                        f"The impact level of {category_value}",
+                    ),
+                ]
+                for category_key, category_value in model_settings.IMPACT_CATEGORIES.items()
+            ]
+        )
+    )
+    # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
         "theme": "The theme for your consolidated summary",
@@ -88,14 +103,7 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
     ELASTICSEARCH_KEY: SecretStr = Field(
         default="...", env="ELASTICSEARCH_KEY", exclude=True
     )
-    es_index: List = [
-        "crawler-4-2024.05",
-        "crawler-4-2024.04",
-        "crawler-4-2024.03",
-        "crawler-4-2024.02",
-        "crawler-4-2024.01",
-        "crawler",
-    ]
+    es_index: List = generate_crawler_indices()
     ES_TIMEOUT: int = 90
 
 
@@ -123,19 +131,15 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     # number of days to look past the inflection point when collecting documents (at 00:00)
     DAYS_PAST_INFLECTION_POINT: int = 2
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class ImpactQuantificationSettings(OnclusiveBaseSettings):
     """Impact Quantification Settings."""
 
     impact_lookback_days: int = 125
     time_interval: str = "24h"
-    local_raio_cutoff = 0.01
-    global_local_comparison_ratio_cutoff = 1
-    mf_tau_cutoff = 0.8
+    local_raio_cutoff: float = 0.01
+    global_local_comparison_ratio_cutoff: float = 1
+    mf_tau_cutoff: float = 0.8
 
 
 class GlobalSettings(

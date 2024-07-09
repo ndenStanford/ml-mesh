@@ -17,7 +17,7 @@ from onclusiveml.core.logging.formatters import (
 )
 from onclusiveml.core.logging.handlers import get_default_handler
 from onclusiveml.core.logging.loggers import get_default_logger
-from onclusiveml.core.logging.params import OnclusiveLogSettings
+from onclusiveml.core.logging.settings import OnclusiveLogSettings
 
 
 __all__ = [

@@ -34,7 +34,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # initialize registered model on neptune ai
-    model_version = TrackedModelVersion(**model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
     # --- initialize models
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer for English")
@@ -125,13 +125,21 @@ def main() -> None:
         hf_pipeline_it,
     ]
     # summarization settings
-    summarization_settings_en = model_card.model_params_en.summarization_settings.dict()
-    summarization_settings_frde = (
-        model_card.model_params_frde.summarization_settings.dict()
+    summarization_settings_en = (
+        model_card.model_params_en.summarization_settings.model_dump()
     )
-    summarization_settings_es = model_card.model_params_es.summarization_settings.dict()
-    summarization_settings_ca = model_card.model_params_ca.summarization_settings.dict()
-    summarization_settings_it = model_card.model_params_it.summarization_settings.dict()
+    summarization_settings_frde = (
+        model_card.model_params_frde.summarization_settings.model_dump()
+    )
+    summarization_settings_es = (
+        model_card.model_params_es.summarization_settings.model_dump()
+    )
+    summarization_settings_ca = (
+        model_card.model_params_ca.summarization_settings.model_dump()
+    )
+    summarization_settings_it = (
+        model_card.model_params_it.summarization_settings.model_dump()
+    )
 
     summarization_settings = [
         summarization_settings_en,
@@ -216,7 +224,7 @@ def main() -> None:
     )
     # model card
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     model_version.stop()

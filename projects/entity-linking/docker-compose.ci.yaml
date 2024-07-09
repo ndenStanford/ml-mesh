@@ -1,5 +1,4 @@
 ---
-version : '3.9'
 
 services:
   # =============================================
@@ -28,7 +27,7 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/${DEPLOYMENT:-prod}.env
@@ -40,7 +39,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     hostname: onclusive-ml
@@ -102,7 +101,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
@@ -123,7 +122,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
@@ -149,7 +148,7 @@ services:
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
@@ -182,7 +181,7 @@ services:
               count: 1
               capabilities: [gpu]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}

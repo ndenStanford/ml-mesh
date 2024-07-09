@@ -19,7 +19,7 @@ from onclusiveml.tracking import TrackedModelVersion
 from src.settings import (  # type: ignore[attr-defined]
     DocumentPipelineCompilationSettings,
     IOSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
     WordPipelineCompilationSettings,
 )
 
@@ -33,8 +33,8 @@ def compile_model() -> None:
         level=io_settings.log_level,
     )
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_specs = UncompiledTrackedModelSettings()
+    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(
         "model/model_card"
@@ -50,23 +50,23 @@ def compile_model() -> None:
     word_pipeline_compilation_settings = WordPipelineCompilationSettings()
     logger.debug(
         f"Using the following word pipeline compilation settings: "
-        f"{word_pipeline_compilation_settings.dict()}. Compiling ..."
+        f"{word_pipeline_compilation_settings.model_dump()}. Compiling ..."
     )
 
     compiled_word_embedding_pipeline = CompiledPipeline.from_pipeline(
         pipeline=base_model_pipeline,
-        **word_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
+        **word_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
     # compile base model pipeline for document embedding feature extraction
     document_pipeline_compilation_settings = DocumentPipelineCompilationSettings()
     logger.debug(
         f"Using the following document pipeline compilation settings: "
-        f"{document_pipeline_compilation_settings.dict()}. Compiling ..."
+        f"{document_pipeline_compilation_settings.model_dump()}. Compiling ..."
     )
 
     compiled_document_embedding_pipeline = CompiledPipeline.from_pipeline(
         pipeline=base_model_pipeline,
-        **document_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
+        **document_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
     # assemble compiled keybert model
     compiled_keybert = CompiledKeyBERT(

@@ -205,6 +205,7 @@ jobs:
     env:
       DOCKER_BUILDKIT: 1
       COMPOSE_DOCKER_CLI_BUILD: 1
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Check out code
@@ -334,7 +335,7 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
+            ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
             PLATFORM="linux/amd64" \

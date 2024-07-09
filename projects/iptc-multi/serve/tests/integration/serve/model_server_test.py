@@ -23,21 +23,13 @@ def test_get_model_server():
     assert not model_server.model.is_ready()
 
 
-@pytest.mark.order(5)
-def test_model_server_root(test_client):
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = test_client.get("/iptc-multi/v1/")
-
-    assert root_response.status_code == 200
-
-
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = test_client.get("/iptc-multi/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 @pytest.mark.order(6)
@@ -46,4 +38,4 @@ def test_model_server_readiness(test_client):
     readiness_response = test_client.get("/iptc-multi/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()

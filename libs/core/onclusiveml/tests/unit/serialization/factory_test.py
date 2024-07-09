@@ -33,8 +33,8 @@ class TestResponseAttributesSchema(JsonApiSchema):
 @pytest.mark.parametrize(
     "namespace, attr1, attr2, attr3, param1, version, attr4, attr5, attr6",
     [
-        ("test", 1, 2999, 2.08, 1, 2, 100, 100, 0.1),
-        ("t", 0, 100, 0.14, 3, 2, 63, 6, 9.3),
+        ("test", "a", 2999.0, 2, 1, 2, 100, 100, 0.1),
+        ("t", "v", 100.0, 0, 3, 2, 63, 6, 9.3),
     ],
 )
 def test_init_schema(

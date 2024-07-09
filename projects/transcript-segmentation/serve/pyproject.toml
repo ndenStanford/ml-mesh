@@ -7,7 +7,6 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 rapidfuzz = "3.7.0"
