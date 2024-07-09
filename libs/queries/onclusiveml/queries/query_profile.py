@@ -7,7 +7,6 @@ from typing import Dict, Optional, Union
 # 3rd party libraries
 import requests
 from pydantic import SecretStr, Field
-from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
@@ -21,13 +20,11 @@ from onclusiveml.queries.exceptions import (
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    model_config = SettingsConfigDict(env_prefix="MEDIA_", extra="ignore")
-
-    client_id: SecretStr = Field(
+    media_client_id: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    client_secret: SecretStr = Field(
+    media_client_secret: SecretStr = Field(
         default="...",
         exclude=True,
     )
@@ -38,12 +35,12 @@ class MediaAPISettings(OnclusiveBaseSettings):
     media_api_url: str = "https://staging-querytool-api.platform.onclusive.org"
 
     def get_client_secret_value(self) -> str:
-        """Get client_secret."""
-        return self.client_secret.get_secret_value()
+        """Get media_client_secret."""
+        return self.media_client_secret.get_secret_value()
 
     def get_client_id_value(self) -> str:
-        """Get client_id."""
-        return self.client_id.get_secret_value()
+        """Get media_client_id."""
+        return self.media_client_id.get_secret_value()
 
 
 class BaseQueryProfile(OnclusiveBaseModel):
@@ -59,8 +56,8 @@ class BaseQueryProfile(OnclusiveBaseModel):
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
         settings_dict = settings.model_dump()
-        settings_dict["client_secret"] = settings.client_secret.get_secret_value()
-        settings_dict["client_id"] = settings.client_id.get_secret_value()
+        settings_dict["client_secret"] = settings.media_client_secret.get_secret_value()
+        settings_dict["client_id"] = settings.media_client_id.get_secret_value()
         settings_dict["grant_type"] = settings.grant_type
         settings_dict["scope"] = settings.scope
 
