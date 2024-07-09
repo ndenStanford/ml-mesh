@@ -10,7 +10,7 @@ from pydantic import SecretStr, Field
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
-from onclusiveml.data.exceptions import (
+from onclusiveml.queries.exceptions import (
     QueryESException,
     QueryStringException,
     QueryIdException,
