@@ -91,17 +91,17 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
     ):
         """Initialize the Bedrock model parameters."""
         if self.model_parameters is None:
-            self.model_parameters = model_parameters_class().dict()
+            self.model_parameters = model_parameters_class().model_dump()
         else:
             try:
                 if self.alias in [ChatModel.TITAN, ChatModel.TITAN_G1]:
                     self.model_parameters = TitanParameters(
-                        **model_parameters_class(**self.model_parameters).dict()
-                    ).dict()
+                        **model_parameters_class(**self.model_parameters).model_dump()
+                    ).model_dump()
                 else:
                     self.model_parameters = model_parameters_class(
                         **self.model_parameters
-                    ).dict()
+                    ).model_dump()
             except ValidationError as e:
                 raise ValueError(f"Invalid parameters: {e}")
 

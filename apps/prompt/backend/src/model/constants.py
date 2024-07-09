@@ -4,10 +4,10 @@
 from typing import List
 
 # 3rd party libraries
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveEnum
 
 
 class ChatModel(str, OnclusiveEnum):
@@ -46,14 +46,11 @@ class ChatModelProdiver(str, OnclusiveEnum):
     BEDROCK: str = "bedrock"
 
 
-class BaseLLMParameters(BaseModel):
+class BaseLLMParameters(OnclusiveBaseModel):
     """Base LLM parameters."""
 
     temperature: float = 0.7
     max_tokens: int = Field(3000, alias="maxTokens")
-
-    class Config:
-        extra = "forbid"
 
 
 class TextGenerationConfig(BaseLLMParameters):
@@ -65,7 +62,7 @@ class TextGenerationConfig(BaseLLMParameters):
     stopSequences: List[str] = Field([], alias="stopSequences")
 
 
-class TitanParameters(BaseModel):
+class TitanParameters(OnclusiveBaseModel):
     """Tital model parameters."""
 
     textGenerationConfig: TextGenerationConfig = Field(
