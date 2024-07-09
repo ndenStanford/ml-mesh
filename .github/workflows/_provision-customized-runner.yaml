@@ -148,15 +148,13 @@ jobs:
       - name: Check cuda
         if: ${{ inputs.self-hosted-runner-ami == 'ami-076e6d962ef3cf710' }}
         run: |
-          sudo dnf install kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r)
+          sudo dnf install dkms kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r)
           sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo"
-          sudo dnf clean all
-          sudo dnf -y install cuda-toolkit-12-5
-          sudo dnf -y module install nvidia-driver:latest-dkms
-          sudo dnf -y install nvidia-gds
+          sudo dnf clean expire-cache
+          sudo dnf module install -y nvidia-driver:latest-dkms
+          sudo dnf install cuda-toolkit
+          sudo dnf install nvidia-gds
           sudo reboot
-          export PATH=/usr/local/cuda-12.5/bin${PATH:+:${PATH}}
-          export LD_LIBRARY_PATH=/usr/local/cuda-12.5/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
           nvidia-smi
 
       - name: Check neuron
