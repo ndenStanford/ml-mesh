@@ -196,7 +196,7 @@ jobs       :
           - name: gpu-base
             validate-build: true
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0d2c0baacebff908c
+            self-hosted-runner-ami: ami-00bfb8e3827e060e0
             runner-kind: custom
 
         base-region: [us-east-1]
@@ -237,7 +237,7 @@ jobs       :
           - name: gpu-train
             validate-build: false
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0d2c0baacebff908c
+            self-hosted-runner-ami: ami-00bfb8e3827e060e0
             self-hosted-runner-neuron: false
             runner-kind: custom
 
@@ -522,7 +522,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0d2c0baacebff908c
+            self-hosted-runner-ami: ami-00bfb8e3827e060e0
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -598,7 +598,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0d2c0baacebff908c
+            self-hosted-runner-ami: ami-00bfb8e3827e060e0
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -763,7 +763,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0d2c0baacebff908c
+            self-hosted-runner-ami: ami-00bfb8e3827e060e0
             self-hosted-runner-neuron: false
             use-cache: true
 
