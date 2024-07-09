@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Optional
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveEnum
 from onclusiveml.core.serialization import JsonApiSchema
 
 

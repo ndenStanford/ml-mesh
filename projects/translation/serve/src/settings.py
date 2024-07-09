@@ -3,9 +3,6 @@
 # Standard Library
 from functools import lru_cache
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.serving.rest.serve.params import ServingParams
@@ -40,6 +37,6 @@ class GlobalSettings(
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()

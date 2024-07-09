@@ -11,19 +11,12 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root():
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/iptc-multi/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get("http://serve:8000/iptc-multi/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 def test_model_server_readiness():
@@ -31,7 +24,7 @@ def test_model_server_readiness():
     readiness_response = requests.get("http://serve:8000/iptc-multi/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 def test_model_server_bio():

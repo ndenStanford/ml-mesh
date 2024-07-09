@@ -22,7 +22,12 @@ def main() -> None:
     # output directory specs
     model_export_params = ServedModelParams()
     # initialize client for specific model version
-    mv = TrackedModelVersion(**model_version_specs.dict())
+    mv = TrackedModelVersion(
+        with_id=model_version_specs.with_id,
+        mode=model_version_specs.mode,
+        api_token=model_version_specs.api_token.get_secret_value(),
+        project=model_version_specs.project,
+    )
 
     docker_image_specs = TrackedImageSpecs()
 
@@ -49,12 +54,12 @@ def main() -> None:
     github_action_specs = TrackedGithubActionsSpecs()
 
     mv.upload_config_to_model_version(
-        config=github_action_specs.dict(),
+        config=github_action_specs.model_dump(),
         neptune_attribute_path=f"{test_results_neptune_attribute_path}/github_action_context.json",
     )
     # upload the docker image specs .json
     mv.upload_config_to_model_version(
-        config=docker_image_specs.dict(),
+        config=docker_image_specs.model_dump(),
         neptune_attribute_path=f"{test_results_neptune_attribute_path}/serve_image_specs.json",
     )
     # shutdown client

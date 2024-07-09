@@ -6,32 +6,24 @@ import os
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
 # --- settings classes
-class TrackedEntityLinkingModelSpecs(TrackedModelSpecs):
+class TrackedEntityLinkingModelSpecs(TrackedModelSettings):
     """Tracked entity-linking model settings."""
 
     project: str = "onclusive/entity-linking"
-    model = "EL-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model: str = "EL-TRAINED"
 
 
-class EntityLinkingSettings(TrackedParams):
+class EntityLinkingSettings(TrackingSettings):
     """Entity linking settings."""
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class EntityLinkingModelParams(TrackedParams):
+class EntityLinkingModelParams(TrackingSettings):
     """Entity linking Model parameters."""
 
     repo: str = "wannaphong/BELA"
@@ -40,10 +32,6 @@ class EntityLinkingModelParams(TrackedParams):
     index_filename: str = "index.txt"
 
     entity_linking_settings: EntityLinkingSettings = EntityLinkingSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class TrackedEntityLinkingBaseModelCard(TrackedModelCard):
@@ -58,7 +46,3 @@ class TrackedEntityLinkingBaseModelCard(TrackedModelCard):
     local_output_dir: str = os.path.join(".", "entity_linking_model_artifacts")
     local_cache_dir: str = os.path.join(".", "entity_linking_model_cache")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

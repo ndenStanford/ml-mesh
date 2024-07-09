@@ -1,5 +1,4 @@
 ---
-version : '3.9'
 
 services:
   # =============================================
@@ -25,7 +24,7 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
@@ -49,7 +48,7 @@ services:
       - 5678:5678
     profiles: [debug]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
@@ -65,7 +64,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -157,7 +156,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/dev.env
     hostname: onclusiveml
@@ -238,85 +237,6 @@ services:
     depends_on:
       serve:
         condition: service_healthy
-
-  # load tests
-  # - include model artifact
-  # - include REST model server process
-  serve-load:
-    volumes:
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/gch-summarization/serve/models
-      - type: bind
-        source: serve/src
-        target: /projects/gch-summarization/serve/src
-      - type: bind
-        source: serve/tests
-        target: /projects/gch-summarization/serve/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
-    command: [pytest, tests/load, -ra, -vv, --capture=no]
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    environment:
-      # load test params
-      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
-      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
-      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
-      ONCLUSIVEML_SERVING_RESET_STATS: No
-      ONCLUSIVEML_SERVING_RUN_TIME: 45s
-      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
-    env_file: serve/config/dev.env
-    profiles: [load]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-    depends_on:
-      serve:
-        condition: service_healthy
-
-  # utility service: uploading the relevant test results to the model registry
-  serve-upload-results:
-    volumes:
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/gch-summarization/serve/models
-      - type: bind
-        source: serve/src
-        target: /projects/gch-summarization/serve/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload]
-    profiles: [serve]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: async
-      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gch-summarization-serve
-      DOCKER_IMAGE_TAG: ${IMAGE_TAG}
-      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
-      GITHUB_REPOSITORY: development-repository
-      GITHUB_ACTOR: development-actor
-      GITHUB_ENV: development-env
-      GITHUB_WORKFLOW: development-workflow
-      GITHUB_JOB: development-job
-      GITHUB_REF: development-ref
-      GITHUB_BASE_REF: development-base-ref
-      GITHUB_HEAD_REF: development-head-ref
-      GITHUB_SHA: development-sha
-      GITHUB_EVENT_NAME: development-event-name
-      GITHUB_RUN_ID: development-run-id
-      GITHUB_RUN_NUMBER: development-run-number
-      RUNNER_ARCH: development-arch
-      RUNNER_NAME: development-name
-      RUNNER_OS: development-os
-    env_file: serve/config/dev.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
 
   # =============================================
   # BACKFILL

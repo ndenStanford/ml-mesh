@@ -3,10 +3,8 @@
 # Standard Library
 from typing import Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.models.keywords import CompiledKeyBERT
 from onclusiveml.serving.rest.serve import ServedModel
 
@@ -24,9 +22,9 @@ from src.serve.server_models import (
 class ServedKeywordsModel(ServedModel):
     """Served keywords model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestModel
-    predict_response_model: Type[BaseModel] = PredictResponseModel
-    bio_response_model: Type[BaseModel] = BioResponseModel
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestModel
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseModel
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseModel
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
 
@@ -58,7 +56,7 @@ class ServedKeywordsModel(ServedModel):
         documents = [input.document for input in inputs]
         # score the model
         predicted_documents = self.model.extract_keywords(
-            docs=documents, **configuration.dict()
+            docs=documents, **configuration.model_dump()
         )
         # assemble validated response model instance
         predicted_payload_list = []

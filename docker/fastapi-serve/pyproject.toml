@@ -6,10 +6,9 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-fastapi = "0.92.0"
-pydantic = "1.10.17"
-uvicorn = "0.30.0"
-starlette = "0.25.0"
+fastapi = "0.110.2"
+pydantic = "2.6.0"
+uvicorn = "0.29.0"
 
 [build-system]
 requires = ["poetry-core"]

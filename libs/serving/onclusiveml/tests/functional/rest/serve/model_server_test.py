@@ -143,7 +143,7 @@ def test_model_server_serve_predict(
         f"http://localhost:{test_port}" + test_model_server_urls.model_predict
     )
 
-    response = requests.post(model_predict_url, json=test_request_data.dict())
+    response = requests.post(model_predict_url, json=test_request_data.model_dump())
 
     test_response_actual = test_response_model(**response.json())
 

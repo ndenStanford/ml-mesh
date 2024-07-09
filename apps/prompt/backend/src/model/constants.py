@@ -1,8 +1,7 @@
 """Constants."""
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveEnum
 
 
 class ChatModel(str, OnclusiveEnum):
@@ -24,6 +23,7 @@ class ChatModel(str, OnclusiveEnum):
     CLAUDE_2 = "anthropic.claude-v2"
     CLAUDE_2_1 = "anthropic.claude-v2:1"
     CLAUDE_3_SONNET = "anthropic.claude-3-sonnet-20240229-v1:0"
+    CLAUDE_3_5_SONNET = "anthropic.claude-3-5-sonnet-20240620-v1:0"
     CLAUDE_3_HAIKU = "anthropic.claude-3-haiku-20240307-v1:0"
     CLAUDE_3_INSTANT = "anthropic.claude-instant-v1"
     LLAMA_2_13B = "meta.llama2-13b-chat-v1"
@@ -52,6 +52,7 @@ DEFAULT_MODELS = [
     {"alias": ChatModel.CLAUDE_2, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_2_1, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_SONNET, "provider": ChatModelProdiver.BEDROCK},
+    {"alias": ChatModel.CLAUDE_3_5_SONNET, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_HAIKU, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.CLAUDE_3_INSTANT, "provider": ChatModelProdiver.BEDROCK},
     {"alias": ChatModel.GPT3_5, "provider": ChatModelProdiver.OPENAI},

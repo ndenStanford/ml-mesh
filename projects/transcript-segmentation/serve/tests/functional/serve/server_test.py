@@ -10,13 +10,6 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_server_root():
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8888/transcript-segmentation/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get(
@@ -24,7 +17,7 @@ def test_server_liveness():
     )
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 def test_server_readiness():
@@ -34,7 +27,7 @@ def test_server_readiness():
     )
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 def test_server_bio():

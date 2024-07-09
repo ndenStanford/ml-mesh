@@ -12,12 +12,12 @@ from onclusiveml.serving.rest.serve import (
 
 def test_readiness_probe_response_model():
     """Tests the initialization and structure of the ReadinessProbeResponse data model."""
-    ReadinessProbeResponse().dict() == {"ready": True}
+    ReadinessProbeResponse().model_dump() == {"ready": True}
 
 
 def test_liveness_probe_response_model():
     """Tests the initialization and structure of the LivenessProbeResponse data model."""
-    LivenessProbeResponse().dict() == {"live": True}
+    LivenessProbeResponse().model_dump() == {"live": True}
 
 
 def test_ml_protocol_v1_request_model(get_test_record):
