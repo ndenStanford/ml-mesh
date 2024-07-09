@@ -40,7 +40,7 @@ on  :
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
       self-hosted-runner-ami:
         required: false
-        default: ami-07b4e00e2c69c3702
+        default: ami-0a3911d5b4b580f22
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       apply-max-attempts:
@@ -115,7 +115,6 @@ jobs:
       self-hosted-runner-ami: ${{ inputs.self-hosted-runner-ami }}
       setup-docker-compose: true
       setup-neuron: false # apps should not require Neuron
-      setup-cuda: false
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -163,7 +162,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4

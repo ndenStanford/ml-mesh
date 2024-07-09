@@ -14,9 +14,9 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-08be1e3e6c338b037
+        default: ami-0a3911d5b4b580f22
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-03e201058e36661a3 for inferentia, ami-0255b953a852e0cb5 for cpu, or ami-0af5c083127a8adce
+        description: The EC2 AMI of the self hosted runner. Choose ami-061f2e0350e09dbb1 for inferentia, ami-0a3911d5b4b580f22 for cpu, or ami-0d2c0baacebff908c
           for gpu.
       setup-docker-compose:
         required: true
@@ -28,11 +28,6 @@ on  :
         default: true
         type: boolean
         description: Whether to set up neuron driver and runtime OS libraries on the runner.
-      setup-cuda:
-        required: true
-        default: true
-        type: boolean
-        description: Whether to set up CUDA driver on the runner.
       neuron-dkms-version:
         required: false
         default: aws-neuronx-dkms-2.9.4.0
