@@ -11,7 +11,7 @@ We are using [the official AWS GPU **base** AMIs](https://aws.amazon.com/release
 ) to set up the node.
 
 More specifically, while developing this core image we used
-- AMI `ami-00bfb8e3827e060e0` and
+- AMI `ami-076e6d962ef3cf710` and
 - instance type `g4dn.xlarge` (e.g. Tesla GPUs)
 
 An additional installation of the docker compose plugin was required to allow the running of the
