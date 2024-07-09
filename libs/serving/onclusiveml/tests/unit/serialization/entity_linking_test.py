@@ -83,7 +83,7 @@ def test_response_attribute_schema(
     assert isinstance(attributes.entities[0].sentence_index, int)
     assert isinstance(attributes.entities[0].wiki_link, str)
 
-    assert dict(attributes) == {
+    assert attributes.model_dump() == {
         "entities": [
             {
                 "entity_type": entity_type,

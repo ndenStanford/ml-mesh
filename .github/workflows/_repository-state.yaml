@@ -80,6 +80,7 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ }}
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     outputs:
       tag: ${{ steps.export-tag.outputs.tag }}
       version: ${{ steps.version-increment.outputs.version }}

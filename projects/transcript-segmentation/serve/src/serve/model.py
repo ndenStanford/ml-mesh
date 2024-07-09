@@ -5,9 +5,9 @@ from typing import Type
 
 # 3rd party libraries
 from fastapi import HTTPException, status
-from pydantic import BaseModel
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
@@ -27,9 +27,9 @@ settings = get_settings()
 class ServedTranscriptSegmentationModel(ServedModel):
     """Served Transcript Segmentation model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
         super().__init__(name="transcript-segmentation")

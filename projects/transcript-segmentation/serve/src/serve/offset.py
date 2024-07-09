@@ -1,7 +1,7 @@
 """Timestamp Offsets."""
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveEnum
 
 
 class OffsetEnum(OnclusiveEnum):

@@ -8,10 +8,9 @@ packages = [{include = "onclusiveml"}]
 [tool.poetry.dependencies]
 python = "3.8.16"
 neptune = "1.1.1"
-boto3 = "1.34.0"
-numpy = "1.22.0" # not specifying this causes 1.24.3 to be installed, clashing with the `compile` lib reqs
+boto3 = "^1.28.29"
+numpy = ">=1.18"
 core = {path = "../core"}
-pydantic = {version = "<2.0.0", extras = ["dotenv"]}
 typing-extensions = "^4.5.0"
 
 

@@ -11,14 +11,14 @@ from onclusiveml.core.logging.constants import (
     OnclusiveService,
 )
 from onclusiveml.core.logging.handlers import get_default_handler
-from onclusiveml.core.logging.params import OnclusiveLogSettings
+from onclusiveml.core.logging.settings import OnclusiveLogSettings
 
 
 def get_default_logger(
     name: str,
-    service: str = OnclusiveService.DEFAULT.value,
+    service: str = OnclusiveService.DEFAULT,
     level: int = DEBUG,
-    fmt_level: str = OnclusiveLogMessageFormat.DEFAULT.name,
+    fmt_level: OnclusiveLogMessageFormat = OnclusiveLogMessageFormat.DEFAULT,
     json_format: bool = False,
     handler: Optional[logging.Handler] = None,
 ) -> logging.Logger:
@@ -40,10 +40,10 @@ def get_default_logger(
     Args:
         name (str): The name of the logger.
         service (str): The onclusive ML service name for the JSON logs. Only relevant if
-            `json_format`=True. Defaults to `OnclusiveService.DEFAULT.value`.
+            `json_format`=True. Defaults to `OnclusiveService.DEFAULT`.
         level (Optional[int], optional): The log level to be used for the logger. Defaults to
             `DEBUG`.
-        fmt_level (Optional[str], optional): The log message format level to be used. Only used if
+        fmt_level (OnclusiveLogMessageFormat): The log message format level to be used. Only used if
             the `handler` arg is not specified.
         json_format (bool): Whether to use the OnclusiveJSONFormatter or standard Formatter. Defalts
             to True.
@@ -70,7 +70,7 @@ def get_default_logger(
 
     # if no handler is specified, create a configured one using handler util
     if handler is None:
-        handler = get_default_handler(**log_settings.dict())
+        handler = get_default_handler(**log_settings.model_dump())
 
     logger.addHandler(handler)
 

@@ -3,10 +3,8 @@
 # Standard Library
 from typing import Any
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.logging.constants import OnclusiveService
 from onclusiveml.data.feature_store import FeastRepoBuilder, FeatureStoreParams
@@ -42,7 +40,7 @@ def main() -> None:
 
 def register(
     feature_registration_params: FeatureStoreParams,
-    iptc_level_feature_registration_params: BaseSettings,
+    iptc_level_feature_registration_params: OnclusiveBaseSettings,
 ) -> None:
     """Register features."""
     feature_registration_params.entity_name = (
