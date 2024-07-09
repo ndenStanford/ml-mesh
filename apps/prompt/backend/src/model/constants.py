@@ -7,7 +7,7 @@ from typing import List
 from pydantic import BaseModel, Field
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveEnum
 
 
 class ChatModel(str, OnclusiveEnum):

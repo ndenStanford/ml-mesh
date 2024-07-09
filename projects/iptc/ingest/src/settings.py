@@ -1,13 +1,16 @@
 """Settings."""
+
 # Standard Library
 from functools import lru_cache
 
 # 3rd party libraries
 import pyarrow as pa
-from pydantic import BaseSettings
+
+# Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 
-class IngestionSettings(BaseSettings):
+class IngestionSettings(OnclusiveBaseSettings):
     """Ingestion inputs."""
 
     source_bucket: str
@@ -85,16 +88,12 @@ class IngestionSettings(BaseSettings):
             + [("iptc_id", pa.int64()), ("event_timestamp", pa.timestamp("ns"))]
         )
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
 
 class GlobalSettings(IngestionSettings):
     """Global server settings."""
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()

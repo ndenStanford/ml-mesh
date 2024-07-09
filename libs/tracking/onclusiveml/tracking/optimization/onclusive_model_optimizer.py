@@ -1,38 +1,38 @@
 """Baseclass for optimizing Onclusive models. Inherited by training and compiling modules."""
 
 # Standard Library
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import List
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
+    TrackedModelSettings,
     TrackedModelVersion,
 )
 
 
-class OnclusiveModelOptimizer:
+class OnclusiveModelOptimizer(ABC):
     """Class for training and managing Onclusive models."""
 
     def __init__(
         self,
-        tracked_model_specs: TrackedModelSpecs,
+        tracked_model_settings: TrackedModelSettings,
         model_card: TrackedModelCard,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
-            tracked_model_specs (TrackedModelSpecs): Specifications for tracked model on neptune.
-            model_card (TrackedModelCard): Model card with specifications of the model.
-
+            tracked_model_settings (TrackedModelSettings): Specifications for
+            racked model on neptune.
+            model_card (TrackedModelCard): Model card with specifications
+                of the model.
         Returns: None
         """
-        self.tracked_model_specs = tracked_model_specs
+        self.tracked_model_settings = tracked_model_settings
         self.model_card = model_card
         self.create_tracked_model_version()
-
         self.logger = get_default_logger(__name__)
 
     @abstractmethod
@@ -49,7 +49,7 @@ class OnclusiveModelOptimizer:
         Returns: None
         """
         self.tracked_model_version = TrackedModelVersion(
-            **self.tracked_model_specs.dict()
+            **self.tracked_model_settings.model_dump()
         )
 
     def upload_model_to_neptune(
@@ -80,7 +80,7 @@ class OnclusiveModelOptimizer:
         )
         # # model card
         self.tracked_model_version.upload_config_to_model_version(
-            config=self.model_card.dict(),
+            config=self.model_card.model_dump(),
             neptune_attribute_path="model/model_card",
         )
         self.tracked_model_version.stop()

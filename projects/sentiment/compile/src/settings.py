@@ -12,8 +12,8 @@ from pydantic import Field
 from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
@@ -25,7 +25,7 @@ UPLOAD = "upload"
 WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
-class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+class UncompiledTrackedModelSettings(TrackedModelSettings):
     """Trained model settings."""
 
     project: str = "onclusive/sentiment"
@@ -42,7 +42,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class CompiledTrackedModelSpecs(TrackedModelSpecs):
+class CompiledTrackedModelSettings(TrackedModelSettings):
     """Compiled model settings."""
 
     project: str = "onclusive/sentiment"
@@ -54,7 +54,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class WorkflowOutputDir(TrackedParams):
+class WorkflowOutputDir(TrackingSettings):
     """Workflow output directory."""
 
     outpath: str = "./outputs"
@@ -106,7 +106,7 @@ class WorkflowComponentIOSettings(object):
             )
 
 
-class IOSettings(TrackedParams):
+class IOSettings(TrackingSettings):
     """Configuring container file system output locations for all 4 components."""
 
     # storage
@@ -126,7 +126,7 @@ class IOSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class TokenizerSettings(TrackedParams):
+class TokenizerSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details."""
 
     add_special_tokens: bool = True
@@ -137,7 +137,7 @@ class TokenizerSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class ModelTracingSettings(TrackedParams):
+class ModelTracingSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
@@ -159,7 +159,7 @@ class ModelTracingSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class PipelineCompilationSettings(TrackedParams):
+class PipelineCompilationSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details."""
 
     pipeline_name: str
@@ -177,7 +177,7 @@ class SentPipelineCompilationSettings(PipelineCompilationSettings):
     """Sentiment pipeline compilation settings."""
 
     pipeline_name: str = "sent_model"
-    max_length = 128
+    max_length: int = 128
 
     class Config:
         env_prefix = "sent_pipeline_compilation_settings_"
@@ -185,7 +185,7 @@ class SentPipelineCompilationSettings(PipelineCompilationSettings):
         env_file_encoding = "utf-8"
 
 
-class CompilationTestSettings(TrackedParams):
+class CompilationTestSettings(TrackingSettings):
     """Compilation test settings."""
 
     regression_atol: float = 1e-02
@@ -197,13 +197,13 @@ class CompilationTestSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class CompiledSentTrackedModelCard(TrackedModelCard):
+class CompiledSentimentTrackedModelCard(TrackedModelCard):
     """Compiled sentiment tracked model card."""
 
     model_type: str = "compiled"
     # --- custom fields
     # uncompiled model reference
-    uncompiled_model: UncompiledTrackedModelSpecs = UncompiledTrackedModelSpecs()
+    uncompiled_model: UncompiledTrackedModelSettings = UncompiledTrackedModelSettings()
     # model compilation params
     sent_model_compilation_settings: PipelineCompilationSettings = (
         SentPipelineCompilationSettings()

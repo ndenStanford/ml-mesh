@@ -7,9 +7,9 @@ from typing import Type
 # 3rd party libraries
 import requests
 from fastapi import HTTPException, status
-from pydantic import BaseModel
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.serving.rest.serve import ServedModel
 
@@ -29,9 +29,9 @@ logger = get_default_logger(__name__)
 class SummarizationServedModel(ServedModel):
     """Summarization model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def bio(self) -> BioResponseSchema:
         """Model bio."""

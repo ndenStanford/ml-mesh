@@ -10,7 +10,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 boto3 = "^1.20.23"
 boto3-type-annotations = "^0.3.1"
-feast = {version = "0.30.2", extras = ["aws"]}
+feast = {version = "0.36.0", extras = ["aws"]}
 serving = {path = "../serving"}
 apache-beam = "2.49.0"
 core = {path = "../core"}

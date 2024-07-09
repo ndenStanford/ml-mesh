@@ -16,7 +16,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 # Internal libraries
 from onclusiveml.data.feature_store import FeatureStoreParams
-from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 
@@ -25,7 +25,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
 
     def __init__(
         self,
-        tracked_model_specs: TrackedModelSpecs,
+        tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
         data_fetch_params: FeatureStoreParams,
         stopwords: List[str],
@@ -33,7 +33,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
         """Initialize the BertopicTrainer.
 
         Args:
-            tracked_model_specs (TrackedModelSpecs): Specifications for tracked model on neptune.
+            tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
             data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
             stopwords (List[str]): List of stopwords to be used in text processing.
@@ -161,7 +161,7 @@ class BertopicTrainer(OnclusiveModelTrainer):
             sample_topics = self.predict(sample_docs, sample_embeddings)
 
             super(OnclusiveModelTrainer, self).__call__(
-                [sample_docs, self.model_card.model_params.dict(), sample_topics],
+                [sample_docs, self.model_card.model_params.model_dump(), sample_topics],
                 [
                     self.model_card.model_test_files.inputs,
                     self.model_card.model_test_files.inference_params,

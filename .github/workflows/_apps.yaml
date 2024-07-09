@@ -34,6 +34,28 @@ on  :
         default: true
         type: boolean
         description: If false, only the app components that have been changed are ran, otherwise every app component is ran.
+      runner-kind:
+        required: true
+        default: custom
+        type: string
+        description: If 'custom', a customized self hosted runner will be provided. Otherwise needs to be a valid Github Actions runner kind reference.
+      self-hosted-runner-type:
+        required: false
+        type: string
+        description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
+      self-hosted-runner-ami:
+        required: false
+        default: ami-07b4e00e2c69c3702
+        type: string
+        description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
+      apply-max-attempts:
+        type: number
+        default: 2
+        description: Number of attempts to deploy manifests to cluster.
+      apply-retry-wait-seconds:
+        type: number
+        default: 30
+        description: Time (in  seconds) between attempts.
       use-cache:
         type: boolean
         required: false
@@ -52,6 +74,9 @@ on  :
       AWS_SECRET_ACCESS_KEY:
         required: true
         description: AWS secret access key
+      GH_PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: Github PAT to allow EC2 instance to connect to Github repository content.
       PROMPT_REGISTRY_APP_ID:
         required: true
         description: Prompt registry app ID.
@@ -63,18 +88,13 @@ on  :
         description: OPENAI Api key.
 
 jobs:
-  deploy:
-    name: 'Build, test & deploy: ${{ inputs.app }}-${{ inputs.component }}'
-    runs-on: ubuntu-20.04
-    environment: ${{ inputs.environment }}
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      DOCKER_BUILDKIT: 1
-      COMPOSE_DOCKER_CLI_BUILD: 1
 
+  check-run-criteria:
+    name: 'Run criteria: ${{ inputs.app }}-${{ inputs.component }}'
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -87,10 +107,70 @@ jobs:
           filters: |
             this:
               - added | modified: 'apps/${{ inputs.app }}/${{ inputs.component }}/**'
+              - added | modified: 'apps/${{ inputs.app }}/docker-compose.ci.yaml'
+
+  provision-customized-runner:
+    name: 'Start runner: ${{ inputs.app }}-${{ inputs.component }}'
+    needs: check-run-criteria
+    uses: ./.github/workflows/_provision-customized-runner.yaml
+    if: ${{ needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
+    with:
+      environment: ${{ inputs.environment }}
+      self-hosted-runner-type: ${{ inputs.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ inputs.self-hosted-runner-ami }}
+      setup-docker-compose: true
+      setup-neuron: false # apps should not require Neuron
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+  set-runner-specs:
+    name: 'Resolve runner specs: ${{ inputs.app }}-${{ inputs.component }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [check-run-criteria, provision-customized-runner]
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    outputs:
+      runner-label: ${{ steps.set-runner-label.outputs.value }}
+      runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
+    steps:
+      - name: Toggle runner label
+        uses: haya14busa/action-cond@v1
+        id: set-runner-label
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-label }}
+          if_false: ${{ inputs.runner-kind }}
+
+      - name: Toggle runner instance type
+        uses: haya14busa/action-cond@v1
+        id: set-runner-instance-id
+        with:
+          cond: ${{ inputs.runner-kind == 'custom' }}
+          if_true: ${{ needs.provision-customized-runner.outputs.runner-instance-id }}
+          if_false: ''
+
+  deploy:
+    name: 'Build, test & deploy: ${{ inputs.app }}-${{ inputs.component }}'
+    needs: [check-run-criteria, set-runner-specs]
+    runs-on: ${{ needs.set-runner-specs.outputs.runner-label }}
+    timeout-minutes: 50
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    environment: ${{ inputs.environment }}
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      DOCKER_BUILDKIT: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -108,41 +188,32 @@ jobs:
             /usr/lib/jvm \
             /var/lib/apt/lists/*
 
-      - name: Set up Docker Buildx
+      - name: Set up docker buildx
+
         uses: docker/setup-buildx-action@v2
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
-      - name: Free space
-        run: |
-          sudo rm -rfv \
-            /usr/local/lib/android \
-            /usr/share/dotnet \
-            /opt/ghc \
-            /usr/local/share/powershell \
-            /usr/share/swift \
-            /usr/local/.ghcup \
-            /usr/lib/jvm \
-            /var/lib/apt/lists/*
-
-      - name: Build App Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        run: |
-          make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
-          AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-          PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
-          PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
-          DEPLOYMENT="${{ inputs.environment }}" \
-          IMAGE_TAG="${{ inputs.tag }}" \
-          TARGET_BUILD_STAGE="development" \
-          PLATFORM="linux/amd64" \
-          ENVIRONMENT="ci" \
-          USE_DOCKER_CACHE="${{ inputs.use-cache }}"
+      - name: Build app docker image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: ${{ inputs.apply-max-attempts }}
+          timeout_minutes: 30
+          retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
+          command: |
+            make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
+            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
+            PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
+            DEPLOYMENT="${{ inputs.environment }}" \
+            IMAGE_TAG="${{ inputs.tag }}" \
+            TARGET_BUILD_STAGE="development" \
+            PLATFORM="linux/amd64" \
+            ENVIRONMENT="ci" \
+            USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
       - name: Run app component unit tests | ${{ inputs.environment }} ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
         run: |
           make apps.unit/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -170,7 +241,7 @@ jobs:
 
 
       - name: Run app component integration tests | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ ( inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
+        if: ${{ inputs.integration }}
         run: |
           make apps.integration/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -183,8 +254,7 @@ jobs:
           PLATFORM="linux/amd64" \
           ENVIRONMENT="ci"
 
-      - name: Build Docker Image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+      - name: Build docker prod image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -197,10 +267,32 @@ jobs:
           ENVIRONMENT="ci" \
           USE_DOCKER_CACHE="${{ inputs.use-cache }}"
 
-      - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
+      - name: Push prod docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         run: |
           make apps.deploy/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
           ENVIRONMENT="ci"
+
+  stop-customized-runner:
+    name: 'Stop runner: ${{ inputs.app }}-${{ inputs.component }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [check-run-criteria, set-runner-specs, deploy]
+    environment: ${{ inputs.environment }}
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Stop EC2 runner
+        uses: machulav/ec2-github-runner@v2.3.4
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          label: ${{ needs.set-runner-specs.outputs.runner-label }}
+          ec2-instance-id: ${{ needs.set-runner-specs.outputs.runner-instance-id }}

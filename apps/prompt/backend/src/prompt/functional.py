@@ -19,7 +19,7 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-validator = PromptInjectionValidator()
+field_validator = PromptInjectionValidator()
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
@@ -47,7 +47,7 @@ def generate_from_prompt_template(
     if settings.VALIDATE_PROMPT_INJECTION:
         validate_input = prompt.as_langchain().messages[0].prompt.template
         validate_input = validate_input.format(**inputs)
-        validator.validate_prompt(validate_input)
+        field_validator.validate_prompt(validate_input)
 
     return chain.invoke(inputs)
 
@@ -59,7 +59,7 @@ def generate_from_prompt(
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     if settings.VALIDATE_PROMPT_INJECTION:
-        validator.validate_prompt(prompt)
+        field_validator.validate_prompt(prompt)
     llm = LanguageModel.get(model_alias).as_langchain(model_parameters=model_parameters)
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
     return conversation.predict(input=prompt)
@@ -88,6 +88,6 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     if settings.VALIDATE_PROMPT_INJECTION:
         validate_input = prompt.as_langchain().messages[0].prompt.template
         validate_input = validate_input.format(**inputs)
-        validator.validate_prompt(validate_input)
+        field_validator.validate_prompt(validate_input)
 
     return chain.invoke(inputs)

@@ -6,10 +6,8 @@ import re
 import time
 from typing import Any, Dict, List, Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import (
     AVAILABLE_MODELS,
@@ -43,9 +41,9 @@ logger = get_default_logger(__name__)
 class ServedIPTCMultiModel(ServedModel):
     """Served IPTC Multi model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
         super().__init__(name="iptc-multi")
@@ -417,7 +415,6 @@ class ServedIPTCMultiModel(ServedModel):
         """
         inputs = payload.attributes
         parameters = payload.parameters
-
         # Execute predictions in a language-aware context
         try:
             iptc_topics = self._predict(
