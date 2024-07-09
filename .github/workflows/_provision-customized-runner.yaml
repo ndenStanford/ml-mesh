@@ -124,23 +124,22 @@ jobs:
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
         run: |
-          # Add Docker's official GPG key:
-          sudo apt-get update
-          sudo apt-get install ca-certificates curl
-          sudo install -m 0755 -d /etc/apt/keyrings
-          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-          sudo chmod a+r /etc/apt/keyrings/docker.asc
-          # Add the repository to Apt sources:
-          echo \
-            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin jq
+          echo "Stopping all docker processes"
+          sudo systemctl stop docker
+          sudo systemctl stop docker.socket
+          sudo systemctl stop containerd
+          echo "Installing docker compose"
+          sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
+          sudo yum list docker-ce --showduplicates
+          sudo yum install -y docker-compose-plugin jq
           echo "Configuring docker dir to mounted EBS volume"
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
-          sudo service docker restart
+          echo "Restarting docker"
+          sudo systemctl enable docker
+          sudo systemctl start docker
           echo "Docker installation file directory:"
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
