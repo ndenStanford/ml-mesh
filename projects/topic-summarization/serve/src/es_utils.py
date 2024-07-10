@@ -1,37 +1,51 @@
 """Elasticsearch utils file."""
 
 # Internal libraries
-# 3rd party libraries
+import re
 
 # Standard Library
 from datetime import datetime
 from typing import List
 
+# 3rd party libraries
+from elasticsearch import Elasticsearch
+from pydantic import SecretStr
 
-def generate_crawler_indices(num_months: int = 5) -> List:
+
+def generate_crawler_indices(es_secret_value: SecretStr, num_months: int = 5) -> List:
     """Generate last 5 monthes indexes."""
     current_date = datetime.now()
-    indices = []
 
+    es = Elasticsearch(
+        [
+            f"https://crawler-prod:{es_secret_value}@search5-client.airpr.com"  # noqa: W505, E501
+        ]
+    )
+    indices = es.indices.get_alias("*").keys()
+
+    # Generate a list of the last num_months in "year.month" format
+    recent_months = []
+    year = current_date.year
+    month = current_date.month
     for i in range(num_months):
-        # Calculate the target month and year
-        target_year = current_date.year
-        target_month = current_date.month - i
+        # Calculate the month and year
+        recent_months.append(f"{year}.{month:02d}")
 
-        # Adjust the year and month if needed
-        # while loop can be avoided if using dateutil. But will get issue in updating poetry.lock.
-        # So keep this for now and will update in the future
-        while target_month <= 0:
-            target_month += 12
-            target_year -= 1
+        # Adjust year and month if month is less than 1
+        month -= 1
+        if month < 1:
+            month += 12
+            year -= 1
 
-        month_str = f"{target_year}.{target_month:02d}"
-        month_str = f"{target_year}.{target_month:02d}"
-        if month_str == "2024.06":
-            index = f"crawler-5-{month_str}"
-        else:
-            index = f"crawler-4-{month_str}"
-        indices.append(index)
-    indices.append("crawler")
+    # Define the pattern to match the required format
+    pattern = re.compile(r"crawler-\d{1,2}-\d{4}\.\d{2}")
 
-    return indices
+    # Filter indices based on the pattern and recent months
+    filtered_indices = [
+        index
+        for index in indices
+        if pattern.match(index) and any(month in index for month in recent_months)
+    ]
+    filtered_indices.append("crawler")
+
+    return filtered_indices
