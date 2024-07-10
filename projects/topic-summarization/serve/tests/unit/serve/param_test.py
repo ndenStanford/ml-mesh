@@ -73,15 +73,25 @@ def test_claude_gpt_switch(
 
 
 @patch("requests.post")
-def test_handler_aggregate(mock_post, article_input, mock_responses):
+def test_handler_aggregate(
+    mock_post,
+    article_input,
+    mock_responses,
+    mock_responses_summary_theme,
+    mock_responses_summary_quality,
+):
     """Test the aggregate function in handler."""
-    mock_post.return_value = mock_responses
+    mock_post.side_effect = [
+        mock_responses,
+        mock_responses_summary_theme,
+        mock_responses_summary_quality,
+    ]
     gpt_inference = _service.aggregate(
         article=article_input,
     )
     assert isinstance(gpt_inference, tuple)
     assert isinstance(gpt_inference[0], dict)
-    assert gpt_inference[1] is None
+    assert isinstance(gpt_inference[1], bool)
 
 
 @patch("requests.post")
@@ -106,7 +116,7 @@ def test_handler_aggregate_with_boolean_query(
     )
     assert isinstance(gpt_inference, tuple)
     assert isinstance(gpt_inference[0], dict)
-    assert isinstance(gpt_inference[1], str)
+    assert isinstance(gpt_inference[1], bool)
 
 
 @patch("requests.put")

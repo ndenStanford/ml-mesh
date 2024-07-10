@@ -240,10 +240,15 @@ class TopicHandler:
             settings.CLAUDE_SUMMARY_QUALITY_ALIAS, settings.DEFAULT_MODEL, input_dict
         )
         output_content = json.loads(q.content)
-        different_themes = output_content.get("different_themes", "").lower() == "no"
+        not_different_themes = (
+            output_content.get("different_themes", "").lower() == "no"
+        )
         entities_related = output_content.get("entities_related", "").lower() == "yes"
 
-        return "Good" if different_themes and entities_related else "Bad"
+        if entities == "[]":
+            return not_different_themes
+        else:
+            return not_different_themes and entities_related
 
     def aggregate(
         self, article: List[str], boolean_query: Optional[str] = None
@@ -269,10 +274,9 @@ class TopicHandler:
         topic_result = self.topic_inference(article, entity_list)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article, entity_list)
-        summary_quality = (
-            self.summary_quality(summary_result["summary"], entity_list)
-            if entity_list
-            else None
+        print(summary_result)
+        topic_summary_quality = self.summary_quality(
+            summary_result["summary"], entity_list or "[]"
         )
 
         merged_result: Dict[
@@ -280,4 +284,4 @@ class TopicHandler:
         ] = {}
         merged_result.update(topic_final_result)
         merged_result.update(summary_result)
-        return (merged_result, summary_quality)
+        return (merged_result, topic_summary_quality)
