@@ -14,7 +14,7 @@ from numpy.typing import ArrayLike
 from prophet import Prophet
 
 # Internal libraries
-from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
 from onclusiveml.serving.serialization.topic_summarization.v1 import (
     ImpactCategoryLabel,
 )
