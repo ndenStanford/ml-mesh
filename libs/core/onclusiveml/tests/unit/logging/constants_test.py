@@ -4,12 +4,13 @@ import pytest
 
 # Internal libraries
 from onclusiveml.core.logging import OnclusiveService
+from onclusiveml.core.logging.constants import LogLevel
 
 
 def test_onclusive_service_validate_raise():
     """Tests the OnclusiveService.validate execption behaviour."""
     with pytest.raises(ValueError):
-        OnclusiveService.validate("invalid-service")
+        OnclusiveService.from_value("invalid-service", raises_if_not_found=True)
 
 
 @pytest.mark.parametrize(
@@ -36,4 +37,24 @@ def test_onclusive_service_validate_raise():
 )
 def test_onclusive_service_validate(service):
     """Tests the OnclusiveService.validate validaton behaviour."""
-    OnclusiveService.validate(service)
+    assert OnclusiveService.from_value(service, raises_if_not_found=True)
+
+
+@pytest.mark.parametrize(
+    "level, expected",
+    [
+        ("CRITICAL", 50),
+        ("FATAL", 50),
+        ("ERROR", 40),
+        ("WARNING", 30),
+        ("WARN", 30),
+        ("INFO", 20),
+        ("DEBUG", 10),
+        ("NOTSET", 0),
+    ],
+)
+def test_logging_level_conversion(level, expected):
+    """Test logging level conversion logic."""
+    log_level = LogLevel.from_name(level)
+
+    assert log_level.level == expected
