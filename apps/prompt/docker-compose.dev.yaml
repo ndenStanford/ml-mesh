@@ -74,7 +74,13 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [backend]
+    profiles: [backend, functional]
+    healthcheck:
+      test: [CMD-SHELL, sleep 50s || exit 1]
+      interval: 5s
+      retries: 5
+      start_period: 15s
+      timeout: 60s
     volumes:
       - type: bind
         source: backend/src
@@ -178,6 +184,52 @@ services:
     networks:
       - onclusive-net
 
+  backend-functional:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    volumes:
+      - type: bind
+        source: backend/src
+        target: /apps/prompt/backend/src
+      - type: bind
+        source: backend/tests
+        target: /apps/prompt/backend/tests
+      - type: bind
+        source: ~/.aws/
+        target: /apps/prompt/backend/.aws/
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
+      DOCS_URL: /docs
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DYNAMODB_HOST: http://dynamodb:8000
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+      AWS_PROFILE: dev
+      VALIDATE_PROMPT_INJECTION: true
+    depends_on:
+      backend:
+        condition: service_healthy
+      dynamodb:
+        condition: service_healthy
+      redisdb:
+        condition: service_healthy
+    networks:
+      - onclusive-net
+
+
   backend-integration:
     build:
       context: ../../
@@ -229,7 +281,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [backend, integration, debug]
+    profiles: [backend, functional, integration, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -248,7 +300,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [backend, integration, debug]
+    profiles: [backend, functional, integration, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
