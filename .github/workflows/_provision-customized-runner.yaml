@@ -149,7 +149,7 @@ jobs:
         if: ${{ inputs.self-hosted-runner-ami == 'ami-076e6d962ef3cf710' }}
         run: |
           echo "Installing NVIDIA CUDA Toolkit"
-          sudo dnf install -y dkms kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r) curl
+          sudo dnf install -y dkms kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r)
           sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo
           sudo dnf clean expire-cache
           sudo dnf module install -y nvidia-driver:latest-dkms
