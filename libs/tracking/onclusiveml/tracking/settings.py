@@ -10,26 +10,7 @@ from pydantic_settings import SettingsConfigDict
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveSecretStr
 from onclusiveml.core.constants import Environment
-from onclusiveml.core.logging import (  # noqa:F401
-    CRITICAL,
-    DEBUG,
-    ERROR,
-    INFO,
-    WARNING,
-    OnclusiveLogMessageFormat,
-    OnclusiveLogSettings,
-)
 from onclusiveml.tracking.constants import ModelType
-
-
-class TrackingLibraryLogSettings(OnclusiveLogSettings):
-    """Entrypoint to configure logging behaviour of the tracking library for the current session."""
-
-    fmt_level: OnclusiveLogMessageFormat = OnclusiveLogMessageFormat.DETAILED
-    level: int = INFO
-    json_format: bool = True
-
-    model_config = SettingsConfigDict(env_prefix="onclusiveml_tracking_logger_")
 
 
 class TrackingSettings(OnclusiveBaseSettings):
