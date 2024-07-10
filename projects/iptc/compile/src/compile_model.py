@@ -19,7 +19,7 @@ from onclusiveml.tracking import TrackedModelVersion
 from src.settings import (  # type: ignore[attr-defined]
     IOSettings,
     IPTCPipelineCompilationSettings,
-    UncompiledTrackedModelSpecs,
+    UncompiledTrackedModelSettings,
 )
 
 
@@ -33,8 +33,8 @@ def main() -> None:
     )
 
     # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict())
+    base_model_specs = UncompiledTrackedModelSettings()
+    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(
         "model/model_card"
@@ -51,12 +51,12 @@ def main() -> None:
 
     logger.debug(
         f"Using the following iptc pipeline compilation settings: "
-        f"{iptc_pipeline_compilation_settings.dict()}. Compiling ..."
+        f"{iptc_pipeline_compilation_settings.model_dump()}. Compiling ..."
     )
 
     compiled_iptc_pipeline = CompiledPipeline.from_pipeline(
         pipeline=base_model_pipeline,
-        **iptc_pipeline_compilation_settings.dict(exclude={"pipeline_name"}),
+        **iptc_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
 
     compiled_iptc = CompiledIPTC(compiled_iptc_pipeline)

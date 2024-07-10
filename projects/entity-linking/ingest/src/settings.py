@@ -7,13 +7,13 @@ from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field
 
 # Internal libraries
-from onclusiveml.tracking import TrackedModelSpecs
+from onclusiveml.core.base import Field, OnclusiveBaseSettings
+from onclusiveml.tracking import TrackedModelSettings
 
 
-class EmbeddingsSettings(BaseSettings):
+class EmbeddingsSettings(OnclusiveBaseSettings):
     """Embeddings settings."""
 
     INDEX_FILE: str = ""
@@ -21,14 +21,14 @@ class EmbeddingsSettings(BaseSettings):
     EMBEDDINGS_SHAPE: List = [16470856, 300]
 
 
-class VectorDBSettings(BaseSettings):
+class VectorDBSettings(OnclusiveBaseSettings):
     """Vector store settings."""
 
     INDEX_NAME: str = "Wiki_entities"
     REDIS_CONNECTION_STRING: str = ""
 
 
-class TrackedTrainedModelSpecs(TrackedModelSpecs):
+class TrackedTrainedModelSpecs(TrackedModelSettings):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather
@@ -45,6 +45,6 @@ class GlobalSettings(EmbeddingsSettings, VectorDBSettings, TrackedTrainedModelSp
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated Settings class."""
     return GlobalSettings()

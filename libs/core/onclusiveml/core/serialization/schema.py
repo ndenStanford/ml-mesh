@@ -1,8 +1,8 @@
 """Base Schema."""
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveFrozenSchema
+from onclusiveml.core.base import OnclusiveFrozenModel
 
 
-class JsonApiSchema(OnclusiveFrozenSchema):
+class JsonApiSchema(OnclusiveFrozenModel):
     """JSON API Schema."""

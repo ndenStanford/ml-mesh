@@ -80,7 +80,7 @@ class _OnclusiveApiCall(DoFn):
         response = self.client[self.namespace](
             **self._extract_input(contents, self.in_keys), **self.parameters
         )
-        contents[self.out_key] = response.data.attributes.dict()
+        contents[self.out_key] = response.data.attributes.model_dump()
         return key, contents
 
     def process(self, element: Tuple) -> Generator[Tuple, None, None]:

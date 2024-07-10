@@ -12,8 +12,8 @@ from pydantic import Field
 from onclusiveml.core.logging import INFO
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
@@ -25,7 +25,7 @@ UPLOAD = "upload"
 WORKFLOW_COMPONENTS = (DOWNLOAD, COMPILE, TEST, UPLOAD)
 
 
-class UncompiledTrackedModelSpecs(TrackedModelSpecs):
+class UncompiledTrackedModelSettings(TrackedModelSettings):
     """Trained model settings."""
 
     project: str = "onclusive/iptc-00000000"
@@ -42,7 +42,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class CompiledTrackedModelSpecs(TrackedModelSpecs):
+class CompiledTrackedModelSettings(TrackedModelSettings):
     """Compiled model settings."""
 
     project: str = "onclusive/iptc-00000000"
@@ -54,7 +54,7 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
         env_file_encoding = "utf-8"
 
 
-class WorkflowOutputDir(TrackedParams):
+class WorkflowOutputDir(TrackingSettings):
     """Workflow output directory."""
 
     outpath: str = "./outputs"
@@ -123,7 +123,7 @@ class IOSettings(object):
         env_file_encoding = "utf-8"
 
 
-class TokenizerSettings(TrackedParams):
+class TokenizerSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_tokenizer for details."""
 
     add_special_tokens: bool = True
@@ -134,7 +134,7 @@ class TokenizerSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class ModelTracingSettings(TrackedParams):
+class ModelTracingSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_model.compile_model for details.
 
     This should be refactored to not cause issues with torch.jit.trace anymore. See ticket
@@ -156,7 +156,7 @@ class ModelTracingSettings(TrackedParams):
         env_file_encoding = "utf-8"
 
 
-class PipelineCompilationSettings(TrackedParams):
+class PipelineCompilationSettings(TrackingSettings):
     """See libs.compile.onclusiveml.compile.compiled_pipeline.compile_pipeline for details."""
 
     pipeline_name: str
@@ -174,7 +174,7 @@ class IPTCPipelineCompilationSettings(PipelineCompilationSettings):
     """IPTCiment pipeline compilation settings."""
 
     pipeline_name: str = "iptc_model"
-    max_length = 512
+    max_length: int = 512
 
     class Config:
         env_prefix = "iptc_pipeline_compilation_settings_"
@@ -182,7 +182,7 @@ class IPTCPipelineCompilationSettings(PipelineCompilationSettings):
         env_file_encoding = "utf-8"
 
 
-class CompilationTestSettings(TrackedParams):
+class CompilationTestSettings(TrackingSettings):
     """Compilation test settings."""
 
     regression_atol: float = 1e-02
@@ -200,7 +200,7 @@ class CompiledIPTCTrackedModelCard(TrackedModelCard):
     model_type: str = "compiled"
     # --- custom fields
     # uncompiled model reference
-    uncompiled_model: UncompiledTrackedModelSpecs = UncompiledTrackedModelSpecs()
+    uncompiled_model: UncompiledTrackedModelSettings = UncompiledTrackedModelSettings()
     # model compilation params
     iptc_model_compilation_settings: PipelineCompilationSettings = (
         IPTCPipelineCompilationSettings()

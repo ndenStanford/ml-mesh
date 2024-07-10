@@ -7,52 +7,36 @@ from typing import List
 # Internal libraries
 from onclusiveml.tracking import (
     TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
 # --- settings classes
-class TrackedSentModelSpecs(TrackedModelSpecs):
+class TrackedSentModelSpecs(TrackedModelSettings):
     """Tracked sentiment model settings."""
 
     project: str = "onclusive/sentiment"
-    model = "SEN-TRAINED"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
+    model: str = "SEN-TRAINED"
 
 
-class Inputs(TrackedParams):
+class Inputs(TrackingSettings):
     """Sentiment input parameters."""
 
     sample_documents: List[str] = [""]
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class SentSettings(TrackedParams):
+class SentSettings(TrackingSettings):
     """Sentiment settings."""
 
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
-
-class SentModelParams(TrackedParams):
+class SentModelParams(TrackingSettings):
     """Sentiment Model parameters."""
 
     huggingface_pipeline_task: str = "sentiment-analysis"
     huggingface_model_reference: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
 
     sent_settings: SentSettings = SentSettings()
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
 
 
 class TrackedSentBaseModelCard(TrackedModelCard):
@@ -66,7 +50,3 @@ class TrackedSentBaseModelCard(TrackedModelCard):
     # admin
     local_output_dir: str = os.path.join(".", "sent_model_artifacts")
     logging_level: str = "INFO"
-
-    class Config:
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"

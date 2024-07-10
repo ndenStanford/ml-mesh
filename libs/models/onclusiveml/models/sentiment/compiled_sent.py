@@ -21,14 +21,14 @@ from onclusiveml.nlp.tokenizers.sentence import SentenceTokenizer
 logger = get_default_logger(__name__, level=20)
 
 
-class CompiledSent:
+class CompiledSentiment:
     """Class for performing sentiment analysis using neuron compiled Sent pipeline."""
 
     def __init__(
         self,
         compiled_sent_pipeline: CompiledPipeline,
     ):
-        """Initalize the CompiledSent object.
+        """Initalize the CompiledSentiment object.
 
         Args:
             compiled_sent_pipeline (CompiledPipeline): The compiled Sent pipline used for inference
@@ -59,14 +59,14 @@ class CompiledSent:
         )
 
     @classmethod
-    def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledSent":
+    def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledSentiment":
         """Load compiledSent object from specfied directory.
 
         Args:
             directory (Union[Path, str]): The directory path contained the pretrained compiled
                 sent pipeline
         Returns:
-            CompiledSent: The loaded pre-trained CompiledSent object
+            CompiledSentiment: The loaded pre-trained CompiledSentiment object
         """
         compiled_sent_pipeline = CompiledPipeline.from_pretrained(
             os.path.join(directory, "compiled_sent_pipeline")

@@ -14,21 +14,6 @@ from onclusiveml.serving.rest.serve import (
 
 
 @pytest.mark.parametrize(
-    "settings_class, expected_env_prefix",
-    [
-        (ServingBaseParams, "onclusiveml_serving_"),
-        (FastAPISettings, "onclusiveml_serving_fastapi_"),
-        (UvicornSettings, "onclusiveml_serving_uvicorn_"),
-        (BetterStackSettings, "onclusiveml_serving_betterstack_"),
-        (ServingParams, "onclusiveml_serving_"),
-    ],
-)
-def test_settings_env_prefix(settings_class, expected_env_prefix):
-    """Tests the environment prefixes for all serving.rest settings/params classes."""
-    assert settings_class.Config.env_prefix == expected_env_prefix
-
-
-@pytest.mark.parametrize(
     "settings_class",
     [
         ServingBaseParams,

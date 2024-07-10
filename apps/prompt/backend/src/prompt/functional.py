@@ -19,7 +19,7 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-validator = PromptInjectionValidator()
+field_validator = PromptInjectionValidator()
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
@@ -29,12 +29,17 @@ def generate_from_prompt_template(
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     # get langchain objects
+    model_parameters = kwargs.get("model_parameters", None)
     prompt = PromptTemplate.get(prompt_alias)
     llm = LanguageModel.get(model_alias)
     # setting output parser
     prompt.fields = kwargs.get("output")
 
-    chain = prompt.as_langchain() | llm.as_langchain() | prompt.output_parser
+    chain = (
+        prompt.as_langchain()
+        | llm.as_langchain(model_parameters=model_parameters)
+        | prompt.output_parser
+    )
 
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
@@ -42,18 +47,20 @@ def generate_from_prompt_template(
     if settings.VALIDATE_PROMPT_INJECTION:
         validate_input = prompt.as_langchain().messages[0].prompt.template
         validate_input = validate_input.format(**inputs)
-        validator.validate_prompt(validate_input)
+        field_validator.validate_prompt(validate_input)
 
     return chain.invoke(inputs)
 
 
 @retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
-def generate_from_prompt(prompt: str, model_alias: str) -> Dict[str, str]:
+def generate_from_prompt(
+    prompt: str, model_alias: str, model_parameters: Dict = None
+) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
     if settings.VALIDATE_PROMPT_INJECTION:
-        validator.validate_prompt(prompt)
-    llm = LanguageModel.get(model_alias).as_langchain()
+        field_validator.validate_prompt(prompt)
+    llm = LanguageModel.get(model_alias).as_langchain(model_parameters=model_parameters)
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
     return conversation.predict(input=prompt)
 
@@ -81,6 +88,6 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     if settings.VALIDATE_PROMPT_INJECTION:
         validate_input = prompt.as_langchain().messages[0].prompt.template
         validate_input = validate_input.format(**inputs)
-        validator.validate_prompt(validate_input)
+        field_validator.validate_prompt(validate_input)
 
     return chain.invoke(inputs)
