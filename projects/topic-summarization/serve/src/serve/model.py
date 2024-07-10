@@ -30,7 +30,7 @@ from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.impact_quantification import ImpactQuantification
 from src.serve.document_collector import DocumentCollector
-from onclusiveml.data.query_profile import (
+from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     BaseQueryProfile,
     ProductionToolsQueryProfile,
