@@ -4,7 +4,7 @@ import pytest
 
 # Internal libraries
 from onclusiveml.core.logging import OnclusiveService
-from onclusiveml.core.logging.constants import LogLevel
+from onclusiveml.core.logging.constants import LoggingLevel
 
 
 def test_onclusive_service_validate_raise():
@@ -44,9 +44,7 @@ def test_onclusive_service_validate(service):
     "level, expected",
     [
         ("CRITICAL", 50),
-        ("FATAL", 50),
         ("ERROR", 40),
-        ("WARNING", 30),
         ("WARN", 30),
         ("INFO", 20),
         ("DEBUG", 10),
@@ -55,6 +53,6 @@ def test_onclusive_service_validate(service):
 )
 def test_logging_level_conversion(level, expected):
     """Test logging level conversion logic."""
-    log_level = LogLevel.from_name(level)
+    log_level = LoggingLevel.from_name(level)
 
-    assert log_level.level == expected
+    assert log_level.value == expected
