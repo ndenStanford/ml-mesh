@@ -21,6 +21,10 @@ def generate_crawler_indices(es_secret_value: SecretStr, num_months: int = 5) ->
             f"https://crawler-prod:{es_secret_value}@search5-client.airpr.com"  # noqa: W505, E501
         ]
     )
+    print("****" * 10)
+    print("****" * 10)
+    print("****" * 10)
+    print("ES SECRET VALUE :", es_secret_value)
     indices = es.indices.get_alias("*").keys()
 
     # Generate a list of the last num_months in "year.month" format
