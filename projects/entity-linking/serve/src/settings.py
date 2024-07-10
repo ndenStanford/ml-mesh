@@ -9,7 +9,8 @@ from typing import List, Union
 from neptune.types.mode import Mode
 
 # Internal libraries
-from onclusiveml.core.base.pydantic import OnclusiveBaseSettings
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.params import ServingBaseParams  # noqa
 from onclusiveml.serving.rest.serve.params import ServingParams  # noqa
@@ -67,6 +68,7 @@ class GlobalSettings(
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     EntityLinkinTrackedModelSettings,
+    OnclusiveLogSettings,
 ):
     """Global server settings."""
 
