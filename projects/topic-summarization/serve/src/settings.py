@@ -113,7 +113,7 @@ class DynamoDBSettings(OnclusiveBaseSettings):
     AWS_DEFAULT_REGION: str = "us-east-1"
     DYNAMODB_HOST: Optional[str] = None
     # table name should be referencing relevant table when deployed
-    DYNAMODB_TABLE_NAME: str = "topic-summary-dev-1"
+    DYNAMODB_TABLE_NAME: str
     ENVIRONMENT: str = "dev"
 
 
