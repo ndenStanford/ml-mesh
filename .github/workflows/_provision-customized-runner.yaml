@@ -16,7 +16,7 @@ on  :
         required: false
         default: ami-086aa47bc12623baf
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-03f3c8ba54dcb5dac for inferentia, ami-086aa47bc12623baf for cpu, or ami-076e6d962ef3cf710
+        description: The EC2 AMI of the self hosted runner. Choose ami-03f3c8ba54dcb5dac for inferentia, ami-086aa47bc12623baf for cpu, or ami-0e15b8f8f4ad780f2
           for gpu.
       setup-docker-compose:
         required: true
@@ -63,7 +63,7 @@ jobs:
   provision-runner:
     name: Provision self-hosted EC2 runner
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     environment: ${{ inputs.environment }}
     outputs:
       label: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).label }}
@@ -79,22 +79,27 @@ jobs:
 
       - name: Start EC2 runner
         id: start-ec2-runner
-        uses: machulav/ec2-github-runner@v2
+        uses: Wandalen/wretry.action@master
         with:
-          mode: start
-          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          ec2-image-id: ${{ inputs.self-hosted-runner-ami }}
-          ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-          subnet-id: ${{ vars.RUNNER_SUBNET_ID }}
-          security-group-id: ${{ vars.RUNNER_SG_ID }}
-          aws-resource-tags: |
-            [
-              {"Key": "Name", "Value": "ml-ec2-github-runner"},
-              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
-              {"Key": "Environment", "Value": "${{ vars.ENVIRONMENT }}"},
-              {"Key": "Stack", "Value": "mesh"},
-              {"Key": "Billing", "Value": "ML"}
-            ]
+          action: machulav/ec2-github-runner@v2
+          with: |
+            mode: start
+            github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+            ec2-image-id: ${{ inputs.self-hosted-runner-ami }}
+            ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
+            subnet-id: ${{ vars.RUNNER_SUBNET_ID }}
+            security-group-id: ${{ vars.RUNNER_SG_ID }}
+            aws-resource-tags: |
+              [
+                {"Key": "Name", "Value": "ml-ec2-github-runner"},
+                {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
+                {"Key": "Environment", "Value": "${{ vars.ENVIRONMENT }}"},
+                {"Key": "Stack", "Value": "mesh"},
+                {"Key": "Billing", "Value": "ML"}
+              ]
+          attempt_limit: 5
+          attempt_delay: 10
+
 
   customize-runner:
     name: Customize self-hosted EC2 runner
@@ -141,23 +146,10 @@ jobs:
           echo "Docker compose installation complete. Version:"
           docker compose version
 
-      - name: Install NVIDIA drivers
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-076e6d962ef3cf710' }}
+      - name: Check CUDA
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0e15b8f8f4ad780f2' }}
         run: |
-          echo "Installing NVIDIA CUDA Toolkit"
-          sudo dnf install -y dkms kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r)
-          sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo
-          sudo dnf clean expire-cache
-          sudo dnf module install -y nvidia-driver:latest-dkms
-          sudo dnf -y install cuda-toolkit
-          sudo dnf -y install nvidia-gds
           nvidia-smi
-          echo "Installing NVIDIA Container Toolkit"
-          curl -s -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo | \
-          sudo tee /etc/yum.repos.d/nvidia-container-toolkit.repo
-          sudo dnf -y install nvidia-container-toolkit
-          sudo nvidia-ctk runtime configure --runtime=docker
-          sudo systemctl restart docker
 
       - name: Check neuron
         if: ${{ inputs.self-hosted-runner-ami == 'ami-03f3c8ba54dcb5dac' }}
