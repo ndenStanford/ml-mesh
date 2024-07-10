@@ -26,6 +26,9 @@ apps.test/%: apps.unit/% apps.integration/% ## Run all tests for project compone
 apps.unit/%: apps.set ## Run unit tests for project component
 	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile unit up $(COMPONENT)-unit --exit-code-from $(COMPONENT)-unit --force-recreate
 
+apps.functional/%: ## Run functional tests for project component
+	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile functional up $(COMPONENT)-functional --exit-code-from $(COMPONENT)-functional --force-recreate --attach-dependencies
+
 apps.integration/%: ## Run integration tests for project component
 	docker compose -f apps/$(notdir $@)/docker-compose.$(ENVIRONMENT).yaml --profile integration up $(COMPONENT)-integration --exit-code-from $(COMPONENT)-integration --force-recreate
 
