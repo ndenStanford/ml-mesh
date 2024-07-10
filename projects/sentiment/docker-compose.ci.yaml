@@ -49,7 +49,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     build:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
@@ -81,7 +81,7 @@ services:
 
   compile-download-model:
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
@@ -97,7 +97,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -109,7 +109,7 @@ services:
 
   compile-upload-model:
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -145,7 +145,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     build:
       context: ../../
       dockerfile: projects/sentiment/serve/Dockerfile
@@ -180,7 +180,7 @@ services:
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
@@ -212,7 +212,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -226,7 +226,7 @@ services:
   # - include REST model server process
   serve-functional:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -257,7 +257,7 @@ services:
         COMPONENT: backfill
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
     volumes:
-      - backfill-vol:/tmp/beam-artifact-staging
+      - backfill-volume:/tmp/beam-artifact-staging
       - type: bind
         source: backfill/src
         target: /projects/sentiment/backfill/src
@@ -342,7 +342,7 @@ services:
         taskmanager.numberOfTaskSlots: 2
         parallelism.default: 1
     volumes:
-      - backfill-vol:/tmp/beam-artifact-staging
+      - backfill-volume:/tmp/beam-artifact-staging
 
   jobserver:
     image: apache/beam_flink1.16_job_server:2.49.0
@@ -357,7 +357,7 @@ services:
     profiles: [backfill]
     networks: [onclusive-net]
     volumes:
-      - backfill-vol:/tmp/beam-artifact-staging
+      - backfill-volume:/tmp/beam-artifact-staging
 
   zookeeper:
     image: confluentinc/cp-zookeeper
@@ -397,6 +397,6 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-vol:
-  serve-vol:
-  backfill-vol:
+  compile-volume:
+  serve-volume:
+  backfill-volume:
