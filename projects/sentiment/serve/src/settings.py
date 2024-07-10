@@ -7,10 +7,10 @@ from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import Field
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
@@ -102,7 +102,7 @@ class TrackedCompiledModelSpecs(TrackedModelSettings):
     # than creating a new one
     with_id: str
     # we only need to download from the base model, not upload
-    mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
+    mode: str = Mode.READ_ONLY
 
 
 class ServerModelSettings(ServingParams):
@@ -118,6 +118,7 @@ class GlobalSettings(
     TrackedImageSpecs,
     SentimentSettings,
     TrackedCompiledModelSpecs,
+    OnclusiveLogSettings,
 ):
     """Global server settings."""
 

@@ -1,5 +1,8 @@
 """Test base module."""
 
+# 3rd party libraries
+import pytest
+
 # Internal libraries
 from onclusiveml.core.base import OnclusiveEnum
 
@@ -17,3 +20,15 @@ def test_onclusive_enum():
     assert TestEnum.TEST_2.value == "two"
 
     assert TestEnum.values() == [1, "two"]
+
+
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        ("TEST_1", TestEnum.TEST_1),
+        ("TEST_2", TestEnum.TEST_2),
+    ],
+)
+def test_from_name_method(name, expected):
+    """Test from_name method."""
+    assert TestEnum.from_name(name) == expected
