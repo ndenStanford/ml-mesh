@@ -69,6 +69,10 @@ class ServedIPTCMultiModel(ServedModel):
         for model_id in AVAILABLE_MODELS.keys():
             if not self._should_check_model(model_id):
                 continue
+
+            if model_id in self.last_failed:
+                self.last_failed.remove(model_id)
+
             client = self._create_client(model_id)
             current_model = self._get_current_model(client, model_id)
             try:
@@ -79,14 +83,14 @@ class ServedIPTCMultiModel(ServedModel):
                     logger.error(
                         f"Error while inferencing the IPTC model {model_id}: empty attributes"
                     )
-                    self.last_failed[model_id] = True
+                    self.last_failed.add(model_id)
                     all_models_live = False
                     break
             except Exception as e:
                 logger.error(
                     f"Error while inferencing the IPTC model {model_id}: {str(e)}"
                 )
-                self.last_failed[model_id] = True
+                self.last_failed.add(model_id)
                 all_models_live = False
                 break
         return all_models_live
@@ -128,9 +132,9 @@ class ServedIPTCMultiModel(ServedModel):
             bool: True if the model should be checked based on the current probability influenced by
             historical frequency and time decay; False otherwise.
         """
-        if self.last_failed.get(model_id):
-            self.last_failed[model_id] = None
+        if model_id in self.last_failed:
             return True
+
         probability = self._calculate_probability_with_decay(model_id)
         should_check = random.random() < probability
         if should_check:
