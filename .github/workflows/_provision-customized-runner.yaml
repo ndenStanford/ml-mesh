@@ -145,16 +145,23 @@ jobs:
           echo "Docker compose installation complete. Version:"
           docker compose version
 
-      - name: Check cuda
+      - name: Install NVIDIA drivers
         if: ${{ inputs.self-hosted-runner-ami == 'ami-076e6d962ef3cf710' }}
         run: |
-          sudo dnf install -y dkms kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r)
+          echo "Installing NVIDIA CUDA Toolkit"
+          sudo dnf install -y dkms kernel-devel-$(uname -r) kernel-headers-$(uname -r) kernel-modules-extra-$(uname -r) curl
           sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/amzn2023/x86_64/cuda-amzn2023.repo
           sudo dnf clean expire-cache
           sudo dnf module install -y nvidia-driver:latest-dkms
           sudo dnf -y install cuda-toolkit
           sudo dnf -y install nvidia-gds
           nvidia-smi
+          echo "Installing NVIDIA Container Toolkit"
+          curl -s -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo | \
+          sudo tee /etc/yum.repos.d/nvidia-container-toolkit.repo
+          sudo dnf -y install nvidia-container-toolkit
+          sudo nvidia-ctk runtime configure --runtime=docker
+          sudo systemctl restart docker
 
       - name: Check neuron
         if: ${{ inputs.self-hosted-runner-ami == 'ami-03f3c8ba54dcb5dac' }}
