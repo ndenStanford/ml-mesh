@@ -60,6 +60,7 @@ services:
     hostname: onclusiveml
     environment:
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     networks:
       - onclusive-net
 
