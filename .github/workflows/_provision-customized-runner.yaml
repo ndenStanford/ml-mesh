@@ -79,26 +79,22 @@ jobs:
 
       - name: Start EC2 runner
         id: start-ec2-runner
-        uses: Wandalen/wretry.action@master
+        uses: machulav/ec2-github-runner@v2
         with:
-          action: machulav/ec2-github-runner@v2
-          with: |
-            mode: start
-            github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-            ec2-image-id: ${{ inputs.self-hosted-runner-ami }}
-            ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
-            subnet-id: ${{ vars.RUNNER_SUBNET_ID }}
-            security-group-id: ${{ vars.RUNNER_SG_ID }}
-            aws-resource-tags: |
-              [
-                {"Key": "Name", "Value": "ml-ec2-github-runner"},
-                {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
-                {"Key": "Environment", "Value": "${{ vars.ENVIRONMENT }}"},
-                {"Key": "Stack", "Value": "mesh"},
-                {"Key": "Billing", "Value": "ML"}
-              ]
-          attempt_limit: 3
-          attempt_delay: 10
+          mode: start
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          ec2-image-id: ${{ inputs.self-hosted-runner-ami }}
+          ec2-instance-type: ${{ inputs.self-hosted-runner-type }}
+          subnet-id: ${{ vars.RUNNER_SUBNET_ID }}
+          security-group-id: ${{ vars.RUNNER_SG_ID }}
+          aws-resource-tags: |
+            [
+              {"Key": "Name", "Value": "ml-ec2-github-runner"},
+              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
+              {"Key": "Environment", "Value": "${{ vars.ENVIRONMENT }}"},
+              {"Key": "Stack", "Value": "mesh"},
+              {"Key": "Billing", "Value": "ML"}
+            ]
 
   customize-runner:
     name: Customize self-hosted EC2 runner
