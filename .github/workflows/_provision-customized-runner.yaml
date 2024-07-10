@@ -154,7 +154,6 @@ jobs:
           sudo dnf module install -y nvidia-driver:latest-dkms
           sudo dnf -y install cuda-toolkit
           sudo dnf -y install nvidia-gds
-          sudo reboot
           nvidia-smi
 
       - name: Check neuron
