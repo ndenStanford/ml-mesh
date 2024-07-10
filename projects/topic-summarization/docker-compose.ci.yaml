@@ -38,6 +38,7 @@ services:
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       ENVIRONMENT: prod
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     env_file: serve/config/prod.env
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
@@ -57,6 +58,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
+    environment:
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     networks:
       - onclusive-net
 
@@ -75,6 +78,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: prod
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     env_file: serve/config/test.env
     depends_on:
       prompt-backend:
@@ -101,6 +105,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: prod
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     env_file: serve/config/test.env
     depends_on:
       serve:
