@@ -203,7 +203,7 @@ def test_generate(mock_generate, alias, model, values, test_client):
         headers={"x-api-key": "1234"},
         json=values,
     )
-    mock_generate.assert_called_with(alias, model, **values)
+    mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
     assert response.status_code == status.HTTP_200_OK
 
 

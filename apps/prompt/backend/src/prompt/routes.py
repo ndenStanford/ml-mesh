@@ -1,11 +1,12 @@
 """Project."""
 
 # Standard Library
+import json
 from typing import Any, Dict
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, status
 
 # Internal libraries
 from onclusiveml.llms.prompt_validator import PromptInjectionException
@@ -130,9 +131,7 @@ def list_prompts():
 
 @router.post("/{alias}/generate/model/{model}", status_code=status.HTTP_200_OK)
 def generate_text_from_prompt_template(
-    alias: str,
-    model: str,
-    values: Dict[str, Any],
+    alias: str, model: str, values: Dict[str, Any], model_parameters: str = Header(None)
 ):
     """Generates text using a prompt template with specific model.
 
@@ -140,9 +139,14 @@ def generate_text_from_prompt_template(
         alias (str): prompt alias
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
+        model_parameters (Dict[str, Any]): Model parameters to override default values.
     """
     try:
-        return F.generate_from_prompt_template(alias, model, **values)
+        if model_parameters is not None:
+            model_parameters = json.loads(model_parameters)
+        return F.generate_from_prompt_template(
+            alias, model, **values, model_parameters=model_parameters
+        )
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
