@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
+    # if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
       runner-label: ${{ steps.set-runner-label.outputs.value }}
       runner-instance-id: ${{ steps.set-runner-instance-id.outputs.value }}
