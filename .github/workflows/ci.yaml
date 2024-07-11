@@ -310,7 +310,7 @@ jobs       :
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -338,7 +338,7 @@ jobs       :
             base-region: us-east-2
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # dask-base
           - name: dask-base
