@@ -22,7 +22,11 @@ settings = get_settings()
 field_validator = PromptInjectionValidator()
 
 
-@retry(tries=settings.LLM_CALL_RETRY_COUNT)
+@retry(tries=settings.LLM_CALL_RETRY_COUNT,
+    delay=settings.LLM_DELAY,
+    backoff=settings.LLM_BACKOFF,
+    max_delay=settings.LLM_MAX_DELAY,
+)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
     prompt_alias: str, model_alias: str, **kwargs
@@ -66,11 +70,7 @@ def generate_from_prompt(
 
 
 @retry(
-    tries=settings.LLM_CALL_RETRY_COUNT,
-    delay=settings.LLM_DELAY,
-    backoff=settings.LLM_BACKOFF,
-    max_delay=settings.LLM_MAX_DELAY,
-)
+    tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""
