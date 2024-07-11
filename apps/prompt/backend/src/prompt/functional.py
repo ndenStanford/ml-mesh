@@ -22,7 +22,8 @@ settings = get_settings()
 field_validator = PromptInjectionValidator()
 
 
-@retry(tries=settings.LLM_CALL_RETRY_COUNT,
+@retry(
+    tries=settings.LLM_CALL_RETRY_COUNT,
     delay=settings.LLM_DELAY,
     backoff=settings.LLM_BACKOFF,
     max_delay=settings.LLM_MAX_DELAY,
