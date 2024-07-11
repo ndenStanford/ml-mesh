@@ -274,7 +274,6 @@ class TopicHandler:
         topic_result = self.topic_inference(article, entity_list)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article, entity_list)
-        print(summary_result)
         topic_summary_quality = self.summary_quality(
             summary_result["summary"], entity_list or "[]"
         )
