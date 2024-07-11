@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Tuple, Union
 import torch
 
 # 3rd party libraries
-import faiss
 import numpy as np
 from redis.commands.search.query import Query
 from tqdm import tqdm
@@ -79,7 +78,6 @@ class BelaModel:
         self,
         checkpoint_path,
         config_name="joint_el_mel",
-        embeddings_path=None,
         ent_catalogue_idx_path=None,
         device="cuda:0",
     ):
@@ -88,7 +86,6 @@ class BelaModel:
         Args:
             checkpoint_path (str): Path to the checkpoint file.
             config_name (str, optional): Name of the configuration. Defaults to "joint_el_mel".
-            embeddings_path (str, optional): Path to the embeddings file. Defaults to None.
             ent_catalogue_idx_path (str, optional): Path to the entity catalogue
                                                     index file. Defaults None.
             device (str, optional): Device to use for computations. Defaults to "cuda:0".
@@ -98,7 +95,6 @@ class BelaModel:
         logger.info("Create task")
         # Load configuration using Pydantic
         settings.task.load_from_checkpoint = checkpoint_path
-        settings.task.embeddings_path = embeddings_path or settings.task.embeddings_path
         settings.datamodule.ent_catalogue_idx_path = (
             ent_catalogue_idx_path or settings.datamodule.ent_catalogue_idx_path
         )
@@ -126,15 +122,12 @@ class BelaModel:
             optim=settings.task.optim,
             only_train_disambiguation=settings.task.only_train_disambiguation,
             train_saliency=settings.task.train_saliency,
-            embeddings_path=settings.task.embeddings_path,
-            use_gpu_index=settings.task.use_gpu_index,
             load_from_checkpoint=settings.task.load_from_checkpoint,
         )
 
         self.task.setup("train")
         self.task = self.task.eval()
         self.task = self.task.to(self.device)
-        self.embeddings = self.task.embeddings
         # Connect to Redis vector store
         self.client = get_client(
             url=settings.redis.REDIS_CONNECTION_STRING.get_secret_value()
@@ -150,22 +143,6 @@ class BelaModel:
         self.ent_idx = []
         for ent in datamodule.ent_catalogue.idx:
             self.ent_idx.append(ent)
-
-    def create_gpu_index(self, gpu_id=0):
-        """Create a GPU-based Faiss index.
-
-        Args:
-            self: The instance of the class.
-            gpu_id (int, optional): The ID of the GPU to use. Defaults to 0.
-        """
-        flat_config = faiss.GpuIndexFlatConfig()
-        flat_config.device = gpu_id
-        flat_config.useFloat16 = True
-
-        res = faiss.StandardGpuResources()
-
-        self.faiss_index = faiss.GpuIndexFlatIP(res, embeddings.shape[1], flat_config)
-        self.faiss_index.add(self.embeddings)
 
     def lookup_faiss(
         self,
