@@ -222,7 +222,7 @@ class TopicHandler:
 
         return final_topic
 
-    def summary_quality(self, summary: str, entities: str) -> str:
+    def summary_quality(self, summary: str, entities: str) -> bool:
         """Return whether quality of summary is good or bad.
 
         Args:
@@ -254,13 +254,13 @@ class TopicHandler:
         self, article: List[str], boolean_query: Optional[str] = None
     ) -> Tuple[
         Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
-        Union[str, None],
+        Union[bool, None],
     ]:
         """Aggregate topic & summary results together.
 
         Args:
             article(list): list of str
-            boolean_query(Optional[str]): boolean query
+            boolean_query(Optional[bool]): boolean query
         Output:
             merged_result (dict): dict
         """
