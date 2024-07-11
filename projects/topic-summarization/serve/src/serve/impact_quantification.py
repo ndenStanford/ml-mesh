@@ -27,20 +27,22 @@ from src.serve.utils import (
     topic_global_query,
     topic_profile_query,
 )
+import src.settings
 from src.settings import get_settings
 
-settings = get_settings()
+src.settings.get_settings_clear_cache()
 
 
 class ImpactQuantification:
     """Package trend detection."""
 
     def __init__(self) -> None:
+        self.settings = get_settings()
         self.es = Elasticsearch(
             [
-                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
+                f"https://crawler-prod:{self.settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
             ],
-            timeout=settings.ES_TIMEOUT,
+            timeout=self.settings.ES_TIMEOUT,
         )
 
     def decompose_trend(self, series_profile: ArrayLike) -> ArrayLike:
@@ -90,20 +92,20 @@ class ImpactQuantification:
         query = query_profile.es_query(MediaAPISettings())
 
         end_time = pd.Timestamp(datetime.now())
-        start_time = end_time - pd.Timedelta(days=settings.impact_lookback_days)
+        start_time = end_time - pd.Timedelta(days=self.settings.impact_lookback_days)
         # ========== Profile (global) ==========
         # Global count of all documents from ES
         series_global_es = self.es.search(
-            index=settings.es_index,
-            body=all_global_query(start_time, end_time, settings.time_interval),
+            index=self.settings.es_index,
+            body=all_global_query(start_time, end_time, self.settings.time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
         series_global_es = remove_weekends(series_global_es)
         # Global count of all documents of a topic from ES
         series_topic_es = self.es.search(
-            index=settings.es_index,
+            index=self.settings.es_index,
             body=topic_global_query(
-                start_time, end_time, topic_id, settings.time_interval
+                start_time, end_time, topic_id, self.settings.time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
@@ -137,9 +139,9 @@ class ImpactQuantification:
         # ========== Profile (local) ==========
         # Profile count from ES
         series_profile_es = self.es.search(
-            index=settings.es_index,
+            index=self.settings.es_index,
             body=all_profile_boolean_query(
-                query, start_time, end_time, settings.time_interval
+                query, start_time, end_time, self.settings.time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
@@ -147,9 +149,9 @@ class ImpactQuantification:
         series_profile = np.array([i["doc_count"] for i in series_profile_es])
         # Profile count of a topic from ES
         series_topic_profile_es = self.es.search(
-            index=settings.es_index,
+            index=self.settings.es_index,
             body=topic_profile_query(
-                query, start_time, end_time, topic_id, settings.time_interval
+                query, start_time, end_time, topic_id, self.settings.time_interval
             ),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
@@ -193,16 +195,16 @@ class ImpactQuantification:
         """
         self.result = self.trend(query_profile, topic_id)
         raw_baseline_bool = (
-            self.result["weighted_local_ratio"] > settings.local_raio_cutoff
+            self.result["weighted_local_ratio"] > self.settings.local_raio_cutoff
         )
         global_vs_local_bool = (
             self.result["weighted_local_ratio"] / self.result["weighted_global_ratio"]
-            > settings.global_local_comparison_ratio_cutoff
+            > self.settings.global_local_comparison_ratio_cutoff
         )
 
         ts = self.result["local_trend_ratio"]
         mk_result = mk.original_test(ts)
-        mk_test_bool = mk_result.Tau > settings.mf_tau_cutoff
+        mk_test_bool = mk_result.Tau > self.settings.mf_tau_cutoff
 
         if (not raw_baseline_bool) or (not global_vs_local_bool) or (not mk_test_bool):
             return ImpactCategoryLabel.LOW
