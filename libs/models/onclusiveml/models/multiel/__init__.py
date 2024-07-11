@@ -36,7 +36,6 @@ class BELA:
                 f"Your checkpoint name is not in the list, so we will load {checkpoint_name} as path in {repo}"  # noqa
             )
             self.checkpoint_name_path = checkpoint_name
-        self.embeddings_path = os.path.join(self.repo, "embeddings.pt")
         self.ent_catalogue_idx_path = os.path.join(self.repo, "index.txt")
         self.checkpoint_path = os.path.join(self.repo, self.checkpoint_name_path)
         self._load_model()
@@ -46,7 +45,6 @@ class BELA:
         self.model = BelaModel(
             self.checkpoint_path,
             config_name=self.config_name,
-            embeddings_path=self.embeddings_path,
             ent_catalogue_idx_path=self.ent_catalogue_idx_path,
             device=self.device,
         )
