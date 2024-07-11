@@ -1,7 +1,7 @@
 # LIBS targets
 
 libs.install/%: ## Installs library and dependencies locally
-	poetry install --directory=libs/$(notdir $@)
+	poetry install --directory=libs/$(notdir $@) --with dev
 
 libs.install-coverage/%: ## Installs library and dependencies locally
 	poetry install --directory=libs/$(notdir $@) --with dev --all-extras
