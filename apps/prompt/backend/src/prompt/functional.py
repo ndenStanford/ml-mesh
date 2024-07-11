@@ -24,9 +24,9 @@ field_validator = PromptInjectionValidator()
 
 @retry(
     tries=settings.LLM_CALL_RETRY_COUNT,
-    delay=settings.LLM_DELAY,
-    backoff=settings.LLM_BACKOFF,
-    max_delay=settings.LLM_MAX_DELAY,
+    delay=settings.LLM_CALL_RETRY_DELAY,
+    backoff=settings.LLM_CALL_RETRY_BACKOFF,
+    max_delay=settings.LLM_CALL_RETRY_MAX_DELAY,
 )
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_prompt_template(
