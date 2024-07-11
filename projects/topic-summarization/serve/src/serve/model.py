@@ -7,8 +7,7 @@
 from typing import Type, Optional
 from datetime import datetime
 
-# 3rd party libraries
-from pydantic import BaseModel
+from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
 
 # Internal libraries
@@ -31,7 +30,7 @@ from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.impact_quantification import ImpactQuantification
 from src.serve.document_collector import DocumentCollector
-from onclusiveml.data.query_profile import (
+from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     BaseQueryProfile,
     ProductionToolsQueryProfile,
@@ -45,9 +44,9 @@ settings = get_settings()
 class ServedTopicModel(ServedModel):
     """Served Topic detection model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""

@@ -2,17 +2,16 @@
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import Field
 
 # Internal libraries
-from onclusiveml.tracking import TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelSettings
 
 
-class TrackedCompiledModelSpecs(TrackedModelSpecs):
+class TrackedCompiledModelSpecs(TrackedModelSettings):
     """Tracked model specs."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = Field("KEYWORDS-COMPILED-88", env="neptune_model_version_id")
+    with_id: str
     # we only need to download from the base model, not upload
-    mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
+    mode: str = Mode.READ_ONLY

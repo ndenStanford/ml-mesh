@@ -5,7 +5,6 @@ from typing import List
 
 # 3rd party libraries
 import pytest
-from pydantic import BaseModel
 
 # Internal libraries
 from libs.serving.onclusiveml.serving.rest.serve.params import (
@@ -14,6 +13,7 @@ from libs.serving.onclusiveml.serving.rest.serve.params import (
     ServingParams,
     UvicornSettings,
 )
+from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.serving.rest.serve import ModelServer, ServedModel
 
 
@@ -41,31 +41,31 @@ def test_model_name():
     return TEST_MODEL_NAME
 
 
-class RootResponse(BaseModel):
+class RootResponse(JsonApiSchema):
     """Root response."""
 
     name: str
 
 
-class TestRecord(BaseModel):
+class TestRecord(JsonApiSchema):
     """Test record."""
 
     number_of_legs: int
 
 
-class TestModelPredictRequestModel(BaseModel):
+class TestModelPredictRequestModel(JsonApiSchema):
     """Test model predict request model."""
 
     instances: List[TestRecord]
 
 
-class TestPrediction(BaseModel):
+class TestPrediction(JsonApiSchema):
     """Test prediction."""
 
     animal: str
 
 
-class TestModelPredictResponseModel(BaseModel):
+class TestModelPredictResponseModel(JsonApiSchema):
     """Test model predict response model."""
 
     predictions: List[TestPrediction]

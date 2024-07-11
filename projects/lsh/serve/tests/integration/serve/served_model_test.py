@@ -43,7 +43,7 @@ def test_served_lsh_model_predict(
         attributes={"content": test_predict_input},
     )
 
-    test_actual_predict_output = served_lsh_model.predict(test_input)
+    test_actual_predict_output = served_lsh_model.predict(test_input).model_dump()
 
     assert test_actual_predict_output == test_expected_predict_output
 

@@ -4,7 +4,8 @@
 from typing import Dict, List, Optional, Union
 
 # 3rd party libraries
-from pydantic import Field, SecretStr, root_validator
+from pydantic import Field, SecretStr
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.logging import INFO, OnclusiveService
@@ -17,7 +18,7 @@ from onclusiveml.serving.rest.serve.constants import (
 
 
 def get_logging_config(
-    service: str = OnclusiveService.DEFAULT.value,
+    service: OnclusiveService = OnclusiveService.DEFAULT,
     level: int = INFO,
     json_format: bool = True,
 ) -> Dict:
@@ -33,8 +34,9 @@ def get_logging_config(
     to ensure that uvicorn server log format is a strucutred JSON string
 
     Args:
-        service (str): The onclusive ML service name for the JSON logs. Only relevant if
-            `json_format`=True. Defaults to `OnclusiveService.DEFAULT.value`.
+        service (OnclusiveService): The onclusive ML service name for the JSON logs.
+            Only relevant if `json_format`=True.
+            Defaults to `OnclusiveService.DEFAULT`.
         level (int): The log level that is universally applied to all uvicorn server level loggers:
             - uvicorn
             - uvicorn.error
@@ -49,8 +51,6 @@ def get_logging_config(
     # resolve json input -> config
     if json_format:
         logging_config = JSON_MODEL_SERVER_LOGGING_CONFIG
-        # validate service name
-        OnclusiveService.validate(service)
         # set service name
         for formatter in logging_config["formatters"].values():
             formatter["service"] = service
@@ -68,9 +68,9 @@ class FastAPISettings(ServingBaseParams):
 
     name: str = "fastapi-app-name"
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}fastapi_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}fastapi_"
+    )
 
 
 class LogConfigSettings(ServingBaseParams):
@@ -80,9 +80,9 @@ class LogConfigSettings(ServingBaseParams):
     level: int = 20  # INFO
     json_format: bool = True
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}logconfig_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}logconfig_"
+    )
 
 
 class UvicornSettings(ServingBaseParams):
@@ -99,7 +99,7 @@ class UvicornSettings(ServingBaseParams):
     port: int = 8000
     host: str = "0.0.0.0"
     log_config: Optional[Union[str, Dict]] = Field(
-        default_factory=lambda: get_logging_config(**LogConfigSettings().dict())
+        default_factory=lambda: get_logging_config(**LogConfigSettings().model_dump())
     )
     reload: bool = False
     reload_dirs: Optional[Union[List[str], str]] = None
@@ -108,9 +108,9 @@ class UvicornSettings(ServingBaseParams):
     reload_excludes: Optional[Union[List[str], str]] = None
     workers: int = 1
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}uvicorn_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}uvicorn_"
+    )
 
 
 class BetterStackSettings(ServingBaseParams):
@@ -129,38 +129,18 @@ class BetterStackSettings(ServingBaseParams):
     """
 
     enable: bool = False
-    api_token: SecretStr = Field("dummy_api_token", exclude=True)
+    api_token: SecretStr = Field(default="api_token", exclude=True)
     base_url: str = "https://uptime.betterstack.com/api/v1/heartbeat/"
-    full_url: str = ""
     enable_multi_model_check: bool = False
 
-    class Config:
-        env_prefix = f"{ServingBaseParams.Config.env_prefix}betterstack_"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_prefix=f"{ServingBaseParams.model_config['env_prefix']}betterstack_"
+    )
 
-    @root_validator
-    def assemble_betterstack_url(cls, values: Dict) -> Dict:
-        """Assembles the full_url field using the two fields.
-
-        Uses attributes
-        - base_url
-        - api_token
-
-        as per full_url = {base_url}{api_token}
-
-        Args:
-            values (Dict): Dictionary containing all field values at time of initialization
-
-        Returns:
-            values (Dict): A dictionary containing all field values, with the full_url dynamically
-                populated
-        """
-        base_url = values.get("base_url")
-        api_token = values.get("api_token").get_secret_value()  # type: ignore[union-attr]
-
-        values["full_url"] = f"{base_url}{api_token}"
-
-        return values
+    @property
+    def full_url(self) -> str:
+        """Full betterstack URL."""
+        return f"{self.base_url}{self.api_token.get_secret_value()}"
 
 
 class ServingParams(ServingBaseParams):
@@ -180,7 +160,7 @@ class ServingParams(ServingBaseParams):
     # uvicorn settings
     uvicorn_settings: UvicornSettings = UvicornSettings()
     # betterstack settings
-    betterstack_settings = BetterStackSettings()
+    betterstack_settings: BetterStackSettings = BetterStackSettings()
     # test inference for readiness/liveness probe
     readiness_sample_inference: bool = False
     liveness_sample_inference: bool = False

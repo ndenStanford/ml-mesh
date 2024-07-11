@@ -11,19 +11,12 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root():
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/sentiment/v2/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get("http://serve:8000/sentiment/v2/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 def test_model_server_readiness():
@@ -31,7 +24,7 @@ def test_model_server_readiness():
     readiness_response = requests.get("http://serve:8000/sentiment/v2/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 def test_model_server_bio():
@@ -129,7 +122,9 @@ def test_model_server_prediction(payload, expected_response):
             {
                 "data": {
                     "namespace": "sentiment",
-                    "attributes": {"content": "AI is a fantastic tool."},
+                    "attributes": {
+                        "content": "London is a wonderful city. John is a terrible man."
+                    },
                     "parameters": {"language": "en"},
                 }
             },
@@ -140,8 +135,8 @@ def test_model_server_prediction(payload, expected_response):
                     "namespace": "sentiment",
                     "attributes": {
                         "label": "positive",
-                        "negative_prob": 0.0256,
-                        "positive_prob": 0.9139,
+                        "negative_prob": 0.4854,
+                        "positive_prob": 0.4794,
                         "entities": None,
                     },
                 },

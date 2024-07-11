@@ -21,21 +21,13 @@ from src.serve.server_models import (
 )
 
 
-@pytest.mark.order(5)
-def test_model_server_root(test_client):
-    """Tests the running ModelServer instance's root endpoint."""
-    root_response = test_client.get("/keywords/v1/")
-
-    assert root_response.status_code == 200
-
-
 @pytest.mark.order(6)
 def test_model_server_liveness(test_client):
     """Tests the running ModelServer instance's liveness endpoint."""
     liveness_response = test_client.get("/keywords/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 @pytest.mark.order(6)
@@ -44,7 +36,7 @@ def test_model_server_readiness(test_client):
     readiness_response = test_client.get("/keywords/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 @pytest.mark.order(7)
@@ -65,7 +57,7 @@ def test_model_server_predict(
         configuration=PredictConfiguration(**test_inference_params),
         inputs=[PredictInputDocumentModel(document=test_inputs[test_record_index])],
     )
-    test_response = test_client.post("/keywords/v1/predict", json=input.dict())
+    test_response = test_client.post("/keywords/v1/predict", json=input.model_dump())
 
     assert test_response.status_code == 200
     actual_output = test_response.json()
@@ -79,7 +71,7 @@ def test_model_server_predict(
                 ]
             )
         ]
-    ).dict()
+    ).model_dump()
 
     assert actual_output == expected_output
 
@@ -98,6 +90,6 @@ def test_model_server_bio(test_model_name, test_client, test_model_card):
 
     expected_output = BioResponseModel(
         model_name=test_model_name, model_card=test_model_card
-    ).dict()
+    ).model_dump()
 
     assert actual_output == expected_output

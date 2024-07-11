@@ -3,14 +3,12 @@
 # Standard Library
 from functools import lru_cache
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.testing import get_override_settings_context_manager
 
 
-class TestSettings(BaseSettings):
+class TestSettings(OnclusiveBaseSettings):
     """Test Settings."""
 
     debug: bool = False

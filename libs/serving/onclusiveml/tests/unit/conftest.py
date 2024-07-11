@@ -5,9 +5,10 @@ from typing import Any, List
 
 # 3rd party libraries
 import pytest
-from pydantic import BaseModel
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
+from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.serving import ServingBaseParams
 from onclusiveml.serving.rest.serve import (
     ModelServer,
@@ -46,7 +47,7 @@ def test_serving_base_params_env_prefix():
 def get_test_record():
     """Test record fixture."""
 
-    class TestRecord(BaseModel):
+    class TestRecord(OnclusiveBaseModel):
         """Test model."""
 
         number_of_legs: int
@@ -58,7 +59,7 @@ def get_test_record():
 def get_test_prediction():
     """Test prediction fixture."""
 
-    class TestPrediction(BaseModel):
+    class TestPrediction(OnclusiveBaseModel):
         """Test model."""
 
         animal: str
@@ -70,7 +71,7 @@ def get_test_prediction():
 def get_test_predict_request_model(get_test_record):
     """Test prediction fixture."""
 
-    class TestModelPredictRequestModel(BaseModel):
+    class TestModelPredictRequestModel(JsonApiSchema):
         """Test model."""
 
         instances: List[get_test_record]
@@ -82,7 +83,7 @@ def get_test_predict_request_model(get_test_record):
 def get_test_served_model(get_test_predict_request_model, get_test_prediction):
     """Test served model fixture."""
 
-    class TestModelPredictResponseModel(BaseModel):
+    class TestModelPredictResponseModel(JsonApiSchema):
         """Test model."""
 
         predictions: List[get_test_prediction]

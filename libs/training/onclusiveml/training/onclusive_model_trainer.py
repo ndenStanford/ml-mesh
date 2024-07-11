@@ -15,7 +15,7 @@ from onclusiveml.data.feature_store import (
     FeatureStoreHandle,
     FeatureStoreParams,
 )
-from onclusiveml.tracking import TrackedModelCard, TrackedModelSpecs
+from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.tracking.optimization import OnclusiveModelOptimizer
 
 
@@ -24,14 +24,14 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
 
     def __init__(
         self,
-        tracked_model_specs: TrackedModelSpecs,
+        tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
         data_fetch_params: FeatureStoreParams,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
-            tracked_model_specs (TrackedModelSpecs): Specifications for tracked model on neptune.
+            tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
             data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
 

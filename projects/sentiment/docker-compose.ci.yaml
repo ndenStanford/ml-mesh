@@ -1,5 +1,4 @@
 ---
-version : '3.9'
 
 services:
   # =============================================
@@ -24,7 +23,7 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/${DEPLOYMENT:-prod}.env
@@ -36,7 +35,7 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     hostname: onclusive-ml
@@ -50,7 +49,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     build:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
@@ -68,7 +67,7 @@ services:
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -82,12 +81,12 @@ services:
 
   compile-download-model:
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
@@ -98,24 +97,24 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
   compile-upload-model:
     volumes:
-      - compile-vol:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
+      - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
       GITHUB_ACTOR: ${GITHUB_ACTOR}
       GITHUB_ENV: ${GITHUB_ENV}
@@ -146,7 +145,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     build:
       context: ../../
       dockerfile: projects/sentiment/serve/Dockerfile
@@ -181,14 +180,14 @@ services:
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
@@ -213,7 +212,7 @@ services:
     devices:
       - /dev/neuron0:/dev/neuron0
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -227,7 +226,7 @@ services:
   # - include REST model server process
   serve-functional:
     volumes:
-      - serve-vol:/projects/sentiment/serve/models
+      - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -238,65 +237,6 @@ services:
     depends_on:
       serve:
         condition: service_healthy
-
-  # load tests
-  # - include model artifact
-  # - include REST model server process
-  serve-load:
-    volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [pytest, tests/load, -ra, -vv, --capture=no]
-    environment:
-      # load test params
-      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
-      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
-      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
-      ONCLUSIVEML_SERVING_RESET_STATS: No
-      ONCLUSIVEML_SERVING_RUN_TIME: 45
-      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    profiles: [load]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-    depends_on:
-      serve:
-        condition: service_healthy
-
-  # utility service: uploading the relevant test results to the model registry
-  serve-upload-results:
-    volumes:
-      - serve-vol:/projects/sentiment/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [python, -m, src.upload]
-    profiles: [serve]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: async
-      ONCLUSIVEML_SERVING_DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve
-      ONCLUSIVEML_SERVING_DOCKER_IMAGE_TAG: ${IMAGE_TAG}
-      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
-      ONCLUSIVEML_SERVING_GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
-      ONCLUSIVEML_SERVING_GITHUB_ACTOR: ${GITHUB_ACTOR}
-      ONCLUSIVEML_SERVING_GITHUB_ENV: ${GITHUB_ENV}
-      ONCLUSIVEML_SERVING_GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
-      ONCLUSIVEML_SERVING_GITHUB_JOB: ${GITHUB_JOB}
-      ONCLUSIVEML_SERVING_GITHUB_REF: ${GITHUB_REF}
-      ONCLUSIVEML_SERVING_GITHUB_BASE_REF: ${GITHUB_BASE_REF}
-      ONCLUSIVEML_SERVING_GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
-      ONCLUSIVEML_SERVING_GITHUB_SHA: ${GITHUB_SHA}
-      ONCLUSIVEML_SERVING_GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
-      ONCLUSIVEML_SERVING_GITHUB_RUN_ID: ${GITHUB_RUN_ID}
-      ONCLUSIVEML_SERVING_GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
-      ONCLUSIVEML_SERVING_RUNNER_ARCH: ${RUNNER_ARCH}
-      ONCLUSIVEML_SERVING_RUNNER_NAME: ${RUNNER_NAME}
-      ONCLUSIVEML_SERVING_RUNNER_OS: ${RUNNER_OS}
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
 
 # =============================================
 # BACKFILL
@@ -317,7 +257,7 @@ services:
         COMPONENT: backfill
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
     volumes:
-      - backfill-vol:/tmp/beam-artifact-staging
+      - backfill-volume:/tmp/beam-artifact-staging
       - type: bind
         source: backfill/src
         target: /projects/sentiment/backfill/src
@@ -402,7 +342,7 @@ services:
         taskmanager.numberOfTaskSlots: 2
         parallelism.default: 1
     volumes:
-      - backfill-vol:/tmp/beam-artifact-staging
+      - backfill-volume:/tmp/beam-artifact-staging
 
   jobserver:
     image: apache/beam_flink1.16_job_server:2.49.0
@@ -417,7 +357,7 @@ services:
     profiles: [backfill]
     networks: [onclusive-net]
     volumes:
-      - backfill-vol:/tmp/beam-artifact-staging
+      - backfill-volume:/tmp/beam-artifact-staging
 
   zookeeper:
     image: confluentinc/cp-zookeeper
@@ -457,6 +397,6 @@ networks:
   onclusive-net:
 
 volumes :
-  compile-vol:
-  serve-vol:
-  backfill-vol:
+  compile-volume:
+  serve-volume:
+  backfill-volume:

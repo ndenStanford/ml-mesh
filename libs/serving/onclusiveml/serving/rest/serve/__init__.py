@@ -10,7 +10,6 @@ from onclusiveml.serving.rest.serve.server_models import (  # noqa: F401
     ServedModelBioModel,
 )
 from onclusiveml.serving.rest.serve.server_utils import (  # noqa: F401
-    get_root_router,
     get_liveness_router,
     get_readiness_router,
     get_model_predict_router,
