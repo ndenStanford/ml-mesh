@@ -28,6 +28,7 @@ from src.settings import get_settings
 settings = get_settings()
 config = Config(read_timeout=settings.BEDROCK_READ_TIMEOUT)
 
+
 class LanguageModel(Dyntastic, LangchainConvertibleMixin):
     """Language model."""
 
@@ -123,5 +124,5 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             service_name="bedrock-runtime",
             region_name=settings.AWS_DEFAULT_REGION,
             endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
-            config=config
+            config=config,
         )
