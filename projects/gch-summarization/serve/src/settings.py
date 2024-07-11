@@ -10,6 +10,7 @@ from neptune.types.mode import Mode
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
@@ -56,6 +57,7 @@ class GlobalSettings(
     TrackedImageSpecs,
     GchSummarizationSettings,
     GchSummarizationTrackedModelSettings,
+    OnclusiveLogSettings,
 ):
     """Global server settings."""
 

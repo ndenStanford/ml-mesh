@@ -6,7 +6,7 @@ from typing import Optional
 
 # Internal libraries
 from onclusiveml.core.logging.constants import (
-    DEBUG,
+    LoggingLevel,
     OnclusiveLogMessageFormat,
     OnclusiveService,
 )
@@ -17,7 +17,7 @@ from onclusiveml.core.logging.settings import OnclusiveLogSettings
 def get_default_logger(
     name: str,
     service: str = OnclusiveService.DEFAULT,
-    level: int = DEBUG,
+    level: int = LoggingLevel.DEBUG.value,
     fmt_level: OnclusiveLogMessageFormat = OnclusiveLogMessageFormat.DEFAULT,
     json_format: bool = False,
     handler: Optional[logging.Handler] = None,
@@ -54,11 +54,6 @@ def get_default_logger(
     Returns:
         logger (logging.Logger): A configured logger instance.
     """
-    # validate inputs
-    log_settings = OnclusiveLogSettings(
-        service=service, level=level, fmt_level=fmt_level, json_format=json_format
-    )
-
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
@@ -70,8 +65,44 @@ def get_default_logger(
 
     # if no handler is specified, create a configured one using handler util
     if handler is None:
-        handler = get_default_handler(**log_settings.model_dump())
+        handler = get_default_handler(
+            service=service, level=level, fmt_level=fmt_level, json_format=json_format
+        )
 
     logger.addHandler(handler)
 
     return logger
+
+
+def _set_root_verbosity(settings: OnclusiveLogSettings) -> None:
+    """Set the root verbosity.
+
+    Args:
+        settings (OnclusiveLogSettings): logging settings
+    """
+    level = settings.level
+    if level != LoggingLevel.NOTSET:
+        logging.basicConfig(level=level)
+        get_default_logger(__name__).debug(
+            f"Logging set to level: " f"{logging.getLevelName(level)}"
+        )
+    else:
+        logging.disable(sys.maxsize)
+        logging.getLogger().disabled = True
+        get_default_logger(__name__).debug("Logging NOTSET")
+
+
+def init_logging(settings: OnclusiveLogSettings) -> None:
+    """Initialize logging with default levels.
+
+    Args:
+        settings (OnclusiveLogSettings): logging settings
+    """
+    _set_root_verbosity(settings)
+
+    for logger_name in settings.suppressed_logger_names:
+        logging.getLogger(logger_name).setLevel(logging.INFO)
+
+    for logger_name in settings.disabled_logger_names:
+        logging.getLogger(logger_name).setLevel(logging.WARNING)
+        logging.getLogger(logger_name).disabled = True
