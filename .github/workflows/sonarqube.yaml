@@ -1,9 +1,10 @@
 ---
-name: SonarQube
+name: SonarQube (Optional)
 on  :
   push:
     branches:
       - develop
+      - bug/sonarqube-checks-fail
 jobs:
   build:
     name: Build
