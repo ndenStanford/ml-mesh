@@ -10,8 +10,8 @@ from pydantic import SecretStr, Field
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
-from onclusiveml.data.exceptions import (
-    QueryException,
+from onclusiveml.queries.exceptions import (
+    QueryESException,
     QueryStringException,
     QueryIdException,
 )
@@ -20,9 +20,13 @@ from onclusiveml.data.exceptions import (
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    client_id: SecretStr = Field(default="...", env="MEDIA_CLIENT_ID", exclude=True)
-    client_secret: SecretStr = Field(
-        default="...", env="MEDIA_CLIENT_SECRET", exclude=True
+    media_client_id: SecretStr = Field(
+        default="...",
+        exclude=True,
+    )
+    media_client_secret: SecretStr = Field(
+        default="...",
+        exclude=True,
     )
     grant_type: str = "client_credentials"
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
@@ -31,12 +35,12 @@ class MediaAPISettings(OnclusiveBaseSettings):
     media_api_url: str = "https://staging-querytool-api.platform.onclusive.org"
 
     def get_client_secret_value(self) -> str:
-        """Get client_secret."""
-        return self.client_secret.get_secret_value()
+        """Get media_client_secret."""
+        return self.media_client_secret.get_secret_value()
 
     def get_client_id_value(self) -> str:
-        """Get client_id."""
-        return self.client_id.get_secret_value()
+        """Get media_client_id."""
+        return self.media_client_id.get_secret_value()
 
 
 class BaseQueryProfile(OnclusiveBaseModel):
@@ -52,8 +56,8 @@ class BaseQueryProfile(OnclusiveBaseModel):
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
         settings_dict = settings.model_dump()
-        settings_dict["client_secret"] = settings.client_secret.get_secret_value()
-        settings_dict["client_id"] = settings.client_id.get_secret_value()
+        settings_dict["client_secret"] = settings.media_client_secret.get_secret_value()
+        settings_dict["client_id"] = settings.media_client_id.get_secret_value()
         settings_dict["grant_type"] = settings.grant_type
         settings_dict["scope"] = settings.scope
 
@@ -68,7 +72,7 @@ class BaseQueryProfile(OnclusiveBaseModel):
             data = response.get("query", {})
             return {"bool": data["es_query"]}
         else:
-            raise QueryException()
+            raise QueryESException()
 
     def _from_boolean_to_media_api(
         self, settings: MediaAPISettings
