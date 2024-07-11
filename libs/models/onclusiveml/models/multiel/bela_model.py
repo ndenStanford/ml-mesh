@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Tuple, Union
 import torch
 
 # 3rd party libraries
-import faiss
 import numpy as np
 from redis.commands.search.query import Query
 from tqdm import tqdm
@@ -123,7 +122,6 @@ class BelaModel:
             optim=settings.task.optim,
             only_train_disambiguation=settings.task.only_train_disambiguation,
             train_saliency=settings.task.train_saliency,
-            use_gpu_index=settings.task.use_gpu_index,
             load_from_checkpoint=settings.task.load_from_checkpoint,
         )
 
@@ -145,22 +143,6 @@ class BelaModel:
         self.ent_idx = []
         for ent in datamodule.ent_catalogue.idx:
             self.ent_idx.append(ent)
-
-    def create_gpu_index(self, gpu_id=0):
-        """Create a GPU-based Faiss index.
-
-        Args:
-            self: The instance of the class.
-            gpu_id (int, optional): The ID of the GPU to use. Defaults to 0.
-        """
-        flat_config = faiss.GpuIndexFlatConfig()
-        flat_config.device = gpu_id
-        flat_config.useFloat16 = True
-
-        res = faiss.StandardGpuResources()
-
-        self.faiss_index = faiss.GpuIndexFlatIP(res, embeddings.shape[1], flat_config)
-        self.faiss_index.add(self.embeddings)
 
     def lookup_faiss(
         self,

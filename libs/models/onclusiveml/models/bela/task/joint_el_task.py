@@ -468,7 +468,6 @@ class JointELTask(LightningModule):
         model: settings.model,
         datamodule: settings.datamodule,
         optim: settings.optim,
-        faiss_index_path: Optional[str] = None,
         n_retrieve_candidates: int = 10,
         eval_compure_recall_at: Tuple[int] = (1, 10, 100),
         warmup_steps: int = 0,
@@ -479,15 +478,12 @@ class JointELTask(LightningModule):
         md_threshold: float = 0.2,
         el_threshold: float = 0.4,
         saliency_threshold: float = 0.4,
-        use_gpu_index: bool = False,
         embedding_dim=settings.redis.EMBEDDINGS_SHAPE,
     ):
         super().__init__()
         # encoder setup
         self.encoder_conf = model
         self.optim_conf = optim
-
-        self.faiss_index_path = faiss_index_path
 
         self.n_retrieve_candidates = n_retrieve_candidates
         self.eval_compure_recall_at = eval_compure_recall_at
@@ -505,7 +501,6 @@ class JointELTask(LightningModule):
         self.md_threshold = md_threshold
         self.el_threshold = el_threshold
         self.saliency_threshold = saliency_threshold
-        self.use_gpu_index = use_gpu_index
         self.embedding_dim = embedding_dim[1]
 
     @staticmethod
@@ -652,32 +647,23 @@ class JointELTask(LightningModule):
         if flat_mentions_repr.shape[0] == 0:
             return None
         # obtain positive entities representations
-        if self.use_gpu_index:
-            entities_repr = torch.stack(
-                [
-                    self.faiss_index.reconstruct(flat_id)
-                    for flat_id in flat_entities_ids.tolist()
-                ]
-            ).to(device)
-        else:
-            raise Exception("An unexpected error occurred: no GPU found")
+        entities_repr = torch.stack(
+            [
+                self.faiss_index.reconstruct(flat_id)
+                for flat_id in flat_entities_ids.tolist()
+            ]
+        ).to(device)
+
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
         # retrieve candidates indices
-        if self.use_gpu_index:
-            (
-                _,
-                neg_cand_indices,
-                neg_cand_repr,
-            ) = self.faiss_index.search_and_reconstruct(
-                flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
-                self.n_retrieve_candidates,
-            )
-            neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
-            neg_cand_repr = torch.from_numpy(neg_cand_repr).to(device)
+        (_, neg_cand_indices, neg_cand_repr,) = self.faiss_index.search_and_reconstruct(
+            flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
+            self.n_retrieve_candidates,
+        )
+        neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
+        neg_cand_repr = torch.from_numpy(neg_cand_repr).to(device)
 
-        else:
-            raise Exception("An unexpected error occurred: no GPU found")
         # compute scores (bs x n_retrieve_candidates)
         neg_cand_scores = torch.bmm(
             flat_mentions_repr.unsqueeze(1), neg_cand_repr.transpose(1, 2)
@@ -826,9 +812,8 @@ class JointELTask(LightningModule):
             flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
             1,
         )
-        if self.use_gpu_index:
-            cand_scores = torch.from_numpy(cand_scores)
-            cand_indices = torch.from_numpy(cand_indices)
+        cand_scores = torch.from_numpy(cand_scores)
+        cand_indices = torch.from_numpy(cand_indices)
         # iterate over predicted and gold mentions to create targets for
         # predicted mentions
         targets = []
@@ -860,15 +845,12 @@ class JointELTask(LightningModule):
         targets = torch.tensor(targets, device=device)
         flat_targets = targets[mention_lengths != 0][flat_mentions_scores > 0]
         md_scores = flat_mentions_scores[flat_mentions_scores > 0].unsqueeze(-1)
-        if self.use_gpu_index:
-            flat_entities_repr = torch.stack(
-                [
-                    self.faiss_index.reconstruct(flat_id)
-                    for flat_id in cand_indices.squeeze(1).tolist()
-                ]
-            ).to(device)
-        else:
-            raise Exception("An unexpected error occurred: no GPU found")
+        flat_entities_repr = torch.stack(
+            [
+                self.faiss_index.reconstruct(flat_id)
+                for flat_id in cand_indices.squeeze(1).tolist()
+            ]
+        ).to(device)
 
         cand_scores = cand_scores.to(device)
         cand_indices = cand_indices.to(device)
@@ -951,15 +933,13 @@ class JointELTask(LightningModule):
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
         flat_entities_ids = entities_ids[mention_lengths != 0]
         # obtain positive entities representations
-        if self.use_gpu_index:
-            entities_repr = torch.stack(
-                [
-                    self.faiss_index.reconstruct(flat_id)
-                    for flat_id in flat_entities_ids.tolist()
-                ]
-            ).to(device)
-        else:
-            raise Exception("An unexpected error occurred: no GPU found")
+        entities_repr = torch.stack(
+            [
+                self.faiss_index.reconstruct(flat_id)
+                for flat_id in flat_entities_ids.tolist()
+            ]
+        ).to(device)
+
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
         # candidates to retrieve
@@ -1055,15 +1035,12 @@ class JointELTask(LightningModule):
         )
 
         if self.train_el_classifier:
-            if self.use_gpu_index:
-                flat_entities_repr = torch.stack(
-                    [
-                        self.faiss_index.reconstruct(flat_id)
-                        for flat_id in cand_indices.squeeze(1).tolist()
-                    ]
-                ).to(device)
-            else:
-                raise Exception("An unexpected error occurred: no GPU found")
+            flat_entities_repr = torch.stack(
+                [
+                    self.faiss_index.reconstruct(flat_id)
+                    for flat_id in cand_indices.squeeze(1).tolist()
+                ]
+            ).to(device)
 
             flat_mentions_scores = mentions_scores[mention_lengths != 0].unsqueeze(-1)
             cand_scores = torch.from_numpy(cand_scores).to(device)
