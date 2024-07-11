@@ -49,6 +49,7 @@ class Settings(OnclusiveBaseSettings):
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     DEFAULT_MODELS: dict = {"default": "anthropic.claude-3-haiku-20240307-v1:0"}
     CORS_ORIGIN: List[str] = ["*"]
+    BEDROCK_READ_TIMEOUT: int = 1000
 
     # Github configuration
     PROMPT_REGISTRY_APP_ID: str
