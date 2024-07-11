@@ -1,7 +1,13 @@
 # LIBS targets
 
+ifeq ($(notdir $@),llms)
+	FLAGS = --with dev --all-extras
+else
+	FLAGS = --with dev
+endif
+
 libs.install/%: ## Installs library and dependencies locally
-	poetry install --directory=libs/$(notdir $@) --with dev --all-extras
+	poetry install --directory=libs/$(notdir $@) $(FLAGS)
 
 libs.lock/%: ## Installs library and dependencies locally
 	poetry lock --directory=libs/$(notdir $@)
