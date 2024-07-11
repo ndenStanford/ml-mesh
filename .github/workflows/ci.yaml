@@ -196,7 +196,7 @@ jobs       :
           - name: gpu-base
             validate-build: true
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0631bf27298da9831
+            self-hosted-runner-ami: ami-0ac0809ecabc87ec9
             runner-kind: custom
 
         base-region: [us-east-1]
@@ -237,21 +237,21 @@ jobs       :
           - name: gpu-train
             validate-build: false
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0631bf27298da9831
+            self-hosted-runner-ami: ami-0ac0809ecabc87ec9
             self-hosted-runner-neuron: false
             runner-kind: custom
 
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0e1771dda4b6f1598
+            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
             self-hosted-runner-neuron: true
             runner-kind: custom
 
           - name: neuron-inference
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0e1771dda4b6f1598
+            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
             self-hosted-runner-neuron: true
             runner-kind: custom
 
@@ -268,7 +268,7 @@ jobs       :
           - name: beam-worker
             validate-build: false
             self-hosted-runner-type: m7a.medium
-            self-hosted-runner-ami: ami-089ccccb73cb9f81c
+            self-hosted-runner-ami: ami-0f12d36a619cc64b8
             self-hosted-runner-neuron: false
             runner-kind: custom
 
@@ -413,7 +413,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0e1771dda4b6f1598
+            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
 
         use-cache: [true]
 
@@ -522,7 +522,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-0631bf27298da9831
+            self-hosted-runner-ami: ami-0ac0809ecabc87ec9
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -585,7 +585,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-089ccccb73cb9f81c
+            self-hosted-runner-ami: ami-0f12d36a619cc64b8
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -598,7 +598,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0631bf27298da9831
+            self-hosted-runner-ami: ami-0ac0809ecabc87ec9
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -681,7 +681,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0e1771dda4b6f1598
+            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
 
           # backfill
           - name: backfill
@@ -763,7 +763,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-0631bf27298da9831
+            self-hosted-runner-ami: ami-0ac0809ecabc87ec9
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -787,7 +787,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0e1771dda4b6f1598
+            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
             self-hosted-runner-neuron: true
             use-cache: true
 
