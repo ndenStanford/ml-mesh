@@ -219,8 +219,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/iptc/compile
+        source: compile/src
+        target: /projects/iptc/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/compile/models
     build:
       context: ../../
       dockerfile: projects/iptc/compile/Dockerfile
@@ -279,8 +282,11 @@ services:
   compile-unit:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/iptc/compile
+        source: compile/src
+        target: /projects/iptc/compile/src
+      - type: bind
+        source: compile/tests
+        target: /projects/iptc/compile/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
@@ -290,8 +296,11 @@ services:
   compile-download-model:
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/iptc/compile/
+        source: compile/src
+        target: /projects/iptc/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
@@ -313,8 +322,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/iptc/compile
+        source: compile/src
+        target: /projects/iptc/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
     profiles: [pipeline]
@@ -332,8 +344,11 @@ services:
   compile-upload-model:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/iptc/compile
+        source: compile/src
+        target: /projects/iptc/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/iptc/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]

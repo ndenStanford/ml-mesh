@@ -88,6 +88,9 @@ services:
       - type: bind
         source: train/src
         target: /projects/topic/train/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/topic/train/models
     build:
       context: ../../
       dockerfile: projects/topic/train/Dockerfile
@@ -184,8 +187,8 @@ services:
         source: ${HOME}/data
         target: /projects/topic/serve/models
       - type: bind
-        source: serve/
-        target: /projects/topic/serve/
+        source: serve/src
+        target: /projects/topic/serve/src
     build:
       context: ../../
       dockerfile: projects/topic/serve/Dockerfile
@@ -241,8 +244,8 @@ services:
         source: ${HOME}/data
         target: /projects/topic/serve/models
       - type: bind
-        source: serve/
-        target: /projects/topic/serve/
+        source: serve/src
+        target: /projects/topic/serve/src
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -270,8 +273,8 @@ services:
         source: ${HOME}/data
         target: /projects/topic/serve/models
       - type: bind
-        source: serve/
-        target: /projects/topic/serve/
+        source: serve/src
+        target: /projects/topic/serve/src
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
@@ -280,7 +283,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
-    env_file: serve/config/dev.env
+    env_file: serve/config/prod.env
     hostname: onclusiveml
     networks: [onclusive-net]
 

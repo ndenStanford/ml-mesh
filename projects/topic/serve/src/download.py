@@ -5,7 +5,12 @@ import os
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.base.pydantic import cast
+from onclusiveml.core.logging import (
+    OnclusiveLogSettings,
+    get_default_logger,
+    init_logging,
+)
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
@@ -30,7 +35,7 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     if not os.path.isdir(settings.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to
         # local
-        print("settings.model_directory: ", settings.model_directory)
+        logger.info(f"settings.model_directory: {settings.model_directory}")
         mv.download_directory_from_model_version(
             local_directory_path=settings.model_directory,
             neptune_attribute_path="model",
@@ -53,4 +58,5 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
 
 
 if __name__ == "__main__":
+    init_logging(cast(settings, OnclusiveLogSettings))
     download_model(settings)
