@@ -69,8 +69,7 @@ def generate_from_prompt(
     return conversation.predict(input=prompt)
 
 
-@retry(
-    tries=settings.LLM_CALL_RETRY_COUNT)
+@retry(tries=settings.LLM_CALL_RETRY_COUNT)
 @redis.cache(ttl=settings.REDIS_TTL_SECONDS)
 def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
     """Generates chat message from input prompt alias and default model."""
