@@ -47,4 +47,4 @@ class TopicSummaryDynamoDB(Dyntastic):
     content: Optional[List[str]] = None
     query_all_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
     query_topic_doc_count: Optional[List[Dict[str, Union[str, int]]]] = None
-    topic_summary_quality: Optional[str] = None
+    topic_summary_quality: Optional[bool] = None
