@@ -8,8 +8,11 @@ services:
   train:
     volumes:
       - type: bind
-        source: train
-        target: /projects/sentiment/train
+        source: ${HOME}/data
+        target: /projects/sentiment/train/models
+      - type: bind
+        source: train/src
+        target: /projects/sentiment/train/src
     build:
       context: ../../
       dockerfile: projects/sentiment/train/Dockerfile
@@ -27,8 +30,6 @@ services:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      ONCLUSIVEML_TRACKING_BACKEND_USE_S3_BACKEND: yes
-      ONCLUSIVEML_TRACKING_LOGGER_LEVEL: 10
     env_file: train/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -81,8 +82,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/sentiment/compile
+        source: compile/src
+        target: /projects/sentiment/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/sentiment/compile/models
     build:
       context: ../../
       dockerfile: projects/sentiment/compile/Dockerfile
@@ -201,8 +205,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
+        source: ${HOME}/data
+        target: /projects/sentiment/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/sentiment/serve/src
     build:
       context: ../../
       dockerfile: projects/sentiment/serve/Dockerfile
@@ -233,8 +240,11 @@ services:
   serve-download-model:
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
+        source: ${HOME}/data
+        target: /projects/sentiment/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/sentiment/serve/src
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [serve, integration, functional, load]
@@ -250,6 +260,13 @@ services:
   serve-debug:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/sentiment/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/sentiment/serve/src
     build:
       context: ../../
       dockerfile: projects/sentiment/serve/Dockerfile
@@ -311,8 +328,14 @@ services:
       - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
     volumes:
       - type: bind
-        source: serve/
-        target: /projects/sentiment/serve/
+        source: ${HOME}/data
+        target: /projects/sentiment/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/sentiment/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/sentiment/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     command: [pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/dev.env

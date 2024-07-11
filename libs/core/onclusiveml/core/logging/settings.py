@@ -1,5 +1,8 @@
 """Logging params."""
 
+# Standard Library
+from typing import List
+
 # 3rd party libraries
 from pydantic import field_validator
 from pydantic_settings import SettingsConfigDict
@@ -21,6 +24,18 @@ class OnclusiveLogSettings(OnclusiveBaseSettings):
     level: int = DEBUG
     fmt_level: OnclusiveLogMessageFormat = OnclusiveLogMessageFormat.SIMPLE
     json_format: bool = False
+    suppressed_logger_names: List[str] = [
+        "urllib3",
+        "s3transfer",
+        "requests_oauthlib",
+        "botocore",
+        "boto3",
+    ]
+    disabled_logger_names: List[str] = [
+        "bravado_core",
+        "bravado.client",
+        "swagger_spec_validator",
+    ]
 
     @field_validator("level")
     def validate_level(value: int) -> int:
