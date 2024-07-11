@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 
 # 3rd party libraries
 import boto3
+from botocore.config import Config
 from dyntastic import Dyntastic
 from langchain_community.chat_models import BedrockChat, ChatOpenAI
 from pydantic import ValidationError
@@ -25,6 +26,7 @@ from src.settings import get_settings
 
 
 settings = get_settings()
+config = Config(read_timeout=settings.BEDROCK_READ_TIMEOUT)
 
 
 class LanguageModel(Dyntastic, LangchainConvertibleMixin):
@@ -122,4 +124,5 @@ class LanguageModel(Dyntastic, LangchainConvertibleMixin):
             service_name="bedrock-runtime",
             region_name=settings.AWS_DEFAULT_REGION,
             endpoint_url="https://bedrock-runtime.us-east-1.amazonaws.com",
+            config=config,
         )
