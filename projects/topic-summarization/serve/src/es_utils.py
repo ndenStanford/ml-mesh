@@ -19,7 +19,7 @@ def generate_crawler_indices(es_secret_value: SecretStr, num_months: int = 5) ->
     print("\n")
     print("\n")
     print("\n")
-    print("ES SECRET VALUE :", es_secret_value.get_secret_value())
+    print("ES SECRET VALUE :", es_secret_value)
 
     es = Elasticsearch(
         [
