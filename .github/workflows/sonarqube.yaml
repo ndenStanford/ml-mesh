@@ -1,9 +1,10 @@
 ---
-name: SonarQube
+name: SonarQube (Optional)
 on  :
   push:
     branches:
       - develop
+      - bug/sonarqube-checks-fail
 jobs:
   build:
     name: Build
@@ -37,13 +38,13 @@ jobs:
           sudo rm -rf /tmp/*
           sudo rm -rf /var/tmp/*
       - name: Install test coverage utils
-        run: pip install coverage
+        run: pip install coverage==7.5.4
       - name: Setup Poetry
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install lib dependencies
-        run: make libs.install-covered
+        run: make libs.install-all-covered
       - name: Generate test coverage for libs
         run: make libs.coverage-unit-all
       - name: Generate test coverage xml
