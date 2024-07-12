@@ -7,20 +7,21 @@ from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
-SENT_SUPPORTED_LANGUAGE = [
+SUPPORTED_LANGUAGES = [
     LanguageIso.EN,  # English
     LanguageIso.PT,  # Portuguese
     LanguageIso.ES,  # Spanish
@@ -88,20 +89,20 @@ SENT_SUPPORTED_LANGUAGE = [
 ]
 
 
-class SentSettings(TrackedParams):
-    """Sentiment settings."""
+class SentimentSettings(TrackingSettings):
+    """Sentimentiment settings."""
 
-    supported_languages: List[LanguageIso] = SENT_SUPPORTED_LANGUAGE
+    supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
-class TrackedCompiledModelSpecs(TrackedModelSpecs):
+class TrackedCompiledModelSpecs(TrackedModelSettings):
     """Tracked compiled model settings."""
 
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = Field("SEN-COMPILED-46", env="neptune_model_version_id")
+    with_id: str
     # we only need to download from the base model, not upload
-    mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
+    mode: str = Mode.READ_ONLY
 
 
 class ServerModelSettings(ServingParams):
@@ -113,15 +114,16 @@ class ServerModelSettings(ServingParams):
 
 class GlobalSettings(
     ServerModelSettings,
-    TrackedCompiledModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    SentSettings,
+    SentimentSettings,
+    TrackedCompiledModelSpecs,
+    OnclusiveLogSettings,
 ):
     """Global server settings."""
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()

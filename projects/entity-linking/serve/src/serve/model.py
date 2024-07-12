@@ -4,10 +4,8 @@
 import re
 from typing import Any, Dict, List, Optional, Tuple, Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.models.multiel import BELA
 from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.lang_exception import (
@@ -32,9 +30,9 @@ settings = get_settings()
 class ServedBelaModel(ServedModel):
     """Entity linking model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initialize the served Content Scoring model with its artifacts.
@@ -128,7 +126,7 @@ class ServedBelaModel(ServedModel):
 
     def _generate_offsets(
         self, text: str, entities: List[Dict[str, Any]]
-    ) -> Tuple[List[str], List[int], List[int], List[int]]:
+    ) -> Tuple[List[Optional[str]], List[int], List[int], List[int]]:
         """Generate a component of query to be consumed by the entity fish endpoint.
 
         Args:
@@ -159,65 +157,186 @@ class ServedBelaModel(ServedModel):
         self,
         content: str,
         entities: Optional[List[Dict[str, Any]]],
+        batch_size: int = 1,
     ) -> List[Dict[str, Any]]:
-        """Get entity linking prediction."""
+        """Get entity linking prediction.
+
+        Args:
+            content (str): The content to process for entity linking.
+            entities (Optional[List[Dict[str, Any]]]): A list of entities to link.
+            batch_size (int): The size of each batch for processing. Defaults to 1.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries representing the entities with links.
+        """
         entities_with_links = []
+
         if entities:
+            entities_with_links = self._process_entities_with_batching(
+                content, entities, batch_size
+            )
+        else:
+            entities_with_links = self._process_text_without_entities(content)
+
+        return entities_with_links
+
+    def _process_entities_with_batching(
+        self, content: str, entities: List[Dict[str, Any]], batch_size: int
+    ) -> List[Dict[str, Any]]:
+        """Process entities with batching.
+
+        Args:
+            content (str): The content to process.
+            entities (List[Dict[str, Any]]): A list of entities to process.
+            batch_size (int): The size of each batch.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries representing the entities with links.
+        """
+        entities_with_links = []
+        num_batches = (
+            len(entities) + batch_size - 1
+        ) // batch_size  # Calculate the number of batches
+
+        for i in range(num_batches):
+            batch_entities = entities[i * batch_size : (i + 1) * batch_size]  # noqa
+            batch_content = [content] * len(batch_entities)  # Create a batch of content
+            (
+                batch_unique_entities_list,
+                batch_entities_offsets,
+                batch_mention_offsets,
+                batch_mention_lengths,
+            ) = self._generate_batch_offsets(content, batch_entities)
+
+            if not batch_mention_offsets:
+                continue  # Skip if all mention_offsets in the batch are empty
+
+            output = self.model.process_disambiguation_batch(
+                list_text=batch_content,
+                mention_offsets=batch_mention_offsets,
+                mention_lengths=batch_mention_lengths,
+                entities=batch_entities_offsets,
+            )
+
+            entities_with_links.extend(
+                self._generate_entities_with_links(
+                    batch_entities, batch_unique_entities_list, output
+                )
+            )
+
+        return entities_with_links
+
+    def _generate_batch_offsets(
+        self, content: str, batch_entities: List[Dict[str, Any]]
+    ) -> Tuple[List[str], List[List[int]], List[List[int]], List[List[int]]]:
+        """Generate batch offsets for entities.
+
+        Args:
+            content (str): The content to process.
+            batch_entities (List[Dict[str, Any]]): A list of entities in the batch.
+
+        Returns:
+            tuple: A tuple containing lists batches.
+        """
+        batch_mention_offsets = []
+        batch_mention_lengths = []
+        batch_entities_offsets = []
+        batch_unique_entities_list = []
+
+        for entity in batch_entities:
             (
                 unique_entities_list,
                 entities_offsets,
                 mention_offsets,
                 mention_lengths,
-            ) = self._generate_offsets(text=content, entities=entities)
-            output = self.model.process_disambiguation_batch(
-                list_text=[content],
-                mention_offsets=[mention_offsets],
-                mention_lengths=[mention_lengths],
-                entities=[entities_offsets],
-            )
-            for entity in entities:
-                try:
-                    if entity["entity_text"] in unique_entities_list:
-                        index = unique_entities_list.index(
-                            entity["entity_text"]
-                        )  # noqa
-                        entity_with_link = entity
-                        entity_with_link["wiki_link"] = (
-                            "https://www.wikidata.org/wiki/"
-                            + output[0]["entities"][index]
-                        )
-                        entities_with_links.append(entity_with_link)
-                except KeyError as e:
-                    raise KeyError(f"KeyError occurred: {e}")
-                except IndexError as e:
-                    raise IndexError(f"IndexError occurred: {e}")
-                except Exception as e:
-                    raise Exception(f"An unexpected error occurred: {e}")
+            ) = self._generate_offsets(text=content, entities=[entity])
 
-        else:
-            list_texts = [content]
-            output = self.model.process_batch(list_text=list_texts)
+            if not mention_offsets:
+                continue
+
+            batch_unique_entities_list.extend(unique_entities_list)
+            batch_entities_offsets.append(entities_offsets)
+            batch_mention_offsets.append(mention_offsets)
+            batch_mention_lengths.append(mention_lengths)
+
+        return (
+            batch_unique_entities_list,
+            batch_entities_offsets,
+            batch_mention_offsets,
+            batch_mention_lengths,
+        )
+
+    def _generate_entities_with_links(
+        self,
+        batch_entities: List[Dict[str, Any]],
+        batch_unique_entities_list: List[str],
+        output: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        """Generate entities with links from batch output.
+
+        Args:
+            batch_entities (List[Dict[str, Any]]): A list of entities in the batch.
+            batch_unique_entities_list (List[str]): A list of unique entities.
+            output (List[Dict[str, Any]]): The output from the model.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries representing the entities with links.
+        """
+        entities_with_links = []
+        output_index = 0
+
+        for entity in batch_entities:
             try:
-                entity_ner_map = dict(
-                    zip(output[0]["entities"], output[0]["md_scores"])
-                )
-                for idx, entity_id in enumerate(output[0]["entities"]):
-                    start_offset = output[0]["offsets"][idx]
-                    entity_length = output[0]["lengths"][idx]
-                    end_offset = start_offset + entity_length
-                    entity_text = str(content[start_offset:end_offset])
-                    entity_with_link = {
-                        "entity_type": None,
-                        "entity_text": entity_text,
-                        "score": entity_ner_map.get(entity_id, None),
-                        "sentence_index": [0],
-                        "wiki_link": "https://www.wikidata.org/wiki/" + entity_id,
-                    }
+                if entity["entity_text"] in batch_unique_entities_list:
+                    entity_with_link = entity
+                    entity_with_link["wiki_link"] = (
+                        "https://www.wikidata.org/wiki/"
+                        + output[output_index]["entities"][-1]
+                    )
                     entities_with_links.append(entity_with_link)
+                    output_index += 1
             except KeyError as e:
                 raise KeyError(f"KeyError occurred: {e}")
             except IndexError as e:
                 raise IndexError(f"IndexError occurred: {e}")
             except Exception as e:
                 raise Exception(f"An unexpected error occurred: {e}")
+
+        return entities_with_links
+
+    def _process_text_without_entities(self, content: str) -> List[Dict[str, Any]]:
+        """Process text without entities.
+
+        Args:
+            content (str): The content to process.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries representing the entities with links.
+        """
+        entities_with_links = []
+        list_texts = [content]
+        output = self.model.process_batch(list_text=list_texts)
+
+        try:
+            entity_ner_map = dict(zip(output[0]["entities"], output[0]["md_scores"]))
+            for idx, entity_id in enumerate(output[0]["entities"]):
+                start_offset = output[0]["offsets"][idx]
+                entity_length = output[0]["lengths"][idx]
+                end_offset = start_offset + entity_length
+                entity_text = str(content[start_offset:end_offset])
+                entity_with_link = {
+                    "entity_type": None,
+                    "entity_text": entity_text,
+                    "score": entity_ner_map.get(entity_id, None),
+                    "sentence_index": [0],
+                    "wiki_link": "https://www.wikidata.org/wiki/" + entity_id,
+                }
+                entities_with_links.append(entity_with_link)
+        except KeyError as e:
+            raise KeyError(f"KeyError occurred: {e}")
+        except IndexError as e:
+            raise IndexError(f"IndexError occurred: {e}")
+        except Exception as e:
+            raise Exception(f"An unexpected error occurred: {e}")
+
         return entities_with_links

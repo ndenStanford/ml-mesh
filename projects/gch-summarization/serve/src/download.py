@@ -3,11 +3,14 @@
 # Standard Library
 import os
 
-# 3rd party libraries
-from pydantic import BaseSettings
-
 # Internal libraries
-from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.base.pydantic import cast
+from onclusiveml.core.logging import (
+    OnclusiveLogSettings,
+    get_default_logger,
+    init_logging,
+)
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
@@ -17,12 +20,18 @@ from src.settings import get_settings
 settings = get_settings()
 
 
-def download_model(settings: BaseSettings) -> None:
+def download_model(settings: OnclusiveBaseSettings) -> None:
     """Download compiled model."""
     logger = get_default_logger(__name__)
     # model registry reference to the desired (compiled) model version
     # initialize client for specific model version
-    mv = TrackedModelVersion(with_id=settings.with_id, mode=settings.mode)
+    mv = TrackedModelVersion(
+        with_id=settings.with_id,
+        mode=settings.mode,
+        api_token=settings.api_token.get_secret_value(),
+        project=settings.project,
+    )
+
     if not os.path.isdir(settings.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to
         # local
@@ -49,4 +58,5 @@ def download_model(settings: BaseSettings) -> None:
 
 
 if __name__ == "__main__":
+    init_logging(cast(settings, OnclusiveLogSettings))
     download_model(settings)

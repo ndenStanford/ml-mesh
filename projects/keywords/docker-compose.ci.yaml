@@ -1,5 +1,4 @@
 ---
-version : '3.9'
 
 services:
   # =============================================
@@ -11,7 +10,10 @@ services:
       context: ../../
       dockerfile: projects/keywords/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: keywords
@@ -21,7 +23,7 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/${DEPLOYMENT:-prod}.env
@@ -33,7 +35,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+    env_file: train/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -50,6 +53,10 @@ services:
       context: ../../
       dockerfile: projects/keywords/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: keywords
@@ -59,7 +66,7 @@ services:
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
@@ -80,7 +87,7 @@ services:
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
@@ -96,7 +103,7 @@ services:
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -108,7 +115,7 @@ services:
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
       GITHUB_ACTOR: ${GITHUB_ACTOR}
       GITHUB_ENV: ${GITHUB_ENV}
@@ -144,7 +151,10 @@ services:
       context: ../../
       dockerfile: projects/keywords/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=keywords-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: keywords
@@ -176,7 +186,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
@@ -225,65 +235,6 @@ services:
     depends_on:
       serve:
         condition: service_healthy
-
-  # load tests
-  # - include model artifact
-  # - include REST model server process
-  serve-load:
-    volumes:
-      - serve-vol:/projects/keywords/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [pytest, tests/load, -ra, -vv, --capture=no]
-    environment:
-      # load test params
-      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
-      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
-      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
-      ONCLUSIVEML_SERVING_RESET_STATS: No
-      ONCLUSIVEML_SERVING_RUN_TIME: 45
-      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    profiles: [load]
-    hostname: onclusiveml
-    networks:
-      - onclusive-net
-    depends_on:
-      serve:
-        condition: service_healthy
-
-  # utility service: uploading the relevant test results to the model registry
-  serve-upload-results:
-    volumes:
-      - serve-vol:/projects/keywords/serve/models
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve:${IMAGE_TAG}
-    command: [python, -m, src.util.upload_test_results]
-    profiles: [serve]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: async
-      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-serve
-      DOCKER_IMAGE_TAG: ${IMAGE_TAG}
-      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
-      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
-      GITHUB_ACTOR: ${GITHUB_ACTOR}
-      GITHUB_ENV: ${GITHUB_ENV}
-      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
-      GITHUB_JOB: ${GITHUB_JOB}
-      GITHUB_REF: ${GITHUB_REF}
-      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
-      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
-      GITHUB_SHA: ${GITHUB_SHA}
-      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
-      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
-      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
-      RUNNER_ARCH: ${RUNNER_ARCH}
-      RUNNER_NAME: ${RUNNER_NAME}
-      RUNNER_OS: ${RUNNER_OS}
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
 
 networks:
   onclusive-net:

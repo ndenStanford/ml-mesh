@@ -1,9 +1,7 @@
 """Constants."""
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.nlp.language.constants import LanguageIso
 
 
@@ -47,7 +45,7 @@ NLTK_SUPPORTED_LANGS = [
 ]
 
 
-class SpecialCharacter(BaseModel):
+class SpecialCharacter(OnclusiveBaseModel):
     """Class to represent special characters.
 
     Args:

@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List, Optional
 
 # Internal libraries
-from onclusiveml.core.base.utils import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveEnum
 from onclusiveml.core.serialization import JsonApiSchema
 
 
@@ -71,6 +71,7 @@ class PredictResponseAttributeSchemaV1(JsonApiSchema):
     impact_category: Optional[ImpactCategoryLabel]
     trending: Optional[bool] = None
     timestamp: datetime
+    topic_summary_quality: Optional[bool] = None
 
 
 class BioRequestAttributeSchemaV1(JsonApiSchema):

@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 # 3rd party libraries
 import pytest
+from dyntastic.exceptions import DoesNotExist
 from fastapi import status
 
 # Source
@@ -35,12 +36,104 @@ def test_create_prompt(
     mock_project_get.return_value = Project(alias=project)
     # api call
     response = test_client.post(
-        "/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.dict()
+        "/api/v2/prompts", headers={"x-api-key": "1234"}, json=prompt.model_dump()
     )
     # asserts
     assert response.status_code == status.HTTP_201_CREATED
     mock_prompt_save.assert_called_once()
-    assert response.json() == prompt.dict()
+    assert response.json() == prompt.model_dump()
+
+
+@pytest.mark.parametrize(
+    "alias, new_template, project",
+    [("existing-prompt", "new-template-text", "existing-project")],
+)
+@patch.object(PromptTemplate, "get")
+@patch.object(PromptTemplate, "update")
+def test_update_prompt(
+    mock_prompt_update,
+    mock_prompt_get,
+    alias,
+    new_template,
+    project,
+    test_client,
+):
+    """Test update prompt."""
+    prompt = PromptTemplate(alias=alias, project=project, template="old-template")
+    mock_prompt_get.return_value = prompt
+
+    response = test_client.put(
+        f"/api/v2/prompts/{alias}",
+        headers={"x-api-key": "1234"},
+        json={"template": new_template},
+    )
+
+    assert response.status_code == status.HTTP_201_CREATED
+    mock_prompt_get.assert_called_once_with(alias)
+    mock_prompt_update.assert_called_once()
+    assert response.json() == {
+        "alias": alias,
+        "project": project,
+        "template": new_template,
+        "sha": None,
+    }
+
+
+@pytest.mark.parametrize(
+    "alias, new_template, project",
+    [("nonexistent-prompt", "new-template-text", "existing-project")],
+)
+@patch.object(PromptTemplate, "get")
+def test_update_prompt_not_found(
+    mock_prompt_get,
+    alias,
+    new_template,
+    project,
+    test_client,
+):
+    """Test update prompt not found."""
+    mock_prompt_get.side_effect = DoesNotExist
+
+    response = test_client.put(
+        f"/api/v2/prompts/{alias}",
+        headers={"x-api-key": "1234"},
+        json={"template": new_template},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    mock_prompt_get.assert_called_once_with(alias)
+    assert response.json() == {"detail": f"Prompt {alias} not found in database"}
+
+
+@pytest.mark.parametrize(
+    "alias, new_template, project",
+    [("existing-prompt", "new-template-text", "existing-project")],
+)
+@patch.object(PromptTemplate, "get")
+@patch.object(PromptTemplate, "update")
+def test_update_prompt_unprocessable_entity(
+    mock_prompt_update,
+    mock_prompt_get,
+    alias,
+    new_template,
+    project,
+    test_client,
+):
+    """Test update prompt unprocessable entity."""
+    prompt = PromptTemplate(alias=alias, project=project, template="old-template")
+    mock_prompt_get.return_value = prompt
+    mock_prompt_update.side_effect = Exception("Update failed")
+
+    response = test_client.put(
+        f"/api/v2/prompts/{alias}",
+        headers={"x-api-key": "1234"},
+        json={"template": new_template},
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    mock_prompt_get.assert_called_once_with(alias)
+    mock_prompt_update.assert_called_once()
+    assert response.json() == {"detail": "Update failed"}
 
 
 @pytest.mark.parametrize(
@@ -63,7 +156,7 @@ def test_delete_prompt(
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == prompt.dict()
+    assert response.json() == prompt.model_dump()
     mock_prompt_delete.assert_called_once()
     mock_prompt_get.assert_called_with(alias)
 
@@ -84,7 +177,7 @@ def test_get_prompt(mock_prompt_get, alias, template, project, test_client):
     )
     # asserts
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == prompt.dict()
+    assert response.json() == prompt.model_dump()
     mock_prompt_get.assert_called_with(alias)
 
 
@@ -110,7 +203,7 @@ def test_generate(mock_generate, alias, model, values, test_client):
         headers={"x-api-key": "1234"},
         json=values,
     )
-    mock_generate.assert_called_with(alias, model, **values)
+    mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
     assert response.status_code == status.HTTP_200_OK
 
 

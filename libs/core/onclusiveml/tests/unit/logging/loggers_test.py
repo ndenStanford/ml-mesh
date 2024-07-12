@@ -13,11 +13,11 @@ from onclusiveml.core.logging import (
     OnclusiveLogMessageFormat,
     get_default_logger,
 )
-from onclusiveml.core.logging.constants import VALID_LOG_LEVELS
+from onclusiveml.core.logging.constants import LOG_LEVELS
 
 
-@pytest.mark.parametrize("level", VALID_LOG_LEVELS)
-@pytest.mark.parametrize("fmt_level", OnclusiveLogMessageFormat.list(names=True))
+@pytest.mark.parametrize("level", LOG_LEVELS)
+@pytest.mark.parametrize("fmt_level", OnclusiveLogMessageFormat.members())
 @pytest.mark.parametrize("json_format", [True, False])
 def test_get_default_logger(level, fmt_level, json_format):
     """Tests the get_default_logger method with all valid input configurations."""
@@ -41,7 +41,7 @@ def test_get_default_logger_message_format_with_custom_handler():
         service="test-service",
         name="test logger",
         level=logging.INFO,
-        fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+        fmt_level=OnclusiveLogMessageFormat.MESSAGE_ONLY,
         handler=logging.StreamHandler(buffer),
         json_format=True,
     )
@@ -57,54 +57,54 @@ def test_get_default_logger_message_format_with_custom_handler():
     "fmt_level, json_format, expected_log_entry",
     [
         (
-            OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+            OnclusiveLogMessageFormat.MESSAGE_ONLY,
             False,
             "testing logging format\n",
         ),
         (
-            OnclusiveLogMessageFormat.BASIC.name,
+            OnclusiveLogMessageFormat.BASIC,
             False,
             "INFO - testing logging format\n",
         ),
         (
-            OnclusiveLogMessageFormat.SIMPLE.name,
+            OnclusiveLogMessageFormat.SIMPLE,
             False,
             "dummy time stamp - INFO - testing logging format\n",
         ),
         (
-            OnclusiveLogMessageFormat.DETAILED.name,
+            OnclusiveLogMessageFormat.DETAILED,
             False,
             "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format\n",  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.DEFAULT.name,
+            OnclusiveLogMessageFormat.DEFAULT,
             False,
             "test logger - (testfile.py).test_function(1) - testing logging format\n",  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.MESSAGE_ONLY.name,
+            OnclusiveLogMessageFormat.MESSAGE_ONLY,
             True,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "testing logging format"}\n',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"testing logging format"}\n',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.BASIC.name,
+            OnclusiveLogMessageFormat.BASIC,
             True,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "INFO - testing logging format"}\n',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"INFO - testing logging format"}\n',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.SIMPLE.name,
+            OnclusiveLogMessageFormat.SIMPLE,
             True,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - INFO - testing logging format"}\n',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"dummy time stamp - INFO - testing logging format"}\n',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.DETAILED.name,
+            OnclusiveLogMessageFormat.DETAILED,
             True,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"dummy time stamp - [INFO] - test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
         ),
         (
-            OnclusiveLogMessageFormat.DEFAULT.name,
+            OnclusiveLogMessageFormat.DEFAULT,
             True,
-            '{"service": "test-service", "asctime": "dummy time stamp", "levelname": "INFO", "name": "test logger", "filename": "testfile.py", "funcName": "test_function", "lineno": 1, "message": "test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
+            '{"service":"test-service","asctime":"dummy time stamp","levelname":"INFO","name":"test logger","filename":"testfile.py","funcName":"test_function","lineno":1,"message":"test logger - (testfile.py).test_function(1) - testing logging format"}\n',  # noqa: E501
         ),
     ],
 )

@@ -1,11 +1,12 @@
 """Project."""
 
 # Standard Library
+import json
 from typing import Any, Dict
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, status
 
 # Internal libraries
 from onclusiveml.llms.prompt_validator import PromptInjectionException
@@ -41,6 +42,32 @@ def create_prompt(prompt: PromptTemplate):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Project {prompt.project} not found in database",
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+
+
+@router.put("/{alias}", status_code=status.HTTP_201_CREATED)
+def update_prompt(template: Dict[str, str], alias: str):
+    """Updates prompt in project.
+
+    Args:
+        template (str): updated prompt template.
+        alias (str): prompt alias.
+    """
+    try:
+        prompt = PromptTemplate.get(alias)
+    except DoesNotExist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Prompt {alias} not found in database",
+        )
+    try:
+        prompt.template = template["template"]
+        prompt.update()
+        return prompt
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -104,9 +131,7 @@ def list_prompts():
 
 @router.post("/{alias}/generate/model/{model}", status_code=status.HTTP_200_OK)
 def generate_text_from_prompt_template(
-    alias: str,
-    model: str,
-    values: Dict[str, Any],
+    alias: str, model: str, values: Dict[str, Any], model_parameters: str = Header(None)
 ):
     """Generates text using a prompt template with specific model.
 
@@ -114,9 +139,14 @@ def generate_text_from_prompt_template(
         alias (str): prompt alias
         model (str): model name
         values (Dict[str, Any]): values to fill in template.
+        model_parameters (Dict[str, Any]): Model parameters to override default values.
     """
     try:
-        return F.generate_from_prompt_template(alias, model, **values)
+        if model_parameters is not None:
+            model_parameters = json.loads(model_parameters)
+        return F.generate_from_prompt_template(
+            alias, model, **values, model_parameters=model_parameters
+        )
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

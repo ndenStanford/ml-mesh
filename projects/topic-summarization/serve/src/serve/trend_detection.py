@@ -12,7 +12,7 @@ from kats.detectors.cusum_detection import CUSUMDetector
 from pandas import Timestamp
 
 # Internal libraries
-from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
 
 # Source
 from src.serve.utils import (  # query_translation,
@@ -33,7 +33,8 @@ class TrendDetection:
         self.es = Elasticsearch(
             [
                 f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
-            ]
+            ],
+            timeout=settings.ES_TIMEOUT,
         )
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:

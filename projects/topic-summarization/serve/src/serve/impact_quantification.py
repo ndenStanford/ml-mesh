@@ -3,17 +3,18 @@
 
 # Standard Library
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 # 3rd party libraries
 import numpy as np
 import pandas as pd
 import pymannkendall as mk
 from elasticsearch import Elasticsearch
+from numpy.typing import ArrayLike
 from prophet import Prophet
 
 # Internal libraries
-from onclusiveml.data.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
 from onclusiveml.serving.serialization.topic_summarization.v1 import (
     ImpactCategoryLabel,
 )
@@ -38,16 +39,17 @@ class ImpactQuantification:
         self.es = Elasticsearch(
             [
                 f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
-            ]
+            ],
+            timeout=settings.ES_TIMEOUT,
         )
 
-    def decompose_trend(self, series_profile: List[float]) -> np.array:
+    def decompose_trend(self, series_profile: ArrayLike) -> ArrayLike:
         """Decomposes trend component of a given time series profile using prophet.
 
         Args:
-            series_profile (List[float]): time series queried from GCH
+            series_profile (ArrayLike): time series queried from GCH
         Output:
-            series_profile_trend (List[float]): time series trend from decomposition
+            series_profile_trend (ArrayLike): time series trend from decomposition
         """
         df = pd.DataFrame()
         df["ds"] = pd.date_range(start="1/1/2018", periods=len(series_profile))

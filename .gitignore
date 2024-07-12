@@ -17,6 +17,9 @@ projects/**/serve/models/
 # project component caches
 projects/**/**/projects
 
+# test configurations for data lib
+test-config-dir/
+
 # C extensions
 *.so
 
@@ -247,3 +250,6 @@ projects/ner/serve/projects/ner/serve/nltk_data
 projects/sentiment/compile/projects/sentiment/compile/nltk_data
 projects/sentiment/serve/projects/sentiment/serve/nltk_data
 *.keras
+
+# pytype
+.pytype/

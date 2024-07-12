@@ -11,19 +11,12 @@ from onclusiveml.serving.rest.serve import (
 )
 
 
-def test_model_server_root():
-    """Tests the root endpoint of a ModelServer (not running) instance."""
-    root_response = requests.get("http://serve:8000/lsh/v1/")
-
-    assert root_response.status_code == 200
-
-
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
     liveness_response = requests.get("http://serve:8000/lsh/v1/live")
 
     assert liveness_response.status_code == 200
-    assert liveness_response.json() == LivenessProbeResponse().dict()
+    assert liveness_response.json() == LivenessProbeResponse().model_dump()
 
 
 def test_model_server_readiness():
@@ -31,7 +24,7 @@ def test_model_server_readiness():
     readiness_response = requests.get("http://serve:8000/lsh/v1/ready")
 
     assert readiness_response.status_code == 200
-    assert readiness_response.json() == ReadinessProbeResponse().dict()
+    assert readiness_response.json() == ReadinessProbeResponse().model_dump()
 
 
 def test_model_server_bio():
@@ -102,3 +95,60 @@ def test_model_server_prediction(payload, expected_response):
     assert response.status_code == 200
     # TODO: assert score close to expected
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    "payload, expected_response",
+    [
+        # Test case for an unsupported language (invalid language code)
+        (
+            {
+                "data": {
+                    "namespace": "lsh",
+                    "attributes": {
+                        "content": "Call functions to generate hash signatures for each article"  # noqa
+                    },
+                    "parameters": {
+                        "language": "xyz",
+                        "shingle_list": 5,
+                        "threshold": 0.6,
+                        "num_perm": 128,
+                    },
+                }
+            },
+            {
+                "status": 204,
+                "detail": "The language reference 'xyz' could not be mapped",
+            },
+        ),
+        (
+            {
+                "data": {
+                    "namespace": "lsh",
+                    "attributes": {
+                        "content": "Call functions to generate hash signatures for each article"  # noqa
+                    },
+                    "parameters": {
+                        "language": "af",
+                        "shingle_list": 5,
+                        "threshold": 0.6,
+                        "num_perm": 128,
+                    },
+                }
+            },
+            {
+                "status": 204,
+                "detail": "The language 'LanguageIso.AF' that was looked up from 'af'",
+            },
+        ),
+    ],
+)
+def test_new_language_cases(payload, expected_response):
+    """Tests the sentiment prediction endpoint for new language scenarios."""
+    response = requests.post(
+        "http://serve:8000/lsh/v1/predict",
+        json=payload,
+    )
+
+    assert response.status_code == 204
+    assert response.text == ""

@@ -1,5 +1,4 @@
 ---
-version : '3.9'
 
 services:
   # =====================================================
@@ -10,7 +9,10 @@ services:
       context: ../../
       dockerfile: apps/prompt/frontend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
@@ -31,7 +33,6 @@ services:
       context: ../../
       dockerfile: apps/prompt/frontend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
@@ -53,7 +54,10 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
@@ -61,7 +65,13 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG:-latest}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [backend]
+    profiles: [backend, functional]
+    healthcheck:
+      test: [CMD-SHELL, sleep 60s || exit 1]
+      interval: 1m30s
+      retries: 3
+      start_period: 1m
+      timeout: 1m10s
     ports:
       - 4000:4000
     environment:
@@ -86,7 +96,6 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
@@ -106,6 +115,41 @@ services:
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
       VALIDATE_PROMPT_INJECTION: true
+    networks:
+      - onclusive-net
+
+  backend-functional:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
+    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    profiles: [functional]
+    environment:
+      ENVIRONMENT: dev
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
+      DOCS_URL: /docs
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DYNAMODB_HOST: http://dynamodb:8000
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+      AWS_PROFILE: dev
+      VALIDATE_PROMPT_INJECTION: true
+    depends_on:
+      backend:
+        condition: service_healthy
+      dynamodb:
+        condition: service_healthy
+      redisdb:
+        condition: service_healthy
     networks:
       - onclusive-net
 
@@ -150,7 +194,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [backend, integration]
+    profiles: [backend, functional, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -169,7 +213,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [backend, integration]
+    profiles: [backend, functional, integration]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.

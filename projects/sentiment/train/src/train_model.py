@@ -33,7 +33,7 @@ def main() -> None:
     if not os.path.isdir(model_card.local_output_dir):
         os.makedirs(model_card.local_output_dir)
     # initialize registered model on neptune ai
-    model_version = TrackedModelVersion(**model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
     # --- initialize models
     # get pretrained model and tokenizer
     logger.info("Initializing model and tokenizer")
@@ -52,7 +52,7 @@ def main() -> None:
         tokenizer=tokenizer,
     )
     # sent settings
-    sent_settings = model_card.model_params.sent_settings.dict()
+    sent_settings = model_card.model_params.sent_settings.model_dump()
     # --- create prediction files
     logger.info("Making predictions from example inputs")
     sent_predictions: List[Dict[str, Union[str, float, int]]] = hf_pipeline(
@@ -83,7 +83,7 @@ def main() -> None:
     )
     # model card
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     model_version.stop()

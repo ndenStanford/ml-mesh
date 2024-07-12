@@ -20,7 +20,7 @@ settings = get_settings()
 
 def test_model_bio(translation_model):
     """Model bio test."""
-    assert translation_model.bio().dict() == {
+    assert translation_model.bio().model_dump() == {
         "version": 1,
         "data": {
             "namespace": "translation",

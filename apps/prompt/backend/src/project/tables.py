@@ -5,12 +5,12 @@ import os
 
 # 3rd party libraries
 from dyntastic import Dyntastic
-from pydantic import validator
+from pydantic import field_validator
 
 # Source
 from src.extensions.github import github
 from src.project.constants import PROJECT_NAME_FORBIDDEN_CHARACTERS
-from src.project.exceptions import ProjectInvalidAlias
+from src.project.exceptions import ProjectInvalidAlias, ProjectTokenExceedAlias
 from src.settings import get_settings
 
 
@@ -27,7 +27,7 @@ class Project(Dyntastic):
 
     alias: str
 
-    @validator("alias")
+    @field_validator("alias")
     def validate_alias(cls, value) -> str:
         """Validates the alias.
 

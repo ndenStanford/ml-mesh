@@ -3,7 +3,7 @@
 
 # Standard Library
 import re
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional, Tuple
 
 # 3rd party libraries
 import requests
@@ -53,29 +53,41 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
+
         return q
 
-    def topic_inference(self, articles: List[str]) -> Dict[str, str]:
+    def topic_inference(
+        self, articles: List[str], entity_list: Optional[str] = None
+    ) -> Dict[str, str]:
         """LLM inference function for the articles.
 
         Args:
             articles(list): list of str
+            entity_list(Optional[str]): string representing a list of entities in the query
         Output:
             topic summary & impact(dict): dict[str,str]
         """
-        topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
-        topic_alias_gpt = settings.GPT_TOPIC_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
         }
 
-        input_dict = {
-            "input": {
-                "articles": processed_article,
-            },
-            "output": settings.TOPIC_RESPONSE_SCHEMA,
-        }
+        if entity_list:
+            topic_alias_claude = settings.CLAUDE_TOPIC_WITH_ENTITY_ALIAS
+            topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_ALIAS
+            input_dict = {
+                "input": {"articles": processed_article, "entity_list": entity_list},
+                "output": settings.TOPIC_RESPONSE_SCHEMA,
+            }
+        else:
+            topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
+            topic_alias_gpt = settings.GPT_TOPIC_ALIAS
+            input_dict = {
+                "input": {
+                    "articles": processed_article,
+                },
+                "output": settings.TOPIC_RESPONSE_SCHEMA,
+            }
 
         output_content = None
         try:
@@ -92,27 +104,74 @@ class TopicHandler:
 
         return output_content
 
-    def summary_inference(self, articles: List[str]) -> Dict[str, str]:
+    def entity_query_extract(self, boolean_query: str) -> str:
+        """Extract entity from boolean query.
+
+        Args:
+            boolean_query(str): boolean query
+        Output:
+            entity_list (str): entity list represented by string
+        """
+        entity_query_alias_claude = settings.CLAUDE_QUERY_ENTITY_EXTRACTION_ALIAS
+        entity_query_alias_gpt = settings.GPT_QUERY_ENTITY_EXTRACTION_ALIAS
+
+        input_dict = {
+            "input": {
+                "query": boolean_query,
+            },
+            "output": settings.ENTITY_RESPONSE_SCHEMA,
+        }
+
+        output_content = None
+        try:
+            q = self.call_api(
+                entity_query_alias_claude, settings.HAIKU_CLAUDE_MODEL, input_dict
+            )
+            output_content = json.loads(q.content)
+            if not isinstance(output_content, dict):
+                raise ValueError("Claude topic response is not a valid string")
+        except Exception as e:
+            logging.error(f"Failed with Claude in Topic: {e}")
+
+        if (not output_content) or not isinstance(output_content, dict):
+            q = self.call_api(entity_query_alias_gpt, settings.GPT_MODEL, input_dict)
+            output_content = json.loads(q.content)
+
+        entity_list = output_content["entity_list"]
+        return entity_list
+
+    def summary_inference(
+        self, articles: List[str], entity_list: Optional[str] = None
+    ) -> Dict[str, str]:
         """LLM summary inference function for the articles.
 
         Args:
             articles(list): list of str
+            entity_list(Optional[str]): string representing a list of entities in the query
         Output:
             summary & theme(dict): dict[str,str]
         """
-        summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
-        summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
         # transfer article to the format used in prompt
         processed_article = {
             f"Article {i}": article for i, article in enumerate(articles)
         }
 
-        input_dict = {
-            "input": {
-                "articles": processed_article,
-            },
-            "output": settings.SUMMARY_RESPONSE_SCHEMA,
-        }
+        if entity_list:
+            summary_alias_claude = settings.CLAUDE_SUMMARY_WITH_ENTITY_ALIAS
+            summary_alias_gpt = settings.GPT_SUMMARY_WITH_ENTITY_ALIAS
+            input_dict = {
+                "input": {"articles": processed_article, "entity_list": entity_list},
+                "output": settings.SUMMARY_RESPONSE_SCHEMA,
+            }
+        else:
+            summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
+            summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
+            input_dict = {
+                "input": {
+                    "articles": processed_article,
+                },
+                "output": settings.SUMMARY_RESPONSE_SCHEMA,
+            }
 
         output_content = None
         try:
@@ -163,23 +222,65 @@ class TopicHandler:
 
         return final_topic
 
+    def summary_quality(self, summary: str, entities: str) -> bool:
+        """Return whether quality of summary is good or bad.
+
+        Args:
+            summary(str): high level topic summary
+            entities(str): entity list represented by string
+        Output:
+            bool (str): quality of summary is good or bad
+        """
+        input_dict = {
+            "input": {"summary": summary, "entities": entities},
+            "output": settings.SUMMARY_QUALITY_RESPONSE_SCHEMA,
+        }
+
+        q = self.call_api(
+            settings.CLAUDE_SUMMARY_QUALITY_ALIAS, settings.DEFAULT_MODEL, input_dict
+        )
+        output_content = json.loads(q.content)
+        not_different_themes = (
+            output_content.get("different_themes", "").lower() == "no"
+        )
+        entities_related = output_content.get("entities_related", "").lower() == "yes"
+
+        if entities == "[]":
+            return not_different_themes
+        else:
+            return not_different_themes and entities_related
+
     def aggregate(
-        self, article: List[str]
-    ) -> Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]:
+        self, article: List[str], boolean_query: Optional[str] = None
+    ) -> Tuple[
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
+        Union[bool, None],
+    ]:
         """Aggregate topic & summary results together.
 
         Args:
             article(list): list of str
+            boolean_query(Optional[bool]): boolean query
         Output:
             merged_result (dict): dict
         """
         article = self.pre_process(article)
-        topic_result = self.topic_inference(article)
+
+        if boolean_query is not None:
+            entity_list = self.entity_query_extract(boolean_query)
+        else:
+            entity_list = None
+
+        topic_result = self.topic_inference(article, entity_list)
         topic_final_result = self.post_process(topic_result)
-        summary_result = self.summary_inference(article)
+        summary_result = self.summary_inference(article, entity_list)
+        topic_summary_quality = self.summary_quality(
+            summary_result["summary"], entity_list or "[]"
+        )
+
         merged_result: Dict[
             str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]
         ] = {}
         merged_result.update(topic_final_result)
         merged_result.update(summary_result)
-        return merged_result
+        return (merged_result, topic_summary_quality)

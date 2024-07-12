@@ -3,11 +3,9 @@
 # Standard Library
 from typing import Any, Dict, List, Optional, Type
 
-# 3rd party libraries
-from pydantic import BaseModel
-
 # Internal libraries
-from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.core.base import OnclusiveBaseModel
+from onclusiveml.models.sentiment import CompiledSentiment
 from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
@@ -32,14 +30,14 @@ class ServedSentModel(ServedModel):
     """Served Sent model.
 
     Attributes:
-        predict_request_model (Type[BaseModel]):  Request model for prediction
-        predict_response_model (Type[BaseModel]): Response model for prediction
-        bio_response_model (Type[BaseModel]): Response model for bio
+        predict_request_model (Type[OnclusiveBaseModel]):  Request model for prediction
+        predict_response_model (Type[OnclusiveBaseModel]): Response model for prediction
+        bio_response_model (Type[OnclusiveBaseModel]): Response model for bio
     """
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self, served_model_artifacts: ServedModelArtifacts):
         """Initalize the served Sent model with its artifacts.
@@ -53,7 +51,7 @@ class ServedSentModel(ServedModel):
         # self.load()  # FOR LOCAL TESTING ONLY, REMOVE FOR PRODUCTION
 
     @property
-    def model(self) -> CompiledSent:
+    def model(self) -> CompiledSentiment:
         """Model class."""
         if self.ready:
             return self._model
@@ -63,8 +61,8 @@ class ServedSentModel(ServedModel):
 
     def load(self) -> None:
         """Load the model artifacts and prepare the model for prediction."""
-        # load model artifacts into ready CompiledSent instance
-        self._model = CompiledSent.from_pretrained(
+        # load model artifacts into ready CompiledSentiment instance
+        self._model = CompiledSentiment.from_pretrained(
             self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
@@ -93,7 +91,7 @@ class ServedSentModel(ServedModel):
                 content=attributes.content,
                 entities=entities,
                 language=parameters.language,
-                additional_params=parameters.dict(),
+                additional_params=parameters.model_dump(),
             )
         except (
             LanguageDetectionException,

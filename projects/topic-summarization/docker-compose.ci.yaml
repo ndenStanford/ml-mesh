@@ -1,5 +1,4 @@
 ---
-version : '3.9'
 
 services:
   # =============================================
@@ -10,7 +9,10 @@ services:
       context: ../../
       dockerfile: projects/topic-summarization/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-serve,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic-summarization
@@ -36,6 +38,7 @@ services:
       MEDIA_CLIENT_SECRET: ${MEDIA_CLIENT_SECRET}
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
       ENVIRONMENT: prod
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     env_file: serve/config/prod.env
     healthcheck:
       test: [CMD, curl, -f, http://serve:8888/topic-summarization/v1/ready]
@@ -55,6 +58,8 @@ services:
     command: [pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
+    environment:
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     networks:
       - onclusive-net
 
@@ -73,6 +78,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: prod
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     env_file: serve/config/test.env
     depends_on:
       prompt-backend:
@@ -99,6 +105,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: prod
+      DYNAMODB_TABLE_NAME: topic-summary-dev-1
     env_file: serve/config/test.env
     depends_on:
       serve:
@@ -114,7 +121,6 @@ services:
       context: ../../
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
@@ -199,7 +205,10 @@ services:
       context: ../../
       dockerfile: projects/topic-summarization/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
-      network: host
+      cache_to:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-backfill,mode=max
+      cache_from:
+        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=topic-summarization-backfill
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic-summarization

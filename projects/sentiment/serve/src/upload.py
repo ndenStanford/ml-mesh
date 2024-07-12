@@ -29,7 +29,12 @@ def main(settings: GlobalSettings) -> None:
     model_version_specs = cast(settings, TrackedCompiledModelSpecs)
     docker_image_specs = cast(settings, TrackedImageSpecs)
     # initialize client for specific model version
-    mv = TrackedModelVersion(**model_version_specs.dict())
+    mv = TrackedModelVersion(
+        with_id=model_version_specs.with_id,
+        mode=model_version_specs.mode,
+        api_token=model_version_specs.api_token.get_secret_value(),
+        project=model_version_specs.project,
+    )
 
     test_results_neptune_attribute_path = (
         f"model/test_results/{settings.docker_image_tag}"
@@ -50,12 +55,12 @@ def main(settings: GlobalSettings) -> None:
     )
 
     mv.upload_config_to_model_version(
-        config=github_action_specs.dict(),
+        config=github_action_specs.model_dump(),
         neptune_attribute_path=f"{test_results_neptune_attribute_path}/github_action_context.json",
     )
     # upload the docker image specs .json
     mv.upload_config_to_model_version(
-        config=docker_image_specs.dict(),
+        config=docker_image_specs.model_dump(),
         neptune_attribute_path=f"{test_results_neptune_attribute_path}/serve_image_specs.json",
     )
     # shutdown client

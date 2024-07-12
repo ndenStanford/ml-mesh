@@ -42,13 +42,6 @@ repos                   :
   # PYTHON
   # =================================
 
-  # python formatter
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-        files: ^(libs|docker|projects|apps)/.*\.py$
-
   # Lint: Python
   - repo: https://github.com/PyCQA/flake8
     rev: 4.0.1
@@ -57,18 +50,12 @@ repos                   :
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
         exclude: ^(libs/serving/onclusiveml/serving/rest/serve/server_utils\.py)
 
-  # static type checking
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.991
+  # python formatter
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
     hooks:
-      - id: mypy
-        files: ^(libs|projects)/.*\.py$
-        exclude:
-          ^(libs/.*/tests/|projects/.*/tests|projects/.*/test_compiled_model|projects/.*/settings.py|projects/topic-summarization/serve/src/serve/model.py|projects/topic-summarization/backfill/src/__init__.py|projects/entity-linking/backfill/src/backfill/__init__.py|projects/entity-linking/backfill/src/backfill/__main__.py|projects/entity-linking/backfill/src/backfill/pipeline.py|projects/gch-summarization/train/src/train_model.py|projects/gch-summarization/train/src/__init__.py|projects/gch-summarization/serve/src/serve/__init__.py|projects/gch-summarization/serve/src/__init__.py|projects/gch-summarization/serve/src/download.py|projects/gch-summarization/serve/src/serve/__main__.py|projects/gch-summarization/serve/src/serve/artifacts.py|projects/gch-summarization/serve/src/serve/model.py|projects/gch-summarization/serve/src/serve/schemas.py|projects/gch-summarization/serve/src/serve/server.py|projects/content-scoring/train/src/train_model.py|projects/iptc-multi/serve/src/serve/__main__.py|projects/iptc-multi/serve/src/serve/schemas.py|projects/summarization/serve/src/serve/__main__.py|libs/models/onclusiveml/models/bela/|libs/models/onclusiveml/models/multiel/|projects/transcript-segmentation/serve/src/serve/exceptions.py)
-        args:
-          - --explicit-package-bases
-          - --no-warn-unused-ignores
-        additional_dependencies: [types-requests]
+      - id: black
+        files: ^(libs|docker|projects|apps)/.*\.py$
 
   # isort
   - repo: https://github.com/pycqa/isort

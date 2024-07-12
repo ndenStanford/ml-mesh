@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Tuple, Union
 import torch
 
 # 3rd party libraries
-import faiss
 import numpy as np
 from redis.commands.search.query import Query
 from tqdm import tqdm
@@ -79,7 +78,6 @@ class BelaModel:
         self,
         checkpoint_path,
         config_name="joint_el_mel",
-        embeddings_path=None,
         ent_catalogue_idx_path=None,
         device="cuda:0",
     ):
@@ -88,7 +86,6 @@ class BelaModel:
         Args:
             checkpoint_path (str): Path to the checkpoint file.
             config_name (str, optional): Name of the configuration. Defaults to "joint_el_mel".
-            embeddings_path (str, optional): Path to the embeddings file. Defaults to None.
             ent_catalogue_idx_path (str, optional): Path to the entity catalogue
                                                     index file. Defaults None.
             device (str, optional): Device to use for computations. Defaults to "cuda:0".
@@ -98,7 +95,6 @@ class BelaModel:
         logger.info("Create task")
         # Load configuration using Pydantic
         settings.task.load_from_checkpoint = checkpoint_path
-        settings.task.embeddings_path = embeddings_path or settings.task.embeddings_path
         settings.datamodule.ent_catalogue_idx_path = (
             ent_catalogue_idx_path or settings.datamodule.ent_catalogue_idx_path
         )
@@ -126,15 +122,12 @@ class BelaModel:
             optim=settings.task.optim,
             only_train_disambiguation=settings.task.only_train_disambiguation,
             train_saliency=settings.task.train_saliency,
-            embeddings_path=settings.task.embeddings_path,
-            use_gpu_index=settings.task.use_gpu_index,
             load_from_checkpoint=settings.task.load_from_checkpoint,
         )
 
         self.task.setup("train")
         self.task = self.task.eval()
         self.task = self.task.to(self.device)
-        self.embeddings = self.task.embeddings
         # Connect to Redis vector store
         self.client = get_client(
             url=settings.redis.REDIS_CONNECTION_STRING.get_secret_value()
@@ -151,22 +144,6 @@ class BelaModel:
         for ent in datamodule.ent_catalogue.idx:
             self.ent_idx.append(ent)
 
-    def create_gpu_index(self, gpu_id=0):
-        """Create a GPU-based Faiss index.
-
-        Args:
-            self: The instance of the class.
-            gpu_id (int, optional): The ID of the GPU to use. Defaults to 0.
-        """
-        flat_config = faiss.GpuIndexFlatConfig()
-        flat_config.device = gpu_id
-        flat_config.useFloat16 = True
-
-        res = faiss.StandardGpuResources()
-
-        self.faiss_index = faiss.GpuIndexFlatIP(res, embeddings.shape[1], flat_config)
-        self.faiss_index.add(self.embeddings)
-
     def lookup_faiss(
         self,
         query: torch.Tensor,
@@ -181,12 +158,11 @@ class BelaModel:
 
         return scores.squeeze(-1).to(self.device), indices.squeeze(-1).to(self.device)
 
-    def lookup(self, query: torch.Tensor, ef_runtime: int = 200):
+    def lookup(self, query: torch.Tensor):
         """Search for nearest neighbors in the Redis index.
 
         Args:
             query (torch.Tensor): Tensor containing query vectors.
-            ef_runtime (int): EF Runtime parameter for HNSW.
         """
         results_scores = []
         results_indices = []
@@ -321,6 +297,93 @@ class BelaModel:
 
         return predictions
 
+    def apply_transformation_with_max_mention_pos(
+        self,
+        texts,
+        mention_offsets,
+        mention_lengths,
+        entities,
+        transform,
+        max_mention_token_pos_in_text=192,
+    ):
+        """Apply transformations to a batch of texts with respect to maximum mention position.
+
+        Args:
+            self: The instance of the class.
+            texts (list of str): A list of texts to be processed.
+            mention_offsets (list of list of int): A list of mention offsets for each text.
+            mention_lengths (list of list of int): A list of mention lengths for each text.
+            entities (list of list of int): A list of entity identifiers corresponding to mentions.
+            transform (callable): A transformation function to apply to the texts.
+            max_mention_token_pos_in_text (int, optional): The maximum allowed token position
+                for a mention within a text. Defaults to 192.
+
+        Returns:
+            dict: A dictionary containing the transformed texts, mention offsets,
+                mention lengths, and entities.
+        """
+        old_max_seq_len = transform.max_seq_len
+        transform.max_seq_len = (
+            10000  # temporarily set to a large number to get the full token boundaries
+        )
+
+        transformed_texts = []
+        transformed_mention_offsets = []
+        transformed_mention_lengths = []
+        transformed_entities = []
+
+        for text, offsets, lengths, ents in zip(
+            texts, mention_offsets, mention_lengths, entities
+        ):
+            new_mention_offsets = []
+            new_mention_lengths = []
+            new_entities = []
+
+            outputs = transform(dict(texts=[text]))
+            sp_token_boundaries = outputs["sp_tokens_boundaries"][0]
+
+            offset = offsets[0]
+            length = lengths[0]
+            ent = ents[0]
+            token_pos = 0
+            while (
+                token_pos < len(sp_token_boundaries)
+                and offset >= sp_token_boundaries[token_pos][1]
+            ):
+                token_pos += 1
+
+            new_text = text
+            new_offset = offset
+            if token_pos > max_mention_token_pos_in_text:
+                shift = sp_token_boundaries[token_pos - max_mention_token_pos_in_text][
+                    0
+                ].item()
+                new_text = text[shift:]
+                new_offset = offset - shift
+
+            assert (
+                text[offset : offset + length]  # noqa
+                == new_text[new_offset : new_offset + length]  # noqa
+            )
+
+            new_mention_offsets.append(new_offset)
+            new_mention_lengths.append(length)
+            new_entities.append(ent)
+
+            transformed_texts.append(new_text)
+            transformed_mention_offsets.append(new_mention_offsets)
+            transformed_mention_lengths.append(new_mention_lengths)
+            transformed_entities.append(new_entities)
+
+        transform.max_seq_len = old_max_seq_len
+
+        return {
+            "texts": transformed_texts,
+            "mention_offsets": transformed_mention_offsets,
+            "mention_lengths": transformed_mention_lengths,
+            "entities": transformed_entities,
+        }
+
     def process_disambiguation_batch(
         self, texts, mention_offsets, mention_lengths, entities
     ):
@@ -342,7 +405,17 @@ class BelaModel:
             "mention_lengths": mention_lengths,
             "entities": entities,
         }
-        model_inputs = self.transform(batch)
+
+        # Apply transformation with max mention position logic
+        transformed_batch = self.apply_transformation_with_max_mention_pos(
+            texts=batch["texts"],
+            mention_offsets=batch["mention_offsets"],
+            mention_lengths=batch["mention_lengths"],
+            entities=batch["entities"],
+            transform=self.transform,
+        )
+
+        model_inputs = self.transform(transformed_batch)
 
         token_ids = model_inputs["input_ids"].to(self.device)
         mention_offsets = model_inputs["mention_offsets"]

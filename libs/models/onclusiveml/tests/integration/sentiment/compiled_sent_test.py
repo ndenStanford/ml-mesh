@@ -9,7 +9,7 @@ from pytest_lazyfixture import lazy_fixture
 
 # Internal libraries
 from onclusiveml.core.logging import LogFormat, get_default_logger
-from onclusiveml.models.sentiment import CompiledSent
+from onclusiveml.models.sentiment import CompiledSentiment
 
 
 logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
@@ -24,7 +24,7 @@ logger = get_default_logger(__name__, level=20, fmt=LogFormat.DETAILED.value)
 )
 def test_compiled_sent_extract_sent(compiled_sent_pipeline, test_documents):
     """Test compiled sentiment extracted sentiment."""
-    compiled_sent = CompiledSent(compiled_sent_pipeline=compiled_sent_pipeline)
+    compiled_sent = CompiledSentiment(compiled_sent_pipeline=compiled_sent_pipeline)
 
     test_compiled_sent = compiled_sent.extract_sentiment(test_documents)
     assert len(test_compiled_sent) > 0
@@ -42,7 +42,7 @@ def test_compiled_sent_save_pretrained_from_pretrained(
 ):
     """Test compiled sentiment save pretrained from pretrained."""
     # initialize with constructor and score
-    compiled_sent = CompiledSent(
+    compiled_sent = CompiledSentiment(
         compiled_sent_pipeline=compiled_sent_pipeline,
     )
 
@@ -50,7 +50,7 @@ def test_compiled_sent_save_pretrained_from_pretrained(
 
     # save, load and score again
     compiled_sent.save_pretrained("./test")
-    compiled_sent_reloaded = CompiledSent.from_pretrained("./test")
+    compiled_sent_reloaded = CompiledSentiment.from_pretrained("./test")
 
     test_compiled_sentiment_reloaded = compiled_sent_reloaded.extract_sentiment(
         test_documents

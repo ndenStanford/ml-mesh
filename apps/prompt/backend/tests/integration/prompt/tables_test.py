@@ -27,7 +27,34 @@ def test_save(alias, template, project, app):
     prompt = PromptTemplate(alias=alias, template=template, project=project)
     prompt.save()
 
+    assert PromptTemplate.get(alias).model_dump_json() == prompt.model_dump_json()
+    assert os.path.join(project, alias) in github.ls(project)
+
+
+@pytest.mark.parametrize(
+    "alias, original_template, new_template, project",
+    [
+        ("prompt-13", "input: {old_text}", "input: {new_text}", "integration-test-1"),
+    ],
+)
+@pytest.mark.order(15)
+def test_update_prompt(alias, original_template, new_template, project, app):
+    """Test update method."""
+    with pytest.raises(DoesNotExist):
+        _ = PromptTemplate.get(alias)
+
+    prompt = PromptTemplate(alias=alias, template=original_template, project=project)
+    prompt.save()
+
     assert PromptTemplate.get(alias).json() == prompt.json()
+
+    prompt.template = new_template
+
+    prompt.update()
+
+    updated_prompt = PromptTemplate.get(alias)
+    assert updated_prompt.template == new_template
+
     assert os.path.join(project, alias) in github.ls(project)
 
 
@@ -41,9 +68,9 @@ def test_save(alias, template, project, app):
 def test_delete(alias, template, project, app):
     """Test delete method."""
     prompt = PromptTemplate(alias=alias, template=template, project=project)
-    assert PromptTemplate.get(alias).json(exclude={"sha"}) == prompt.json(
+    assert PromptTemplate.get(alias).model_dump_json(
         exclude={"sha"}
-    )
+    ) == prompt.model_dump_json(exclude={"sha"})
 
     prompt.delete()
 

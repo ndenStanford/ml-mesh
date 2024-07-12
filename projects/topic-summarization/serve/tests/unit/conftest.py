@@ -35,6 +35,56 @@ def mock_responses():
 
 
 @pytest.fixture
+def mock_responses_entity_extraction():
+    """Mock response for request.post."""
+    mock_response = MagicMock()
+
+    # The value for each key in the inner JSON object
+    value_dict = {
+        "entity_list": "['entity']",
+    }
+    # Manually construct the inner JSON string
+    value_str = json.dumps(value_dict)
+
+    # Create the final string
+    mock_response.content = value_str
+    return mock_response
+
+
+@pytest.fixture
+def mock_responses_summary_quality():
+    """Mock response for summary quality."""
+    mock_response = MagicMock()
+
+    # The value for each key in the inner JSON object
+    value_dict = {"different_themes": "yes", "entities_related": "no"}
+    # Manually construct the inner JSON string
+    value_str = json.dumps(value_dict)
+
+    # Create the final string
+    mock_response.content = value_str
+    return mock_response
+
+
+@pytest.fixture
+def mock_responses_summary_theme():
+    """Mock response for summary and theme."""
+    mock_response = MagicMock()
+
+    # The value for each key in the inner JSON object
+    value_dict = {
+        "summary": "The articles do not contain any information about Elon Musk.",
+        "theme": "N/A",
+    }
+    # Manually construct the inner JSON string
+    value_str = json.dumps(value_dict)
+
+    # Create the final string
+    mock_response.content = value_str
+    return mock_response
+
+
+@pytest.fixture
 def mock_claude_fail_output():
     """Mock response for claude failure."""
     return None
@@ -49,6 +99,12 @@ def mock_reponses_production_tool():
     mock_response.json.return_value = mock_response_data
     mock_response.status_code = 200
     return mock_response
+
+
+@pytest.fixture
+def boolean_query_input():
+    """Input boolean query."""
+    return """("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print"""  # noqa: E501
 
 
 @pytest.fixture

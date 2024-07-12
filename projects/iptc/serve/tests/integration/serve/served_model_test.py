@@ -68,9 +68,9 @@ def test_served_iptc_model_predict(
     )
 
     actual_output = served_iptc_model.predict(input)
-    output_data = actual_output.dict()["data"]
+    output_data = actual_output.model_dump()["data"]
     actual_output = PredictResponseSchema.from_data(
-        version=actual_output.dict()["version"],
+        version=actual_output.model_dump()["version"],
         namespace=output_data["namespace"],
         attributes={"iptc": [output_data["attributes"]["iptc"][0]]},
     )

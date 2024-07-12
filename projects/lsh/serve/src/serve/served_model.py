@@ -1,14 +1,17 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type
-
-# 3rd party libraries
-from pydantic import BaseModel
+from typing import List, Type
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.hashing.lsh import LshHandler
-from onclusiveml.serving.rest.serve import ServedModel
+from onclusiveml.nlp.language import filter_language
+from onclusiveml.nlp.language.lang_exception import (
+    LanguageDetectionException,
+    LanguageFilterException,
+)
+from onclusiveml.serving.rest.serve import OnclusiveHTTPException, ServedModel
 
 # Source
 from src.serve.schemas import (
@@ -25,9 +28,9 @@ settings = get_settings()
 class ServedLshModel(ServedModel):
     """Served LSH model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def __init__(self) -> None:
         super().__init__(name="lsh")
@@ -47,12 +50,25 @@ class ServedLshModel(ServedModel):
         # extract inputs data and inference specs from incoming payload
         inputs = payload.attributes
         configuration = payload.parameters
+        shingle_list = configuration.shingle_list
+        num_perm = configuration.num_perm
+        threshold = configuration.threshold
 
-        words = self.model.pre_processing(
-            text=inputs.content, lang=configuration.language
-        )
-
-        shingle_list = self.model.k_shingle(words, k=configuration.shingle_list)
+        try:
+            shingle_list = self._predict(
+                content=inputs.content,
+                language=configuration.language,
+                shingle_list=shingle_list,
+                num_perm=num_perm,
+                threshold=threshold,
+            )
+        except (
+            LanguageDetectionException,
+            LanguageFilterException,
+        ) as language_exception:
+            raise OnclusiveHTTPException(
+                status_code=204, detail=language_exception.message
+            )
         if len(shingle_list) < 1:
             return PredictResponseSchema.from_data(
                 version=int(settings.api_version[1:]),
@@ -62,8 +78,8 @@ class ServedLshModel(ServedModel):
 
         signature = self.model.generate_lsh_signature(
             shingle_list=shingle_list,
-            num_perm=configuration.num_perm,
-            threshold=configuration.threshold,
+            num_perm=num_perm,
+            threshold=threshold,
         )
 
         return PredictResponseSchema.from_data(
@@ -71,6 +87,22 @@ class ServedLshModel(ServedModel):
             namespace=settings.model_name,
             attributes={"signature": signature},
         )
+
+    @filter_language(
+        supported_languages=settings.supported_languages,
+        raise_if_none=True,
+    )
+    def _predict(
+        self,
+        content: str,
+        language: str,
+        shingle_list: int,
+        num_perm: int,
+        threshold: float,
+    ) -> List[str]:
+        """Language filtering."""
+        words = self.model.pre_processing(text=content, lang=language)
+        return self.model.k_shingle(words, k=shingle_list)
 
     def bio(self) -> BioResponseSchema:
         """Get bio information about the served Sentiment model.
