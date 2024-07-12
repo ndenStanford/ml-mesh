@@ -20,22 +20,20 @@ from src.serve.utils import (  # query_translation,
     remove_weekends,
     topic_profile_query,
 )
-import src.settings
 from src.settings import get_settings
 
-src.settings.get_settings_clear_cache()
+settings = get_settings()
 
 
 class TrendDetection:
     """Trend detection class used to find trend of a given profile and topic."""
 
     def __init__(self) -> None:
-        self.settings = get_settings()
         self.es = Elasticsearch(
             [
-                f"https://crawler-prod:{self.settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
+                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
             ],
-            timeout=self.settings.ES_TIMEOUT,
+            timeout=settings.ES_TIMEOUT,
         )
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -87,7 +85,7 @@ class TrendDetection:
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results_all_profile_query = self.es.search(
-            index=self.settings.es_index,
+            index=settings.es_index,
             body=all_profile_query(query, start_time, end_time, trend_time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
         if len(results_all_profile_query) > 0:
@@ -102,7 +100,7 @@ class TrendDetection:
 
         # profile topic query
         results_topic_profile_query = self.es.search(
-            index=self.settings.es_index,
+            index=settings.es_index,
             body=topic_profile_query(
                 query, start_time, end_time, topic_id, trend_time_interval
             ),

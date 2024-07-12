@@ -6,14 +6,24 @@ from unittest.mock import patch
 import pytest
 from freezegun import freeze_time
 
+# Apply patches before any other imports
+patcher_generate = patch("src.settings.generate_crawler_indices")
+mock_generate = patcher_generate.start()
+mock_generate.return_value = [
+    "crawler-4-2024.03",
+    "crawler-4-2024.02",
+    "crawler-4-2024.01",
+    "crawler-4-2023.12",
+    "crawler-4-2023.11",
+    "crawler",
+]
+
 # Source
-import src.settings
 from src.settings import get_settings
 from src.serve.schema import PredictRequestSchema
 from src.serve.model import ServedTopicModel
 from src.serve.tables import TopicSummaryDynamoDB
 
-src.settings.get_settings_clear_cache()
 settings = get_settings()
 
 
@@ -50,10 +60,6 @@ def test_served_topic_model_bio(test_expected_bio_output):
 @pytest.mark.order(4)
 def test_served_topic_model_predict(test_inference_params):
     """Tests the ServedTopicModel's predict method."""
-    src.settings.get_settings_clear_cache()
-
-    # Now get_settings will reflect the frozen time
-    settings = src.settings.get_settings()
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
@@ -77,11 +83,6 @@ def test_served_topic_model_predict_save_dynamodb(
     mock_topic_summary_dynamodb_save, test_inference_params
 ):
     """Tests the ServedTopicModel's predict method."""
-    src.settings.get_settings_clear_cache()
-
-    # Now get_settings will reflect the frozen time
-    settings = src.settings.get_settings()
-
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
@@ -105,11 +106,6 @@ def test_served_topic_model_predict_save_dynamodb(
 @pytest.mark.order(6)
 def test_served_topic_model_predict_query_id(test_inference_params):
     """Tests the ServedTopicModel's predict method."""
-    src.settings.get_settings_clear_cache()
-
-    # Now get_settings will reflect the frozen time
-    settings = src.settings.get_settings()
-
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
@@ -130,11 +126,6 @@ def test_served_topic_model_predict_query_id(test_inference_params):
 @pytest.mark.order(7)
 def test_served_topic_model_predict_skip_trend(test_inference_params):
     """Tests ServedTopicModel's predict method without trend detection."""
-    src.settings.get_settings_clear_cache()
-
-    # Now get_settings will reflect the frozen time
-    settings = src.settings.get_settings()
-
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 

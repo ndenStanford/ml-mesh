@@ -3,9 +3,22 @@
 
 # 3rd party libraries
 import pytest
+from unittest.mock import patch
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import LivenessProbeResponse, ReadinessProbeResponse
+
+# Apply patches before any other imports
+patcher_generate = patch("src.settings.generate_crawler_indices")
+mock_generate = patcher_generate.start()
+mock_generate.return_value = [
+    "crawler-4-2024.03",
+    "crawler-4-2024.02",
+    "crawler-4-2024.01",
+    "crawler-4-2023.12",
+    "crawler-4-2023.11",
+    "crawler",
+]
 
 # Source
 from src.serve.model import ServedTopicModel

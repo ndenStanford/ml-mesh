@@ -6,7 +6,7 @@ from onclusiveml.queries.query_profile import MediaAPISettings
 
 # Standard Library
 import itertools
-from functools import lru_cache, wraps
+from functools import lru_cache
 
 # Internal libraries
 from onclusiveml.core.base import (
@@ -162,18 +162,6 @@ class GlobalSettings(
     """Global server settings."""
 
 
-# Helper function to clear cache
-def clear_lru_cache(func):
-    """Helper function to clear cache."""
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        func.cache_clear()
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
 @lru_cache
 def get_settings() -> OnclusiveFrozenSettings:
     """Returns instanciated global settings class."""
@@ -184,7 +172,3 @@ def get_settings() -> OnclusiveFrozenSettings:
 def get_api_settings() -> OnclusiveFrozenSettings:
     """Returns API settings."""
     return PromptBackendAPISettings()
-
-
-# Expose a function to clear cache
-get_settings_clear_cache = clear_lru_cache(get_settings)

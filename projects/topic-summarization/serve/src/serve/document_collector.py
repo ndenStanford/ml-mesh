@@ -12,23 +12,21 @@ from elasticsearch import Elasticsearch
 from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
 
 # Source
-import src.settings
 from src.serve.utils import topic_profile_documents_query
 from src.settings import get_settings
 
-src.settings.get_settings_clear_cache()
+settings = get_settings()
 
 
 class DocumentCollector:
     """Document collector class used to return documents from elastic search."""
 
     def __init__(self) -> None:
-        self.settings = get_settings()
         self.es = Elasticsearch(
             [
-                f"https://crawler-prod:{self.settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
+                f"https://crawler-prod:{settings.ELASTICSEARCH_KEY.get_secret_value()}@search5-client.airpr.com"  # noqa: W505, E501
             ],
-            timeout=self.settings.ES_TIMEOUT,
+            timeout=settings.ES_TIMEOUT,
         )
 
     def get_documents(
@@ -51,9 +49,9 @@ class DocumentCollector:
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results = self.es.search(
-            index=self.settings.es_index,
+            index=settings.es_index,
             body=topic_profile_documents_query(
-                query, start_time, end_time, topic_id, self.settings.NUM_DOCUMENTS
+                query, start_time, end_time, topic_id, settings.NUM_DOCUMENTS
             ),
         )
         content_list: List[str] = [
