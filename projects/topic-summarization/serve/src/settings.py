@@ -165,8 +165,8 @@ class GlobalSettings(
 # Helper function to clear cache
 def clear_lru_cache(func):
     """Helper function to clear cache."""
-    wraps(func)
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         func.cache_clear()
         return func(*args, **kwargs)
