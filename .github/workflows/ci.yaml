@@ -244,14 +244,14 @@ jobs       :
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
+            self-hosted-runner-ami: ami-0cb5219ceb9a91441
             self-hosted-runner-neuron: true
             runner-kind: custom
 
           - name: neuron-inference
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
+            self-hosted-runner-ami: ami-0cb5219ceb9a91441
             self-hosted-runner-neuron: true
             runner-kind: custom
 
@@ -268,7 +268,7 @@ jobs       :
           - name: beam-worker
             validate-build: false
             self-hosted-runner-type: m7a.medium
-            self-hosted-runner-ami: ami-0f12d36a619cc64b8
+            self-hosted-runner-ami: ami-06d57739e26e67754
             self-hosted-runner-neuron: false
             runner-kind: custom
 
@@ -413,7 +413,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
+            self-hosted-runner-ami: ami-0cb5219ceb9a91441
 
         use-cache: [true]
 
@@ -585,7 +585,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-0f12d36a619cc64b8
+            self-hosted-runner-ami: ami-06d57739e26e67754
             self-hosted-runner-neuron: false
             use-cache: true
 
@@ -681,7 +681,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
+            self-hosted-runner-ami: ami-0cb5219ceb9a91441
 
           # backfill
           - name: backfill
@@ -787,7 +787,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0cdcbff6b4fe8514c
+            self-hosted-runner-ami: ami-0cb5219ceb9a91441
             self-hosted-runner-neuron: true
             use-cache: true
 
