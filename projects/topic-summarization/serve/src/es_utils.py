@@ -16,6 +16,11 @@ def generate_crawler_indices(es_secret_value: SecretStr, num_months: int = 5) ->
     """Generate last 5 monthes indexes."""
     current_date = datetime.now()
 
+    print("\n")
+    print("\n")
+    print("\n")
+    print("ES SECRET VALUE :", es_secret_value.get_secret_value())
+
     es = Elasticsearch(
         [
             f"https://crawler-prod:{es_secret_value}@search5-client.airpr.com"  # noqa: W505, E501
