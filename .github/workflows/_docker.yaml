@@ -229,7 +229,7 @@ jobs:
             TARGET_BUILD_STAGE="production" \
             PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
-            USE_DOCKER_CACHE="${{ inputs.use-cache }}"
+            USE_DOCKER_CACHE="true"
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
