@@ -10,8 +10,6 @@ import torch
 import torch.nn as nn
 
 # 3rd party libraries
-import faiss
-import faiss.contrib.torch_utils
 import numpy as np
 from pytorch_lightning import LightningModule
 
@@ -470,8 +468,6 @@ class JointELTask(LightningModule):
         model: settings.model,
         datamodule: settings.datamodule,
         optim: settings.optim,
-        embeddings_path: str,
-        faiss_index_path: Optional[str] = None,
         n_retrieve_candidates: int = 10,
         eval_compure_recall_at: Tuple[int] = (1, 10, 100),
         warmup_steps: int = 0,
@@ -482,15 +478,12 @@ class JointELTask(LightningModule):
         md_threshold: float = 0.2,
         el_threshold: float = 0.4,
         saliency_threshold: float = 0.4,
-        use_gpu_index: bool = False,
+        embedding_dim=settings.redis.EMBEDDINGS_SHAPE,
     ):
         super().__init__()
         # encoder setup
         self.encoder_conf = model
         self.optim_conf = optim
-
-        self.embeddings_path = embeddings_path
-        self.faiss_index_path = faiss_index_path
 
         self.n_retrieve_candidates = n_retrieve_candidates
         self.eval_compure_recall_at = eval_compure_recall_at
@@ -508,7 +501,7 @@ class JointELTask(LightningModule):
         self.md_threshold = md_threshold
         self.el_threshold = el_threshold
         self.saliency_threshold = saliency_threshold
-        self.use_gpu_index = use_gpu_index
+        self.embedding_dim = embedding_dim[1]
 
     @staticmethod
     def _get_encoder_state(state, encoder_name):
@@ -527,19 +520,6 @@ class JointELTask(LightningModule):
                 encoder_state[key[len(encoder_name) + 1 :]] = value  # noqa
         return encoder_state
 
-    def setup_gpu_index(self):
-        """Sets up a GPU-based FAISS index for efficient similarity search using embeddings."""
-        gpu_id = self.local_rank
-
-        flat_config = faiss.GpuIndexFlatConfig()
-        flat_config.device = gpu_id
-        flat_config.useFloat16 = True
-
-        res = faiss.StandardGpuResources()
-
-        self.faiss_index = faiss.GpuIndexFlatIP(res, self.embedding_dim, flat_config)
-        self.faiss_index.add(self.embeddings)
-
     def setup(self, stage: str):
         """Sets up the model and components based on the stage (phase) of training.
 
@@ -550,10 +530,6 @@ class JointELTask(LightningModule):
             return
         # resetting call_configure_sharded_model_hook attribute so that we could configure model
         self.call_configure_sharded_model_hook = False
-
-        self.embeddings = torch.load(self.embeddings_path)
-        self.embedding_dim = len(self.embeddings[0])
-        self.embeddings.requires_grad = False
 
         self.encoder = HFEncoder(model_path=self.encoder_conf.model_path)
         #     self.encoder = self.encoder_conf
@@ -671,47 +647,23 @@ class JointELTask(LightningModule):
         if flat_mentions_repr.shape[0] == 0:
             return None
         # obtain positive entities representations
-        if self.use_gpu_index:
-            entities_repr = torch.stack(
-                [
-                    self.faiss_index.reconstruct(flat_id)
-                    for flat_id in flat_entities_ids.tolist()
-                ]
-            ).to(device)
-        else:
-            entities_repr = self.embeddings[flat_entities_ids.to("cpu")].to(device)
+        entities_repr = torch.stack(
+            [
+                self.faiss_index.reconstruct(flat_id)
+                for flat_id in flat_entities_ids.tolist()
+            ]
+        ).to(device)
+
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
         # retrieve candidates indices
-        if self.use_gpu_index:
-            (
-                _,
-                neg_cand_indices,
-                neg_cand_repr,
-            ) = self.faiss_index.search_and_reconstruct(
-                flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
-                self.n_retrieve_candidates,
-            )
-            neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
-            neg_cand_repr = torch.from_numpy(neg_cand_repr).to(device)
+        (_, neg_cand_indices, neg_cand_repr,) = self.faiss_index.search_and_reconstruct(
+            flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
+            self.n_retrieve_candidates,
+        )
+        neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
+        neg_cand_repr = torch.from_numpy(neg_cand_repr).to(device)
 
-        else:
-            (_, neg_cand_indices,) = self.faiss_index.search(
-                flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
-                self.n_retrieve_candidates,
-            )
-            # get candidates embeddings
-            neg_cand_repr = (
-                self.embeddings[neg_cand_indices.flatten()]
-                .reshape(
-                    neg_cand_indices.shape[0],  # bs
-                    neg_cand_indices.shape[1],  # n_retrieve_candidates
-                    self.embeddings.shape[1],  # emb dim
-                )
-                .to(device)
-            )
-
-            neg_cand_indices = torch.from_numpy(neg_cand_indices).to(device)
         # compute scores (bs x n_retrieve_candidates)
         neg_cand_scores = torch.bmm(
             flat_mentions_repr.unsqueeze(1), neg_cand_repr.transpose(1, 2)
@@ -860,9 +812,8 @@ class JointELTask(LightningModule):
             flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
             1,
         )
-        if self.use_gpu_index:
-            cand_scores = torch.from_numpy(cand_scores)
-            cand_indices = torch.from_numpy(cand_indices)
+        cand_scores = torch.from_numpy(cand_scores)
+        cand_indices = torch.from_numpy(cand_indices)
         # iterate over predicted and gold mentions to create targets for
         # predicted mentions
         targets = []
@@ -894,16 +845,12 @@ class JointELTask(LightningModule):
         targets = torch.tensor(targets, device=device)
         flat_targets = targets[mention_lengths != 0][flat_mentions_scores > 0]
         md_scores = flat_mentions_scores[flat_mentions_scores > 0].unsqueeze(-1)
-        # flat_entities_repr = self.embeddings[cand_indices.squeeze(1)].to(device)
-        if self.use_gpu_index:
-            flat_entities_repr = torch.stack(
-                [
-                    self.faiss_index.reconstruct(flat_id)
-                    for flat_id in cand_indices.squeeze(1).tolist()
-                ]
-            ).to(device)
-        else:
-            flat_entities_repr = self.embeddings[cand_indices.squeeze(1)].to(device)
+        flat_entities_repr = torch.stack(
+            [
+                self.faiss_index.reconstruct(flat_id)
+                for flat_id in cand_indices.squeeze(1).tolist()
+            ]
+        ).to(device)
 
         cand_scores = cand_scores.to(device)
         cand_indices = cand_indices.to(device)
@@ -986,16 +933,13 @@ class JointELTask(LightningModule):
         flat_mentions_repr = mentions_repr[mention_lengths != 0]
         flat_entities_ids = entities_ids[mention_lengths != 0]
         # obtain positive entities representations
-        # entities_repr = self.embeddings[flat_entities_ids.to("cpu")].to(device)
-        if self.use_gpu_index:
-            entities_repr = torch.stack(
-                [
-                    self.faiss_index.reconstruct(flat_id)
-                    for flat_id in flat_entities_ids.tolist()
-                ]
-            ).to(device)
-        else:
-            entities_repr = self.embeddings[flat_entities_ids.to("cpu")].to(device)
+        entities_repr = torch.stack(
+            [
+                self.faiss_index.reconstruct(flat_id)
+                for flat_id in flat_entities_ids.tolist()
+            ]
+        ).to(device)
+
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
         # candidates to retrieve
@@ -1091,16 +1035,12 @@ class JointELTask(LightningModule):
         )
 
         if self.train_el_classifier:
-            # flat_entities_repr = self.embeddings[cand_indices.squeeze(1)].to(device)
-            if self.use_gpu_index:
-                flat_entities_repr = torch.stack(
-                    [
-                        self.faiss_index.reconstruct(flat_id)
-                        for flat_id in cand_indices.squeeze(1).tolist()
-                    ]
-                ).to(device)
-            else:
-                flat_entities_repr = self.embeddings[cand_indices.squeeze(1)].to(device)
+            flat_entities_repr = torch.stack(
+                [
+                    self.faiss_index.reconstruct(flat_id)
+                    for flat_id in cand_indices.squeeze(1).tolist()
+                ]
+            ).to(device)
 
             flat_mentions_scores = mentions_scores[mention_lengths != 0].unsqueeze(-1)
             cand_scores = torch.from_numpy(cand_scores).to(device)
@@ -1299,8 +1239,6 @@ class JointELTask(LightningModule):
             metrics = self._compute_disambiguation_metrics(outputs, log_prefix)
         else:
             metrics = self._compute_el_metrics(outputs, log_prefix)
-        print("EVAL:")
-        print(metrics)
 
         self.log_dict(metrics, on_epoch=True, sync_dist=True)
 

@@ -184,7 +184,7 @@ jobs       :
     uses: ./.github/workflows/_docker.yaml
     needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
-      max-parallel: 2
+      max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
@@ -301,7 +301,7 @@ jobs       :
     uses: ./.github/workflows/_docker.yaml
     needs: [get-environment, run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
-      max-parallel: 1
+      max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
@@ -310,7 +310,7 @@ jobs       :
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -338,7 +338,7 @@ jobs       :
             base-region: us-east-2
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # dask-base
           - name: dask-base
@@ -597,7 +597,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: custom
-            self-hosted-runner-type: g4dn.2xlarge
+            self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-0ac0809ecabc87ec9
             self-hosted-runner-neuron: false
             use-cache: true
