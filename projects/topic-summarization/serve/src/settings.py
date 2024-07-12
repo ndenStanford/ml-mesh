@@ -111,6 +111,10 @@ class ElasticsearchSettings(OnclusiveBaseSettings):
         """Dynamic get es index."""
         elasticsearch_key = values.get("ELASTICSEARCH_KEY")
         values["es_index"] = generate_crawler_indices(elasticsearch_key)
+        print("\n")
+        print("\n")
+        print("\n")
+        print("ES INDEX :", values)
         return values
 
 
