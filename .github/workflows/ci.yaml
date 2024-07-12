@@ -229,7 +229,7 @@ jobs       :
     uses: ./.github/workflows/_docker.yaml
     needs: [get-environment, run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
     strategy:
-      max-parallel: 1
+      max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
@@ -317,21 +317,21 @@ jobs       :
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # kubeflow-torch-cpu
           - name: kubeflow-torch-cpu
             base-region: us-east-2
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: true
+            use-cache: false
 
           # kubeflow-data-science
           - name: kubeflow-data-science
@@ -339,12 +339,6 @@ jobs       :
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: false
-
-          # dask-base
-          - name: dask-base
-            base-region: us-east-1
-            runner-kind: ubuntu-20.04
-            use-cache: true
 
         validate-build: [false]
         region: [us-east-2]
