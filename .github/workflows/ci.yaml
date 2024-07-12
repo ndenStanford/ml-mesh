@@ -310,35 +310,35 @@ jobs       :
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
             base-region: us-east-1
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
           # kubeflow-torch-cpu
           - name: kubeflow-torch-cpu
             base-region: us-east-2
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
           # kubeflow-data-science
           - name: kubeflow-data-science
             base-region: us-east-2
             self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
         validate-build: [false]
         region: [us-east-2]
