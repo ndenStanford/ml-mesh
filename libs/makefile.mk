@@ -3,6 +3,9 @@
 libs.install/%: ## Installs library and dependencies locally
 	poetry install --directory=libs/$(notdir $@) --with dev
 
+libs.install-coverage/%: ## Installs library and dependencies locally
+	poetry install --directory=libs/$(notdir $@) --with dev --all-extras
+
 libs.lock/%: ## Installs library and dependencies locally
 	poetry lock --directory=libs/$(notdir $@)
 
@@ -35,4 +38,4 @@ libs.lock-all: $(foreach I, $(ALL_LIBS), libs.lock/$(I)) # install library depen
 
 libs.coverage-unit-all: $(foreach I, $(COVERED_LIBS), libs.coverage-unit/$(I))
 
-libs.install-covered: $(foreach I, $(COVERED_LIBS), libs.install/$(I)) # install library dependencies for covered libs
+libs.install-all-covered: $(foreach I, $(COVERED_LIBS), libs.install-coverage/$(I)) # install library dependencies for covered libs

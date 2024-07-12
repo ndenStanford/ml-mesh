@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "queries"
+version = "0.1.0"
+description = "Elasticsearch and other related query utilities"
+authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>",
+            "Jian Tong <jian.tong@onclusive.com>"]
+packages = [{include = "onclusiveml"}]
+
+[tool.poetry.dependencies]
+python = "3.8.16"
+core = {path = "../core"}
+elasticsearch = ">=7.0.0,<8.0.0"
+hdbscan = "0.8.33"
+umap-learn = {version = "0.5.3", extras = ["scorer"]}
+transformers = {version = "4.33.1", extras = ["scorer"]}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.3.2"
+pytest-mock = "^3.11.1"
+moto = "4.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

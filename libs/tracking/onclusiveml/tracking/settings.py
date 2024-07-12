@@ -10,26 +10,7 @@ from pydantic_settings import SettingsConfigDict
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings, OnclusiveSecretStr
 from onclusiveml.core.constants import Environment
-from onclusiveml.core.logging import (  # noqa:F401
-    CRITICAL,
-    DEBUG,
-    ERROR,
-    INFO,
-    WARNING,
-    OnclusiveLogMessageFormat,
-    OnclusiveLogSettings,
-)
 from onclusiveml.tracking.constants import ModelType
-
-
-class TrackingLibraryLogSettings(OnclusiveLogSettings):
-    """Entrypoint to configure logging behaviour of the tracking library for the current session."""
-
-    fmt_level: OnclusiveLogMessageFormat = OnclusiveLogMessageFormat.DETAILED
-    level: int = INFO
-    json_format: bool = True
-
-    model_config = SettingsConfigDict(env_prefix="onclusiveml_tracking_logger_")
 
 
 class TrackingSettings(OnclusiveBaseSettings):
@@ -51,8 +32,8 @@ class TrackingBackendSettings(TrackingSettings):
         - s3_backend_root
     """
 
+    environment: Environment
     use_s3_backend: bool = True
-    environment: Environment = Environment.DEV
     s3_bucket_prefix: str = "onclusive-model-store-"
     s3_backend_root: str = "neptune-ai-model-registry"
 
@@ -62,20 +43,6 @@ class TrackingBackendSettings(TrackingSettings):
     def bucket_name(self) -> str:
         """S3 bucket name."""
         return f"{self.s3_bucket_prefix}{self.environment}"
-
-    @field_validator("environment")
-    @classmethod
-    def environment_validation(cls, v: str) -> str:
-        """Environment validation."""
-        if v not in Environment.values():
-            raise ValueError(
-                f"Invalid backend storage bucket environment {v}: Must be one"
-                " of the valid options: "
-                f"{Environment.DEV} (development environment)"
-                f"{Environment.STAGE} (staging environment)"
-                f"{Environment.PROD} (production environment)"
-            )
-        return v
 
 
 class TrackedGithubActionsSpecs(OnclusiveBaseSettings):

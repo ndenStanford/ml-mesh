@@ -28,7 +28,6 @@ class EntityLinkingModelParams(TrackingSettings):
 
     repo: str = "wannaphong/BELA"
     checkpoint_name: str = "wiki"
-    embeddings_filename: str = "embeddings.pt"
     index_filename: str = "index.txt"
 
     entity_linking_settings: EntityLinkingSettings = EntityLinkingSettings()

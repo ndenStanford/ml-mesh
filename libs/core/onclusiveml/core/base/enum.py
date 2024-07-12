@@ -22,6 +22,11 @@ class OnclusiveEnum(Enum):
         return value in cls.members()
 
     @classmethod
+    def names(cls) -> List[str]:
+        """List enum values."""
+        return [field.name for field in cls]
+
+    @classmethod
     def values(cls) -> List[T]:
         """List enum values."""
         return [field.value for field in cls]
@@ -44,6 +49,27 @@ class OnclusiveEnum(Enum):
             raise ValueError(
                 f"The specified value {value} is not in the valid range: "
                 f"{cls.values()}"
+            )
+        return None
+
+    @classmethod
+    def from_name(
+        cls, name: str, raises_if_not_found: bool = False
+    ) -> Optional["OnclusiveEnum"]:
+        """Get enum object from name.
+
+        Args:
+            name (str): enum name.
+            raises_if_not_found (bool): if set to `True`, an exception is
+                raised if the value is not found in the enum class.
+        """
+        for member in cls:
+            if name == member.name:
+                return member
+        if raises_if_not_found:
+            raise ValueError(
+                f"The specified name {name} is not in the valid range: "
+                f"{cls.names()}"
             )
         return None
 
