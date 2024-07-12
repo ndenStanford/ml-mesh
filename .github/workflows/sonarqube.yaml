@@ -1,5 +1,5 @@
 ---
-name: SonarQube
+name: SonarQube (Optional)
 on  :
   push:
     branches:
@@ -37,17 +37,15 @@ jobs:
             /usr/lib/jvm \
             /var/lib/apt/lists/* \
       - name: Install test coverage utils
-        run: pip install coverage
+        run: pip install coverage==7.5.4
       - name: Setup Poetry
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: ${{ matrix.poetry-version }}
-      - name: Install lib dependencies and generate test coverage for libs
-        run: |
-          for lib in core compile data models nlp serving tracking hashing llms; do
-            make libs.install/$lib
-            make libs.coverage-unit/$lib
-          done
+      - name: Install lib dependencies
+        run: make libs.install-all-covered
+      - name: Generate test coverage for libs
+        run: make libs.coverage-unit-all
       - name: Generate test coverage xml
         run: |
           poetry run coverage combine .coverage-*

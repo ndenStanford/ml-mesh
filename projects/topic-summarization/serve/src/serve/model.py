@@ -7,8 +7,7 @@
 from typing import Type, Optional
 from datetime import datetime
 
-# 3rd party libraries
-from pydantic import BaseModel
+from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
 
 # Internal libraries
@@ -31,7 +30,7 @@ from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.impact_quantification import ImpactQuantification
 from src.serve.document_collector import DocumentCollector
-from onclusiveml.data.query_profile import (
+from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     BaseQueryProfile,
     ProductionToolsQueryProfile,
@@ -45,9 +44,9 @@ settings = get_settings()
 class ServedTopicModel(ServedModel):
     """Served Topic detection model."""
 
-    predict_request_model: Type[BaseModel] = PredictRequestSchema
-    predict_response_model: Type[BaseModel] = PredictResponseSchema
-    bio_response_model: Type[BaseModel] = BioResponseSchema
+    predict_request_model: Type[OnclusiveBaseModel] = PredictRequestSchema
+    predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
+    bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
@@ -155,15 +154,18 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
 
-                topic = self.model.aggregate(content, boolean_query)
+                topic, topic_summary_quality = self.model.aggregate(
+                    content, boolean_query
+                )
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
             else:
                 topic = None
                 impact_category = None
+                topic_summary_quality = None
         else:
-            topic = self.model.aggregate(content)
+            topic, topic_summary_quality = self.model.aggregate(content)
             impact_category = None
         if save_report_dynamodb:
             query_string = query_profile.query
@@ -182,6 +184,7 @@ class ServedTopicModel(ServedModel):
                 "content": content,
                 "query_all_doc_count": query_all_doc_count,
                 "query_topic_doc_count": query_topic_doc_count,
+                "topic_summary_quality": topic_summary_quality,
             }
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
@@ -198,6 +201,7 @@ class ServedTopicModel(ServedModel):
                 "impact_category": impact_category,
                 "trending": trend_found,
                 "timestamp": datetime.now(),
+                "topic_summary_quality": topic_summary_quality,
             },
         )
 

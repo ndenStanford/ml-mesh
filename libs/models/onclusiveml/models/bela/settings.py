@@ -70,9 +70,6 @@ class TrainerSettings(OnclusiveBaseSettings):
     val_check_interval: int = 3000
     limit_val_batches: int = 500
 
-    class Config:
-        extra = "allow"
-
 
 class CheckpointCallbackSettings(OnclusiveBaseSettings):
     """Checkpoint Callback configuration settings."""
@@ -91,8 +88,6 @@ class TaskSettings(OnclusiveBaseSettings):
 
     only_train_disambiguation: bool = Field(default=False)
     train_saliency: bool = Field(default=False)
-    embeddings_path: str = Field(default="/fsx/movb/data/matcha/mel/embeddings_new.pt")
-    use_gpu_index: bool = Field(default=True)
     load_from_checkpoint: str = Field(
         default="/checkpoints/movb/bela/2023-01-13-023711/0/lightning_logs/version_4144/checkpoints/last.ckpt"  # noqa
     )
@@ -119,6 +114,3 @@ class BelaSettings(
     model: ModelSettings = ModelSettings()
     checkpoint_callback: CheckpointCallbackSettings = CheckpointCallbackSettings()
     redis: RedisSetttings = RedisSetttings()
-
-    class Config:
-        extra = "allow"

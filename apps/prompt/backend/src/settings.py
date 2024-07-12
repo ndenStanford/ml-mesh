@@ -35,6 +35,9 @@ class Settings(OnclusiveBaseSettings):
     # OpenAI API key
     OPENAI_API_KEY: str
     LLM_CALL_RETRY_COUNT: int = 2
+    LLM_CALL_RETRY_DELAY: float = 3.0
+    LLM_CALL_RETRY_BACKOFF: float = 2.0
+    LLM_CALL_RETRY_MAX_DELAY: float = 10.0
 
     # Betterstack heartbeat key
     BETTERSTACK_KEY: str = ""
@@ -49,6 +52,7 @@ class Settings(OnclusiveBaseSettings):
     AWS_SECRET_ACCESS_KEY: Optional[str] = None
     DEFAULT_MODELS: dict = {"default": "anthropic.claude-3-haiku-20240307-v1:0"}
     CORS_ORIGIN: List[str] = ["*"]
+    BEDROCK_READ_TIMEOUT: int = 300
 
     # Github configuration
     PROMPT_REGISTRY_APP_ID: str

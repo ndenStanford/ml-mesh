@@ -2,10 +2,11 @@
 
 # Standard Library
 import json
+import logging
 import os
 from datetime import datetime as dt
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, Iterator, List, Tuple, Union
 
 # 3rd party libraries
 import boto3
@@ -16,12 +17,10 @@ from neptune.exceptions import TypeDoesNotSupportAttributeException
 from neptune.types import File
 
 # Internal libraries
-from onclusiveml.tracking.tracked_logging import (
-    tracking_library_logger as logger,
-)
-from onclusiveml.tracking.tracking_settings import (
-    TrackingLibraryBackendSettings,
-)
+from onclusiveml.tracking.settings import TrackingBackendSettings
+
+
+logger = logging.getLogger(__name__)
 
 
 class TrackedModelVersion(ModelVersion):
@@ -39,66 +38,12 @@ class TrackedModelVersion(ModelVersion):
         """
         super().__init__(*args, **kwargs)
         # configure s3 storage backend
-        self.s3_storage_backend_config = TrackingLibraryBackendSettings()
-        self.configure_s3_storage_backend()
+        self.s3_storage_backend_config = TrackingBackendSettings()
 
-    # --- S3 specific utilities
-    def configure_s3_storage_backend(self, **kwargs: Any) -> None:
-        """Validates and sets the s3 storage backend configuration for this TrackedModelVersion instance.
-
-        If not arguments are provided, falls back on the configuration derived at the time
-        of instance initialization. If no such configuration exists (e.g. if this is called
-        by the constructor) environment variables and default values as per the
-        TrackedLibraryBackendSetting class will be used.
-
-        Args:
-            use_s3_backend: (bool): Whether to use S3 storage as a backend for file attributes.
-                Enabling this is useful for two reasons:
-                    - Storage capacity on Neptune servers is very limited at 100GB/month, and LLM
-                        model artifacts will easily use up that quota when using the default neptune
-                        storage servers
-                    - S3 buckets configured in the same VPC/AZ as the EC2 instances hosting the
-                        application code
-
-            s3_backend_bucket (str, optional): The bucket to be used for file attribute storage.
-                Defaults to ''.
-            s3_backend_prefix (str, optional): The optional S3 prefix to be prepended to all file
-                attributes stored in the S3 bucket via the TrackedModelVersion utilities. Defaults
-                to ''.
-
-        Raises:
-            ValueError: If `use_s3_backend` is set to True but an invalid bucket `s3_backend_bucket`
-                is specified (see tracking_settings for valid range)
-            ValueError: If the `s3_backend_prefix` is not empty but starts/ends with a '/'
-        """
-        logger.debug(
-            "(Re-)configuring backend settings using the following parameters (using"
-            f"defaults for others): {kwargs}"
-        )
-
-        # only update the parameters that are specified in this method's kwargs
-        logger.debug("Backend configuration found. Updating specified params.")
-        s3_storage_backend_updated_dict = self.s3_storage_backend_config.dict().copy()
-        s3_storage_backend_updated_dict.update(kwargs)
-        self.s3_storage_backend_config = TrackingLibraryBackendSettings(
-            **s3_storage_backend_updated_dict
-        )
-
-        logger.debug(
-            "Successfully configured s3 storage backend: "
-            f"{self.s3_storage_backend_config}"
-        )
-
-    def get_s3_bucket_client(self, s3_backend_bucket: str) -> Any:
-        """Utility to retrieve S3 bucket client instance.
-
-        Args:
-            s3_backend_bucket (str): Name of the S3 bucket
-
-        Returns:
-            boto3.resource.Bucket: An initialized S3 bucket client
-        """
-        return boto3.resource("s3").Bucket(s3_backend_bucket)
+    @property
+    def s3_client(self) -> Any:
+        """S3 bucket client instance getter."""
+        return boto3.resource("s3").Bucket(self.s3_storage_backend_config.bucket_name)
 
     def derive_model_version_s3_prefix(self, s3_prefix: str = "") -> str:
         """Helper function that assembles the S3 storage prefix for the current model version.
@@ -156,7 +101,6 @@ class TrackedModelVersion(ModelVersion):
         # if the use of s3 storage is not specified at the file upload level, fall back on
         # `s3_storage_backend_config` parameter
         use_s3 = kwargs.get("use_s3", self.s3_storage_backend_config.use_s3_backend)
-
         # if a file object is specified, enforce neptune ai storage backend as uploading configs
         # directly is not yet supported by S3 backend
         # if no file object is specified, ensure a valid local file path is specified and create a
@@ -190,7 +134,6 @@ class TrackedModelVersion(ModelVersion):
                 f"Unforeseen specification: File object {file_object}."
                 f"File path {local_file_path}."
             )
-
         # upload the file:
         # - if storage backend is configured to neptune ai servers, upload the file object
         # - if storage backend is configured to internal S3:
@@ -233,12 +176,11 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             str: The full S3 uri of the uploaded file
         """
-        s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
-        s3_prefix = self.s3_storage_backend_config.s3_backend_prefix
+        s3_bucket = self.s3_storage_backend_config.bucket_name
+        s3_bucket_root = self.s3_storage_backend_config.s3_backend_root
 
-        s3_client = self.get_s3_bucket_client(s3_bucket)
         # assemble full s3 uri for file
-        s3_model_version_prefix = self.derive_model_version_s3_prefix(s3_prefix)
+        s3_model_version_prefix = self.derive_model_version_s3_prefix(s3_bucket_root)
         s3_file_prefix = f"{s3_model_version_prefix}/{neptune_attribute_path}"
         s3_file_uri = f"s3://{s3_bucket}/{s3_file_prefix}"
 
@@ -247,7 +189,7 @@ class TrackedModelVersion(ModelVersion):
             f"{s3_file_prefix}."
         )
 
-        s3_client.upload_file(local_file_path, s3_file_prefix)
+        self.s3_client.upload_file(local_file_path, s3_file_prefix)
 
         logger.debug(
             f"Uploaded file {local_file_path} into S3 bucket {s3_bucket}: "
@@ -533,29 +475,25 @@ class TrackedModelVersion(ModelVersion):
         Returns:
             None
         """
-        s3_bucket = self.s3_storage_backend_config.s3_backend_bucket
+        s3_bucket = self.s3_storage_backend_config.bucket_name
         # extract the underlying s3 file's prefix as required by boto3's download_file method
         neptune_attribute = self[neptune_attribute_path]
         neptune_artifact = neptune_attribute.fetch_files_list()[0]
         tracked_file_s3_uri = neptune_artifact.metadata["location"]
         tracked_file_s3_prefix = tracked_file_s3_uri.replace(f"s3://{s3_bucket}/", "")
 
-        s3_client = self.get_s3_bucket_client(s3_bucket)
-
-        logger.debug(
-            f"Downloading file {tracked_file_s3_prefix} to local path {local_file_path}"
+        logger.info(
+            f"Downloading file {tracked_file_s3_uri} to local path {local_file_path}"
         )
 
-        s3_client.download_file(tracked_file_s3_prefix, local_file_path)
+        self.s3_client.download_file(tracked_file_s3_prefix, local_file_path)
 
-        logger.debug(
-            f"Downloaded file {tracked_file_s3_prefix} to local path {local_file_path}"
+        logger.info(
+            f"Downloaded file {tracked_file_s3_uri} to local path {local_file_path}"
         )
 
     @classmethod
-    def _extract_data_attributes(
-        cls, value: Any
-    ) -> Union[FileAttributeType, ArtifactAttributeType, Dict]:
+    def _extract_data_attributes(cls, value: Any) -> Iterator[Any]:
         """Utility function to unravel a ModelVersion structure attribute dict.
 
         Args:

@@ -102,7 +102,7 @@ jobs:
           list-files: shell
           filters: |
             this:
-              - added | modified: 'docker/**'
+              - added | modified: 'docker/${{ inputs.image }}'
               - added | modified: 'docker/docker-compose.ci.yaml'
 
   provision-customized-runner:
@@ -159,6 +159,7 @@ jobs:
       DOCKER_BUILDKIT: 1
       COMPOSE_DOCKER_CLI_BUILD: 1
       BUILDKIT_INLINE_CACHE: 1
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Check out code
@@ -196,7 +197,7 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
-          timeout_minutes: 30
+          timeout_minutes: 50
           retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}
           command: |
             make docker.build/${{ inputs.image }} \

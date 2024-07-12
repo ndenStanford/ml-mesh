@@ -3,7 +3,7 @@
 
 # Standard Library
 import re
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Tuple
 
 # 3rd party libraries
 import requests
@@ -222,14 +222,45 @@ class TopicHandler:
 
         return final_topic
 
+    def summary_quality(self, summary: str, entities: str) -> bool:
+        """Return whether quality of summary is good or bad.
+
+        Args:
+            summary(str): high level topic summary
+            entities(str): entity list represented by string
+        Output:
+            bool (str): quality of summary is good or bad
+        """
+        input_dict = {
+            "input": {"summary": summary, "entities": entities},
+            "output": settings.SUMMARY_QUALITY_RESPONSE_SCHEMA,
+        }
+
+        q = self.call_api(
+            settings.CLAUDE_SUMMARY_QUALITY_ALIAS, settings.DEFAULT_MODEL, input_dict
+        )
+        output_content = json.loads(q.content)
+        not_different_themes = (
+            output_content.get("different_themes", "").lower() == "no"
+        )
+        entities_related = output_content.get("entities_related", "").lower() == "yes"
+
+        if entities == "[]":
+            return not_different_themes
+        else:
+            return not_different_themes and entities_related
+
     def aggregate(
         self, article: List[str], boolean_query: Optional[str] = None
-    ) -> Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]:
+    ) -> Tuple[
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
+        Union[bool, None],
+    ]:
         """Aggregate topic & summary results together.
 
         Args:
             article(list): list of str
-            boolean_query(Optional[str]): boolean query
+            boolean_query(Optional[bool]): boolean query
         Output:
             merged_result (dict): dict
         """
@@ -243,9 +274,13 @@ class TopicHandler:
         topic_result = self.topic_inference(article, entity_list)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article, entity_list)
+        topic_summary_quality = self.summary_quality(
+            summary_result["summary"], entity_list or "[]"
+        )
+
         merged_result: Dict[
             str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]
         ] = {}
         merged_result.update(topic_final_result)
         merged_result.update(summary_result)
-        return merged_result
+        return (merged_result, topic_summary_quality)

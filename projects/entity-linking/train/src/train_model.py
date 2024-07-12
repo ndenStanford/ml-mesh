@@ -30,15 +30,9 @@ def main() -> None:
     if not os.path.isdir(model_card.local_cache_dir):
         os.makedirs(model_card.local_cache_dir)
     # initialize registered model on neptune ai
-    model_version = TrackedModelVersion(**model_specs.dict())
+    model_version = TrackedModelVersion(**model_specs.model_dump())
 
     checkpoint_name_path = f"model_{model_card.model_params.checkpoint_name}.ckpt"
-    hf_hub_download(
-        repo_id=model_card.model_params.repo,
-        filename=model_card.model_params.embeddings_filename,
-        local_dir=model_card.local_output_dir,
-        cache_dir=model_card.local_cache_dir,
-    )
     hf_hub_download(
         repo_id=model_card.model_params.repo,
         filename=model_card.model_params.index_filename,
@@ -52,7 +46,9 @@ def main() -> None:
         cache_dir=model_card.local_cache_dir,
     )
 
-    entity_linking_settings = model_card.model_params.entity_linking_settings.dict()
+    entity_linking_settings = (
+        model_card.model_params.entity_linking_settings.model_dump()
+    )
 
     logger.info("Pushing assets to neptune AI")
     for (test_file, test_file_attribute_path) in [
@@ -69,7 +65,7 @@ def main() -> None:
     )
     # model card
     model_version.upload_config_to_model_version(
-        config=model_card.dict(), neptune_attribute_path="model/model_card"
+        config=model_card.model_dump(), neptune_attribute_path="model/model_card"
     )
 
     model_version.stop()

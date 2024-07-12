@@ -7,16 +7,17 @@ from typing import List, Union
 
 # 3rd party libraries
 from neptune.types.mode import Mode
-from pydantic import BaseSettings, Field
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 from onclusiveml.tracking import (
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    TrackedModelSpecs,
-    TrackedParams,
+    TrackedModelSettings,
+    TrackingSettings,
 )
 
 
@@ -35,16 +36,6 @@ SUPPORTED_LANGUAGES = [
 ]
 
 
-class TrackedTrainedModelSpecs(TrackedModelSpecs):
-    """Tracked compiled model settings."""
-
-    # we need an additional version tag since we are referencing an EXISTING model version, rather
-    # than creating a new one
-    with_id: str = Field("TOPIC-TRAINED-63", env="neptune_model_version_id")
-    # we only need to download from the base model, not upload
-    mode: str = Field(Mode.READ_ONLY, env="neptune_client_mode")
-
-
 class ServerModelSettings(ServingParams):
     """Prediction model settings."""
 
@@ -52,23 +43,31 @@ class ServerModelSettings(ServingParams):
     model_directory: Union[str, Path] = "."
 
 
-class TopicSettings(TrackedParams):
+class TopicSettings(TrackingSettings):
     """Topic settings."""
 
     supported_languages: List[LanguageIso] = SUPPORTED_LANGUAGES
 
 
+class TopicTrackedModelSettings(TrackedModelSettings):
+    """Tracked compiled model settings."""
+
+    with_id: str
+    mode: str = Mode.READ_ONLY
+
+
 class GlobalSettings(
     ServerModelSettings,
-    TrackedTrainedModelSpecs,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TopicSettings,
+    TopicTrackedModelSettings,
+    OnclusiveLogSettings,
 ):
     """Global server settings."""
 
 
 @lru_cache
-def get_settings() -> BaseSettings:
+def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
     return GlobalSettings()
