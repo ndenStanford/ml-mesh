@@ -346,18 +346,18 @@ numpy = {version = ">=1.15.0", markers = "python_version < \"3.9\""}
 
 [[package]]
 name = "boto3"
-version = "1.34.141"
+version = "1.34.143"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.34.141-py3-none-any.whl", hash = "sha256:f906c797a02d37a3b88fe4c97e4d72b387e19ab6f3096d2f573578f020fd9bf4"},
-    {file = "boto3-1.34.141.tar.gz", hash = "sha256:947c7a94ac3a2131142914a53afc3b1c5a572d6a79515bf2f0473188817cfcd6"},
+    {file = "boto3-1.34.143-py3-none-any.whl", hash = "sha256:0d16832f23e6bd3ae94e35ea8e625529850bfad9baccd426de96ad8f445d8e03"},
+    {file = "boto3-1.34.143.tar.gz", hash = "sha256:b590ce80c65149194def43ebf0ea1cf0533945502507837389a8d22e3ecbcf05"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.141,<1.35.0"
+botocore = ">=1.34.143,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -366,14 +366,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.141"
+version = "1.34.143"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.34.141-py3-none-any.whl", hash = "sha256:0e661a452c0489b6d62a9c91fed3320d5690a524489a7e50afc8efadb994dba8"},
-    {file = "botocore-1.34.141.tar.gz", hash = "sha256:d2815c09037039a287461eddc07af895d798bc897e6ba4b08f5a12eaa9886ff1"},
+    {file = "botocore-1.34.143-py3-none-any.whl", hash = "sha256:094aea179e8aaa1bc957ad49cc27d93b189dd3a1f3075d8b0ca7c445a2a88430"},
+    {file = "botocore-1.34.143.tar.gz", hash = "sha256:059f032ec05733a836e04e869c5a15534420102f93116f3bc9a5b759b0651caf"},
 ]
 
 [package.dependencies]
@@ -4641,14 +4641,14 @@ url = "../../../libs/serving"
 
 [[package]]
 name = "setuptools"
-version = "70.2.0"
+version = "70.3.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-70.2.0-py3-none-any.whl", hash = "sha256:b8b8060bb426838fbe942479c90296ce976249451118ef566a5a0b7d8b78fb05"},
-    {file = "setuptools-70.2.0.tar.gz", hash = "sha256:bd63e505105011b25c3c11f753f7e3b8465ea739efddaccef8f0efac2137bac1"},
+    {file = "setuptools-70.3.0-py3-none-any.whl", hash = "sha256:fe384da74336c398e0d956d1cae0669bc02eed936cdb1d49b57de1990dc11ffc"},
+    {file = "setuptools-70.3.0.tar.gz", hash = "sha256:f171bab1dfbc86b132997f26a119f6056a57950d058587841a0082e8830f9dc5"},
 ]
 
 [package.extras]
