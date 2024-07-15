@@ -77,7 +77,6 @@ def test_served_topic_model_predict(test_inference_params):
                 "trend_detection": True,
             },
         )
-        print("START PREDICT")
         test_actual_predict_output = served_topic_model.predict(test_input)
         assert test_actual_predict_output.attributes.topic is not None
 
