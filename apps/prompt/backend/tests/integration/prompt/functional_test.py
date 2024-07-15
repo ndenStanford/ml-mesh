@@ -3,12 +3,10 @@
 # 3rd party libraries
 import pytest
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator import PromptInjectionException
-
 # Source
 from src.model.constants import ChatModel
 from src.prompt import functional as F
+from src.prompt_validator import PromptInjectionException
 
 
 @pytest.mark.parametrize(
