@@ -10,13 +10,11 @@ from langchain.chains import ConversationChain
 from langchain_core.runnables.base import RunnableSequence
 from redis_cache import RedisCache
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator import PromptInjectionException
-
 # Source
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
 from src.prompt.tables import PromptTemplate
+from src.prompt_validator import PromptInjectionException
 
 
 @pytest.mark.parametrize(

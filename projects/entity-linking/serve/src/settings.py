@@ -63,12 +63,12 @@ class ELSettings(TrackingSettings):
 
 
 class GlobalSettings(
+    OnclusiveLogSettings,
     ServerModelSettings,
     ELSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     EntityLinkinTrackedModelSettings,
-    OnclusiveLogSettings,
 ):
     """Global server settings."""
 

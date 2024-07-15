@@ -3,8 +3,8 @@
 # 3rd party libraries
 import pytest
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator import (
+# Source
+from src.prompt_validator import (
     PromptInjectionException,
     PromptInjectionValidator,
 )

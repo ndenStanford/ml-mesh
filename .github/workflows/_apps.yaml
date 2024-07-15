@@ -254,7 +254,7 @@ jobs:
           PLATFORM="linux/amd64" \
           ENVIRONMENT="ci"
 
-      - name: Build docker prod image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
+      - name: Build production docker image | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         run: |
           make apps.build/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
@@ -265,7 +265,7 @@ jobs:
           TARGET_BUILD_STAGE="production" \
           PLATFORM="linux/amd64" \
           ENVIRONMENT="ci" \
-          USE_DOCKER_CACHE="${{ inputs.use-cache }}"
+          USE_DOCKER_CACHE="true"
 
       - name: Push prod docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
         run: |
