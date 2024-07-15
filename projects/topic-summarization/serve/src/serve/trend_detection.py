@@ -35,6 +35,7 @@ class TrendDetection:
             ],
             timeout=settings.ES_TIMEOUT,
         )
+        self.es_index = settings.es_index
 
     def remove_weekends(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove weekends.
@@ -85,7 +86,7 @@ class TrendDetection:
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results_all_profile_query = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=all_profile_query(query, start_time, end_time, trend_time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
         if len(results_all_profile_query) > 0:
@@ -100,7 +101,7 @@ class TrendDetection:
 
         # profile topic query
         results_topic_profile_query = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=topic_profile_query(
                 query, start_time, end_time, topic_id, trend_time_interval
             ),
