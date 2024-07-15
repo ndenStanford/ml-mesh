@@ -14,10 +14,8 @@ from langchain_experimental.prompt_injection_identifier import (
 from optimum.onnxruntime import ORTModelForSequenceClassification
 from pydantic import ValidationError
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator.exceptions import (
-    PromptInjectionException,
-)
+# Source
+from src.prompt_validator.exceptions import PromptInjectionException
 
 
 class PatchedHuggingFaceInjectionIdentifier(HuggingFaceInjectionIdentifier):

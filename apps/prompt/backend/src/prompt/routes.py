@@ -8,13 +8,11 @@ from typing import Any, Dict
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, Header, HTTPException, status
 
-# Internal libraries
-from onclusiveml.llms.prompt_validator import PromptInjectionException
-
 # Source
 from src.project.tables import Project
 from src.prompt import functional as F
 from src.prompt.tables import PromptTemplate
+from src.prompt_validator import PromptInjectionException
 from src.settings import get_settings
 
 
