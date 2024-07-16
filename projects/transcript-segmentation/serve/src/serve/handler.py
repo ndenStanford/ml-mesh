@@ -307,7 +307,7 @@ class TranscriptSegmentationHandler:
             "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_ad_alias,
-                "anthropic.claude-instant-v1",
+                settings.default_model_ad,
             ),
             headers=headers,
             json=payload,
@@ -369,7 +369,7 @@ class TranscriptSegmentationHandler:
             "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_alias,
-                "anthropic.claude-instant-v1",
+                settings.default_model_segmentation,
             ),
             headers=headers,
             json=payload,
