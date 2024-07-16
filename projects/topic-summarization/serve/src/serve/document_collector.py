@@ -28,6 +28,7 @@ class DocumentCollector:
             ],
             timeout=settings.ES_TIMEOUT,
         )
+        self.es_index = settings.es_index
 
     def get_documents(
         self,
@@ -49,7 +50,7 @@ class DocumentCollector:
         query = query_profile.es_query(MediaAPISettings())
         # Profile query
         results = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=topic_profile_documents_query(
                 query, start_time, end_time, topic_id, settings.NUM_DOCUMENTS
             ),
