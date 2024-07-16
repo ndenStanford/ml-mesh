@@ -14,9 +14,9 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-0fdef23b3cabab05f
+        default: ami-0036bcb321f81a37c
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-020eedc2951da9189 for inferentia, ami-0fdef23b3cabab05f for cpu, or ami-0afe8751fcfde1e8e
+        description: The EC2 AMI of the self hosted runner. Choose ami-0843e747f2a6db7d0 for inferentia, ami-0036bcb321f81a37c for cpu, or ami-0c80174f344aa1224
           for gpu.
       setup-docker-compose:
         required: true
@@ -125,6 +125,16 @@ jobs:
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
         run: |
+          # Add Docker's official GPG key:
+          sudo apt-get update -y
+          sudo apt-get install -y ca-certificates curl
+          sudo install -m 0755 -d /etc/apt/keyrings
+          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+          sudo chmod a+r /etc/apt/keyrings/docker.asc
+          echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin jq
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
@@ -136,12 +146,12 @@ jobs:
           docker compose version
 
       - name: Check CUDA
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-0afe8751fcfde1e8e' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0c80174f344aa1224' }}
         run: |
           nvidia-smi
 
       - name: Check neuron
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-020eedc2951da9189' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0843e747f2a6db7d0' }}
         run: |
           neuron-ls
           ls /dev/neuron* -l
