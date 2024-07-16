@@ -11,7 +11,10 @@ from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
-from src.serve.exceptions import PromptBackendError
+from src.serve.exceptions import (
+    PromptBackendException,
+    StructuredOutputException,
+)
 from src.serve.handler import TranscriptSegmentationHandler
 from src.serve.schemas import (
     BioResponseSchema,
@@ -65,9 +68,14 @@ class ServedTranscriptSegmentationModel(ServedModel):
                 offset_start_buffer=parameter_input.offset_start_buffer,
                 offset_end_buffer=parameter_input.offset_end_buffer,
             )
-        except PromptBackendError as e:
+        except PromptBackendException as e:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(e),
+            )
+        except StructuredOutputException as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
             )
 

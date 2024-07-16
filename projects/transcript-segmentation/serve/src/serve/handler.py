@@ -12,7 +12,10 @@ from rapidfuzz import fuzz
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.serve.exceptions import PromptBackendError
+from src.serve.exceptions import (
+    PromptBackendException,
+    StructuredOutputException,
+)
 from src.serve.offset import OffsetEnum
 from src.settings import get_api_settings  # type: ignore[attr-defined]
 
@@ -304,7 +307,7 @@ class TranscriptSegmentationHandler:
             "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_ad_alias,
-                settings.default_model_ad,
+                "anthropic.claude-instant-v1",
             ),
             headers=headers,
             json=payload,
@@ -366,13 +369,15 @@ class TranscriptSegmentationHandler:
             "{}/api/v2/prompts/{}/generate/model/{}".format(
                 settings.prompt_api_url,
                 settings.prompt_alias,
-                settings.default_model_segmentation,
+                "anthropic.claude-instant-v1",
             ),
             headers=headers,
             json=payload,
         )
+        if q.status_code == 500:
+            raise StructuredOutputException(error=q.content)
         if q.status_code != 200:
-            raise PromptBackendError(error=q.content)
+            raise PromptBackendException(error=q.content)
 
         if offset_start_buffer == 0.0 and offset_end_buffer == 0.0:
             offset = self.country_offsets.get(country.lower())
