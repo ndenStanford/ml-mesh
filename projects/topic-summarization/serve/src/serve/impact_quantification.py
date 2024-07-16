@@ -42,6 +42,7 @@ class ImpactQuantification:
             ],
             timeout=settings.ES_TIMEOUT,
         )
+        self.es_index = settings.es_index
 
     def decompose_trend(self, series_profile: ArrayLike) -> ArrayLike:
         """Decomposes trend component of a given time series profile using prophet.
@@ -94,14 +95,14 @@ class ImpactQuantification:
         # ========== Profile (global) ==========
         # Global count of all documents from ES
         series_global_es = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=all_global_query(start_time, end_time, settings.time_interval),
         )["aggregations"]["daily_doc_count"]["buckets"]
         # Remove weekends
         series_global_es = remove_weekends(series_global_es)
         # Global count of all documents of a topic from ES
         series_topic_es = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=topic_global_query(
                 start_time, end_time, topic_id, settings.time_interval
             ),
@@ -137,7 +138,7 @@ class ImpactQuantification:
         # ========== Profile (local) ==========
         # Profile count from ES
         series_profile_es = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=all_profile_boolean_query(
                 query, start_time, end_time, settings.time_interval
             ),
@@ -147,7 +148,7 @@ class ImpactQuantification:
         series_profile = np.array([i["doc_count"] for i in series_profile_es])
         # Profile count of a topic from ES
         series_topic_profile_es = self.es.search(
-            index=settings.es_index,
+            index=self.es_index,
             body=topic_profile_query(
                 query, start_time, end_time, topic_id, settings.time_interval
             ),
