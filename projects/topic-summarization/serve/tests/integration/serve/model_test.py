@@ -14,15 +14,6 @@ from src.serve.tables import TopicSummaryDynamoDB
 
 settings = get_settings()
 
-new_es_index = [
-    "crawler-4-2024.03",
-    "crawler-4-2024.02",
-    "crawler-4-2024.01",
-    "crawler-4-2023.12",
-    "crawler-4-2023.11",
-    "crawler",
-]
-
 
 @pytest.mark.order(1)
 def test_served_topic_model__init__():
@@ -55,16 +46,16 @@ def test_served_topic_model_bio(test_expected_bio_output):
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(4)
-def test_served_topic_model_predict(test_inference_params):
+def test_served_topic_model_predict(test_inference_params, test_new_es_index):
     """Tests the ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
     with patch.object(
-        served_topic_model.trend_detector, "es_index", new=new_es_index
+        served_topic_model.trend_detector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.document_collector, "es_index", new=new_es_index
+        served_topic_model.document_collector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.impact_quantifier, "es_index", new=new_es_index
+        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
     ):
         # get_settings.cache_clear()
 
@@ -85,18 +76,18 @@ def test_served_topic_model_predict(test_inference_params):
 @patch.object(TopicSummaryDynamoDB, "save")
 @pytest.mark.order(5)
 def test_served_topic_model_predict_save_dynamodb(
-    mock_topic_summary_dynamodb_save, test_inference_params
+    mock_topic_summary_dynamodb_save, test_inference_params, test_new_es_index
 ):
     """Tests the ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
     with patch.object(
-        served_topic_model.trend_detector, "es_index", new=new_es_index
+        served_topic_model.trend_detector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.document_collector, "es_index", new=new_es_index
+        served_topic_model.document_collector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.impact_quantifier, "es_index", new=new_es_index
+        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
     ):
 
         test_input = PredictRequestSchema.from_data(
@@ -117,17 +108,17 @@ def test_served_topic_model_predict_save_dynamodb(
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(6)
-def test_served_topic_model_predict_query_id(test_inference_params):
+def test_served_topic_model_predict_query_id(test_inference_params, test_new_es_index):
     """Tests the ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
     with patch.object(
-        served_topic_model.trend_detector, "es_index", new=new_es_index
+        served_topic_model.trend_detector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.document_collector, "es_index", new=new_es_index
+        served_topic_model.document_collector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.impact_quantifier, "es_index", new=new_es_index
+        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
     ):
 
         test_input = PredictRequestSchema.from_data(
@@ -145,16 +136,18 @@ def test_served_topic_model_predict_query_id(test_inference_params):
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(7)
-def test_served_topic_model_predict_skip_trend(test_inference_params):
+def test_served_topic_model_predict_skip_trend(
+    test_inference_params, test_new_es_index
+):
     """Tests ServedTopicModel's predict method without trend detection."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
     with patch.object(
-        served_topic_model.trend_detector, "es_index", new=new_es_index
+        served_topic_model.trend_detector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.document_collector, "es_index", new=new_es_index
+        served_topic_model.document_collector, "es_index", new=test_new_es_index
     ), patch.object(
-        served_topic_model.impact_quantifier, "es_index", new=new_es_index
+        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
     ):
 
         test_input = PredictRequestSchema.from_data(

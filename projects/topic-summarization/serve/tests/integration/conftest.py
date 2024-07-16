@@ -26,6 +26,20 @@ def test_inference_params() -> str:
 
 
 @pytest.fixture
+def test_new_es_index():
+    """Mock es index."""
+    new_es_index = [
+        "crawler-4-2024.03",
+        "crawler-4-2024.02",
+        "crawler-4-2024.01",
+        "crawler-4-2023.12",
+        "crawler-4-2023.11",
+        "crawler",
+    ]
+    return new_es_index
+
+
+@pytest.fixture
 def test_client():
     """Client fixture."""
     model_server = get_model_server()
