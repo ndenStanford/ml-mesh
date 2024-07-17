@@ -1,12 +1,14 @@
 """Test routes."""
 
 # Standard Library
+from json import JSONDecodeError
 from unittest.mock import patch
 
 # 3rd party libraries
 import pytest
 from dyntastic.exceptions import DoesNotExist
 from fastapi import status
+from langchain_core.exceptions import OutputParserException
 
 # Source
 from src.project.tables import Project
@@ -205,6 +207,48 @@ def test_generate(mock_generate, alias, model, values, test_client):
     )
     mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
     assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.parametrize(
+    "alias, model, values, exception",
+    [
+        (
+            "prompt-1",
+            "model-1",
+            {"text": ""},
+            JSONDecodeError("JSON decode error", "source", 102),
+        ),
+        (
+            "prompt-2",
+            "model-2",
+            {"text": ""},
+            OutputParserException("Output parser exception"),
+        ),
+    ],
+)
+@patch("src.prompt.functional.generate_from_prompt_template")
+def test_generate_exception(
+    mock_generate, alias, model, values, exception, test_client
+):
+    """Test get generate from prompt template endpoint with exceptions."""
+    mock_generate.side_effect = [exception]
+
+    response = test_client.post(
+        f"/api/v2/prompts/{alias}/generate/model/{model}",
+        headers={"x-api-key": "1234"},
+        json=values,
+    )
+
+    if isinstance(exception, JSONDecodeError):
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert (
+            response.json()["detail"]
+            == "JSON decode error: line 1 column 103 (char 102)"
+        )
+    elif isinstance(exception, OutputParserException):
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.json()["detail"] == "Output parser exception"
+    mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
 
 
 @pytest.mark.parametrize(
