@@ -42,6 +42,15 @@ def mock_response_upstream_error():
 
 
 @pytest.fixture
+def mock_response_structured_output_error():
+    """Mock response for structured output error from prompt backend."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({"message": "Some structured ouput error"})
+    mock_response.status_code = 500
+    return mock_response
+
+
+@pytest.fixture
 def transcript_keywords():
     """Input keyword."""
     return ["Ai"]

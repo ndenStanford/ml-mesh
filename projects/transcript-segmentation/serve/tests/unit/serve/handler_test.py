@@ -9,7 +9,7 @@ import pytest
 
 # Source
 from src.serve.handler import TranscriptSegmentationHandler
-from src.serve.exceptions import PromptBackendError
+from src.serve.exceptions import PromptBackendException, StructuredOutputException
 
 _service = TranscriptSegmentationHandler()
 
@@ -65,7 +65,7 @@ def test_handler_preprocessing_abbrv(
 
 
 @patch("requests.post")
-def test_handler_exception(
+def test_handler_prompt_backend_exception(
     mock_post,
     transcript_input,
     transcript_keywords,
@@ -76,7 +76,29 @@ def test_handler_exception(
     """Test the exception handling."""
     mock_post.return_value = mock_response_upstream_error
 
-    with pytest.raises(PromptBackendError):
+    with pytest.raises(PromptBackendException):
+        _ = _service(
+            word_transcript=transcript_input,
+            keywords=transcript_keywords,
+            offset_start_buffer=transcript_offset[0],
+            offset_end_buffer=transcript_offset[1],
+            country=transcript_country[1],
+        )
+
+
+@patch("requests.post")
+def test_handler_structured_output_exception(
+    mock_post,
+    transcript_input,
+    transcript_keywords,
+    transcript_offset,
+    transcript_country,
+    mock_response_structured_output_error,
+):
+    """Test the exception handling."""
+    mock_post.return_value = mock_response_structured_output_error
+
+    with pytest.raises(StructuredOutputException):
         _ = _service(
             word_transcript=transcript_input,
             keywords=transcript_keywords,

@@ -4,7 +4,6 @@ on  :
   push:
     branches:
       - develop
-      - bug/sonarqube-checks-fail
 jobs:
   build:
     name: Build
@@ -23,20 +22,19 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Clean up Docker
+      - name: Free up disk space
         run: |
-          docker system prune -f
-          docker volume prune -f
-      - name: Clean up unused files
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
           sudo apt-get clean
           sudo apt-get autoremove -y
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo rm -rf /tmp/*
-          sudo rm -rf /var/tmp/*
+          sudo rm -rfv \
+            /usr/local/lib/android \
+            /usr/share/dotnet \
+            /opt/ghc \
+            /usr/local/share/powershell \
+            /usr/share/swift \
+            /usr/local/.ghcup \
+            /usr/lib/jvm \
+            /var/lib/apt/lists/* \
       - name: Install test coverage utils
         run: pip install coverage==7.5.4
       - name: Setup Poetry
