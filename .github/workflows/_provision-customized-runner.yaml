@@ -14,9 +14,9 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-0036bcb321f81a37c
+        default: ami-06d57739e26e67754
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-0843e747f2a6db7d0 for inferentia, ami-0036bcb321f81a37c for cpu, or ami-0c80174f344aa1224
+        description: The EC2 AMI of the self hosted runner. Choose ami-0cb5219ceb9a91441 for inferentia, ami-06d57739e26e67754 for cpu, or ami-0864d43f4d77c8300
           for gpu.
       setup-docker-compose:
         required: true
@@ -122,36 +122,60 @@ jobs:
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
+      # - name: Install docker compose
+      #   if: ${{ inputs.setup-docker-compose }}
+      #   run: |
+      #     # Add Docker's official GPG key:
+      #     # sudo apt-get update -y
+      #     # sudo install -m 0755 -d /etc/apt/keyrings
+      #     # sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+      #     # sudo chmod a+r /etc/apt/keyrings/docker.asc
+      #     # echo \
+      #     #   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      #     #   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      #     #   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      #     sudo apt-get update -y
+      #     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin jq
+      #     sudo touch /etc/docker/daemon.json
+      #     sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
+      #     cat /etc/docker/daemon.json
+      #     sudo service docker restart
+      #     echo "Docker installation file directory:"
+      #     docker info -f '{{ .DockerRootDir}}'
+      #     echo "Docker compose installation complete. Version:"
+      #     docker compose version
+
       - name: Install docker compose
         if: ${{ inputs.setup-docker-compose }}
         run: |
-          # Add Docker's official GPG key:
-          sudo apt-get update -y
-          sudo install -m 0755 -d /etc/apt/keyrings
-          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-          sudo chmod a+r /etc/apt/keyrings/docker.asc
-          echo \
-            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt-get update -y
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin jq
+          echo "Stopping all docker processes"
+          sudo systemctl stop docker
+          sudo systemctl stop docker.socket
+          sudo systemctl stop containerd
+          echo "Installing docker compose"
+          sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
+          sudo yum list docker-ce --showduplicates
+          sudo yum install -y docker-compose-plugin jq
+          echo "Configuring docker dir to mounted EBS volume"
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
           cat /etc/docker/daemon.json
-          sudo service docker restart
+          echo "Restarting docker"
+          sudo systemctl enable docker
+          sudo systemctl start docker
           echo "Docker installation file directory:"
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
 
       - name: Check CUDA
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-0c80174f344aa1224' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0864d43f4d77c8300' }}
         run: |
           nvidia-smi
 
       - name: Check neuron
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-0843e747f2a6db7d0' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0cb5219ceb9a91441' }}
         run: |
           neuron-ls
           ls /dev/neuron* -l

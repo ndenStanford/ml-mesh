@@ -60,7 +60,7 @@ on  :
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
       self-hosted-runner-ami:
         required: false
-        default: ami-0036bcb321f81a37c
+        default: ami-06d57739e26e67754
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       self-hosted-runner-neuron:
