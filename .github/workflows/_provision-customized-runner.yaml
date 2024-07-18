@@ -177,5 +177,4 @@ jobs:
       - name: Check neuron
         if: ${{ inputs.self-hosted-runner-ami == 'ami-05c66f6f98b5a0e7c' }}
         run: |
-          neuron-ls
           ls /dev/neuron* -l
