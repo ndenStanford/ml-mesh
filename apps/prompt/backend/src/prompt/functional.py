@@ -9,12 +9,12 @@ from langchain.memory import ConversationBufferMemory
 
 # Internal libraries
 from onclusiveml.core.retry import retry
-from onclusiveml.llms.prompt_validator import PromptInjectionValidator
 
 # Source
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
 from src.prompt.tables import PromptTemplate
+from src.prompt_validator import PromptInjectionValidator
 from src.settings import get_settings
 
 

@@ -2,19 +2,19 @@
 
 # Standard Library
 import json
+from json import JSONDecodeError
 from typing import Any, Dict
 
 # 3rd party libraries
 from dyntastic.exceptions import DoesNotExist
 from fastapi import APIRouter, Header, HTTPException, status
-
-# Internal libraries
-from onclusiveml.llms.prompt_validator import PromptInjectionException
+from langchain_core.exceptions import OutputParserException
 
 # Source
 from src.project.tables import Project
 from src.prompt import functional as F
 from src.prompt.tables import PromptTemplate
+from src.prompt_validator import PromptInjectionException
 from src.settings import get_settings
 
 
@@ -150,6 +150,11 @@ def generate_text_from_prompt_template(
     except PromptInjectionException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except (JSONDecodeError, OutputParserException) as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         )
 
