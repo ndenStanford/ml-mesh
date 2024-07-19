@@ -14,9 +14,9 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-06d57739e26e67754
+        default: ami-078fc5aa9eaf20502
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-03016a19c08b154ff for inferentia, ami-06d57739e26e67754 for cpu, or ami-0864d43f4d77c8300
+        description: The EC2 AMI of the self hosted runner. Choose ami-01b94142de3350100 for inferentia, ami-078fc5aa9eaf20502 for cpu, or ami-005eed844c599e83c
           for gpu.
       setup-docker-compose:
         required: true
@@ -170,12 +170,12 @@ jobs:
           docker compose version
 
       - name: Check CUDA
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-0864d43f4d77c8300' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-005eed844c599e83c' }}
         run: |
           nvidia-smi
 
       - name: Check neuron
-        if: ${{ inputs.self-hosted-runner-ami == 'ami-03016a19c08b154ff' }}
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-01b94142de3350100' }}
         run: |
           neuron-ls
           ls /dev/neuron* -l
