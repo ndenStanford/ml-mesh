@@ -244,14 +244,14 @@ jobs       :
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0a83d0e10b541ab0e
+            self-hosted-runner-ami: ami-0ce64505c663ca986
             self-hosted-runner-neuron: true
             runner-kind: custom
 
           - name: neuron-inference
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0a83d0e10b541ab0e
+            self-hosted-runner-ami: ami-0ce64505c663ca986
             self-hosted-runner-neuron: true
             runner-kind: custom
 
@@ -407,7 +407,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0a83d0e10b541ab0e
+            self-hosted-runner-ami: ami-0ce64505c663ca986
 
         use-cache: [true]
 
@@ -675,7 +675,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0a83d0e10b541ab0e
+            self-hosted-runner-ami: ami-0ce64505c663ca986
 
           # backfill
           - name: backfill
@@ -781,7 +781,7 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0a83d0e10b541ab0e
+            self-hosted-runner-ami: ami-0ce64505c663ca986
             self-hosted-runner-neuron: true
             use-cache: true
 
