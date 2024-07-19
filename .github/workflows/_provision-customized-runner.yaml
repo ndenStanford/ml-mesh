@@ -132,7 +132,8 @@ jobs:
       #     # sudo chmod a+r /etc/apt/keyrings/docker.asc
       #     # echo \
       #     #   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      #     #   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      #     #   $(. /etc/os-release
+      #  && echo "$VERSION_CODENAME") stable" | \
       #     #   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
       #     sudo apt-get update -y
       #     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin jq
@@ -177,5 +178,4 @@ jobs:
       - name: Check neuron
         if: ${{ inputs.self-hosted-runner-ami == 'ami-0a83d0e10b541ab0e' }}
         run: |
-          neuron-ls
-          ls /dev/neuron* -l
+          echo $(ls /opt/aws/neuron/bin)
