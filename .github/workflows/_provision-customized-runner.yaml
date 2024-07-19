@@ -112,7 +112,7 @@ jobs:
           sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
           sudo dnf list docker-ce --showduplicates
-          sudo dnf install -y docker-compose-plugin jq
+          sudo dnf install -y docker-compose-plugin
           echo "Configuring docker dir to mounted EBS volume"
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
