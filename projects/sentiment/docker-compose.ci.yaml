@@ -11,9 +11,9 @@ services:
       dockerfile: projects/sentiment/train/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train,mode=max
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-train,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-train
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-train
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -55,9 +55,9 @@ services:
       dockerfile: projects/sentiment/compile/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile,mode=max
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-compile,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-compile
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-compile
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -151,9 +151,9 @@ services:
       dockerfile: projects/sentiment/serve/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve,mode=max
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-serve,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-serve
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-serve
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
@@ -248,9 +248,9 @@ services:
       dockerfile: projects/sentiment/backfill/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill,mode=max
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-backfill,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=sentiment-backfill
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=sentiment-backfill
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: sentiment
