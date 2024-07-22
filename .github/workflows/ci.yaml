@@ -267,7 +267,7 @@ jobs       :
 
           - name: beam-worker
             validate-build: false
-            self-hosted-runner-type: m7a.medium
+            self-hosted-runner-type: c6i.large
             self-hosted-runner-ami: ami-078fc5aa9eaf20502
             self-hosted-runner-neuron: false
             runner-kind: custom
@@ -308,35 +308,35 @@ jobs       :
           # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
             base-region: us-east-1
-            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             base-region: us-east-1
-            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
             base-region: us-east-1
-            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
 
           # kubeflow-torch-cpu
           - name: kubeflow-torch-cpu
             base-region: us-east-2
-            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
 
           # kubeflow-data-science
           - name: kubeflow-data-science
             base-region: us-east-2
-            self-hosted-runner-type: m7a.medium # only need the disk space here, not GPUs
+            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
 
