@@ -315,9 +315,9 @@ class TranscriptSegmentationHandler:
 
         json_response = json.loads(q.content)
         # get the time stamp with ads
-        advertisement_detect = json_response.get("advertisement_detect").lower()
+        advertisement_detect = json_response.get("advertisement_detect")
 
-        if advertisement_detect == "yes":
+        if advertisement_detect and advertisement_detect.lower() == "yes":
             return True
         else:
             return False
