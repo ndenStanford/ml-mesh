@@ -65,6 +65,26 @@ def test_handler_preprocessing_abbrv(
 
 
 @patch("requests.post")
+def test_handler_ad(mock_post, ad_input, transcript_keywords, mock_ad_response_yes):
+    """Test ad detect."""
+    mock_post.return_value = mock_ad_response_yes
+
+    res = _service.ad_detect(ad_input, transcript_keywords)
+    assert res is True
+
+
+@patch("requests.post")
+def test_handler_ad_none_output(
+    mock_post, ad_input, transcript_keywords, mock_ad_response_none
+):
+    """Test ad detect."""
+    mock_post.return_value = mock_ad_response_none
+
+    res = _service.ad_detect(ad_input, transcript_keywords)
+    assert res is False
+
+
+@patch("requests.post")
 def test_handler_prompt_backend_exception(
     mock_post,
     transcript_input,
