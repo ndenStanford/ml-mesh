@@ -10,9 +10,9 @@ services:
       dockerfile: apps/prompt/frontend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend,mode=max
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=prompt-frontend,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-frontend
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=prompt-frontend
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
@@ -55,9 +55,9 @@ services:
       dockerfile: apps/prompt/backend/Dockerfile
       target: ${TARGET_BUILD_STAGE:-development}
       cache_to:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend,mode=max
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=prompt-backend,mode=max
       cache_from:
-        - type=s3,bucket=ecr-cache-${DEPLOYMENT},region=us-east-1,name=prompt-backend
+        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=prompt-backend
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
