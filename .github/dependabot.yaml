@@ -11,7 +11,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: 09:00
       timezone: Europe/London
       day: monday
 
@@ -27,7 +27,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "10:00"
+      time: 10:00
       timezone: Europe/London
       day: monday
 
@@ -44,7 +44,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "11:00"
+      time: 11:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -60,7 +60,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "12:00"
+      time: 12:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -75,7 +75,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "13:00"
+      time: 13:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -91,7 +91,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "14:00"
+      time: 14:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -106,7 +106,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "15:00"
+      time: 15:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -121,7 +121,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "16:00"
+      time: 16:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -136,7 +136,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "17:00"
+      time: 17:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -151,7 +151,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "18:00"
+      time: 18:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -166,7 +166,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "19:00"
+      time: 19:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -181,7 +181,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "20:00"
+      time: 20:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -200,7 +200,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "21:00"
+      time: 21:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -215,7 +215,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "22:00"
+      time: 22:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -230,7 +230,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "23:00"
+      time: 23:00
       timezone: Europe/London
       day: monday
     ignore:
@@ -245,7 +245,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "00:00"
+      time: 00:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -260,7 +260,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "01:00"
+      time: 01:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -275,7 +275,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "02:00"
+      time: 02:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -290,7 +290,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "03:00"
+      time: 03:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -311,7 +311,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "04:00"
+      time: 04:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -325,7 +325,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "05:00"
+      time: 05:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -339,7 +339,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "06:00"
+      time: 06:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -356,7 +356,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "07:00"
+      time: 07:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -373,7 +373,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "08:00"
+      time: 08:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -389,7 +389,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "09:00"
+      time: 09:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -406,7 +406,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "10:00"
+      time: 10:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -420,7 +420,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "11:00"
+      time: 11:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -434,7 +434,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "12:00"
+      time: 12:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -451,7 +451,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "13:00"
+      time: 13:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -465,7 +465,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "14:00"
+      time: 14:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -479,7 +479,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "15:00"
+      time: 15:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -495,7 +495,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "16:00"
+      time: 16:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -506,22 +506,6 @@ updates:
   # APPS
   # ====================================
 
-  # ENTITY-FISHING
-  ## backend
-  - package-ecosystem: maven
-    directory: /apps/entity-fishing/backend
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: monthly
-      time: "17:00"
-      timezone: Europe/London
-      day: tuesday
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
   # PROMPT
 
   ## backend
@@ -531,7 +515,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "18:00"
+      time: 18:00
       timezone: Europe/London
       day: tuesday
     ignore:
@@ -546,7 +530,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: monthly
-      time: "19:00"
+      time: 19:00
       timezone: Europe/London
       day: tuesday
     ignore:
