@@ -46,9 +46,9 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: files-changed
         name: Get a list of modified files.
         with:
@@ -72,7 +72,7 @@ jobs:
 
       - name: Install lib dependencies
         if: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
           retry_wait_seconds: ${{ inputs.apply-retry-wait-seconds }}

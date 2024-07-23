@@ -36,9 +36,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         if: ${{ inputs.pull-request }}
         id: files-changed
         name: Get a list of modified files.
@@ -67,7 +67,7 @@ jobs:
         if: ${{ inputs.pull-request }}
         id: pre-commit
         timeout-minutes: ${{ inputs.timeout }}
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
         with:
           extra_args: --verbose --files ${{ steps.files-changed.outputs.all_files }}
 
@@ -75,7 +75,7 @@ jobs:
         if: ${{ !inputs.pull-request || inputs.release }}
         id: pre-commit-all
         timeout-minutes: ${{ inputs.timeout }}
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
         with:
           extra_args: --verbose --all
 
