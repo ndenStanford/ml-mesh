@@ -28,10 +28,10 @@ repos                   :
 
 # Autoformat: YAML,docker...
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-    rev: 0.2.1    # or other specific tag
+    rev: 0.2.1  # or other specific tag
     hooks:
       - id: yamlfmt
-        args: [--mapping, '2', --sequence, '4', --offset, '2', --colons]
+        args: [--mapping, '2', --sequence, '4', --offset, '2', --colons, --preserve-quotes]
 
 
   # =================================
