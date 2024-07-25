@@ -95,6 +95,75 @@ def test_served_transcript_segmentation_model_predict(
     )
 
 
+@pytest.mark.order(4)
+def test_served_transcript_segmentation_model_predict_fr(
+    test_predict_input_fr,
+    test_inference_params,
+    test_expected_predict_output_fr,
+    test_predict_keyword_fr,
+):
+    """Tests the fully initialized and loaded ServedTranscriptSegmentationModel's predict method."""
+    served_transcript_segmentation_model = ServedTranscriptSegmentationModel()
+    served_transcript_segmentation_model.load()
+
+    test_input = PredictRequestSchema.from_data(
+        namespace=settings.model_name,
+        parameters=test_inference_params,
+        attributes={
+            "transcript": test_predict_input_fr,
+            "keywords": test_predict_keyword_fr,
+        },
+    )
+
+    test_actual_predict_output_fr = served_transcript_segmentation_model.predict(
+        test_input
+    )
+
+    assert (
+        abs(
+            test_actual_predict_output_fr.data.attributes.start_time
+            - test_expected_predict_output_fr.data.attributes.start_time
+        )
+        <= 10000
+    )
+    assert (
+        abs(
+            test_actual_predict_output_fr.data.attributes.end_time
+            - test_expected_predict_output_fr.data.attributes.end_time
+        )
+        <= 10000
+    )
+    assert (
+        abs(
+            test_actual_predict_output_fr.data.attributes.transcript_start_time
+            - test_expected_predict_output_fr.data.attributes.transcript_start_time
+        )
+        <= 10000
+    )
+    assert (
+        abs(
+            test_actual_predict_output_fr.data.attributes.transcript_end_time
+            - test_expected_predict_output_fr.data.attributes.transcript_end_time
+        )
+        <= 10000
+    )
+    assert isinstance(test_actual_predict_output_fr.data.attributes.title, str)
+    assert isinstance(test_actual_predict_output_fr.data.attributes.summary, str)
+    assert isinstance(test_actual_predict_output_fr.data.attributes.segment, str)
+    assert (
+        test_actual_predict_output_fr.data.attributes.ad
+        == test_expected_predict_output_fr.data.attributes.ad
+    )
+    assert (
+        test_actual_predict_output_fr.data.identifier
+        == test_expected_predict_output_fr.data.identifier
+    )
+    assert (
+        test_actual_predict_output_fr.data.namespace
+        == test_expected_predict_output_fr.data.namespace
+    )
+
+
 @pytest.mark.order(3)
 def test_served_transcript_segmentation_model_bio(test_expected_bio_output):
     """Tests the fully initialized and loaded ServedTranscriptSegmentationModel's bio method."""
