@@ -253,36 +253,6 @@ class TranscriptSegmentationHandler:
         paragraph = paragraph.replace(" .", ".")
         return paragraph
 
-    def trim_paragraph(self, paragraph: str, keywords: List[str]) -> str:
-        """Trime paragraph to focus on keywords.
-
-        Args:
-            paragraph: combined content from transcript
-            keywords (List[str]): List of keywords
-
-        Returns:
-            str: trimmeded paragraph
-
-        note:
-        """
-        # truncates the paragraph such that it focuses more on the keywords
-        # This is to avoid "lost in the middle" phenomena which is a big problem with LLMs
-        beg, end = len(paragraph), 0
-        lowercase_paragraph = paragraph.lower()
-        indices = [
-            (lowercase_paragraph.find(k.lower()), lowercase_paragraph.rfind(k.lower()))
-            for k in keywords
-        ]
-        beg = min(
-            filter(lambda x: 0 < x[0] < beg or (x[0] > 0 and beg == -1), indices),
-            default=(len(paragraph), 0),
-        )[0]
-        end = max((e_temp for _, e_temp in indices), default=0)
-
-        beg = max(0, beg - settings.CHARACTER_BUFFER)
-        end = end + settings.CHARACTER_BUFFER if end > 0 else len(paragraph)
-        return paragraph[beg:end]
-
     def ad_detect(
         self, paragraph: Optional[str], keywords: Optional[List[str]]
     ) -> Optional[bool]:
@@ -356,12 +326,10 @@ class TranscriptSegmentationHandler:
         """
         # preprocess
         paragraph = self.preprocess_transcript(word_transcript)
-        # Truncate paragraph
-        trimmed_paragraph = self.trim_paragraph(paragraph, keywords)
 
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
         payload = {
-            "input": {"paragraph": trimmed_paragraph, "keywords": keywords},
+            "input": {"paragraph": paragraph, "keywords": keywords},
             "output": settings.segmentation_output_schema,
         }
 
