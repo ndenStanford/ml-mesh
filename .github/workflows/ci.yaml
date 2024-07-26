@@ -311,6 +311,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -318,6 +319,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
@@ -325,6 +327,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            release: true
 
           # kubeflow-torch-cpu
           - name: kubeflow-torch-cpu
@@ -332,6 +335,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
           # kubeflow-data-science
           - name: kubeflow-data-science
@@ -339,6 +343,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
         validate-build: [false]
         region: [us-east-2]
@@ -351,7 +356,7 @@ jobs       :
       base-region: ${{ matrix.image.base-region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       validate-build: ${{ matrix.validate-build }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ matrix.image.release }}
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
