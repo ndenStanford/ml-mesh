@@ -173,7 +173,7 @@ jobs       :
       functional: ${{ matrix.libs.functional }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.f.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
   # ===============================================
   # DOCKER
