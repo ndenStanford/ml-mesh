@@ -211,7 +211,6 @@ jobs       :
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       validate-build: ${{ matrix.image.validate-build }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}

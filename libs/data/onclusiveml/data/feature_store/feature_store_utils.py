@@ -98,7 +98,7 @@ class FeastRepoBuilder:
         )
 
     @staticmethod
-    def resolve_feast_types(type: str) -> str:
+    def resolve_feast_types(type: str) -> Any:
         """Resolves Feast data types.
 
         This static method maps a string representation of a Feast data type to
@@ -134,10 +134,11 @@ class FeastRepoBuilder:
             None
 
         """
-        self.feature_registration_params.fields = [
+        fields = [
             (field[0], self.resolve_feast_types(field[1]))
             for field in self.feature_registration_params.fields
         ]
+
         self.feature_view = FeatureView(
             # The unique name of this feature view. Two feature views in a single
             # project cannot have the same name
@@ -146,10 +147,7 @@ class FeastRepoBuilder:
             # The list of features defined below act as a schema to both define features
             # for both materialization of features into a store, and are used as references
             # during retrieval for building a training dataset or serving features
-            schema=[
-                Field(name=field[0], dtype=field[1])
-                for field in self.feature_registration_params.fields
-            ],
+            schema=[Field(name=field[0], dtype=field[1]) for field in fields],
             online=False,
             source=self.data_source,
             # Tags are user defined key/value pairs that are attached to each
