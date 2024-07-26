@@ -330,14 +330,14 @@ jobs       :
             base-region: us-east-2
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
           # kubeflow-data-science
           - name: kubeflow-data-science
             base-region: us-east-2
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
-            use-cache: false
+            use-cache: true
 
         validate-build: [false]
         region: [us-east-2]
