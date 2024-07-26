@@ -154,7 +154,7 @@ jobs:
           override: true
 
       - name: Generate Release Notes
-        uses: release-drafter/release-drafter@v5.25.0
+        uses: release-drafter/release-drafter@v6
         id: release-drafter
         if: ${{ !inputs.pull-request }}
         with:

@@ -1,9 +1,6 @@
 # Entity linking
 
-This project requires no model artifact, but local development **does** require artifacts of
-dependency services
-- `ner` and
-- `entity-fishing`.
+This project requires a model artifact.
 
 For details on how to run and maintain the `entity-linking` project components, please refer to
 - [the project README](../README.md) and

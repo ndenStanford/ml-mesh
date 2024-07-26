@@ -16,9 +16,6 @@ labels :
   - label: prompt
     files:
       - apps/prompt/*
-  - label: entity_fishing
-    files:
-      - apps/entity-fishing/*
   - label: ner
     files:
       - projects/ner/*

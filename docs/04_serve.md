@@ -27,7 +27,6 @@ The model in question can be a
   or
 - :speedboat: "code-only" model *without artifact* files and no AI model registry entry, as is the case for
   - `lsh` :books::arrow_forward::hash::hash:
-  - `entity-fishing` :fishing_pole_and_fish:
   - `summarization` :books::arrow_forward::memo:
 
 It draws its configurations from the `src/serve/params.py` module, which parses all required
@@ -40,7 +39,6 @@ Projects implementing a `serve` component are
 - `ner`: :books::arrow_forward::european_castle::church::hotel: | :factory:
 - `sentiment`: :smile:/:frowning: | :factory:
 - `lsh` :books::arrow_forward::hash::hash: | :speedboat:
-- `entity-fishing` :fishing_pole_and_fish: | :speedboat:
 - `summarization` :books::arrow_forward::memo:| :speedboat:
 
 ### 2.1 Environment variables :deciduous_tree:

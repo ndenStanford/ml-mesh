@@ -14,30 +14,10 @@ on  :
         description: The EC2 instance type of the self hosted runner.
       self-hosted-runner-ami:
         required: false
-        default: ami-03e201058e36661a3
+        default: ami-078fc5aa9eaf20502
         type: string
-        description: The EC2 AMI of the self hosted runner. Choose ami-03e201058e36661a3 for inferentia, ami-0255b953a852e0cb5 for cpu, or ami-0af5c083127a8adce
+        description: The EC2 AMI of the self hosted runner. Choose ami-0ce64505c663ca986 for inferentia, ami-078fc5aa9eaf20502 for cpu, or ami-005eed844c599e83c
           for gpu.
-      setup-docker-compose:
-        required: true
-        default: true
-        type: boolean
-        description: Whether to set up docker compose on the runner.
-      setup-neuron:
-        required: true
-        default: true
-        type: boolean
-        description: Whether to set up neuron driver and runtime OS libraries on the runner.
-      neuron-dkms-version:
-        required: false
-        default: aws-neuronx-dkms-2.9.4.0
-        type: string
-        description: 'The neuron driver version to be installed. Valid options are: `aws-neuron-dkms-2.3.26.*` or `aws-neuronx-dkms-2.*`'
-      neuron-tools-version:
-        required: false
-        default: aws-neuronx-tools-2.10.1.0
-        type: string
-        description: The neuron inspection tool suite version to be installed. Valid options are:`aws-neuron-tools-2.1.4.*` or `aws-neuronx-tools-2.*`
     secrets:
       AWS_DEFAULT_REGION:
         required: true
@@ -63,7 +43,7 @@ jobs:
   provision-runner:
     name: Provision self-hosted EC2 runner
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     environment: ${{ inputs.environment }}
     outputs:
       label: ${{ fromJSON( steps.start-ec2-runner.outputs.outputs ).label }}
@@ -71,7 +51,7 @@ jobs:
 
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -81,7 +61,7 @@ jobs:
         id: start-ec2-runner
         uses: Wandalen/wretry.action@master
         with:
-          action: machulav/ec2-github-runner@v2.3.4
+          action: machulav/ec2-github-runner@v2.3.6
           with: |
             mode: start
             github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
@@ -97,8 +77,9 @@ jobs:
                 {"Key": "Stack", "Value": "mesh"},
                 {"Key": "Billing", "Value": "ML"}
               ]
-          attempt_limit: 3
+          attempt_limit: 5
           attempt_delay: 10
+
 
   customize-runner:
     name: Customize self-hosted EC2 runner
@@ -121,39 +102,17 @@ jobs:
           sudo mkdir /mnt/ebs # Create mount point
           sudo mount -t xfs -o nouuid /dev/nvme1n1 ${{ env.ebs-mount-point }} # Mount drive
 
-      - name: Install neuron libraries
-        if: ${{ inputs.setup-neuron }}
-        run: |
-          echo "Installing neuron libraries"
-          sudo tee /etc/yum.repos.d/neuron.repo > /dev/null <<EOF
-          [neuron]
-          name=Neuron YUM Repository
-          baseurl=https://yum.repos.neuron.amazonaws.com
-          enabled=1
-          metadata_expire=0
-          EOF
-          sudo rpm --import https://yum.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB
-          sudo yum update -y
-          sudo yum install kernel-devel-$(uname -r) kernel-headers-$(uname -r) -y
-          sudo yum install ${{ inputs.neuron-dkms-version }} -y
-          sudo yum install ${{ inputs.neuron-tools-version }} -y
-          export PATH=/opt/aws/neuron/bin:$PATH
-          echo "Available neuron device(s):"
-          neuron-ls
-          ls /dev/neuron* -l
-
       - name: Install docker compose
-        if: ${{ inputs.setup-docker-compose }}
         run: |
           echo "Stopping all docker processes"
           sudo systemctl stop docker
           sudo systemctl stop docker.socket
           sudo systemctl stop containerd
           echo "Installing docker compose"
-          sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           sudo sed -i 's/$releasever/7/g' /etc/yum.repos.d/docker-ce.repo
-          sudo yum list docker-ce --showduplicates
-          sudo yum install -y docker-compose-plugin jq
+          sudo dnf list docker-ce --showduplicates
+          sudo dnf install -y docker-compose-plugin
           echo "Configuring docker dir to mounted EBS volume"
           sudo touch /etc/docker/daemon.json
           sudo jq -n --arg docker_dir "${{ env.ebs-mount-point }}/docker" '{"data-root": $docker_dir}' > /etc/docker/daemon.json
@@ -165,3 +124,14 @@ jobs:
           docker info -f '{{ .DockerRootDir}}'
           echo "Docker compose installation complete. Version:"
           docker compose version
+
+      - name: Check CUDA
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-005eed844c599e83c' }}
+        run: |
+          nvidia-smi
+
+      - name: Check neuron
+        if: ${{ inputs.self-hosted-runner-ami == 'ami-0ce64505c663ca986' }}
+        run: |
+          export PATH="/opt/aws/neuron/bin:$PATH"
+          neuron-ls

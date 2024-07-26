@@ -10,10 +10,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "09:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
 
   # ====================================
   # DOCKER
@@ -26,10 +26,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "10:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
 
     ignore:
       - dependency-name: '*'
@@ -43,10 +43,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "11:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -59,10 +59,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "12:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -74,10 +74,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "13:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -90,10 +90,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "14:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -105,10 +105,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "15:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -120,10 +120,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "16:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -135,10 +135,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "17:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -150,10 +150,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "18:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -165,10 +165,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "19:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -180,10 +180,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "20:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -199,10 +199,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "21:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -214,10 +214,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "22:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -229,10 +229,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "23:00"
-      timezone: Europe/London
-      day: monday
+      timezone: "Europe/London"
+      day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -244,10 +244,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "00:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -259,10 +259,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "01:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -274,10 +274,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "02:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -289,10 +289,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "03:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -310,10 +310,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "04:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -324,10 +324,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "05:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -338,10 +338,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "06:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -355,10 +355,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "07:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -372,10 +372,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "08:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -388,10 +388,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "09:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -405,10 +405,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "10:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -419,10 +419,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "11:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -433,10 +433,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "12:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -450,10 +450,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "13:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -464,10 +464,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "14:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -478,10 +478,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "15:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -494,10 +494,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "16:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -505,22 +505,6 @@ updates:
   # ====================================
   # APPS
   # ====================================
-
-  # ENTITY-FISHING
-  ## backend
-  - package-ecosystem: maven
-    directory: /apps/entity-fishing/backend
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: monthly
-      time: "17:00"
-      timezone: Europe/London
-      day: tuesday
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
 
   # PROMPT
 
@@ -530,10 +514,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "18:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
@@ -545,10 +529,10 @@ updates:
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
-      interval: monthly
+      interval: "monthly"
       time: "19:00"
-      timezone: Europe/London
-      day: tuesday
+      timezone: "Europe/London"
+      day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]

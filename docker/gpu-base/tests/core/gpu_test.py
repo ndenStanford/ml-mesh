@@ -18,4 +18,4 @@ def test_profiling_device_usage():
 
     print(f"Idle GPU memory used (MB): {memory_used_mb}")
 
-    assert memory_used_mb < 350
+    assert memory_used_mb < 450

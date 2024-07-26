@@ -51,6 +51,28 @@ def mock_response_structured_output_error():
 
 
 @pytest.fixture
+def ad_input():
+    """Sample ad input."""
+    return "This is a sample."
+
+
+@pytest.fixture
+def mock_ad_response_yes():
+    """Mock response for existing ad."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({"advertisement_detect": "Yes"})
+    return mock_response
+
+
+@pytest.fixture
+def mock_ad_response_none():
+    """Mock response for none ad."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({})
+    return mock_response
+
+
+@pytest.fixture
 def transcript_keywords():
     """Input keyword."""
     return ["Ai"]
