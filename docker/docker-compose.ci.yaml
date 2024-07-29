@@ -37,6 +37,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: fastapi-serve
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
     depends_on:
@@ -94,6 +95,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: gpu-train
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
 
@@ -130,6 +132,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: neuron-compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
 
@@ -159,6 +162,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: neuron-inference
         NEURON_COMPILE_OUTPUT_DIR: tests/input_inference # /docker/neuron-inference/tests/input_inference in container
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
