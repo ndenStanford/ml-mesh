@@ -1,7 +1,8 @@
 ARG AWS_ACCOUNT_ID
 ARG IMAGE_TAG
+ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:$BASE_IMAGE_TAG as builder
 
 ARG IMAGE_NAME
 

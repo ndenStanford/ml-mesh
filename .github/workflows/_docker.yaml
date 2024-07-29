@@ -31,7 +31,7 @@ on  :
         type: boolean
         description: If true, builds development stage and runs its build validation pytest suite marked by 'build'.
       release:
-        required: false
+        required: true
         default: true
         type: boolean
         description: If false, only the images that have been changed are ran, otherwise every image is ran.

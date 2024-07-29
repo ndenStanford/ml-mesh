@@ -30,6 +30,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: fastapi-serve
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
     depends_on:
@@ -85,6 +86,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: gpu-train
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
 
@@ -122,6 +124,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: neuron-compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
     depends_on:
@@ -157,6 +160,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: neuron-inference
         NEURON_COMPILE_OUTPUT_DIR: tests/input_inference # /docker/neuron-inference/tests/input_inference in container
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
@@ -190,6 +194,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: kubeflow-jupyter
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
     ports:
@@ -210,6 +215,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: kubeflow-torch-cpu
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
     ports:
@@ -230,6 +236,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: kubeflow-data-science
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     ports:
@@ -250,6 +257,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: kubeflow-torch-gpu
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     ports:
@@ -300,6 +308,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-${IMAGE_TAG}}
         IMAGE_NAME: kubeflow-torch-inf
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     ports:

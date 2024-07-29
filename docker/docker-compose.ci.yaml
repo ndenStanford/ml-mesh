@@ -187,6 +187,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: kubeflow-jupyter
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
     entrypoint: [pwd]
@@ -207,6 +208,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: kubeflow-torch-cpu
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
     entrypoint: [pwd]
@@ -227,6 +229,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: kubeflow-data-science
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     entrypoint: [pwd]
@@ -247,6 +250,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
         IMAGE_NAME: kubeflow-torch-gpu
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     entrypoint: [pwd]
@@ -287,6 +291,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.7.2}
         IMAGE_NAME: kubeflow-torch-inf
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     entrypoint: [pwd]
