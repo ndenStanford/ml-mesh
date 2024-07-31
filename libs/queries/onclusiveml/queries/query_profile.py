@@ -5,6 +5,8 @@
 from typing import Dict, Optional, Union
 
 # 3rd party libraries
+import ast
+import json
 import requests
 from pydantic import SecretStr, Field
 
@@ -28,19 +30,21 @@ class MediaAPISettings(OnclusiveBaseSettings):
         default="...",
         exclude=True,
     )
+    media_username: SecretStr = Field(
+        default="...",
+        exclude=True,
+    )
+    media_password: SecretStr = Field(
+        default="...",
+        exclude=True,
+    )
+
     grant_type: str = "client_credentials"
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
     ml_query_id: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
     authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
     media_api_url: str = "https://staging-querytool-api.platform.onclusive.org"
-
-    def get_client_secret_value(self) -> str:
-        """Get media_client_secret."""
-        return self.media_client_secret.get_secret_value()
-
-    def get_client_id_value(self) -> str:
-        """Get media_client_id."""
-        return self.media_client_id.get_secret_value()
+    media_api_base_usl: str = "https://crawler-api-prod.airpr.com/v1"
 
 
 class BaseQueryProfile(OnclusiveBaseModel):
@@ -67,10 +71,14 @@ class BaseQueryProfile(OnclusiveBaseModel):
     def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
         """Elastic search query."""
         # call the media to translate Boolean query -> ES query
-        response = self._from_boolean_to_media_api(settings)
-        if response:
-            data = response.get("query", {})
-            return {"bool": data["es_query"]}
+        if hasattr(self, "query"):
+            response = self._from_boolean_to_media_api(settings)
+            if response:
+                data = response.get("query", {})
+                return {"bool": data["es_query"]}
+        elif hasattr(self, "media_query"):
+            response = self.run(settings)
+            return response
         else:
             raise QueryESException()
 
@@ -96,6 +104,35 @@ class BaseQueryProfile(OnclusiveBaseModel):
             return response.json()
         else:
             raise QueryStringException(boolean_query=self.query)
+
+    def run(
+        self,
+        settings: MediaAPISettings,
+        page: int = 1,
+        limit: int = 25,
+        only_id: bool = True,
+    ) -> Union[Dict, None]:
+        """Runs a media API query."""
+        query = self.media_query
+        query["page"] = page
+        query["limit"] = limit
+        query["sort"] = ["_score"]
+        query["show_query"] = True
+
+        MEDIA_API_BASE_URL = settings.media_api_base_usl
+        username = settings.media_username.get_secret_value()
+        password = settings.media_password.get_secret_value()
+
+        if only_id:
+            query["return_fields"] = ["id", "url", "content"]
+        res = requests.post(
+            f"{MEDIA_API_BASE_URL}/search/articles",
+            json=query,
+            auth=(username, password),
+        )
+        json_res = res.json()
+        final_res = json.loads(json_res["es_query"])["query"]
+        return final_res
 
 
 class StringQueryProfile(BaseQueryProfile):
@@ -128,3 +165,16 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
             return request_result.json().get("booleanQuery")
         else:
             raise QueryIdException(query_id=self.query_id)
+
+
+class MediaApiStringQuery(BaseQueryProfile):
+    """360 Media Api query to es query."""
+
+    string_query: str
+
+    @property
+    def media_query(self) -> str:
+        """Media Api String query."""
+        # api call to query tool
+        json_query = ast.literal_eval(self.string_query)
+        return json_query

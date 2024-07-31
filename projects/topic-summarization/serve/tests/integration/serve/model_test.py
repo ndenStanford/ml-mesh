@@ -136,6 +136,36 @@ def test_served_topic_model_predict_query_id(test_inference_params, test_new_es_
 
 @freeze_time("2024-03-15 15:01:00", tick=True)
 @pytest.mark.order(7)
+def test_served_topic_model_predict_media_api_query(
+    test_inference_params, test_new_es_index, test_media_api_query
+):
+    """Tests the ServedTopicModel's predict method."""
+    served_topic_model = ServedTopicModel()
+    served_topic_model.load()
+
+    with patch.object(
+        served_topic_model.trend_detector, "es_index", new=test_new_es_index
+    ), patch.object(
+        served_topic_model.document_collector, "es_index", new=test_new_es_index
+    ), patch.object(
+        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
+    ):
+
+        test_input = PredictRequestSchema.from_data(
+            namespace=settings.model_name,
+            parameters=test_inference_params,
+            attributes={
+                "query_id": test_media_api_query,  # noqa: E501
+                "topic_id": 257,
+                "trend_detection": True,
+            },
+        )
+        test_actual_predict_output = served_topic_model.predict(test_input)
+        assert test_actual_predict_output.attributes.topic is not None
+
+
+@freeze_time("2024-03-15 15:01:00", tick=True)
+@pytest.mark.order(7)
 def test_served_topic_model_predict_skip_trend(
     test_inference_params, test_new_es_index
 ):

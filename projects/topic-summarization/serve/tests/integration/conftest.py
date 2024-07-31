@@ -40,6 +40,12 @@ def test_new_es_index():
 
 
 @pytest.fixture
+def test_media_api_query():
+    """Input media api query."""
+    return """{"query":{"advanced":{"terms":"(content:\\"Fidelity\\" || title:\\"Fidelity\\" || author:\\"Fidelity\\")"}},"source":"360","limit":100,"page":1,"filters":{"date":{"start":"2024-06-23 00:00","end":"2024-07-23 23:59","time_zone":"-04:00"},"lang":[],"pagerank":{"min":0,"max":10},"country":[],"domains":[],"es_filter":{"must_not":[{"prefix":{"licenses":{"value":"AGR:"}}},{"bool":{"must":[{"bool":{"must_not":{"term":{"market.country":"USA"}}}},{"bool":{"must":{"terms":{"domain.raw":["criticalmention.onclusive.com"]}}}}]}}],"must":[],"should":[{"bool":{"must_not":[{"exists":{"field":"licenses"}}],"must":[]}}],"should_minimum_match":1}},"exclude":{"country":[],"domains":["spain.onclusive.com","news.google.com"]},"sort":[{"published_on":{"order":"desc"}}],"return_fields":["id","ave","amplification","author","country","domain","lang","publication","published_on","reach","summary","title","url","score","media_type","pagerank","licenses","publication_details","sentiment","author_id","thumbnail_url","metadata"],"media_types":["web","print","tv","radio"]}"""  # noqa: E501
+
+
+@pytest.fixture
 def test_client():
     """Client fixture."""
     model_server = get_model_server()

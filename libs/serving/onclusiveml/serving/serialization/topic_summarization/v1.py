@@ -19,6 +19,7 @@ class PredictRequestAttributeSchemaV1(JsonApiSchema):
     query_id: Optional[str] = None
     media_api_version: Optional[str] = "1"
     save_report_dynamodb: bool = False
+    media_api_query: Optional[str] = None
 
 
 class PredictRequestParametersSchemaV1(JsonApiSchema):
