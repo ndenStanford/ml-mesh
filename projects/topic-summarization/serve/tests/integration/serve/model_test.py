@@ -134,7 +134,7 @@ def test_served_topic_model_predict_query_id(test_inference_params, test_new_es_
         assert test_actual_predict_output.attributes.topic is not None
 
 
-@freeze_time("2024-03-15 15:01:00", tick=True)
+@freeze_time("2024-07-23 15:01:00", tick=True)
 @pytest.mark.order(7)
 def test_served_topic_model_predict_media_api_query(
     test_inference_params, test_new_es_index, test_media_api_query
@@ -155,7 +155,7 @@ def test_served_topic_model_predict_media_api_query(
             namespace=settings.model_name,
             parameters=test_inference_params,
             attributes={
-                "query_id": test_media_api_query,  # noqa: E501
+                "media_api_query": test_media_api_query,  # noqa: E501
                 "topic_id": 257,
                 "trend_detection": True,
             },

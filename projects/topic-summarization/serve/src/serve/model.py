@@ -34,6 +34,7 @@ from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     BaseQueryProfile,
     ProductionToolsQueryProfile,
+    MediaApiStringQuery,
 )
 
 logger = get_default_logger(__name__)
