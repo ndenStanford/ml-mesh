@@ -3,7 +3,9 @@
 from unittest.mock import patch
 
 # 3rd party libraries
+import pandas as pd
 import pytest
+from datetime import datetime
 from freezegun import freeze_time
 
 # Source
@@ -137,18 +139,18 @@ def test_served_topic_model_predict_query_id(test_inference_params, test_new_es_
 @freeze_time("2024-07-23 15:01:00", tick=True)
 @pytest.mark.order(7)
 def test_served_topic_model_predict_media_api_query(
-    test_inference_params, test_new_es_index, test_media_api_query
+    test_inference_params, test_media_api_es_index, test_media_api_query
 ):
     """Tests the ServedTopicModel's predict method."""
     served_topic_model = ServedTopicModel()
     served_topic_model.load()
 
     with patch.object(
-        served_topic_model.trend_detector, "es_index", new=test_new_es_index
+        served_topic_model.trend_detector, "es_index", new=test_media_api_es_index
     ), patch.object(
-        served_topic_model.document_collector, "es_index", new=test_new_es_index
+        served_topic_model.document_collector, "es_index", new=test_media_api_es_index
     ), patch.object(
-        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
+        served_topic_model.impact_quantifier, "es_index", new=test_media_api_es_index
     ):
 
         test_input = PredictRequestSchema.from_data(
@@ -156,12 +158,34 @@ def test_served_topic_model_predict_media_api_query(
             parameters=test_inference_params,
             attributes={
                 "media_api_query": test_media_api_query,  # noqa: E501
-                "topic_id": 257,
+                "topic_id": 59,
                 "trend_detection": True,
             },
         )
-        test_actual_predict_output = served_topic_model.predict(test_input)
-        assert test_actual_predict_output.attributes.topic is not None
+        inputs = test_input.attributes
+        query_profile = served_topic_model.get_query_profile(inputs)
+        topic_id = inputs.topic_id
+
+        trend_end_time = pd.Timestamp(datetime.now())
+        trend_start_time = trend_end_time - pd.Timedelta(days=14)
+        topic_document_threshold = 0.01
+        trend_time_interval = "12h"
+
+        (
+            trend_found,
+            inflection_point,
+            query_all_doc_count,
+            query_topic_doc_count,
+        ) = served_topic_model.trend_detector.single_topic_trend(
+            query_profile,
+            topic_id,
+            trend_start_time,
+            trend_end_time,
+            topic_document_threshold,
+            trend_time_interval,
+        )
+        assert query_all_doc_count is not None
+        assert query_topic_doc_count is not None
 
 
 @freeze_time("2024-03-15 15:01:00", tick=True)

@@ -40,9 +40,181 @@ def test_new_es_index():
 
 
 @pytest.fixture
+def test_media_api_es_index():
+    """Mock media api es index."""
+    new_es_index = [
+        "crawler-4-2024.07",
+        "crawler-5-2024.06",
+        "crawler",
+    ]
+    return new_es_index
+
+
+@pytest.fixture
 def test_media_api_query():
     """Input media api query."""
-    return """{"query":{"advanced":{"terms":"(content:\\"Fidelity\\" || title:\\"Fidelity\\" || author:\\"Fidelity\\")"}},"source":"360","limit":100,"page":1,"filters":{"date":{"start":"2024-06-23 00:00","end":"2024-07-23 23:59","time_zone":"-04:00"},"lang":[],"pagerank":{"min":0,"max":10},"country":[],"domains":[],"es_filter":{"must_not":[{"prefix":{"licenses":{"value":"AGR:"}}},{"bool":{"must":[{"bool":{"must_not":{"term":{"market.country":"USA"}}}},{"bool":{"must":{"terms":{"domain.raw":["criticalmention.onclusive.com"]}}}}]}}],"must":[],"should":[{"bool":{"must_not":[{"exists":{"field":"licenses"}}],"must":[]}}],"should_minimum_match":1}},"exclude":{"country":[],"domains":["spain.onclusive.com","news.google.com"]},"sort":[{"published_on":{"order":"desc"}}],"return_fields":["id","ave","amplification","author","country","domain","lang","publication","published_on","reach","summary","title","url","score","media_type","pagerank","licenses","publication_details","sentiment","author_id","thumbnail_url","metadata"],"media_types":["web","print","tv","radio"]}"""  # noqa: E501
+    return """{
+            "query": {
+                "simple": {
+                    "terms": "(\\"biden\\")",
+                    "case_sensitive_terms": None,
+                    "operator": "and",
+                    "search_fields": ["content", "title", "author"]
+                }
+            },
+            "source": "360",
+            "limit": 100,
+            "page": 1,
+            "filters": {
+                "date": {
+                    "start": "2024-06-15 16:09",
+                    "end": "2024-07-15 18:09",
+                    "time_zone": "+00:00"
+                },
+                "lang": [],
+                "pagerank": {
+                    "min": 0,
+                    "max": 10
+                },
+                "country": ["GBR"],
+                "domains": [],
+                "relevance": {
+                    "min": 0
+                },
+                "es_filter": {
+                    "must_not": [
+                        {
+                            "multi_match": {
+                                "query": "stocks",
+                                "type": "cross_fields",
+                                "fields": ["title", "content"],
+                                "operator": "and",
+                                "minimum_should_match": 3
+                            }
+                        },
+                        {
+                            "bool": {
+                                "minimum_should_match": 2,
+                                "should": [
+                                    {
+                                        "multi_match": {
+                                            "query": "NYSE",
+                                            "type": "cross_fields",
+                                            "fields": ["title", "content"],
+                                            "operator": "and"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "nasdaq",
+                                            "type": "cross_fields",
+                                            "fields": ["title", "content"],
+                                            "operator": "and"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "DJIA",
+                                            "type": "cross_fields",
+                                            "fields": ["title", "content"],
+                                            "operator": "and"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "S&P",
+                                            "type": "cross_fields",
+                                            "fields": ["title", "content"],
+                                            "operator": "and"
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "stock pick",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "stock performance",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "stock investor",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "stock market",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "stock price",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "stock prices",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "earnings snapshot",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    },
+                                    {
+                                        "multi_match": {
+                                            "query": "Dow jones",
+                                            "type": "phrase",
+                                            "fields": ["title", "content"],
+                                            "slop": 0
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "exclude": {
+                "country": [],
+                "domains": ["metabase.moreover.com", "nyt.com"]
+            },
+            "sort": [
+                {
+                    "published_on": {
+                        "order": "desc"
+                    }
+                }
+            ],
+            "profile_uuid": "be8d4f51-790f-4d22-9ec8-dc0a9b41e9de",
+            "return_fields": [
+                "id", "ave", "amplification", "author", "country", "domain", "lang", "publication", "published_on", "reach", "summary", "title", "url", "score", "media_type", "pagerank", "licenses", "publication_details", "sentiment", "author_id", "thumbnail_url", "metadata"
+            ],
+            "media_types": ["print"]
+        }"""  # noqa: E501
 
 
 @pytest.fixture
