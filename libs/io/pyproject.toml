@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "fileio"
+name = "io"
 version = "0.1.0"
 description = "Files management"
 authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
-readme = "README.md"
+packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
 boto3 = "1.28.29"
+core = {path = "../core"}
 
 
 [tool.poetry.group.dev.dependencies]
