@@ -67,6 +67,11 @@ on  :
         required: false
         default: true
         description: Whether to use docker caching during building and pushing of the images.
+      push-image:
+        type: boolean
+        required: false
+        default: false
+        description: Flag to push Docker image to ECR
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -236,6 +241,7 @@ jobs:
             AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
+        if: inputs.push-image == 'true'
         run: |
           make docker.deploy/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
