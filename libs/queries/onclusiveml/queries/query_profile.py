@@ -71,14 +71,10 @@ class BaseQueryProfile(OnclusiveBaseModel):
     def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
         """Elastic search query."""
         # call the media to translate Boolean query -> ES query
-        if hasattr(self, "query"):
-            response = self._from_boolean_to_media_api(settings)
-            if response:
-                data = response.get("query", {})
-                return {"bool": data["es_query"]}
-        elif hasattr(self, "media_query"):
-            response = self.run(settings)
-            return response
+        response = self._from_boolean_to_media_api(settings)
+        if response:
+            data = response.get("query", {})
+            return {"bool": data["es_query"]}
         else:
             raise QueryESException()
 
@@ -104,35 +100,6 @@ class BaseQueryProfile(OnclusiveBaseModel):
             return response.json()
         else:
             raise QueryStringException(boolean_query=self.query)
-
-    def run(
-        self,
-        settings: MediaAPISettings,
-        page: int = 1,
-        limit: int = 25,
-        only_id: bool = True,
-    ) -> Union[Dict, None]:
-        """Runs a media API query."""
-        query = self.media_query
-        query["page"] = page
-        query["limit"] = limit
-        query["sort"] = ["_score"]
-        query["show_query"] = True
-
-        MEDIA_API_BASE_URL = settings.media_api_base_usl
-        username = settings.media_username.get_secret_value()
-        password = settings.media_password.get_secret_value()
-
-        if only_id:
-            query["return_fields"] = ["id", "url", "content"]
-        res = requests.post(
-            f"{MEDIA_API_BASE_URL}/search/articles",
-            json=query,
-            auth=(username, password),
-        )
-        json_res = res.json()
-        final_res = json.loads(json_res["es_query"])["query"]
-        return final_res
 
 
 class StringQueryProfile(BaseQueryProfile):
@@ -178,3 +145,41 @@ class MediaApiStringQuery(BaseQueryProfile):
         # api call to query tool
         json_query = ast.literal_eval(self.string_query)
         return json_query
+
+    def run(
+        self,
+        settings: MediaAPISettings,
+        page: int = 1,
+        limit: int = 25,
+        only_id: bool = True,
+    ) -> Union[Dict, None]:
+        """Runs a media API query to generate es query."""
+        query = self.media_query
+        query["page"] = page
+        query["limit"] = limit
+        query["sort"] = ["_score"]
+        query["show_query"] = True
+
+        MEDIA_API_BASE_URL = settings.media_api_base_usl
+        username = settings.media_username.get_secret_value()
+        password = settings.media_password.get_secret_value()
+
+        if only_id:
+            query["return_fields"] = ["id", "url", "content"]
+        res = requests.post(
+            f"{MEDIA_API_BASE_URL}/search/articles",
+            json=query,
+            auth=(username, password),
+        )
+        json_res = res.json()
+        final_res = json.loads(json_res["es_query"])["query"]
+        return final_res
+
+    def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
+        """Elastic search query."""
+        # call the media to translate Boolean query -> ES query
+        response = self.run(settings)
+        if response:
+            return response
+        else:
+            raise QueryESException()
