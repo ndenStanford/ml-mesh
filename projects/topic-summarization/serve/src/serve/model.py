@@ -48,7 +48,7 @@ class ServedTopicModel(ServedModel):
     predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
     bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
-    def preprocess_string_query(self, query_string: str) -> str:
+    def _preprocess_string_query(self, query_string: str) -> str:
         """Pre processing of query strings."""
         preprocessed_query = query_string.replace('\\"', '"')
         return preprocessed_query
@@ -57,7 +57,7 @@ class ServedTopicModel(ServedModel):
         """Convert user profile input into appropriate Profile class."""
         if inputs.query_string:
             return StringQueryProfile(
-                string_query=self.preprocess_string_query(inputs.query_string)
+                string_query=self._preprocess_string_query(inputs.query_string)
             )
         elif inputs.query_id:
             return ProductionToolsQueryProfile(
