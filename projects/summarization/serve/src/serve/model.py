@@ -91,8 +91,8 @@ class SummarizationServedModel(ServedModel):
                 output_language = input_language
 
             alias = settings.summarization_prompts[input_language][output_language][
-                "alias"
-            ]
+                "bespoke-summary"
+            ]["alias"]
         except KeyError:
             logger.error("Summarization language not supported.")
             raise HTTPException(

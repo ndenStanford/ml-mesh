@@ -33,17 +33,43 @@ class ApplicationSettings(OnclusiveBaseSettings):
 
     summarization_prompts: Dict[str, Dict[str, Dict[str, str]]] = {
         "en": {
-            "en": {"alias": "ml-summarization-english"},
+            "en": {
+                "alias": "ml-summarization-english",
+                "bespoke-summary": {"alias": "bespokse-summary-uk"},
+            },
             "fr": {"alias": "ml-summarization-english-french"},
         },
         "fr": {
-            "fr": {"alias": "ml-summarization-french"},
+            "fr": {
+                "alias": "ml-summarization-french",
+                "bespoke-summary": {"alias": "bespokse-summary-fr"},
+            },
             "en": {"alias": "ml-summarization-french-english"},
         },
-        "de": {"de": {"alias": "ml-summarization-german"}},
-        "it": {"it": {"alias": "ml-summarization-italian"}},
-        "es": {"es": {"alias": "ml-summarization-spanish"}},
-        "ca": {"ca": {"alias": "ml-summarization-catalan"}},
+        "de": {
+            "de": {
+                "alias": "ml-summarization-german",
+                "bespoke-summary": {"alias": "bespokse-summary-de"},
+            }
+        },
+        "it": {
+            "it": {
+                "alias": "ml-summarization-italian",
+                "bespoke-summary": {"alias": "bespokse-summary-it-theme"},
+            }
+        },
+        "es": {
+            "es": {
+                "alias": "ml-summarization-spanish",
+                "bespoke-summary": {"alias": "bespokse-summary-sp"},
+            }
+        },
+        "ca": {
+            "ca": {
+                "alias": "ml-summarization-catalan",
+                "bespoke-summary": {"alias": "bespokse-summary-ca"},
+            }
+        },
         "pt": {"pt": {"alias": "ml-summarization-portuguese"}},
         "zh": {"zh": {"alias": "ml-summarization-chinese_simplified"}},
         "zh-t": {"zh-t": {"alias": "ml-summarization-chinese_traditional"}},
