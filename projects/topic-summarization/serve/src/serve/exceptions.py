@@ -10,3 +10,9 @@ class TopicSummaryInsertionException(OnclusiveException):
     message_format = (
         "Insertion error for topic summary dict: {dynamodb_dict} with error {e}"
     )
+
+
+class TopicSummarizationParsingException(OnclusiveException):
+    """Exception for errors in topic summarization parsing."""
+
+    message_format = "Error occurred in topic summarization parsing: '{e}'"

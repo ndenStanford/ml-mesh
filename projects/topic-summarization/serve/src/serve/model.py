@@ -10,13 +10,19 @@ from datetime import datetime
 from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
 
+# 3rd party libraries
+from fastapi import HTTPException, status
+
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
 from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
 from onclusiveml.core.logging import get_default_logger
 from src.serve.tables import TopicSummaryDynamoDB
-from src.serve.exceptions import TopicSummaryInsertionException
+from src.serve.exceptions import (
+    TopicSummaryInsertionException,
+    TopicSummarizationParsingException,
+)
 
 # Source
 from src.serve.schema import (
@@ -154,9 +160,16 @@ class ServedTopicModel(ServedModel):
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
 
-                topic, topic_summary_quality = self.model.aggregate(
-                    content, boolean_query
-                )
+                try:
+                    topic, topic_summary_quality = self.model.aggregate(
+                        content, boolean_query
+                    )
+                except TopicSummarizationParsingException as e:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=str(e),
+                    )
+
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
@@ -165,7 +178,13 @@ class ServedTopicModel(ServedModel):
                 impact_category = None
                 topic_summary_quality = None
         else:
-            topic, topic_summary_quality = self.model.aggregate(content)
+            try:
+                topic, topic_summary_quality = self.model.aggregate(content)
+            except TopicSummarizationParsingException as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=str(e),
+                )
             impact_category = None
         if save_report_dynamodb:
             query_string = query_profile.query
