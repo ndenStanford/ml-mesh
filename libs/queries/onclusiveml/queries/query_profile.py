@@ -43,8 +43,10 @@ class MediaAPISettings(OnclusiveBaseSettings):
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
     ml_query_id: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
     authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
-    media_api_url: str = "https://staging-querytool-api.platform.onclusive.org"
-    media_api_base_usl: str = "https://crawler-api-prod.airpr.com/v1"
+    production_tool_endpoint: str = (
+        "https://staging-querytool-api.platform.onclusive.org"
+    )
+    media_api_url: str = "https://crawler-api-prod.airpr.com/v1"
 
 
 class BaseQueryProfile(OnclusiveBaseModel):
@@ -88,13 +90,13 @@ class BaseQueryProfile(OnclusiveBaseModel):
             "booleanQuery": self.query,
         }
         _ = requests.put(
-            f"{settings.media_api_url}/v1/topics/{settings.ml_query_id}",
+            f"{settings.production_tool_endpoint}/v1/topics/{settings.ml_query_id}",
             headers=self.headers(settings),
             json=json_data,
         )
         if _.status_code == 204:
             response = requests.get(
-                f"{settings.media_api_url}/v1/mediaContent/translate/mediaapi?queryId={settings.ml_query_id}",  # noqa: E501
+                f"{settings.production_tool_endpoint}/v1/mediaContent/translate/mediaapi?queryId={settings.ml_query_id}",  # noqa: E501
                 headers=self.headers(settings),
             )
             return response.json()
@@ -125,7 +127,7 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
     def query(self) -> Union[str, None]:
         """Translate query id to string query."""
         request_result = requests.get(
-            f"{self.settings.media_api_url}/v{self.version}/topics/{self.query_id}",
+            f"{self.settings.production_tool_endpoint}/v{self.version}/topics/{self.query_id}",
             headers=self.headers(self.settings),
         )
         if request_result.status_code == 200:
@@ -160,7 +162,7 @@ class MediaApiStringQuery(BaseQueryProfile):
         query["sort"] = ["_score"]
         query["show_query"] = True
 
-        MEDIA_API_BASE_URL = settings.media_api_base_usl
+        MEDIA_API_BASE_URL = settings.media_api_url
         username = settings.media_username.get_secret_value()
         password = settings.media_password.get_secret_value()
 
