@@ -2960,3 +2960,12 @@ def mock_topic_profile_query():
             }
         },
     }
+
+
+@pytest.fixture
+def mock_response_parsing_error():
+    """Mock response for parsing error."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({"message": "Parsing error"})
+    mock_response.status_code = 500
+    return mock_response
