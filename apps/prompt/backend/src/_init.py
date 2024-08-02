@@ -32,7 +32,7 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
-    if SystemInfo.in_docker() and not SystemInfo.in_kubernetes():
+    if SystemInfo.in_kubernetes():
         _syncronize_prompts()
 
 
