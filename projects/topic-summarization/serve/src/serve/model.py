@@ -97,8 +97,8 @@ class ServedTopicModel(ServedModel):
             # as we don't have 360 media api boolean query now, so use if as a temporary solution
             if inputs.query_string or inputs.query_id:
                 boolean_query = query_profile.query
-            else:
-                boolean_query = None
+            elif inputs.media_api_query:
+                boolean_query = query_profile.media_query
             trend_detection = inputs.trend_detection
 
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
