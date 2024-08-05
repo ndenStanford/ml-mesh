@@ -13,7 +13,7 @@ from onclusiveml.serving.rest.serve import (
 
 def test_model_server_liveness():
     """Tests the liveness endpoint of a ModelServer (not running) instance."""
-    liveness_response = requests.get("http://serve:8000/translation/v1/live")
+    liveness_response = requests.get("http://serve:8000/translation/v2/live")
 
     assert liveness_response.status_code == 200
     assert liveness_response.json() == LivenessProbeResponse().model_dump()
@@ -21,7 +21,7 @@ def test_model_server_liveness():
 
 def test_model_server_readiness():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/translation/v1/ready")
+    readiness_response = requests.get("http://serve:8000/translation/v2/ready")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json() == ReadinessProbeResponse().model_dump()
@@ -29,7 +29,7 @@ def test_model_server_readiness():
 
 def test_model_server_bio():
     """Tests the readiness endpoint of a ModelServer (not running) instance."""
-    readiness_response = requests.get("http://serve:8000/translation/v1/bio")
+    readiness_response = requests.get("http://serve:8000/translation/v2/bio")
 
     assert readiness_response.status_code == 200
     assert readiness_response.json()["data"]["attributes"].get("model_name") is not None
@@ -229,7 +229,7 @@ def test_model_server_bio():
 def test_model_server_prediction(test_client, payload, expected_response):
     """Tests the predict endpoint of a running ModelServer instance."""
     response = test_client.post(
-        "/translation/v1/predict",
+        "/translation2/predict",
         json=payload,
     )
     assert response.status_code == 200
@@ -263,7 +263,7 @@ def test_model_server_prediction_invalid_language(
 ):
     """Tests the language validation of the predict endpoint of a running ModelServer instance."""
     response = test_client.post(
-        "/translation/v1/predict",
+        "/translation/v2/predict",
         json=payload,
     )
 

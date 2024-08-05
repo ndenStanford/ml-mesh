@@ -31,7 +31,9 @@ class ApplicationSettings(OnclusiveBaseSettings):
     internal_ml_endpoint_api_key: str = "1234"
     summarization_default_model: str = "gpt-4o"
 
-    summarization_prompts: Dict[str, Dict[str, Dict[str, str]]] = {
+    summarization_prompts: Dict[
+        str, Dict[str, Dict[str, Union[str, Dict[str, str]]]]
+    ] = {
         "en": {
             "en": {
                 "alias": "ml-summarization-english",
@@ -58,10 +60,15 @@ class ApplicationSettings(OnclusiveBaseSettings):
                 "bespoke-summary": {"alias": "bespokse-summary-it-theme"},
             }
         },
+        "gl": {
+            "gl": {
+                "bespoke-summary": {"alias": "bespokse-summary-gl"},
+            }
+        },
         "es": {
             "es": {
                 "alias": "ml-summarization-spanish",
-                "bespoke-summary": {"alias": "bespokse-summary-sp"},
+                "bespoke-summary": {"alias": "bespokse-summary-es"},
             }
         },
         "ca": {

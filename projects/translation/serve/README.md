@@ -19,19 +19,19 @@ using
 To invoke the `live` endpoint for server liveness, use:
 
 ```bash
-curl -X 'GET' 'http://0.0.0.0:8000/translation/v1/live'
+curl -X 'GET' 'http://0.0.0.0:8000/translation/v2/live'
 ```
 
 To invoke the `bio` endpoint for model meta data, use:
 
 ```bash
-curl -X 'GET' 'http://0.0.0.0:8000/translation/v1/bio'
+curl -X 'GET' 'http://0.0.0.0:8000/translation/v2/bio'
 ```
 
 To invoke the `predict` endpoint for inference, use:
 
 ```bash
-curl -X 'POST' 'http://0.0.0.0:8000/translation/v1/predict' \
+curl -X 'POST' 'http://0.0.0.0:8000/translation/v2/predict' \
     -H 'Content-Type: application/json' \
     -d '{
         "data": {
@@ -67,7 +67,7 @@ This should return a response along the lines of
 An invocation of the `predict` endpoint with invalid language specs...
 
 ```bash
-curl -X 'POST' 'http://0.0.0.0:8000/translation/v1/predict' \
+curl -X 'POST' 'http://0.0.0.0:8000/translation/v2/predict' \
     -H 'Content-Type: application/json' \
     -d '{
         "data": {
