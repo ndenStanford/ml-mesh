@@ -71,6 +71,7 @@ class SummarizationServedModel(ServedModel):
         type,
         keywords,
         title,
+        theme,
     ) -> str:
         """Summarization prediction handler method.
 
@@ -106,7 +107,14 @@ class SummarizationServedModel(ServedModel):
                 detail="Unsupported language",
             )
 
-        input_dict = {"input": {"desired_length": desired_length, "content": text}}
+        input_dict = {
+            "input": {
+                "desired_length": desired_length,
+                "content": text,
+                "keywords": keywords,
+                "theme": theme,
+            }
+        }
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
 
         q = requests.post(
@@ -130,6 +138,7 @@ class SummarizationServedModel(ServedModel):
         type = parameters.type
         keywords = parameters.keywords
         title = parameters.title
+        theme = parameters.theme
 
         if content is None or content == "":
             logger.warning(
@@ -138,7 +147,14 @@ class SummarizationServedModel(ServedModel):
 
         text = re.sub("\n+", " ", content)
         summary = self.inference(
-            text, desired_length, input_language, output_language, type, keywords, title
+            text,
+            desired_length,
+            input_language,
+            output_language,
+            type,
+            keywords,
+            title,
+            theme,
         )
         summary = re.sub("\n+", " ", summary)
 

@@ -21,12 +21,12 @@ class ApplicationSettings(OnclusiveBaseSettings):
     """App base settings."""
 
     enable_metrics: bool = False
-    api_version: str = "v1"
+    api_version: str = "v2"
     api_key_name: str = "x-api-key"
     # Prompt url
     prompt_api: str = "http://prompt-backend:4000"
     translation_api: str = (
-        "https://internal.api.ml.dev.onclusive.org/translation/v1/predict"
+        "http://http://translation-service:8000/translation/v1/predict"
     )
     internal_ml_endpoint_api_key: str = "1234"
     summarization_default_model: str = "gpt-4o"

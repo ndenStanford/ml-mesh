@@ -27,6 +27,7 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
     input_language: Optional[str] = None
     output_language: Optional[str] = None
     type: str = "bespoke-summary"
+    theme: Optional[str] = None
     keywords: List[str] = []
     title: Optional[bool] = False
     desired_length: Optional[int] = 100

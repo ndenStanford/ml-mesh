@@ -106,6 +106,36 @@ services:
     networks:
       - onclusive-net
 
+  translation-service:
+    build:
+      context: ../../
+      dockerfile: projects/translation/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: translation
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG:-latest}
+    command: [python, -m, src.serve.__main__]
+    profiles: [serve, integration, debug]
+    ports:
+      - 8000:8000
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: serve/config/dev.env
+    hostname: onclusiveml
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/translation/v2/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
   dynamodb:
     command: -jar DynamoDBLocal.jar -sharedDb
     image: amazon/dynamodb-local:latest
