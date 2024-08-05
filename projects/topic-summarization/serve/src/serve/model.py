@@ -48,10 +48,17 @@ class ServedTopicModel(ServedModel):
     predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
     bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
+    def _preprocess_string_query(self, query_string: str) -> str:
+        """Pre processing of query strings."""
+        preprocessed_query = query_string.replace('\\"', '"')
+        return preprocessed_query
+
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
         if inputs.query_string:
-            return StringQueryProfile(string_query=inputs.query_string)
+            return StringQueryProfile(
+                string_query=self._preprocess_string_query(inputs.query_string)
+            )
         elif inputs.query_id:
             return ProductionToolsQueryProfile(
                 version=inputs.media_api_version, query_id=inputs.query_id
