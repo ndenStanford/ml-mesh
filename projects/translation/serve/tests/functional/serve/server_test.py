@@ -229,7 +229,7 @@ def test_model_server_bio():
 def test_model_server_prediction(test_client, payload, expected_response):
     """Tests the predict endpoint of a running ModelServer instance."""
     response = test_client.post(
-        "/translation2/predict",
+        "/translation/v1/predict",
         json=payload,
     )
     assert response.status_code == 200
@@ -263,7 +263,7 @@ def test_model_server_prediction_invalid_language(
 ):
     """Tests the language validation of the predict endpoint of a running ModelServer instance."""
     response = test_client.post(
-        "/translation/v1predict",
+        "/translation/v1/predict",
         json=payload,
     )
 
