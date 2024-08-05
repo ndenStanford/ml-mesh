@@ -7,7 +7,7 @@ from onclusiveml.core.base import OnclusiveException
 class FileIOException(OnclusiveException):
     """Unknown I/O error."""
 
-    message_format = "Unknown file I/O exception."
+    message_format = "File I/O exception: {message}"
 
 
 class UnknownFileSystemException(FileIOException):

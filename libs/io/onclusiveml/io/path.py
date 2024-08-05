@@ -4,7 +4,7 @@
 import os
 import posixpath
 from abc import ABC
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Tuple, Union
 
 # Internal libraries
 from onclusiveml.io import constants
@@ -44,9 +44,14 @@ class OnclusivePathModule(BasePathModule):
         return tail, scheme
 
     def split(self, path: str) -> Union[Tuple[List[str], str], Tuple[List[str]]]:
-        """Split the path into a pair (head, tail), where *head* is everything
+        """Splits path.
+
+        Split the path into a pair (head, tail), where *head* is everything
         before the final path separator, and *tail* is everything after.
         Either part may be empty.
+
+        Args:
+            path (str): path to splits
         """
         tail, scheme = self.splitscheme(path)
         parts = tail.split(self.sep)
@@ -55,11 +60,17 @@ class OnclusivePathModule(BasePathModule):
         if parts[-1] == self.empty:
             parts = parts[:-1]
         return parts, scheme
+
     # NOTE: not sure if this is needed
     def splitdrive(self, path: str) -> Tuple[str, str]:
-        """Split the path into a 2-item tuple (drive, tail), w`here *drive* is
-        a device name or mount point, and *tail* is everything after the
-        drive. Either part may be empty."""
+        """Split the path into a 2-item tuple (drive, tail).
+
+        The *drive* is a device name or mount point, and *tail* is
+        everything after the drive. Either part may be empty.
+
+        Args:
+            path (str): string path.
+        """
         return posixpath.splitdrive(path)
 
     def normcase(self, path: str) -> str:
@@ -67,8 +78,11 @@ class OnclusivePathModule(BasePathModule):
         return posixpath.normcase(path)
 
     def isabs(self, path: str) -> bool:
-        """Returns whether the path is absolute, i.e. unaffected by the
-        current directory or drive."""
+        """Returns whether the path is absolute.
+
+        Args:
+            path (str): string path.
+        """
         s = os.fspath(path)
         scheme_tail = s.split(self.schemesep, 1)
         return len(scheme_tail) == 2
@@ -76,11 +90,13 @@ class OnclusivePathModule(BasePathModule):
 
 class OnclusivePath(ABC):
     """Base class for pure path objects.
-    NOTE: This class only handles absolute paths.
-    This class *does not* provide several magic methods that are defined in
-    its subclass PurePath. They are: __fspath__, __bytes__, __reduce__,
-    __hash__, __eq__, __lt__, __le__, __gt__, __ge__. Its initializer and path
-    joining methods accept only strings, not os.PathLike objects more broadly.
+
+    Note:
+        This class only handles absolute paths.
+        This class *does not* provide several magic methods that are defined in
+        its subclass PurePath. They are: __fspath__, __bytes__, __reduce__,
+        __hash__, __eq__, __lt__, __le__, __gt__, __ge__. Its initializer and path
+        joining methods accept only strings, not os.PathLike objects more broadly.
     """
 
     __slots__ = (
@@ -119,6 +135,7 @@ class OnclusivePath(ABC):
     @property
     def scheme(self) -> str:
         """Return the scheme portion of this path.
+
         An absolute path's scheme is the leading few characters.
         Consider a few examples:
         ```python
@@ -148,7 +165,8 @@ class OnclusivePath(ABC):
 
     @property
     def suffix(self) -> str:
-        """
+        """Returns the path suffix.
+
         The final component's last suffix, if any.
         This includes the leading period. For example: '.txt'
         """
@@ -179,8 +197,8 @@ class OnclusivePath(ABC):
 
     @property
     def suffixes(self):
-        """
-        A list of the final component's suffixes, if any.
+        """A list of the final component's suffixes, if any.
+
         These include the leading periods. For example: ['.tar', '.gz']
         """
         name = self.name
@@ -201,14 +219,13 @@ class OnclusivePath(ABC):
 
     @property
     def parts(self):
-        """An object providing sequence-like access to the
-        components in the filesystem path."""
+        """Returns sequence-like access to the path."""
         return self._parts
 
     @property
     def parent(self):
         """The logical parent of the path."""
-        return (
+        return type(self)(
             self.scheme
             + self.pathmod.schemesep
             + self.pathmod.join(self.parts[0], *self.parts[1:-1])
@@ -224,7 +241,11 @@ class OnclusivePath(ABC):
 
     def with_segments(self, *pathsegments: Iterable[str]):
         """Create a new path object of the same type by combining the given pathsegments.
+
         This method is called whenever a derivative path is created.
+
+        Args:
+            *pathsegments (Iterable[str]): string path segments
         """
         return type(self)(self.root, *pathsegments)
 
@@ -237,9 +258,13 @@ class OnclusivePath(ABC):
         return self.with_name(stem + self.suffix)
 
     def with_suffix(self, suffix: str) -> "OnclusivePath":
-        """Return a new path with the file suffix changed.  If the path
-        has no suffix, add given suffix.  If the given suffix is an empty
-        string, remove the suffix from the path.
+        """Return a new path with the file suffix changed.
+
+        If the path has no suffix, add given suffix.
+        If the given suffix is an empty string, remove the suffix from the path.
+
+        Args:
+            suffix (str): path suffix
         """
         stem = self.stem
         if not suffix:
@@ -267,11 +292,15 @@ class OnclusivePath(ABC):
                 return False
         return True
 
-    def joinpath(self, *pathsegments):
-        """Combine this path with one or several arguments, and return a
-        new path representing either a subpath (if all arguments are relative
-        paths) or a totally different path (if one of the arguments is
-        anchored).
+    def joinpath(self, *pathsegments: Iterable[str]):
+        """Combine this path with one or several arguments.
+
+        Args:
+            *pathsegments (Iterable[str]): path segments
+
+        Returns: A new path representing either a subpath
+        (if all arguments are relative paths)
+        or a totally different path (if one of the arguments is anchored).
         """
         return self.with_segments(self._raw_path, *pathsegments)
 
@@ -287,37 +316,46 @@ class OnclusivePath(ABC):
         return str(self)
 
     def __str__(self):
-        """Return the string representation of the path, suitable for
-        passing to system calls."""
+        """Return the string representation of the path.
+
+        Suitable for passing to system calls.
+        """
         return (
             self.scheme + self.pathmod.schemesep + self.pathmod.join("", self._raw_path)
         )
 
     def __bytes__(self) -> bytes:
-        """Return the bytes representation of the path.  This is only
-        recommended to use under Unix."""
+        """Return the bytes representation of the path.
+
+        Note:
+            This is only recommended to use under Unix.
+        """
         return os.fsencode(f"{self}")
 
     def __repr__(self) -> str:
         return "{}({!r})".format(self.__class__.__name__, str(self))
 
     def __fspath__(self) -> str:
-        """Compatibilty with os.fspath()
-        ```python
-        import os
-        from onclusiveml.io import Path
-        path: Path = Path("s3://foo/bar")
-        str_path: str = os.fspath(path)
-        ```
+        """Compatibilty with os.fspath().
+
+        Example:
+            ```python
+            import os
+            from onclusiveml.io import Path
+            path: Path = Path("s3://foo/bar")
+            str_path: str = os.fspath(path)
+            ```
         """
         return str(self)
 
     def __eq__(self, other: object) -> bool:
         """Enables equality comparisons, e.g.
-        ```python
-        from onclusiveml.io import OnclusivePath
-        OnclusivePath("s3://foo/bar") == OnclusivePath("s3://foo/bar")
-        ```
+
+        Example:
+            ```python
+            from onclusiveml.io import OnclusivePath
+            OnclusivePath("s3://foo/bar") == OnclusivePath("s3://foo/bar")
+            ```
         """
         return (
             isinstance(other, OnclusivePath)
@@ -327,20 +365,30 @@ class OnclusivePath(ABC):
 
     @property
     def glob(self) -> List["OnclusivePath"]:
-        """Returns glob (individual paths)."""
+        """Returns glob."""
         return self.filesystem.glob(self)
 
     @property
     def isfile(self) -> bool:
-        """ "If path is file."""
+        """If path is file."""
         return self.filesystem.isfile(self)
 
     @property
     def isdir(self) -> bool:
-        """ "If path is a folder."""
+        """If path is a folder."""
         return self.filesystem.isdir(self)
 
     @property
     def exists(self) -> bool:
-        """ "True if path exists."""
+        """True if path exists."""
         return self.filesystem.exists(self)
+
+    @classmethod
+    def from_relative(cls, relative_path: str) -> "OnclusivePath":
+        """Create instance from relative path."""
+        return cls(
+            os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                relative_path,
+            )
+        )

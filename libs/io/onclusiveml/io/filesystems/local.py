@@ -1,20 +1,11 @@
 """Local filesystem using Python's built-in modules (`os`, `shutil`, `glob`)."""
 
 # Standard Library
+import datetime
 import glob
 import os
 import shutil
-from typing import (
-    IO,
-    Any,
-    Callable,
-    ClassVar,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Tuple,
-)
+from typing import IO, Any, List, Optional
 
 # Internal libraries
 from onclusiveml.io.base import BaseFileSystem, FileInfo
@@ -49,7 +40,7 @@ class LocalFileSystem(BaseFileSystem):
             Any: The file object.
         """
         return open(
-            path.name, mode=mode, encoding=encoding, errors=errors, newline=newline
+            path._raw_path, mode=mode, encoding=encoding, errors=errors, newline=newline
         )
 
     def cp(
@@ -71,18 +62,7 @@ class LocalFileSystem(BaseFileSystem):
                 f"Destination file {str(dst)} already exists and argument "
                 f"`overwrite` is false."
             )
-        shutil.copyfile(src.name, dst.name)
-
-    def exists(self, path: "OnclusivePath") -> bool:
-        """Returns `True` if the given path exists.
-
-        Args:
-            path: The path to check.
-
-        Returns:
-            bool: Whether the path exists.
-        """
-        return os.path.exists(path)
+        shutil.copytree(src._raw_path, dst._raw_path)
 
     def glob(self, pattern: "OnclusivePath") -> List["OnclusivePath"]:
         """Return the paths that match a glob pattern.
@@ -93,18 +73,7 @@ class LocalFileSystem(BaseFileSystem):
         Returns:
             List["OnclusivePath"]: The paths that match the glob pattern.
         """
-        return glob.glob(pattern)  # type: ignore[type-var]
-
-    def isdir(self, path: "OnclusivePath") -> bool:
-        """Returns whether the given path points to a directory.
-
-        Args:
-            path: The path to check.
-
-        Returns:
-            bool: Whether the path points to a directory.
-        """
-        return os.path.isdir(path)
+        return [type(pattern)(g) for g in glob.glob(pattern._raw_path)]
 
     def ls(self, path: "OnclusivePath") -> List["OnclusivePath"]:
         """Returns a list of files under a given directory in the filesystem.
@@ -115,7 +84,12 @@ class LocalFileSystem(BaseFileSystem):
         Returns:
             List["OnclusivePath"]: The list of files under the given directory.
         """
-        return os.listdir(path)  # type:ignore[return-value]
+        if path.isfile:
+            return [path]
+        return [
+            type(path)(os.path.join(path.parent, path.stem, f))
+            for f in os.listdir(path._raw_path)
+        ]
 
     def mkdirs(self, path: "OnclusivePath") -> None:
         """Make a directory at the given path, recursively creating parents.
@@ -123,7 +97,7 @@ class LocalFileSystem(BaseFileSystem):
         Args:
             path: The path to the directory.
         """
-        os.makedirs(path, exist_ok=True)
+        return os.makedirs(path._raw_path, exist_ok=True)
 
     def mkdir(self, path: "OnclusivePath") -> None:
         """Make a directory at the given path; parent directory must exist.
@@ -131,7 +105,7 @@ class LocalFileSystem(BaseFileSystem):
         Args:
             path: The path to the directory.
         """
-        os.mkdir(path)
+        os.mkdir(path._raw_path)
 
     def rm(self, path: "OnclusivePath") -> None:
         """Remove the file at the given path. Dangerous operation.
@@ -139,39 +113,12 @@ class LocalFileSystem(BaseFileSystem):
         Args:
             path: The path to the file.
         """
-        os.remove(path)
+        if self.isfile(path):
+            return os.remove(path._raw_path)
+        if self.isdir(path):
+            return shutil.rmtree(path._raw_path)
 
-    def rmtree(path: "OnclusivePath") -> None:
-        """Deletes dir recursively. Dangerous operation.
-
-        Args:
-            path: The path to the directory.
-        """
-        shutil.rmtree(path)
-
-    def stat(self, path: "OnclusivePath") -> Any:
-        """Return the stat descriptor for a given file path.
-
-        Args:
-            path: The path to the file.
-
-        Returns:
-            Any: The stat descriptor for the file.
-        """
-        return os.stat(path)
-
-    def size(self, path: "OnclusivePath") -> int:
-        """Get the size of a file in bytes.
-
-        Args:
-            path: The path to the file.
-
-        Returns:
-            The size of the file in bytes.
-        """
-        return os.path.getsize(path)
-
-    def info(self, path: "OnclusivePath") -> List[FileInfo]:
+    def info(self, path: "OnclusivePath") -> Optional[FileInfo]:
         """Get the info for a given file path.
 
         Args:
@@ -180,45 +127,49 @@ class LocalFileSystem(BaseFileSystem):
         Returns:
             The FileInfo object
         """
+        if not self.isfile(path):
+            return
 
-    def walk(
-        self,
-        top: "OnclusivePath",
-        topdown: bool = True,
-        onerror: Optional[Callable[..., None]] = None,
-    ) -> Iterable[Tuple["OnclusivePath", List["OnclusivePath"], List["OnclusivePath"]]]:
-        """Return an iterator that walks the contents of the given directory.
+        stat = os.stat(path._raw_path)
 
-        Args:
-            top: Path of directory to walk.
-            topdown: Whether to walk directories topdown or bottom-up.
-            onerror: Callable that gets called if an error occurs.
-
-        Yields:
-            An Iterable of Tuples, each of which contain the path of the
-            current directory path, a list of directories inside the
-            current directory and a list of files inside the current
-            directory.
-        """
-        yield from os.walk(  # type: ignore[type-var, misc]
-            top, topdown=topdown, onerror=onerror
+        return FileInfo(
+            size=stat.st_size,
+            created=datetime.datetime.fromtimestamp(stat.st_ctime),
+            last_modified=datetime.datetime.fromtimestamp(stat.st_mtime),
+            path=path._raw_path,
         )
 
     def exists(self, path: "OnclusivePath") -> bool:
         """Check if file exists at given path."""
-        if self.isdir(path) or self.isfile(path):
-            return os.path.exists(str(path))
         if self.isglob(path):
             return len(self.glob(path)) > 0
-        return False
+        return os.path.exists(path._raw_path)
 
     def isfile(self, path: "OnclusivePath") -> bool:
         """Is this entry file-like?"""
-        return os.path.isfile(str(path))
+        return os.path.isfile(path._raw_path)
 
     def isdir(self, path: "OnclusivePath") -> bool:
-        """Is this entry directory-like?."""
-        return os.path.isdir(str(path))
+        """Returns whether the given path points to a directory.
+
+        Args:
+            path: The path to check.
+
+        Returns:
+            bool: Whether the path points to a directory.
+        """
+        return os.path.isdir(path._raw_path)
+
+    def isglob(self, path: "OnclusivePath") -> bool:
+        """Check whether the given path is a glob.
+
+        Args:
+            path: The path to check.
+
+        Returns:
+            `True` if the given path is a glob, `False` otherwise.
+        """
+        return "*" in path._raw_path
 
 
 LocalFileSystem._context_class = LocalFileSystem

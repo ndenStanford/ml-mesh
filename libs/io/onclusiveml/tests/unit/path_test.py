@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 # Internal libraries
-from onclusiveml.io import LocalFileSystem, OnclusivePath
+from onclusiveml.io import OnclusivePath
 from onclusiveml.io.base import BaseFileSystem
 
 
@@ -89,8 +89,8 @@ def test_path_module_normcase(pathmodule, path, expected):
         )
     ],
 )
-def test_path_module_normcase(pathmodule, paths, expected):
-    """Test normcase method."""
+def test_path_module_join(pathmodule, paths, expected):
+    """Test join method."""
     assert pathmodule.join(*paths) == expected
 
 
@@ -124,7 +124,7 @@ def test_onclusive_path_scheme(str_path, expected):
             ["/", "ner", "serve", "models", "SUM-COMPILED-16"],
         ),
         (
-            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",
+            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",  # noqa: E501
             [
                 "/",
                 "sentiment",
@@ -140,7 +140,7 @@ def test_onclusive_path_scheme(str_path, expected):
             ],
         ),
         (
-            "s3://onclusive-model-store-prod/neptune-ai-model-registry/onclusive/topic/",
+            "s3://onclusive-model-store-prod/neptune-ai-model-registry/onclusive/topic/",  # noqa: E501
             [
                 "onclusive-model-store-prod",
                 "neptune-ai-model-registry",
@@ -160,7 +160,7 @@ def test_onclusive_path_parts(str_path, expected):
     [
         ("file:///ner/serve/models/SUM-COMPILED-16", "/"),
         (
-            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",
+            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",  # noqa: E501
             "/",
         ),
         # (
@@ -178,13 +178,9 @@ def test_onclusive_path_root(str_path, expected):
     "str_path, expected",
     [
         (
-            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",
+            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",  # noqa: E501
             "file:///",
-        ),
-        # (
-        #     "s3://onclusive-model-store-stage/neptune-ai-model-registry/onclusive/ner/",
-        #     's3://onclusive-model-store-stage'
-        # )
+        )
     ],
 )
 def test_onclusive_path_anchor(str_path, expected):
@@ -196,7 +192,7 @@ def test_onclusive_path_anchor(str_path, expected):
     "str_path, expected",
     [
         (
-            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",
+            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",  # noqa: E501
             "model.pt",
         ),
         (
@@ -214,7 +210,7 @@ def test_onclusive_path_name(str_path, expected):
     "str_path, expected",
     [
         (
-            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",
+            "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",  # noqa: E501
             ".pt",
         ),
         ("s3://kubeflow-feast-config-stage/feature_store.yaml", ".yaml"),
@@ -230,7 +226,7 @@ def test_onclusive_path_suffix(str_path, expected):
     "str_path, expected",
     [
         (
-            "s3://kubeflow-data-lake-prod/iptc/first_level_multi_lingual/doc_classification_dataset_crawler-4-2022-03-000.parquet",
+            "s3://kubeflow-data-lake-prod/iptc/first_level_multi_lingual/doc_classification_dataset_crawler-4-2022-03-000.parquet",  # noqa: E501
             [".parquet"],
         ),
         ("s3://kubeflow-opoint-data-prod/processed/archive.tar.gz", [".tar", ".gz"]),
@@ -248,7 +244,7 @@ def test_onclusive_path_suffixes(str_path, expected):
         ("s3://kubeflow-opoint-data-prod/processed/archive.tar.gz", "archive.tar"),
     ],
 )
-def test_onclusive_path_stem(str_path, expected):
+def test_onclusive_path_stem_remote(str_path, expected):
     """Test OnclusivePath stem attribute."""
     assert OnclusivePath(str_path).stem == expected
 
@@ -317,26 +313,6 @@ def test_onclusive_path_with_segments(str_path, segments, expected):
 
 
 @pytest.mark.parametrize(
-    "str_path, segments, expected",
-    [
-        # (
-        #     "s3://kubeflow-opoint-data-prod/processed",
-        #     ["archive.tar.gz"],
-        #     OnclusivePath("s3://kubeflow-opoint-data-prod/processed/archive.tar.gz")
-        # ),
-        (
-            "file:///user/local/bin",
-            ["/", "home", "lib", "python3.8"],
-            OnclusivePath("file:///home/lib/python3.8"),
-        )
-    ],
-)
-def test_onclusive_path_with_segments(str_path, segments, expected):
-    """Test OnclusivePath parent attribute."""
-    assert OnclusivePath(str_path).with_segments(*segments) == expected
-
-
-@pytest.mark.parametrize(
     "str_path, expected",
     [
         (
@@ -372,10 +348,10 @@ def test_onclusive_path_stem(str_path, expected):
             OnclusivePath("file:///user/local/bin/python3.8"),
         ),
         (
-            "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/pytorch_model.bin",
+            "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/pytorch_model.bin",  # noqa: E501
             "tokenizer.json",
             OnclusivePath(
-                "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/tokenizer.json"
+                "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/tokenizer.json"  # noqa: W505,E501
             ),
         ),
     ],
@@ -399,10 +375,10 @@ def test_onclusive_path_with_name(str_path, name, expected):
             OnclusivePath("file:///home/newfile.txt"),
         ),
         (
-            "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/pytorch_model.bin",
+            "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/pytorch_model.bin",  # noqa: E501
             "tokenizer",
             OnclusivePath(
-                "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/tokenizer.bin"
+                "file:///home/ec2-user/ml-mesh/projects/ner/serve/models/NER-TRAINED/NER-TRAINED-182/model/model_artifacts/base_ner/tokenizer.bin"  # noqa: W505,E501
             ),
         ),
     ],
@@ -437,9 +413,11 @@ def test_onclusive_path_with_suffix(str_path, suffix, expected):
         ),
     ],
 )
-def test_onclusive_path_with_suffix(str_path, extra, expected):
+def test_onclusive_path_overloaded_operator(str_path, extra, expected):
     """Test OnclusivePath parent attribute."""
     assert OnclusivePath(str_path) / extra == expected
+
+
 # filesystem-backed attributes / methods
 @pytest.mark.parametrize(
     "str_path, expected",
@@ -455,7 +433,7 @@ def test_onclusive_path_with_suffix(str_path, extra, expected):
 )
 @patch.object(BaseFileSystem, "glob")
 def test_onclusive_path_blobs(mock_glob, str_path, expected):
-    """OnclusivePath blobs."""
+    """Test blobs."""
     mock_glob.return_value = expected
     assert OnclusivePath(str_path).glob == expected
 
@@ -469,7 +447,7 @@ def test_onclusive_path_blobs(mock_glob, str_path, expected):
 )
 @patch.object(BaseFileSystem, "isfile")
 def test_onclusive_path_isfile(mock_isfile, str_path, expected):
-    """OnclusivePath isfile method."""
+    """Test isfile method."""
     mock_isfile.return_value = expected
     assert OnclusivePath(str_path).isfile == expected
 
@@ -483,7 +461,7 @@ def test_onclusive_path_isfile(mock_isfile, str_path, expected):
 )
 @patch.object(BaseFileSystem, "isdir")
 def test_onclusive_path_isdir(mock_isdir, str_path, expected):
-    """OnclusivePath isdir method."""
+    """Test isdir method."""
     mock_isdir.return_value = expected
     assert OnclusivePath(str_path).isdir == expected
 
@@ -497,7 +475,7 @@ def test_onclusive_path_isdir(mock_isdir, str_path, expected):
 )
 @patch.object(BaseFileSystem, "exists")
 def test_onclusive_path_exists(mock_exists, str_path, expected):
-    """OnclusivePath exists method."""
+    """Test exists method."""
     mock_exists.return_value = expected
     assert OnclusivePath(str_path).exists == expected
 
@@ -514,7 +492,7 @@ def test_onclusive_path_exists(mock_exists, str_path, expected):
 @patch.object(BaseFileSystem, "exists")
 @patch.object(BaseFileSystem, "mv")
 def test_onclusive_path_move(mock_move, mock_exists, source, destination):
-    """OnclusivePath exists method."""
+    """Test move method."""
     mock_exists.return_value = True
 
     OnclusivePath(source).move(OnclusivePath(destination))
@@ -530,6 +508,6 @@ def test_onclusive_path_move(mock_move, mock_exists, source, destination):
         ("file:///usr/local/lib", "file:///usr/local/bin", False),
     ],
 )
-def test_onclusive_path_move(str_path, other, expected):
-    """OnclusivePath exists method."""
+def test_onclusive_path_is_relative(str_path, other, expected):
+    """Test is_relative method."""
     assert OnclusivePath(str_path).is_relative_to(OnclusivePath(other)) == expected

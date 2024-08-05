@@ -2,19 +2,9 @@
 
 # Standard Library
 import datetime
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import abstractclassmethod, abstractmethod
 from io import DEFAULT_BUFFER_SIZE
-from typing import (
-    IO,
-    Any,
-    Callable,
-    ClassVar,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Tuple,
-)
+from typing import IO, Any, List, Optional, Set
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveFrozenModel
@@ -25,14 +15,9 @@ class FileInfo(OnclusiveFrozenModel):
     """File metadata."""
 
     size: Optional[int] = None
+    created: Optional[datetime.datetime] = None
     last_modified: Optional[datetime.datetime] = None
-    checksum: Optional[str] = None
     path: Optional[str] = None
-
-    def __eq__(self, other):
-        if isinstance(other, FileInfo):
-            return self.checksum == other.checksum
-        return False
 
 
 class BaseFileSystem(metaclass=Context):
@@ -175,35 +160,14 @@ class BaseFileSystem(metaclass=Context):
         """
 
     @abstractmethod
-    def walk(
-        self,
-        top: "OnclusivePath",
-        topdown: bool = True,
-        onerror: Optional[Callable[..., None]] = None,
-    ) -> Iterable[Tuple["OnclusivePath", List["OnclusivePath"], List["OnclusivePath"]]]:
-        """Return an iterator that walks the contents of the given directory.
-
-        Args:
-            top: Path of directory to walk.
-            topdown: Whether to walk directories topdown or bottom-up.
-            onerror: Callable that gets called if an error occurs.
-
-        Yields:
-            An Iterable of Tuples, each of which contain the path of the
-            current directory path, a list of directories inside the
-            current directory and a list of files inside the current
-            directory.
-        """
-
-    @abstractmethod
-    def exists(self, path: "OnclusivePath") -> bool:
-        """Check whether the given path exists.
+    def isglob(self, path: "OnclusivePath") -> bool:
+        """Check whether the given path is a glob.
 
         Args:
             path: The path to check.
 
         Returns:
-            `True` if the given path exists, `False` otherwise.
+            `True` if the given path is a glob, `False` otherwise.
         """
 
     @abstractmethod
@@ -234,4 +198,12 @@ class BaseRemoteFileSystem(BaseFileSystem):
 
     @abstractclassmethod
     def from_path(cls, path: "OnclusivePath") -> "BaseRemoteFileSystem":
+        """Instanciate remote filesystem from path."""
+
+    @abstractclassmethod
+    def upload(cls, source: "OnclusivePath", destination: "OnclusivePath") -> None:
+        """Instanciate remote filesystem from path."""
+
+    @abstractclassmethod
+    def download(cls, source: "OnclusivePath", destination: "OnclusivePath") -> None:
         """Instanciate remote filesystem from path."""

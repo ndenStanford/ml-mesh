@@ -4,6 +4,7 @@
 import pytest
 
 # Internal libraries
+from onclusiveml.io import LocalFileSystem
 from onclusiveml.io.path import OnclusivePathModule
 
 
@@ -11,3 +12,9 @@ from onclusiveml.io.path import OnclusivePathModule
 def pathmodule() -> OnclusivePathModule:
     """Path module fixture."""
     return OnclusivePathModule()
+
+
+@pytest.fixture
+def localfs() -> LocalFileSystem:
+    """Path module fixture."""
+    return LocalFileSystem()
