@@ -1,11 +1,9 @@
 """Metaclasses."""
 
 # Standard Library
-import abc
 import threading
-from collections import defaultdict
 from sys import modules
-from typing import Any, Dict, List, Optional, Type, TypeVar, cast
+from typing import Any, List, Optional, Type, TypeVar, cast
 
 
 T = TypeVar("T", bound="ContextMeta")
@@ -66,6 +64,8 @@ class Context(type):
     """Metaclass to create objects that behave like context managers."""
 
     def __new__(cls, name, bases, dct):
+        """Overload new operator."""
+
         def __enter__(self):
             self.__class__.context_class.get_context_stack().append(self)
             return self
@@ -85,10 +85,13 @@ class Context(type):
 
     def get_context(cls, raise_if_none: bool = True) -> Optional[T]:
         """Returns the last in context object of type ```cls```.
+
         Args:
             raise_if_none (bool): if `True` raises an error if the
                 context stack is empty.
+
         Returns:
+            Optional[T]: context instance if found, None id not
         """
         candidate = None
         try:
@@ -126,6 +129,7 @@ class Context(type):
         cls._context_class = super().context_class
 
     def __call__(cls, *args, **kwargs):
+        """Overload call operator."""
         instance = cls.__new__(cls, *args, **kwargs)
         with instance:
             instance.__init__(*args, **kwargs)
