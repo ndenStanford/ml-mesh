@@ -57,7 +57,9 @@ class SummarizationServedModel(ServedModel):
         }
 
         response = requests.post(
-            settings.translation_api, json=payload, headers=headers
+            f"{settings.translation_api}/translation/v1/predict",
+            json=payload,
+            headers=headers,
         )
 
         return response["data"]["attributes"]["source_language"]

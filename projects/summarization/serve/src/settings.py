@@ -25,9 +25,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     api_key_name: str = "x-api-key"
     # Prompt url
     prompt_api: str = "http://prompt-backend:4000"
-    translation_api: str = (
-        "http://http://translation-service:8000/translation/v1/predict"
-    )
+    translation_api: str = "http://translation-service:8000"
     internal_ml_endpoint_api_key: str = "1234"
     summarization_default_model: str = "gpt-4o"
 
