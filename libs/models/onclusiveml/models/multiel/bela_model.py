@@ -418,7 +418,11 @@ class BelaModel:
 
         model_inputs = self.transform(transformed_batch)
 
+        logger.info("we reached this point so far")
+
         token_ids = model_inputs["input_ids"].to(self.device)
+
+        logger.info("this is a miracle")
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()
