@@ -10,6 +10,7 @@ from typing import Iterable, List, Tuple, Union
 from onclusiveml.io import constants
 from onclusiveml.io.base import BaseFileSystem, BasePathModule
 from onclusiveml.io.exceptions import UnknownFileSystemException
+from onclusiveml.io.filesystems import LocalFileSystem
 
 
 class OnclusivePathModule(BasePathModule):
@@ -186,7 +187,7 @@ class OnclusivePath(ABC):
         )
         # NOTE: infer filesystem from URL.
         if self.scheme == "file":
-            infered_filesystem = BaseFileSystem()
+            infered_filesystem = LocalFileSystem()
 
         if filesystem_from_context is not None:
             return filesystem_from_context

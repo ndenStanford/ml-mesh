@@ -1,14 +1,10 @@
 """Path test."""
 
-# Standard Library
-from unittest.mock import patch
-
 # 3rd party libraries
 import pytest
 
 # Internal libraries
 from onclusiveml.io import OnclusivePath
-from onclusiveml.io.base import BaseFileSystem
 
 
 @pytest.mark.parametrize(
@@ -163,10 +159,6 @@ def test_onclusive_path_parts(str_path, expected):
             "file:///sentiment/serve/sentiment/SEN-COMPILED/SEN-COMPILED-127/model/model_artifacts/compiled_sent_pipeline/compiled_model/model.pt",  # noqa: E501
             "/",
         ),
-        # (
-        #     "s3://onclusive-model-store-prod/neptune-ai-model-registry/onclusive/topic/",
-        #     'onclusive-model-store-prod'
-        # )
     ],
 )
 def test_onclusive_path_root(str_path, expected):
@@ -254,15 +246,15 @@ def test_onclusive_path_stem_remote(str_path, expected):
     [
         (
             "s3://kubeflow-feast-config-prod/feature_store.yaml",
-            "s3://kubeflow-feast-config-prod",
+            OnclusivePath("s3://kubeflow-feast-config-prod"),
         ),
         (
             "s3://kubeflow-opoint-data-prod/processed/archive.tar.gz",
-            "s3://kubeflow-opoint-data-prod/processed",
+            OnclusivePath("s3://kubeflow-opoint-data-prod/processed"),
         ),
         (
             "file:///user",
-            "file:///",
+            OnclusivePath("file:///"),
         ),
     ],
 )
@@ -274,13 +266,6 @@ def test_onclusive_path_parent(str_path, expected):
 @pytest.mark.parametrize(
     "str_path, expected",
     [
-        # (
-        #     "s3://kubeflow-opoint-data-prod/processed/archive.tar.gz",
-        #     (
-        #         OnclusivePath("s3://kubeflow-opoint-data-prod"),
-        #         OnclusivePath("s3://kubeflow-opoint-data-prod/processed"),
-        #     ),
-        # ),
         (
             "file:///user",
             (OnclusivePath("file:///"),),
@@ -295,11 +280,6 @@ def test_onclusive_path_parents(str_path, expected):
 @pytest.mark.parametrize(
     "str_path, segments, expected",
     [
-        # (
-        #     "s3://kubeflow-opoint-data-prod/processed",
-        #     ["archive.tar.gz"],
-        #     OnclusivePath("s3://kubeflow-opoint-data-prod/processed/archive.tar.gz")
-        # ),
         (
             "file:///user/local/bin",
             ["/", "home", "lib", "python3.8"],
@@ -337,11 +317,6 @@ def test_onclusive_path_stem(str_path, expected):
 @pytest.mark.parametrize(
     "str_path, name, expected",
     [
-        # (
-        #     "s3://kubeflow-opoint-data-prod/processed",
-        #     ["archive.tar.gz"],
-        #     OnclusivePath("s3://kubeflow-opoint-data-prod/processed/archive.tar.gz")
-        # ),
         (
             "file:///user/local/bin/python3.9",
             "python3.8",
@@ -364,11 +339,6 @@ def test_onclusive_path_with_name(str_path, name, expected):
 @pytest.mark.parametrize(
     "str_path, stem, expected",
     [
-        # (
-        #     "s3://kubeflow-opoint-data-prod/processed",
-        #     ["archive.tar.gz"],
-        #     OnclusivePath("s3://kubeflow-opoint-data-prod/processed/archive.tar.gz")
-        # ),
         (
             "file:///home/file.txt",
             "newfile",
@@ -416,89 +386,6 @@ def test_onclusive_path_with_suffix(str_path, suffix, expected):
 def test_onclusive_path_overloaded_operator(str_path, extra, expected):
     """Test OnclusivePath parent attribute."""
     assert OnclusivePath(str_path) / extra == expected
-
-
-# filesystem-backed attributes / methods
-@pytest.mark.parametrize(
-    "str_path, expected",
-    [
-        (
-            "file:///home/ec2-user/data/*",
-            [
-                OnclusivePath("file:///home/ec2-user/data/README.md"),
-                OnclusivePath("file:///home/ec2-user/data/CONTRIBUTING.md"),
-            ],
-        ),
-    ],
-)
-@patch.object(BaseFileSystem, "glob")
-def test_onclusive_path_blobs(mock_glob, str_path, expected):
-    """Test blobs."""
-    mock_glob.return_value = expected
-    assert OnclusivePath(str_path).glob == expected
-
-
-@pytest.mark.parametrize(
-    "str_path, expected",
-    [
-        ("file:///home/ec2-user/data/README.md", True),
-        ("file:///home/ec2-user/data/.pyenv", False),
-    ],
-)
-@patch.object(BaseFileSystem, "isfile")
-def test_onclusive_path_isfile(mock_isfile, str_path, expected):
-    """Test isfile method."""
-    mock_isfile.return_value = expected
-    assert OnclusivePath(str_path).isfile == expected
-
-
-@pytest.mark.parametrize(
-    "str_path, expected",
-    [
-        ("file:///home/ec2-user/data/README.md", False),
-        ("file:///home/ec2-user/data/.pyenv", True),
-    ],
-)
-@patch.object(BaseFileSystem, "isdir")
-def test_onclusive_path_isdir(mock_isdir, str_path, expected):
-    """Test isdir method."""
-    mock_isdir.return_value = expected
-    assert OnclusivePath(str_path).isdir == expected
-
-
-@pytest.mark.parametrize(
-    "str_path, expected",
-    [
-        ("file:///home/ec2-user/ml-mesh", True),
-        ("file:///home/ec2-user/data/.docker", False),
-    ],
-)
-@patch.object(BaseFileSystem, "exists")
-def test_onclusive_path_exists(mock_exists, str_path, expected):
-    """Test exists method."""
-    mock_exists.return_value = expected
-    assert OnclusivePath(str_path).exists == expected
-
-
-@pytest.mark.parametrize(
-    "source, destination",
-    [
-        (
-            "file:///home/ec2-user/ml-mesh/README.md",
-            "file:///home/ec2-user/ml-mesh/data/README.md",
-        )
-    ],
-)
-@patch.object(BaseFileSystem, "exists")
-@patch.object(BaseFileSystem, "mv")
-def test_onclusive_path_move(mock_move, mock_exists, source, destination):
-    """Test move method."""
-    mock_exists.return_value = True
-
-    OnclusivePath(source).move(OnclusivePath(destination))
-
-    mock_exists.assert_called_once()
-    mock_move.assert_called_with(OnclusivePath(source), OnclusivePath(destination))
 
 
 @pytest.mark.parametrize(

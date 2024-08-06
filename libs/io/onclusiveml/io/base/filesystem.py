@@ -4,7 +4,7 @@
 import datetime
 from abc import abstractclassmethod, abstractmethod
 from io import DEFAULT_BUFFER_SIZE
-from typing import IO, Any, List, Optional, Set
+from typing import IO, Any, ClassVar, List, Optional, Set
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveFrozenModel
@@ -27,22 +27,18 @@ class BaseFileSystem(metaclass=Context):
     https://github.com/tensorflow/tfx/blob/master/tfx/dsl/io/filesystem.py
     """
 
-    def __init__(
-        self, supported_schemes: Set[str] = set(), root_index: int = 0
-    ) -> None:
-        """Base contructor."""
-        self._supported_schemes = supported_schemes
-        self._root_index = root_index
+    SUPPORTED_SCHEMES: ClassVar[Set[str]]
+    ROOT_INDEX: ClassVar[int]
 
     @property
     def supported_schemes(self) -> Set[str]:
         """Supported schemes."""
-        return self._supported_schemes
+        return type(self).SUPPORTED_SCHEMES
 
     @property
     def root_index(self) -> int:
         """Filesystem root index."""
-        return self._root_index
+        return type(self).ROOT_INDEX
 
     @abstractmethod
     def open(
@@ -138,14 +134,6 @@ class BaseFileSystem(metaclass=Context):
 
         Raises:
             FileNotFoundError: If the file does not exist.
-        """
-
-    @abstractmethod
-    def rmtree(self, path: "OnclusivePath") -> None:
-        """Deletes a directory recursively. Dangerous operation.
-
-        Args:
-            path: The path to the directory to delete.
         """
 
     @abstractmethod

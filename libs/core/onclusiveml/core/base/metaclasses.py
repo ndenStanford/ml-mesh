@@ -2,6 +2,7 @@
 
 # Standard Library
 import threading
+from abc import ABCMeta
 from sys import modules
 from typing import Any, List, Optional, Type, TypeVar, cast
 
@@ -60,7 +61,7 @@ class Singleton(type):
         cls.__singleton_instance = None
 
 
-class Context(type):
+class Context(ABCMeta):
     """Metaclass to create objects that behave like context managers."""
 
     def __new__(cls, name, bases, dct):
@@ -123,8 +124,7 @@ class Context(type):
             cls._context_class = getattr(modules[cls.__module__], cls._context_class)
         return cls._context_class
 
-    # inherit context class from parent
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs):  # inherit context class from parent
         super().__init_subclass__(**kwargs)
         cls._context_class = super().context_class
 

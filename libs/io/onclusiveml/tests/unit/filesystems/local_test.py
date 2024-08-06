@@ -21,7 +21,7 @@ def test_open(mock_open, localfs, path):
     """Test open method."""
     _ = localfs.open(path)
     mock_open.assert_called_with(
-        path.name, mode="r", encoding=None, errors=None, newline=None
+        path._raw_path, mode="r", encoding=None, errors=None, newline=None
     )
 
 
@@ -34,11 +34,11 @@ def test_open(mock_open, localfs, path):
         ),
     ],
 )
-@patch("shutil.copyfile")
+@patch("shutil.copytree")
 def test_cp(mock_copyfile, localfs, source, destination):
     """Test copy."""
     localfs.cp(source, destination)
-    mock_copyfile.assert_called_with(source.name, destination.name)
+    mock_copyfile.assert_called_with(source._raw_path, destination._raw_path)
 
 
 @pytest.mark.parametrize(
@@ -153,20 +153,15 @@ def test_isfile(mock_isfile, localfs, path, expected):
 
 
 @pytest.mark.parametrize(
-    "path, isdir_return",
-    [
-        (OnclusivePath("file:///folder/subfolder/"), True),
-    ],
+    "path",
+    [OnclusivePath("file:///folder/subfolder/")],
 )
-@patch("os.path.isdir")
 @patch("os.makedirs")
-def test_mkdirs(mock_mkdirs, mock_isdir, localfs, path, isdir_return):
+def test_mkdirs(mock_mkdirs, localfs, path):
     """Test mkdirs method."""
-    mock_isdir.return_value = isdir_return
     mock_mkdirs.return_value = None
 
     assert localfs.mkdirs(path) is None
-    mock_isdir.assert_called_with(path._raw_path)
     mock_mkdirs.assert_called_with(path._raw_path, exist_ok=True)
 
 

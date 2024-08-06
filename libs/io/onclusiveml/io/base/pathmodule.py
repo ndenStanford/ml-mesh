@@ -2,6 +2,7 @@
 
 # Standard Library
 from abc import ABC, abstractmethod
+from typing import List, Tuple, Union
 
 
 class BasePathModule(ABC):

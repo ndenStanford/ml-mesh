@@ -4,7 +4,7 @@
 from typing import Optional
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveEnum
+from onclusiveml.core.base import OnclusiveStrEnum
 
 
 PATH_SEPARATOR: str = "/"
@@ -14,7 +14,7 @@ DEFAULT_ENCODING: str = "bytes"
 DEFAULT_SCHEME = "file"
 
 
-class FileEncoding(str, OnclusiveEnum):
+class FileEncoding(OnclusiveStrEnum):
     """File encoding formats."""
 
     BASE64 = "base64"
@@ -27,7 +27,7 @@ class FileEncoding(str, OnclusiveEnum):
     PICKLE = "pickle"
 
 
-class IOScheme(OnclusiveEnum):
+class IOScheme(OnclusiveStrEnum):
     """Path schemes."""
 
     FILE = "file"

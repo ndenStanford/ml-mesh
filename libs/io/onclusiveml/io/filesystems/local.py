@@ -5,7 +5,7 @@ import datetime
 import glob
 import os
 import shutil
-from typing import IO, Any, List, Optional
+from typing import IO, Any, ClassVar, List, Optional, Set
 
 # Internal libraries
 from onclusiveml.io.base import BaseFileSystem, FileInfo
@@ -15,11 +15,8 @@ from onclusiveml.io.constants import IOScheme
 class LocalFileSystem(BaseFileSystem):
     """Filesystem that uses local file operations."""
 
-    def __init__(self) -> None:
-        """Base contructor."""
-        super().__init__(
-            supported_schemes={str(IOScheme.FILE)},
-        )
+    SUPPORTED_SCHEMES: ClassVar[Set[str]] = {IOScheme.FILE}
+    ROOT_INDEX: ClassVar[int] = 0
 
     def open(
         self,
