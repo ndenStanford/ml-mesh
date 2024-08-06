@@ -39,7 +39,7 @@ class TopicSummaryDynamoDB(Dyntastic):
     ] = None
     impact_category: Optional[ImpactCategoryLabel] = None
     query_id: Optional[str] = None
-    query_string: str
+    query_string: Union[str, dict]
     trend_lookback_days: int
     topic_document_threshold: Decimal
     trend_time_interval: str
