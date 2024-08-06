@@ -29,7 +29,10 @@ from onclusiveml.queries.query_profile import (
     ProductionToolsQueryProfile,
 )
 from src.settings import get_settings
-from src.serve.exceptions import TopicSummarizationParsingException
+from src.serve.exceptions import (
+    TopicSummarizationParsingException,
+    TopicSummarizationJSONDecodeException,
+)
 
 _service = TopicHandler()
 settings = get_settings()
@@ -387,4 +390,16 @@ def test_topic_handler_parsing_exception(
     mock_post.return_value = mock_response_parsing_error
 
     with pytest.raises(TopicSummarizationParsingException):
+        _ = _service.topic_inference(["Article content"])
+
+
+@patch("requests.post")
+def test_topic_handler_json_decode_exception(
+    mock_post,
+    mock_response_json_decode_error,
+):
+    """Test the exception handling for Json decode error."""
+    mock_post.return_value = mock_response_json_decode_error
+
+    with pytest.raises(TopicSummarizationJSONDecodeException):
         _ = _service.topic_inference(["Article content"])

@@ -2970,3 +2970,13 @@ def mock_response_parsing_error():
     mock_response.status_code = 500
     mock_response.detail = "OutputParserException:"
     return mock_response
+
+
+@pytest.fixture
+def mock_response_json_decode_error():
+    """Mock response for json decode error."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({"message": "Json decode error"})
+    mock_response.status_code = 500
+    mock_response.detail = "JSONDecodeError:"
+    return mock_response

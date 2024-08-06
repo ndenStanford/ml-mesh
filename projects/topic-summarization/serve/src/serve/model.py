@@ -22,6 +22,7 @@ from src.serve.tables import TopicSummaryDynamoDB
 from src.serve.exceptions import (
     TopicSummaryInsertionException,
     TopicSummarizationParsingException,
+    TopicSummarizationJSONDecodeException,
 )
 
 # Source
@@ -164,7 +165,10 @@ class ServedTopicModel(ServedModel):
                     topic, topic_summary_quality = self.model.aggregate(
                         content, boolean_query
                     )
-                except TopicSummarizationParsingException as e:
+                except (
+                    TopicSummarizationParsingException,
+                    TopicSummarizationJSONDecodeException,
+                ) as e:
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail=str(e),
@@ -180,7 +184,10 @@ class ServedTopicModel(ServedModel):
         else:
             try:
                 topic, topic_summary_quality = self.model.aggregate(content)
-            except TopicSummarizationParsingException as e:
+            except (
+                TopicSummarizationParsingException,
+                TopicSummarizationJSONDecodeException,
+            ) as e:
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=str(e),

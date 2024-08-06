@@ -13,6 +13,12 @@ class TopicSummaryInsertionException(OnclusiveException):
 
 
 class TopicSummarizationParsingException(OnclusiveException):
-    """Exception for errors in topic summarization parsing."""
+    """Exception for output parsing error in topic summarization."""
 
-    message_format = "Error occurred in topic summarization parsing: '{e}'"
+    message_format = "Output parsing error occurred in topic summarization: '{e}'"
+
+
+class TopicSummarizationJSONDecodeException(OnclusiveException):
+    """Exception for Json decoding error in topic summarization."""
+
+    message_format = "Json decoding error occurred in topic summarization: '{e}'"
