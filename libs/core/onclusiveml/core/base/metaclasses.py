@@ -10,7 +10,7 @@ from typing import Any, List, Optional, Type, TypeVar, cast
 T = TypeVar("T", bound="ContextMeta")
 
 
-class Singleton(type):
+class Singleton(ABCMeta):
     """Singleton metaclass.
 
     Use this metaclass to make any class into a singleton class:
