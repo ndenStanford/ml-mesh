@@ -414,6 +414,7 @@ class BelaModel:
             entities=batch["entities"],
             transform=self.transform,
         )
+        logger.info("truncation applied")
 
         model_inputs = self.transform(transformed_batch)
 
