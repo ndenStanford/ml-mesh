@@ -9,8 +9,12 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 
 # Internal libraries
+from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.bela.transforms.hf_transform import HFTransform
 from onclusiveml.models.bela.transforms.spm_transform import SPMTransform
+
+
+logger = get_default_logger(__name__, level=20)
 
 
 class ReadState(Enum):
@@ -441,6 +445,20 @@ class JointELTransform(HFTransform):
             eos_idx=self.eos_idx,
             max_seq_len=self.max_seq_len,
         )
+        # Apply truncation
+        logger.info("applying truncation in transform")
+        token_ids = [ids[: self.max_seq_len] for ids in token_ids]
+        seq_lens = [min(len(ids), self.max_seq_len) for ids in token_ids]
+        mention_offsets = [
+            [offset for offset in offsets if offset < self.max_seq_len]
+            for offsets in mention_offsets
+        ]
+        mention_lengths = [
+            [length for length in lengths if length < self.max_seq_len]
+            for lengths in mention_lengths
+        ]
+
+        logger.info("truncation done in trnasform")
 
         entities = [
             text_entities[: len(text_mention_offsets)]
@@ -811,6 +829,12 @@ class JointELXlmrRawTextTransform(SPMTransform):
         sp_token_ids = [
             [self.bos_idx] + tokens + [self.eos_idx] for tokens in sp_token_ids
         ]
+        # Apply truncation
+        logger.info("applying truncation in transform")
+        sp_token_ids = [tokens[: self.max_seq_len] for tokens in sp_token_ids]
+        seq_lens = [min(len(tokens), self.max_seq_len) for tokens in sp_token_ids]
+        logger.info("truncation done in trnasform")
+
         sp_token_boundaries: List[List[List[int]]] = [
             [[start, end] for _, start, end in tokens]
             for tokens in sp_tokens_with_indices
