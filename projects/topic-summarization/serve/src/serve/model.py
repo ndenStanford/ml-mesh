@@ -34,6 +34,7 @@ from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     BaseQueryProfile,
     ProductionToolsQueryProfile,
+    MediaApiStringQuery,
 )
 
 logger = get_default_logger(__name__)
@@ -48,14 +49,23 @@ class ServedTopicModel(ServedModel):
     predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
     bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
+    def _preprocess_string_query(self, query_string: str) -> str:
+        """Pre processing of query strings."""
+        preprocessed_query = query_string.replace('\\"', '"')
+        return preprocessed_query
+
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
         if inputs.query_string:
-            return StringQueryProfile(string_query=inputs.query_string)
+            return StringQueryProfile(
+                string_query=self._preprocess_string_query(inputs.query_string)
+            )
         elif inputs.query_id:
             return ProductionToolsQueryProfile(
                 version=inputs.media_api_version, query_id=inputs.query_id
             )
+        elif inputs.media_api_query:
+            return MediaApiStringQuery(string_query=inputs.media_api_query)
         else:
             logger.error("QueryProfile not found")
             # TODO: ADD ERROR RESPONSE HERE
@@ -91,7 +101,11 @@ class ServedTopicModel(ServedModel):
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
-            boolean_query = query_profile.query
+            # as we don't have 360 media api boolean query now, so use if as a temporary solution
+            if inputs.query_string or inputs.query_id:
+                boolean_query = query_profile.query
+            elif inputs.media_api_query:
+                boolean_query = query_profile.media_query
             trend_detection = inputs.trend_detection
 
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
