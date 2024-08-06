@@ -12,13 +12,6 @@ input = """
         The round-number milestone reflects just how high Musk soared during the run-up in asset prices during the easy-money pandemic era. Tesla exceeded a $1 trillion market capitalization for the first time in October 2021, joining the likes of ubiquitous technology companies Apple Inc., Microsoft Corp., Amazon.com Inc. and Google parent Alphabet Inc., even though its electric vehicles represented only a sliver of the overall auto market."""  # noqa: E501
 
 
-def test_get_model_server(test_client):
-    """Integration test for the get_model_server function."""
-    response = test_client.get("/summarization/v1/")
-
-    assert response.status_code == 200
-
-
 @pytest.mark.parametrize(
     "payload",
     [
@@ -27,8 +20,9 @@ def test_get_model_server(test_client):
                 "namespace": "summarization",
                 "attributes": {"content": input},
                 "parameters": {
-                    "language": "en",
-                    "target_language": "en",
+                    "input_language": "en",
+                    "output_language": "en",
+                    "type": "",
                     "desired_length": 50,
                 },
             }
@@ -38,8 +32,9 @@ def test_get_model_server(test_client):
                 "namespace": "summarization",
                 "attributes": {"content": input},
                 "parameters": {
-                    "language": "en",
-                    "target_language": "fr",
+                    "input_language": "en",
+                    "output_language": "fr",
+                    "type": "",
                     "desired_length": 100,
                 },
             }
@@ -48,7 +43,7 @@ def test_get_model_server(test_client):
 )
 def test_integration_summarization_model(test_client, payload):
     """Integration test for SummarizationServedModel."""
-    response = test_client.post("/summarization/v1/predict", json=payload)
+    response = test_client.post("/summarization/v2/predict", json=payload)
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
@@ -62,8 +57,9 @@ def test_integration_summarization_model(test_client, payload):
                 "namespace": "summarization",
                 "attributes": {"content": input},
                 "parameters": {
-                    "language": "hu",
-                    "target_language": "en",
+                    "input_language": "hu",
+                    "output_language": "en",
+                    "type": "",
                     "desired_length": 100,
                 },
             }
@@ -73,8 +69,9 @@ def test_integration_summarization_model(test_client, payload):
                 "namespace": "summarization",
                 "attributes": {"content": input},
                 "parameters": {
-                    "language": "en",
-                    "target_language": "hu",
+                    "input_language": "en",
+                    "output_language": "hu",
+                    "type": "",
                     "desired_length": 200,
                 },
             }
@@ -84,8 +81,9 @@ def test_integration_summarization_model(test_client, payload):
                 "namespace": "summarization",
                 "attributes": {"content": input},
                 "parameters": {
-                    "language": "hu",
-                    "target_language": "hu",
+                    "input_language": "hu",
+                    "output_language": "hu",
+                    "type": "",
                     "desired_length": 100,
                 },
             }
@@ -94,6 +92,6 @@ def test_integration_summarization_model(test_client, payload):
 )
 def test_invalid_language(test_client, payload):
     """Test for invalid language."""
-    response = test_client.post("/summarization/v1/predict", json=payload)
+    response = test_client.post("/summarization/v2/predict", json=payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert response.json()["detail"] == "Unsupported language"
