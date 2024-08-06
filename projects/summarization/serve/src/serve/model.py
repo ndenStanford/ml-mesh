@@ -41,7 +41,7 @@ class SummarizationServedModel(ServedModel):
             attributes={"model_name": self.name, "model_card": {}},
         )
 
-    def identify_language(text):
+    def identify_language(self, text):
         """Detect input language."""
         payload = {
             "data": {
@@ -62,7 +62,7 @@ class SummarizationServedModel(ServedModel):
             headers=headers,
         )
 
-        return response["data"]["attributes"]["source_language"]
+        return response.json()["data"]["attributes"]["source_language"]
 
     def inference(
         self,

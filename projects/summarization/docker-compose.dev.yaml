@@ -33,9 +33,12 @@ services:
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
+      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8000
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
+        condition: service_healthy
+      translation-serve:
         condition: service_healthy
     hostname: onclusiveml
     networks:
@@ -116,7 +119,7 @@ services:
     networks:
       - onclusive-net
 
-  translation-service:
+  translation-serve:
     build:
       context: ../../
       dockerfile: projects/translation/serve/Dockerfile
@@ -131,15 +134,15 @@ services:
     command: [python, -m, src.serve.__main__]
     profiles: [serve, integration, debug]
     ports:
-      - 8000:8000
+      - 8001:8000
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: serve/config/dev.env
-    hostname: onclusiveml
+
+    env_file: ../../projects/translation/serve/config/dev.env
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/translation/v1/ready]
-      interval: 10s
+      test: [CMD, curl, -f, http://translation-serve:8000/translation/v1/ready]
+      interval: 5s
       retries: 5
       start_period: 5s
       timeout: 10s
