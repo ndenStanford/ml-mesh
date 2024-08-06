@@ -2968,4 +2968,5 @@ def mock_response_parsing_error():
     mock_response = MagicMock()
     mock_response.content = json.dumps({"message": "Parsing error"})
     mock_response.status_code = 500
+    mock_response.detail = "OutputParserException:"
     return mock_response

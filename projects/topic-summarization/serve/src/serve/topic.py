@@ -59,7 +59,7 @@ class TopicHandler:
             json=input_dict,
         )
 
-        if q.status_code == 500:
+        if q.status_code == 500 and q.detail.startswith("OutputParserException"):
             logging.error(f"OutputParserException in Topic summarization: {q.content}")
             raise TopicSummarizationParsingException(e=q.content)
 
