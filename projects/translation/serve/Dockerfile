@@ -5,9 +5,12 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
 ENV HOME="${PROJECT_DIR}"
+
+# hadolint ignore=DL3002
+USER root
 
 RUN mkdir -p "${HOME}" && \
     chown -R "${USER}:users" "${HOME}"
@@ -25,9 +28,6 @@ COPY --chown=${USER}:users libs/ libs/
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
-
-# hadolint ignore=DL3002
-USER root
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \

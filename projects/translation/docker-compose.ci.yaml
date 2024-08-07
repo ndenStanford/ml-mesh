@@ -23,7 +23,7 @@ services:
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [serve, functional]
     ports:
-      - 8000:8000
+      - 8001:8001
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -31,7 +31,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/translation/v1/ready]
+      test: [CMD, curl, -f, http://serve:8001/translation/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
