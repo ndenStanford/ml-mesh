@@ -12,12 +12,11 @@ from onclusiveml.data.feature_store import FeastRepoBuilder, FeatureStoreParams
 # Source
 from src.settings import (  # type: ignore[attr-defined]; FeatureRegistrationLLMParams,
     FeatureRegistrationParams,
-    OnDemandFeatureRegistrationParams,
     IptcFirstLevelFeatureRegistrationParams,
-    # IptcLLMLabelFeatureRegistrationParams,
+    IptcFirstLevelOnDemandFeatureRegistrationParams,
     IptcSecondLevelFeatureRegistrationParams,
     IptcThirdLevelFeatureRegistrationParams,
-    IptcFirstLevelOnDemandFeatureRegistrationParams
+    OnDemandFeatureRegistrationParams,
 )
 
 
@@ -43,8 +42,10 @@ def main() -> None:
     iptc_first_level_on_demand_feature_registration_params = (
         IptcFirstLevelOnDemandFeatureRegistrationParams()
     )
-    register_on_demand(on_demand_feature_registration_params, iptc_first_level_on_demand_feature_registration_params)
-
+    register_on_demand(
+        on_demand_feature_registration_params,
+        iptc_first_level_on_demand_feature_registration_params,
+    )
 
 
 def register(
@@ -80,6 +81,7 @@ def register(
     if feature_registration_params.register_features:
         register_repo_contents(feast_repo_builder)
 
+
 def register_on_demand(
     feature_registration_params: OnDemandFeatureRegistrationParams,
     iptc_level_on_demand_feature_registration_params: OnclusiveBaseSettings,
@@ -88,8 +90,12 @@ def register_on_demand(
     feature_registration_params.sources = (
         iptc_level_on_demand_feature_registration_params.sources
     )
-    feature_registration_params.fields = iptc_level_on_demand_feature_registration_params.fields
-    feature_registration_params.udf = iptc_level_on_demand_feature_registration_params.udf
+    feature_registration_params.fields = (
+        iptc_level_on_demand_feature_registration_params.fields
+    )
+    feature_registration_params.udf = (
+        iptc_level_on_demand_feature_registration_params.udf
+    )
 
     logger.info("Creating feast-repo builder...")
     feast_repo_builder = FeastRepoBuilder(feature_registration_params)
@@ -134,6 +140,7 @@ def register_repo_contents(feast_repo_builder: Any) -> None:
         f"{[(fv.projection.name, fv.features) for fv in feature_views_list]}"
     )
 
+
 def register_on_demand_repo_contents(feast_repo_builder: Any) -> None:
     """Registers entity, features, and logs registration information.
 
@@ -149,23 +156,14 @@ def register_on_demand_repo_contents(feast_repo_builder: Any) -> None:
         None
 
     """
-    # logger.info("Registering entity...")
-    # feast_repo_builder.fs_handle.register([feast_repo_builder.entity])
     logger.info("Registering features...")
     feast_repo_builder.fs_handle.register([feast_repo_builder.feature_view])
-    # logger.info(
-    #     f"Registered entities: "
-    #     f"{[entity.name for entity in feast_repo_builder.fs_handle.list_entities()]}"
-    # )
-    # logger.info(
-    #     f"Registered datasources: "
-    #     f"{[datasource.name for datasource in feast_repo_builder.fs_handle.list_data_sources()]}"
-    # )
     feature_views_list = feast_repo_builder.fs_handle.list_on_demand_feature_views()
     logger.info(
         f"Registered on-demand feature views: "
         f"{[(fv.projection.name, fv.features) for fv in feature_views_list]}"
     )
+
 
 def plan_repo_contents(feast_repo_builder: Any) -> None:
     """Generates a plan for registering feast components and logs the differences.

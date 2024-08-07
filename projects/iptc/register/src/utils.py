@@ -124,5 +124,4 @@ def iptc_llm_feature_view_2(features_df: pd.DataFrame) -> pd.DataFrame:
         )
     ]
     df["topic_1_llm"] = pd.Series(topic_label).astype(pd.StringDtype())
-    # df["topic_1_llm"] = features_df["title"].astype(pd.StringDtype())
     return df
