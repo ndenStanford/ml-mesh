@@ -7,6 +7,7 @@ from typing import Dict, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.nlp.language import LanguageIso
 from onclusiveml.serving.rest.serve.params import ServingParams
 
 
@@ -25,61 +26,39 @@ class ApplicationSettings(OnclusiveBaseSettings):
     api_key_name: str = "x-api-key"
     # Prompt url
     prompt_api: str = "http://prompt-backend:4000"
-    translation_api: str = "http://translation-serve:8000"
+    translation_api: str = "translation-serve:8001"
     internal_ml_endpoint_api_key: str = "1234"
-    summarization_default_model: str = "gpt-4o"
+    summarization_default_model: str = "gpt-4o-mini"
 
-    summarization_prompts: Dict[
-        str, Dict[str, Dict[str, Union[str, Dict[str, str]]]]
-    ] = {
-        "en": {
-            "en": {
-                "alias": "ml-summarization-english",
-                "bespoke-summary": {"alias": "bespokse-summary-uk"},
-            },
-            "fr": {"alias": "ml-summarization-english-french"},
+    summarization_prompts: Dict[LanguageIso, Dict[str, str]] = {
+        LanguageIso.EN: {
+            "section": "ml-summarization-english",
+            "bespoke": "bespokse-summary-uk",
         },
-        "fr": {
-            "fr": {
-                "alias": "ml-summarization-french",
-                "bespoke-summary": {"alias": "bespokse-summary-fr"},
-            },
-            "en": {"alias": "ml-summarization-french-english"},
+        LanguageIso.FR: {
+            "section": "ml-summarization-french",
+            "bespoke": "bespokse-summary-fr",
         },
-        "de": {
-            "de": {
-                "alias": "ml-summarization-german",
-                "bespoke-summary": {"alias": "bespokse-summary-de"},
-            }
+        LanguageIso.DE: {
+            "section": "ml-summarization-german",
+            "bespoke": "bespokse-summary-de",
         },
-        "it": {
-            "it": {
-                "alias": "ml-summarization-italian",
-                "bespoke-summary": {"alias": "bespokse-summary-it-theme"},
-            }
+        LanguageIso.IT: {
+            "section": "ml-summarization-italian",
+            "bespoke": "bespokse-summary-it-theme",
         },
-        "gl": {
-            "gl": {
-                "bespoke-summary": {"alias": "bespokse-summary-gl"},
-            }
+        LanguageIso.ES: {
+            "section": "ml-summarization-spanish",
+            "bespoke": "bespokse-summary-es",
         },
-        "es": {
-            "es": {
-                "alias": "ml-summarization-spanish",
-                "bespoke-summary": {"alias": "bespokse-summary-es"},
-            }
+        LanguageIso.CA: {
+            "section": "ml-summarization-catalan",
+            "bespoke": "bespokse-summary-ca",
         },
-        "ca": {
-            "ca": {
-                "alias": "ml-summarization-catalan",
-                "bespoke-summary": {"alias": "bespokse-summary-ca"},
-            }
-        },
-        "pt": {"pt": {"alias": "ml-summarization-portuguese"}},
-        "zh": {"zh": {"alias": "ml-summarization-chinese_simplified"}},
-        "zh-t": {"zh-t": {"alias": "ml-summarization-chinese_traditional"}},
-        "ja": {"ja": {"alias": "ml-summarization-japanese"}},
-        "ko": {"ko": {"alias": "ml-summarization-korean"}},
+        LanguageIso.PT: {"section": "ml-summarization-portuguese"},
+        LanguageIso.ZH: {"section": "ml-summarization-chinese_simplified"},
+        LanguageIso.JA: {"section": "ml-summarization-japanese"},
+        LanguageIso.KO: {"section": "ml-summarization-korean"},
     }
 
 
