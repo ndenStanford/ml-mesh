@@ -7,12 +7,6 @@ from typing import Optional
 import torch.nn as nn
 from transformers import AutoModel
 
-# Internal libraries
-from onclusiveml.core.logging import get_default_logger
-
-
-logger = get_default_logger(__name__, level=20)
-
 
 class HFEncoder(nn.Module):
     """Encoder."""
@@ -27,7 +21,6 @@ class HFEncoder(nn.Module):
             model_path, device_map="auto", torch_dtype="auto"
         )
         self.embedding_dim = self.transformer.encoder.config.hidden_size
-        self.max_length = 256
 
     def forward(self, input_ids, attention_mask=None):
         """Forward Encoder."""

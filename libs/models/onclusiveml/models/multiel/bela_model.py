@@ -92,7 +92,6 @@ class BelaModel:
         """
         self.device = torch.device(device)
 
-        logger.info("Create task")
         # Load configuration using Pydantic
         settings.task.load_from_checkpoint = checkpoint_path
         settings.datamodule.ent_catalogue_idx_path = (
@@ -416,7 +415,6 @@ class BelaModel:
             entities=batch["entities"],
             transform=self.transform,
         )
-        logger.info("truncation applied")
 
         model_inputs = self.transform(transformed_batch)
 
@@ -427,13 +425,10 @@ class BelaModel:
         if token_ids.shape[1] > self.max_length:
             token_ids = token_ids[:, : self.max_length]
 
-        logger.info("we reached this point so far")
-
         token_ids = token_ids.to(self.device)
 
         torch.cuda.empty_cache()
 
-        logger.info("this is a miracle")
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()
