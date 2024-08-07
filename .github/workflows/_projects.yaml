@@ -106,10 +106,10 @@ on  :
       GH_PERSONAL_ACCESS_TOKEN:
         required: true
         description: Github PAT to allow EC2 instance to connect to Github repository content.
-      MEDIA_CLIENT_ID:
+      MEDIA_API_CLIENT_ID:
         required: false
         description: Media client ID.
-      MEDIA_CLIENT_SECRET:
+      MEDIA_API_CLIENT_SECRET:
         required: false
         description: Media client secret key.
       ELASTICSEARCH_KEY:
@@ -279,8 +279,8 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM="linux/amd64" \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-            MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
-            MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
+            MEDIA_API_CLIENT_ID="${{ secrets.MEDIA_API_CLIENT_ID }}" \
+            MEDIA_API_CLIENT_SECRET="${{ secrets.MEDIA_API_CLIENT_SECRET }}" \
             ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
@@ -296,8 +296,8 @@ jobs:
             TARGET_BUILD_STAGE="development" \
             PLATFORM="linux/amd64" \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-            MEDIA_CLIENT_ID="${{ secrets.MEDIA_CLIENT_ID }}" \
-            MEDIA_CLIENT_SECRET="${{ secrets.MEDIA_CLIENT_SECRET }}" \
+            MEDIA_API_CLIENT_ID="${{ secrets.MEDIA_API_CLIENT_ID }}" \
+            MEDIA_API_CLIENT_SECRET="${{ secrets.MEDIA_API_CLIENT_SECRET }}" \
             ELASTICSEARCH_KEY="${{ secrets.ELASTICSEARCH_KEY }}" \
             PROMPT_REGISTRY_APP_ID="${{ secrets.PROMPT_REGISTRY_APP_ID }}" \
             PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
