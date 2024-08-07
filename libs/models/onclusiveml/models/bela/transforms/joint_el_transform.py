@@ -811,7 +811,6 @@ class JointELXlmrRawTextTransform(SPMTransform):
         sp_token_ids = [
             [self.bos_idx] + tokens + [self.eos_idx] for tokens in sp_token_ids
         ]
-
         sp_token_boundaries: List[List[List[int]]] = [
             [[start, end] for _, start, end in tokens]
             for tokens in sp_tokens_with_indices

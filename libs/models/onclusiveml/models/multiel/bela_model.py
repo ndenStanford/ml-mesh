@@ -92,6 +92,7 @@ class BelaModel:
         """
         self.device = torch.device(device)
 
+        logger.info("Create task")
         # Load configuration using Pydantic
         settings.task.load_from_checkpoint = checkpoint_path
         settings.datamodule.ent_catalogue_idx_path = (
