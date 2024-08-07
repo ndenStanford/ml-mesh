@@ -20,7 +20,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    env_file: serve/config/prod.env
     profiles: [serve, functional]
     ports:
       - 8001:8001
@@ -45,7 +45,7 @@ services:
     hostname: onclusiveml
     environment:
       ONCLUSIVEML_SERVING_LOGCONFIG_JSON_FORMAT: false
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    env_file: serve/config/prod.env
     networks:
       - onclusive-net
 
@@ -55,7 +55,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: serve/config/${DEPLOYMENT:-prod}.env
+    env_file: serve/config/prod.env
     profiles: [functional]
     hostname: onclusiveml
     networks:
