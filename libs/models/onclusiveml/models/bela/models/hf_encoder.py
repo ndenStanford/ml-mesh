@@ -31,12 +31,6 @@ class HFEncoder(nn.Module):
 
     def forward(self, input_ids, attention_mask=None):
         """Forward Encoder."""
-        logger.info(f"input_ids shape: {input_ids.shape}")
-        if input_ids.shape[1] > self.max_length:
-            input_ids = input_ids[:, : self.max_length]
-        logger.info(
-            f"input_ids shape after truncation within HFencoder: {input_ids.shape}"
-        )
         output = self.transformer(input_ids=input_ids, attention_mask=attention_mask)
         last_layer = output["last_hidden_state"]
         sentence_rep = last_layer[:, 0, :]
