@@ -178,6 +178,14 @@ class FeatureStoreHandle:
 
         """
         return self.fs.list_feature_views()
+    
+    def list_on_demand_feature_views(self) -> List[FeastObject]:
+        """Lists feast on-demand feature views.
+
+        Returns: List of on-demand feature views registered with feast.
+
+        """
+        return self.fs.list_on_demand_feature_views()
 
     def list_data_sources(self) -> List[FeastObject]:
         """Lists feast data sources.
