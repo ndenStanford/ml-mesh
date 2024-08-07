@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple, Type
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
-from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.multiel import BELA
 from onclusiveml.nlp.language import filter_language
 from onclusiveml.nlp.language.lang_exception import (
@@ -26,7 +25,6 @@ from src.settings import get_settings
 
 
 settings = get_settings()
-logger = get_default_logger(__name__)
 
 
 class ServedBelaModel(ServedModel):
@@ -45,7 +43,6 @@ class ServedBelaModel(ServedModel):
         self.served_model_artifacts = served_model_artifacts
         self._model = None
         super().__init__(name=served_model_artifacts.model_name)
-        logger.info("Initialization completed")
 
     def bio(self) -> BioResponseSchema:
         """Model bio."""
@@ -59,7 +56,6 @@ class ServedBelaModel(ServedModel):
     def model(self) -> BELA:
         """Model class."""
         if self.ready:
-            logger.info("Model ready")
             return self._model
         raise ValueError(
             "Model has not been initialized. Please call .load() before making a prediction"
@@ -82,8 +78,6 @@ class ServedBelaModel(ServedModel):
 
         self.ready = True
 
-        logger.info("Bela model loaded")
-
     def entities(self) -> Optional[Dict[str, Any]]:
         """Entities to be linked."""
         return self._entities
@@ -96,8 +90,6 @@ class ServedBelaModel(ServedModel):
         content = attributes.content
         lang = parameters.lang
         entities = getattr(attributes, "entities", None)
-
-        logger.info("Variabled set")
 
         try:
             entities_with_links = self._predict(
@@ -130,7 +122,6 @@ class ServedBelaModel(ServedModel):
         entities: Optional[List[Dict[str, Any]]],
     ) -> List[Dict[str, Any]]:
         """Language filtered prediction."""
-        logger.info("Language accepted")
         return self._get_entity_linking(content=content, entities=entities)
 
     def _generate_offsets(
@@ -143,7 +134,6 @@ class ServedBelaModel(ServedModel):
             entities (List[Dict[str, Any]]):
                 entities within text recognized by an external NER model
         """
-        logger.info("generating offsets")
         unique_entity_text = list(
             set(entity.get("entity_text", entity.get("text")) for entity in entities)
         )
