@@ -1,7 +1,7 @@
 """Summarization v1 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -24,12 +24,8 @@ class PredictRequestParametersSchemaV1(JsonApiSchema):
         desired_length (int): Desired token length of summary used in the prompt
     """
 
-    input_language: Optional[str] = None
-    output_language: Optional[str] = None
-    type: str = "bespoke-summary"
-    theme: Optional[str] = None
-    keywords: List[str] = []
-    title: Optional[bool] = False
+    language: str = "en"
+    target_language: str = "en"
     desired_length: Optional[int] = 100
 
 
