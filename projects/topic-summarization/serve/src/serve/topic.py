@@ -168,7 +168,10 @@ class TopicHandler:
                     entity_query_alias_gpt, settings.GPT_MODEL, input_dict
                 )
                 output_content = json.loads(q.content)
-            except TopicSummarizationParsingException as e:
+            except (
+                TopicSummarizationParsingException,
+                TopicSummarizationJSONDecodeException,
+            ) as e:
                 raise e
 
         entity_list = output_content["entity_list"]

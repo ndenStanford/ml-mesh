@@ -170,8 +170,7 @@ class ServedTopicModel(ServedModel):
                     TopicSummarizationJSONDecodeException,
                 ) as e:
                     raise HTTPException(
-                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=str(e),
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
                     )
 
                 impact_category = self.impact_quantifier.quantify_impact(
@@ -189,8 +188,7 @@ class ServedTopicModel(ServedModel):
                 TopicSummarizationJSONDecodeException,
             ) as e:
                 raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=str(e),
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
                 )
             impact_category = None
         if save_report_dynamodb:
