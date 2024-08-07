@@ -22,19 +22,19 @@ from onclusiveml.queries.exceptions import (
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    media_client_id: SecretStr = Field(
+    media_api_client_id: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_client_secret: SecretStr = Field(
+    media_api_client_secret: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_username: SecretStr = Field(
+    media_api_username: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_password: SecretStr = Field(
+    media_api_password: SecretStr = Field(
         default="...",
         exclude=True,
     )
@@ -62,8 +62,10 @@ class BaseQueryProfile(OnclusiveBaseModel):
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
         settings_dict = settings.model_dump()
-        settings_dict["client_secret"] = settings.media_client_secret.get_secret_value()
-        settings_dict["client_id"] = settings.media_client_id.get_secret_value()
+        settings_dict[
+            "client_secret"
+        ] = settings.media_api_client_secret.get_secret_value()
+        settings_dict["client_id"] = settings.media_api_client_id.get_secret_value()
         settings_dict["grant_type"] = settings.GRANT_TYPE
         settings_dict["scope"] = settings.SCOPE
 
@@ -163,8 +165,8 @@ class MediaApiStringQuery(BaseQueryProfile):
         query["show_query"] = True
 
         MEDIA_API_BASE_URL = settings.MEDIA_API_URL
-        username = settings.media_username.get_secret_value()
-        password = settings.media_password.get_secret_value()
+        username = settings.media_api_username.get_secret_value()
+        password = settings.media_api_password.get_secret_value()
 
         if only_id:
             query["return_fields"] = ["id", "url", "content"]
