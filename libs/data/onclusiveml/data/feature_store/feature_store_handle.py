@@ -178,7 +178,7 @@ class FeatureStoreHandle:
 
         """
         return self.fs.list_feature_views()
-    
+
     def list_on_demand_feature_views(self) -> List[FeastObject]:
         """Lists feast on-demand feature views.
 

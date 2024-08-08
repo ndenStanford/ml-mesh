@@ -1,15 +1,19 @@
 """Feature registration inputs."""
 
 # Standard Library
-from typing import List, Optional, Tuple, Callable, Dict
+from typing import Callable, List, Optional, Tuple
 
 # 3rd party libraries
 from pydantic_settings import SettingsConfigDict
-from feast import FeatureView
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.feature_store import FeatureStoreParams, OnDemandFeatureStoreParams
+from onclusiveml.data.feature_store import (
+    FeatureStoreParams,
+    OnDemandFeatureStoreParams,
+)
+
+# Source
 from src.utils import iptc_llm_feature_view_2
 
 
@@ -24,6 +28,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
     fields: Optional[List[Tuple[str, str]]] = None
     entity_join_key: str = "iptc_id"
     register_features: bool = False
+
 
 class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
     feast_config_bucket: str
@@ -74,7 +79,7 @@ class IptcThirdLevelFeatureRegistrationParams(OnclusiveBaseSettings):
 class IptcFirstLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     """On-demand feature registration inputs."""
 
-    feature_view_name: str 
+    feature_view_name: str
     sources: List[str]
     fields: Optional[List[Tuple[str, str]]] = None
     udf: Callable = iptc_llm_feature_view_2
@@ -90,6 +95,3 @@ class IptcLLMLabelFeatureRegistrationParams(OnclusiveBaseSettings):
     fields: List[Tuple[str, str]]
 
     model_config = SettingsConfigDict(env_prefix="llm_label_")
-
-
-

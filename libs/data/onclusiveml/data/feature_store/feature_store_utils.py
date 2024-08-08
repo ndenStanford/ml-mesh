@@ -1,7 +1,7 @@
 """Utilities for feast feature store."""
 
 # Standard Library
-from typing import Any, Optional, List, Callable
+from typing import Any, Callable, List, Optional
 
 # 3rd party libraries
 from feast import Entity, FeatureView, Field, OnDemandFeatureView
@@ -18,7 +18,8 @@ from onclusiveml.data.feature_store import (
 class FeatureStoreParams(OnclusiveBaseSettings):
     """Base class for all parameter classes in the featurestore module in data library.
 
-    Subclassing from OnclusiveBaseSettings allows for configuring parameters via environment variables.
+    Subclassing from OnclusiveBaseSettings allows for configuring parameters
+    via environment variables.
     """
 
     feast_config_bucket: str
@@ -33,7 +34,8 @@ class FeatureStoreParams(OnclusiveBaseSettings):
 class OnDemandFeatureStoreParams(OnclusiveBaseSettings):
     """Base class for all parameter classes in the on-demand featurestore module in data library.
 
-    Subclassing from OnclusiveBaseSettings allows for configuring parameters via environment variables.
+    Subclassing from OnclusiveBaseSettings allows for configuring parameters
+    via environment variables.
     """
 
     feast_config_bucket: str
@@ -191,7 +193,10 @@ class FeastRepoBuilder:
             for field in self.feature_registration_params.fields
         ]
 
-        self.feature_view_sources = [self.fs_handle.fs.get_feature_view(source) for source in self.feature_registration_params.sources]
+        self.feature_view_sources = [
+            self.fs_handle.fs.get_feature_view(source)
+            for source in self.feature_registration_params.sources
+        ]
 
         self.feature_view = OnDemandFeatureView(
             name=self.feature_registration_params.udf.__name__,
