@@ -27,7 +27,7 @@ class QueryMissingIdException(OnclusiveException):
 class QueryGetException(OnclusiveException):
     """Media API GET method exception when trying to retrieve translated ES query with query id."""
 
-    message_format = "Translated query  not found for the boolean query: {boolean_query}, queryId: {query_id}"  # noqa: E501
+    message_format = "Translated query not found for the boolean query: {boolean_query}, queryId: {query_id}"  # noqa: E501
 
 
 class QueryDeleteException(OnclusiveException):
