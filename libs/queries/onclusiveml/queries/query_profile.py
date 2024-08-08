@@ -5,6 +5,8 @@
 from typing import Dict, Optional, Union
 
 # 3rd party libraries
+import ast
+import json
 import requests
 from pydantic import SecretStr, Field
 
@@ -20,27 +22,31 @@ from onclusiveml.queries.exceptions import (
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    media_client_id: SecretStr = Field(
+    media_api_client_id: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_client_secret: SecretStr = Field(
+    media_api_client_secret: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    grant_type: str = "client_credentials"
-    scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
-    ml_query_id: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
-    authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
-    media_api_url: str = "https://staging-querytool-api.platform.onclusive.org"
+    media_api_username: SecretStr = Field(
+        default="...",
+        exclude=True,
+    )
+    media_api_password: SecretStr = Field(
+        default="...",
+        exclude=True,
+    )
 
-    def get_client_secret_value(self) -> str:
-        """Get media_client_secret."""
-        return self.media_client_secret.get_secret_value()
-
-    def get_client_id_value(self) -> str:
-        """Get media_client_id."""
-        return self.media_client_id.get_secret_value()
+    GRANT_TYPE: str = "client_credentials"
+    SCOPE: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
+    ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
+    AUTHENTICATION_URL: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
+    PRODUCTION_TOOL_ENDPOINT: str = (
+        "https://staging-querytool-api.platform.onclusive.org"
+    )
+    MEDIA_API_URL: str = "https://crawler-api-prod.airpr.com/v1"
 
 
 class BaseQueryProfile(OnclusiveBaseModel):
@@ -56,12 +62,14 @@ class BaseQueryProfile(OnclusiveBaseModel):
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
         settings_dict = settings.model_dump()
-        settings_dict["client_secret"] = settings.media_client_secret.get_secret_value()
-        settings_dict["client_id"] = settings.media_client_id.get_secret_value()
-        settings_dict["grant_type"] = settings.grant_type
-        settings_dict["scope"] = settings.scope
+        settings_dict[
+            "client_secret"
+        ] = settings.media_api_client_secret.get_secret_value()
+        settings_dict["client_id"] = settings.media_api_client_id.get_secret_value()
+        settings_dict["grant_type"] = settings.GRANT_TYPE
+        settings_dict["scope"] = settings.SCOPE
 
-        token_request = requests.post(settings.authentication_url, settings_dict)
+        token_request = requests.post(settings.AUTHENTICATION_URL, settings_dict)
         return token_request.json().get("access_token")
 
     def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
@@ -84,13 +92,13 @@ class BaseQueryProfile(OnclusiveBaseModel):
             "booleanQuery": self.query,
         }
         _ = requests.put(
-            f"{settings.media_api_url}/v1/topics/{settings.ml_query_id}",
+            f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/{settings.ML_QUERY_ID}",
             headers=self.headers(settings),
             json=json_data,
         )
         if _.status_code == 204:
             response = requests.get(
-                f"{settings.media_api_url}/v1/mediaContent/translate/mediaapi?queryId={settings.ml_query_id}",  # noqa: E501
+                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={settings.ML_QUERY_ID}",  # noqa: E501
                 headers=self.headers(settings),
             )
             return response.json()
@@ -121,10 +129,61 @@ class ProductionToolsQueryProfile(BaseQueryProfile):
     def query(self) -> Union[str, None]:
         """Translate query id to string query."""
         request_result = requests.get(
-            f"{self.settings.media_api_url}/v{self.version}/topics/{self.query_id}",
+            f"{self.settings.PRODUCTION_TOOL_ENDPOINT}/v{self.version}/topics/{self.query_id}",
             headers=self.headers(self.settings),
         )
         if request_result.status_code == 200:
             return request_result.json().get("booleanQuery")
         else:
             raise QueryIdException(query_id=self.query_id)
+
+
+class MediaApiStringQuery(BaseQueryProfile):
+    """360 Media Api query to es query."""
+
+    string_query: str
+
+    @property
+    def media_query(self) -> str:
+        """Media Api String query."""
+        # api call to query tool
+        json_query = ast.literal_eval(self.string_query)
+        return json_query
+
+    def run(
+        self,
+        settings: MediaAPISettings,
+        page: int = 1,
+        limit: int = 25,
+        only_id: bool = True,
+    ) -> Union[Dict, None]:
+        """Runs a media API query to generate es query."""
+        query = self.media_query
+        query["page"] = page
+        query["limit"] = limit
+        query["sort"] = ["_score"]
+        query["show_query"] = True
+
+        MEDIA_API_BASE_URL = settings.MEDIA_API_URL
+        username = settings.media_api_username.get_secret_value()
+        password = settings.media_api_password.get_secret_value()
+
+        if only_id:
+            query["return_fields"] = ["id", "url", "content"]
+        res = requests.post(
+            f"{MEDIA_API_BASE_URL}/search/articles",
+            json=query,
+            auth=(username, password),
+        )
+        json_res = res.json()
+        final_res = json.loads(json_res["es_query"])["query"]
+        return final_res
+
+    def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
+        """Elastic search query."""
+        # call the media to translate Boolean query -> ES query
+        response = self.run(settings)
+        if response:
+            return response
+        else:
+            raise QueryESException()

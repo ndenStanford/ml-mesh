@@ -78,8 +78,6 @@ def test_model_server_client_no_model(
 
     response = requests.get(url)
 
-    print(response)
-
     test_probe_response_model(**response.json())
 
 

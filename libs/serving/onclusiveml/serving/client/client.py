@@ -13,6 +13,7 @@ import onclusiveml.serving.serialization.ner.v1 as ner_v1
 import onclusiveml.serving.serialization.sentiment.v1 as sentiment_v1
 import onclusiveml.serving.serialization.topic.v1 as topic_v1
 import onclusiveml.serving.serialization.topic_summarization.v1 as topic_summarization_v1
+import onclusiveml.serving.serialization.translation.v1 as translation_v1
 from onclusiveml.serving.client._bind import bind
 
 
@@ -194,6 +195,16 @@ class OnclusiveApiClient:
         request_attributes_schema=lsh_v1.PredictRequestAttributeSchemaV1,
         request_parameters_schema=lsh_v1.PredictRequestParametersSchemaV1,
         response_attributes_schema=lsh_v1.PredictResponseAttributeSchemaV1,
+    )
+
+    translation = bind(
+        namespace="translation",
+        version=1,
+        method="POST",
+        endpoint="predict",
+        request_attributes_schema=translation_v1.PredictRequestAttributeSchemaV1,
+        request_parameters_schema=translation_v1.PredictRequestParametersSchemaV1,
+        response_attributes_schema=translation_v1.PredictResponseAttributeSchemaV1,
     )
 
     iptc_multi = bind(

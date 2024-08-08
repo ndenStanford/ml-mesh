@@ -10,7 +10,7 @@ packages = [{include = "neuron_compile"}]
 python = "3.8.16"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 torch = "1.12.1"
-torch-neuron = {version = "1.12.1.2.9.74.0", source = "aws-neuron"}
+torch-neuron = {version = "1.12.1.2.10.12.0", source = "aws-neuron"}
 transformers = "^4.38.2"
 
 [[tool.poetry.source]]

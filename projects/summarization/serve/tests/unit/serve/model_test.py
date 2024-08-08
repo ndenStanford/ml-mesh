@@ -17,7 +17,7 @@ from src.serve.schemas import PredictRequestSchema
 def test_model_bio(summarization_model):
     """Model bio test."""
     assert summarization_model.bio().model_dump() == {
-        "version": 1,
+        "version": 2,
         "data": {
             "namespace": "summarization",
             "identifier": None,
@@ -30,7 +30,7 @@ def test_model_bio(summarization_model):
 
 
 @pytest.mark.parametrize(
-    "text, desired_length, language, target_language, expected_summary",
+    "text, desired_length, input_language, output_language, type, expected_summary",
     [
         (
             """Elon Musk was the second person ever to amass a personal fortune of more than $200 billion,
@@ -38,26 +38,28 @@ def test_model_bio(summarization_model):
             100,
             "en",
             "en",
+            "bespoke",
             """Elon Musk reached a net worth of over $200 billion in January 2021,
             becoming the second individual to achieve this milestone after Jeff Bezos.""",
         ),
     ],
 )
-@patch.object(SummarizationServedModel, "inference")
+@patch.object(SummarizationServedModel, "_inference")
 def test_model_inefrence(
     mock_inference,
     summarization_model,
     text,
     desired_length,
-    language,
-    target_language,
+    input_language,
+    output_language,
+    type,
     expected_summary,
 ):
     """Test model inference."""
     mock_inference.return_value = expected_summary
 
-    summary = summarization_model.inference(
-        text, desired_length, language, target_language
+    summary = summarization_model._inference(
+        text, desired_length, input_language, output_language, type
     )
 
     assert summary == expected_summary
@@ -75,8 +77,9 @@ def test_model_inefrence(
                         breaching that threshold in January 2021, months after Jeff Bezos."""
                     },
                     "parameters": {
-                        "language": "en",
-                        "target_language": "en",
+                        "input_language": "en",
+                        "output_language": "en",
+                        "summary_type": "",
                         "desired_length": 200,
                     },
                 }
