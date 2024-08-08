@@ -41,7 +41,6 @@ class MediaAPISettings(OnclusiveBaseSettings):
 
     GRANT_TYPE: str = "client_credentials"
     SCOPE: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
-    ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
     AUTHENTICATION_URL: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
     PRODUCTION_TOOL_ENDPOINT: str = (
         "https://staging-querytool-api.platform.onclusive.org"
@@ -89,14 +88,15 @@ class BaseQueryProfile(OnclusiveBaseModel):
             "description": "used by ML team to translate queries from boolean to media API",
             "booleanQuery": self.query,
         }
-        _ = requests.put(
-            f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/{settings.ML_QUERY_ID}",
+        q = requests.post(
+            f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/",
             headers=self.headers(settings),
             json=json_data,
         )
-        if _.status_code == 204:
+        if q.status_code == 201:
+            res = q.json()
             response = requests.get(
-                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={settings.ML_QUERY_ID}",  # noqa: E501
+                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?query={res['id']}",  # noqa: E501
                 headers=self.headers(settings),
             )
             return response.json()
