@@ -14,7 +14,10 @@ from pydantic import SecretStr, Field
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
 from onclusiveml.queries.exceptions import (
     QueryESException,
-    QueryStringException,
+    QueryPostException,
+    QueryGetException,
+    QueryDeleteException,
+    QueryMissingIdException,
     QueryIdException,
 )
 
@@ -88,20 +91,40 @@ class BaseQueryProfile(OnclusiveBaseModel):
             "description": "used by ML team to translate queries from boolean to media API",
             "booleanQuery": self.query,
         }
-        q = requests.post(
+        # add query to database
+        post_res = requests.post(
             f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/",
             headers=self.headers(settings),
             json=json_data,
         )
-        if q.status_code == 201:
-            res = q.json()
-            response = requests.get(
-                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={res['id']}",  # noqa: E501
+        if post_res.status_code == 201:
+            post_res = post_res.json()
+            query_id = post_res.get("id")
+
+            # check if id is given after inserting boolean query into database
+            if query_id is None:
+                raise QueryMissingIdException(boolean_query=self.query)
+
+            # retrieve query from database
+            get_res = requests.get(
+                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={query_id}",  # noqa: E501
                 headers=self.headers(settings),
             )
-            return response.json()
+            if get_res.status_code == 200:
+                # delete query from database
+                del_res = requests.delete(
+                    f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/{query_id}",  # noqa: E501
+                    headers=self.headers(settings),
+                )
+                if del_res.status_code != 204:
+                    raise QueryDeleteException(
+                        boolean_query=self.query, query_id=query_id
+                    )
+                return get_res.json()
+            else:
+                raise QueryGetException(boolean_query=self.query, query_id=query_id)
         else:
-            raise QueryStringException(boolean_query=self.query)
+            raise QueryPostException(boolean_query=self.query)
 
 
 class StringQueryProfile(BaseQueryProfile):
