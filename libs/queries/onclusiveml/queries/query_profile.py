@@ -96,7 +96,7 @@ class BaseQueryProfile(OnclusiveBaseModel):
         if q.status_code == 201:
             res = q.json()
             response = requests.get(
-                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?query={res['id']}",  # noqa: E501
+                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={res['id']}",  # noqa: E501
                 headers=self.headers(settings),
             )
             return response.json()
