@@ -4,12 +4,10 @@
 from onclusiveml.core.base.exception import OnclusiveException
 
 
-class LanguageNotSupportedException(OnclusiveException):
-    """Language not supported exception."""
+class PromptNotFoundException(OnclusiveException):
+    """Prompt not found exception."""
 
-    message_format = (
-        "Summary language '{language}' and or '{summary_type}' not supported."
-    )
+    message_format = "Prompt not found. Summary language '{language}' and or '{summary_type}' not supported."  # noqa: E501
 
 
 class PromptBackendException(OnclusiveException):

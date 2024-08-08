@@ -18,8 +18,8 @@ from onclusiveml.serving.rest.serve import ServedModel
 
 # Source
 from src.exceptions import (
-    LanguageNotSupportedException,
     PromptBackendException,
+    PromptNotFoundException,
     SummaryTypeNotSupportedException,
 )
 from src.serve.schemas import (
@@ -101,7 +101,7 @@ class SummarizationServedModel(ServedModel):
         try:
             alias = settings.summarization_prompts[input_language][summary_type]
         except KeyError:
-            raise LanguageNotSupportedException(
+            raise PromptNotFoundException(
                 language=input_language, summary_type=summary_type
             )
         return alias
