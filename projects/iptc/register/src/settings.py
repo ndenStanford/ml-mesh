@@ -31,6 +31,8 @@ class FeatureRegistrationParams(FeatureStoreParams):
 
 
 class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
+    """On-demand feature registration inputs."""
+
     feast_config_bucket: str
     config_file: str = "feature_store.yaml"
     local_config_dir: str = "local-config-dir"

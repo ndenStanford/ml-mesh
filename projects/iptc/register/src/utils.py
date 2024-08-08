@@ -47,6 +47,7 @@ def generate_label_llm(title, article, candidates):
 
 
 def iptc_llm_feature_view_2(features_df: pd.DataFrame) -> pd.DataFrame:
+    """On-demand feature view transformation."""
     candidates = [
         {
             "name": "arts, culture, entertainment and media",
