@@ -20,3 +20,9 @@ class UncompatiblePathException(OnclusiveException):
     """Incompatible Path."""
 
     message_format = "Path {path} is not compatible with filesystem {fs}."
+
+
+class IncompatibleSchemesException(OnclusiveException):
+    """Incompatible schemss."""
+
+    message_format = "Got schemes {scheme_source} and {scheme_destination} but expected {scheme_source_expected} and {scheme_destination_expected}."  # noqa: E501
