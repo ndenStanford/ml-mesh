@@ -14,7 +14,7 @@ from onclusiveml.data.feature_store import (
 )
 
 # Source
-from src.utils import iptc_llm_feature_view_2
+from src.utils import iptc_first_level_on_demand_feature_view
 
 
 class FeatureRegistrationParams(FeatureStoreParams):
@@ -41,7 +41,7 @@ class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
     redshift_schema: str = "feast"
     fields: Optional[List[Tuple[str, str]]] = None
     sources: List[str] = ["iptc_feature_view"]
-    udf: Callable = iptc_llm_feature_view_2
+    udf: Callable = iptc_first_level_on_demand_feature_view
     register_features: bool = False
 
 
@@ -84,7 +84,7 @@ class IptcFirstLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     sources: List[str]
     fields: Optional[List[Tuple[str, str]]] = None
-    udf: Callable = iptc_llm_feature_view_2
+    udf: Callable = iptc_first_level_on_demand_feature_view
     model_config = SettingsConfigDict(env_prefix="first_level_on_demand_")
 
 

@@ -20,7 +20,6 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
         "iptc category": "Answer the IPTC category",
-        "reason": "The reason for why you think it is this category",  # noqa: E501
     }
     DEFAULT_MODEL: str = "anthropic.claude-3-5-sonnet-20240620-v1:0"
 
@@ -46,7 +45,7 @@ def generate_label_llm(title, article, candidates):
     return output_content["iptc category"]
 
 
-def iptc_llm_feature_view_2(features_df: pd.DataFrame) -> pd.DataFrame:
+def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """On-demand feature view transformation."""
     candidates = [
         {
@@ -122,7 +121,6 @@ def iptc_llm_feature_view_2(features_df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame()
     topic_label = [
         generate_label_llm(title, content, candidates)
-        # (title+content)
         for title, content in zip(
             features_df["title"].values, features_df["content"].values
         )

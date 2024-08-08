@@ -17,7 +17,7 @@ feature_view = [
 
 features = [f"{feature_view.name}:{feature.name}" for feature in feature_view.features]
 
-features += ["iptc_llm_feature_view_2:topic_1_llm"]
+features += ["iptc_first_level_on_demand_feature_view:topic_1_llm"]
 entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "feast"."iptc_first_level"
 LIMIT 10"""
 
