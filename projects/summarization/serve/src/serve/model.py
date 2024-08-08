@@ -41,23 +41,67 @@ class SummarizationServedModel(ServedModel):
             attributes={"model_name": self.name, "model_card": {}},
         )
 
+    def identify_language(self, text):
+        """Detect input language."""
+        payload = {
+            "data": {
+                "identifier": "None",
+                "namespace": "translation",
+                "attributes": {"content": text},
+                "parameters": {},
+            }
+        }
+        headers = {
+            "content-type": "application/json",
+            "x-api-key": settings.internal_ml_endpoint_api_key,
+        }
+
+        response = requests.post(
+            f"{settings.translation_api}/translation/v1/predict",
+            json=payload,
+            headers=headers,
+        )
+
+        return response.json()["data"]["attributes"]["source_language"]
+
     def inference(
         self,
-        text: str,
-        desired_length: int,
-        lang: str,
-        target_lang: str,
+        text,
+        desired_length,
+        input_language,
+        output_language,
+        type,
+        keywords,
+        title,
+        theme,
     ) -> str:
         """Summarization prediction handler method.
 
         Args:
             text (str): Text to summarize
             desired_length (int): desired length of the summary
-            lang (str): input language of the summary
-            target_lang (str): target language
+            input_language (str): input language of the summary
+            output_language (str): target language
+            type (str): summary type between bespoke-summary and section-summary
+            keywords (List(str)): relevant keywords/topics in the content for creating the summary
+            title (bool): if title has to be returned
+            theme (str): specific theme in the content for creating the summary
         """
         try:
-            alias = settings.summarization_prompts[lang][target_lang]["alias"]
+            if input_language is None:
+                input_language = self.identify_language(text)
+            if output_language is None:
+                output_language = input_language
+
+            if type == "bespoke-summary":
+                alias = settings.summarization_prompts[input_language][output_language][
+                    "bespoke-summary"
+                ]["alias"]
+            else:
+                alias = settings.summarization_prompts[input_language][output_language][
+                    "alias"
+                ]
+
         except KeyError:
             logger.error("Summarization language not supported.")
             raise HTTPException(
@@ -65,7 +109,14 @@ class SummarizationServedModel(ServedModel):
                 detail="Unsupported language",
             )
 
-        input_dict = {"input": {"desired_length": desired_length, "content": text}}
+        input_dict = {
+            "input": {
+                "desired_length": desired_length,
+                "content": text,
+                "keywords": keywords,
+                "theme": theme,
+            }
+        }
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
 
         q = requests.post(
@@ -83,9 +134,13 @@ class SummarizationServedModel(ServedModel):
         parameters = payload.data.parameters
 
         content = attributes.content
-        lang = parameters.language
+        input_language = parameters.input_language
         desired_length = parameters.desired_length
-        target_lang = parameters.target_language
+        output_language = parameters.output_language
+        type = parameters.type
+        keywords = parameters.keywords
+        title = parameters.title
+        theme = parameters.theme
 
         if content is None or content == "":
             logger.warning(
@@ -93,7 +148,16 @@ class SummarizationServedModel(ServedModel):
             )
 
         text = re.sub("\n+", " ", content)
-        summary = self.inference(text, desired_length, lang, target_lang)
+        summary = self.inference(
+            text,
+            desired_length,
+            input_language,
+            output_language,
+            type,
+            keywords,
+            title,
+            theme,
+        )
         summary = re.sub("\n+", " ", summary)
 
         return PredictResponseSchema.from_data(

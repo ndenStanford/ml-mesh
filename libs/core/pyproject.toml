@@ -9,7 +9,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 typing-extensions = ">=4.6.0"
 pydantic = "2.8.2"
-pydantic-settings = "2.3.4"
+pydantic-settings = "2.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-catchlog = "1.2.2"

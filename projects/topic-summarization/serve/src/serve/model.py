@@ -182,7 +182,10 @@ class ServedTopicModel(ServedModel):
             topic, topic_summary_quality = self.model.aggregate(content)
             impact_category = None
         if save_report_dynamodb:
-            query_string = query_profile.query
+            if inputs.query_string or inputs.query_id:
+                query_string = query_profile.query
+            elif inputs.media_api_query:
+                query_string = query_profile.media_query
             dynamodb_dict = {
                 "topic_id": topic_id,
                 "trending": trend_found,
