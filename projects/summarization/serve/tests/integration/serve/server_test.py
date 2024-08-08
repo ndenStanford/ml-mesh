@@ -83,7 +83,6 @@ def test_integration_summarization_model(test_client, payload):
 def test_invalid_language(test_client, payload):
     """Test for invalid language."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-    print(response)
     assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert response.json()["detail"] == (
         f"Summary language '{LanguageIso.from_language_iso(payload['data']['parameters']['input_language'])}' and or '{payload['data']['parameters']['summary_type']}' not supported."  # noqa: E501,W505
