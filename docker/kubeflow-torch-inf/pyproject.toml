@@ -24,7 +24,7 @@ pandasticsearch = {extras = ["pandas"], version = "0.6.0"}
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-priority = "explicit"
+priority = "supplemental"
 
 
 [build-system]
