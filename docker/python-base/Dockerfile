@@ -1,12 +1,10 @@
-ARG PYTHON_VERSION=3.8.16
+ARG PYTHON_VERSION=3.10.14
 
 FROM python:${PYTHON_VERSION}-slim as builder
 
 ARG IMAGE_NAME
 
 ENV USER=app
-ENV HOME="docker/${IMAGE_NAME}"
-
 ENV HOME="/home"
 
 ENV PYTHONUNBUFFERED=1 \
@@ -34,7 +32,12 @@ RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cac
     && python -V
 
 # --- production stage
-FROM builder as production
+FROM python:${PYTHON_VERSION}-slim as production
+
+ENV HOME="/home"
+
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder ${HOME} ${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM production as development

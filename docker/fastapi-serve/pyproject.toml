@@ -5,7 +5,7 @@ description = "Core docker image for serving with FastAPI."
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 fastapi = "0.110.2"
 pydantic = "2.8.2"
 uvicorn = "0.30.3"

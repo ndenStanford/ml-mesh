@@ -1,13 +1,12 @@
 [tool.poetry]
 name = "kubeflow-torch-inf"
 version = "0.1.0"
-description = "Kubeflow image for torch (Inferentia available)"
-authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
+description = ""
+authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 readme = "README.md"
-packages = [{include = "kubeflow_torch_inf"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 jupyterlab = "3.6.5"
 notebook = "6.4.12"
 ipykernel = "6.25.0"
@@ -25,8 +24,7 @@ pandasticsearch = {extras = ["pandas"], version = "0.6.0"}
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = "supplemental"
 
 
 [build-system]

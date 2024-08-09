@@ -3,7 +3,9 @@ ARG CUDA_VERSION
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.8.16
+ARG PYTHON_VERSION=3.10.14
+
+ENV HOME="/docker/${IMAGE_NAME}"
 
 ENV POETRY_VERSION=1.3.2
 ENV PIP_VERSION=22.3.1
@@ -62,7 +64,7 @@ RUN curl -o "Python-${PYTHON_VERSION}.tgz" "https://www.python.org/ftp/python/${
     && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
 
 # create symlink: typing "python" will invoke /usr/local/bin/python3.8
-RUN ln -s /usr/local/bin/python3.8 /usr/local/bin/python
+RUN ln -s /usr/local/bin/python3.10 /usr/local/bin/python
 
 # python dependencies
 RUN pip3 install poetry==${POETRY_VERSION} --no-cache-dir && \

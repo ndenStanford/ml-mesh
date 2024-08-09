@@ -1,11 +1,11 @@
 FROM apache/flink:1.16-scala_2.12-java11 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.8.16
+ARG PYTHON_VERSION=3.10.14
 
 
 ENV USER=app
-ENV HOME="docker/${IMAGE_NAME}"
+ENV HOME="/docker/${IMAGE_NAME}"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -106,7 +106,7 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     chown -R "${USER}:users" "${HOME}"
 
 # python SDK
-COPY --from=apache/beam_python3.8_sdk:2.49.0 /opt/apache/beam /opt/apache/beam
+COPY --from=apache/beam_python3.10_sdk:2.49.0 /opt/apache/beam /opt/apache/beam
 
 WORKDIR "${HOME}"
 

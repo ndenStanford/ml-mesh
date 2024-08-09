@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "neuron_compile"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.10.12.0", source = "aws-neuron"}
@@ -16,8 +16,7 @@ transformers = "^4.38.2"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = "supplemental"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.2.0"

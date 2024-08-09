@@ -1,11 +1,11 @@
 FROM apache/beam_python3.8_sdk:2.49.0 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.8.16
+ARG PYTHON_VERSION=3.10.14
 
 
 ENV USER=app
-ENV HOME="docker/${IMAGE_NAME}"
+ENV HOME="/docker/${IMAGE_NAME}"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]

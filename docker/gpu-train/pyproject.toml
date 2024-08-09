@@ -5,7 +5,7 @@ description = "PyTorch-flavoured GPU image for model training"
 authors = ["Sebastian sebastian.scherer@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 tracking = {path = "../../libs/tracking"}
 transformers = "^4.31.0"
 accelerate = "^0.21.0"
