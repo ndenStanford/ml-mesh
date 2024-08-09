@@ -6,7 +6,7 @@ authors = ["Sebastian Scherer <scherersebastian@yahoo.de>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.10.14"
+python = "3.9.19"
 uvicorn = "0.23.2"
 fastapi = "0.110.2"
 locust = "2.16.1"

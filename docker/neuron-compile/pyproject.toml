@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "neuron_compile"}]
 
 [tool.poetry.dependencies]
-python = "3.10.14"
+python = "3.9.19"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 torch = "1.12.1"
 torch-neuron = {version = "1.12.1.2.10.12.0", source = "aws-neuron"}

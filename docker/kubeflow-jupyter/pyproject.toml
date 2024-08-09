@@ -5,7 +5,7 @@ description = "Base for all kubeflow images."
 authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.10.14"
+python = "3.9.19"
 jupyterlab = "3.6.5"
 notebook = "6.4.12"
 ipykernel = "6.25.0"

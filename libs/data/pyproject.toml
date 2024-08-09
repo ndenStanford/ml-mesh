@@ -7,10 +7,10 @@ authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>",
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.10.14"
+python = "3.9.19"
 boto3 = "^1.20.23"
 boto3-type-annotations = "^0.3.1"
-feast = {version = "0.38.0", extras = ["aws"]}
+feast = {version = "0.36.0", extras = ["aws"]}
 serving = {path = "../serving"}
 apache-beam = "2.54.0"
 core = {path = "../core"}

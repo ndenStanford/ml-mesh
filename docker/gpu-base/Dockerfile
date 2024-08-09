@@ -3,7 +3,7 @@ ARG CUDA_VERSION
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.10.14
+ARG PYTHON_VERSION=3.9.19
 
 ENV HOME="/docker/${IMAGE_NAME}"
 

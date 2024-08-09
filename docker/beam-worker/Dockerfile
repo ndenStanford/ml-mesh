@@ -1,7 +1,7 @@
 FROM apache/beam_python3.10_sdk:2.54.0 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.10.14
+ARG PYTHON_VERSION=3.9.19
 
 
 ENV USER=app

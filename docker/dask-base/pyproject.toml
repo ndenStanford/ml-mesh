@@ -5,7 +5,7 @@ description = "Dask image for workers and schedulers"
 authors = ["Vincent Park <vincent.park@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.10.14"
+python = "3.9.19"
 jupyterlab = "3.6.5"
 notebook = "6.4.12"
 ipykernel = "6.25.0"

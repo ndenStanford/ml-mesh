@@ -13,7 +13,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
-        PYTHON_VERSION: ${PYTHON_VERSION:-3.10.14}
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.9.19}
         IMAGE_NAME: python-base
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG}
 
@@ -47,7 +47,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         CUDA_VERSION: 11.7.1
-        PYTHON_VERSION: ${PYTHON_VERSION:-3.10.14}
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.9.19}
         IMAGE_NAME: gpu-base
         IMAGE_TAG: ${IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}

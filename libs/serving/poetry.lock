@@ -398,7 +398,7 @@ name = "core"
 version = "0.1.0"
 description = "Core library"
 optional = false
-python-versions = "3.10.14"
+python-versions = "3.9.19"
 files = []
 develop = false
 
@@ -487,6 +487,7 @@ files = [
 [package.dependencies]
 blinker = ">=1.6.2"
 click = ">=8.1.3"
+importlib-metadata = {version = ">=3.6.0", markers = "python_version < \"3.10\""}
 itsdangerous = ">=2.1.2"
 Jinja2 = ">=3.1.2"
 Werkzeug = ">=3.0.0"
@@ -1610,7 +1611,7 @@ files = [
 ]
 
 [package.dependencies]
-pytest = {version = ">=6.2.4", markers = "python_version >= \"3.10\""}
+pytest = {version = ">=5.0", markers = "python_version < \"3.10\""}
 
 [[package]]
 name = "python-dotenv"
@@ -1841,6 +1842,7 @@ files = [
 
 [package.dependencies]
 anyio = ">=3.4.0,<5"
+typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
@@ -2109,5 +2111,5 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "3.10.14"
-content-hash = "5a4152cca4e70379b3292de90da6b6d8bf4e282a98a8e42d88583b1d1dd69d5f"
+python-versions = "3.9.19"
+content-hash = "d433fb1c6b83069ce9f35e1e3544231a34be01858c12d4025fd4d5b0f3d85343"

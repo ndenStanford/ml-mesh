@@ -32,7 +32,7 @@ assignees: ""
           - name: <new project>
             component: <project component>
             integration: false
-            python-version: "3.10.14"
+            python-version: "3.9.19"
 ```
 
 - [ ] update dependabot configuration to keep dependencies up to date.

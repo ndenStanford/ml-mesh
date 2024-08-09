@@ -1,7 +1,7 @@
 FROM apache/flink:1.16-scala_2.12-java11 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.10.14
+ARG PYTHON_VERSION=3.9.19
 
 
 ENV USER=app
