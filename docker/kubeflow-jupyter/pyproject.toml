@@ -16,7 +16,7 @@ tracking = {path = "../../libs/tracking"}
 neptune-notebooks = "^0.9.3"
 matplotlib = "^3.7.2"
 seaborn = "^0.12.2"
-pandas = "~1.4.3"
+pandas = "2.0.0"
 dask = "~2023.3.1"
 kfp = "2.7.0"
 dask-kubernetes = "~2023.3.1"
