@@ -3530,4 +3530,4 @@ topic = ["bertopic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.10.14"
-content-hash = "29f54802d711a27a26bc320bd3c5895dfde700544a8dd12185f4a2a4296f9076"
+content-hash = "6ba8e5468ef0f989df2ec924523a6a186fd4e08ad1e72558a5137a67ce50e79c"
