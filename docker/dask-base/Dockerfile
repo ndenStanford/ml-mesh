@@ -13,13 +13,13 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.3.2 \
+    POETRY_VERSION=1.8.0 \
     POETRY_HOME="/${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1
 
 # hadolint ignore=DL4006
-RUN curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.3.2 python3 -
+RUN curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.8.0 python3 -
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
