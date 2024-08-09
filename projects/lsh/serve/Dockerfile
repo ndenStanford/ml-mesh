@@ -5,7 +5,7 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
 ENV HOME="${PROJECT_DIR}"
 
