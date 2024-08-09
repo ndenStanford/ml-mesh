@@ -6,7 +6,7 @@ authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 compile = {path = "../compile"}
 nlp = {path = "../nlp"}
 regex = "^2023.6.3"
@@ -22,8 +22,7 @@ keywords = ["keybert"]
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = default
 
 
 

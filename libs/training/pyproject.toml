@@ -1,36 +1,37 @@
 [tool.poetry]
-name = "train"
+name = "training"
 version = "0.1.0"
-description = "Training module for OnclusiveML models."
-authors = ["vishal.singh <vishal.singh@onclusive.com>"]
+description = ""
+authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
-
+python = "3.10.14"
 tracking = {path = "../tracking"}
 data = {path = "../data"}
 core = {path = "../core"}
 sentence-transformers = "2.2.2"
-cubinlinker-cu11 = { version = "0.3.0.post1", source = "pipy-nvidia" }
-ucx-py-cu11 = { version = "0.31.0", source = "pipy-nvidia" }
-ptxcompiler-cu11 = { version = "0.7.0.post1", source = "pipy-nvidia" }
-rmm-cu11 = { version = "23.4.0", source = "pipy-nvidia" }
-raft-dask-cu11 = { version = "23.4.0", source = "pipy-nvidia" }
-dask-cudf-cu11 = { version = "23.4.0", source = "pipy-nvidia" }
-cudf-cu11 = { version = "23.4.0", source = "pipy-nvidia" }
-pylibraft-cu11 = { version = "23.4.0", source = "pipy-nvidia" }
-cuml-cu11 = { version = "23.4.0", source = "pipy-nvidia" }
 cuda-python = "11.8.2"
 bertopic = "0.15.0"
 torch = "1.12.1"
+cubinlinker-cu11 = { version = "0.3.0.post1", source = "pypi-nvidia" }
+ucx-py-cu11 = { version = "0.31.0", source = "pypi-nvidia" }
+ptxcompiler-cu11 = { version = "0.7.0.post1", source = "pypi-nvidia" }
+rmm-cu11 = { version = "23.4.0", source = "pypi-nvidia" }
+raft-dask-cu11 = { version = "23.4.0", source = "pypi-nvidia" }
+dask-cudf-cu11 = { version = "23.4.0", source = "pypi-nvidia" }
+cudf-cu11 = { version = "23.4.0", source = "pypi-nvidia" }
+pylibraft-cu11 = { version = "23.4.0", source = "pypi-nvidia" }
+cuml-cu11 = { version = "23.4.0", source = "pypi-nvidia" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
 
+
 [[tool.poetry.source]]
-name = "pipy-nvidia"
+name = "pypi-nvidia"
 url = "https://pypi.nvidia.com"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]

@@ -6,7 +6,7 @@ authors = ["Amaury de Guillebon <amaury.deguillebon@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 
 core = {path = "../core"}
 nlp = {path = "../nlp"}

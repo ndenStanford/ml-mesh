@@ -6,7 +6,7 @@ authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 nltk = "^3.8.1"
 jieba = "^0.42.1"
 langdetect = "1.0.8"

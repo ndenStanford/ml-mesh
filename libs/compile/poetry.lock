@@ -165,7 +165,7 @@ version = "0.1.0"
 description = "Core library"
 category = "main"
 optional = false
-python-versions = "3.8.16"
+python-versions = "3.10.14"
 files = []
 develop = false
 
@@ -1485,5 +1485,5 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "3.8.16"
+python-versions = "3.10.14"
 content-hash = "cc07032644ac9a5e10a835a5acc5930fb03d0f21f92983978d5f04b32d749fe3"

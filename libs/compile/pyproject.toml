@@ -6,7 +6,7 @@ authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.10.14"
 protobuf = "3.20.1"
 neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
 torch = "1.12.1"
@@ -20,8 +20,7 @@ urllib3 = "<2.0.0"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = default
 
 
 [tool.poetry.group.dev.dependencies]
