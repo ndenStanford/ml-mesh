@@ -106,7 +106,7 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     chown -R "${USER}:users" "${HOME}"
 
 # python SDK
-COPY --from=apache/beam_python3.10_sdk:2.49.0 /opt/apache/beam /opt/apache/beam
+COPY --from=apache/beam_python3.10_sdk:2.54.0 /opt/apache/beam /opt/apache/beam
 
 WORKDIR "${HOME}"
 

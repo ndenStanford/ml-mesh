@@ -176,7 +176,7 @@ services:
       - backfill-volume:/tmp/beam-artifact-staging
 
   jobserver:
-    image: apache/beam_flink1.16_job_server:2.49.0
+    image: apache/beam_flink1.16_job_server:2.54.0
     command:
       - --flink-master=jobmanager:8081
     ports:
