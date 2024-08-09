@@ -5,7 +5,7 @@ description = ""
 authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 urllib3 = "1.26"
 core = {path = "../../../libs/core"}
 apache-beam = {extras = ["dataframe"], version = "2.48.0"}
