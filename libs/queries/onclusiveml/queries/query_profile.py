@@ -42,9 +42,9 @@ class MediaAPISettings(OnclusiveBaseSettings):
         exclude=True,
     )
 
-    GRANT_TYPE: str = "client_credentials"
-    SCOPE: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
-    AUTHENTICATION_URL: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
+    grant_type: str = "client_credentials"
+    scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
+    authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
     PRODUCTION_TOOL_ENDPOINT: str = (
         "https://staging-querytool-api.platform.onclusive.org"
     )
@@ -68,10 +68,11 @@ class BaseQueryProfile(OnclusiveBaseModel):
             "client_secret"
         ] = settings.media_api_client_secret.get_secret_value()
         settings_dict["client_id"] = settings.media_api_client_id.get_secret_value()
-        settings_dict["grant_type"] = settings.GRANT_TYPE
-        settings_dict["scope"] = settings.SCOPE
+        settings_dict.pop("PRODUCTION_TOOL_ENDPOINT")
+        settings_dict.pop("MEDIA_API_URL")
+        settings_dict["media_api_url"] = settings.PRODUCTION_TOOL_ENDPOINT
 
-        token_request = requests.post(settings.AUTHENTICATION_URL, settings_dict)
+        token_request = requests.post(settings.authentication_url, settings_dict)
         return token_request.json().get("access_token")
 
     def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
@@ -99,6 +100,7 @@ class BaseQueryProfile(OnclusiveBaseModel):
             headers=self.headers(settings),
             json=json_data,
         )
+
         if post_res.status_code == 201:
             post_res = post_res.json()
             query_id = post_res.get("id")
