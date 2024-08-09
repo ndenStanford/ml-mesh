@@ -5,7 +5,7 @@ description = "Ingesting and building vector store for entity linking data"
 authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 tracking = {path = "../../../libs/tracking"}
 torch = "1.12.1"
 redis = "^5.0.0"
