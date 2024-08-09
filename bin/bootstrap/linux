@@ -278,8 +278,8 @@ _install_poetry(){
     if [ -e "$HOME/ml-mesh/.poetry-version" ]; then
         POETRY_VERSION=$(cat "$HOME/ml-mesh/.poetry-version")
     else
-        warn "python-version file was not found. Installing Poetry "
-        POETRY_VERSION=""
+        warn "python-version file was not found. Installing Poetry 1.8.0"
+        POETRY_VERSION="1.8.0"
     fi
     pip3 --no-cache-dir install --upgrade pip setuptools wheel
     pip3 --no-cache-dir install "poetry==${POETRY_VERSION}"
