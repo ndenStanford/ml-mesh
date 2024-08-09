@@ -5,7 +5,7 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/beam-backfill:$BASE_IMAGE
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
 ENV USER=app
 ENV HOME="${PROJECT_DIR}"
