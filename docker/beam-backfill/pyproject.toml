@@ -6,7 +6,7 @@ authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.9.19"
-apache-beam = "2.54.0"
+apache-beam = "2.58.0"
 
 
 [build-system]

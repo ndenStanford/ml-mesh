@@ -16,7 +16,7 @@ transformers = "^4.38.2"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-priority = "supplemental"
+priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.2.0"
