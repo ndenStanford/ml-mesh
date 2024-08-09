@@ -70,7 +70,7 @@ on  :
       push-image:
         type: boolean
         required: false
-        default: false
+        default: true
         description: Flag to push Docker image to ECR
     secrets:
       AWS_ACCOUNT_ID:
@@ -241,7 +241,7 @@ jobs:
             AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
-        if: inputs.push-image == 'true'
+        if: ${{ inputs.push-image == 'true' }}
         run: |
           make docker.deploy/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
