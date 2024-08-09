@@ -20,7 +20,7 @@ urllib3 = "<2.0.0"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-priority = "explicit"
+priority = "supplemental"
 
 
 [tool.poetry.group.dev.dependencies]

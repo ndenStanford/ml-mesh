@@ -22,7 +22,7 @@ keywords = ["keybert"]
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-priority = "explicit"
+priority = "supplemental"
 
 
 
