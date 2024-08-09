@@ -89,8 +89,9 @@ _install_global_deps() {
 
     info "🌕  Installing system dependencies..."
 
+    sudo yum clean all
+    sudo yum update
     sudo yum install -y git \
-                        curl \
                         make \
                         yum-utils \
                         zlib \
