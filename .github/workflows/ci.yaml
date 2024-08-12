@@ -477,7 +477,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: true
 
     with:
       project: summarization
