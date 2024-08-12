@@ -108,6 +108,19 @@ class TranslationModel(ServedModel):
         """Language detection."""
         return detect_language(content=content)
 
+    @property
+    def client(self) -> Any:
+        """Setup boto3 session."""
+        boto3.setup_default_session(
+            profile_name=settings.aws_profile,
+            aws_access_key_id=settings.aws_access_key_id,
+            aws_secret_access_key=settings.aws_secret_access_key,
+        )
+        return boto3.client(
+            service_name=settings.service_name,
+            region_name=settings.region_name,
+        )
+
     @filter_language(
         supported_languages=list(LanguageIso),
         raise_if_none=True,
@@ -120,31 +133,14 @@ class TranslationModel(ServedModel):
     ) -> Dict[str, Any]:
         """Language filtered prediction."""
         if len(content) < 10000:
-            try:
-                client = boto3.client(
-                    service_name=settings.service_name,
-                    region_name=settings.region_name,
-                )
-            except Exception as e:
-                raise OnclusiveHTTPException(
-                    status_code=204,
-                    detail=e,
-                )
-            try:
-                response = client.translate_text(
-                    Text=content,
-                    SourceLanguageCode=language,
-                    TargetLanguageCode=target_language,
-                    Settings={
-                        "Profanity": settings.profanity,
-                    },
-                )
-
-            except Exception as e:
-                raise OnclusiveHTTPException(
-                    status_code=204,
-                    detail=e,
-                )
+            response = self.client.translate_text(
+                Text=content,
+                SourceLanguageCode=language,
+                TargetLanguageCode=target_language,
+                Settings={
+                    "Profanity": settings.profanity,
+                },
+            )
             return response["TranslatedText"]
         else:
             raise OnclusiveHTTPException(

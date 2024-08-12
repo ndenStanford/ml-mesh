@@ -2,6 +2,7 @@
 
 # Standard Library
 from functools import lru_cache
+from typing import Optional
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -19,6 +20,9 @@ class Boto3ClientSettings(OnclusiveBaseSettings):
 
     region_name: str = "us-east-2"
     service_name: str = "translate"
+    aws_profile: Optional[str] = None
+    aws_access_key_id: Optional[str] = None
+    aws_secret_access_key: Optional[str] = None
 
 
 class ModelSettings(OnclusiveBaseSettings):

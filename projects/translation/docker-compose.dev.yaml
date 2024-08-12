@@ -9,6 +9,9 @@ services:
       - type: bind
         source: serve/src
         target: /projects/translation/serve/src
+      - type: bind
+        source: ~/.aws/
+        target: /projects/translation/serve/.aws/
     build:
       context: ../../
       dockerfile: projects/translation/serve/Dockerfile
@@ -23,7 +26,7 @@ services:
     command: [python, -m, src.serve.__main__]
     profiles: [serve, functional]
     ports:
-      - 8000:8000
+      - 8001:8001
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -32,7 +35,7 @@ services:
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/translation/v1/ready]
+      test: [CMD, curl, -f, http://serve:8001/translation/v1/ready]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -65,9 +68,9 @@ services:
       - type: bind
         source: serve/tests
         target: /projects/translation/serve/tests
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      - type: bind
+        source: ~/.aws/
+        target: /projects/translation/serve/.aws/
     env_file: serve/config/dev.env
     hostname: onclusiveml
     networks:
