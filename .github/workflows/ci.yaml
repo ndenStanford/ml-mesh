@@ -218,7 +218,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.image.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -444,7 +444,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -493,7 +493,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -571,7 +571,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -651,7 +651,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -736,7 +736,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -840,7 +840,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -935,7 +935,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -998,7 +998,7 @@ jobs       :
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1086,7 +1086,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1135,7 +1135,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1197,7 +1197,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1262,7 +1262,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.apps.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.apps.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.push-image }}
+      push-image: ${{ matrix.apps.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
