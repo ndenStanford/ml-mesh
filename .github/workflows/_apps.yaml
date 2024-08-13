@@ -270,7 +270,7 @@ jobs:
           USE_DOCKER_CACHE="true"
 
       - name: Push prod docker image with version | ${{ inputs.environment }}  ${{ inputs.app }}-${{ inputs.component }}
-        if: ${{ inputs.push-image == 'true' }}
+        if: ${{ inputs.push-image }}
         run: |
           make apps.deploy/${{ inputs.app }} COMPONENT=${{ inputs.component }} \
           AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
