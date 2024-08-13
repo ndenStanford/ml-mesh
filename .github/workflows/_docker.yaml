@@ -241,7 +241,7 @@ jobs:
             AWS_REGION="${{ inputs.region }}"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.image }}
-        if: ${{ inputs.push-image  }}
+        if: ${{ inputs.push-image }}
         run: |
           make docker.deploy/${{ inputs.image }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
