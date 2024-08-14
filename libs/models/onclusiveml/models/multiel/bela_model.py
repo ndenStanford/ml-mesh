@@ -419,16 +419,12 @@ class BelaModel:
 
         model_inputs = self.transform(transformed_batch)
 
-        torch.cuda.empty_cache()
-
         token_ids = model_inputs["input_ids"]
 
         if token_ids.shape[1] > self.max_length:
             token_ids = token_ids[:, : self.max_length]
 
         token_ids = token_ids.to(self.device)
-
-        torch.cuda.empty_cache()
 
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
