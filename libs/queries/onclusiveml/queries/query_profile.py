@@ -14,7 +14,10 @@ from pydantic import SecretStr, Field
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
 from onclusiveml.queries.exceptions import (
     QueryESException,
-    QueryStringException,
+    QueryPostException,
+    QueryGetException,
+    QueryDeleteException,
+    QueryMissingIdException,
     QueryIdException,
 )
 
@@ -22,27 +25,26 @@ from onclusiveml.queries.exceptions import (
 class MediaAPISettings(OnclusiveBaseSettings):
     """Media API Settings."""
 
-    media_client_id: SecretStr = Field(
+    media_api_client_id: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_client_secret: SecretStr = Field(
+    media_api_client_secret: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_username: SecretStr = Field(
+    media_api_username: SecretStr = Field(
         default="...",
         exclude=True,
     )
-    media_password: SecretStr = Field(
+    media_api_password: SecretStr = Field(
         default="...",
         exclude=True,
     )
 
-    GRANT_TYPE: str = "client_credentials"
-    SCOPE: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
-    ML_QUERY_ID: str = "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
-    AUTHENTICATION_URL: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
+    grant_type: str = "client_credentials"
+    scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
+    authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
     PRODUCTION_TOOL_ENDPOINT: str = (
         "https://staging-querytool-api.platform.onclusive.org"
     )
@@ -62,12 +64,15 @@ class BaseQueryProfile(OnclusiveBaseModel):
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
         settings_dict = settings.model_dump()
-        settings_dict["client_secret"] = settings.media_client_secret.get_secret_value()
-        settings_dict["client_id"] = settings.media_client_id.get_secret_value()
-        settings_dict["grant_type"] = settings.GRANT_TYPE
-        settings_dict["scope"] = settings.SCOPE
+        settings_dict[
+            "client_secret"
+        ] = settings.media_api_client_secret.get_secret_value()
+        settings_dict["client_id"] = settings.media_api_client_id.get_secret_value()
+        settings_dict.pop("PRODUCTION_TOOL_ENDPOINT")
+        settings_dict.pop("MEDIA_API_URL")
+        settings_dict["media_api_url"] = settings.PRODUCTION_TOOL_ENDPOINT
 
-        token_request = requests.post(settings.AUTHENTICATION_URL, settings_dict)
+        token_request = requests.post(settings.authentication_url, settings_dict)
         return token_request.json().get("access_token")
 
     def es_query(self, settings: MediaAPISettings) -> Union[Dict, None]:
@@ -89,19 +94,41 @@ class BaseQueryProfile(OnclusiveBaseModel):
             "description": "used by ML team to translate queries from boolean to media API",
             "booleanQuery": self.query,
         }
-        _ = requests.put(
-            f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/{settings.ML_QUERY_ID}",
+        # add query to database
+        post_res = requests.post(
+            f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/",
             headers=self.headers(settings),
             json=json_data,
         )
-        if _.status_code == 204:
-            response = requests.get(
-                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={settings.ML_QUERY_ID}",  # noqa: E501
+
+        if post_res.status_code == 201:
+            post_res = post_res.json()
+            query_id = post_res.get("id")
+
+            # check if id is given after inserting boolean query into database
+            if query_id is None:
+                raise QueryMissingIdException(boolean_query=self.query)
+
+            # retrieve query from database
+            get_res = requests.get(
+                f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/mediaContent/translate/mediaapi?queryId={query_id}",  # noqa: E501
                 headers=self.headers(settings),
             )
-            return response.json()
+            if get_res.status_code == 200:
+                # delete query from database
+                del_res = requests.delete(
+                    f"{settings.PRODUCTION_TOOL_ENDPOINT}/v1/topics/{query_id}",  # noqa: E501
+                    headers=self.headers(settings),
+                )
+                if del_res.status_code != 204:
+                    raise QueryDeleteException(
+                        boolean_query=self.query, query_id=query_id
+                    )
+                return get_res.json()
+            else:
+                raise QueryGetException(boolean_query=self.query, query_id=query_id)
         else:
-            raise QueryStringException(boolean_query=self.query)
+            raise QueryPostException(boolean_query=self.query)
 
 
 class StringQueryProfile(BaseQueryProfile):
@@ -163,8 +190,8 @@ class MediaApiStringQuery(BaseQueryProfile):
         query["show_query"] = True
 
         MEDIA_API_BASE_URL = settings.MEDIA_API_URL
-        username = settings.media_username.get_secret_value()
-        password = settings.media_password.get_secret_value()
+        username = settings.media_api_username.get_secret_value()
+        password = settings.media_api_password.get_secret_value()
 
         if only_id:
             query["return_fields"] = ["id", "url", "content"]
