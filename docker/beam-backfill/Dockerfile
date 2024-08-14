@@ -1,10 +1,18 @@
-FROM apache/flink:1.16-scala_2.12-java11 as builder
+ARG FLINK_VERSION
+ARG SCALA_VERSION
+ARG JAVA_VERSION
+ARG BEAM_VERSION
+
+FROM apache/flink:${FLINK_VERSION}-scala_${SCALA_VERSION}-java${JAVA_VERSION} as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.9.19
+ARG PYTHON_VERSION
+ARG BEAM_VERSION
+ARG PYTHON_SHORT_VERSION
+ARG JAVA_VERSION
+ARG FLINK_VERSION
 
-
-ENV USER=app
+ENV USER=onclusiveml
 ENV HOME="/docker/${IMAGE_NAME}"
 
 # set shell to bash
@@ -21,7 +29,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.8.0 \
-    POETRY_HOME="/${HOME}/onclusive/app/.poetry" \
+    POETRY_HOME="${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1 \
     RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1
@@ -73,7 +81,7 @@ RUN curl -o Python-${PYTHON_VERSION}.tgz "https://www.python.org/ftp/python/${PY
     && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
 
 # python package management setup
-RUN pip3 install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} apache-flink==1.16 --no-cache-dir \
+RUN pip3 install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} apache-flink==${FLINK_VERSION} --no-cache-dir \
     && python3 -V
 
 # create non root user
@@ -95,7 +103,7 @@ USER ${USER}
 WORKDIR "/"
 
 # install - poetry requirements
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" .${HOME}/
 
 WORKDIR "${HOME}"
 
@@ -105,14 +113,17 @@ RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-# python SDK
-COPY --from=apache/beam_python3.10_sdk:2.58.0 /opt/apache/beam /opt/apache/beam
-
 WORKDIR "${HOME}"
 
 # --- production stage
-FROM builder as production
+FROM apache/flink:${FLINK_VERSION}-scala_${SCALA_VERSION}-java${JAVA_VERSION} as production
 
+ENV HOME="/home"
+
+# python SDK
+COPY --from=apache/beam_python3.9_sdk:2.58.0 /opt/apache/beam /opt/apache/beam
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder "/docker/${IMAGE_NAME}" ${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM production as development
