@@ -29,6 +29,7 @@ class FeatureStoreParams(OnclusiveBaseSettings):
     redshift_schema: str = "feast"
     redshift_table: str
     redshift_timestamp_field: str = "event_timestamp"
+    is_on_demand: bool = False
 
 
 class OnDemandFeatureStoreParams(OnclusiveBaseSettings):

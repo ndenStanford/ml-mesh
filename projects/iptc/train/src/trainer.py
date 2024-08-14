@@ -59,6 +59,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.model_id = extract_model_id(tracked_model_specs.project)
         self.level = ID_TO_LEVEL[self.model_id]
         self.iptc_label = ID_TO_TOPIC[self.model_id]
+        # Access the is_on_demand flag from data_fetch_params
+        self.is_on_demand = data_fetch_params.is_on_demand
         # Update data_fetch_params dynamically
         self.data_fetch_params = data_fetch_params
         data_fetch_configurations = {
@@ -71,7 +73,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "comparison_operators": [],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
-                    "topic_1",
+                    "topic_1_llm" if self.is_on_demand else "topic_1",
                 ],
             },
             2: {
@@ -84,7 +86,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
                     "topic_1",
-                    "topic_2",
+                    "topic_2_llm" if self.is_on_demand else "topic_2",
                 ],
             },
             3: {
@@ -98,7 +100,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     model_card.model_params.selected_text,
                     "topic_1",
                     "topic_2",
-                    "topic_3",
+                    "topic_3_llm" if self.is_on_demand else "topic_3",
                 ],
             },
         }
@@ -163,9 +165,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
-        class_distribution = self.dataset_df[f"topic_{self.level}"].value_counts(
-            normalize=True
-        )
+        class_distribution = self.dataset_df[
+            f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
+        ].value_counts(normalize=True)
         self.logger.info(
             f"Class distribution after dropping nulls: \n{class_distribution}"
         )
@@ -182,6 +184,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.dataset_df,
                 test_size=self.model_card.model_params.test_size,
             )
+        # Limit the training and evaluation datasets to 10 samples each for testing
+        self.train_df = self.train_df.sample(n=10, random_state=42)
+        self.eval_df = self.eval_df.sample(n=10, random_state=42)
         # convert df to torch dataset
         self.train_dataset = IPTCDataset(
             self.train_df,
@@ -191,6 +196,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.first_level_root,
             self.second_level_root,
             self.model_card.model_params.max_length,
+            is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
         self.eval_dataset = IPTCDataset(
             self.eval_df,
@@ -200,6 +206,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.first_level_root,
             self.second_level_root,
             self.model_card.model_params.max_length,
+            is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
 
     def train(self) -> None:
@@ -256,6 +263,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.first_level_root,
                 self.second_level_root,
                 self.model_card.model_params.max_length,
+                is_on_demand=self.is_on_demand,  # Pass the on-demand flag
             )
             sample_predictions = self.predict(sample_dataset)
 

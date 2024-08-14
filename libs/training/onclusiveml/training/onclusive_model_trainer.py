@@ -41,7 +41,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self.logger = get_default_logger(__name__)
 
         super().__init__(
-            tracked_model_specs=tracked_model_specs,
+            tracked_model_settings=tracked_model_specs,
             model_card=model_card,
         )
 
@@ -71,10 +71,16 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             f"Registered feature views: "
             f"{[feature_view.projection.name for feature_view in self.fs_handle.list_feature_views()]}"  # noqa: E501
         )
+
+        base_feature_view_name = self.data_fetch_params.feature_view_name
+        for feature_view in self.fs_handle.list_feature_views():
+            self.logger.info(f"XXXXXXXXX{feature_view}xXXXXXXX")
+        for feature_view in self.fs_handle.list_on_demand_feature_views():
+            self.logger.info(f"DDDDDDDDD{feature_view}DDDDDDDD")
         self.feature_view = [
             feature_view
             for feature_view in self.fs_handle.list_feature_views()
-            if feature_view.name == self.data_fetch_params.feature_view_name
+            if feature_view.name == base_feature_view_name
         ][0]
 
         features = [
@@ -82,6 +88,21 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             for feature in self.feature_view.features
         ]
 
+        # If the dataset is on-demand, add the corresponding on-demand features
+        # if self.data_fetch_params.is_on_demand:
+        #     on_demand_feature_view = [
+        #         feature_view
+        #         for feature_view in self.fs_handle.list_on_demand_feature_views()
+        #         if feature_view.name == f"{base_feature_view_name}_on_demand"
+        #     ][0]
+
+        #     on_demand_features = [
+        #         f"{on_demand_feature_view.name}:{feature.name}"
+        #         for feature in on_demand_feature_view.features
+        #     ]
+        #     features.extend(on_demand_features)
+        #     self.logger.info(f"Added on-demand features: {on_demand_features}")
+        # features += ["iptc_first_level_on_demand_feature_view:topic_1_llm"]
         self.dataset_df = self.fs_handle.fetch_historical_features(
             features,
             filter_columns=self.data_fetch_params.filter_columns,
