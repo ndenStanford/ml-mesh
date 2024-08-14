@@ -5,12 +5,12 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$IMAGE_TAG as
 
 ARG IMAGE_NAME
 
-ENV USER=app
+ENV USER=onclusiveml
 ENV HOME="/docker/${IMAGE_NAME}"
-ENV POETRY_HOME="/${HOME}/onclusive/app/.poetry"
+ENV POETRY_HOME="${HOME}/.poetry"
 
 # create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
+RUN useradd -l -M -s /bin/bash -N -u 1001 ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
