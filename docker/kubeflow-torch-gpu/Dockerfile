@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:$IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG} as builder
 
 ARG IMAGE_NAME
 
@@ -115,7 +115,7 @@ RUN pip install --upgrade pip=="${PIP_VERSION}" poetry=="${POETRY_VERSION}" --no
     && python -V
 
 # install - poetry requirements
-COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml .${HOME}/
 
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
 
