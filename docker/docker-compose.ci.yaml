@@ -77,41 +77,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
 
   # ===========================================================
-  # GPU TRAIN
-  # ===========================================================
-  gpu-train:
-    build:
-      context: ..
-      dockerfile: ./docker/gpu-train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=gpu-train,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=gpu-train
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: gpu-train
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
-
-  gpu-train-tests:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-            # that's the closest analogue to --gpus; provide
-            # an integer amount of devices or 'all'
-              count: 1
-            # Devices are reserved using a list of capabilities, making
-            # capabilities the only required field. A device MUST
-            # satisfy all the requested capabilities for a successful
-            # reservation.
-              capabilities: [gpu]
-    command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
-
-  # ===========================================================
   # NEURON COMPILE
   # ===========================================================
 

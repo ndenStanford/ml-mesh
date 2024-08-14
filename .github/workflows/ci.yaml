@@ -236,14 +236,6 @@ jobs       :
       matrix:
         image:
 
-          - name: gpu-train
-            validate-build: false
-            self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-005eed844c599e83c
-            self-hosted-runner-neuron: false
-            runner-kind: custom
-            push-image: true
-
           - name: neuron-compile
             validate-build: true
             self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
