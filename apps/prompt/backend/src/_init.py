@@ -10,7 +10,6 @@ from dyntastic import Dyntastic
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.core.system import SystemInfo
 
 # Source
 from src.extensions.github import github
@@ -32,8 +31,7 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
-    if SystemInfo.in_docker() and not SystemInfo.in_kubernetes():
-        _syncronize_prompts()
+    _syncronize_prompts()
 
 
 def _create_tables(tables: List[Type[Dyntastic]]) -> None:
@@ -62,8 +60,6 @@ def _syncronize_prompts():
         if project is None:
             Project(alias=project_alias).sync()
         if len(prompt_alias) > 0:
-            prompt = PromptTemplate(
+            PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
-            )
-            logging.info(f"Syncing prompt.. {prompt.model_dump_json()}")
-            prompt.sync()
+            ).sync()

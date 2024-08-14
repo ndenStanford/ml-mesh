@@ -4,11 +4,14 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type, Optional
+from typing import Type, Optional, List, Dict, Union, Tuple
 from datetime import datetime
 
 from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
+
+# 3rd party libraries
+from fastapi import HTTPException, status
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
@@ -16,7 +19,12 @@ from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
 from onclusiveml.core.logging import get_default_logger
 from src.serve.tables import TopicSummaryDynamoDB
-from src.serve.exceptions import TopicSummaryInsertionException
+from src.serve.exceptions import (
+    TopicSummaryInsertionException,
+    TopicSummarizationParsingException,
+    TopicSummarizationJSONDecodeException,
+)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
 # Source
 from src.serve.schema import (
@@ -34,6 +42,7 @@ from onclusiveml.queries.query_profile import (
     StringQueryProfile,
     BaseQueryProfile,
     ProductionToolsQueryProfile,
+    MediaApiStringQuery,
 )
 
 logger = get_default_logger(__name__)
@@ -48,14 +57,23 @@ class ServedTopicModel(ServedModel):
     predict_response_model: Type[OnclusiveBaseModel] = PredictResponseSchema
     bio_response_model: Type[OnclusiveBaseModel] = BioResponseSchema
 
+    def _preprocess_string_query(self, query_string: str) -> str:
+        """Pre processing of query strings."""
+        preprocessed_query = query_string.replace('\\"', '"')
+        return preprocessed_query
+
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
         if inputs.query_string:
-            return StringQueryProfile(string_query=inputs.query_string)
+            return StringQueryProfile(
+                string_query=self._preprocess_string_query(inputs.query_string)
+            )
         elif inputs.query_id:
             return ProductionToolsQueryProfile(
                 version=inputs.media_api_version, query_id=inputs.query_id
             )
+        elif inputs.media_api_query:
+            return MediaApiStringQuery(string_query=inputs.media_api_query)
         else:
             logger.error("QueryProfile not found")
             # TODO: ADD ERROR RESPONSE HERE
@@ -91,7 +109,11 @@ class ServedTopicModel(ServedModel):
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
-            boolean_query = query_profile.query
+            # as we don't have 360 media api boolean query now, so use if as a temporary solution
+            if inputs.query_string or inputs.query_id:
+                boolean_query = query_profile.query
+            elif inputs.media_api_query:
+                boolean_query = query_profile.media_query
             trend_detection = inputs.trend_detection
 
             # this will function the same as `pd.Timestamp.now()` but is used to allow freeze time
@@ -153,10 +175,10 @@ class ServedTopicModel(ServedModel):
                 content = self.document_collector.get_documents(
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
-
-                topic, topic_summary_quality = self.model.aggregate(
-                    content, boolean_query
-                )
+                (
+                    topic,
+                    topic_summary_quality,
+                ) = self.model_aggregate_and_handle_exceptions(content, boolean_query)
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
@@ -165,10 +187,15 @@ class ServedTopicModel(ServedModel):
                 impact_category = None
                 topic_summary_quality = None
         else:
-            topic, topic_summary_quality = self.model.aggregate(content)
+            topic, topic_summary_quality = self.model_aggregate_and_handle_exceptions(
+                content
+            )
             impact_category = None
         if save_report_dynamodb:
-            query_string = query_profile.query
+            if inputs.query_string or inputs.query_id:
+                query_string = query_profile.query
+            elif inputs.media_api_query:
+                query_string = query_profile.media_query
             dynamodb_dict = {
                 "topic_id": topic_id,
                 "trending": trend_found,
@@ -204,6 +231,29 @@ class ServedTopicModel(ServedModel):
                 "topic_summary_quality": topic_summary_quality,
             },
         )
+
+    def model_aggregate_and_handle_exceptions(
+        self, content: List[str], boolean_query: Optional[str] = None
+    ) -> Tuple[
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
+        Union[bool, None],
+    ]:
+        """Call model aggregate and handle exceptions.
+
+        Args:
+            content (List[str]): article content.
+            boolean_query (Optional[str]): boolean query
+        """
+        try:
+            topic, topic_summary_quality = self.model.aggregate(content, boolean_query)
+            return topic, topic_summary_quality
+        except (
+            TopicSummarizationParsingException,
+            TopicSummarizationJSONDecodeException,
+        ) as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            )
 
     def bio(self) -> BioResponseSchema:
         """Model bio endpoint."""
