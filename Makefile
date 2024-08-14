@@ -17,10 +17,27 @@ DOCKER_FLAGS?=
 PORT?=8888
 ENVIRONMENT?=dev
 
+## low level dependencies
+PYTHON_VERSION=$(shell cat .python-version)
+PYTHON_SHORT_VERSION=$(shell grep -Eo '[0-9]\.[0-9]+' .python-version  | head -1)
+POETRY_VERSION=$(shell cat .poetry-version)
+PIP_VERSION=$(shell cat .pip-version)
+SCALA_VERSION=$(shell cat .scala-version)
+CUDA_VERSION=$(shell cat .cuda-version)
+FLINK_VERSION=$(shell cat .flink-version)
+BEAM_VERSION=$(shell cat .beam-version)
+BEAM_SHORT_VERSION=$(shell grep -Eo '[0-9]\.[0-9]+' .beam-version  | head -1)
+DASK_VERSION=$(shell cat .dask-version)
+AWS_CLI_VERSION=$(shell cat .aws-cli-version)
+S6_VERSION=$(shell cat .s6-version)
+KUBECTL_VERSION=$(shell cat .kubectl-version)
+JAVA_VERSION=$(shell cat .java-version)
+
 ## VARIABLES
 ifeq ($(USE_DOCKER_CACHE),false)
 	DOCKER_FLAGS += --no-cache
 endif
+
 
 # all core docker images
 ALL_DOCKER_IMGS:= \
