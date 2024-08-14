@@ -29,7 +29,7 @@ COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ${HOME
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
+RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
