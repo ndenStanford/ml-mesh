@@ -25,11 +25,6 @@ on  :
         required: true
         type: string
         description: Version tag of image.
-      validate-build:
-        required: false
-        default: false
-        type: boolean
-        description: If true, builds development stage and runs its build validation pytest suite marked by 'build'.
       release:
         required: false
         default: true
@@ -196,7 +191,7 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_REGION=${{ inputs.base-region }}
 
-      - name: Build Development Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
+      - name: Build Production Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         uses: nick-fields/retry@v3
         with:
           max_attempts: ${{ inputs.apply-max-attempts }}
@@ -207,32 +202,10 @@ jobs:
               AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
               DEPLOYMENT="${{ inputs.environment }}" \
               IMAGE_TAG="${{ inputs.tag }}" \
-              TARGET_BUILD_STAGE="development" \
+              TARGET_BUILD_STAGE="production" \
               PLATFORM="linux/amd64" \
               ENVIRONMENT="ci" \
               USE_DOCKER_CACHE="${{ inputs.use-cache }}"
-
-      - name: Validate core docker image build | ${{ inputs.environment }} ${{ inputs.image }}
-        if: ${{ inputs.validate-build }}
-        run: |
-          make docker.validate/${{ inputs.image }} \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            DEPLOYMENT="${{ inputs.environment }}" \
-            IMAGE_TAG="${{ inputs.tag }}" \
-            TARGET_BUILD_STAGE="development" \
-            PLATFORM="linux/amd64" \
-            ENVIRONMENT="ci"
-
-      - name: Build Production Core Docker Image | ${{ inputs.environment }} ${{ inputs.image }}
-        run: |
-          make docker.build/${{ inputs.image }} \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            DEPLOYMENT="${{ inputs.environment }}" \
-            IMAGE_TAG="${{ inputs.tag }}" \
-            TARGET_BUILD_STAGE="production" \
-            PLATFORM="linux/amd64" \
-            ENVIRONMENT="ci" \
-            USE_DOCKER_CACHE="true"
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |

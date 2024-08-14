@@ -190,15 +190,11 @@ jobs       :
         image:
 
           - name: python-base
-            validate-build: false
             runner-kind: ubuntu-20.04
             push-image: true
 
           - name: gpu-base
-            validate-build: true
-            self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-005eed844c599e83c
-            runner-kind: custom
+            runner-kind: ubuntu-20.04
             push-image: true
 
         base-region: [us-east-1]
@@ -237,27 +233,21 @@ jobs       :
         image:
 
           - name: neuron-inference
-            validate-build: true
-            self-hosted-runner-type: inf1.xlarge # (e.g. AWS inferentia gen1 chips)
-            self-hosted-runner-ami: ami-0ce64505c663ca986
-            self-hosted-runner-neuron: true
-            runner-kind: custom
+            self-hosted-runner-neuron: false
+            runner-kind: ubuntu-20.04
             push-image: true
 
           - name: fastapi-serve
-            validate-build: false
             self-hosted-runner-neuron: false
             runner-kind: ubuntu-20.04
             push-image: true
 
           - name: beam-backfill
-            validate-build: false
             self-hosted-runner-neuron: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
 
           - name: beam-worker
-            validate-build: false
             self-hosted-runner-type: c6i.large
             self-hosted-runner-ami: ami-078fc5aa9eaf20502
             self-hosted-runner-neuron: false
@@ -274,7 +264,6 @@ jobs       :
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      validate-build: ${{ matrix.image.validate-build }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
@@ -338,7 +327,6 @@ jobs       :
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
 
-        validate-build: [false]
         region: [us-east-2]
         self-hosted-runner-neuron: [false]
 
@@ -348,7 +336,6 @@ jobs       :
       region: ${{ matrix.region }}
       base-region: ${{ matrix.image.base-region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      validate-build: ${{ matrix.validate-build }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
