@@ -86,24 +86,3 @@ ENV HOME="/home"
 COPY --from=builder /usr/local /usr/local
 
 FROM production as development
-
-ARG IMAGE_NAME
-
-WORKDIR "${HOME}"
-
-# poetry requirements
-COPY "/docker/${IMAGE_NAME}/poetry.lock" "/docker/${IMAGE_NAME}/pyproject.toml" ./
-
-# install production dependencies
-RUN poetry install \
-    --only dev \
-    --no-root \
-    --no-interaction \
-    --no-ansi \
-    -v && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
-
-# develop tests
-COPY "docker/${IMAGE_NAME}/tests" "${HOME}/tests"
