@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Context to score (i.e. run inference on) a torch based graph that has been compiled to torch neuron."
 authors = ["Sebastian Scherer sebastian.scherer@onclusive.com>"]
 readme = "README.md"
-packages = [{include = "neuron_inference"}]
 
 [tool.poetry.dependencies]
 python = "3.9.19"
@@ -16,14 +15,6 @@ transformers = "^4.39.2"
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com"
 priority = "supplemental"
-
-[tool.poetry.group.compilation.dependencies]
-pytest = "8.2.0"
-neuron-cc = {version = "1.14.3.0", source = "aws-neuron"}
-transformers = "^4.39.2"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "8.2.0"
 
 [build-system]
 requires = ["poetry-core"]
