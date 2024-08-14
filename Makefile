@@ -32,6 +32,7 @@ AWS_CLI_VERSION=$(shell cat .aws-cli-version)
 S6_VERSION=$(shell cat .s6-version)
 KUBECTL_VERSION=$(shell cat .kubectl-version)
 JAVA_VERSION=$(shell cat .java-version)
+NODE_VERSION=$(shell cat .node-version)
 
 ## VARIABLES
 ifeq ($(USE_DOCKER_CACHE),false)
@@ -43,8 +44,6 @@ endif
 ALL_DOCKER_IMGS:= \
 	python-base \
 	gpu-base \
-	gpu-train \
-	neuron-compile \
 	neuron-inference \
 	fastapi-serve \
 	kubeflow-jupyter \

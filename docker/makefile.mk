@@ -13,7 +13,8 @@ docker.build/%: docker.set ## Build app
 			--build-arg AWS_CLI_VERSION=$(AWS_CLI_VERSION) \
 			--build-arg S6_VERSION=$(S6_VERSION) \
 			--build-arg KUBECTL_VERSION=$(KUBECTL_VERSION) \
-			--build-arg JAVA_VERSION=$(JAVA_VERSION)
+			--build-arg JAVA_VERSION=$(JAVA_VERSION) \
+			--build-arg NODE_VERSION=$(NODE_VERSION)
 
 	@echo "::endgroup::"
 
