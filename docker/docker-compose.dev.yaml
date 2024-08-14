@@ -71,38 +71,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
 
   # ===========================================================
-  # NEURON COMPILE
-  # ===========================================================
-
-  neuron-compile:
-    build:
-      context: ..
-      dockerfile: ./docker/neuron-compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: neuron-compile
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
-    depends_on:
-      - python-base
-
-  neuron-compile-tests:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - type: bind
-        source: neuron-compile/tests
-        target: /docker/neuron-compile/tests
-    environment:
-      NEURON_COMPILE_OUTPUT_DIR: ./tests/output_compile #  ~ /docker/neuron-compile/tests/output_compile in container
-    command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
-    depends_on:
-      - neuron-compile
-
-  # ===========================================================
   # NEURON INFERENCE
   # ===========================================================
 
