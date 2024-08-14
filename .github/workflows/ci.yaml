@@ -74,7 +74,7 @@ jobs       :
     uses: ./.github/workflows/_code-quality.yaml
     needs: [run-get-core-dependencies-versions, get-environment]
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       pull-request: ${{ github.event_name == 'pull_request' }}
       timeout: 20
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
@@ -92,7 +92,7 @@ jobs       :
     uses: ./.github/workflows/_repository-state.yaml
     needs: [get-environment, run-code-quality-checks]
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       pull-request: ${{ github.event_name == 'pull_request' }}
       base-ref: ${{ github.base_ref }}
       head-ref: ${{ github.ref_name }}
@@ -194,7 +194,7 @@ jobs       :
         use-cache: [true]
 
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       image: ${{ matrix.image.name }}
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
@@ -249,7 +249,7 @@ jobs       :
         use-cache: [true]
 
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       image: ${{ matrix.image.name }}
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
@@ -306,7 +306,7 @@ jobs       :
         self-hosted-runner-neuron: [false]
 
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       image: ${{ matrix.image.name }}
       region: ${{ matrix.region }}
       base-region: ${{ matrix.image.base-region }}
@@ -377,7 +377,7 @@ jobs       :
 
     with:
       project: keywords
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -427,7 +427,7 @@ jobs       :
 
     with:
       project: summarization
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -503,7 +503,7 @@ jobs       :
 
     with:
       project: gch-summarization
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -583,7 +583,7 @@ jobs       :
 
     with:
       project: entity-linking
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -669,7 +669,7 @@ jobs       :
 
     with:
       project: sentiment
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -772,7 +772,7 @@ jobs       :
 
     with:
       project: iptc
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -823,7 +823,7 @@ jobs       :
 
     with:
       project: iptc-multi
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -872,7 +872,7 @@ jobs       :
 
     with:
       project: translation
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -931,7 +931,7 @@ jobs       :
 
     with:
       project: lsh
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1019,7 +1019,7 @@ jobs       :
 
     with:
       project: topic
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1069,7 +1069,7 @@ jobs       :
 
     with:
       project: transcript-segmentation
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1131,7 +1131,7 @@ jobs       :
 
     with:
       project: topic-summarization
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
@@ -1197,7 +1197,7 @@ jobs       :
         use-cache: [true]
 
     with:
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       app: ${{ matrix.apps.name }}
       component: ${{ matrix.apps.component }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
