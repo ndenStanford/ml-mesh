@@ -199,7 +199,6 @@ jobs       :
       base-region: ${{ matrix.base-region }}
       region: ${{ matrix.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      validate-build: ${{ matrix.image.validate-build }}
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
