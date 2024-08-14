@@ -1,20 +1,18 @@
 ARG CUDA_VERSION
 
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04 as builder
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu22.04 as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.9.19
+ARG PYTHON_VERSION
+ARG POETRY_VERSION
+ARG PIP_VERSION
 
 ENV HOME="/docker/${IMAGE_NAME}"
 
-ENV POETRY_VERSION=1.8.0
-ENV PIP_VERSION=22.3.1
-ENV POETRY_HOME="/home/.poetry"
+ENV POETRY_HOME="${HOME}/.poetry" \
+    POETRY_VIRTUALENVS_CREATE=false
 ENV PATH="$POETRY_HOME/bin:$PATH"
-ENV POETRY_VIRTUALENVS_CREATE=false
 ENV PATH="${PATH}:/root/.local/bin"
-
-ENV LD_LIBRARY_PATH="/usr/local/cuda-11.6/compat:${LD_LIBRARY_PATH}"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -63,17 +61,12 @@ RUN curl -o "Python-${PYTHON_VERSION}.tgz" "https://www.python.org/ftp/python/${
     && make install \
     && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
 
-# create symlink: typing "python" will invoke /usr/local/bin/python3.8
-RUN ln -s /usr/local/bin/python3.10 /usr/local/bin/python
-
 # python dependencies
 RUN pip3 install poetry==${POETRY_VERSION} --no-cache-dir && \
-    python -V
-
-ENTRYPOINT []
+    python3 -V
 
 # poetry requirements
-COPY "docker/${IMAGE_NAME}/poetry.lock" "docker/${IMAGE_NAME}/pyproject.toml" ./
+COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./
 
 # install production dependencies
 RUN poetry install \
@@ -86,7 +79,20 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-FROM builder as development
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu22.04 as production
+
+ENV HOME="/home"
+
+COPY --from=builder /usr/local /usr/local
+
+FROM production as development
+
+ARG IMAGE_NAME
+
+WORKDIR "${HOME}"
+
+# poetry requirements
+COPY "/docker/${IMAGE_NAME}/poetry.lock" "/docker/${IMAGE_NAME}/pyproject.toml" ./
 
 # install production dependencies
 RUN poetry install \
@@ -100,8 +106,4 @@ RUN poetry install \
     poetry cache clear pypi --all -q
 
 # develop tests
-COPY "docker/${IMAGE_NAME}/tests" "docker/${IMAGE_NAME}/tests"
-
-WORKDIR "/docker/${IMAGE_NAME}"
-
-FROM builder as production
+COPY "docker/${IMAGE_NAME}/tests" "${HOME}/tests"
