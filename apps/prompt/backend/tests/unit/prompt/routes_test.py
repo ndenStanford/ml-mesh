@@ -243,11 +243,14 @@ def test_generate_exception(
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert (
             response.json()["detail"]
-            == "JSON decode error: line 1 column 103 (char 102)"
+            == "JSONDecodeError: JSON decode error: line 1 column 103 (char 102)"
         )
     elif isinstance(exception, OutputParserException):
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert response.json()["detail"] == "Output parser exception"
+        assert (
+            response.json()["detail"]
+            == "OutputParserException: Output parser exception"
+        )
     mock_generate.assert_called_with(alias, model, **values, model_parameters=None)
 
 

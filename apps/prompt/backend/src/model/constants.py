@@ -23,6 +23,7 @@ class ChatModel(str, OnclusiveEnum):
     GPT4_TURBO = "gpt-4-turbo-2024-04-09"
     GPT4_TURBO_PREVIEW = "gpt-4-0125-preview"
     GPT4_O = "gpt-4o"
+    GPT4_O_MINI = "gpt-4o-mini"
     GPT4_1106 = "gpt-4-1106-preview"
     TITAN = "amazon.titan-text-express-v1"
     TITAN_G1 = "amazon.titan-text-lite-v1"
@@ -124,6 +125,7 @@ MODELS_TO_PARAMETERS = {
     ChatModel.GPT4_TURBO: BaseLLMParameters,
     ChatModel.GPT4_TURBO_PREVIEW: BaseLLMParameters,
     ChatModel.GPT4_O: BaseLLMParameters,
+    ChatModel.GPT4_O_MINI: BaseLLMParameters,
     ChatModel.GPT4_1106: BaseLLMParameters,
     ChatModel.TITAN: TitanParameters,
     ChatModel.TITAN_G1: TitanParameters,
@@ -154,4 +156,5 @@ DEFAULT_MODELS = [
     {"alias": ChatModel.GPT4_TURBO, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4_1106, "provider": ChatModelProdiver.OPENAI},
     {"alias": ChatModel.GPT4_O, "provider": ChatModelProdiver.OPENAI},
+    {"alias": ChatModel.GPT4_O_MINI, "provider": ChatModelProdiver.OPENAI},
 ]

@@ -18,7 +18,6 @@ def input_query():
 def input_query_id():
     """Input query id."""
     return "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c3"
-    # return "6bcd99ee-df08-4a7e-ad5e-5cdab4b558c4"
 
 
 @pytest.fixture
@@ -28,11 +27,182 @@ def input_product_tool_version():
 
 
 @pytest.fixture
+def input_media_api_query():
+    """Input media api query."""
+    return """{"query":{"advanced":{"terms":"(content:\\"Fidelity\\" || title:\\"Fidelity\\" || author:\\"Fidelity\\")"}},"source":"360","limit":100,"page":1,"filters":{"date":{"start":"2024-06-23 00:00","end":"2024-07-23 23:59","time_zone":"-04:00"},"lang":[],"pagerank":{"min":0,"max":10},"country":[],"domains":[],"es_filter":{"must_not":[{"prefix":{"licenses":{"value":"AGR:"}}},{"bool":{"must":[{"bool":{"must_not":{"term":{"market.country":"USA"}}}},{"bool":{"must":{"terms":{"domain.raw":["criticalmention.onclusive.com"]}}}}]}}],"must":[],"should":[{"bool":{"must_not":[{"exists":{"field":"licenses"}}],"must":[]}}],"should_minimum_match":1}},"exclude":{"country":[],"domains":["spain.onclusive.com","news.google.com"]},"sort":[{"published_on":{"order":"desc"}}],"return_fields":["id","ave","amplification","author","country","domain","lang","publication","published_on","reach","summary","title","url","score","media_type","pagerank","licenses","publication_details","sentiment","author_id","thumbnail_url","metadata"],"media_types":["web","print","tv","radio"]}"""  # noqa: E501
+
+
+@pytest.fixture
 def expected_query_id_output():
     """Expected output for id to boolean."""
     return """
         (apple  AND NOT  "Apple's Jade") OR  "Steve Jobs"  OR  "Tim Cook"  OR  "Angela Ahrends"  OR  "Eddie Cue"  OR  "Craig Federighi"  OR  "Jonathan Ive"  OR  "Luca Maestri"  OR  "Dan Riccio"  OR  "Phil Schiller"  OR  "Bruce Sewell"  OR  "Jeff Williams"  OR  "Paul Deneve"  OR  "Lisa Jackson"  OR  "Joel Podolny"  OR  "Johnny Srouji"  OR  "Denise Young Smith"
         """  # noqa: E501
+
+
+@pytest.fixture
+def expected_media_query():
+    """Expected media api query."""
+    return {
+        "bool": {
+            "filter": [
+                {
+                    "bool": {
+                        "minimum_should_match": 1,
+                        "should": [
+                            {
+                                "bool": {
+                                    "minimum_should_match": 1,
+                                    "should": [
+                                        {
+                                            "bool": {
+                                                "must": [{"term": {"_type": "_doc"}}],
+                                                "must_not": [
+                                                    {"exists": {"field": "media_type"}}
+                                                ],
+                                            }
+                                        },
+                                        {"term": {"media_type": "web"}},
+                                    ],
+                                }
+                            },
+                            {
+                                "bool": {
+                                    "minimum_should_match": 1,
+                                    "should": [
+                                        {"term": {"_type": "_doc"}},
+                                        {"term": {"media_type": "print"}},
+                                    ],
+                                }
+                            },
+                            {"terms": {"media_type": ["tv", "radio"]}},
+                        ],
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                            {
+                                "range": {
+                                    "published_on": {
+                                        "time_zone": "-04:00",
+                                        "gte": "2024-06-23T00:00",
+                                        "lte": "2024-07-23T23:59",
+                                    }
+                                }
+                            },
+                            {
+                                "range": {
+                                    "content_start_time": {
+                                        "time_zone": "-04:00",
+                                        "gte": "2024-06-23T00:00",
+                                        "lte": "2024-07-23T23:59",
+                                    }
+                                }
+                            },
+                        ],
+                        "minimum_should_match": 1,
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                            {"range": {"pagerank": {"gte": 0, "lte": 10}}},
+                            {"exists": {"field": "station"}},
+                        ],
+                        "minimum_should_match": 1,
+                    }
+                },
+                {
+                    "bool": {
+                        "must_not": [
+                            {
+                                "bool": {
+                                    "must": [
+                                        {"exists": {"field": "embargo_date"}},
+                                        {"range": {"published_on": {"gte": "now"}}},
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                            {
+                                "bool": {
+                                    "must": [{"terms": {"station.media_type": [1, 2]}}]
+                                }
+                            },
+                            {"bool": {"must_not": [{"exists": {"field": "station"}}]}},
+                        ],
+                        "minimum_should_match": 1,
+                    }
+                },
+                {
+                    "bool": {
+                        "minimum_should_match": 1,
+                        "should": [
+                            {
+                                "bool": {
+                                    "must_not": [{"exists": {"field": "licenses"}}],
+                                    "must": [],
+                                }
+                            }
+                        ],
+                    }
+                },
+                {
+                    "bool": {
+                        "must_not": [
+                            {"prefix": {"licenses": {"value": "AGR:"}}},
+                            {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "bool": {
+                                                "must_not": {
+                                                    "term": {"market.country": "USA"}
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "bool": {
+                                                "must": {
+                                                    "terms": {
+                                                        "domain.raw": [
+                                                            "criticalmention.onclusive.com"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        },
+                                    ]
+                                }
+                            },
+                        ]
+                    }
+                },
+            ],
+            "must_not": [
+                {"term": {"domain.raw": "nla.onclusive.com"}},
+                {"terms": {"domain": ["spain.onclusive.com", "news.google.com"]}},
+                {"prefix": {"licenses": {"value": "AGR:"}}},
+                {"term": {"licenses": "cedro_paywall"}},
+            ],
+            "must": [
+                {
+                    "query_string": {
+                        "allow_leading_wildcard": False,
+                        "query": '(content:"Fidelity" || title:"Fidelity" || author:"Fidelity")',
+                        "fields": ["content", "title"],
+                    }
+                },
+                {"exists": {"field": "content"}},
+            ],
+        }
+    }
 
 
 @pytest.fixture
