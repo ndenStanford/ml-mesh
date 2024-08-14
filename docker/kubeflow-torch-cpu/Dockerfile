@@ -1,31 +1,156 @@
 ARG AWS_ACCOUNT_ID
 ARG IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG} as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG} as builder
 
 ARG IMAGE_NAME
+ARG S6_VERSION
+ARG AWS_CLI_VERSION
+ARG KUBECTL_VERSION
+ARG NODE_VERSION
 
+# common environemnt variables
+ENV NB_USER=jovyan
+ENV NB_UID=1000
+ENV NB_PREFIX=/
+ENV SHELL=/bin/bash
 ENV HOME="/home/${NB_USER}"
+ENV POETRY_HOME="${HOME}"
+ENV POETRY_VIRTUALENVS_CREATE=false
+
+# args - software versions
+ARG KUBECTL_ARCH="amd64"
+ARG KUBECTL_VERSION=${KUBECTL_VERSION}
+ARG S6_ARCH="amd64"
+# https://skarnet.org/software/s6/
+ARG S6_VERSION=${S6_VERSION}
+ARG AWS_CLI_VERSION=${AWS_CLI_VERSION}
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# switch to NB_UID for installs
-USER ${NB_UID}
+USER root
+
+# install - usefull linux packages
+# hadolint ignore=DL3008
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -yq update \
+    && apt-get -yq upgrade \
+    && apt-get -yq install --no-install-recommends \
+    apt-transport-https \
+    bash \
+    bzip2 \
+    curl \
+    gcc \
+    git \
+    gnupg \
+    gnupg2 \
+    graphviz \
+    htop \
+    libffi-dev  \
+    libssl-dev  \
+    locales \
+    lsb-release \
+    nano \
+    npm \
+    software-properties-common \
+    tzdata \
+    unzip \
+    vim \
+    procps \
+    zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# install node js using new approach witout setup script (deprecated)
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+
+# install - s6 overlay
+RUN export GNUPGHOME=/tmp/ \
+    && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer" -o /tmp/s6-overlay-${S6_VERSION}-installer \
+    && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer.sig" -o /tmp/s6-overlay-${S6_VERSION}-installer.sig \
+    && gpg --keyserver keys.gnupg.net --keyserver pgp.surfnet.nl --recv-keys 6101B2783B2FD161 \
+    && gpg -q --verify /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer \
+    && chmod +x /tmp/s6-overlay-${S6_VERSION}-installer \
+    && /tmp/s6-overlay-${S6_VERSION}-installer / \
+    && rm /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer
+
+# install - kubectl
+RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" -o /usr/local/bin/kubectl \
+    && curl -sL "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl.sha256" -o /tmp/kubectl.sha256 \
+    && echo "$(cat /tmp/kubectl.sha256) /usr/local/bin/kubectl" | sha256sum --check \
+    && rm /tmp/kubectl.sha256 \
+    && chmod +x /usr/local/bin/kubectl
+
+# install aws cli
+# hadolint ignore=DL4001
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install
 
 WORKDIR "/"
 
+# create user and set required ownership
+# new user is not added to lastlog and faillog databases
+# https://stackoverflow.com/questions/48671214/docker-image-size-for-different-user
+RUN useradd -l -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
+    && mkdir -p ${HOME} \
+    && chown -R ${NB_USER}:users ${HOME} \
+    && chown -R ${NB_USER}:users /usr/local \
+    && chown -R ${NB_USER}:users /etc/profile
+
+### set locale configs
+RUN echo "en_GB.UTF-8 UTF-8" > /etc/locale.gen \
+    && locale-gen
+ENV LANG en_GB.UTF-8
+ENV LANGUAGE en_GB.UTF-8
+ENV LC_ALL en_GB.UTF-8
+
+# switch to NB_UID for installs
+USER "${NB_UID}"
+
+# install and activate venv to ensure poetry installed python packages end up on mounted volume
+# source: https://github.com/python-poetry/poetry/issues/1579#issuecomment-863737675
+ENV VIRTUAL_ENV="${HOME}/venv"
+RUN python -m venv "${VIRTUAL_ENV}"
+ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
+
+# install pip, poetry and python into venv
+RUN pip install --upgrade pip=="${PIP_VERSION}" poetry=="${POETRY_VERSION}" --no-cache-dir \
+    && python -V
+
 # install - poetry requirements
-COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml .${HOME}/
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
+
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+
+# s6 - copy scripts
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/s6 /etc/
+
+# copy libraries - ensure relative difference '../..' between home app dir and lib as listed in poetry toml
+COPY --chown=${USER}:users libs/ libs/
 
 WORKDIR "${HOME}"
 
+COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.config .config
+
 # install python dependencies into configured virtual environment at /home/jovyan
-RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${NB_USER}:users" "${HOME}"
+RUN poetry install --only main --no-root --no-interaction --no-ansi && \
+    rm -rf ~/.cache/pypoetry/cache &&\
+    rm -rf ~/.cache/pypoetry/artifacts
+
+RUN poetry cache clear pypi --all -q \
+    && jupyter lab build --debug
+
+USER root
+
+# s6 - 01-copy-tmp-home
+RUN mkdir -p /tmp_home \
+    && cp -r "${HOME}" /tmp_home \
+    && chown -R "${NB_USER}:users" /tmp_home
+
+USER "${NB_USER}"
 
 EXPOSE 8888
 
