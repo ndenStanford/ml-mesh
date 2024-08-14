@@ -4,7 +4,7 @@ ARG APP_NAME
 ARG APP_COMPONENT
 ARG APP_DIR="apps/${APP_NAME}/${APP_COMPONENT}"
 
-ENV USER=app
+ENV USER=onclusiveml
 ENV HOME="/${APP_DIR}"
 
 # create non root user
@@ -20,7 +20,7 @@ RUN mkdir -p "${HOME}" && \
 WORKDIR "/"
 
 # Copy the package.json and install dependencies
-COPY --chown=${USER}:users ${HOME}/package*.json ${HOME}/tsconfig.json ./${HOME}/
+COPY --chown=${USER}:users ${HOME}/package*.json ${HOME}/tsconfig.json .${HOME}/
 
 # source
 COPY --chown=${USER}:users "${HOME}/public" "${HOME}/public"
