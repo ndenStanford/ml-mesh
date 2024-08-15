@@ -21,28 +21,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG}
 
   # ===========================================================
-  # FASTAPI SERVE
-  # ===========================================================ech
-
-  fastapi-serve:
-    build:
-      context: ..
-      dockerfile: ./docker/fastapi-serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=fastapi-serve,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=fastapi-serve
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: fastapi-serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
-    depends_on:
-      - python-base
-
-  # ===========================================================
   # GPU BASE
   # ===========================================================
   gpu-base:
@@ -81,26 +59,6 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
 
   # ===========================================================
-  # KUBEFLOW JUPYTER
-  # ===========================================================
-
-  kubeflow-jupyter:
-    build:
-      context: ..
-      dockerfile: ./docker/kubeflow-jupyter/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: kubeflow-jupyter
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
-    entrypoint: [pwd]
-
-  # ===========================================================
   # KUBEFLOW TORCH CPU
   # ===========================================================
 
@@ -119,26 +77,6 @@ services:
         IMAGE_NAME: kubeflow-torch-cpu
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
-    entrypoint: [pwd]
-
-  # ===========================================================
-  # KUBEFLOW DATA SCIENCE
-  # ===========================================================
-
-  kubeflow-data-science:
-    build:
-      context: ..
-      dockerfile: ./docker/kubeflow-data-science/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: kubeflow-data-science
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     entrypoint: [pwd]
 
   # ===========================================================

@@ -27,6 +27,7 @@ RUN apt-get update && \
                             zlib1g-dev \
                             build-essential \
                             ca-certificates \
+                            sqlite-devel \
                             curl \
                             vim \
                             procps && \

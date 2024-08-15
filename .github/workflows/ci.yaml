@@ -45,7 +45,6 @@ jobs       :
         id: get-poetry
         run: |
           echo "::set-output name=version::$(cat .poetry-version)"
-
   # ===============================================
   # GET ENVIRONMENT NAME
   # ===============================================
@@ -135,6 +134,7 @@ jobs       :
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         libs:
+
           - name: core
             integration: false
 
@@ -164,158 +164,102 @@ jobs       :
       integration: ${{ matrix.libs.integration }}
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
 
   # ===============================================
   # DOCKER
   # ===============================================
 
-  run-us-east-1-base-docker:
-    name: Core Image
+  run-core-docker:
+    name: Core Docker images
     uses: ./.github/workflows/_docker.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
     strategy:
-      max-parallel: 2
+      max-parallel: 4
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         image:
 
           - name: python-base
-            runner-kind: ubuntu-20.04
+            region: us-east-1
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
             push-image: true
 
           - name: gpu-base
-            runner-kind: ubuntu-20.04
-            push-image: true
-
-        base-region: [us-east-1]
-        region: [us-east-1]
-        self-hosted-runner-neuron: [false]
-        use-cache: [true]
-
-    with:
-      environment: prod
-      image: ${{ matrix.image.name }}
-      base-region: ${{ matrix.base-region }}
-      region: ${{ matrix.region }}
-      tag: ${{ needs.run-repository-state.outputs.tag }}
-      runner-kind: ${{ matrix.image.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.image.push-image }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
-  run-us-east-1-docker:
-    name: Adv. Core Image
-    uses: ./.github/workflows/_docker.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
-    strategy:
-      max-parallel: 10
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
-      matrix:
-        image:
-
-          - name: neuron-inference
-            self-hosted-runner-neuron: false
-            runner-kind: ubuntu-20.04
-            push-image: true
-
-          - name: fastapi-serve
-            self-hosted-runner-neuron: false
-            runner-kind: ubuntu-20.04
+            region: us-east-1
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
             push-image: true
 
           - name: beam-backfill
-            self-hosted-runner-neuron: false
-            runner-kind: ubuntu-20.04
-            push-image: ${{ github.event_name != 'pull_request' }}
+            region: us-east-1
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
+            push-image: true
 
           - name: beam-worker
+            region: us-east-1
             self-hosted-runner-type: c6i.large
-            self-hosted-runner-ami: ami-078fc5aa9eaf20502
-            self-hosted-runner-neuron: false
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
 
-        base-region: [us-east-1]
-        region: [us-east-1]
+          - name: neuron-inference
+            region: us-east-1
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
+            push-image: true
+            base-image: python-base
+            base-region: us-east-2
+
+          # kubeflow-torch-gpu
+          - name: kubeflow-torch-gpu
+            region: us-east-2
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: gpu-base
+            base-region: us-east-2
+
+          # kubeflow-torch-inf
+          - name: kubeflow-torch-inf
+            region: us-east-2
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
+            base-region: us-east-2
+
+          # kubeflow-torch-cpu
+          - name: kubeflow-torch-cpu
+            region: us-east-2
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
+            base-region: us-east-2
+
+        self-hosted-runner-neuron: [false]
+        self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
         use-cache: [true]
 
     with:
       environment: prod
       image: ${{ matrix.image.name }}
-      base-region: ${{ matrix.base-region }}
-      region: ${{ matrix.region }}
-      tag: ${{ needs.run-repository-state.outputs.tag }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      runner-kind: ${{ matrix.image.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.use-cache }}
-      push-image: ${{ matrix.image.push-image }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
-  run-us-east-2-docker:
-    name: KF Core Image
-    uses: ./.github/workflows/_docker.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, run-us-east-1-base-docker, get-target-branch-name]
-    strategy:
-      max-parallel: 10
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
-      matrix:
-        image:
-          # kubeflow-torch-gpu
-          - name: kubeflow-torch-gpu
-            base-region: us-east-1
-            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
-            runner-kind: custom
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-
-          # kubeflow-torch-inf
-          - name: kubeflow-torch-inf
-            base-region: us-east-1
-            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
-            runner-kind: custom
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-
-
-          # kubeflow-torch-cpu
-          - name: kubeflow-torch-cpu
-            base-region: us-east-2
-            self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
-            runner-kind: custom
-            use-cache: true
-            push-image: true
-
-        region: [us-east-2]
-        self-hosted-runner-neuron: [false]
-
-    with:
-      environment: prod
-      image: ${{ matrix.image.name }}
-      region: ${{ matrix.region }}
+      base-image: ${{ matrix.image.base-image }}
       base-region: ${{ matrix.image.base-region }}
+      region: ${{ matrix.image.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.image.runner-kind }}
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.image.use-cache }}
+      use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.image.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -333,7 +277,12 @@ jobs       :
   run-keywords-project:
     name: Keywords Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 5
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -350,6 +299,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # compile
           - name: compile
@@ -360,6 +310,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
 
           # serve
           - name: serve
@@ -370,8 +321,9 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0ce64505c663ca986
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
 
         use-cache: [true]
 
@@ -385,12 +337,13 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -406,7 +359,12 @@ jobs       :
   run-summarization-project:
     name: Sum. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -424,6 +382,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
     with:
       project: summarization
@@ -435,89 +394,12 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
-    secrets:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
-      INTERNAL_ML_ENDPOINT_API_KEY: ${{ secrets.INTERNAL_ML_ENDPOINT_API_KEY }}
-
-  # gch-summarization
-
-  run-gch-summarization-project:
-    name: GCH Sum. Project
-    uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
-    strategy:
-      max-parallel: 10
-      fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
-      matrix:
-        components:
-          # NOTE: list of project components to run
-
-          # train
-          - name: train
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-
-          # serve
-          - name: serve
-            download-model: true
-            integration: false
-            functional: true
-            load: false
-            upload-test-results: false
-            runner-kind: custom
-            self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-005eed844c599e83c
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-
-          # backfill
-          - name: backfill
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-
-    with:
-      project: gch-summarization
-      environment: prod
-      component: ${{ matrix.components.name }}
-      tag: ${{ needs.run-repository-state.outputs.tag }}
-      download-model: ${{ matrix.components.download-model }}
-      integration: ${{ matrix.components.integration }}
-      functional: ${{ matrix.components.functional }}
-      load: ${{ matrix.components.load }}
-      upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      runner-kind: ${{ matrix.components.runner-kind }}
-      self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
-      self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
-      use-cache: ${{ matrix.components.use-cache }}
-      push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -533,7 +415,12 @@ jobs       :
   run-entity-linking-project:
     name: Entity Linking Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -550,10 +437,11 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-078fc5aa9eaf20502
+            self-hosted-runner-ami: ami-046f0b2604eaac9c4
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # serve
           - name: serve
@@ -564,10 +452,11 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.xlarge
-            self-hosted-runner-ami: ami-005eed844c599e83c
+            self-hosted-runner-ami: ami-03e4816f04f417e5a
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: gpu-base
 
           # backfill
           - name: backfill
@@ -580,6 +469,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: beam-backfill
 
     with:
       project: entity-linking
@@ -591,13 +481,14 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -615,7 +506,12 @@ jobs       :
   run-sentiment-project:
     name: Sentiment Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -632,6 +528,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # compile
           - name: compile
@@ -642,6 +539,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
 
           # serve
           - name: serve
@@ -652,8 +550,9 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0ce64505c663ca986
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # backfill
           - name: backfill
@@ -664,6 +563,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: beam-backfill
 
         use-cache: [true]
 
@@ -677,12 +577,13 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -698,25 +599,18 @@ jobs       :
   run-iptc-project:
     name: IPTC Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
       matrix:
         components:
           # NOTE: list of project components to run
-
-          # ingest
-          - name: ingest
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
 
           # register
           - name: register
@@ -729,6 +623,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # train
           - name: train
@@ -739,10 +634,11 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: g4dn.2xlarge
-            self-hosted-runner-ami: ami-005eed844c599e83c
+            self-hosted-runner-ami: ami-03e4816f04f417e5a
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: gpu-base
 
           # compile
           - name: compile
@@ -755,6 +651,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
 
           # serve
           - name: serve
@@ -765,10 +662,11 @@ jobs       :
             upload-test-results: false
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
-            self-hosted-runner-ami: ami-0ce64505c663ca986
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             self-hosted-runner-neuron: true
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: neuron-inference
 
     with:
       project: iptc
@@ -780,13 +678,14 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -802,7 +701,12 @@ jobs       :
   run-iptc-multi-project:
     name: IPTC Multi Model Client Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -820,6 +724,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
     with:
       project: iptc-multi
@@ -831,11 +736,12 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -851,7 +757,12 @@ jobs       :
   run-translation-project:
     name: Translation Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -869,6 +780,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
     with:
       project: translation
@@ -882,6 +794,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -897,7 +810,12 @@ jobs       :
   run-lsh-project:
     name: LSH Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -915,6 +833,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # backfill
           - name: backfill
@@ -926,6 +845,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: beam-backfill
 
         use-cache: [true]
 
@@ -939,12 +859,13 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -959,7 +880,12 @@ jobs       :
   run-topic-project:
     name: Topic Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -978,6 +904,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # train
           - name: train
@@ -991,6 +918,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: gpu-base
 
           # serve
           - name: serve
@@ -1004,6 +932,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: gpu-base
 
           # backfill
           - name: backfill
@@ -1016,6 +945,7 @@ jobs       :
             self-hosted-runner-neuron: false
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: beam-backfill
 
     with:
       project: topic
@@ -1027,12 +957,13 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1048,7 +979,12 @@ jobs       :
   run-transcript-segmentation-project:
     name: Transcr. Segm. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -1066,6 +1002,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
     with:
       project: transcript-segmentation
@@ -1077,11 +1014,12 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1099,7 +1037,12 @@ jobs       :
   run-topic-summarization-project:
     name: Topic Sum. Project
     uses: ./.github/workflows/_projects.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }} # fixed. desired: TRUE for feature PR & PUSH events
@@ -1116,6 +1059,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           # backfill
           - name: backfill
@@ -1126,6 +1070,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: beam-backfill
 
         use-cache: [true]
 
@@ -1139,11 +1084,12 @@ jobs       :
       functional: ${{ matrix.components.functional }}
       load: ${{ matrix.components.load }}
       upload-test-results: ${{ matrix.components.upload-test-results }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.components.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1166,7 +1112,13 @@ jobs       :
   run-apps:
     name: Web App
     uses: ./.github/workflows/_apps.yaml
-    needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
+    needs:
+      - get-environment
+      - run-repository-state
+      - get-target-branch-name
+      - run-libs-tests
+      - run-core-docker
+      - run-core-docker
     strategy:
       max-parallel: 10
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
@@ -1183,9 +1135,10 @@ jobs       :
             integration: true
             runner-kind: custom
             self-hosted-runner-type: c6i.xlarge
-            self-hosted-runner-ami: ami-078fc5aa9eaf20502
+            self-hosted-runner-ami: ami-046f0b2604eaac9c4
             functional: true
             push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
 
           - name: prompt
             component: frontend
@@ -1203,12 +1156,13 @@ jobs       :
       tag: ${{ needs.run-repository-state.outputs.tag }}
       integration: ${{ matrix.apps.integration }}
       functional: ${{ matrix.apps.functional }}
-      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
+      release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.apps.runner-kind }}
       self-hosted-runner-type: ${{ matrix.apps.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.apps.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.apps.push-image }}
+      base-image: ${{ matrix.components.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1234,12 +1188,9 @@ jobs       :
       - run-get-core-dependencies-versions
       - get-target-branch-name
       - run-libs-tests
-      - run-us-east-1-base-docker
-      - run-us-east-1-docker
-      - run-us-east-2-docker
+      - run-core-docker
       - run-keywords-project
       - run-summarization-project
-      - run-gch-summarization-project
       - run-entity-linking-project
       - run-sentiment-project
       - run-iptc-project

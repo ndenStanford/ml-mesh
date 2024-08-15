@@ -16,12 +16,13 @@ on  :
         type: string
         description: Component to build, test and deploy.
       base-image:
-        required: true
+        required: false
+        default:
         type: string
         description: Base image ECR repo name.
       base-region:
         required: false
-        default: us-east-1
+        default: us-east-2
         type: string
         description: Base image ECR repo region.
       tag:
@@ -69,7 +70,7 @@ on  :
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
       self-hosted-runner-ami:
         required: false
-        default: ami-078fc5aa9eaf20502
+        default: ami-046f0b2604eaac9c4
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       self-hosted-runner-neuron:
@@ -142,7 +143,7 @@ on  :
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.project }}-${{ inputs.component }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -177,7 +178,7 @@ jobs:
 
   set-runner-specs:
     name: 'Resolve runner specs: ${{ inputs.project }}-${{ inputs.component }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
@@ -379,11 +380,12 @@ jobs:
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    # NOTE: required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

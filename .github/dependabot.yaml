@@ -19,39 +19,6 @@ updates:
   # DOCKER
   # ====================================
 
-  # fastapi-serve
-
-  - package-ecosystem: pip
-    directory: /docker/fastapi-serve
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "10:00"
-      timezone: "Europe/London"
-      day: "monday"
-
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
-  # kubeflow data science
-
-  - package-ecosystem: pip
-    directory: /docker/kubeflow-data-science
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "11:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
   # kubeflow torch cpu
 
   - package-ecosystem: pip
@@ -67,37 +34,6 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # kubeflow jupyter
-
-  - package-ecosystem: pip
-    directory: /docker/kubeflow-jupyter
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "13:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
-  # neuron-compile
-
-  - package-ecosystem: pip
-    directory: /docker/neuron-compile
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "14:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
   # neuron-inference
 
   - package-ecosystem: pip
@@ -106,7 +42,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
-      time: "15:00"
+      time: "14:00"
       timezone: "Europe/London"
       day: "monday"
     ignore:
@@ -152,21 +88,6 @@ updates:
     schedule:
       interval: "monthly"
       time: "18:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-  # gpu train
-
-  - package-ecosystem: pip
-    directory: /docker/gpu-train
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "19:00"
       timezone: "Europe/London"
       day: "monday"
     ignore:

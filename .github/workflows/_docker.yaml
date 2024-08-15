@@ -11,8 +11,14 @@ on  :
         required: true
         type: string
         description: Image to build and test.
+      region:
+        required: false
+        default: us-east-1
+        type: string
+        description: Image ECR repo region.
       base-image:
-        required: true
+        required: false
+        default:
         type: string
         description: Base image ECR repo name.
       base-region:
@@ -20,11 +26,6 @@ on  :
         default: us-east-1
         type: string
         description: Base image ECR repo region.
-      region:
-        required: false
-        default: us-east-1
-        type: string
-        description: Image ECR repo region.
       tag:
         required: true
         type: string
@@ -45,7 +46,7 @@ on  :
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
       self-hosted-runner-ami:
         required: false
-        default: ami-078fc5aa9eaf20502
+        default: ami-046f0b2604eaac9c4
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       self-hosted-runner-neuron:
@@ -91,7 +92,7 @@ on  :
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.image }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -126,7 +127,7 @@ jobs:
 
   set-runner-specs:
     name: 'Resolve runner specs: ${{ inputs.image }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
@@ -191,9 +192,7 @@ jobs:
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
-          make docker.login \
-            AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            AWS_REGION=${{ inputs.base-region }}
+          make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
       - name: Get base image tag | ${{ inputs.environment }} ${{ inputs.image }}
         id: get-base-image-tag
@@ -235,11 +234,12 @@ jobs:
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.image }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    # NOTE: required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

@@ -45,7 +45,6 @@ ALL_DOCKER_IMGS:= \
 	python-base \
 	gpu-base \
 	neuron-inference \
-	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \
 	kubeflow-torch-gpu \

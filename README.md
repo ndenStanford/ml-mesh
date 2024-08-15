@@ -95,8 +95,7 @@ As all images used in projects and apps are based on our core docker images. It 
 
 ```shell
 make docker.build/python-base
-make docker.build/fastapi-serve
-make docker.build/neuron-compile
+make docker.build/gpu-base
 make docker.build/neuron-inference
 ```
 
