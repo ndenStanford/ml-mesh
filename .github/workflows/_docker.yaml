@@ -11,6 +11,10 @@ on  :
         required: true
         type: string
         description: Image to build and test.
+      base-image:
+        required: true
+        type: string
+        description: Base image ECR repo name.
       base-region:
         required: false
         default: us-east-1
@@ -191,6 +195,12 @@ jobs:
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
             AWS_REGION=${{ inputs.base-region }}
 
+      - name: Get base image tag | ${{ inputs.environment }} ${{ inputs.image }}
+        id: get-base-image-tag
+        if: ${{ inputs.base-image != null }}
+        run: |
+          echo "::set-output name=tag::$(aws ecr describe-images --repository-name ${{ inputs.base-image }} --query "reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[0]")"
+
       - name: Build Production Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         uses: nick-fields/retry@v3
         with:
@@ -202,6 +212,7 @@ jobs:
               AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
               DEPLOYMENT="${{ inputs.environment }}" \
               IMAGE_TAG="${{ inputs.tag }}" \
+              BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
               TARGET_BUILD_STAGE="production" \
               PLATFORM="linux/amd64" \
               ENVIRONMENT="ci" \

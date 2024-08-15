@@ -15,6 +15,15 @@ on  :
         required: true
         type: string
         description: Component to build, test and deploy.
+      base-image:
+        required: true
+        type: string
+        description: Base image ECR repo name.
+      base-region:
+        required: false
+        default: us-east-1
+        type: string
+        description: Base image ECR repo region.
       tag:
         required: true
         type: string
@@ -233,6 +242,12 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Get base image tag | ${{ inputs.environment }} ${{ inputs.image }}
+        id: get-base-image-tag
+        if: ${{ inputs.base-image != null }}
+        run: |
+          echo "::set-output name=tag::$(aws ecr describe-images --repository-name ${{ inputs.base-image }} --query "reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[0]")"
+
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         uses: nick-fields/retry@v3
         with:
@@ -244,6 +259,7 @@ jobs:
               AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
               DEPLOYMENT="${{ inputs.environment }}" \
               IMAGE_TAG="${{ inputs.tag }}" \
+              BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
               TARGET_BUILD_STAGE="development" \
               PLATFORM="linux/amd64" \
               ENVIRONMENT="ci" \
