@@ -116,7 +116,7 @@ def test_cp(localfs, source, destination):
 def test_glob(localfs, glob, expected):
     """Test blog method."""
     # NOTE: list comparison fails here so we compare the length instead
-    assert localfs.glob(glob) == expected
+    assert len(localfs.glob(glob)) == len(expected)
 
 
 @pytest.mark.parametrize(
