@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
-ARG IMAGE_TAG
+ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG} as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${BASE_IMAGE_TAG} as builder
 
 ARG IMAGE_NAME
 
@@ -36,7 +36,7 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     chown -R "${USER}:users" "${HOME}"
 
 # --- production stage
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG} as production
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${BASE_IMAGE_TAG} as production
 
 ENV HOME="/home"
 ARG IMAGE_NAME
