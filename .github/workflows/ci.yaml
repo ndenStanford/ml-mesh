@@ -254,6 +254,7 @@ jobs       :
       - run-repository-state
       - get-target-branch-name
       - run-libs-tests
+      - run-core-docker
     strategy:
       max-parallel: 5
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
