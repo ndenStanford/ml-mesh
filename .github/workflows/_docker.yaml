@@ -192,7 +192,7 @@ jobs:
 
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.image }}
         run: |
-          make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
+          make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" AWS_REGION=${{ inputs.base-region }}
 
       - name: Get base image tag lookup | ${{ inputs.environment }} ${{ inputs.image }}
         uses: haya14busa/action-cond@v1

@@ -119,7 +119,6 @@ jobs       :
           if_true: ${{ github.base_ref }}
           if_false: ${{ github.ref_name }}
 
-
   # ===============================================
   # TEST LIBS
   # ===============================================
@@ -267,7 +266,7 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
-            base-region: us-east-2
+            base-region: us-east-1
 
           # kubeflow-torch-gpu
           - name: kubeflow-torch-gpu
@@ -276,7 +275,7 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: gpu-base
-            base-region: us-east-2
+            base-region: us-east-1
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -285,7 +284,7 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
-            base-region: us-east-2
+            base-region: us-east-1
 
         self-hosted-runner-neuron: [false]
         self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
