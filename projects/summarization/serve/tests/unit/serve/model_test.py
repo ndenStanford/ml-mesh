@@ -38,13 +38,13 @@ def test_model_bio(summarization_model):
             100,
             "en",
             "en",
-            "",
+            "bespoke",
             """Elon Musk reached a net worth of over $200 billion in January 2021,
             becoming the second individual to achieve this milestone after Jeff Bezos.""",
         ),
     ],
 )
-@patch.object(SummarizationServedModel, "inference")
+@patch.object(SummarizationServedModel, "_inference")
 def test_model_inefrence(
     mock_inference,
     summarization_model,
@@ -58,7 +58,7 @@ def test_model_inefrence(
     """Test model inference."""
     mock_inference.return_value = expected_summary
 
-    summary = summarization_model.inference(
+    summary = summarization_model._inference(
         text, desired_length, input_language, output_language, type
     )
 
@@ -79,7 +79,7 @@ def test_model_inefrence(
                     "parameters": {
                         "input_language": "en",
                         "output_language": "en",
-                        "type": "",
+                        "summary_type": "",
                         "desired_length": 200,
                     },
                 }

@@ -4,11 +4,14 @@
 """Prediction model."""
 
 # Standard Library
-from typing import Type, Optional
+from typing import Type, Optional, List, Dict, Union, Tuple
 from datetime import datetime
 
 from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
+
+# 3rd party libraries
+from fastapi import HTTPException, status
 
 # Internal libraries
 from onclusiveml.serving.rest.serve import ServedModel
@@ -16,7 +19,12 @@ from onclusiveml.core.serialization import JsonApiSchema
 from onclusiveml.core.retry import retry
 from onclusiveml.core.logging import get_default_logger
 from src.serve.tables import TopicSummaryDynamoDB
-from src.serve.exceptions import TopicSummaryInsertionException
+from src.serve.exceptions import (
+    TopicSummaryInsertionException,
+    TopicSummarizationParsingException,
+    TopicSummarizationJSONDecodeException,
+)
+from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 
 # Source
 from src.serve.schema import (
@@ -56,6 +64,7 @@ class ServedTopicModel(ServedModel):
 
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
+        # Fake comment. Add to enforce new image build.
         if inputs.query_string:
             return StringQueryProfile(
                 string_query=self._preprocess_string_query(inputs.query_string)
@@ -167,10 +176,10 @@ class ServedTopicModel(ServedModel):
                 content = self.document_collector.get_documents(
                     query_profile, topic_id, doc_start_time, doc_end_time
                 )
-
-                topic, topic_summary_quality = self.model.aggregate(
-                    content, boolean_query
-                )
+                (
+                    topic,
+                    topic_summary_quality,
+                ) = self.model_aggregate_and_handle_exceptions(content, boolean_query)
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
@@ -179,7 +188,9 @@ class ServedTopicModel(ServedModel):
                 impact_category = None
                 topic_summary_quality = None
         else:
-            topic, topic_summary_quality = self.model.aggregate(content)
+            topic, topic_summary_quality = self.model_aggregate_and_handle_exceptions(
+                content
+            )
             impact_category = None
         if save_report_dynamodb:
             if inputs.query_string or inputs.query_id:
@@ -221,6 +232,29 @@ class ServedTopicModel(ServedModel):
                 "topic_summary_quality": topic_summary_quality,
             },
         )
+
+    def model_aggregate_and_handle_exceptions(
+        self, content: List[str], boolean_query: Optional[str] = None
+    ) -> Tuple[
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
+        Union[bool, None],
+    ]:
+        """Call model aggregate and handle exceptions.
+
+        Args:
+            content (List[str]): article content.
+            boolean_query (Optional[str]): boolean query
+        """
+        try:
+            topic, topic_summary_quality = self.model.aggregate(content, boolean_query)
+            return topic, topic_summary_quality
+        except (
+            TopicSummarizationParsingException,
+            TopicSummarizationJSONDecodeException,
+        ) as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            )
 
     def bio(self) -> BioResponseSchema:
         """Model bio endpoint."""

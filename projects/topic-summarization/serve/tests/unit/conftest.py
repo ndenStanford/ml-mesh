@@ -145,6 +145,36 @@ def mock_boolean_check():
 
 
 @pytest.fixture
+def mock_query_del():
+    """Mock response for request.del."""
+    mock_response = MagicMock()
+    mock_response.status_code = 204
+    return mock_response
+
+
+@pytest.fixture
+def mock_add_query_to_database():
+    """Mock response for request.post."""
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "id": "2a360d06-3ebd-40d2-a60d-4062d84f7c74",
+        "name": "ml-query",
+        "description": "used by ML team to translate queries from boolean to media API",
+        "booleanQuery": '("Apple Music" OR AppleMusic) AND sourcecountry:[ESP,AND] AND sourcetype:print',  # noqa: E501
+        "createdAt": "2024-08-15T04:23:30.2075032Z",
+        "updatedAt": "2024-08-15T04:23:30.2075033Z",
+        "userIdLastUpdate": "7483c974-cf85-41dd-a3b5-6719948cd943",
+        "usernameLastUpdate": "",
+        "medialistIdsInQuery": [],
+        "keywordsInQuery": ["Apple Music", "AppleMusic"],
+        "relevanceStatistics": [],
+        "hasFilter": True,
+    }
+    mock_response.status_code = 201
+    return mock_response
+
+
+@pytest.fixture
 def mock_boolean_query_translated():
     """Mock response for request.get."""
     mock_response = MagicMock()
@@ -310,6 +340,7 @@ def mock_boolean_query_translated():
     }
     # Create the final string
     mock_response.content = query
+    mock_response.status_code = 200
     return mock_response
 
 
@@ -2960,3 +2991,23 @@ def mock_topic_profile_query():
             }
         },
     }
+
+
+@pytest.fixture
+def mock_response_parsing_error():
+    """Mock response for parsing error."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({"message": "Parsing error"})
+    mock_response.status_code = 500
+    mock_response.detail = "OutputParserException:"
+    return mock_response
+
+
+@pytest.fixture
+def mock_response_json_decode_error():
+    """Mock response for json decode error."""
+    mock_response = MagicMock()
+    mock_response.content = json.dumps({"message": "Json decode error"})
+    mock_response.status_code = 500
+    mock_response.detail = "JSONDecodeError:"
+    return mock_response

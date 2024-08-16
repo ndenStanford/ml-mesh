@@ -29,6 +29,10 @@ from onclusiveml.queries.query_profile import (
     ProductionToolsQueryProfile,
 )
 from src.settings import get_settings
+from src.serve.exceptions import (
+    TopicSummarizationParsingException,
+    TopicSummarizationJSONDecodeException,
+)
 
 _service = TopicHandler()
 settings = get_settings()
@@ -130,6 +134,8 @@ def test_handler_aggregate_with_boolean_query(
     assert isinstance(gpt_inference[1], bool)
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -150,6 +156,8 @@ def test_not_trending(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -158,10 +166,14 @@ def test_not_trending(
     mock_boolean_check,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -179,6 +191,8 @@ def test_not_trending(
     assert res[1] is None
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -199,6 +213,8 @@ def test_trending(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -207,10 +223,14 @@ def test_trending(
     mock_boolean_check,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -228,6 +248,8 @@ def test_trending(
     assert res[1] == pd.Timestamp("2024-03-25 12:00:00+0000")
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -249,6 +271,8 @@ def test_not_trending_query_id(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -258,6 +282,8 @@ def test_not_trending_query_id(
     mock_reponses_production_tool,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.side_effect = [
@@ -265,6 +291,8 @@ def test_not_trending_query_id(
         mock_boolean_query_translated,
     ]
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -282,6 +310,8 @@ def test_not_trending_query_id(
     assert res[1] is None
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -303,6 +333,8 @@ def test_trending_query_id(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -312,6 +344,8 @@ def test_trending_query_id(
     mock_reponses_production_tool,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.side_effect = [
@@ -319,6 +353,8 @@ def test_trending_query_id(
         mock_boolean_query_translated,
     ]
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -336,6 +372,8 @@ def test_trending_query_id(
     assert res[1] == pd.Timestamp("2024-03-25 12:00:00+0000")
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.impact_quantification.Elasticsearch")
@@ -354,6 +392,8 @@ def test_impact_quantification(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     mock_boolean_query_translated,
@@ -362,10 +402,14 @@ def test_impact_quantification(
     mock_topic_global_query,
     mock_all_profile_boolean_query,
     mock_topic_profile_query,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_all_global_query,
         mock_topic_global_query,
@@ -375,3 +419,27 @@ def test_impact_quantification(
     trend_detector = ImpactQuantification()
     res = trend_detector.quantify_impact(profile, topic_id)
     assert res == ImpactCategoryLabel.LOW
+
+
+@patch("requests.post")
+def test_topic_handler_parsing_exception(
+    mock_post,
+    mock_response_parsing_error,
+):
+    """Test the exception handling for parsing error."""
+    mock_post.return_value = mock_response_parsing_error
+
+    with pytest.raises(TopicSummarizationParsingException):
+        _ = _service.topic_inference(["Article content"])
+
+
+@patch("requests.post")
+def test_topic_handler_json_decode_exception(
+    mock_post,
+    mock_response_json_decode_error,
+):
+    """Test the exception handling for Json decode error."""
+    mock_post.return_value = mock_response_json_decode_error
+
+    with pytest.raises(TopicSummarizationJSONDecodeException):
+        _ = _service.topic_inference(["Article content"])

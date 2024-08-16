@@ -60,8 +60,6 @@ def _syncronize_prompts():
         if project is None:
             Project(alias=project_alias).sync()
         if len(prompt_alias) > 0:
-            prompt = PromptTemplate(
+            PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
-            )
-            logging.info(f"Syncing prompt.. {prompt.model_dump_json()}")
-            prompt.sync()
+            ).sync()

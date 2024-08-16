@@ -144,6 +144,8 @@ class BelaModel:
         for ent in datamodule.ent_catalogue.idx:
             self.ent_idx.append(ent)
 
+        self.max_length = 256
+
     def lookup_faiss(
         self,
         query: torch.Tensor,
@@ -417,7 +419,13 @@ class BelaModel:
 
         model_inputs = self.transform(transformed_batch)
 
-        token_ids = model_inputs["input_ids"].to(self.device)
+        token_ids = model_inputs["input_ids"]
+
+        if token_ids.shape[1] > self.max_length:
+            token_ids = token_ids[:, : self.max_length]
+
+        token_ids = token_ids.to(self.device)
+
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()

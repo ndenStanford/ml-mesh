@@ -10,6 +10,8 @@ import requests
 import json
 import logging
 
+# from fastapi import status
+
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.nlp.preprocess import remove_html, remove_whitespace
@@ -17,6 +19,12 @@ from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCateg
 
 # Source
 from src.settings import get_api_settings, get_settings  # type: ignore[attr-defined]
+
+# exceptions
+from src.serve.exceptions import (
+    TopicSummarizationParsingException,
+    TopicSummarizationJSONDecodeException,
+)
 
 logger = get_default_logger(__name__)
 settings = get_api_settings()
@@ -53,6 +61,16 @@ class TopicHandler:
             headers=headers,
             json=input_dict,
         )
+
+        if q.status_code == 500:
+            if q.detail.startswith("OutputParserException"):
+                logging.error(
+                    f"OutputParserException in Topic summarization: {q.content}"
+                )
+                raise TopicSummarizationParsingException(e=q.content)
+            elif q.detail.startswith("JSONDecodeError"):
+                logging.error(f"JSONDecodeError in Topic summarization: {q.content}")
+                raise TopicSummarizationJSONDecodeException(e=q.content)
 
         return q
 
@@ -95,6 +113,12 @@ class TopicHandler:
             output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
                 raise ValueError("Claude topic response is not a valid dict")
+
+        except (
+            TopicSummarizationParsingException,
+            TopicSummarizationJSONDecodeException,
+        ) as e:
+            raise e
         except Exception as e:
             logging.error(f"Failed with Sonnet in Topic: {e}")
 
@@ -130,12 +154,25 @@ class TopicHandler:
             output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
                 raise ValueError("Claude topic response is not a valid string")
+        except (
+            TopicSummarizationParsingException,
+            TopicSummarizationJSONDecodeException,
+        ) as e:
+            raise e
         except Exception as e:
             logging.error(f"Failed with Claude in Topic: {e}")
 
         if (not output_content) or not isinstance(output_content, dict):
-            q = self.call_api(entity_query_alias_gpt, settings.GPT_MODEL, input_dict)
-            output_content = json.loads(q.content)
+            try:
+                q = self.call_api(
+                    entity_query_alias_gpt, settings.GPT_MODEL, input_dict
+                )
+                output_content = json.loads(q.content)
+            except (
+                TopicSummarizationParsingException,
+                TopicSummarizationJSONDecodeException,
+            ) as e:
+                raise e
 
         entity_list = output_content["entity_list"]
         return entity_list
@@ -179,12 +216,23 @@ class TopicHandler:
             output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
                 raise ValueError("Claude summary response is not a valid dict")
+        except (
+            TopicSummarizationParsingException,
+            TopicSummarizationJSONDecodeException,
+        ) as e:
+            raise e
         except Exception as e:
             logging.error(f"Failed with Sonnet in Summary: {e}")
 
         if (not output_content) or not isinstance(output_content, dict):
-            q = self.call_api(summary_alias_gpt, settings.GPT_MODEL, input_dict)
-            output_content = json.loads(q.content)
+            try:
+                q = self.call_api(summary_alias_gpt, settings.GPT_MODEL, input_dict)
+                output_content = json.loads(q.content)
+            except (
+                TopicSummarizationParsingException,
+                TopicSummarizationJSONDecodeException,
+            ) as e:
+                raise e
 
         return output_content
 
@@ -235,10 +283,17 @@ class TopicHandler:
             "input": {"summary": summary, "entities": entities},
             "output": settings.SUMMARY_QUALITY_RESPONSE_SCHEMA,
         }
-
-        q = self.call_api(
-            settings.CLAUDE_SUMMARY_QUALITY_ALIAS, settings.DEFAULT_MODEL, input_dict
-        )
+        try:
+            q = self.call_api(
+                settings.CLAUDE_SUMMARY_QUALITY_ALIAS,
+                settings.DEFAULT_MODEL,
+                input_dict,
+            )
+        except (
+            TopicSummarizationParsingException,
+            TopicSummarizationJSONDecodeException,
+        ) as e:
+            raise e
         output_content = json.loads(q.content)
         not_different_themes = (
             output_content.get("different_themes", "").lower() == "no"
