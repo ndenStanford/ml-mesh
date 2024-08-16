@@ -143,7 +143,6 @@ class ServedBelaModel(ServedModel):
         entities_list = []
         mention_offsets = []
         mention_lengths = []
-
         for entity_text in unique_entity_text:
             matched_entities = list(re.finditer(entity_text, text))
             spans = [m.span() for m in matched_entities]
@@ -245,6 +244,7 @@ class ServedBelaModel(ServedModel):
         batch_mention_lengths = []
         batch_entities_offsets = []
         batch_unique_entities_list = []
+
         for entity in batch_entities:
             (
                 unique_entities_list,
