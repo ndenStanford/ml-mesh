@@ -179,7 +179,7 @@ jobs       :
       - get-target-branch-name
       - run-libs-tests
     strategy:
-      max-parallel: 4
+      max-parallel: 2
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
       matrix:
         image:
@@ -208,6 +208,15 @@ jobs       :
             runner-kind: custom
             push-image: ${{ github.event_name != 'pull_request' }}
 
+          # kubeflow-torch-cpu
+          - name: kubeflow-torch-cpu
+            region: us-east-2
+            self-hosted-runner-type: c6i.large
+            runner-kind: custom
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
+            base-region: us-east-2
+
           - name: neuron-inference
             region: us-east-1
             self-hosted-runner-type: c6i.large
@@ -225,6 +234,7 @@ jobs       :
             base-image: gpu-base
             base-region: us-east-2
 
+
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
             region: us-east-2
@@ -234,14 +244,6 @@ jobs       :
             base-image: neuron-inference
             base-region: us-east-2
 
-          # kubeflow-torch-cpu
-          - name: kubeflow-torch-cpu
-            region: us-east-2
-            self-hosted-runner-type: c6i.large
-            runner-kind: custom
-            push-image: ${{ github.event_name != 'pull_request' }}
-            base-image: python-base
-            base-region: us-east-2
 
         self-hosted-runner-neuron: [false]
         self-hosted-runner-ami: [ami-046f0b2604eaac9c4]
