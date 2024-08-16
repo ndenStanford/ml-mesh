@@ -45,6 +45,7 @@ jobs       :
         id: get-poetry
         run: |
           echo "::set-output name=version::$(cat .poetry-version)"
+
   # ===============================================
   # GET ENVIRONMENT NAME
   # ===============================================
@@ -242,7 +243,6 @@ jobs       :
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-
 
   run-kubeflow-docker:
     name: Kubeflow Docker images
