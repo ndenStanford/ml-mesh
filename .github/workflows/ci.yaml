@@ -226,7 +226,7 @@ jobs       :
       environment: prod
       image: ${{ matrix.image.name }}
       base-image: ${{ matrix.image.base-image }}
-      base-region: ${{ matrix.image.base-region }}
+      base-region: ${{ matrix.image.region }}
       region: ${{ matrix.image.region }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
