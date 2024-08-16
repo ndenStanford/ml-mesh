@@ -74,6 +74,7 @@ class ServedBelaModel(ServedModel):
             config_name=settings.config_name,
             repo=content_model_directory,
         )
+
         # Load model card JSON file into dict
         self.model_card = self.served_model_artifacts.model_card
 

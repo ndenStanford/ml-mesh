@@ -64,6 +64,7 @@ class ServedTopicModel(ServedModel):
 
     def get_query_profile(self, inputs: JsonApiSchema) -> Optional[BaseQueryProfile]:
         """Convert user profile input into appropriate Profile class."""
+        # Fake comment. Add to enforce new image build.
         if inputs.query_string:
             return StringQueryProfile(
                 string_query=self._preprocess_string_query(inputs.query_string)
