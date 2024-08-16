@@ -245,7 +245,6 @@ class ServedBelaModel(ServedModel):
         batch_mention_lengths = []
         batch_entities_offsets = []
         batch_unique_entities_list = []
-
         for entity in batch_entities:
             (
                 unique_entities_list,
