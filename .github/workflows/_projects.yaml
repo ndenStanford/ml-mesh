@@ -249,8 +249,8 @@ jobs:
         if: ${{ inputs.base-image != null }}
         with:
           cond: ${{ github.event_name == 'pull_request' }}
-          if_true: v2
-          if_false: ci-
+          if_true: ci-
+          if_false: v
 
       - name: Get base image tag | ${{ inputs.environment }} ${{ inputs.image }}
         id: get-base-image-tag
