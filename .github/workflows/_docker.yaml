@@ -207,7 +207,7 @@ jobs:
         id: get-base-image-tag
         if: ${{ inputs.base-image != null }}
         run: |
-          echo "::set-output name=tag::$(aws ecr describe-images --repository-name python-base --query "reverse(sort_by(imageDetails,& imagePushedAt))[*].imageTags[?starts_with(@, \`${{ steps.get-environment-name.outputs.value }}\`) == \`true\`][] | [0]")"
+          echo "::set-output name=tag::$(aws ecr describe-images --region ${{ inputs.base-region }} --repository-name python-base --query "reverse(sort_by(imageDetails,& imagePushedAt))[*].imageTags[?starts_with(@, \`${{ steps.get-environment-name.outputs.value }}\`) == \`true\`][] | [0]")"
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         uses: nick-fields/retry@v3
