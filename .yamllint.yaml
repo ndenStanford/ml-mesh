@@ -9,6 +9,6 @@ rules  :
   comments: disable
   comments-indentation: disable
   line-length:
-    max: 250
+    max: 275
     level: warning
   truthy: disable

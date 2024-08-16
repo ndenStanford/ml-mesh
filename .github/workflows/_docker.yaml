@@ -194,11 +194,20 @@ jobs:
         run: |
           make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Get base image tag lookup | ${{ inputs.environment }} ${{ inputs.image }}
+        uses: haya14busa/action-cond@v1
+        id: get-base-image-tag-lookup
+        if: ${{ inputs.base-image != null }}
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: v2
+          if_false: ci-
+
       - name: Get base image tag | ${{ inputs.environment }} ${{ inputs.image }}
         id: get-base-image-tag
         if: ${{ inputs.base-image != null }}
         run: |
-          echo "::set-output name=tag::$(aws ecr describe-images --repository-name ${{ inputs.base-image }} --query "reverse(sort_by(imageDetails,& imagePushedAt))[0].imageTags[0]")"
+          echo "::set-output name=tag::$(aws ecr describe-images --repository-name python-base --query "reverse(sort_by(imageDetails,& imagePushedAt))[*].imageTags[?starts_with(@, \`${{ steps.get-environment-name.outputs.value }}\`) == \`true\`][] | [0]")"
 
       - name: Build Production Core Docker Image | ${{ inputs.environment }}  ${{ inputs.image }}
         uses: nick-fields/retry@v3
