@@ -8,7 +8,6 @@ ARG S6_VERSION
 ARG AWS_CLI_VERSION
 ARG KUBECTL_VERSION
 ARG NODE_VERSION
-ARG PIP_VERSION
 ARG POETRY_VERSION
 
 # common environemnt variables
@@ -73,9 +72,11 @@ ENV PATH="/opt/aws/neuron/bin:${PATH}"
 # installs nvm (Node Version Manager)
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
+# hadolint ignore=SC1091
 RUN . ${HOME}/.nvm/nvm.sh && nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}
 
 # install - s6 overlay
+# hadolint ignore=SC2002
 RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-noarch.tar.xz" -o /tmp/s6-overlay-noarch.tar.xz \
  && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-noarch.tar.xz.sha256" -o /tmp/s6-overlay-noarch.tar.xz.sha256 \
  && echo "$(cat /tmp/s6-overlay-noarch.tar.xz.sha256 | awk '{ print $1; }')  /tmp/s6-overlay-noarch.tar.xz" | sha256sum -c - \
@@ -130,10 +131,6 @@ ENV VIRTUAL_ENV="${HOME}/venv"
 RUN python -m venv "${VIRTUAL_ENV}"
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 
-# install pip, poetry and python into venv
-RUN pip install --upgrade pip=="${PIP_VERSION}" poetry=="${POETRY_VERSION}" --no-cache-dir \
-    && python -V
-
 # install - poetry requirements
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml .${HOME}/
 
@@ -153,6 +150,7 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
 RUN poetry cache clear pypi --all -q \
     && chown -R "${NB_USER}:users" "${HOME}"
 
+# hadolint ignore=SC1091
 RUN . ${HOME}/.nvm/nvm.sh && nvm use ${NODE_VERSION} && python -m jupyter lab build --debug
 
 USER root
