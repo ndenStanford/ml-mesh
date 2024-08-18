@@ -11,16 +11,27 @@ ARG NODE_VERSION
 ARG POETRY_VERSION
 
 # common environemnt variables
-ENV NB_USER=jovyan
-ENV NB_UID=1001
-ENV NB_PREFIX=/
-ENV SHELL=/bin/bash
-ENV HOME="/home/${NB_USER}"
-ENV POETRY_HOME="${HOME}"
-ENV POETRY_VIRTUALENVS_CREATE=false
-ENV NVM_DIR=${HOME}/.nvm
-ENV PATH="$NVM_DIR:$PATH"
+ENV NB_USER=jovyan \
+    NB_UID=1001 \
+    NB_PREFIX=/ \
+    SHELL=/bin/bash \
+    POETRY_VIRTUALENVS_CREATE=false \
+    NB_GID=0 \
+    USERS_GID=100
 
+# s6-overlay only gives 5 seconds by default, which is too small for slow PVC storage backends
+# when running `/etc/cont-inid.d/01-copy-tmp-home` (note, this is in milliseconds)
+ENV S6_CMD_WAIT_FOR_SERVICES_MAXTIME 300000
+
+# s6-overlay does not fail by default if the `/etc/cont-init.d/` or `/etc/services.d/` scripts fail
+# this is not the desired behavior, so we set it to fail
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS 2
+
+ENV HOME="/home/${NB_USER}" \
+    HOME_TMP=/tmp_home/${NB_USER}
+ENV POETRY_HOME="${HOME}"
+ENV NVM_DIR="${HOME}/.nvm"
+ENV PATH="$NVM_DIR:$PATH"
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
 ARG KUBECTL_VERSION=${KUBECTL_VERSION}
@@ -109,11 +120,19 @@ WORKDIR "/"
 # create user and set required ownership
 # new user is not added to lastlog and faillog databases
 # https://stackoverflow.com/questions/48671214/docker-image-size-for-different-user
-RUN useradd -l -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
-    && mkdir -p ${HOME} \
+RUN useradd -M -N --shell /bin/bash --home ${HOME} --uid ${NB_UID} --groups ${USERS_GID} --gid ${NB_GID} ${NB_USER} \
+    && mkdir -pv ${HOME} \
+    && mkdir -pv ${HOME}/.local \
+    && mkdir -pv ${HOME_TMP} \
+    && chmod 2775 ${HOME} \
+    && chmod 2775 ${HOME_TMP} \
     && chown -R ${NB_USER}:users ${HOME} \
     && chown -R ${NB_USER}:users /usr/local \
-    && chown -R ${NB_USER}:users /etc/profile
+    && chown -R ${NB_USER}:users /etc/profile \
+    && chown -R ${NB_USER}:users ${HOME_TMP} \
+    && chown -R ${NB_USER}:users /usr/local/bin \
+    && chown -R ${NB_USER}:users ${HOME}/.local
+
 
 ### set locale configs
 RUN echo "en_GB.UTF-8 UTF-8" > /etc/locale.gen \
@@ -133,11 +152,16 @@ ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 
 # install - poetry requirements
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml .${HOME}/
+# create the SYSTEM_CONFIG_PATH for jupyter, and make it owned by NB_USER
+# this is needed for jupyter to write `--level=system` configs
+RUN mkdir -pv /usr/local/etc/jupyter \
+ && chown -R ${NB_USER}:${NB_GID} /usr/local/etc/jupyter
 
-COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.jupyter/jupyter_notebook_config.py /etc/jupyter/jupyter_notebook_config.py
+ # switch to NB_UID for installs
+USER $NB_UID
 
 # s6 - copy scripts
-COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/s6 /etc/
+COPY --chown=${NB_USER}:${NB_GID} --chmod=755 docker/${IMAGE_NAME}/s6 /etc/
 
 # copy libraries - ensure relative difference '../..' between home app dir and lib as listed in poetry toml
 COPY --chown=${USER}:users libs/ libs/

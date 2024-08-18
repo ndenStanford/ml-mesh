@@ -85,6 +85,7 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users "${PYENV_ROOT}" \
  && chown -R ${USER}:users /usr/local \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \

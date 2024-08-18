@@ -69,7 +69,6 @@ services:
         IMAGE_NAME: kubeflow-torch-cpu
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
-    command: ["python3"]
     ports:
       - 8888:8888
 
