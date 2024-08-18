@@ -54,7 +54,7 @@ jobs:
 
   check-github-state:
     name: Check github refs
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     steps:
 
@@ -73,7 +73,7 @@ jobs:
 
   get-stage:
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
       pull-requests: write
