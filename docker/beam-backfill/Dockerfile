@@ -70,19 +70,16 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# python
-# hadolint ignore=DL3003,SC2046
-RUN curl -o Python-${PYTHON_VERSION}.tgz "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz" \
-    && tar -xf Python-${PYTHON_VERSION}.tgz \
-    && cd  Python-${PYTHON_VERSION} \
-    && ./configure --enable-optimizations --with-ensurepip \
-    && make -j $(nproc) \
-    && make install \
-    && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
+# setup python
+RUN curl https://pyenv.run | bash
+
+RUN /pyenv/bin/pyenv install ${PYTHON_VERSION} && \
+    eval "$(/pyenv/bin/pyenv init -)" && \
+    /pyenv/bin/pyenv global ${PYTHON_VERSION}
 
 # python package management setup
-RUN pip3 install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} apache-flink==${FLINK_VERSION} --no-cache-dir \
-    && python3 -V
+RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} apache-flink==${FLINK_VERSION} --no-cache-dir \
+    && python -V
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \

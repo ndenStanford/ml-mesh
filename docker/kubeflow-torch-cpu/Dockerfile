@@ -8,22 +8,23 @@ ARG S6_VERSION
 ARG AWS_CLI_VERSION
 ARG KUBECTL_VERSION
 ARG NODE_VERSION
+ARG PYTHON_VERSION
 
 # common environemnt variables
 ENV NB_USER=jovyan
-ENV NB_UID=1000
+ENV NB_UID=1001
 ENV NB_PREFIX=/
 ENV SHELL=/bin/bash
 ENV HOME="/home/${NB_USER}"
 ENV POETRY_HOME="${HOME}"
 ENV POETRY_VIRTUALENVS_CREATE=false
+ENV NVM_DIR=${HOME}/.nvm
+ENV PATH="$NVM_DIR:$PATH"
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
+ARG S6_ARCH="x86_64"
 ARG KUBECTL_VERSION=${KUBECTL_VERSION}
-ARG S6_ARCH="amd64"
-# https://skarnet.org/software/s6/
-ARG S6_VERSION=${S6_VERSION}
 ARG AWS_CLI_VERSION=${AWS_CLI_VERSION}
 
 # set shell to bash
@@ -40,6 +41,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     apt-transport-https \
     bash \
     bzip2 \
+    wget \
     curl \
     gcc \
     git \
@@ -49,6 +51,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     htop \
     libffi-dev  \
     libssl-dev  \
+    sqlite3 \
+    libsqlite3-dev \
     locales \
     lsb-release \
     nano \
@@ -59,22 +63,29 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     vim \
     procps \
     zip \
+    xz-utils \
     && apt-get clean \
+    && apt-get remove -yq nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-# install node js using new approach witout setup script (deprecated)
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+# installs nvm (Node Version Manager)
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+
+RUN . ${HOME}/.nvm/nvm.sh && nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}
 
 # install - s6 overlay
-RUN export GNUPGHOME=/tmp/ \
-    && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer" -o /tmp/s6-overlay-${S6_VERSION}-installer \
-    && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer.sig" -o /tmp/s6-overlay-${S6_VERSION}-installer.sig \
-    && gpg --keyserver keys.gnupg.net --keyserver pgp.surfnet.nl --recv-keys 6101B2783B2FD161 \
-    && gpg -q --verify /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer \
-    && chmod +x /tmp/s6-overlay-${S6_VERSION}-installer \
-    && /tmp/s6-overlay-${S6_VERSION}-installer / \
-    && rm /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer
+RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-noarch.tar.xz" -o /tmp/s6-overlay-noarch.tar.xz \
+ && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-noarch.tar.xz.sha256" -o /tmp/s6-overlay-noarch.tar.xz.sha256 \
+ && echo "$(cat /tmp/s6-overlay-noarch.tar.xz.sha256 | awk '{ print $1; }')  /tmp/s6-overlay-noarch.tar.xz" | sha256sum -c - \
+ && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}.tar.xz" -o /tmp/s6-overlay-${S6_ARCH}.tar.xz \
+ && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}.tar.xz.sha256" -o /tmp/s6-overlay-${S6_ARCH}.tar.xz.sha256 \
+ && echo "$(cat /tmp/s6-overlay-${S6_ARCH}.tar.xz.sha256 | awk '{ print $1; }')  /tmp/s6-overlay-${S6_ARCH}.tar.xz" | sha256sum -c - \
+ && tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz \
+ && tar -C / -Jxpf /tmp/s6-overlay-${S6_ARCH}.tar.xz \
+ && rm /tmp/s6-overlay-noarch.tar.xz  \
+       /tmp/s6-overlay-noarch.tar.xz.sha256 \
+       /tmp/s6-overlay-${S6_ARCH}.tar.xz \
+       /tmp/s6-overlay-${S6_ARCH}.tar.xz.sha256
 
 # install - kubectl
 RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" -o /usr/local/bin/kubectl \
@@ -110,16 +121,6 @@ ENV LC_ALL en_GB.UTF-8
 # switch to NB_UID for installs
 USER "${NB_UID}"
 
-# install and activate venv to ensure poetry installed python packages end up on mounted volume
-# source: https://github.com/python-poetry/poetry/issues/1579#issuecomment-863737675
-ENV VIRTUAL_ENV="${HOME}/venv"
-RUN python -m venv "${VIRTUAL_ENV}"
-ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
-
-# install pip, poetry and python into venv
-RUN pip install --upgrade pip=="${PIP_VERSION}" poetry=="${POETRY_VERSION}" --no-cache-dir \
-    && python -V
-
 # install - poetry requirements
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml ./${HOME}/
 
@@ -135,15 +136,16 @@ WORKDIR "${HOME}"
 
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/.config .config
 
+# hadolint ignore=DL3002
+USER root
+
 # install python dependencies into configured virtual environment at /home/jovyan
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
-    rm -rf ~/.cache/pypoetry/cache &&\
-    rm -rf ~/.cache/pypoetry/artifacts
+    rm -rf ~/.cache/pypoetry/cache && \
+    rm -rf ~/.cache/pypoetry/artifacts && \
+    poetry cache clear pypi --all -q
 
-RUN poetry cache clear pypi --all -q \
-    && jupyter lab build --debug
-
-USER root
+RUN . ${HOME}/.nvm/nvm.sh && nvm use ${NODE_VERSION} && python -m jupyter lab build --debug
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
@@ -153,9 +155,6 @@ RUN mkdir -p /tmp_home \
 USER "${NB_USER}"
 
 EXPOSE 8888
-
-# hadolint ignore=DL3002
-USER root
 
 ENTRYPOINT ["/init"]
 

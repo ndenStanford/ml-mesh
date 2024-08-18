@@ -218,6 +218,36 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
+  # data lib
+
+  - package-ecosystem: pip
+    directory: /libs/data
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "03:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # queries lib
+
+  - package-ecosystem: pip
+    directory: /libs/queries
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "03:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
   # ====================================
   # PROJECTS
   # ====================================

@@ -36,13 +36,9 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get -y install --no-install-recommends \
-                            libpq-dev \
-                            zlib1g-dev \
                             build-essential \
                             ca-certificates \
-                            curl \
-                            vim \
-                            procps && \
+                            liblzma-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

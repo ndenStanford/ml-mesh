@@ -1,6 +1,7 @@
 ARG CUDA_VERSION
+ARG UBUNTU_VERSION
 
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu22.04 as builder
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as builder
 
 ARG IMAGE_NAME
 ARG PYTHON_VERSION
@@ -51,15 +52,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# python
-# hadolint ignore=DL3003,SC2046
-RUN curl -o "Python-${PYTHON_VERSION}.tgz" "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz" \
-    && tar -xf "Python-${PYTHON_VERSION}.tgz" \
-    && cd "Python-${PYTHON_VERSION}" \
-    && ./configure --enable-optimizations --with-ensurepip \
-    && make -j $(nproc) \
-    && make install \
-    && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
+# setup python
+RUN git clone https://github.com/pyenv/pyenv.git /pyenv
+ENV PYENV_ROOT /pyenv
+RUN /pyenv/bin/pyenv install ${PYTHON_VERSION} && \
+    eval "$(/pyenv/bin/pyenv init -)"
 
 # python dependencies
 RUN pip3 install poetry==${POETRY_VERSION} --no-cache-dir && \

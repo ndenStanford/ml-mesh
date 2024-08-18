@@ -1221,7 +1221,7 @@ jobs       :
   # ===============================================
 
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Jobs Completion Check
     if: always()
     needs:

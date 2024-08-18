@@ -33,6 +33,7 @@ S6_VERSION=$(shell cat .s6-version)
 KUBECTL_VERSION=$(shell cat .kubectl-version)
 JAVA_VERSION=$(shell cat .java-version)
 NODE_VERSION=$(shell cat .node-version)
+UBUNTU_VERSION=$(shell cat .ubuntu-version)
 
 ## VARIABLES
 ifeq ($(USE_DOCKER_CACHE),false)

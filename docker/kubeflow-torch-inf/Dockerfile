@@ -8,15 +8,19 @@ ARG S6_VERSION
 ARG AWS_CLI_VERSION
 ARG KUBECTL_VERSION
 ARG NODE_VERSION
+ARG PIP_VERSION
+ARG POETRY_VERSION
 
 # common environemnt variables
 ENV NB_USER=jovyan
-ENV NB_UID=1000
+ENV NB_UID=1001
 ENV NB_PREFIX=/
 ENV SHELL=/bin/bash
 ENV HOME="/home/${NB_USER}"
 ENV POETRY_HOME="${HOME}"
 ENV POETRY_VIRTUALENVS_CREATE=false
+ENV NVM_DIR=${HOME}/.nvm
+ENV PATH="$NVM_DIR:$PATH"
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
@@ -51,6 +55,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     locales \
     lsb-release \
     nano \
+    sqlite3 \
+    libsqlite3-dev \
     npm \
     software-properties-common \
     tzdata \
@@ -59,31 +65,29 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     wget \
     zip \
     && apt-get clean \
+    && apt-get remove -yq nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/opt/aws/neuron/bin:${PATH}"
 
-# install node js using new approach witout setup script (deprecated)
-# hadolint ignore=DL4001
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+# installs nvm (Node Version Manager)
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
-# hadolint ignore=DL3008
-RUN apt-get update \
-    && apt-get install --no-install-recommends nodejs -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN . ${HOME}/.nvm/nvm.sh && nvm install ${NODE_VERSION} && nvm use ${NODE_VERSION}
 
 # install - s6 overlay
-# hadolint ignore=DL4001
-RUN export GNUPGHOME=/tmp/ \
-    && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer" -o /tmp/s6-overlay-${S6_VERSION}-installer \
-    && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer.sig" -o /tmp/s6-overlay-${S6_VERSION}-installer.sig \
-    && gpg --keyserver keys.gnupg.net --keyserver pgp.surfnet.nl --recv-keys 6101B2783B2FD161 \
-    && gpg -q --verify /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer \
-    && chmod +x /tmp/s6-overlay-${S6_VERSION}-installer \
-    && /tmp/s6-overlay-${S6_VERSION}-installer / \
-    && rm /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer
+RUN curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-noarch.tar.xz" -o /tmp/s6-overlay-noarch.tar.xz \
+ && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-noarch.tar.xz.sha256" -o /tmp/s6-overlay-noarch.tar.xz.sha256 \
+ && echo "$(cat /tmp/s6-overlay-noarch.tar.xz.sha256 | awk '{ print $1; }')  /tmp/s6-overlay-noarch.tar.xz" | sha256sum -c - \
+ && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}.tar.xz" -o /tmp/s6-overlay-${S6_ARCH}.tar.xz \
+ && curl -fsSL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}.tar.xz.sha256" -o /tmp/s6-overlay-${S6_ARCH}.tar.xz.sha256 \
+ && echo "$(cat /tmp/s6-overlay-${S6_ARCH}.tar.xz.sha256 | awk '{ print $1; }')  /tmp/s6-overlay-${S6_ARCH}.tar.xz" | sha256sum -c - \
+ && tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz \
+ && tar -C / -Jxpf /tmp/s6-overlay-${S6_ARCH}.tar.xz \
+ && rm /tmp/s6-overlay-noarch.tar.xz  \
+       /tmp/s6-overlay-noarch.tar.xz.sha256 \
+       /tmp/s6-overlay-${S6_ARCH}.tar.xz \
+       /tmp/s6-overlay-${S6_ARCH}.tar.xz.sha256
 
 # install - kubectl
 # hadolint ignore=DL4001
@@ -149,7 +153,7 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
 RUN poetry cache clear pypi --all -q \
     && chown -R "${NB_USER}:users" "${HOME}"
 
-RUN jupyter lab build --debug
+RUN . ${HOME}/.nvm/nvm.sh && nvm use ${NODE_VERSION} && python -m jupyter lab build --debug
 
 USER root
 

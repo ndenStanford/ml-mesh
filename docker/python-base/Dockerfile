@@ -1,56 +1,64 @@
-FROM ubuntu:22.04 as builder
+ARG UBUNTU_VERSION
+
+FROM ubuntu:${UBUNTU_VERSION} as builder
 
 ARG IMAGE_NAME
 ARG PIP_VERSION
 ARG POETRY_VERSION
 ARG PYTHON_VERSION
 
-ENV HOME="/docker/${IMAGE_NAME}"
+ENV HOME="/home"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_VERSION=${PIP_VERSION} \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=${POETRY_VERSION} \
     POETRY_HOME="${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
-    POETRY_NO_INTERACTION=1
+    POETRY_NO_INTERACTION=1 \
+    PYENV_ROOT="/pyenv"
 
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-# hadolint ignore=DL3008
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get -y install --no-install-recommends \
-                            libpq-dev \
-                            zlib1g-dev \
-                            build-essential \
-                            ca-certificates \
-                            sqlite3 \
-                            libsqlite3-dev \
-                            curl \
-                            vim \
-                            procps && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$PATH"
 
-# python
-# hadolint ignore=DL3003,SC2046
-RUN curl -o "Python-${PYTHON_VERSION}.tgz" "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz" \
-    && tar -xf "Python-${PYTHON_VERSION}.tgz" \
-    && cd "Python-${PYTHON_VERSION}" \
-    && ./configure --enable-optimizations --with-ensurepip \
-    && make -j $(nproc) \
-    && make install \
-    && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -yq update \
+    && apt-get -yq upgrade \
+    && apt-get -yq install --no-install-recommends \
+    ca-certificates \
+    make \
+    build-essential \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    wget \
+    curl \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libffi-dev \
+    liblzma-dev \
+    git \
+    && apt-get clean \
+    && apt-get remove -yq nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
 
-# python package management setup
-RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
+# setup python
+RUN curl https://pyenv.run | bash \
+    && pyenv install ${PYTHON_VERSION} \
+    && eval "$(pyenv init -)"
+
+RUN pyenv global ${PYTHON_VERSION} \
+    && pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
     && python3 -V
 
 # --- production stage
-FROM ubuntu:22.04 as production
+FROM ubuntu:${UBUNTU_VERSION} as production
 
 ARG IMAGE_NAME
 
@@ -60,9 +68,13 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_HOME="${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1 \
-    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1
+    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
+    PYENV_ROOT="/pyenv"
+
+ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$PATH"
 
 COPY --from=builder /usr/local /usr/local
+COPY --from=builder /pyenv /pyenv
 
 # --- test build stage
 FROM production as development
