@@ -92,7 +92,7 @@ on  :
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.image }}'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -127,7 +127,7 @@ jobs:
 
   set-runner-specs:
     name: 'Resolve runner specs: ${{ inputs.image }}'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
@@ -243,7 +243,7 @@ jobs:
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.image }}'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
