@@ -59,8 +59,8 @@ RUN /pyenv/bin/pyenv install ${PYTHON_VERSION} && \
     eval "$(/pyenv/bin/pyenv init -)"
 
 # python dependencies
-RUN pip3 install poetry==${POETRY_VERSION} --no-cache-dir && \
-    python3 -V
+RUN pip install poetry==${POETRY_VERSION} --no-cache-dir && \
+    python -V
 
 # poetry requirements
 COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./
