@@ -22,6 +22,11 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$PATH"
 
+# set shell to bash
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# install - usefull linux packages
+# hadolint ignore=DL3008
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get -yq update \
     && apt-get -yq upgrade \
