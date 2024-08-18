@@ -25,7 +25,7 @@ RUN wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEU
 # Install Neuron Driver
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get -yq install --no-install-recommends aws-neuronx-tools aws-neuronx-dkms && \
+    apt-get -yq install --no-install-recommends aws-neuronx-tools && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -35,7 +35,8 @@ RUN useradd -l -M -s /bin/bash -N -u 1001 ${USER} \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
  && chown -R ${USER}:users /usr/local \
- && chown -R ${USER}:users "${POETRY_HOME}"
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${PYENV_ROOT}"
 
 # switch user
 USER ${USER}
@@ -43,8 +44,6 @@ USER ${USER}
 # setup workspace
 
 WORKDIR "/"
-
-ENV PATH="/opt/aws/neuron/bin:$PATH"
 
 # install - production poetry requirements
 COPY --chown=${USER}:users ${HOME}/poetry.lock ${HOME}/pyproject.toml .${HOME}/
@@ -63,9 +62,14 @@ RUN poetry install \
     poetry cache clear pypi --all -q
 
 # --- production stage
-FROM builder as production
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:${BASE_IMAGE_TAG} as production
 
 ENV HOME="/home"
+ENV PATH="/opt/aws/neuron/bin:$PATH"
+
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /pyenv /pyenv
+COPY --from=builder /opt/aws/neuron/ /opt/aws/neuron/
 
 WORKDIR "${HOME}"
 
