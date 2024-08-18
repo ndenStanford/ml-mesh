@@ -60,7 +60,7 @@ RUN curl https://pyenv.run | bash \
 
 RUN pyenv global ${PYTHON_VERSION} \
     && pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
-    && python3 -V
+    && python -V
 
 # --- production stage
 FROM ubuntu:${UBUNTU_VERSION} as production

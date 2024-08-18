@@ -11,9 +11,10 @@ ARG PIP_VERSION
 ENV HOME="/docker/${IMAGE_NAME}"
 
 ENV POETRY_HOME="${HOME}/.poetry" \
-    POETRY_VIRTUALENVS_CREATE=false
-ENV PATH="$POETRY_HOME/bin:$PATH"
-ENV PATH="${PATH}:/root/.local/bin"
+    POETRY_VIRTUALENVS_CREATE=false \
+    PYENV_ROOT="/pyenv"
+
+ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -53,14 +54,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/*
 
 # setup python
-RUN git clone https://github.com/pyenv/pyenv.git /pyenv
-ENV PYENV_ROOT /pyenv
-RUN /pyenv/bin/pyenv install ${PYTHON_VERSION} && \
-    eval "$(/pyenv/bin/pyenv init -)"
+RUN curl https://pyenv.run | bash \
+    && pyenv install ${PYTHON_VERSION} \
+    && eval "$(pyenv init -)"
 
-# python dependencies
-RUN pip install poetry==${POETRY_VERSION} --no-cache-dir && \
-    python -V
+RUN pyenv global ${PYTHON_VERSION} \
+    && pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
+    && python -V
 
 # poetry requirements
 COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./

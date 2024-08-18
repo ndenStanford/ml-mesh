@@ -32,9 +32,10 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_HOME="${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1 \
-    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1
+    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
+    PYENV_ROOT="/pyenv"
 
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # hadolint ignore=DL3008
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -71,14 +72,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/*
 
 # setup python
-RUN curl https://pyenv.run | bash
+RUN curl https://pyenv.run | bash \
+    && pyenv install ${PYTHON_VERSION} \
+    && eval "$(pyenv init -)"
 
-RUN /pyenv/bin/pyenv install ${PYTHON_VERSION} && \
-    eval "$(/pyenv/bin/pyenv init -)" && \
-    /pyenv/bin/pyenv global ${PYTHON_VERSION}
-
-# python package management setup
-RUN pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} apache-flink==${FLINK_VERSION} --no-cache-dir \
+RUN pyenv global ${PYTHON_VERSION} \
+    && pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
     && python -V
 
 # create non root user
