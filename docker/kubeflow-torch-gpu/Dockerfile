@@ -8,7 +8,7 @@ ARG S6_VERSION
 ARG AWS_CLI_VERSION
 ARG KUBECTL_VERSION
 ARG NODE_VERSION
-ARG POETRY_VERSION
+ARG PYTHON_VERSION
 
 # common environemnt variables
 ENV NB_USER=jovyan \
@@ -35,43 +35,47 @@ ENV PATH="$NVM_DIR:$PATH"
 
 # args - software versions
 ARG KUBECTL_ARCH="amd64"
+ARG S6_ARCH="x86_64"
 ARG KUBECTL_VERSION=${KUBECTL_VERSION}
-ARG S6_ARCH="amd64"
-# https://skarnet.org/software/s6/
-ARG S6_VERSION=${S6_VERSION}
 ARG AWS_CLI_VERSION=${AWS_CLI_VERSION}
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# hadolint ignore=DL3002
-USER root
-
 # install - usefull linux packages
 # hadolint ignore=DL3008
 RUN export DEBIAN_FRONTEND=noninteractive \
-   && apt-get -yq update \
-   && apt-get -yq install --no-install-recommends \
-   apt-transport-https \
-   bash \
-   bzip2 \
-   curl \
-   gnupg \
-   gnupg2 \
-   htop \
-   locales \
-   lsb-release \
-   nano \
-   sqlite3 \
-   libsqlite3-dev \
-   npm \
-   software-properties-common \
-   tzdata \
-   vim \
-   zip \
-   && apt-get clean \
-   && apt-get remove -yq nodejs npm \
-   && rm -rf /var/lib/apt/lists/*
+    && apt-get -yq update \
+    && apt-get -yq upgrade \
+    && apt-get -yq install --no-install-recommends \
+    apt-transport-https \
+    bash \
+    bzip2 \
+    wget \
+    curl \
+    gcc \
+    git \
+    gnupg \
+    gnupg2 \
+    graphviz \
+    htop \
+    libffi-dev  \
+    libssl-dev  \
+    sqlite3 \
+    libsqlite3-dev \
+    locales \
+    lsb-release \
+    nano \
+    software-properties-common \
+    tzdata \
+    unzip \
+    vim \
+    procps \
+    zip \
+    xz-utils \
+    && apt-get clean \
+    && apt-get remove -yq nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
 
 # installs nvm (Node Version Manager)
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
@@ -98,12 +102,13 @@ RUN chmod 0775 /run
 
 # install - kubectl
 RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" -o /usr/local/bin/kubectl \
-   && curl -sL "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl.sha256" -o /tmp/kubectl.sha256 \
-   && echo "$(cat /tmp/kubectl.sha256) /usr/local/bin/kubectl" | sha256sum --check \
-   && rm /tmp/kubectl.sha256 \
-   && chmod +x /usr/local/bin/kubectl
+    && curl -sL "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl.sha256" -o /tmp/kubectl.sha256 \
+    && echo "$(cat /tmp/kubectl.sha256) /usr/local/bin/kubectl" | sha256sum --check \
+    && rm /tmp/kubectl.sha256 \
+    && chmod +x /usr/local/bin/kubectl
 
 # install aws cli
+# hadolint ignore=DL4001
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install
@@ -126,21 +131,15 @@ RUN useradd -M -N --shell /bin/bash --home ${HOME} --uid ${NB_UID} --groups ${US
     && chown -R ${NB_USER}:users /usr/local/bin \
     && chown -R ${NB_USER}:users ${HOME}/.local
 
-### set locale configs
-RUN echo "en_GB.UTF-8 UTF-8" > /etc/locale.gen \
-   && locale-gen
-ENV LANG en_GB.UTF-8
-ENV LANGUAGE en_GB.UTF-8
-ENV LC_ALL en_GB.UTF-8
+# set locale configs
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+ && locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # switch to NB_UID for installs
 USER "${NB_UID}"
-
-# install and activate venv to ensure poetry installed python packages end up on mounted volume
-# source: https://github.com/python-poetry/poetry/issues/1579#issuecomment-863737675
-ENV VIRTUAL_ENV="${HOME}/venv"
-RUN python -m venv "${VIRTUAL_ENV}"
-ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
 
 # install - poetry requirements
 COPY --chown="${NB_USER}:users" docker/${IMAGE_NAME}/poetry.lock docker/${IMAGE_NAME}/pyproject.toml .${HOME}/

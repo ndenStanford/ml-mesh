@@ -66,7 +66,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     locales \
     lsb-release \
     nano \
-    npm \
     software-properties-common \
     tzdata \
     unzip \
