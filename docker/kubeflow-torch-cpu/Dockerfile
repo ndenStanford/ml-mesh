@@ -128,7 +128,8 @@ RUN useradd -M -N --shell /bin/bash --home ${HOME} --uid ${NB_UID} --groups ${US
     && chown -R ${NB_USER}:users /etc/profile \
     && chown -R ${NB_USER}:users ${HOME_TMP} \
     && chown -R ${NB_USER}:users /usr/local/bin \
-    && chown -R ${NB_USER}:users ${HOME}/.local
+    && chown -R ${NB_USER}:users ${HOME}/.local \
+    && chown -R ${NB_USER}:users "${PYENV_ROOT}"
 
 # set locale configs
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
