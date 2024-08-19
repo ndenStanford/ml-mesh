@@ -55,6 +55,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
    apt-transport-https \
    bash \
    bzip2 \
+   curl \
    gnupg \
    gnupg2 \
    htop \
