@@ -79,6 +79,13 @@ RUN poetry install \
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as production
 
 ENV HOME="/home"
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_HOME="${HOME}/.poetry" \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1 \
+    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
+    PYENV_ROOT="/pyenv"
 
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
