@@ -149,7 +149,7 @@ RUN mkdir -pv /usr/local/etc/jupyter \
  && chown -R ${NB_USER}:${NB_GID} /usr/local/etc/jupyter
 
  # switch to NB_UID for installs
-USER $NB_UID
+USER "${NB_UID}"
 
 # s6 - copy scripts
 COPY --chown=${NB_USER}:${NB_GID} --chmod=755 docker/${IMAGE_NAME}/s6 /etc/
@@ -168,6 +168,7 @@ RUN poetry cache clear pypi --all -q \
 # hadolint ignore=SC1091
 RUN . ${HOME}/.nvm/nvm.sh && nvm use ${NODE_VERSION} && python -m jupyter lab build --debug
 
+# hadolint ignore=DL3002
 USER root
 
 # s6 - 01-copy-tmp-home
@@ -175,12 +176,7 @@ RUN mkdir -p /tmp_home \
     && cp -r "${HOME}" /tmp_home \
     && chown -R "${NB_USER}:users" /tmp_home
 
-USER "${NB_USER}"
-
 EXPOSE 8888
-
-# hadolint ignore=DL3002
-USER root
 
 ENTRYPOINT ["/init"]
 
