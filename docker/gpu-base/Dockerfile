@@ -81,5 +81,6 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as produ
 ENV HOME="/home"
 
 COPY --from=builder /usr/local /usr/local
+COPY --from=builder /pyenv /pyenv
 
 FROM production as development
