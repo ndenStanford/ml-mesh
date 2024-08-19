@@ -74,7 +74,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     zip \
     xz-utils \
     && apt-get clean \
-    && apt-get remove -yq nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 # installs nvm (Node Version Manager)

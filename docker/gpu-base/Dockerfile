@@ -14,7 +14,7 @@ ENV POETRY_HOME="${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
     PYENV_ROOT="/pyenv"
 
-ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -51,6 +51,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         sudo \
     && apt-get autoremove -y \
     && apt-get clean \
+    && apt-get remove -yq nodejs npm python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # setup python
@@ -78,6 +79,8 @@ RUN poetry install \
 
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as production
 
+ARG IMAGE_NAME
+
 ENV HOME="/home"
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -87,7 +90,10 @@ ENV PYTHONUNBUFFERED=1 \
     RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
     PYENV_ROOT="/pyenv"
 
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
+COPY --from=builder /docker/${IMAGE_NAME} ${HOME}
 
 FROM production as development
