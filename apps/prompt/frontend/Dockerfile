@@ -34,6 +34,6 @@ RUN npm install && npm run build
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 RUN npm install --save-dev

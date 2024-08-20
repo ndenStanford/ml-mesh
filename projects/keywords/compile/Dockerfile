@@ -45,7 +45,7 @@ FROM builder as production
 USER root
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -60,6 +60,6 @@ USER root
 RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

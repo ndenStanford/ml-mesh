@@ -6,7 +6,7 @@ authors = ["Nutch <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 torch = "1.9.1"
 transformers = "4.17.0"
 core = {path = "../../../libs/core"}

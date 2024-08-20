@@ -6,7 +6,7 @@ authors = ["Vishal Singh <vihal.singh@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
 data = {path = "../../../libs/data"}

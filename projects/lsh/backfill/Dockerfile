@@ -42,7 +42,7 @@ FROM builder as production
 ENV PYTHONPATH=${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 

@@ -6,7 +6,7 @@ authors = ["Yuzhou Gao <yuzhou.gao@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 regex = "2022.10.31"
 
 core = {path = "../../../libs/core"}

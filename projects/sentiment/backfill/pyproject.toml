@@ -6,7 +6,7 @@ authors = ["Szymon Aptacy <szymon.aptacy@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 data = {path = "../../../libs/data"}
 core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}

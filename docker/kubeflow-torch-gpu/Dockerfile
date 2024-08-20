@@ -186,4 +186,4 @@ ENTRYPOINT ["/init"]
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development

@@ -29,15 +29,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1001 ${USER} \
- && mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users /usr/local \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users "${PYENV_ROOT}"
-
 # switch user
 USER ${USER}
 

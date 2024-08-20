@@ -41,7 +41,7 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 

@@ -1205,7 +1205,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.apps.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
       push-image: ${{ matrix.apps.push-image }}
-      base-image: ${{ matrix.components.base-image }}
+      base-image: ${{ matrix.apps.base-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
