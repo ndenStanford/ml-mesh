@@ -90,15 +90,15 @@ class TopicHandler:
             f"Article {i}": article for i, article in enumerate(articles)
         }
 
+        llm_default_model = settings.DEFAULT_MODEL
+
         if entity_list:
-            topic_alias_claude = settings.CLAUDE_TOPIC_WITH_ENTITY_ALIAS
             topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_ALIAS
             input_dict = {
                 "input": {"articles": processed_article, "entity_list": entity_list},
                 "output": settings.TOPIC_RESPONSE_SCHEMA,
             }
         else:
-            topic_alias_claude = settings.CLAUDE_TOPIC_ALIAS
             topic_alias_gpt = settings.GPT_TOPIC_ALIAS
             input_dict = {
                 "input": {
@@ -109,10 +109,12 @@ class TopicHandler:
 
         output_content = None
         try:
-            q = self.call_api(topic_alias_claude, settings.DEFAULT_MODEL, input_dict)
+            q = self.call_api(topic_alias_gpt, llm_default_model, input_dict)
             output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
-                raise ValueError("Claude topic response is not a valid dict")
+                raise ValueError(
+                    f"{llm_default_model} topic response is not a valid dict"
+                )
 
         except (
             TopicSummarizationParsingException,
@@ -120,7 +122,7 @@ class TopicHandler:
         ) as e:
             raise e
         except Exception as e:
-            logging.error(f"Failed with Sonnet in Topic: {e}")
+            logging.error(f"Failed with {llm_default_model} in Topic: {e}")
 
         if (not output_content) or not isinstance(output_content, dict):
             q = self.call_api(topic_alias_gpt, settings.GPT_MODEL, input_dict)
