@@ -207,14 +207,12 @@ class TopicHandler:
         }
 
         if entity_list:
-            # summary_alias_claude = settings.CLAUDE_SUMMARY_WITH_ENTITY_ALIAS
             summary_alias_gpt = settings.GPT_SUMMARY_WITH_ENTITY_ALIAS
             input_dict = {
                 "input": {"articles": processed_article, "entity_list": entity_list},
                 "output": settings.SUMMARY_RESPONSE_SCHEMA,
             }
         else:
-            # summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
             summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
             input_dict = {
                 "input": {
