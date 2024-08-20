@@ -74,12 +74,25 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1 \
     RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
-    PYENV_ROOT="/pyenv"
+    PYENV_ROOT="/pyenv" \
+    USER=onclusiveml \
+    UID=1001
 
 ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$PATH"
 
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
+
+# create non root user
+RUN useradd -l -M -s /bin/bash -N -u ${UID} ${USER} \
+ && mkdir -p "${HOME}" \
+ && mkdir -p "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users /usr/local/bin \
+ && chown -R ${USER}:users /usr/local/lib \
+ && chown -R ${USER}:users /usr/local/include \
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${PYENV_ROOT}"
 
 # --- test build stage
 FROM production as development
