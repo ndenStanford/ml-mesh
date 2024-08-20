@@ -63,14 +63,25 @@ class TopicHandler:
         )
 
         if q.status_code == 500:
-            if q.detail.startswith("OutputParserException"):
-                logging.error(
-                    f"OutputParserException in Topic summarization: {q.content}"
-                )
-                raise TopicSummarizationParsingException(e=q.content)
-            elif q.detail.startswith("JSONDecodeError"):
-                logging.error(f"JSONDecodeError in Topic summarization: {q.content}")
-                raise TopicSummarizationJSONDecodeException(e=q.content)
+            if q.content:
+                try:
+                    if q.detail.startswith("OutputParserException"):
+                        logging.error(
+                            f"OutputParserException in Topic summarization: {q.content}"
+                        )
+                        raise TopicSummarizationParsingException(e=q.content)
+                    elif q.detail.startswith("JSONDecodeError"):
+                        logging.error(
+                            f"JSONDecodeError in Topic summarization: {q.content}"
+                        )
+                        raise TopicSummarizationJSONDecodeException(e=q.content)
+                except ValueError:
+                    logging.error(
+                        f"Non-JSON Error Response in Topic summarization: {q.content}"
+                    )
+                    raise TopicSummarizationParsingException(e=q.content)
+            else:
+                logging.error("Empty response body received with status code 500")
 
         return q
 
@@ -196,14 +207,14 @@ class TopicHandler:
         }
 
         if entity_list:
-            summary_alias_claude = settings.CLAUDE_SUMMARY_WITH_ENTITY_ALIAS
+            # summary_alias_claude = settings.CLAUDE_SUMMARY_WITH_ENTITY_ALIAS
             summary_alias_gpt = settings.GPT_SUMMARY_WITH_ENTITY_ALIAS
             input_dict = {
                 "input": {"articles": processed_article, "entity_list": entity_list},
                 "output": settings.SUMMARY_RESPONSE_SCHEMA,
             }
         else:
-            summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
+            # summary_alias_claude = settings.CLAUDE_SUMMARY_ALIAS
             summary_alias_gpt = settings.GPT_SUMMARY_ALIAS
             input_dict = {
                 "input": {
@@ -214,7 +225,7 @@ class TopicHandler:
 
         output_content = None
         try:
-            q = self.call_api(summary_alias_claude, settings.DEFAULT_MODEL, input_dict)
+            q = self.call_api(summary_alias_gpt, settings.DEFAULT_MODEL, input_dict)
             output_content = json.loads(q.content)
             if not isinstance(output_content, dict):
                 raise ValueError("Claude summary response is not a valid dict")
