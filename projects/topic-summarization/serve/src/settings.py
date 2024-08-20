@@ -44,7 +44,6 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     PROMPT_API: str = "http://prompt-backend:4000"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     CLAUDE_TOPIC_ALIAS: str = "ml-topic-summarization-claude"
-    # CLAUDE_TOPIC_ALIAS: str = "ml-topic-summarization-citations-gpt"
     GPT_TOPIC_ALIAS: str = "ml-topic-summarization-citations-gpt"
     CLAUDE_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-claude"
     GPT_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-gpt"
