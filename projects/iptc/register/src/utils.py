@@ -64,8 +64,17 @@ async def enrich_dataframe(features_df: pd.DataFrame) -> pd.DataFrame:
     return features_df
 
 
+# def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
+#     """Wrapper function to run the async enrichment."""
+
+#     df = asyncio.run(enrich_dataframe(features_df))
+#     return df.astype({"topic_1_llm": pd.StringDtype()})
+
 def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
 
-    df = asyncio.run(enrich_dataframe(features_df))
-    return df.astype({"topic_1_llm": pd.StringDtype()})
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df))
+
+    df = pd.DataFrame()
+    df["topic_1_llm"]=features_df_with_label["topic_1_llm"].astype(pd.StringDtype())
+    return df
