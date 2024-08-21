@@ -86,7 +86,7 @@ ENV PATH="$JAVA_HOME/bin:$PATH"
 WORKDIR "/"
 
 # install - poetry requirements
-COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" .${HOME}/
+COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
@@ -100,7 +100,13 @@ USER ${USER}
 # --- production stage
 FROM apache/flink:${FLINK_VERSION}-scala_${SCALA_VERSION}-java${JAVA_VERSION} as production
 
-ENV HOME="/home" \
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_HOME="${HOME}/.poetry" \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1 \
+    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
+    PYENV_ROOT="/pyenv" \
     USER=onclusiveml \
     UID=1002
 
@@ -108,6 +114,7 @@ ENV HOME="/home" \
 COPY --from=apache/beam_python3.9_sdk:2.58.0 /opt/apache/beam /opt/apache/beam
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder "/docker/${IMAGE_NAME}" ${HOME}
+COPY --from=builder /pyenv /pyenv
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u ${UID} ${USER} \
