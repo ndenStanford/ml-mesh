@@ -30,5 +30,4 @@ build-backend = "poetry.core.masonry.api"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = "supplemental"
