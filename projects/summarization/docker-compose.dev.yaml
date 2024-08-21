@@ -81,7 +81,7 @@ services:
   # unit tests
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     volumes:
       - type: bind
@@ -100,7 +100,7 @@ services:
   # integration tests
   serve-integration:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     volumes:
       - type: bind

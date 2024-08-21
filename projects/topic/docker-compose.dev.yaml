@@ -61,7 +61,7 @@ services:
         source: register/
         target: /projects/topic/register/
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-register:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -156,7 +156,7 @@ services:
         source: train/
         target: /projects/topic/train/
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-train:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [train, unit]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -300,7 +300,7 @@ services:
         target: /projects/topic/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     env_file: serve/config/dev.env
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     networks:
@@ -318,7 +318,7 @@ services:
         source: serve/tests
         target: /projects/topic/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/dev.env
     profiles: [functional]
     hostname: onclusiveml
@@ -416,7 +416,7 @@ services:
         source: backfill
         target: /projects/topic/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-backfill:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
       HOST: test.onclusive.com

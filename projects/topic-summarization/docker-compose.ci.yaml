@@ -57,7 +57,7 @@ services:
 
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     environment:
@@ -68,7 +68,7 @@ services:
 
   serve-integration:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -95,7 +95,7 @@ services:
   # functional tests
   serve-functional:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     environment:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
@@ -257,7 +257,7 @@ services:
         source: backfill
         target: /projects/topic-summarization/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
       HOST: test.onclusive.com

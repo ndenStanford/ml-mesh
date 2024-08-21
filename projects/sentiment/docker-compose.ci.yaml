@@ -32,7 +32,7 @@ services:
 
   train-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-train:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -74,7 +74,7 @@ services:
 
   compile-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -199,7 +199,7 @@ services:
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
     env_file: serve/config/${DEPLOYMENT:-prod}.env
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     networks:
@@ -214,7 +214,7 @@ services:
     volumes:
       - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [integration]
     hostname: onclusiveml
@@ -228,7 +228,7 @@ services:
     volumes:
       - serve-volume:/projects/sentiment/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-serve:${IMAGE_TAG}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
     hostname: onclusiveml
@@ -293,7 +293,7 @@ services:
         source: backfill
         target: /projects/sentiment/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-backfill:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
       HOST: test.onclusive.com

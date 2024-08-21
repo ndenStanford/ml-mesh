@@ -32,10 +32,6 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-ENV PATH="/pyenv/versions/3.9.19/bin/pytest:$PATH"
-ENV PATH="/pyenv/versions/3.9.19/lib/python3.9/site-packages/pytest:$PATH"
-
-    
 # --- production stage
 FROM builder as production
 
