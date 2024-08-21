@@ -25,13 +25,13 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
+# switch user
+USER ${USER}
+
 RUN poetry install --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-
-# switch user
-USER ${USER}
 
 # --- production stage
 FROM builder as production

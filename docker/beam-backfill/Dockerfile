@@ -110,6 +110,8 @@ ENV PYTHONUNBUFFERED=1 \
     USER=onclusiveml \
     UID=1002
 
+ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$PATH"
+
 # python SDK
 COPY --from=apache/beam_python3.9_sdk:2.58.0 /opt/apache/beam /opt/apache/beam
 COPY --from=builder /usr/local /usr/local
@@ -121,11 +123,11 @@ RUN useradd -l -M -s /bin/bash -N -u ${UID} ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${PYENV_ROOT}" \
  && chown -R ${USER}:users /usr/local \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
- && chown -R ${USER}:users "${POETRY_HOME}"
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${PYENV_ROOT}"
 
 # --- test build stage
 FROM production as development

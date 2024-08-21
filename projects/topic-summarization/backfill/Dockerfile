@@ -25,20 +25,17 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
+# switch user
+USER ${USER}
+
 RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
-
-# switch user
-USER ${USER}
-
 # --- production stage
 FROM builder as production
 
-ENV PYTHONPATH=${HOME}
 
 # --- test build stage
 FROM production as development
