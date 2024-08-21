@@ -7,9 +7,7 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
-
 
 # setup workspace
 WORKDIR "/"

@@ -7,18 +7,7 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
-
-# create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/bin \
- && chown -R ${USER}:users /usr/local/lib \
- && chown -R ${USER}:users /usr/local/share
 
 # hadolint ignore=DL3002
 USER root
@@ -47,9 +36,7 @@ RUN poetry install --no-interaction --no-ansi --only main && \
 # --- production stage
 FROM builder as production
 
-USER app
-
-ENV PYTHONPATH=${HOME}
+USER ${USER}
 
 # --- test build stage
 FROM production as development
@@ -62,7 +49,7 @@ WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction --with dev
 
-USER app
+USER ${USER}
 
 # --- debugger stage
 FROM development as debugger

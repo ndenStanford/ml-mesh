@@ -7,7 +7,6 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
 
@@ -33,8 +32,6 @@ RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-
-RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
 
 # switch user
 USER ${USER}

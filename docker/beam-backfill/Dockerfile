@@ -12,7 +12,6 @@ ARG PYTHON_SHORT_VERSION
 ARG JAVA_VERSION
 ARG FLINK_VERSION
 
-ENV USER=onclusiveml
 ENV HOME="/docker/${IMAGE_NAME}"
 
 # set shell to bash
@@ -80,8 +79,38 @@ RUN pyenv global ${PYTHON_VERSION} \
     && pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
     && python -V
 
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:$PATH"
+
+# setup workspace
+WORKDIR "/"
+
+# install - poetry requirements
+COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" .${HOME}/
+
+RUN poetry install --only main --no-root --no-interaction --no-ansi && \
+    rm -rf ~/.cache/pypoetry/cache && \
+    rm -rf ~/.cache/pypoetry/artifacts && \
+    poetry cache clear pypi --all -q
+
+WORKDIR "${HOME}"
+
+USER ${USER}
+
+# --- production stage
+FROM apache/flink:${FLINK_VERSION}-scala_${SCALA_VERSION}-java${JAVA_VERSION} as production
+
+ENV HOME="/home" \
+    USER=onclusiveml \
+    UID=1002
+
+# python SDK
+COPY --from=apache/beam_python3.9_sdk:2.58.0 /opt/apache/beam /opt/apache/beam
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder "/docker/${IMAGE_NAME}" ${HOME}
+
 # create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
+RUN useradd -l -M -s /bin/bash -N -u ${UID} ${USER} \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
@@ -90,37 +119,6 @@ RUN useradd -l -M -s /bin/bash -N -u 1000 ${USER} \
  && chown -R ${USER}:users /usr/local/bin \
  && chown -R ${USER}:users /usr/local/lib \
  && chown -R ${USER}:users "${POETRY_HOME}"
-
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-ENV PATH="$JAVA_HOME/bin:$PATH"
-
-USER ${USER}
-
-# setup workspace
-WORKDIR "/"
-
-# install - poetry requirements
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" .${HOME}/
-
-WORKDIR "${HOME}"
-
-RUN poetry install --only main --no-root --no-interaction --no-ansi && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q && \
-    chown -R "${USER}:users" "${HOME}"
-
-WORKDIR "${HOME}"
-
-# --- production stage
-FROM apache/flink:${FLINK_VERSION}-scala_${SCALA_VERSION}-java${JAVA_VERSION} as production
-
-ENV HOME="/home"
-
-# python SDK
-COPY --from=apache/beam_python3.9_sdk:2.58.0 /opt/apache/beam /opt/apache/beam
-COPY --from=builder /usr/local /usr/local
-COPY --from=builder "/docker/${IMAGE_NAME}" ${HOME}
 
 # --- test build stage
 FROM production as development
