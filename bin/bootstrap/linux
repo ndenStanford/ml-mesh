@@ -101,11 +101,17 @@ _install_global_deps() {
                         sqlite-devel \
                         libffi-devel \
                         readline-devel \
+                        ncurses-devel \
                         gcc \
                         glibc \
                         glibc-common \
                         gd \
                         gd-devel \
+                        xz-devel \
+                        patch \
+                        bzip2 \
+                        sqlite \
+                        tk-devel \
                         xz-devel
 
     # install neuron dependencies if required
