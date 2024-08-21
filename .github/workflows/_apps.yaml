@@ -290,6 +290,7 @@ jobs:
           PROMPT_REGISTRY_APP_PRIVATE_KEY="${{ secrets.PROMPT_REGISTRY_APP_PRIVATE_KEY }}" \
           DEPLOYMENT="${{ inputs.environment }}" \
           IMAGE_TAG="${{ inputs.tag }}" \
+          BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
           TARGET_BUILD_STAGE="production" \
           PLATFORM="linux/amd64" \
           ENVIRONMENT="ci" \

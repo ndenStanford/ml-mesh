@@ -369,11 +369,12 @@ jobs:
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
+            BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
             TARGET_BUILD_STAGE="production" \
             PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
-            DEPLOYMENT="${{ inputs.environment }}" \
             USE_DOCKER_CACHE="true"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
