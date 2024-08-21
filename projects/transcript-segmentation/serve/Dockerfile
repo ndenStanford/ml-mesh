@@ -32,7 +32,6 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-
 # --- production stage
 FROM builder as production
 
