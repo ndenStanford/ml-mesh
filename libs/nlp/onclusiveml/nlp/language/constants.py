@@ -110,6 +110,7 @@ class LanguageIso(Enum):
     def from_locale(cls, locale: str) -> Optional["LanguageIso"]:
         """Returns Language ISO from locale."""
         _lang, _locale = locale.split("-")
+        print("_lang: ", _lang)
         iso = cls.from_language_iso(_lang.lower())
         if iso is None or iso.locales.get(f"{_lang.lower()}-{_locale.upper()}") is None:
             return None

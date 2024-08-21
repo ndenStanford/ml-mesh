@@ -8,7 +8,7 @@ from langdetect import detect
 
 # Internal libraries
 from onclusiveml.nlp.language import constants
-from onclusiveml.nlp.language.constants import LanguageIso
+from onclusiveml.nlp.language.constants import _LOCALES, LanguageIso
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
@@ -56,9 +56,19 @@ def filter_language(
             - needs to be called with `content` and `language` as keyword arguments
             - will only be executed if the detected language is supported
     """
-    supported_language_iso_values = [
-        supported_language.value for supported_language in supported_languages
-    ]
+    supported_language_iso_values = [  # noqa
+        supported_language.value for supported_language in supported_languages  # noqa
+    ]  # noqa
+
+    supported_language_values = sorted(
+        {
+            sub_lang
+            for iso in supported_languages
+            for sub_lang in _LOCALES.get(iso, {}).keys()
+        }
+    )
+
+    print("supported languages: ", supported_language_values)
 
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -72,13 +82,17 @@ def filter_language(
             """
             content, language = kwargs["content"], kwargs["language"]
 
+            print("language: ", language)
+
             language_iso = detect_language(content=content, language=language)
+
+            print("language_iso: ", language_iso)
 
             if language_iso is None:
                 if raise_if_none:
                     raise LanguageDetectionException(
                         original_language=language,
-                        supported_language_iso_values=supported_language_iso_values,
+                        supported_language_values=supported_language_values,
                     )
                 else:
                     return None
@@ -90,7 +104,7 @@ def filter_language(
                     raise LanguageFilterException(
                         original_language=language,
                         language_iso=language_iso,
-                        supported_language_iso_values=supported_language_iso_values,
+                        supported_language_values=supported_language_values,
                     )
 
         return wrapper

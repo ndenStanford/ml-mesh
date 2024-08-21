@@ -47,7 +47,7 @@ def test_model_server_bio():
                         "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
                     },
                     "parameters": {
-                        "target_language": "fr",
+                        "target_language": "fr-FR",
                         "translation": True,
                     },
                 }
@@ -59,7 +59,7 @@ def test_model_server_bio():
                     "namespace": "translation",
                     "attributes": {
                         "source_language": "en",
-                        "target_language": "fr",
+                        "target_language": "fr-FR",
                         "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
@@ -152,7 +152,7 @@ def test_model_server_bio():
                         "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
                     },
                     "parameters": {
-                        "source_language": "ja",
+                        "source_language": "ja-JP",
                         "target_language": "en",
                         "translation": True,
                     },
@@ -164,7 +164,7 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "source_language": "ja",
+                        "source_language": "ja-JP",
                         "target_language": "en",
                         "translated_text": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
                     },
