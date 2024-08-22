@@ -23,8 +23,6 @@ features = [f"{feature_view.name}:{feature.name}" for feature in feature_view.fe
 features += ["iptc_first_level_on_demand_feature_view:topic_1_llm"]
 
 start = time.time()
-# entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "feast"."iptc_first_level"
-# LIMIT 10"""
 entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
 LIMIT 10"""
 
@@ -40,7 +38,7 @@ print(df.head())
 
 
 start = time.time()
-entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "feast"."iptc_first_level"
+entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
 LIMIT 100"""
 
 dataset_df = fs_handle.fs.get_historical_features(
@@ -54,7 +52,7 @@ print(time.time() - start)
 print(df.head())
 
 start = time.time()
-entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "feast"."iptc_first_level"
+entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
 LIMIT 1000"""
 
 dataset_df = fs_handle.fs.get_historical_features(
