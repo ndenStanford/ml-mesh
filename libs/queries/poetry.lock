@@ -13,17 +13,17 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.34.157"
+version = "1.35.3"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.34.157-py3-none-any.whl", hash = "sha256:3cc357156df5482154a016f138d1953061a181b4c594f8b6302c9d6c024bd950"},
-    {file = "boto3-1.34.157.tar.gz", hash = "sha256:7ef19ed38cba9863b58430fb4a66a72a5c250304f234bd1c16b860f9bf25677b"},
+    {file = "boto3-1.35.3-py3-none-any.whl", hash = "sha256:e24f9b8a4dc85bfcf4d3e9183589dba6ed2964dfa1233ca578fc7c04db1c68b4"},
+    {file = "boto3-1.35.3.tar.gz", hash = "sha256:9c2799cfeba2c68d91f840b6d018ffe76f5f27514dcbb166b20d9e3a704cbcea"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.157,<1.35.0"
+botocore = ">=1.35.3,<1.36.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -32,13 +32,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.157"
+version = "1.35.3"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.34.157-py3-none-any.whl", hash = "sha256:c6cba6de8eb86ca4d2f934e009b37adbe1e7fdcfa52fbab74783f4c30676e07d"},
-    {file = "botocore-1.34.157.tar.gz", hash = "sha256:5628a36cec123cdc8c1158d05a7b06aa5e53649ad73796c50ef3fb51199785fb"},
+    {file = "botocore-1.35.3-py3-none-any.whl", hash = "sha256:3ff54075e125304a8978e5d3f27ab96485f2deedb561d458b0567a0a921dc243"},
+    {file = "botocore-1.35.3.tar.gz", hash = "sha256:ff0c3189c0aa588c3aeda3f3e5e37925d64deaac6748310124307f978933e768"},
 ]
 
 [package.dependencies]
@@ -418,7 +418,7 @@ test = ["pytest (>=6)"]
 name = "filelock"
 version = "3.15.4"
 description = "A platform independent file lock."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "filelock-3.15.4-py3-none-any.whl", hash = "sha256:6ca1fffae96225dab4c6eaf1c4f4f28cd2568d3ec2a44e15a08520504de468e7"},
@@ -434,7 +434,7 @@ typing = ["typing-extensions (>=4.8)"]
 name = "fsspec"
 version = "2024.6.1"
 description = "File-system specification"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "fsspec-2024.6.1-py3-none-any.whl", hash = "sha256:3cb443f8bcd2efb31295a5b9fdb02aee81d8452c80d28f97a6d0959e6cee101e"},
@@ -488,13 +488,13 @@ scipy = ">=1.0"
 
 [[package]]
 name = "huggingface-hub"
-version = "0.24.5"
+version = "0.24.6"
 description = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
-optional = false
+optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "huggingface_hub-0.24.5-py3-none-any.whl", hash = "sha256:d93fb63b1f1a919a22ce91a14518974e81fc4610bf344dfe7572343ce8d3aced"},
-    {file = "huggingface_hub-0.24.5.tar.gz", hash = "sha256:7b45d6744dd53ce9cbf9880957de00e9d10a9ae837f1c9b7255fc8fa4e8264f3"},
+    {file = "huggingface_hub-0.24.6-py3-none-any.whl", hash = "sha256:a990f3232aa985fe749bc9474060cbad75e8b2f115f6665a9fda5b9c97818970"},
+    {file = "huggingface_hub-0.24.6.tar.gz", hash = "sha256:cc2579e761d070713eaa9c323e3debe39d5b464ae3a7261c39a9195b27bb8000"},
 ]
 
 [package.dependencies]
@@ -585,7 +585,7 @@ files = [
 name = "llvmlite"
 version = "0.43.0"
 description = "lightweight wrapper around basic LLVM functionality"
-optional = false
+optional = true
 python-versions = ">=3.9"
 files = [
     {file = "llvmlite-0.43.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a289af9a1687c6cf463478f0fa8e8aa3b6fb813317b0d70bf1ed0759eab6f761"},
@@ -732,7 +732,7 @@ xray = ["aws-xray-sdk (>=0.93,!=0.96)", "setuptools"]
 name = "numba"
 version = "0.60.0"
 description = "compiling Python code using LLVM"
-optional = false
+optional = true
 python-versions = ">=3.9"
 files = [
     {file = "numba-0.60.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:5d761de835cd38fb400d2c26bb103a2726f548dc30368853121d66201672e651"},
@@ -997,7 +997,7 @@ yaml = ["pyyaml (>=6.0.1)"]
 name = "pynndescent"
 version = "0.5.13"
 description = "Nearest Neighbor Descent"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "pynndescent-0.5.13-py3-none-any.whl", hash = "sha256:69aabb8f394bc631b6ac475a1c7f3994c54adf3f51cd63b2730fefba5771b949"},
@@ -1144,7 +1144,7 @@ files = [
 name = "regex"
 version = "2024.7.24"
 description = "Alternative regular expression module, to replace re."
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "regex-2024.7.24-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:228b0d3f567fafa0633aee87f08b9276c7062da9616931382993c03808bb68ce"},
@@ -1289,7 +1289,7 @@ crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 name = "safetensors"
 version = "0.4.4"
 description = ""
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "safetensors-0.4.4-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:2adb497ada13097f30e386e88c959c0fda855a5f6f98845710f5bb2c57e14f12"},
@@ -1530,7 +1530,7 @@ files = [
 name = "tokenizers"
 version = "0.13.3"
 description = "Fast and Customizable Tokenizers"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "tokenizers-0.13.3-cp310-cp310-macosx_10_11_x86_64.whl", hash = "sha256:f3835c5be51de8c0a092058a4d4380cb9244fb34681fd0a295fbf0a52a5fdf33"},
@@ -1595,7 +1595,7 @@ files = [
 name = "tqdm"
 version = "4.66.5"
 description = "Fast, Extensible Progress Meter"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "tqdm-4.66.5-py3-none-any.whl", hash = "sha256:90279a3770753eafc9194a0364852159802111925aa30eb3f9d85b0e805ac7cd"},
@@ -1615,7 +1615,7 @@ telegram = ["requests"]
 name = "transformers"
 version = "4.33.1"
 description = "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow"
-optional = false
+optional = true
 python-versions = ">=3.8.0"
 files = [
     {file = "transformers-4.33.1-py3-none-any.whl", hash = "sha256:0630c2d26448d7c6cb78435e6c43910c89e99387badea6be1f565ffa3f093f1d"},
@@ -1695,7 +1695,7 @@ files = [
 name = "umap-learn"
 version = "0.5.3"
 description = "Uniform Manifold Approximation and Projection"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "umap-learn-0.5.3.tar.gz", hash = "sha256:dbd57cb181c2b66d238acb5635697526bf24c798082daed0cf9b87f6a3a6c0c7"},
@@ -1731,13 +1731,13 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "werkzeug"
-version = "3.0.3"
+version = "3.0.4"
 description = "The comprehensive WSGI web application library."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "werkzeug-3.0.3-py3-none-any.whl", hash = "sha256:fc9645dc43e03e4d630d23143a04a7f947a9a3b5727cd535fdfe155a17cc48c8"},
-    {file = "werkzeug-3.0.3.tar.gz", hash = "sha256:097e5bfda9f0aba8da6b8545146def481d06aa7d3266e7448e2cccf67dd8bd18"},
+    {file = "werkzeug-3.0.4-py3-none-any.whl", hash = "sha256:02c9eb92b7d6c06f31a782811505d2157837cea66aaede3e217c7c27c039476c"},
+    {file = "werkzeug-3.0.4.tar.gz", hash = "sha256:34f2371506b250df4d4f84bfe7b0921e4762525762bbd936614909fe25cd7306"},
 ]
 
 [package.dependencies]
@@ -1757,7 +1757,10 @@ files = [
     {file = "xmltodict-0.13.0.tar.gz", hash = "sha256:341595a488e3e01a85a9d8911d8912fd922ede5fecc4dce437eb4b6c8d037e56"},
 ]
 
+[extras]
+scorer = ["hdbscan", "transformers", "umap-learn"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "3.9.19"
-content-hash = "0d7c892c83450b481ee144c913c01103c08da1e1d33f94ac788379631c7c57d9"
+content-hash = "ee271f4b6c9525c63792fd450e66e7185e0a87faae9ddd2a512c8bf769c57e45"

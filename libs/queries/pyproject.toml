@@ -11,8 +11,11 @@ python = "3.9.19"
 core = {path = "../core"}
 elasticsearch = ">=7.0.0,<8.0.0"
 hdbscan = "0.8.33"
-umap-learn = {version = "0.5.3", extras = ["scorer"]}
-transformers = {version = "4.33.1", extras = ["scorer"]}
+umap-learn = {version = "0.5.3", optional = true}
+transformers = {version = "4.33.1", optional = true}
+
+[tool.poetry.extras]
+scorer = ["umap-learn", "transformers","hdbscan"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"

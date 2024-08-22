@@ -49,6 +49,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     libffi-dev \
     liblzma-dev \
     git \
+    gcc \
     && apt-get clean \
     && apt-get remove -yq nodejs npm \
     && rm -rf /var/lib/apt/lists/*
@@ -85,7 +86,7 @@ COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 /usr/lib/x86_64-linux-gnu/libsqlite3.so.0
 
-# install - usefull linux packages
+# install packages in production stage
 # hadolint ignore=DL3008
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get -yq update \
