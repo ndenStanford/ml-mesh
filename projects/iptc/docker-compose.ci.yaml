@@ -45,7 +45,7 @@ services:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: ingest/config/${DEPLOYMENT:-prod}.env
+    env_file: train/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -134,7 +134,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
-    env_file: ingest/config/${DEPLOYMENT:-prod}.env
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
