@@ -49,7 +49,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     libffi-dev \
     liblzma-dev \
     git \
-    gcc \
     && apt-get clean \
     && apt-get remove -yq nodejs npm \
     && rm -rf /var/lib/apt/lists/*
