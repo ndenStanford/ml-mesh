@@ -85,7 +85,16 @@ COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 /usr/lib/x86_64-linux-gnu/libsqlite3.so.0
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/list/*
+# install - usefull linux packages
+# hadolint ignore=DL3008
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -yq update \
+    && apt-get -yq upgrade \
+    && apt-get -yq install --no-install-recommends \
+    curl \
+    && apt-get clean \
+    && apt-get remove -yq nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
 
 # create non root user
 RUN useradd -l -M -s /bin/bash -N -u ${UID} ${USER} \
