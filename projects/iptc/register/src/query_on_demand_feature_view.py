@@ -1,3 +1,6 @@
+# Standard Library
+import time
+
 # Internal libraries
 from onclusiveml.data.feature_store import FeastRepoBuilder
 
@@ -18,11 +21,46 @@ feature_view = [
 features = [f"{feature_view.name}:{feature.name}" for feature in feature_view.features]
 
 features += ["iptc_first_level_on_demand_feature_view:topic_1_llm"]
-entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "feast"."iptc_first_level"
+
+start = time.time()
+entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
 LIMIT 10"""
 
 dataset_df = fs_handle.fs.get_historical_features(
     entity_df=entity_df, features=features
 )
 df = dataset_df.to_df()
+
+print("=" * 20)
+print("10 samples")
+print(time.time() - start)
+print(df.head())
+
+
+start = time.time()
+entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
+LIMIT 100"""
+
+dataset_df = fs_handle.fs.get_historical_features(
+    entity_df=entity_df, features=features
+)
+df = dataset_df.to_df()
+
+print("=" * 20)
+print("100 samples")
+print(time.time() - start)
+print(df.head())
+
+start = time.time()
+entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
+LIMIT 1000"""
+
+dataset_df = fs_handle.fs.get_historical_features(
+    entity_df=entity_df, features=features
+)
+df = dataset_df.to_df()
+
+print("=" * 20)
+print("1000 samples")
+print(time.time() - start)
 print(df.head())
