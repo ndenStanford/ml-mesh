@@ -57,18 +57,16 @@ async def generate_label_llm(row, session):
 
 async def enrich_dataframe(features_df: pd.DataFrame) -> pd.DataFrame:
     """On-demand feature view transformation with async."""
+    # Make a copy of the DataFrame to avoid modifying the original
+    features_df_copy = features_df.copy()
 
     async with aiohttp.ClientSession() as session:
-        tasks = [generate_label_llm(row, session) for _, row in features_df.iterrows()]
-        features_df["topic_1_llm"] = await asyncio.gather(*tasks)
-    return features_df
+        tasks = [
+            generate_label_llm(row, session) for _, row in features_df_copy.iterrows()
+        ]
+        features_df_copy["topic_1_llm"] = await asyncio.gather(*tasks)
+    return features_df_copy
 
-
-# def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
-#     """Wrapper function to run the async enrichment."""
-
-#     df = asyncio.run(enrich_dataframe(features_df))
-#     return df.astype({"topic_1_llm": pd.StringDtype()})
 
 def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
@@ -76,5 +74,5 @@ def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Dat
     features_df_with_label = asyncio.run(enrich_dataframe(features_df))
 
     df = pd.DataFrame()
-    df["topic_1_llm"]=features_df_with_label["topic_1_llm"].astype(pd.StringDtype())
+    df["topic_1_llm"] = features_df_with_label["topic_1_llm"].astype(pd.StringDtype())
     return df
