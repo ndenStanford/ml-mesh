@@ -217,7 +217,7 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "source_language": "Language not found",
+                        "source_language": "zh",
                         "target_language": None,
                         "translated_text": None,  # noqa
                     },

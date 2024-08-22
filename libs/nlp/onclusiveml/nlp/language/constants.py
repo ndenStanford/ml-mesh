@@ -110,7 +110,6 @@ class LanguageIso(Enum):
     def from_locale(cls, locale: str) -> Optional["LanguageIso"]:
         """Returns Language ISO from locale."""
         _lang, _locale = locale.split("-")
-        print("_lang: ", _lang)
         iso = cls.from_language_iso(_lang.lower())
         if iso is None or iso.locales.get(f"{_lang.lower()}-{_locale.upper()}") is None:
             return None
@@ -121,6 +120,14 @@ class LanguageIso(Enum):
         """Returns LanguageIso from string input."""
         reverse: Dict[str, "LanguageIso"] = {iso.value: iso for iso in LanguageIso}
         return reverse.get(lang.lower())
+
+    @classmethod
+    def from_locale_and_language_iso(cls, lang: str) -> Optional["LanguageIso"]:
+        """Returns Language ISO from locale."""
+        if "-" in lang:
+            return cls.from_locale(lang)
+        else:
+            return cls.from_language_iso(lang)
 
 
 _LOCALES: Dict[LanguageIso, Dict[str, Dict[str, str]]] = {
