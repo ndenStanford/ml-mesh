@@ -80,6 +80,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENV PATH="$PYENV_ROOT/shims:${PYENV_ROOT}/bin:$PATH"
 
+COPY --from=builder /usr/bin/ /usr/bin/
 COPY --from=builder /usr/lib/ /usr/lib/
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
