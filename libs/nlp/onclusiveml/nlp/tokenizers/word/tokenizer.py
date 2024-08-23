@@ -11,8 +11,16 @@ import nltk
 import spacy
 from konoha import WordTokenizer
 
+import ssl
 
-nltk.download("punkt")
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+nltk.download("punkt_tab")
 command = "python -m spacy download ko_core_news_sm"
 subprocess.run(command, shell=True, check=True)
 
