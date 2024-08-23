@@ -13,6 +13,7 @@ import spacy
 from konoha import WordTokenizer
 
 
+# skip cert verification
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
