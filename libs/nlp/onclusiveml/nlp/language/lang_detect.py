@@ -60,13 +60,13 @@ def filter_language(
         supported_language.value for supported_language in supported_languages  # noqa
     ]  # noqa
 
-    supported_language_values = sorted(
-        {
-            sub_lang
-            for iso in supported_languages
-            for sub_lang in _LOCALES.get(iso, {}).keys()
-        }
-    )
+    supported_language_values = sorted(  # noqa
+        {  # noqa
+            sub_lang  # noqa
+            for iso in supported_languages  # noqa
+            for sub_lang in _LOCALES.get(iso, {}).keys()  # noqa
+        }  # noqa
+    )  # noqa
 
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -86,7 +86,7 @@ def filter_language(
                 if raise_if_none:
                     raise LanguageDetectionException(
                         original_language=language,
-                        supported_language_values=supported_language_values,
+                        supported_language_iso_values=supported_language_iso_values,
                     )
                 else:
                     return None
@@ -98,7 +98,7 @@ def filter_language(
                     raise LanguageFilterException(
                         original_language=language,
                         language_iso=language_iso,
-                        supported_language_values=supported_language_values,
+                        supported_language_iso_values=supported_language_iso_values,
                     )
 
         return wrapper
