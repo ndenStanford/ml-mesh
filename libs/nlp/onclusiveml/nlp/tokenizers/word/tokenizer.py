@@ -12,6 +12,7 @@ import nltk
 import spacy
 from konoha import WordTokenizer
 
+
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
@@ -104,7 +105,6 @@ class SpacyWordTokenizer(BaseWordTokenizer):
         """
         # Process the content using SpaCy
         doc = self.nlp[language](content)
-
         # Extract the words from the SpaCy doc
         words = [token.text for token in doc if not token.is_space]
 
