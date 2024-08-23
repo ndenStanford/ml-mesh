@@ -167,6 +167,7 @@ jobs       :
             integration: false
             functional: false
 
+
     with:
       lib: ${{ matrix.libs.name }}
       integration: ${{ matrix.libs.integration }}
@@ -192,12 +193,14 @@ jobs       :
           - name: python-base
             validate-build: false
             runner-kind: ubuntu-20.04
+            push-image: true
 
           - name: gpu-base
             validate-build: true
             self-hosted-runner-type: g4dn.xlarge
             self-hosted-runner-ami: ami-005eed844c599e83c
             runner-kind: custom
+            push-image: true
 
         base-region: [us-east-1]
         region: [us-east-1]
@@ -216,6 +219,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.image.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -239,6 +243,7 @@ jobs       :
             self-hosted-runner-ami: ami-005eed844c599e83c
             self-hosted-runner-neuron: false
             runner-kind: custom
+            push-image: true
 
           - name: neuron-compile
             validate-build: true
@@ -246,6 +251,7 @@ jobs       :
             self-hosted-runner-ami: ami-0ce64505c663ca986
             self-hosted-runner-neuron: true
             runner-kind: custom
+            push-image: true
 
           - name: neuron-inference
             validate-build: true
@@ -253,16 +259,19 @@ jobs       :
             self-hosted-runner-ami: ami-0ce64505c663ca986
             self-hosted-runner-neuron: true
             runner-kind: custom
+            push-image: true
 
           - name: fastapi-serve
             validate-build: false
             self-hosted-runner-neuron: false
             runner-kind: ubuntu-20.04
+            push-image: true
 
           - name: beam-backfill
             validate-build: false
             self-hosted-runner-neuron: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           - name: beam-worker
             validate-build: false
@@ -270,6 +279,7 @@ jobs       :
             self-hosted-runner-ami: ami-078fc5aa9eaf20502
             self-hosted-runner-neuron: false
             runner-kind: custom
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         base-region: [us-east-1]
         region: [us-east-1]
@@ -288,6 +298,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.image.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.image.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.image.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -310,6 +321,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # kubeflow-torch-inf
           - name: kubeflow-torch-inf
@@ -317,6 +329,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # kubeflow-jupyter
           - name: kubeflow-jupyter
@@ -324,6 +337,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            push-image: true
 
           # kubeflow-torch-cpu
           - name: kubeflow-torch-cpu
@@ -331,6 +345,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            push-image: true
 
           # kubeflow-data-science
           - name: kubeflow-data-science
@@ -338,6 +353,7 @@ jobs       :
             self-hosted-runner-type: c6i.large # only need the disk space here, not GPUs
             runner-kind: custom
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         validate-build: [false]
         region: [us-east-2]
@@ -355,6 +371,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.image.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.image.use-cache }}
+      push-image: ${{ matrix.image.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -387,6 +404,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # compile
           - name: compile
@@ -396,6 +414,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # serve
           - name: serve
@@ -407,6 +426,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-ami: ami-0ce64505c663ca986
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         use-cache: [true]
 
@@ -425,6 +445,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -457,6 +478,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: summarization
@@ -472,6 +494,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -505,6 +528,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # serve
           - name: serve
@@ -518,6 +542,7 @@ jobs       :
             self-hosted-runner-ami: ami-005eed844c599e83c
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # backfill
           - name: backfill
@@ -529,6 +554,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: gch-summarization
@@ -546,6 +572,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -581,6 +608,7 @@ jobs       :
             self-hosted-runner-ami: ami-078fc5aa9eaf20502
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # serve
           - name: serve
@@ -594,6 +622,7 @@ jobs       :
             self-hosted-runner-ami: ami-005eed844c599e83c
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # backfill
           - name: backfill
@@ -605,6 +634,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: entity-linking
@@ -622,6 +652,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -655,6 +686,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # compile
           - name: compile
@@ -664,6 +696,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # serve
           - name: serve
@@ -675,6 +708,7 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-ami: ami-0ce64505c663ca986
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # backfill
           - name: backfill
@@ -684,6 +718,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         use-cache: [true]
 
@@ -702,6 +737,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -735,6 +771,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # register
           - name: register
@@ -746,6 +783,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # train
           - name: train
@@ -759,6 +797,7 @@ jobs       :
             self-hosted-runner-ami: ami-005eed844c599e83c
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # compile
           - name: compile
@@ -770,6 +809,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # serve
           - name: serve
@@ -783,6 +823,7 @@ jobs       :
             self-hosted-runner-ami: ami-0ce64505c663ca986
             self-hosted-runner-neuron: true
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: iptc
@@ -800,6 +841,7 @@ jobs       :
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -832,6 +874,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: iptc-multi
@@ -847,6 +890,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -879,6 +923,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: translation
@@ -891,6 +936,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -923,6 +969,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # backfill
           - name: backfill
@@ -933,6 +980,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         use-cache: [true]
 
@@ -951,6 +999,7 @@ jobs       :
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -983,6 +1032,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # train
           - name: train
@@ -995,6 +1045,7 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # serve
           - name: serve
@@ -1007,6 +1058,7 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # backfill
           - name: backfill
@@ -1018,6 +1070,7 @@ jobs       :
             runner-kind: ubuntu-20.04
             self-hosted-runner-neuron: false
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: topic
@@ -1034,6 +1087,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-neuron: ${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1066,6 +1120,7 @@ jobs       :
             upload-test-results: false
             runner-kind: ubuntu-20.04
             use-cache: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
     with:
       project: transcript-segmentation
@@ -1081,6 +1136,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.components.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1114,6 +1170,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           # backfill
           - name: backfill
@@ -1123,6 +1180,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-20.04
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         use-cache: [true]
 
@@ -1140,6 +1198,7 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.components.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -1181,12 +1240,14 @@ jobs       :
             self-hosted-runner-type: c6i.xlarge
             self-hosted-runner-ami: ami-078fc5aa9eaf20502
             functional: true
+            push-image: ${{ github.event_name != 'pull_request' }}
 
           - name: prompt
             component: frontend
             integration: false
             runner-kind: ubuntu-20.04
             functional: false
+            push-image: ${{ github.event_name != 'pull_request' }}
 
         use-cache: [true]
 
@@ -1202,6 +1263,7 @@ jobs       :
       self-hosted-runner-type: ${{ matrix.apps.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.apps.self-hosted-runner-ami }}
       use-cache: ${{ matrix.use-cache }}
+      push-image: ${{ matrix.apps.push-image }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

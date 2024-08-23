@@ -46,6 +46,7 @@ class Analysis(JsonApiSchema):
     summary: Optional[str] = None
     theme: Optional[str] = None
     impact: Optional[ImpactCategoryLabel] = None
+    sources: Optional[str] = None
 
 
 class Topic(JsonApiSchema):
