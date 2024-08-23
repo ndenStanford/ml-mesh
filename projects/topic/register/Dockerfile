@@ -5,12 +5,21 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_T
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
+ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# hadolint ignore=DL3002
-USER root
+# create non root user
+RUN useradd -l -M -s /bin/bash -N -u 1000 app \
+ && mkdir -p "${HOME}" \
+ && mkdir -p "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users /usr/local/ \
+ && chown -R ${USER}:users /pyenv/
+
+USER app
 
 # setup workspace
 WORKDIR "/"
@@ -36,7 +45,7 @@ RUN poetry install --no-interaction --no-ansi --only main && \
 # --- production stage
 FROM builder as production
 
-USER ${USER}
+ENV PYTHONPATH=${HOME}
 
 # --- test build stage
 FROM production as development
@@ -48,8 +57,6 @@ COPY --chown=${USER}:users "${HOME}/tests" "${HOME}/tests"
 WORKDIR "${HOME}"
 
 RUN poetry install --no-interaction --with dev
-
-USER ${USER}
 
 # --- debugger stage
 FROM development as debugger
