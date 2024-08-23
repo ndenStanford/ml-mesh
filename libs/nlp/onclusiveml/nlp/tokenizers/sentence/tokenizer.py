@@ -2,6 +2,7 @@
 
 # Standard Library
 import re
+import ssl
 import subprocess
 from typing import Any, Dict, List
 
@@ -16,6 +17,12 @@ from onclusiveml.nlp.tokenizers.sentence.src.zh_sentence import (
 )
 
 
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
 # Download nltk tokenizers and Spacy tokenizer for Korean
 nltk.download("punkt")
 command = "python -m spacy download ko_core_news_sm"

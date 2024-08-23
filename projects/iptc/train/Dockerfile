@@ -10,7 +10,7 @@ ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# create non root user
+# create non root user (currently not provided in gpu base)
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \

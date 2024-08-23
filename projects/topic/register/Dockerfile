@@ -7,19 +7,9 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/ \
- && chown -R ${USER}:users /pyenv/
-
-USER app
+USER onclusiveml
 
 # setup workspace
 WORKDIR "/"
@@ -40,7 +30,6 @@ RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-
 
 # --- production stage
 FROM builder as production
