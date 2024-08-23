@@ -2,6 +2,7 @@
 
 # Standard Library
 import re
+import ssl
 import subprocess
 from typing import Any, Dict, List
 
@@ -10,8 +11,6 @@ import jieba
 import nltk
 import spacy
 from konoha import WordTokenizer
-
-import ssl
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
