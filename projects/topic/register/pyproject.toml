@@ -9,7 +9,7 @@ packages = [{include = "src"}]
 python = "3.9.19"
 core = {path = "../../../libs/core"}
 data = {path = "../../../libs/data"}
-protobuf = "4.23"
+protobuf = ">=4.22.1,<4.23.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
