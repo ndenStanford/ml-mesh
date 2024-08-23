@@ -20,6 +20,7 @@ except AttributeError:
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 
+nltk.download("punkt")
 nltk.download("punkt_tab")
 command = "python -m spacy download ko_core_news_sm"
 subprocess.run(command, shell=True, check=True)
