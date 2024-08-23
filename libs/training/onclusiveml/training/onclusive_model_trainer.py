@@ -110,7 +110,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             comparison_operators=self.data_fetch_params.comparison_operators,
             non_nullable_columns=self.data_fetch_params.non_nullable_columns,
         )
-        logger.info(self.dataset_df.head())
+        self.logger.info(self.dataset_df.head())
         self.logger.info(
             f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
         )

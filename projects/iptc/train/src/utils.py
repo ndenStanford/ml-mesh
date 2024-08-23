@@ -1,13 +1,13 @@
 """Utility functions."""
 
 # Standard Library
-import json
+import asyncio
 import re
 from typing import Dict
 
 # 3rd party libraries
+import aiohttp
 import pandas as pd
-import requests
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 # Source
@@ -86,45 +86,59 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     # Placed in this file due to the circular import issue.
     """API configuration."""
 
-    PROMPT_API: str = "http://prompt-backend:4000"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
+    PROMPT_API: str = "https://internal.api.ml.prod.onclusive.com"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-e7OtXaIMzp7wxjJkz7kILyO3gYrrh0ez"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
         "iptc category": "Answer the IPTC category",
     }
-    DEFAULT_MODEL: str = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+    DEFAULT_MODEL: str = "gpt-4o-mini"
 
 
 settings = PromptBackendAPISettings()
 
 
-def generate_label_llm(title, article, candidates):
-    """Invoke LLM to generate IPTC ."""
+async def generate_label_llm(row, session):
+    """Invoke LLM to generate IPTC asynchronously."""
     input_dict = {
-        "input": {"title": title, "article": article, "candidates": candidates},
+        "input": {
+            "title": row["title"],
+            "article": row["content"],
+            "candidates": CLASS_DICT_FIRST,
+        },
         "output": settings.IPTC_RESPONSE_SCHEMA,
     }
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
-    q = requests.post(
+
+    async with session.post(
         "{}/api/v2/prompts/{}/generate/model/{}".format(
             settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
         ),
         headers=headers,
         json=input_dict,
-    )
-    output_content = json.loads(q.content)
-    return output_content["iptc category"]
+    ) as response:
+        output_content = await response.json()
+        return output_content["iptc category"]
+
+
+async def enrich_dataframe(features_df: pd.DataFrame) -> pd.DataFrame:
+    """On-demand feature view transformation with async."""
+    # Make a copy of the DataFrame to avoid modifying the original
+    features_df_copy = features_df.copy()
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [
+            generate_label_llm(row, session) for _, row in features_df_copy.iterrows()
+        ]
+        features_df_copy["topic_1_llm"] = await asyncio.gather(*tasks)
+    return features_df_copy
 
 
 def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
-    """On-demand feature view transformation."""
+    """Wrapper function to run the async enrichment."""
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df))
+
     df = pd.DataFrame()
-    topic_label = [
-        generate_label_llm(title, content, CLASS_DICT_FIRST)
-        for title, content in zip(
-            features_df["title"].values, features_df["content"].values
-        )
-    ]
-    df["topic_1_llm"] = pd.Series(topic_label).astype(pd.StringDtype())
+    df["topic_1_llm"] = features_df_with_label["topic_1_llm"].astype(pd.StringDtype())
     return df

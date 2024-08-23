@@ -42,7 +42,7 @@ class FeatureStoreHandle:
         data_source: DataSource = None,
         data_id_key: str = "entity_key",
         data_ids: List[str] = ["1", "2"],
-        limit: str = "1000",
+        limit: str = "10",
         timestamp_key: str = "event_timestamp",
     ):
 
