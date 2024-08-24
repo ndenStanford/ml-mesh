@@ -2,16 +2,28 @@
 
 # Standard Library
 import asyncio
+import json
+import logging
 import re
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from typing import Dict
 
 # 3rd party libraries
-import aiohttp
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 # Source
-from src.class_dict import CLASS_DICT_FIRST, CLASS_DICT_SECOND, CLASS_DICT_THIRD
+from src.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CLASS_DICT_FIRST,
+    CLASS_DICT_SECOND,
+    CLASS_DICT_THIRD,
+)
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 def compute_metrics(pred):  # type: ignore[no-untyped-def]
@@ -82,8 +94,7 @@ def topic_conversion(df):  # type: ignore[no-untyped-def]
     return df
 
 
-class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
-    # Placed in this file due to the circular import issue.
+class PromptBackendAPISettings:
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.prod.onclusive.com"
@@ -99,39 +110,67 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
 settings = PromptBackendAPISettings()
 
 
-async def generate_label_llm(row, session):
-    """Invoke LLM to generate IPTC asynchronously."""
+def fetch_label_llm(url: str, headers: Dict[str, str], data: Dict) -> Dict:
+    """Synchronous function to make the API request."""
+    try:
+        # Ensure the data is a properly formatted JSON dictionary
+        logging.info(
+            f"Data being sent: {json.dumps(data, ensure_ascii=False, indent=2)}"
+        )
+
+        headers.update(
+            {"Content-Type": "application/json"}
+        )  # Ensure the correct content type is set
+
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(data).encode("utf-8"),  # JSON encode the dictionary
+            headers=headers,
+            method="POST",
+        )
+
+        with urllib.request.urlopen(req) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    except urllib.error.HTTPError as e:
+        logging.error(f"HTTP error: {e.code} - {e.reason}")
+        logging.error(f"Response: {e.read().decode('utf-8')}")
+        raise
+
+
+async def generate_label_llm(row):
+    """Invoke LLM to generate IPTC asynchronously using the standard library."""
     input_dict = {
         "input": {
-            "title": row["title"],
-            "article": row["content"],
-            "candidates": CLASS_DICT_FIRST,
+            "title": row.get("title", ""),
+            "article": row.get("content", ""),
+            "candidates": CANDIDATE_DICT_FIRST,
         },
         "output": settings.IPTC_RESPONSE_SCHEMA,
     }
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+    url = "{}/api/v2/prompts/{}/generate/model/{}".format(
+        settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
+    )
 
-    async with session.post(
-        "{}/api/v2/prompts/{}/generate/model/{}".format(
-            settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
-        ),
-        headers=headers,
-        json=input_dict,
-    ) as response:
-        output_content = await response.json()
-        return output_content["iptc category"]
+    logging.info(f"Sending request to {url} with payload: {input_dict}")
+
+    loop = asyncio.get_event_loop()
+    with ThreadPoolExecutor() as pool:
+        output_content = await loop.run_in_executor(
+            pool, fetch_label_llm, url, headers, input_dict
+        )
+
+    return output_content["iptc category"]
 
 
 async def enrich_dataframe(features_df: pd.DataFrame) -> pd.DataFrame:
-    """On-demand feature view transformation with async."""
+    """On-demand feature view transformation with async using the standard library."""
     # Make a copy of the DataFrame to avoid modifying the original
     features_df_copy = features_df.copy()
 
-    async with aiohttp.ClientSession() as session:
-        tasks = [
-            generate_label_llm(row, session) for _, row in features_df_copy.iterrows()
-        ]
-        features_df_copy["topic_1_llm"] = await asyncio.gather(*tasks)
+    tasks = [generate_label_llm(row) for _, row in features_df_copy.iterrows()]
+    features_df_copy["topic_1_llm"] = await asyncio.gather(*tasks)
     return features_df_copy
 
 

@@ -184,9 +184,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.dataset_df,
                 test_size=self.model_card.model_params.test_size,
             )
-        # Limit the training and evaluation datasets to 10 samples each for testing
-        self.train_df = self.train_df.sample(n=10, random_state=42)
-        self.eval_df = self.eval_df.sample(n=10, random_state=42)
+        # # Limit the training and evaluation datasets to 10 samples each for testing
+        # self.train_df = self.train_df.sample(n=10, random_state=42)
+        # self.eval_df = self.eval_df.sample(n=10, random_state=42)
         # convert df to torch dataset
         self.train_dataset = IPTCDataset(
             self.train_df,
