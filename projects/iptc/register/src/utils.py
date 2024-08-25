@@ -12,7 +12,7 @@ import pandas as pd
 import requests
 
 # Source
-from src.class_dict import CANDIDATE_DICT_FIRST
+from src.class_dict import CANDIDATE_DICT_FIRST, CANDIDATE_DICT_SECOND
 
 
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
