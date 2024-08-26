@@ -15,6 +15,7 @@ from src.settings import (  # type: ignore[attr-defined]; FeatureRegistrationLLM
     IptcFirstLevelFeatureRegistrationParams,
     IptcFirstLevelOnDemandFeatureRegistrationParams,
     IptcSecondLevelFeatureRegistrationParams,
+    IptcSecondLevelOnDemandFeatureRegistrationParams,
     IptcThirdLevelFeatureRegistrationParams,
     OnDemandFeatureRegistrationParams,
 )
@@ -46,6 +47,13 @@ def main() -> None:
         on_demand_feature_registration_params,
         iptc_first_level_on_demand_feature_registration_params,
     )
+    iptc_second_level_on_demand_feature_registration_params = (
+        IptcSecondLevelOnDemandFeatureRegistrationParams()
+    )
+    register_on_demand(
+        on_demand_feature_registration_params,
+        iptc_second_level_on_demand_feature_registration_params,
+    )
 
 
 def register(
@@ -75,9 +83,7 @@ def register(
 
     logger.info("Creating featureview...")
     feast_repo_builder.build_featureview()
-
     # plan_repo_contents(feast_repo_builder)
-
     # if feature_registration_params.register_features:
     register_repo_contents(feast_repo_builder)
 
