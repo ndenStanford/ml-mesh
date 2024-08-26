@@ -181,3 +181,12 @@ def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Dat
     df = pd.DataFrame()
     df["topic_1_llm"] = features_df_with_label["topic_1_llm"].astype(pd.StringDtype())
     return df
+
+
+def iptc_second_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
+    """Wrapper function to run the async enrichment."""
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df))
+
+    df = pd.DataFrame()
+    df["topic_2_llm"] = features_df_with_label["topic_2_llm"].astype(pd.StringDtype())
+    return df
