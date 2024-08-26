@@ -81,7 +81,7 @@ def test_model_server_bio():
                         "content": "London is a wonderful city. John is a terrible man.",
                     },
                     "parameters": {
-                        "language": "en",
+                        "language": "en-GB",
                     },
                 }
             },
