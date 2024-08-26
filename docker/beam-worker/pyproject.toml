@@ -6,7 +6,7 @@ authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.16"
-data = {path = "../../libs/data"}
+beam = {path = "../../libs/beam"}
 
 
 [build-system]
