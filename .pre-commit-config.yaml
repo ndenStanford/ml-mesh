@@ -43,6 +43,8 @@ repos                   :
     rev: 4.0.1
     hooks:
       - id: flake8
+        args:
+          - --extend-ignore=E111,E114,F821,E402,W503,E203,E501,E701
         files: ^(libs|docker|apps|projects|tests)/.*\.py$
         exclude: ^(libs/serving/onclusiveml/serving/rest/serve/server_utils\.py)
 
