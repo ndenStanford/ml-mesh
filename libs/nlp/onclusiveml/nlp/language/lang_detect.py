@@ -8,7 +8,7 @@ from langdetect import detect
 
 # Internal libraries
 from onclusiveml.nlp.language import constants
-from onclusiveml.nlp.language.constants import _LOCALES, LanguageIso
+from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
     LanguageFilterException,
@@ -59,14 +59,6 @@ def filter_language(
     supported_language_iso_values = [  # noqa
         supported_language.value for supported_language in supported_languages  # noqa
     ]  # noqa
-
-    supported_language_values = sorted(  # noqa
-        {  # noqa
-            sub_lang  # noqa
-            for iso in supported_languages  # noqa
-            for sub_lang in _LOCALES.get(iso, {}).keys()  # noqa
-        }  # noqa
-    )  # noqa
 
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
