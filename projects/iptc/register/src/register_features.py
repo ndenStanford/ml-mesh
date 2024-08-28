@@ -17,6 +17,7 @@ from src.settings import (  # type: ignore[attr-defined]; FeatureRegistrationLLM
     IptcSecondLevelFeatureRegistrationParams,
     IptcSecondLevelOnDemandFeatureRegistrationParams,
     IptcThirdLevelFeatureRegistrationParams,
+    IptcThirdLevelOnDemandFeatureRegistrationParams,
     OnDemandFeatureRegistrationParams,
 )
 
@@ -53,6 +54,13 @@ def main() -> None:
     register_on_demand(
         on_demand_feature_registration_params,
         iptc_second_level_on_demand_feature_registration_params,
+    )
+    iptc_third_level_on_demand_feature_registration_params = (
+        IptcThirdLevelOnDemandFeatureRegistrationParams()
+    )
+    register_on_demand(
+        on_demand_feature_registration_params,
+        iptc_third_level_on_demand_feature_registration_params,
     )
 
 

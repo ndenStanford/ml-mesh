@@ -17,6 +17,7 @@ from onclusiveml.data.feature_store import (
 from src.utils import (
     iptc_first_level_on_demand_feature_view,
     iptc_second_level_on_demand_feature_view,
+    iptc_third_level_on_demand_feature_view,
 )
 
 
@@ -99,6 +100,16 @@ class IptcSecondLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     fields: Optional[List[Tuple[str, str]]] = None
     udf: Callable = iptc_second_level_on_demand_feature_view
     model_config = SettingsConfigDict(env_prefix="second_level_on_demand_")
+
+
+class IptcThirdLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
+    """On-demand feature registration inputs."""
+
+    feature_view_name: str = "iptc_on_demand_feature_view"
+    sources: List[str]
+    fields: Optional[List[Tuple[str, str]]] = None
+    udf: Callable = iptc_third_level_on_demand_feature_view
+    model_config = SettingsConfigDict(env_prefix="third_level_on_demand_")
 
 
 class IptcLLMLabelFeatureRegistrationParams(OnclusiveBaseSettings):

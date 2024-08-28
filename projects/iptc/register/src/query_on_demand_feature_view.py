@@ -16,18 +16,20 @@ feature_view = [
     feature_view
     for feature_view in fs_handle.list_feature_views()
     # if feature_view.name == "iptc_first_level_feature_view"
-    if feature_view.name == "iptc_second_level_feature_view"
+    # if feature_view.name == "iptc_second_level_feature_view"
+    if feature_view.name == "iptc_third_level_feature_view"
 ][0]
 
 features = [f"{feature_view.name}:{feature.name}" for feature in feature_view.features]
 
 # features += ["iptc_first_level_on_demand_feature_view:topic_1_llm"]
-features += ["iptc_second_level_on_demand_feature_view:topic_2_llm"]
+# features += ["iptc_second_level_on_demand_feature_view:topic_2_llm"]
+features += ["iptc_third_level_on_demand_feature_view:topic_3_llm"]
 
 start = time.time()
 # entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_first_level"
 # LIMIT 10"""
-entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_second_level"
+entity_df = """SELECT iptc_id, CURRENT_TIMESTAMP AS event_timestamp FROM "external"."iptc_third_level"
 LIMIT 10"""
 
 dataset_df = fs_handle.fs.get_historical_features(

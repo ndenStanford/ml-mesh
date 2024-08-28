@@ -12,7 +12,7 @@ import pandas as pd
 import requests
 
 # Source
-from src.class_dict import CANDIDATE_DICT_FIRST, CANDIDATE_DICT_SECOND
+from src.class_dict import CANDIDATE_DICT_FIRST, CANDIDATE_DICT_SECOND, CANDIDATE_DICT_THIRD
 
 
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
@@ -42,6 +42,11 @@ def get_candidate_list(row, level):
         node_name = row["topic_1"]
         candidate_list = list(
             CANDIDATE_DICT_SECOND.get(node_name, {"dummy": "dummy"}).values()
+        )
+    elif level == 3:
+        node_name = row["topic_2"]
+        candidate_list = list(
+            CANDIDATE_DICT_THIRD.get(node_name, {"dummy": "dummy"}).values()
         )
 
     return candidate_list
@@ -112,6 +117,17 @@ def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Dat
 def iptc_second_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
     level = 2
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df, level))
+
+    df = pd.DataFrame()
+    col_name = get_col_name(level)
+    df[col_name] = features_df_with_label[col_name].astype(pd.StringDtype())
+    return df
+
+
+def iptc_third_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
+    """Wrapper function to run the async enrichment."""
+    level = 3
     features_df_with_label = asyncio.run(enrich_dataframe(features_df, level))
 
     df = pd.DataFrame()
