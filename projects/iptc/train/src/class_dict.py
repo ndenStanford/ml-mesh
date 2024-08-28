@@ -73,7 +73,7 @@ CANDIDATE_DICT_FIRST = [
 CLASS_DICT_FIRST = {
     "root": {
         0: "arts, culture, entertainment and media",
-        1: "conflicts, war and peace",
+        1: "conflict, war and peace",
         2: "crime, law and justice",
         3: "disaster, accident and emergency incident",
         4: "economy, business and finance",

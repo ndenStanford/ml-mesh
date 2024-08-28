@@ -240,7 +240,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def save(self) -> None:
         """Save the model."""
         self.iptc_model_local_dir = os.path.join(
-            self.model_card.local_output_dir, f"{self.tracked_model_specs.model}"
+            self.model_card.local_output_dir, f"{self.tracked_model_settings.model}"
         )
         self.trainer.save_model(self.iptc_model_local_dir)
 
