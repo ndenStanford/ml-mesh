@@ -75,8 +75,6 @@ def test_model_server_bio():
                     },
                     "parameters": {
                         "source_language": "en-GB",
-                        "target_language": "fr",
-                        "translation": True,
                     },
                 }
             },
@@ -86,9 +84,9 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "source_language": "en-GB",
-                        "target_language": "fr",
-                        "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                        "source_language": "en",
+                        "target_language": None,
+                        "translated_text": None,  # noqa
                     },
                 },
             },
@@ -192,7 +190,7 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "source_language": "ja-JP",
+                        "source_language": "ja",
                         "target_language": "en",
                         "translated_text": "This is a test to detect language, and I'm writing whatever's in my head, so I hope it doesn't matter if anyone checks it later.",  # noqa
                     },
@@ -252,6 +250,34 @@ def test_model_server_bio():
                 },
             },
         ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
+                    },
+                    "parameters": {
+                        "source_language": "de",
+                        "target_language": "fr",
+                        "translation": True,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "source_language": "en",
+                        "target_language": "fr",
+                        "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_model_server_prediction(test_client, payload, expected_response):
@@ -262,38 +288,3 @@ def test_model_server_prediction(test_client, payload, expected_response):
     )
     assert response.status_code == 200
     assert response.json() == expected_response
-
-
-@pytest.mark.parametrize(
-    "payload,expected_error_detail",
-    [
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "translation",
-                    "attributes": {
-                        "content": "Irrelevant message as we want to test the language detection.",  # noqa
-                    },
-                    "parameters": {
-                        "source_language": "invalid language",
-                        "target_language": "fr",
-                        "translation": True,
-                    },
-                }
-            },
-            "The language reference 'invalid language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
-        ),
-    ],
-)
-def test_model_server_prediction_invalid_language(
-    test_client, payload, expected_error_detail
-):
-    """Tests the language validation of the predict endpoint of a running ModelServer instance."""
-    response = test_client.post(
-        "/translation/v1/predict",
-        json=payload,
-    )
-
-    assert response.status_code == 204
-    assert response.text == ""
