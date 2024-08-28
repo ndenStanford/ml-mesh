@@ -64,7 +64,8 @@ ALL_LIBS:= \
 	tracking \
 	hashing \
 	training \
-	llms
+	llms \
+	ts
 
 # libraries included in sonarqube coverage tests
 COVERED_LIBS:= \
