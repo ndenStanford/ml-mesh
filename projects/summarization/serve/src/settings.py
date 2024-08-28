@@ -34,6 +34,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
         LanguageIso.EN: {
             "section": "ml-summarization-english",
             "bespoke": "bespokse-summary-uk",
+            "multi-article-summary": "ml-multi-articles-summarization",
         },
         LanguageIso.FR: {
             "section": "ml-summarization-french",

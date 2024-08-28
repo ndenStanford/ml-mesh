@@ -34,6 +34,9 @@ settings = get_settings()
 logger = get_default_logger(__name__)
 
 
+MULTI_ARTICLE_SUMMARY = "multi-article-summary"
+
+
 class SummarizationServedModel(ServedModel):
     """Summarization model."""
 
@@ -91,15 +94,23 @@ class SummarizationServedModel(ServedModel):
         )
         return response.attributes.translated_text
 
-    def _retrieve_prompt_alias(self, input_language: str, summary_type: str) -> str:
+    def _retrieve_prompt_alias(
+        self, input_language: str, summary_type: str, multiple_article_summary: bool
+    ) -> str:
         """Retrieves prompt alias.
 
         Args:
             input_language (str): input content language
             summary_type (str): summary type
+            multiple_article_summary (bool): whether it is a multi-article summary
         """
         try:
-            alias = settings.summarization_prompts[input_language][summary_type]
+            if multiple_article_summary:
+                alias = settings.summarization_prompts[input_language][summary_type]
+            else:
+                alias = settings.summarization_prompts[LanguageIso.EN][
+                    MULTI_ARTICLE_SUMMARY
+                ]
         except KeyError:
             raise PromptNotFoundException(
                 language=input_language, summary_type=summary_type
@@ -163,6 +174,12 @@ class SummarizationServedModel(ServedModel):
             payload.parameters.output_language
         )
         # identify language (needed to retrieve the appropriate prompt)
+        multiple_article_summary = False
+        if type(content) == list:
+            multiple_article_summary = True
+            content = {
+                f"Article {i}": f"```{article}```" for i, article in enumerate(content)
+            }
         if input_language is None:
             input_language = self._identify_language(content)
             logger.debug(f"Detected content language: {input_language}")
@@ -175,7 +192,9 @@ class SummarizationServedModel(ServedModel):
 
         try:
             prompt_alias = self._retrieve_prompt_alias(
-                input_language=input_language, summary_type=parameters.summary_type
+                input_language=input_language,
+                summary_type=parameters.summary_type,
+                multiple_article_summary=multiple_article_summary,
             )
         except LanguageNotSupportedException as e:
             logger.error(f"Summarization language {input_language} not supported.")
