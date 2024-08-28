@@ -167,9 +167,9 @@ jobs       :
             integration: false
             functional: false
 
-      #    - name: feature_store
-      #      integration: false
-      #      functional: false
+          - name: feature_store
+            integration: false
+            functional: false
 
 
     with:
