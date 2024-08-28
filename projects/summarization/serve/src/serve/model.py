@@ -105,7 +105,7 @@ class SummarizationServedModel(ServedModel):
             multiple_article_summary (bool): whether it is a multi-article summary
         """
         try:
-            if multiple_article_summary:
+            if not multiple_article_summary:
                 alias = settings.summarization_prompts[input_language][summary_type]
             else:
                 alias = settings.summarization_prompts[LanguageIso.EN][
@@ -175,6 +175,7 @@ class SummarizationServedModel(ServedModel):
         )
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
+        content = eval(content)
         if type(content) == list:
             multiple_article_summary = True
             content = {
@@ -210,7 +211,7 @@ class SummarizationServedModel(ServedModel):
                 "Content field is empty. This will result in no summary being returned"
             )
 
-        content = re.sub("\n+", " ", content)
+        content = re.sub("\n+", " ", str(content))
 
         summary = self._inference(
             content=content,

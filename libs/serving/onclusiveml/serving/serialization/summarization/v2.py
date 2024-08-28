@@ -1,7 +1,7 @@
 """Summarization v2 data schemas."""
 
 # Standard Library
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 # Internal libraries
 from onclusiveml.core.serialization import JsonApiSchema
@@ -11,10 +11,10 @@ class PredictRequestAttributeSchemaV2(JsonApiSchema):
     """Prediction request data.
 
     Attributes:
-        content (Union[str, List[str]]): Content for prediction.
+        content (str): Content for prediction.
     """
 
-    content: Union[str, List[str]] = ""
+    content: str = ""
 
 
 class PredictRequestParametersSchemaV2(JsonApiSchema):
