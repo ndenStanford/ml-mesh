@@ -47,7 +47,7 @@ def test_model_server_bio():
                         "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
                     },
                     "parameters": {
-                        "target_language": "fr-FR",
+                        "target_language": "fr",
                         "translation": True,
                     },
                 }
@@ -59,7 +59,35 @@ def test_model_server_bio():
                     "namespace": "translation",
                     "attributes": {
                         "source_language": "en",
-                        "target_language": "fr-FR",
+                        "target_language": "fr",
+                        "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
+                    },
+                    "parameters": {
+                        "source_language": "en-GB",
+                        "target_language": "fr",
+                        "translation": True,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "source_language": "en-GB",
+                        "target_language": "fr",
                         "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
