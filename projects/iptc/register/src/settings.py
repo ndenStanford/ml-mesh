@@ -14,7 +14,11 @@ from onclusiveml.data.feature_store import (
 )
 
 # Source
-from src.utils import iptc_first_level_on_demand_feature_view
+from src.utils import (
+    iptc_first_level_on_demand_feature_view,
+    iptc_second_level_on_demand_feature_view,
+    iptc_third_level_on_demand_feature_view,
+)
 
 
 class FeatureRegistrationParams(FeatureStoreParams):
@@ -27,7 +31,7 @@ class FeatureRegistrationParams(FeatureStoreParams):
     feature_view_name: str = "iptc_feature_view"
     fields: Optional[List[Tuple[str, str]]] = None
     entity_join_key: str = "iptc_id"
-    register_features: bool = False
+    register_features: bool = True
 
 
 class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
@@ -42,7 +46,7 @@ class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
     fields: Optional[List[Tuple[str, str]]] = None
     sources: List[str] = ["iptc_feature_view"]
     udf: Callable = iptc_first_level_on_demand_feature_view
-    register_features: bool = False
+    register_features: bool = True
 
 
 class IptcFirstLevelFeatureRegistrationParams(OnclusiveBaseSettings):
@@ -81,11 +85,31 @@ class IptcThirdLevelFeatureRegistrationParams(OnclusiveBaseSettings):
 class IptcFirstLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     """On-demand feature registration inputs."""
 
-    feature_view_name: str
+    feature_view_name: str = "iptc_on_demand_feature_view"
     sources: List[str]
     fields: Optional[List[Tuple[str, str]]] = None
     udf: Callable = iptc_first_level_on_demand_feature_view
     model_config = SettingsConfigDict(env_prefix="first_level_on_demand_")
+
+
+class IptcSecondLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
+    """On-demand feature registration inputs."""
+
+    feature_view_name: str = "iptc_on_demand_feature_view"
+    sources: List[str]
+    fields: Optional[List[Tuple[str, str]]] = None
+    udf: Callable = iptc_second_level_on_demand_feature_view
+    model_config = SettingsConfigDict(env_prefix="second_level_on_demand_")
+
+
+class IptcThirdLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
+    """On-demand feature registration inputs."""
+
+    feature_view_name: str = "iptc_on_demand_feature_view"
+    sources: List[str]
+    fields: Optional[List[Tuple[str, str]]] = None
+    udf: Callable = iptc_third_level_on_demand_feature_view
+    model_config = SettingsConfigDict(env_prefix="third_level_on_demand_")
 
 
 class IptcLLMLabelFeatureRegistrationParams(OnclusiveBaseSettings):
