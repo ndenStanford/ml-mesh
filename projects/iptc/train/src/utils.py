@@ -98,7 +98,7 @@ class PromptBackendAPISettings:
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.prod.onclusive.com"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-e7OtXaIMzp7wxjJkz7kILyO3gYrrh0ez"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
