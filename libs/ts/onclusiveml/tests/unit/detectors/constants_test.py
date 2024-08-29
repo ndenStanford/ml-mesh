@@ -27,7 +27,10 @@ from onclusiveml.ts.timeseries import TimeSeriesData
 
 
 class SingleSpikeTest(TestCase):
+    """Single spike test."""
+
     def test_spike(self) -> None:
+        """Test spike."""
         spike_time_str = "2020-03-01"
         spike_time = datetime.strptime(spike_time_str, "%Y-%m-%d")
         spike = SingleSpike(time=spike_time, value=1.0, n_sigma=3.0)
@@ -35,10 +38,11 @@ class SingleSpikeTest(TestCase):
 
 
 class UnivariateChangePointIntervalTest(TestCase):
-    # test for univariate time series
-    def setUp(self) -> None:
-        np.random.seed(100)
+    """Tests for univariate time series."""
 
+    def setUp(self) -> None:
+        """Setup test data."""
+        np.random.seed(100)
         date_start_str = "2020-03-01"
         date_start = datetime.strptime(date_start_str, "%Y-%m-%d")
         self.previous_seq = [date_start + timedelta(days=x) for x in range(15)]
@@ -95,12 +99,13 @@ class UnivariateChangePointIntervalTest(TestCase):
         self.spike_list = self.current_int.spikes
 
     def test_start_end_date(self) -> None:
-        # tests whether data is clipped property to start and end dates
+        """Tests whether data is clipped property to start and end dates."""
         np.testing.assert_array_equal(
             self.previous_values[0:9], self.previous_int_test.data
         )
 
     def test_interval_seq_length(self) -> None:
+        """Test internal sequence length."""
         self.assertEqual(len(self.previous_int), len(self.previous_seq))
 
     @parameterized.expand(
@@ -116,18 +121,22 @@ class UnivariateChangePointIntervalTest(TestCase):
     )
     # check all the properties
     def test_properties(self, attribute: str, initial_object: str) -> None:
+        """Test properties."""
         self.assertEqual(
             attrgetter(attribute)(self.current_int), attrgetter(initial_object)(self)
         )
 
     def test_length(self) -> None:
+        """Test length."""
         self.assertEqual(len(self.current_int), self.current_length)
 
     # check spike detection
     def test_spike_start_value(self) -> None:
+        """Test spike detection."""
         self.assertEqual(self.spike_list[0].value, 100.0)
 
     def test_spike_start_time_str(self) -> None:
+        """Test spike detection start time."""
         self.assertEqual(
             self.spike_list[0].time_str,
             self.current_start_time_str,
@@ -135,10 +144,11 @@ class UnivariateChangePointIntervalTest(TestCase):
 
 
 class MultivariateChangePointIntervalTest(TestCase):
-    # test for multivariate time series
-    def setUp(self) -> None:
-        np.random.seed(100)
+    """Test for multivariate time series."""
 
+    def setUp(self) -> None:
+        """Setup test data."""
+        np.random.seed(100)
         date_start_str = "2020-03-01"
         date_start = datetime.strptime(date_start_str, "%Y-%m-%d")
 
@@ -238,7 +248,7 @@ class MultivariateChangePointIntervalTest(TestCase):
         self.spike_array = self.current_int.spikes
 
     def test_start_end_date(self) -> None:
-        # tests whether data is clipped properly to start and end dates
+        """Tests whether data is clipped properly to start and end dates."""
         for i in range(self.num_seq):
             self.assertEqual(
                 self.previous_int1.data[:, i].tolist(),
@@ -246,7 +256,7 @@ class MultivariateChangePointIntervalTest(TestCase):
             )
 
     def test_extend_length_except_last_point(self) -> None:
-        # test extending the data to include the whole sequence except the last point
+        """Test extending the data to include the whole sequence except the last point."""
         self.assertEqual(len(self.previous_int) + 1, len(self.previous_seq))
 
     #  `parameterized.parameterized.parameterized.expand([["previous_int2"],
@@ -258,6 +268,7 @@ class MultivariateChangePointIntervalTest(TestCase):
         ]
     )
     def test_extend_length(self, attribute: str) -> None:
+        """Test extend length."""
         self.assertEqual(len(attrgetter(attribute)(self)), len(self.previous_seq))
 
     @parameterized.expand(
@@ -271,7 +282,7 @@ class MultivariateChangePointIntervalTest(TestCase):
         ]
     )
     def check_current_int_properties(self, attribute: str, initial_object: str) -> None:
-        # check all the properties
+        """Check all the properties."""
         self.assertEqual(
             attrgetter(attribute)(self.current_int), attrgetter(initial_object)(self)
         )
@@ -285,6 +296,7 @@ class MultivariateChangePointIntervalTest(TestCase):
         ]
     )
     def check_current_int_mean_var(self, attribute: str, initial_object: str) -> None:
+        """Check current int mean var."""
         self.assertEqual(
             attrgetter(attribute)(self.current_int).tolist(),
             attrgetter(initial_object)(self),
@@ -296,15 +308,18 @@ class MultivariateChangePointIntervalTest(TestCase):
         [["current_int", "current_length"], ["spike_array", "num_seq"]]
     )
     def check_length(self, attribute: str, initial_object: str) -> None:
+        """Check length."""
         self.assertEqual(
             len(attrgetter(attribute)(self)), attrgetter(initial_object)(self)
         )
 
     def check_spike_array_value(self) -> None:
+        """Check spike array value."""
         for i in range(self.num_seq):
             self.assertEqual(self.spike_array[i][0].value, 100 * (i + 1))
 
     def check_spike_array_time_str(self) -> None:
+        """Check spile array time."""
         for i in range(self.num_seq):
             self.assertEqual(
                 self.spike_array[i][0].time_str,
@@ -313,10 +328,11 @@ class MultivariateChangePointIntervalTest(TestCase):
 
 
 class UnivariatePercentageChangeTest(TestCase):
-    # test for univariate time series
-    def setUp(self) -> None:
-        np.random.seed(100)
+    """Test for univariate time series."""
 
+    def setUp(self) -> None:
+        """Setup test data."""
+        np.random.seed(100)
         date_start_str = "2020-03-01"
         date_start = datetime.strptime(date_start_str, "%Y-%m-%d")
         previous_seq = [date_start + timedelta(days=x) for x in range(30)]
@@ -402,12 +418,14 @@ class UnivariatePercentageChangeTest(TestCase):
     #  ["perc_change_2", False]])`.
     @parameterized.expand([["perc_change_1", True], ["perc_change_2", False]])
     def test_stat_sig(self, obj: str, ans: bool) -> None:
+        """Test stat sig."""
         self.assertEqual(attrgetter(obj)(self).stat_sig, ans)
 
     #  `parameterized.parameterized.parameterized.expand([["perc_change_1", True],
     #  ["perc_change_2", False]])`.
     @parameterized.expand([["perc_change_1", True], ["perc_change_2", False]])
     def test_p_value(self, obj: str, ans: bool) -> None:
+        """Test p-value."""
         self.assertEqual(attrgetter(obj)(self).p_value < 0.05, ans)
 
     #  `parameterized.parameterized.parameterized.expand([["perc_change_1", True],
@@ -420,33 +438,38 @@ class UnivariatePercentageChangeTest(TestCase):
         ]
     )
     def test_score(self, obj: str, ans: bool) -> None:
+        """Test score."""
         self.assertEqual(attrgetter(obj)(self).score > 1.96, ans)
 
     def test_ratio_estimate(self) -> None:
+        """Test ratio estimate."""
         self.assertEqual(self.perc_change_1.ratio_estimate, self.ratio_val_1)
 
     def test_approx_ratio_estimate(self) -> None:
+        """Test approximation ratio estimate."""
         self.assertAlmostEqual(cast(float, self.perc_change_1.ratio_estimate), 10.0, 0)
 
     def test_direction(self) -> None:
+        """Test direction."""
         self.assertEqual(self.perc_change_1.direction, "up")
 
     def test_perc_change(self) -> None:
+        """Test percentage change."""
         self.assertEqual(self.perc_change_1.perc_change, (self.ratio_val_1 - 1) * 100)
 
     def test_degenerate(self) -> None:
+        """Test degenerate data."""
         self.assertTrue(np.isnan(self.perc_change_4.score))
         self.assertTrue(np.isnan(self.perc_change_4.ci_lower))
         self.assertTrue(np.isnan(self.perc_change_4.ci_upper))
 
-    # TODO delta method tests
-
 
 class MultivariatePercentageChangeTest(TestCase):
-    # test for multivariate time series
-    def setUp(self) -> None:
-        np.random.seed(100)
+    """Test for multivariate time series."""
 
+    def setUp(self) -> None:
+        """Setup test data."""
+        np.random.seed(100)
         date_start_str = "2020-03-01"
         date_start = datetime.strptime(date_start_str, "%Y-%m-%d")
         previous_seq = [date_start + timedelta(days=x) for x in range(30)]
@@ -573,6 +596,7 @@ class MultivariatePercentageChangeTest(TestCase):
         ]
     )
     def test_p_value(self, obj: str, ans: bool) -> None:
+        """Test p-value."""
         self.assertListEqual(
             (attrgetter(obj)(self).p_value < 0.05).tolist(),
             [ans] * self.num_seq,
@@ -585,6 +609,7 @@ class MultivariatePercentageChangeTest(TestCase):
         ]
     )
     def test_stat_sig(self, obj: str, ans: bool) -> None:
+        """Test stat sig."""
         self.assertListEqual(
             (attrgetter(obj)(self).stat_sig).tolist(), [ans] * self.num_seq
         )
@@ -597,26 +622,30 @@ class MultivariatePercentageChangeTest(TestCase):
         ]
     )
     def test_score(self, obj: str, ans: bool) -> None:
+        """Test score."""
         self.assertListEqual(
             (attrgetter(obj)(self).score > 1.96).tolist(),
             [ans] * self.num_seq,
         )
 
     def test_score_negative(self) -> None:
+        """Test score negative."""
         self.assertListEqual(
             (self.perc_change_3.score < -1.96).tolist(),
             [True] * self.num_seq,
         )
 
     def test_approx_ratio_estimate(self) -> None:
-        #  `__iter__`.
+        """Test approximation ratio."""
         for r in self.perc_change_1.ratio_estimate:
             self.assertAlmostEqual(r, 10.0, 0)
 
     def test_direction(self) -> None:
+        """Test direction."""
         self.assertEqual(self.perc_change_1.direction.tolist(), ["up"] * self.num_seq)
 
     def test_perc_change(self) -> None:
+        """Test percentage change."""
         self.assertListEqual(
             self.perc_change_1.perc_change.tolist(),
             ((self.ratio_val_1 - 1) * 100).tolist(),
@@ -624,10 +653,11 @@ class MultivariatePercentageChangeTest(TestCase):
 
 
 class TestUnivariateAnomalyResponse(TestCase):
-    # test anomaly response for univariate time series
-    def setUp(self) -> None:
-        np.random.seed(100)
+    """Test anomaly response for univariate time series."""
 
+    def setUp(self) -> None:
+        """Setup test data."""
+        np.random.seed(100)
         date_start_str = "2020-03-01"
         date_start = datetime.strptime(date_start_str, "%Y-%m-%d")
         previous_seq = [date_start + timedelta(days=x) for x in range(30)]
@@ -710,7 +740,7 @@ class TestUnivariateAnomalyResponse(TestCase):
         )
 
     def test_response_univariate(self) -> None:
-        #  Ensure that num_series is properly populated - this response object is univariate
+        """Ensure that num_series is properly populated - this response object is univariate."""
         self.assertEqual(self.response.num_series, 1)
 
     #  `parameterized.parameterized.parameterized.expand([["scores"],
@@ -727,7 +757,7 @@ class TestUnivariateAnomalyResponse(TestCase):
         ]
     )
     def test_update_response_preserves_length(self, attribute: str) -> None:
-        # assert that all the lengths of the time series are preserved
+        """Assert that all the lengths of the time series are preserved."""
         self.assertEqual(len(attrgetter(attribute)(self.response)), self.N)
 
     #  `parameterized.parameterized.parameterized.expand([["scores"],
@@ -744,6 +774,7 @@ class TestUnivariateAnomalyResponse(TestCase):
         ]
     )
     def test_get_last_n_length(self, attribute: str) -> None:
+        """Test last n length."""
         n_val = 10
         response_last_n = self.response.get_last_n(n_val)
         self.assertEqual(len(attrgetter(attribute)(response_last_n)), n_val)
@@ -761,6 +792,7 @@ class TestUnivariateAnomalyResponse(TestCase):
     def test_update_one_point_forward(
         self, attribute: str, initial_object: str
     ) -> None:
+        """Test update one point forward."""
         self.assertEqual(
             attrgetter(attribute)(self.response).value[0],
             attrgetter(initial_object)(self).value[1],
@@ -777,12 +809,13 @@ class TestUnivariateAnomalyResponse(TestCase):
         ]
     )
     def test_last_point(self, attribute: str, new_value: float) -> None:
-        # assert that a new point has been added to the end
+        """Assert that a new point has been added to the end."""
         self.assertEqual(
             attrgetter(attribute)(self.response).value.values[-1], new_value
         )
 
     def test_get_last_n_values(self) -> None:
+        """Test get last n values."""
         n_val = 10
         response_last_n = self.response.get_last_n(n_val)
         # assert that we return the last N values
@@ -792,6 +825,7 @@ class TestUnivariateAnomalyResponse(TestCase):
         )
 
     def test_extend(self) -> None:
+        """Test extend."""
         extension_len = 10
         shifted_time = self.response.scores.time + (
             pd.Timedelta(self.response.scores.time[:2].diff()[1].value)
@@ -856,19 +890,23 @@ class TestUnivariateAnomalyResponse(TestCase):
             )
 
     def test_extend_fail_validation(self) -> None:
+        """Test extend fail validation."""
         with self.assertRaises(ValueError):
             self.response.extend(self.response, validate=True)
         # When validate = False, this should succeed
         self.response_min_required.extend(self.response_min_required, validate=False)
 
     def test_extend_mismatch(self) -> None:
+        """Test extend mismatch."""
         with self.assertRaises(ValueError):
             self.response.extend(self.response_min_required, validate=False)
 
 
 class TestMultivariateAnomalyResponse(TestCase):
-    # test anomaly response for multivariate time series
+    """Test anomaly response for multivariate time series."""
+
     def setUp(self) -> None:
+        """Setup test data."""
         np.random.seed(100)
 
         date_start_str = "2020-03-01"
@@ -993,7 +1031,7 @@ class TestMultivariateAnomalyResponse(TestCase):
         self.N = len(previous_seq)
 
     def test_response_num_series(self) -> None:
-        # Ensure that num_series is properly populated
+        """Ensure that num_series is properly populated."""
         self.assertEqual(self.response.num_series, self.num_seq)
 
     #  `parameterized.parameterized.parameterized.expand([["scores"],
@@ -1010,7 +1048,7 @@ class TestMultivariateAnomalyResponse(TestCase):
         ]
     )
     def test_update_response_preserves_length(self, attribute: str) -> None:
-        # assert that all the lengths of the time series are preserved
+        """Assert that all the lengths of the time series are preserved."""
         self.assertEqual(len(attrgetter(attribute)(self.response)), self.N)
 
     @parameterized.expand(
@@ -1026,6 +1064,7 @@ class TestMultivariateAnomalyResponse(TestCase):
     def test_update_one_point_forward(
         self, attribute: str, initial_object: str
     ) -> None:
+        """Test update one point forward."""
         self.assertEqual(
             attrgetter(attribute)(self.response).value.iloc[0].tolist(),
             attrgetter(initial_object)(self).value.iloc[1].tolist(),
@@ -1042,7 +1081,7 @@ class TestMultivariateAnomalyResponse(TestCase):
         ]
     )
     def test_last_point(self, attribute: str, new_value: float) -> None:
-        # assert that a new point has been added to the end
+        """Test that a new point has been added to the end."""
         self.assertEqual(
             attrgetter(attribute)(self.response).value.iloc[-1].tolist(),
             (np.ones(self.num_seq) * new_value).tolist(),
@@ -1062,11 +1101,13 @@ class TestMultivariateAnomalyResponse(TestCase):
         ]
     )
     def test_get_last_n_length(self, attribute: str) -> None:
+        """Test get last n."""
         n_val = 10
         response_last_n = self.response.get_last_n(n_val)
         self.assertEqual(len(attrgetter(attribute)(response_last_n)), n_val)
 
     def test_get_last_n_values(self) -> None:
+        """Test get last n values."""
         n_val = 10
         response_last_n = self.response.get_last_n(n_val)
         # assert that we return the last N values
@@ -1076,6 +1117,7 @@ class TestMultivariateAnomalyResponse(TestCase):
         )
 
     def test_extend(self) -> None:
+        """Test extend."""
         extension_len = 10
         shifted_time = self.response.scores.time + (
             pd.Timedelta(self.response.scores.time[:2].diff()[1].value)
@@ -1140,11 +1182,13 @@ class TestMultivariateAnomalyResponse(TestCase):
             )
 
     def test_extend_fail_validation(self) -> None:
+        """Test extend fail validation."""
         with self.assertRaises(ValueError):
             self.response.extend(self.response, validate=True)
         # When validate = False, this should succeed
         self.response_min_required.extend(self.response_min_required, validate=False)
 
     def test_extend_mismatch(self) -> None:
+        """Test extend mismatch."""
         with self.assertRaises(ValueError):
             self.response.extend(self.response_min_required, validate=False)

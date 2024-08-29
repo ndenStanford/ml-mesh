@@ -26,6 +26,7 @@ from onclusiveml.ts.timeseries import TimeSeriesData
 
 class DecompositionTest(TestCase):
     def setUp(self) -> None:
+        """Setup test data."""
         data = load_air_passengers(return_ts=False)
         self.ts_data = TimeSeriesData(data)
 

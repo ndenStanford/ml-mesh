@@ -17,8 +17,8 @@ from statsmodels.tsa.seasonal import STL, seasonal_decompose
 # Internal libraries
 from onclusiveml.ts.constants import IRREGULAR_GRANULARITY_ERROR
 from onclusiveml.ts.exceptions import (
-    DataError,
-    DataIrregularGranularityError,
+    DataException,
+    IrregularGranularityException,
     ParameterError,
 )
 from onclusiveml.ts.timeseries import TimeSeriesData
@@ -315,7 +315,7 @@ class SeasonalityHandler:
         if len(data) < 7:
             msg = "Input data for SeasonalityHandler must have at least 7 data points."
             _log.error(msg)
-            raise DataError(msg)
+            raise DataException(msg)
 
         self.data = data
 
@@ -350,7 +350,7 @@ class SeasonalityHandler:
                     self.frequency = freq_counts.index[0]
                 else:
                     _log.debug(f"freq_counts: {freq_counts}")
-                    raise DataIrregularGranularityError(IRREGULAR_GRANULARITY_ERROR)
+                    raise IrregularGranularityException(IRREGULAR_GRANULARITY_ERROR)
 
         self.frequency_sec: int = int(self.frequency.total_seconds())
         self.frequency_sec_str: str = str(self.frequency_sec) + "s"
@@ -371,7 +371,7 @@ class SeasonalityHandler:
 
         data_time_idx = self.decomposer_input.time.isin(self.data.time)
         if len(self.decomposer_input.time[data_time_idx]) != len(self.data):
-            raise DataIrregularGranularityError(IRREGULAR_GRANULARITY_ERROR)
+            raise IrregularGranularityException(IRREGULAR_GRANULARITY_ERROR)
 
         self.period: int = min(
             int(self.seasonal_period / self.frequency.total_seconds()),
@@ -439,6 +439,7 @@ class SeasonalityHandler:
             self.decomp[str(i)] = decomposer.decomposer()
 
     def remove_seasonality(self) -> TimeSeriesData:
+        """Remove seasonality."""
         if self.decomp is None:
             self._decompose()
         if not self.ifmulti:
@@ -467,6 +468,7 @@ class SeasonalityHandler:
         return self.data_nonseason
 
     def get_seasonality(self) -> TimeSeriesData:
+        """Get seasonality."""
         if self.decomp is None:
             self._decompose()
         decomp = self.decomp

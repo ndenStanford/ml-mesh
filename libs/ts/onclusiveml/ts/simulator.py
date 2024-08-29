@@ -104,6 +104,7 @@ class Simulator:
 
         Returns:
             ts: TimeSeries generated.
+
         Examples:
         >>> sim = Simulator(n=100, freq="MS", start = pd.to_datetime("2011-01-01 00:00:00"))
         >>> np.random.seed(100)

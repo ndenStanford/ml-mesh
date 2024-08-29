@@ -2,27 +2,28 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+"""Exceptions."""
 
 
-class TimeSeriesError(Exception):
-    pass
+class TimeSeriesException(Exception):
+    """Time Series Exception."""
 
 
-class DataError(TimeSeriesError):
-    pass
+class DataException(TimeSeriesException):
+    """Data Exception."""
 
 
-class DataIrregularGranularityError(DataError):
-    pass
+class IrregularGranularityException(DataException):
+    """Irregular granularity exception."""
 
 
-class DataInsufficientError(DataError):
-    pass
+class InsufficientDataException(DataException):
+    """Insufficient data exeption."""
 
 
-class ParameterError(TimeSeriesError):
-    pass
+class ParameterError(TimeSeriesException):
+    """Parameter error."""
 
 
-class InternalError(TimeSeriesError):
-    pass
+class InternalError(TimeSeriesException):
+    """Internal error."""

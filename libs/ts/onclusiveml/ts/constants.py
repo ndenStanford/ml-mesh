@@ -4,18 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 """Constants."""
 
-"""
-This module contains some of the key data structures in the Kats library,
-including :class:`TimeSeriesData`, :class:`TimeSeriesChangePoint`, and
-:class:`TimeSeriesIterator`.
-
-:class:`TimeSeriesChangePoint` is the return type of many of the Kats detection
-algorithms.
-
-:class:`TimeSeriesData` is the fundamental data structure in the Kats library,
-that gives uses access to a host of forecasting, detection, and utility
-algorithms right at the user's fingertips.
-"""
 
 # Standard Library
 from enum import Enum, IntEnum, auto, unique
@@ -73,40 +61,8 @@ class Directionality(IntEnum):
 
 
 @unique
-class ModelEnum(Enum):
-    """
-    This enum lists the options of models to be set for default search space in
-    hyper-parameter tuning.
-    """
-
-    ARIMA = auto()
-    SARIMA = auto()
-    PROPHET = auto()
-    HOLTWINTERS = auto()
-    LINEAR = auto()
-    QUADRATIC = auto()
-
-
-@unique
-class SearchMethodEnum(Enum):
-    """
-    This enum lists the options of search algorithms to be used in
-    hyper-parameter tuning.
-    """
-
-    GRID_SEARCH = auto()
-    RANDOM_SEARCH_UNIFORM = auto()
-    RANDOM_SEARCH_SOBOL = auto()
-    BAYES_OPT = auto()
-    NEVERGRAD = auto()
-
-
-@unique
 class OperationsEnum(Enum):
-    """
-    This enum lists all the mathematical operations that can be performed on
-    :class:`TimeSeriesData` objects.
-    """
+    """Mathematical operations that can be performed on:class:`TimeSeriesData` objects."""
 
     ADD = auto()
     SUB = auto()

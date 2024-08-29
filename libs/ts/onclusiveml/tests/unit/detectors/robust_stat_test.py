@@ -25,7 +25,10 @@ from onclusiveml.ts.timeseries import TimeSeriesData
 
 
 class RobustStatTest(TestCase):
+    """Robust stat test."""
+
     def setUp(self) -> None:
+        """Setup test data."""
         self.random_seed = 10
         np.random.seed(self.random_seed)
         self.dates = pd.Series(pd.date_range("2019-01-01", "2019-03-01"))
@@ -96,6 +99,7 @@ class RobustStatTest(TestCase):
         ]
     )
     def test_length(self, change_points: str, ans: int) -> None:
+        """Test length."""
         self.assertEqual(len(attrgetter(change_points)(self)), ans)
 
     @parameterized.expand(
@@ -109,9 +113,11 @@ class RobustStatTest(TestCase):
         ]
     )
     def test_plot(self, detector: str, change_points: str) -> None:
+        """Test plot."""
         attrgetter(detector)(self).plot(attrgetter(change_points)(self))
 
     def test_raise_error(self) -> None:
+        """Test raise error."""
         D = 10
         mean1 = np.ones(D)
         mean2 = mean1 * 2

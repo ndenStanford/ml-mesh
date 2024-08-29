@@ -20,8 +20,8 @@ from onclusiveml.ts.base.detector import DetectorModel
 from onclusiveml.ts.decomposition import SeasonalityHandler
 from onclusiveml.ts.detectors.constants import AnomalyResponse
 from onclusiveml.ts.exceptions import (
-    DataError,
-    DataInsufficientError,
+    DataException,
+    InsufficientDataException,
     InternalError,
     ParameterError,
 )
@@ -318,7 +318,7 @@ class RollingStatsModel(DetectorModel):
 
         if n_points_hist_data < rolling_window:
             if not self.allow_expanding_window:
-                raise DataInsufficientError(
+                raise InsufficientDataException(
                     f"{n_points_hist_data} vs. {rolling_window}. "
                     "Insufficient historical data provided! Either decrease the "
                     "rolling_window parameter or increase the history window."
@@ -379,12 +379,12 @@ class RollingStatsModel(DetectorModel):
             historical_data (Optional[TimeSeriesData]): historical data
         """
         if not data.is_univariate():
-            raise DataError(
+            raise DataException(
                 "Multiple time series not supported for RollingStats algorithm."
             )
 
         if historical_data and not historical_data.is_univariate():
-            raise DataError(
+            raise DataException(
                 "Multiple time series not supported for RollingStats algorithm."
             )
         # pull all the data in historical data

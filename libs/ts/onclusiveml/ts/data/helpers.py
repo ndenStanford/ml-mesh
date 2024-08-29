@@ -2,26 +2,11 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-
-
-"""Base I/O code for time series data in Kats
-
-This is a base implementation to load datasets for test and evaluation/benchmarking
-purposes. We currently support the following data sets:
-
-1. air passengers data
-2. m3 meta data
-3. Peyton manning data
-4. retail sales data
-5. yosemite temps data
-6. multi ts data
-7. mean change detection test data
-8. multivariate anomaly simulated data
-"""
+"""Helpers."""
 
 # Standard Library
 import os
-from typing import Literal, Union, overload
+from typing import Union
 
 # 3rd party libraries
 import pandas as pd
@@ -32,7 +17,7 @@ from onclusiveml.ts.timeseries import TimeSeriesData
 
 
 def load_data(file_name: str, reset_columns: bool = False) -> pd.DataFrame:
-    """load data for tests and tutorial notebooks"""
+    """Load data for tests and tutorial notebooks."""
     root = os.path.join(os.getcwd(), ROOT)
     df = pd.read_csv(os.path.join(root, "data", file_name), encoding="utf8")
     if reset_columns:
@@ -40,18 +25,8 @@ def load_data(file_name: str, reset_columns: bool = False) -> pd.DataFrame:
     return df
 
 
-@overload
-def load_air_passengers(return_ts: Literal[True]) -> TimeSeriesData:
-    ...
-
-
-@overload
-def load_air_passengers(return_ts: Literal[False] = ...) -> pd.DataFrame:
-    ...
-
-
 def load_air_passengers(return_ts: bool = True) -> Union[pd.DataFrame, TimeSeriesData]:
-    """Load and return air passengers time series dataset
+    """Load and return air passengers time series dataset.
 
     ==============================
     Length                     144

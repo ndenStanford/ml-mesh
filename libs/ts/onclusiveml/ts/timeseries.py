@@ -718,8 +718,7 @@ class TimeSeriesData:
         return len(self.value.shape) == 1
 
     def to_dataframe(self, standard_time_col_name: bool = False) -> pd.DataFrame:
-        """
-        Converts the :class:`TimeSeriesData` object into a `pandas.DataFrame`.
+        """Converts the TimeSeriesData object into a pandas.DataFrame.
 
         Args:
           standard_time_col (optional): True if the DataFrame's time column name

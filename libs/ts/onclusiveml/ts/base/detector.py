@@ -60,7 +60,7 @@ class DetectorModelRegistry(ABCMeta, Generic[D]):
     def __new__(
         cls, name: str, bases: Tuple[Type[T], ...], attrs: Dict[str, Any]
     ) -> Type[T]:
-        # Create the new class object (callable)
+        """Create the new class object (callable)."""
         new_cls = type.__new__(cls, name, bases, attrs)
         # Only store instantiable (non-abstract) types
         if not inspect.isabstract(new_cls):
@@ -71,10 +71,12 @@ class DetectorModelRegistry(ABCMeta, Generic[D]):
 
     @classmethod
     def get_registry(cls) -> Dict[str, Type[D]]:
+        """Returns registry object."""
         return dict(cls.REGISTRY)
 
     @classmethod
     def get_detector_model_by_name(cls, class_name: str) -> Type[D]:
+        """Get detector model by name."""
         try:
             # Return the class object that can be called to instantiate the class
             return cls.REGISTRY[class_name]
@@ -102,6 +104,7 @@ class Detector(ABC):
 
     @abstractmethod
     def detector(self, method: Optional[str] = None) -> Sequence[TimeSeriesChangePoint]:
+        """Detector call."""
         raise NotImplementedError()
 
     def remover(self, interpolate: bool = False) -> TimeSeriesData:
@@ -135,12 +138,12 @@ class Detector(ABC):
         return ts_out
 
     def plot(self, **kwargs: Any) -> Union[plt.Axes, Sequence[plt.Axes], Figure]:
+        """Plots data."""
         raise NotImplementedError()
 
 
 class DetectorModel(metaclass=DetectorModelRegistry):
     """Base Detector model class to be inherited by specific detectors.
-
 
     A DetectorModel keeps the state of the Detector, and implements the incremental
     model training. The usage of the DetectorModel is:

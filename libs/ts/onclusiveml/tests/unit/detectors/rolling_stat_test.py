@@ -16,8 +16,8 @@ from parameterized.parameterized import parameterized
 # Internal libraries
 from onclusiveml.ts.detectors.rolling_stats import RollingStatsModel
 from onclusiveml.ts.exceptions import (
-    DataError,
-    DataInsufficientError,
+    DataException,
+    InsufficientDataException,
     InternalError,
     ParameterError,
 )
@@ -110,7 +110,7 @@ def generate_irregular_granularity_data(
     length: int = 200,
     percentage: float = 0.7,
     seed: int = 0,
- ) -> TimeSeriesData:
+) -> TimeSeriesData:
     """Generate irregular granularity data."""
     np.random.seed(seed)
     n = int(length * percentage)
@@ -126,6 +126,7 @@ def generate_irregular_granularity_data(
 
 class TestRollingStatsModels(TestCase):
     """Test rolling stats models."""
+
     @parameterized.expand(
         [
             # score func, window, point_based, seasonality
@@ -213,6 +214,7 @@ class TestRollingStatsModels(TestCase):
         point_based: bool,
         remove_seasonality: bool,
     ) -> None:
+        """Test data with individual missing datapoints."""
         ig_ts = generate_data_with_individual_missing_datapoints()
 
         window_size_points = window_size
@@ -273,6 +275,7 @@ class TestRollingStatsModels(TestCase):
         point_based: bool,
         remove_seasonality: bool,
     ) -> None:
+        """Test data wuth granularity change."""
         ig_ts = generate_data_with_sudden_granularity_changes()
 
         window_size_points = window_size
@@ -331,6 +334,7 @@ class TestRollingStatsModels(TestCase):
         point_based: bool,
         remove_seasonality: bool,
     ) -> None:
+        """Test score computation function."""
         ts = generate_ts_data(length=10)
 
         if not point_based:
@@ -351,6 +355,7 @@ class TestRollingStatsModels(TestCase):
         self.assertEqual(len(anom.scores), 1)
 
     def test_regular_ts_data(self) -> None:
+        """Test regular timeseries data."""
         # enough historical data
         ts = generate_ts_data()
         model = RollingStatsModel(
@@ -396,13 +401,17 @@ class TestRollingStatsModels(TestCase):
 
 
 class TestRollingStatsModelsError(TestCase):
+    """Test rolling stat model errors."""
+
     def setUp(self) -> None:
+        """Setup test data."""
         self.ts = generate_ts_data()
         time_index = pd.date_range(start="2018-01-01", freq="D", periods=2)
         ts_pd = pd.DataFrame({"time": time_index, "val_1": [1, 2], "val_2": [1, 2]})
         self.multi_ts = TimeSeriesData(ts_pd)
 
     def test_window_size_error(self) -> None:
+        """Test window size error."""
         model = RollingStatsModel(
             rolling_window=60,
             point_based=False,
@@ -411,6 +420,7 @@ class TestRollingStatsModelsError(TestCase):
             _ = model.fit_predict(data=self.ts)
 
     def test_internal_error(self) -> None:
+        """Test internal error."""
         model = RollingStatsModel(
             rolling_window=60,
             point_based=False,
@@ -422,13 +432,14 @@ class TestRollingStatsModelsError(TestCase):
             _ = model.predict(data=self.ts)
 
     def test_data_error(self) -> None:
+        """Test data error."""
         model = RollingStatsModel(
             rolling_window=10,
         )
-        with self.assertRaises(DataError):
+        with self.assertRaises(DataException):
             _ = model.fit_predict(data=self.multi_ts)
 
-        with self.assertRaises(DataError):
+        with self.assertRaises(DataException):
             _ = model.fit_predict(data=self.ts, historical_data=self.multi_ts)
 
     @parameterized.expand(
@@ -447,13 +458,14 @@ class TestRollingStatsModelsError(TestCase):
         score_func: str,
         window_size: int,
     ) -> None:
+        """Test insufficient data error."""
         model = RollingStatsModel(
             rolling_window=10,
             point_based=True,
             allow_expanding_window=False,
         )
-        with self.assertRaises(DataInsufficientError):
+        with self.assertRaises(InsufficientDataException):
             _ = model.fit_predict(data=self.ts)
 
-        with self.assertRaises(DataInsufficientError):
+        with self.assertRaises(InsufficientDataException):
             _ = model.fit_predict(data=self.ts[9:], historical_data=self.ts[:9])

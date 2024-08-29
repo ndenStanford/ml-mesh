@@ -58,8 +58,8 @@ from onclusiveml.ts.constants import (
 from onclusiveml.ts.decomposition import SeasonalityHandler
 from onclusiveml.ts.detectors.constants import AnomalyResponse
 from onclusiveml.ts.exceptions import (
-    DataIrregularGranularityError,
     InternalError,
+    IrregularGranularityException,
     ParameterError,
 )
 from onclusiveml.ts.timeseries import TimeSeriesChangePoint, TimeSeriesData
@@ -76,6 +76,8 @@ _log: logging.Logger = logging.getLogger("cusum_model")
 
 @dataclass
 class CUSUMDefaultArgs:
+    """Cusum Default arguments."""
+
     threshold: float = 0.01
     max_iter: int = 10
     delta_std_ratio: float = 1.0
@@ -92,6 +94,8 @@ class CUSUMDefaultArgs:
 
 @dataclass
 class CUSUMChangePointVal:
+    """Cusum change point value."""
+
     changepoint: int
     mu0: float
     mu1: float
@@ -110,6 +114,8 @@ class CUSUMChangePointVal:
 
 @dataclass
 class VectorizedCUSUMChangePointVal:
+    """Vectorized cusum change point value."""
+
     changepoint: List[int]
     mu0: List[float]
     mu1: List[float]
@@ -129,6 +135,7 @@ class VectorizedCUSUMChangePointVal:
 def transfer_vect_cusum_cp_to_cusum_cp(
     vectcusumcp: VectorizedCUSUMChangePointVal,
 ) -> List[CUSUMChangePointVal]:
+    """Transfer vector cusum changepoint to cusum changepoint."""
     res = []
     for i in range(len(vectcusumcp.changepoint)):
         res.append(
@@ -153,7 +160,6 @@ class CUSUMChangePoint(TimeSeriesChangePoint):
     This is a changepoint detected by CUSUMDetector.
 
     Attributes:
-
         start_time: Start time of the change.
         end_time: End time of the change.
         confidence: The confidence of the change point.
@@ -205,46 +211,57 @@ class CUSUMChangePoint(TimeSeriesChangePoint):
 
     @property
     def direction(self) -> str:
+        """Direction."""
         return self._direction
 
     @property
     def cp_index(self) -> int:
+        """Changepoint index."""
         return self._cp_index
 
     @property
     def mu0(self) -> Union[float, np.ndarray]:
+        """Parameter mu0."""
         return self._mu0
 
     @property
     def mu1(self) -> Union[float, np.ndarray]:
+        """Parameter mu1."""
         return self._mu1
 
     @property
     def delta(self) -> Union[float, np.ndarray]:
+        """Parameter delta."""
         return self._delta
 
     @property
     def llr(self) -> float:
+        """Parameter llr."""
         return self._llr
 
     @property
     def llr_int(self) -> float:
+        """Parameter llr int."""
         return self._llr_int
 
     @property
     def regression_detected(self) -> bool:
+        """Regression detected."""
         return self._regression_detected
 
     @property
     def stable_changepoint(self) -> bool:
+        """Stable changepoint."""
         return self._stable_changepoint
 
     @property
     def p_value(self) -> float:
+        """P-value."""
         return self._p_value
 
     @property
     def p_value_int(self) -> float:
+        """P-value int."""
         return self._p_value_int
 
     def __repr__(self) -> str:
@@ -281,6 +298,7 @@ class CUSUMChangePoint(TimeSeriesChangePoint):
         )
 
     def _almost_equal(self, x: float, y: float, round_int: int = 10) -> bool:
+        """Almost equal."""
         return (
             x == y
             or round(x, round_int) == round(y, round_int)
@@ -288,10 +306,7 @@ class CUSUMChangePoint(TimeSeriesChangePoint):
         )
 
     def almost_equal(self, other: TimeSeriesChangePoint, round_int: int = 10) -> bool:
-        """
-        Compare if two CUSUMChangePoint objects are almost equal to each other.
-        """
-
+        """Compare if two CUSUMChangePoint objects are almost equal to each other."""
         if not isinstance(other, CUSUMChangePoint):
             # don't attempt to compare against unrelated types
             raise NotImplementedError
@@ -316,6 +331,8 @@ class CUSUMChangePoint(TimeSeriesChangePoint):
 
 
 class CUSUMDetector(Detector):
+    """Cusum detector."""
+
     interest_window: Optional[Tuple[int, int]] = None
     magnitude_quantile: Optional[float] = None
     magnitude_ratio: Optional[float] = None
@@ -327,7 +344,7 @@ class CUSUMDetector(Detector):
         is_multivariate: bool = False,
         is_vectorized: bool = False,
     ) -> None:
-        """Univariate CUSUM detector for level shifts
+        """Univariate CUSUM detector for level shifts.
 
         Use cusum to detect changes, the algorithm is based on likelihood ratio
         cusum. See https://www.fs.isy.liu.se/Edu/Courses/TSFS06/PDFs/Basseville.pdf
@@ -335,10 +352,11 @@ class CUSUMDetector(Detector):
         Distribution.
 
         Args:
-
-            data: :class:`onclusiveml.ts.constants.TimeSeriesData`; The input time series data.
-            is_multivariate: Optional; bool; should be False unless running
-                MultiCUSUMDetector,
+            data (TimeSeriesData): The input time series data.
+            is_multivariate (bool): should be False unless running
+                MultiCUSUMDetector
+            is_vectorized (bool): should be False unless running
+                VectorizedCUSUMDetector
         """
         super(CUSUMDetector, self).__init__(data=data)
         if not self.data.is_univariate() and not is_multivariate and not is_vectorized:
@@ -353,9 +371,7 @@ class CUSUMDetector(Detector):
     def _get_change_point(
         self, ts: np.ndarray, max_iter: int, start_point: int, change_direction: str
     ) -> CUSUMChangePointVal:
-        """
-        Find change point in the timeseries.
-        """
+        """Find change point in the timeseries."""
         interest_window = self.interest_window
         # locate the change point using cusum method
         if change_direction == "increase":
@@ -435,9 +451,7 @@ class CUSUMDetector(Detector):
         mu1: float,
         changepoint: int,
     ) -> float:
-        """
-        Calculate the log likelihood ratio
-        """
+        """Calculate the log likelihood ratio."""
         scale = np.sqrt(
             (
                 np.sum((ts[: (changepoint + 1)] - mu0) ** 2)
@@ -474,16 +488,13 @@ class CUSUMDetector(Detector):
         Returns:
             the value of log likelihood ratio.
         """
-
         return np.sum(
             np.log(sigma1 / sigma0)
             + 0.5 * (((x - mu1) / sigma1) ** 2 - ((x - mu0) / sigma0) ** 2)
         )
 
     def _magnitude_compare(self, ts: np.ndarray) -> float:
-        """
-        Compare daily magnitude to avoid daily seasonality false positives.
-        """
+        """Compare daily magnitude to avoid daily seasonality false positives."""
         time = self.data.time
         interest_window = self.interest_window
         magnitude_ratio = self.magnitude_ratio
@@ -512,19 +523,15 @@ class CUSUMDetector(Detector):
         return comparable_mag / days
 
     def _get_time_series_magnitude(self, ts: np.ndarray) -> float:
-        """
-        Calculate the magnitude of a time series.
-        """
+        """Calculate the magnitude of a time series."""
         magnitude = np.quantile(ts, self.magnitude_quantile, interpolation="nearest")
         return magnitude
 
     # pyre-fixme[14]: `detector` overrides method defined in `Detector` inconsistently.
     def detector(self, **kwargs: Any) -> Sequence[CUSUMChangePoint]:
-        """
-        Find the change point and calculate related statistics.
+        """Find the change point and calculate related statistics.
 
         Args:
-
             threshold: Optional; float; significance level, default: 0.01.
             max_iter: Optional; int, maximum iteration in finding the
                 changepoint.
@@ -666,10 +673,7 @@ class CUSUMDetector(Detector):
         cusum_changepoints: Dict[str, Dict[str, Any]],
         return_all_changepoints: bool,
     ) -> List[CUSUMChangePoint]:
-        """
-        Convert the output from the other ts cusum algorithm into
-        CUSUMChangePoint type.
-        """
+        """Convert the output from the other ts cusum algorithm into CUSUMChangePoint type."""
         converted = []
         detected_cps = cusum_changepoints
 
@@ -739,11 +743,10 @@ class CUSUMDetector(Detector):
 
 
 class MultiCUSUMDetector(CUSUMDetector):
-    """
-    MultiCUSUM is similar to univariate CUSUM, but we use MultiCUSUM to find a
-    changepoint in multivariate time series.  The detector is used to detect
-    changepoints in the multivariate mean of the time series.  The cusum values
-    and likelihood ratio test calculations assume the underlying distribution
+    """MultiCUSUM is similar to univariate CUSUM.
+
+    The detector is used to detect changepoints in the multivariate mean of the time series.
+    The cusum values and likelihood ratio test calculations assume the underlying distribution
     has a Multivariate Guassian distriubtion.
 
     Attributes:
@@ -754,8 +757,7 @@ class MultiCUSUMDetector(CUSUMDetector):
         super(MultiCUSUMDetector, self).__init__(data=data, is_multivariate=True)
 
     def detector(self, **kwargs: Any) -> List[CUSUMChangePoint]:
-        """
-        Overwrite the detector method for MultiCUSUMDetector.
+        """Overwrite the detector method for MultiCUSUMDetector.
 
         Args:
             threshold: Optional; float; significance level, default: 0.01.
@@ -869,7 +871,7 @@ class MultiCUSUMDetector(CUSUMDetector):
         start_point: int,
         change_direction: str = "increase",
     ) -> CUSUMChangePointVal:
-        # locate the change point using cusum method
+        """Locate the change point using cusum method."""
         changepoint_func = np.argmin
         n = 0
         ts_int = ts
@@ -948,10 +950,10 @@ class MultiCUSUMDetector(CUSUMDetector):
 
 
 class VectorizedCUSUMDetector(CUSUMDetector):
-    """
-    VectorizedCUSUM is the vecteorized version of CUSUM. It can take
-    multiple time series as an input and run CUSUM algorithm on each time series
-    in a vectorized manner.
+    """VectorizedCUSUM is the vecteorized version of CUSUM.
+
+    It can take multiple time series as an input and run CUSUM algorithm
+    on each time series in a vectorized manner.
 
     Attributes:
         data: The input time series data from TimeSeriesData
@@ -965,11 +967,9 @@ class VectorizedCUSUMDetector(CUSUMDetector):
         )
 
     def detector(self, **kwargs: Any) -> List[List[CUSUMChangePoint]]:
-        """
-        Detector method for vectorized version of CUSUM
+        """Detector method for vectorized version of CUSUM.
 
         Args:
-
             threshold: Optional; float; significance level, default: 0.01.
             max_iter: Optional; int, maximum iteration in finding the
                 changepoint.
@@ -998,7 +998,6 @@ class VectorizedCUSUMDetector(CUSUMDetector):
         Returns:
             A list of CUSUMChangePoint.
         """
-
         defaultArgs = CUSUMDefaultArgs()
         # Extract all arg values or assign defaults from default vals constant
         threshold = kwargs.get("threshold", defaultArgs.threshold)
@@ -1128,8 +1127,7 @@ class VectorizedCUSUMDetector(CUSUMDetector):
         return res
 
     def detector_(self, **kwargs: Any) -> List[List[CUSUMChangePoint]]:
-        """
-        Detector method for vectorized version of CUSUM
+        """Detector method for vectorized version of CUSUM.
 
         Args:
             threshold: Optional; float; significance level, default: 0.01.
@@ -1290,9 +1288,7 @@ class VectorizedCUSUMDetector(CUSUMDetector):
         change_direction: str,
         start_point: Optional[int] = None,
     ) -> VectorizedCUSUMChangePointVal:
-        """
-        Find change points in a list of time series
-        """
+        """Find change points in a list of time series."""
         interest_window = self.interest_window
         # locate the change point using cusum method
         if change_direction == "increase":
@@ -1407,8 +1403,7 @@ class VectorizedCUSUMDetector(CUSUMDetector):
 def percentage_change(
     data: TimeSeriesData, pre_mean: Union[float, pd.Series], **kwargs: Any
 ) -> TimeSeriesData:
-    """
-    Calculate percentage change absolute change / baseline change
+    """Calculate percentage change absolute change / baseline change.
 
     Args:
         data: The data need to calculate the score
@@ -1424,8 +1419,7 @@ def percentage_change(
 def change(
     data: TimeSeriesData, pre_mean: Union[float, pd.Series], **kwargs: Any
 ) -> TimeSeriesData:
-    """
-    Calculate absolute change
+    """Calculate absolute change.
 
     Args:
         data: The data need to calculate the score
@@ -1443,8 +1437,8 @@ def z_score(
     pre_mean: Union[float, pd.Series],
     pre_std: Union[float, pd.Series],
 ) -> TimeSeriesData:
-    """
-    Calculate z score
+    """Calculate z score.
+
     The formula for calculating a z-score is is z = (x-mu)/sigma,
     where x is the raw score, mu is the population mean,
     and sigma is the population standard deviation.
@@ -1464,6 +1458,8 @@ def z_score(
 
 
 class CusumScoreFunction(Enum):
+    """Cusum score function."""
+
     change = "change"
     percentage_change = "percentage_change"
     z_score = "z_score"
@@ -1484,12 +1480,14 @@ STR_TO_SCORE_FUNC: Dict[str, CusumScoreFunction] = {  # Used for param tuning
 
 
 class PredictFunctionValues(NamedTuple):
+    """Predict function values."""
+
     score: TimeSeriesData
     absolute_change: TimeSeriesData
 
 
 class CUSUMDetectorModel(DetectorModel):
-    """CUSUMDetectorModel for detecting multiple level shift change points
+    """CUSUMDetectorModel for detecting multiple level shift change points.
 
     CUSUMDetectorModel runs CUSUMDetector multiple times to detect multiple change
     points. In each run, CUSUMDetector will use historical_window + scan_window as
@@ -1646,19 +1644,18 @@ class CUSUMDetectorModel(DetectorModel):
         return False
 
     def serialize(self) -> bytes:
-        """
-        Retrun serilized model.
-        """
-
+        """Returns serilized model."""
         return str.encode(json.dumps(self.__dict__))
 
     def _set_alert_off(self) -> None:
+        """Set alert off."""
         self.alert_fired = False
         self.number_of_normal_scan = 0
 
     def _set_alert_on(
         self, baseline_mean: float, baseline_std: float, alert_change_direction: str
     ) -> None:
+        """Set alert on."""
         self.alert_fired = True
         self.alert_change_direction = alert_change_direction
         self.pre_mean = baseline_mean
@@ -1835,9 +1832,7 @@ class CUSUMDetectorModel(DetectorModel):
         data: TimeSeriesData,
         score_func: CusumScoreFunction = CusumScoreFunction.change,
     ) -> PredictFunctionValues:
-        """
-        data: the new data for the anoamly score calculation.
-        """
+        """Performs anomaly detection."""
         if self.alert_fired:
             cp = self.cps[-1]
             tz = data.tz()
@@ -1981,7 +1976,7 @@ class CUSUMDetectorModel(DetectorModel):
                 frequency = freq_counts.index[0]
             else:
                 _log.debug(f"freq_counts: {freq_counts}")
-                raise DataIrregularGranularityError(IRREGULAR_GRANULARITY_ERROR)
+                raise IrregularGranularityException(IRREGULAR_GRANULARITY_ERROR)
         # check if historical_window, scan_window, and step_window are suitable for given TSs
         frequency_sec = frequency.total_seconds()
         self._check_window_sizes(frequency_sec)
@@ -2773,9 +2768,9 @@ class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
         historical_data: Optional[TimeSeriesData] = None,
         **kwargs: Any,
     ) -> AnomalyResponse:
-        """
-        This function combines fit and predict and return anomaly socre for data. It
-        requires scan_window > step_window.
+        """This function combines fit and predict and return anomaly socre for data.
+
+        It requires scan_window > step_window.
         The relationship between two consective cusum runs in the loop is shown as below:
 
         >>> |---historical_window---|---scan_window---|
@@ -2847,7 +2842,7 @@ class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
                 frequency = freq_counts.index[0]
             else:
                 _log.debug(f"freq_counts: {freq_counts}")
-                raise DataIrregularGranularityError(IRREGULAR_GRANULARITY_ERROR)
+                raise IrregularGranularityException(IRREGULAR_GRANULARITY_ERROR)
         # check if historical_window, scan_window, and step_window are suitable for given TSs
         self._check_window_sizes(frequency.total_seconds())
 

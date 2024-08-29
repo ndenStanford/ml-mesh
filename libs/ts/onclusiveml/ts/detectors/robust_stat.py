@@ -20,6 +20,8 @@ from onclusiveml.ts.timeseries import TimeSeriesChangePoint, TimeSeriesData
 
 
 class RobustStatChangePoint(TimeSeriesChangePoint):
+    """Robust stat change point."""
+
     def __init__(
         self,
         start_time: pd.Timestamp,
@@ -34,14 +36,18 @@ class RobustStatChangePoint(TimeSeriesChangePoint):
 
     @property
     def metric(self) -> float:
+        """Change point detection metric."""
         return self._metric
 
     @property
     def index(self) -> int:
+        """Change point index."""
         return self._index
 
 
 class RobustStatDetector(Detector):
+    """Robust stats detector."""
+
     def __init__(self, data: TimeSeriesData) -> None:
         super(RobustStatDetector, self).__init__(data=data)
         if not self.data.is_univariate():
@@ -58,6 +64,7 @@ class RobustStatDetector(Detector):
         smoothing_window_size: int = 5,
         comparison_window: int = -2,
     ) -> Sequence[RobustStatChangePoint]:
+        """Executes anomaly detection."""
         time_col_name = self.data.time.name
         val_col_name = self.data.value.name
 
@@ -105,6 +112,7 @@ class RobustStatDetector(Detector):
     def plot(
         self, change_points: Sequence[RobustStatChangePoint], **kwargs: Any
     ) -> plt.Axes:
+        """Generates timeseries plot."""
         time_col_name = self.data.time.name
         val_col_name = self.data.value.name
 

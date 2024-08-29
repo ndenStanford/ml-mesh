@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+"""Metrics."""
 
 # Standard Library
 import logging
@@ -16,24 +17,9 @@ from statsmodels.distributions.empirical_distribution import ECDF
 from onclusiveml.ts.typing import ArrayLike
 
 
-# Type aliases
-#
-# Most metrics have the shape:
-#
-# def metric(y_true: ArrayLike,
-#            y_pred: ArrayLike) -> float:
-#
-# defined as Metric or
-#
-# def metric(y_true: ArrayLike,
-#            y_pred: ArrayLike,
-#            sample_weight: Optional[ArrayLike] = None) -> float:
-#
-# defined as WeightedMetric.
-#
-# Other shapes require their own custom protocols.
-#
 class ArrayMetric(Protocol):
+    """Array Metric."""
+
     def __call__(
         self,
         y_true: ArrayLike,
@@ -44,11 +30,15 @@ class ArrayMetric(Protocol):
 
 
 class Metric(Protocol):
+    """Metric."""
+
     def __call__(self, y_true: ArrayLike, y_pred: ArrayLike) -> float:
         ...  # pragma: no cover
 
 
 class WeightedMetric(Protocol):
+    """Weighted metric."""
+
     def __call__(
         self,
         y_true: ArrayLike,
@@ -59,6 +49,8 @@ class WeightedMetric(Protocol):
 
 
 class MultiOutputMetric(Protocol):
+    """Multi output metric."""
+
     def __call__(
         self,
         y_true: ArrayLike,
@@ -70,6 +62,8 @@ class MultiOutputMetric(Protocol):
 
 
 class ThresholdMetric(Protocol):
+    """Threshold metric."""
+
     def __call__(
         self,
         y_true: ArrayLike,
@@ -80,6 +74,8 @@ class ThresholdMetric(Protocol):
 
 
 class MultiThresholdMetric(Protocol):
+    """Multi threshold metric."""
+
     def __call__(
         self,
         y_true: ArrayLike,
@@ -89,7 +85,7 @@ class MultiThresholdMetric(Protocol):
         ...  # pragma: no cover
 
 
-KatsMetric = Union[
+MetricT = Union[
     Metric,
     ArrayMetric,
     WeightedMetric,
@@ -776,8 +772,7 @@ def mult_coverage(
     y_upper: ArrayLike,
     rolling_window: Union[None, int] = None,
 ) -> np.ndarray:
-    """Compute the coverage rates (or roling mean of the coverage rates) of
-        the confidence intervals based on the actual values.
+    """Compute the coverage rates the confidence intervals based on the actual values.
 
     Args:
         y_true: the actual values.
@@ -799,8 +794,8 @@ def mult_coverage(
 def interval_score(
     y_true: ArrayLike, y_lower: ArrayLike, y_upper: ArrayLike, alpha: float = 0.2
 ) -> float:
-    """
-    Compute the mean interval score of the confidence intervals based on the actual values
+    """Compute the mean interval score of the confidence intervals based on the actual values.
+
     Args:
         y_true: the actual values.
         y_lower: the lower bound of the prediction interval.
@@ -831,9 +826,7 @@ def mult_interval_score(
     alpha: float = 0.2,
     rolling_window: Union[None, int] = None,
 ) -> np.ndarray:
-    """
-    Compute the interval scores  (or roling mean of the interval scores) of
-        the confidence intervals based on the actual values.
+    """Compute the interval scores.
 
     Args:
         y_true: the actual values.
@@ -844,7 +837,6 @@ def mult_interval_score(
 
     Returns:
         A `numpy.ndarray` object representing interval scores
-
     """
     y_true, y_lower, y_upper = _arrays(y_true, y_lower, y_upper)
     lower_diff = y_true - y_lower < 0
@@ -893,7 +885,7 @@ mexceed: MultiThresholdMetric = mult_exceed
 ploss: ThresholdMetric = pinball_loss
 excd: ThresholdMetric = exceed
 
-ALL_METRICS: Dict[str, KatsMetric] = {
+ALL_METRICS: Dict[str, MetricT] = {
     # Array Metrics
     "error": error,
     "absolute_error": absolute_error,
@@ -945,7 +937,7 @@ ALL_METRICS: Dict[str, KatsMetric] = {
 }
 
 
-def metric(name: str) -> KatsMetric:
+def metric(name: str) -> MetricT:
     """Convenience method to look up a onclusiveml.ts.metric by name.
 
     Args:

@@ -17,11 +17,7 @@ import pytest
 import pytz
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
-from pandas.testing import (
-    assert_frame_equal,
-    assert_index_equal,
-    assert_series_equal,
-)
+from pandas.testing import assert_frame_equal, assert_series_equal
 
 # Internal libraries
 from onclusiveml.ts.constants import DEFAULT_TIME_NAME, DEFAULT_VALUE_NAME
@@ -55,7 +51,10 @@ CAT_MUL_DF = pd.DataFrame(
 
 
 class TimeSeriesBaseTest(TestCase):
+    """Time series base test."""
+
     def setUp(self) -> None:
+        """Setup test data."""
         # load Dataframes for testing
         self.AIR_DF = load_data("air_passengers.csv")
         self.AIR_DF_DATETIME = self.AIR_DF.copy(deep=True)
@@ -85,7 +84,10 @@ class TimeSeriesBaseTest(TestCase):
 
 
 class TimeSeriesDataInitTest(TimeSeriesBaseTest):
+    """Test class initialization."""
+
     def setUp(self) -> None:
+        """Setup test data."""
         super(TimeSeriesDataInitTest, self).setUp()
         # Univariate TimeSeriesData initialized from a pd.DataFrame
         self.ts_from_df = TimeSeriesData(df=self.AIR_DF, time_col_name=TIME_COL_NAME)
@@ -287,7 +289,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         )
 
     def test_init_categorical_ts(self) -> None:
-        # univariate categorical data
+        """Univariate categorical data."""
         _ = TimeSeriesData(
             time=CAT_TIME_INDEX,
             value=CAT_VALUE,
@@ -308,9 +310,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         # fail to initialize a TimeSeriesData object with categorical variable if not specified
         self.assertRaises(ValueError, TimeSeriesData, df=CAT_MUL_DF)
 
-    # Testing univariate time series intialized from a DataFrame
     def test_init_from_df_univar(self) -> None:
-        # DataFrame with string time
+        """Testing univariate time series intialized from a DataFrame."""
         assert_series_equal(self.ts_from_df.time, self.AIR_TIME_SERIES_PD_DATETIME)
         assert_series_equal(
             cast(pd.Series, self.ts_from_df.value), self.AIR_VALUE_SERIES
@@ -330,8 +331,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             cast(pd.Series, self.ts_from_df_with_unix.value), self.AIR_VALUE_SERIES
         )
 
-    # Testing multivariate time series initialized from a DataFrame
     def test_init_from_df_multi(self) -> None:
+        """Testing multivariate time series initialized from a DataFrame."""
         assert_series_equal(
             self.ts_from_df_multi.time, self.AIR_TIME_SERIES_PD_DATETIME
         )
@@ -339,9 +340,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             cast(pd.DataFrame, self.ts_from_df_multi.value), self.MULTIVAR_VALUE_DF
         )
 
-    # Testing univariate time series initialized from a Series and Series/DataFrame
     def test_init_from_series_univar(self) -> None:
-        # time and value from Series, with time as string
+        """Testing univariate time series initialized from a Series and Series/DataFrame."""
         assert_series_equal(
             self.ts_from_series_univar_no_datetime.time,
             self.AIR_TIME_SERIES_PD_DATETIME,
@@ -381,9 +381,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             self.AIR_VALUE_SERIES,
         )
 
-    # Testing multivariate time series initialized from a Series/DataFrame
     def test_init_from_series_multivar(self) -> None:
-        # Testing multivariate time series initialized from a
+        """Testing multivariate time series initialized from a Series/DataFrame."""
         assert_series_equal(
             self.ts_from_series_and_df_multivar.time, self.AIR_TIME_SERIES_PD_DATETIME
         )
@@ -392,9 +391,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             self.MULTIVAR_VALUE_DF,
         )
 
-    # Testing univariate time series with time initialized as a
-    # pd.DateTimeIndex
     def test_init_from_index_univar(self) -> None:
+        """Testing univariate time series with time."""
         assert_series_equal(
             self.ts_from_index_and_series_univar.time, self.AIR_TIME_SERIES_PD_DATETIME
         )
@@ -403,9 +401,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             self.AIR_VALUE_SERIES,
         )
 
-    # Testing multivariate time series with time initialized as a
-    # pd.DateTimeIndex
     def test_init_from_index_multivar(self) -> None:
+        """Testing multivariate time series with time."""
         assert_series_equal(
             self.ts_from_index_and_series_multivar.time,
             self.AIR_TIME_SERIES_PD_DATETIME,
@@ -415,9 +412,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             self.MULTIVAR_VALUE_DF,
         )
 
-    # Testing initialization from None Objects
     def test_none(self) -> None:
-        # Testing initialization from None DataFrame
+        """Testing initialization from None Objects."""
         assert_series_equal(self.ts_df_none.time, EMPTY_TIME_SERIES)
         assert_series_equal(cast(pd.Series, self.ts_df_none.value), EMPTY_VALUE_SERIES)
         # Testing initialization from two None Series
@@ -426,9 +422,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             cast(pd.Series, self.ts_time_none_and_value_none.value), EMPTY_VALUE_SERIES
         )
 
-    # Testing initialization from Empty Objects
     def test_empty(self) -> None:
-        # Testing intialization from two empty Series
+        """Testing initialization from Empty Objects."""
         assert_series_equal(self.ts_time_empty_value_empty.time, EMPTY_TIME_SERIES)
         assert_series_equal(
             cast(pd.Series, self.ts_time_empty_value_empty.value), EMPTY_VALUE_SERIES
@@ -464,9 +459,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             EMPTY_VALUE_SERIES,
         )
 
-    # Testing incorrect initializations
     def test_incorrect_init_types(self) -> None:
-        # Incorrect initialization with DF
+        """Testing incorrect initializations."""
         with self.assertRaises(ValueError):
             TimeSeriesData(df=[])
         # Incorrect initialization with value
@@ -492,9 +486,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
                 time=self.AIR_TIME_SERIES, value=self.MULTIVAR_VALUE_DF.applymap(str)
             )
 
-    # Testing incorrect initializations
     def test_incorrect_init_lengths(self) -> None:
-        # Incorrect initialization with different length time and values
+        """Testing incorrect initializations."""
         with self.assertRaises(ValueError):
             TimeSeriesData(time=self.AIR_TIME_SERIES, value=self.AIR_VALUE_SERIES[:-1])
         with self.assertRaises(ValueError):
@@ -504,9 +497,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         with self.assertRaises(ValueError):
             TimeSeriesData(time=self.AIR_TIME_SERIES[:-1], value=self.MULTIVAR_VALUE_DF)
 
-    # Testing DataFrame conversion
     def test_to_dataframe(self) -> None:
-        # Univariate case
+        """Testing DataFrame conversion."""
         assert_frame_equal(self.ts_from_df.to_dataframe(), self.AIR_DF_DATETIME)
         # Multivariate case
         assert_frame_equal(
@@ -540,9 +532,8 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             self.ts_time_empty_value_empty_df.to_dataframe(), EMPTY_DF_WITH_COLS
         )
 
-    # Testing Data Interpolate
     def test_interpolate(self) -> None:
-        # univariate
+        """Testing Data Interpolate."""
         self.assertEqual(
             self.ts_univariate_missing.interpolate(freq="D", method="linear"),
             TimeSeriesData(
@@ -801,7 +792,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
             self.ts_multi_missing.interpolate(freq="D", method="bad_input_should_fail")
 
     def test_to_array(self) -> None:
-        # Univariate case
+        """Univariate case."""
         np.testing.assert_array_equal(
             self.ts_from_df.to_array(), self.AIR_DF_DATETIME.to_numpy()
         )
@@ -842,6 +833,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         )
 
     def test_tz(self) -> None:
+        """Test timezone."""
         self.ts_univar_PST_tz.validate_data(
             validate_frequency=True, validate_dimension=True
         )
@@ -912,6 +904,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         )
 
     def test_infer_freq_robust(self) -> None:
+        """Test infer_freq_robust method."""
         self.assertEqual(
             self.ts_univariate_missing.infer_freq_robust(),
             pd.Timedelta(value=1, unit="D"),
@@ -923,6 +916,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         )
 
     def test_is_data_missing(self) -> None:
+        """Test is_data_missing method."""
         self.assertEqual(self.ts_univariate_missing.is_data_missing(), True)
 
         self.assertEqual(self.ts_univar_PST_missing_tz.is_data_missing(), True)
@@ -932,6 +926,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         self.assertEqual(self.ts_from_series_and_df_multivar.is_data_missing(), False)
 
     def test_is_timezone_aware(self) -> None:
+        """Test is_timezone_aware method."""
         self.assertEqual(self.ts_univar_PST_tz.is_timezone_aware(), True)
 
         self.assertEqual(self.ts_univar_str_date.is_timezone_aware(), False)
@@ -941,6 +936,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         self.assertEqual(self.ts_multi_str_date.is_timezone_aware(), False)
 
     def test_set_timezone(self) -> None:
+        """Test set timezone."""
         ts_local = self.ts_univar_str_date
         self.assertEqual(ts_local.is_timezone_aware(), False)
         ts_local.set_timezone(tz="US/Eastern")
@@ -968,6 +964,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         self.assertEqual(str(pd.DatetimeIndex(ts_local.time).tzinfo), "US/Pacific")
 
     def test_convert_timezone(self) -> None:
+        """Test convert timezone."""
         ts_local = self.ts_univar_PST_tz
         self.assertEqual(str(pd.DatetimeIndex(ts_local.time).tzinfo), "US/Pacific")
         ts_local.convert_timezone(tz="US/Eastern")
@@ -979,7 +976,7 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
         self.assertEqual(str(pd.DatetimeIndex(ts_local.time).tzinfo), "US/Eastern")
 
     def test_min_max_values(self) -> None:
-        # test min/max value for univariate
+        """Test min/max value for univariate."""
         self.assertEqual(self.ts_from_df.min, np.nanmin(self.ts_from_df.value.values))
         self.assertEqual(self.ts_from_df.max, np.nanmax(self.ts_from_df.value.values))
         # test min/max value for multivariate
@@ -1044,7 +1041,10 @@ class TimeSeriesDataInitTest(TimeSeriesBaseTest):
 
 
 class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
+    """Test timeseries data ops."""
+
     def setUp(self) -> None:
+        """Setup test data."""
         super(TimeSeriesDataOpsTest, self).setUp()
         # Creating DataFrames
         # DataFrame with date offset
@@ -1230,7 +1230,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
         self.length = len(self.AIR_DF)
 
     def test_eq(self) -> None:
-        # Univariate equality
+        """Univariate equality."""
         self.assertTrue(self.ts_univ_1 == self.ts_univ_2)
         # Multivariate equality
         self.assertTrue(self.ts_multi_1 == self.ts_multi_2)
@@ -1247,7 +1247,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
         self.assertFalse(self.ts_multi_1 == self.ts_univ_1)
 
     def test_ne(self) -> None:
-        # Univariate equality
+        """Univariate equality."""
         self.assertFalse(self.ts_univ_1 != self.ts_univ_2)
         # Multivariate equality
         self.assertFalse(self.ts_multi_1 != self.ts_multi_2)
@@ -1264,7 +1264,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
         self.assertTrue(self.ts_multi_1 != self.ts_univ_1)
 
     def test_add(self) -> None:
-        # Add same DataFrames
+        """Add same DataFrames."""
         self.assertEqual(self.ts_univ_1 + self.ts_univ_2, self.ts_value_transform_univ)
         # Add different DataFrames
         self.assertEqual(
@@ -1281,7 +1281,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
             self.ts_univ_1 + self.ts_date_transform_univ
 
     def test_sub(self) -> None:
-        # Subtract same DataFrames
+        """Subtract same DataFrames."""
         self.assertEqual(self.ts_univ_1 - self.ts_univ_2, self.ts_zero)
         # Subtract different DataFrames
         self.assertEqual(
@@ -1300,7 +1300,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
             self.ts_univ_1 - self.ts_date_transform_univ
 
     def test_div(self) -> None:
-        # Divide same DataFrames
+        """Divide same DataFrames."""
         self.assertEqual(self.ts_univ_1 / self.ts_univ_2, self.ts_ones)
         # Divide different DataFrames
         self.assertEqual(
@@ -1318,7 +1318,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
             self.ts_univ_1 / self.ts_date_transform_univ
 
     def test_mul(self) -> None:
-        # Multiply same DataFrames
+        """Multiply same DataFrames."""
         self.assertEqual(self.ts_ones * self.ts_ones, self.ts_ones)
         # Multiply different DataFrames
         self.assertEqual(self.ts_univ_1 * self.ts_twos, self.ts_value_transform_univ)
@@ -1333,13 +1333,13 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
             self.ts_univ_1 * self.ts_date_transform_univ
 
     def test_len(self) -> None:
-        # Normal case
+        """Normal case."""
         self.assertEqual(len(self.ts_univ_1), self.length)
         # Empty case
         self.assertEqual(len(self.ts_empty), 0)
 
     def test_extend(self) -> None:
-        # Testing cases with validate=True
+        """Testing cases with validate=True."""
         # Univariate case
         self.ts_univ_extend.extend(self.ts_date_transform_univ)
         self.assertEqual(self.ts_univ_extend, self.ts_date_transform_concat_univ)
@@ -1386,7 +1386,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
         self.assertEqual(self.ts_empty_extend, self.ts_empty)
 
     def test_get_item(self) -> None:
-        # Univariate test case
+        """Univariate test case."""
         self.assertEqual(
             self.ts_date_transform_concat_univ[: len(self.ts_univ_1)], self.ts_univ_1
         )
@@ -1421,7 +1421,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
     #  `pytest.mark.mpl_image_compare`.
     @pytest.mark.mpl_image_compare
     def test_plot(self) -> plt.Figure:
-        # Univariate test case
+        """Univariate test case."""
         ax = self.ts_univ_1.plot(cols=["y"])
         self.assertIsNotNone(ax)
         return plt.gcf()
@@ -1429,7 +1429,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
     #  `pytest.mark.mpl_image_compare`.
     @pytest.mark.mpl_image_compare
     def test_plot_multivariate(self) -> plt.Figure:
-        # Multivariate test case
+        """Multivariate test case."""
         ax = self.ts_multi_1.plot()
         self.assertIsNotNone(ax)
         return plt.gcf()
@@ -1437,7 +1437,7 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
     #  `pytest.mark.mpl_image_compare`.
     @pytest.mark.mpl_image_compare
     def test_plot_params(self) -> plt.Figure:
-        # Test more parameter overrides.
+        """Test more parameter overrides."""
         ax = self.ts_multi_1.plot(
             figsize=(8, 3), plot_kwargs={"cmap": "Purples"}, grid=False
         )
@@ -1447,65 +1447,28 @@ class TimeSeriesDataOpsTest(TimeSeriesBaseTest):
     #  `pytest.mark.mpl_image_compare`.
     @pytest.mark.mpl_image_compare
     def test_plot_grid_ax(self) -> plt.Figure:
-        # Test grid and ax parameter overrides.
+        """Test grid and ax parameter overrides."""
         fig, ax = plt.subplots(figsize=(6, 4))
         ax = self.ts_univ_1.plot(ax=ax, grid_kwargs={"lw": 2, "ls": ":"})
         self.assertIsNotNone(ax)
         return fig
 
     def test_plot_missing_column(self) -> None:
-        # Columns not in data.
+        """Columns not in data."""
         with self.assertRaises(ValueError):
             self.ts_univ_1.plot(cols=["z"])
 
     def test_plot_empty(self) -> None:
-        # No data to plot.
+        """No data to plot."""
         with self.assertRaises(ValueError):
             self.ts_empty.plot()
 
 
-class TimeSeriesDataMiscTest(TimeSeriesBaseTest):
-    def setUp(self) -> None:
-        super(TimeSeriesDataMiscTest, self).setUp()
-        # Creating TimeSeriesData objects
-        # Univariate TimeSeriesData initialized from a pd.DataFrame
-        self.ts_univ = TimeSeriesData(df=self.AIR_DF, time_col_name=TIME_COL_NAME)
-        # Multivariate TimeSeriesData initialized from a pd.DataFrame
-        self.ts_multi = TimeSeriesData(
-            df=self.MULTIVAR_AIR_DF, time_col_name=TIME_COL_NAME
-        )
-
-    def test_is_univariate(self) -> None:
-        # Univariate case
-        self.assertTrue(self.ts_univ.is_univariate())
-        # Multivariate case
-        self.assertFalse(self.ts_multi.is_univariate())
-
-    def test_time_to_index(self) -> None:
-        # Univariate case
-        assert_index_equal(self.ts_univ.time_to_index(), self.AIR_TIME_DATETIME_INDEX)
-        # Multivariate case
-        assert_index_equal(self.ts_multi.time_to_index(), self.AIR_TIME_DATETIME_INDEX)
-
-    def test_repr(self) -> None:
-        # Univariate case
-        self.assertEqual(self.ts_univ.__repr__(), self.AIR_DF_DATETIME.__repr__())
-        # Multivariate case
-        self.assertEqual(
-            self.ts_multi.__repr__(), self.MULTIVAR_AIR_DF_DATETIME.__repr__()
-        )
-
-    def test_repr_html(self) -> None:
-        # Univariate case
-        self.assertEqual(self.ts_univ._repr_html_(), self.AIR_DF_DATETIME._repr_html_())
-        # Multivariate case
-        self.assertEqual(
-            self.ts_multi._repr_html_(), self.MULTIVAR_AIR_DF_DATETIME._repr_html_()
-        )
-
-
 class TSIteratorTest(TestCase):
+    """Time series iterator test."""
+
     def test_ts_iterator_univariate_next(self) -> None:
+        """Test time series iterator univariate."""
         df = pd.DataFrame(
             [["2020-03-01", 100], ["2020-03-02", 120], ["2020-03-03", 130]],
             columns=["time", "y"],
@@ -1535,6 +1498,7 @@ class TSIteratorTest(TestCase):
         )
 
     def test_ts_iterator_multivariate_next(self) -> None:
+        """Test timeseries iterator multivariate next."""
         df = pd.DataFrame(
             [
                 ["2020-03-01", 100, 200],
@@ -1571,6 +1535,7 @@ class TSIteratorTest(TestCase):
         )
 
     def test_ts_iterator_comprehension(self) -> None:
+        """Test timeseries iterator comprehension."""
         ts_data = TimeSeriesData(
             time=pd.to_datetime(
                 np.array([1596225347, 1596225348, 1596225349]), unit="s", utc=True
