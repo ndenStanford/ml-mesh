@@ -172,7 +172,10 @@ class SummarizationServedModel(ServedModel):
         )
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
-        content = eval(content)
+        try:
+            content = eval(content)
+        except Exception as e:
+            logger.warn("Cannot eval content. Assuming it to be string type.", e)
         if type(content) == list:
             multiple_article_summary = True
             content = {
