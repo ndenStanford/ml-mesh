@@ -34,9 +34,6 @@ settings = get_settings()
 logger = get_default_logger(__name__)
 
 
-MULTI_ARTICLE_SUMMARY = "multi-article-summary"
-
-
 class SummarizationServedModel(ServedModel):
     """Summarization model."""
 
@@ -109,7 +106,7 @@ class SummarizationServedModel(ServedModel):
                 alias = settings.summarization_prompts[input_language][summary_type]
             else:
                 alias = settings.summarization_prompts[LanguageIso.EN][
-                    MULTI_ARTICLE_SUMMARY
+                    settings.multi_article_summary
                 ]
         except KeyError:
             raise PromptNotFoundException(

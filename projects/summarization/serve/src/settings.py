@@ -29,6 +29,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     translation_api: str = "translation-serve:8001"
     internal_ml_endpoint_api_key: str = "1234"
     summarization_default_model: str = "gpt-4o-mini"
+    multi_article_summary = "multi-article-summary"
 
     summarization_prompts: Dict[LanguageIso, Dict[str, str]] = {
         LanguageIso.EN: {
