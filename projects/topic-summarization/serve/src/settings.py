@@ -92,7 +92,10 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
         )
     )
 
-    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT: Dict[str, str] = TOPIC_RESPONSE_SCHEMA.update({'sentiment': 'The overall sentiment focusing on given entity, based on all the input articles'})  # noqa: E501
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT: Dict[str, str] = TOPIC_RESPONSE_SCHEMA.copy()
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['sentiment'] = (
+        "The overall sentiment focusing on given entity, based on all the input articles"
+    )
     # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
@@ -135,7 +138,7 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     """Trend Summarization Settings."""
 
     # No of documents to collect for summarization
-    NUM_DOCUMENTS: int = 5
+    NUM_DOCUMENTS: int = 25
     # Lookback days to assess trend
     TREND_LOOKBACK_DAYS: int = 14
     # Number of documents per interval

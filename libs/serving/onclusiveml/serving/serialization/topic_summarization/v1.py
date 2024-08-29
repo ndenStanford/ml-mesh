@@ -65,6 +65,7 @@ class Topic(JsonApiSchema):
     environment: Analysis = Analysis()
     summary: str
     theme: str
+    sentiment: Optional[str] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):

@@ -110,11 +110,13 @@ class TopicHandler:
         if entity_list:
             if sentiment_flag:
                 topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_SENTIMENT_ALIAS
+                output_schema = settings.TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT
             else:
                 topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_ALIAS
+                output_schema = settings.TOPIC_RESPONSE_SCHEMA
             input_dict = {
                 "input": {"articles": processed_article, "entity_list": entity_list},
-                "output": settings.TOPIC_RESPONSE_SCHEMA,
+                "output": output_schema,
             }
         else:
             topic_alias_gpt = settings.GPT_TOPIC_ALIAS
@@ -281,16 +283,15 @@ class TopicHandler:
                 if category not in final_topic:
                     final_topic[category] = {}
                 final_topic[category][suffix] = value
-                impact_value = final_topic[category]["impact"].lower()
-                final_topic[category]["impact"] = self.impact_map[impact_value]
             else:
                 category = key
                 if category not in final_topic and value != "N/A":
-                    # final_topic[category] = {"summary": value}
                     final_topic[category] = value
-        # for key in final_topic:
-        #     impact_value = final_topic[key]["impact"].lower()
-        #     final_topic[key]["impact"] = self.impact_map[impact_value]
+        for key in final_topic:
+            if not isinstance(final_topic[key], dict):
+                continue
+            impact_value = final_topic[key]["impact"].lower()
+            final_topic[key]["impact"] = self.impact_map[impact_value]
 
         return final_topic
 
