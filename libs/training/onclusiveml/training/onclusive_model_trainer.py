@@ -102,7 +102,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         #     ]
         #     features.extend(on_demand_features)
         #     self.logger.info(f"Added on-demand features: {on_demand_features}")
-        features += ["iptc_first_level_on_demand_feature_view:topic_1_llm"]
+        features += ["iptc_first_level_on_demand_feature_view:topic_2_llm"]
         self.dataset_df = self.fs_handle.fetch_historical_features(
             features,
             filter_columns=self.data_fetch_params.filter_columns,
