@@ -174,13 +174,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              # that's the closest analogue to --gpus; provide
-              # an integer amount of devices or 'all'
               count: 1
-              # Devices are reserved using a list of capabilities, making
-              # capabilities the only required field. A device MUST
-              # satisfy all the requested capabilities for a successful
-              # reservation.
               capabilities: [gpu]
     volumes:
       - type: bind
@@ -202,18 +196,18 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/dev.env
-    profiles: [serve, functional, load]
+    profiles: [serve, functional]
     ports:
-      - 8000:8000
+      - 7000:7000
     hostname: onclusiveml
     networks:
       - onclusive-net
     healthcheck:
-      test: [CMD, curl, -f, http://serve:8000/topic/v1/ready]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
+      test: [CMD, curl, -f, http://serve:7000/topic/v1/ready]
+      interval: 1m30s
+      retries: 3
+      start_period: 1m
+      timeout: 1m10s
 
   serve-debug:
     deploy:
@@ -283,7 +277,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
-    env_file: serve/config/prod.env
+    env_file: serve/config/dev.env
     hostname: onclusiveml
     networks: [onclusive-net]
 

@@ -86,10 +86,10 @@ services:
       - onclusive-net
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/entity-linking/v1/ready]
-      interval: 80s
-      retries: 10
-      start_period: 30s
-      timeout: 600s
+      interval: 1m30s
+      retries: 3
+      start_period: 1m
+      timeout: 1m10s
 
   # download
   serve-download-model:

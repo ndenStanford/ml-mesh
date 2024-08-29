@@ -129,10 +129,10 @@ services:
       - onclusive-net
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/topic/v1/ready]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
+      interval: 1m30s
+      retries: 3
+      start_period: 1m
+      timeout: 1m10s
 
   # utility service: downloading the compiled model artifact that will be served
   serve-download-model:
