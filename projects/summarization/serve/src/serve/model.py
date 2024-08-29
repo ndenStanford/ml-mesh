@@ -174,13 +174,14 @@ class SummarizationServedModel(ServedModel):
         multiple_article_summary = False
         try:
             content = eval(content)
+            if type(content) == list:
+                multiple_article_summary = True
+                content = {
+                    f"Article {i}": f"```{article}```"
+                    for i, article in enumerate(content)
+                }
         except Exception as e:
             logger.warn("Cannot eval content. Assuming it to be string type.", e)
-        if type(content) == list:
-            multiple_article_summary = True
-            content = {
-                f"Article {i}": f"```{article}```" for i, article in enumerate(content)
-            }
         if input_language is None:
             input_language = self._identify_language(content)
             logger.debug(f"Detected content language: {input_language}")
