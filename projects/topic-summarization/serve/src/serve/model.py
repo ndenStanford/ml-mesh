@@ -107,6 +107,7 @@ class ServedTopicModel(ServedModel):
         save_report_dynamodb = inputs.save_report_dynamodb
         query_all_doc_count = None
         query_topic_doc_count = None
+        sentiment_flag = inputs.sentiment_flag
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -179,7 +180,9 @@ class ServedTopicModel(ServedModel):
                 (
                     topic,
                     topic_summary_quality,
-                ) = self.model_aggregate_and_handle_exceptions(content, boolean_query)
+                ) = self.model_aggregate_and_handle_exceptions(
+                    content, boolean_query, sentiment_flag
+                )
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
@@ -189,7 +192,7 @@ class ServedTopicModel(ServedModel):
                 topic_summary_quality = None
         else:
             topic, topic_summary_quality = self.model_aggregate_and_handle_exceptions(
-                content
+                content, sentiment_flag
             )
             impact_category = None
         if save_report_dynamodb:
@@ -234,7 +237,10 @@ class ServedTopicModel(ServedModel):
         )
 
     def model_aggregate_and_handle_exceptions(
-        self, content: List[str], boolean_query: Optional[str] = None
+        self,
+        content: List[str],
+        boolean_query: Optional[str] = None,
+        sentiment_flag: Optional[bool] = False,
     ) -> Tuple[
         Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
         Union[bool, None],
@@ -244,9 +250,12 @@ class ServedTopicModel(ServedModel):
         Args:
             content (List[str]): article content.
             boolean_query (Optional[str]): boolean query
+            sentiment_flag (Optional[bool]): boolean query for detecting sentiment or not
         """
         try:
-            topic, topic_summary_quality = self.model.aggregate(content, boolean_query)
+            topic, topic_summary_quality = self.model.aggregate(
+                content, boolean_query, sentiment_flag
+            )
             return topic, topic_summary_quality
         except (
             TopicSummarizationParsingException,

@@ -45,6 +45,9 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     GPT_TOPIC_ALIAS: str = "ml-topic-summarization-citations-gpt"
     GPT_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-gpt"
+    GPT_TOPIC_WITH_ENTITY_SENTIMENT_ALIAS: str = (
+        "ml-topic-summarization-entity-sentiment-citation"
+    )
 
     CLAUDE_SUMMARY_QUALITY_ALIAS: str = "ml-topic-summarization-summary-quality"
     GPT_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-gpt"
@@ -88,6 +91,8 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
             ]
         )
     )
+
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT: Dict[str, str] = TOPIC_RESPONSE_SCHEMA.update({'sentiment': 'The overall sentiment focusing on given entity, based on all the input articles'})  # noqa: E501
     # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
