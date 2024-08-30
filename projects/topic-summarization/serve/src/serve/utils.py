@@ -1,5 +1,8 @@
 """Topic summairization utility functions."""
+
 # Internal libraries
+
+from datetime import datetime
 
 # Standard Library
 from typing import Dict
@@ -10,8 +13,8 @@ import pandas as pd
 
 def all_profile_query(
     translated_boolean_query: Dict,
-    start_time: pd.datetime,
-    end_time: pd.datetime,
+    start_time: datetime,
+    end_time: datetime,
     time_interval: str,
 ) -> Dict:
     """Local trend query.
@@ -57,7 +60,7 @@ def all_profile_query(
 
 
 def topic_global_query(
-    start_time: pd.datetime, end_time: pd.datetime, topic_id: int, time_interval: str
+    start_time: datetime, end_time: datetime, topic_id: int, time_interval: str
 ) -> Dict:
     """Global trend query.
 
@@ -100,7 +103,7 @@ def topic_global_query(
 
 
 def all_global_query(
-    start_time: pd.datetime, end_time: pd.datetime, time_interval: str
+    start_time: datetime, end_time: datetime, time_interval: str
 ) -> Dict:
     """Global trend query.
 
@@ -144,8 +147,8 @@ def all_global_query(
 
 def all_profile_boolean_query(
     translated_boolean_query: Dict,
-    start_time: pd.datetime,
-    end_time: pd.datetime,
+    start_time: datetime,
+    end_time: datetime,
     time_interval: str,
 ) -> Dict:
     """Local trend query.
@@ -191,8 +194,8 @@ def all_profile_boolean_query(
 
 def topic_profile_query(
     translated_boolean_query: Dict,
-    start_time: pd.datetime,
-    end_time: pd.datetime,
+    start_time: datetime,
+    end_time: datetime,
     topic_id: int,
     time_interval: str,
 ) -> Dict:
@@ -241,8 +244,8 @@ def topic_profile_query(
 
 def topic_profile_documents_query(
     translated_boolean_query: Dict,
-    start_time: pd.datetime,
-    end_time: pd.datetime,
+    start_time: datetime,
+    end_time: datetime,
     topic_id: int,
     size: int,
 ) -> Dict:
