@@ -777,18 +777,6 @@ jobs       :
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
 
-          # register
-         # - name: register
-         #   download-model: false
-         #   integration: false
-         #   functional: false
-         #   load: false
-         #   upload-test-results: false
-         #   runner-kind: ubuntu-20.04
-         #   self-hosted-runner-neuron: false
-         #   use-cache: true
-         #   push-image: ${{ github.event_name != 'pull_request' }}
-
           # train
           - name: train
             download-model: false
