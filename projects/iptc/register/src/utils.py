@@ -12,7 +12,11 @@ import pandas as pd
 import requests
 
 # Source
-from src.class_dict import CANDIDATE_DICT_FIRST, CANDIDATE_DICT_SECOND, CANDIDATE_DICT_THIRD
+from src.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
+)
 
 
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
@@ -96,13 +100,8 @@ async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:
         ]
         features_df_copy[col_name] = await asyncio.gather(*tasks)
     return features_df_copy
-# def iptc_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
-#     """Wrapper function to run the async enrichment."""
-#     features_df_with_label = asyncio.run(enrich_dataframe(features_df))
-#     df = pd.DataFrame()
-#     col_name=get_col_name()
-#     df[col_name] = features_df_with_label[col_name].astype(pd.StringDtype())
-#     return df
+
+
 def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
     level = 1
