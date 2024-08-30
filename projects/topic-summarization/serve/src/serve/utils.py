@@ -1,10 +1,7 @@
 """Topic summairization utility functions."""
 
-# Internal libraries
-
-from datetime import datetime
-
 # Standard Library
+from datetime import datetime
 from typing import Dict
 
 # 3rd party libraries

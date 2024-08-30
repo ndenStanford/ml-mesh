@@ -1,4 +1,5 @@
 """zh_sentence source code."""
+
 """
 Copyright 2021 Rairye
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +18,24 @@ limitations under the License.
 
 breaks = set(["。", "！", "？", "．"])
 closing_punctuation = set(
-    [")", "]", "}", "）", "」", "】", "』", "｝", "〕", ">", "＞", "》", "〉", "］", "﹂", '"']
+    [
+        ")",
+        "]",
+        "}",
+        "）",
+        "」",
+        "】",
+        "』",
+        "｝",
+        "〕",
+        ">",
+        "＞",
+        "》",
+        "〉",
+        "］",
+        "﹂",
+        '"',
+    ]
 )
 
 
@@ -31,7 +49,7 @@ def is_closing_punct(char):  # type: ignore[no-untyped-def] # noqa: D212, D103
 
 def tokenize(paragraph):  # type: ignore[no-untyped-def] # noqa: D212, D103
 
-    if type(paragraph) != str:
+    if not isinstance(paragraph, str):
         return []
 
     if len(paragraph) == 0:

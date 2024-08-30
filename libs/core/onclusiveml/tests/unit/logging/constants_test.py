@@ -1,4 +1,5 @@
 """Constants tests."""
+
 # 3rd party libraries
 import pytest
 

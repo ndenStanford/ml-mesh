@@ -1,4 +1,5 @@
 """Conftest."""
+
 # 3rd party libraries
 import pytest
 

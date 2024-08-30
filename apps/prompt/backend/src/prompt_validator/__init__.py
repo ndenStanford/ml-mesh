@@ -1,4 +1,5 @@
 """Init."""
+
 from src.prompt_validator.prompt_injection_validator import (  # noqa: F401
     PromptInjectionValidator,
 )

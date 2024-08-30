@@ -1,4 +1,5 @@
 """Class dict and id to topic."""
+
 CLASS_DICT_FIRST = {
     "root": {
         0: "arts, culture, entertainment and media",
