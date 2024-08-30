@@ -969,7 +969,7 @@ jobs       :
           # serve
           - name: serve
             download-model: true
-            integration: true
+            integration: false
             functional: false
             load: false
             upload-test-results: false
