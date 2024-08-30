@@ -73,10 +73,6 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         )
 
         base_feature_view_name = self.data_fetch_params.feature_view_name
-        for feature_view in self.fs_handle.list_feature_views():
-            self.logger.info(f"XXXXXXXXX{feature_view}xXXXXXXX")
-        for feature_view in self.fs_handle.list_on_demand_feature_views():
-            self.logger.info(f"DDDDDDDDD{feature_view}DDDDDDDD")
         self.feature_view = [
             feature_view
             for feature_view in self.fs_handle.list_feature_views()
@@ -89,20 +85,21 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         ]
 
         # If the dataset is on-demand, add the corresponding on-demand features
-        # if self.data_fetch_params.is_on_demand:
-        #     on_demand_feature_view = [
-        #         feature_view
-        #         for feature_view in self.fs_handle.list_on_demand_feature_views()
-        #         if feature_view.name == f"{base_feature_view_name}_on_demand"
-        #     ][0]
+        if self.data_fetch_params.is_on_demand:
+            on_demand_feature_view = [
+                feature_view
+                for feature_view in self.fs_handle.list_on_demand_feature_views()
+                if feature_view.name
+                == f"{base_feature_view_name.replace('_feature_view', '')}_on_demand_feature_view"
+            ][0]
 
-        #     on_demand_features = [
-        #         f"{on_demand_feature_view.name}:{feature.name}"
-        #         for feature in on_demand_feature_view.features
-        #     ]
-        #     features.extend(on_demand_features)
-        #     self.logger.info(f"Added on-demand features: {on_demand_features}")
-        features += ["iptc_first_level_on_demand_feature_view:topic_2_llm"]
+            on_demand_features = [
+                f"{on_demand_feature_view.name}:{feature.name}"
+                for feature in on_demand_feature_view.features
+            ]
+            features.extend(on_demand_features)
+            self.logger.info(f"Added on-demand features: {on_demand_features}")
+
         self.dataset_df = self.fs_handle.fetch_historical_features(
             features,
             filter_columns=self.data_fetch_params.filter_columns,

@@ -17,8 +17,8 @@ from onclusiveml.tracking import (
 class TrackedIPTCModelSpecs(TrackedModelSettings):
     """Tracked iptc model settings."""
 
-    project: str = "onclusive/iptc-01000000"
-    model: str = "IP01000000-TRAINED"
+    project: str = "onclusive/iptc-20000170"
+    model: str = "IP20000170-TRAINED"
 
 
 class IPTCModelParams(TrackingSettings):

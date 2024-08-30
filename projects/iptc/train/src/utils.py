@@ -17,6 +17,8 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 # Source
 from src.class_dict import (
     CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
     CLASS_DICT_FIRST,
     CLASS_DICT_SECOND,
     CLASS_DICT_THIRD,
@@ -98,7 +100,7 @@ class PromptBackendAPISettings:
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.prod.onclusive.com"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "xx"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
@@ -108,6 +110,33 @@ class PromptBackendAPISettings:
 
 
 settings = PromptBackendAPISettings()
+
+
+def get_candidate_list(row, level):
+    """Get candidate description."""
+    if level == 1:
+        node_name = "root"
+        candidate_list = list(
+            CANDIDATE_DICT_FIRST.get(node_name, {"dummy": "dummy"}).values()
+        )
+    elif level == 2:
+        node_name = row["topic_1"]
+        candidate_list = list(
+            CANDIDATE_DICT_SECOND.get(node_name, {"dummy": "dummy"}).values()
+        )
+    elif level == 3:
+        node_name = row["topic_2"]
+        candidate_list = list(
+            CANDIDATE_DICT_THIRD.get(node_name, {"dummy": "dummy"}).values()
+        )
+
+    return candidate_list
+
+
+def get_col_name(level):
+    """Get column name."""
+    col_name = f"topic_{level}_llm"
+    return col_name
 
 
 def fetch_label_llm(url: str, headers: Dict[str, str], data: Dict) -> Dict:
@@ -138,13 +167,14 @@ def fetch_label_llm(url: str, headers: Dict[str, str], data: Dict) -> Dict:
         raise
 
 
-async def generate_label_llm(row):
+async def generate_label_llm(row, level):
     """Invoke LLM to generate IPTC asynchronously using the standard library."""
+    candidate_list = get_candidate_list(row, level)
     input_dict = {
         "input": {
             "title": row.get("title", ""),
             "article": row.get("content", ""),
-            "candidates": CANDIDATE_DICT_FIRST,
+            "candidates": candidate_list,
         },
         "output": settings.IPTC_RESPONSE_SCHEMA,
     }
@@ -164,19 +194,19 @@ async def generate_label_llm(row):
     return output_content["iptc category"]
 
 
-async def enrich_dataframe(features_df: pd.DataFrame) -> pd.DataFrame:
+async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:
     """On-demand feature view transformation with async using the standard library."""
     # Make a copy of the DataFrame to avoid modifying the original
     features_df_copy = features_df.copy()
-
-    tasks = [generate_label_llm(row) for _, row in features_df_copy.iterrows()]
-    features_df_copy["topic_1_llm"] = await asyncio.gather(*tasks)
+    col_name = get_col_name(level)
+    tasks = [generate_label_llm(row, level) for _, row in features_df_copy.iterrows()]
+    features_df_copy[col_name] = await asyncio.gather(*tasks)
     return features_df_copy
 
 
 def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
-    features_df_with_label = asyncio.run(enrich_dataframe(features_df))
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df, 1))
 
     df = pd.DataFrame()
     df["topic_1_llm"] = features_df_with_label["topic_1_llm"].astype(pd.StringDtype())
@@ -185,7 +215,7 @@ def iptc_first_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Dat
 
 def iptc_second_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
-    features_df_with_label = asyncio.run(enrich_dataframe(features_df))
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df, 2))
 
     df = pd.DataFrame()
     df["topic_2_llm"] = features_df_with_label["topic_2_llm"].astype(pd.StringDtype())
@@ -194,7 +224,7 @@ def iptc_second_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Da
 
 def iptc_third_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
-    features_df_with_label = asyncio.run(enrich_dataframe(features_df))
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df, 3))
 
     df = pd.DataFrame()
     df["topic_3_llm"] = features_df_with_label["topic_3_llm"].astype(pd.StringDtype())

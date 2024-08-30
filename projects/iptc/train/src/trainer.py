@@ -73,7 +73,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "comparison_operators": [],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
-                    "topic_1_llm" if self.is_on_demand else "topic_1",
                 ],
             },
             2: {
@@ -86,7 +85,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
                     "topic_1",
-                    "topic_2_llm" if self.is_on_demand else "topic_2",
                 ],
             },
             3: {
@@ -100,7 +98,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     model_card.model_params.selected_text,
                     "topic_1",
                     "topic_2",
-                    "topic_3_llm" if self.is_on_demand else "topic_3",
                 ],
             },
         }
