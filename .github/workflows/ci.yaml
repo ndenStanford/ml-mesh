@@ -163,7 +163,11 @@ jobs       :
             integration: false
             functional: false
 
-          - name: data
+          - name: beam
+            integration: false
+            functional: false
+
+          - name: feature_store
             integration: false
             functional: false
 
@@ -685,18 +689,6 @@ jobs       :
 
           # ingest
           - name: ingest
-            download-model: false
-            integration: false
-            functional: false
-            load: false
-            upload-test-results: false
-            runner-kind: ubuntu-20.04
-            self-hosted-runner-neuron: false
-            use-cache: true
-            push-image: ${{ github.event_name != 'pull_request' }}
-
-          # register
-          - name: register
             download-model: false
             integration: false
             functional: false

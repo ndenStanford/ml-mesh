@@ -9,7 +9,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.8.16"
 
 tracking = {path = "../tracking"}
-data = {path = "../data"}
+feature_store = {path = "../../libs/feature_store"}
 core = {path = "../core"}
 sentence-transformers = "2.2.2"
 cubinlinker-cu11 = { version = "0.3.0.post1", source = "pipy-nvidia" }
