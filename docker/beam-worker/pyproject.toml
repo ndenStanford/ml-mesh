@@ -5,8 +5,13 @@ description = "Apache Beam worker dependencies"
 authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
+<<<<<<< HEAD
 python = "3.9.19"
 data = {path = "../../libs/data"}
+=======
+python = "3.8.16"
+beam = {path = "../../libs/beam"}
+>>>>>>> develop
 
 
 [build-system]

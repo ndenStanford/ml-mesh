@@ -9,7 +9,7 @@ packages = [{include = "src"}]
 python = "3.9.19"
 core = {path = "../../../libs/core"}
 tracking = {path = "../../../libs/tracking"}
-data = {path = "../../../libs/data"}
+feature_store = {path = "../../../libs/feature_store"}
 nlp = {path = "../../../libs/nlp"}
 training = {path = "../../../libs/training"}
 
