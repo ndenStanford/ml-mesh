@@ -14,16 +14,12 @@ serving = {path = "../../../libs/serving"}
 nlp = {path = "../../../libs/nlp"}
 tracking = {path = "../../../libs/tracking"}
 queries = {path = "../../../libs/queries"}
+ts = {path = "../../../libs/ts"}
 types-requests = "^2.31.0.2"
 requests = "^2.31.0"
 httpx = "^0.25.0"
-packaging = "^22.0"
-pandas = ">=1.4.3,<2"
-prophet = "1.1.2"
-holidays = "0.24"
 pymannkendall = "1.4.3"
 elasticsearch = "7.17"
-statsmodels = "0.13.2"
 dyntastic = "^0.14.0"
 
 [tool.poetry.group.dev.dependencies]
