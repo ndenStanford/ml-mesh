@@ -43,7 +43,9 @@ class ChangePointInterval:
 
     start_time: datetime
     end_time: datetime
-    previous_interval: Optional[ChangePointInterval] = attr.ib(default=None, init=False)
+    previous_interval: Optional["ChangePointInterval"] = attr.ib(
+        default=None, init=False
+    )
     _all_spikes: Union[
         Optional[List[SingleSpike]], Optional[List[List[SingleSpike]]]
     ] = attr.ib(default=None, init=False)
@@ -648,7 +650,7 @@ class AnomalyResponse:
         else:
             ts.value.loc[ts.time == time, :] = np.array(value, dtype=float)
 
-    def get_last_n(self, N: int) -> AnomalyResponse:
+    def get_last_n(self, N: int) -> "AnomalyResponse":
         """Returns the response for the last N days."""
         cb = self.confidence_band
         pts = self.predicted_ts
