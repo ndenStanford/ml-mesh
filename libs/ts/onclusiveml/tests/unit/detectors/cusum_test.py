@@ -128,16 +128,20 @@ class TestIncreaseCUSUMDetectorModel(TestCase):
         attr1: str,
         attr2: str,
     ) -> None:
+        """Test score time series data."""
         self.assertEqual(func_(attrgetter(attr1)(self)), attrgetter(attr2)(self))
 
     def test_serialized_model(self) -> None:
+        """Test serialized model."""
         self.assertIsInstance(self.serialized_model, bytes)
 
     def test_new_model(self) -> None:
+        """Test new model."""
         model_new = CUSUMDetectorModel(self.serialized_model)
         self.assertEqual(model_new, self.model)
 
     def test_model(self) -> None:
+        """Test model."""
         self.assertNotEqual(
             self.model,
             CUSUMDetectorModel(
@@ -147,6 +151,8 @@ class TestIncreaseCUSUMDetectorModel(TestCase):
 
 
 class TestDecreaseCUSUMDetectorModel(TestCase):
+    """Test decrease cusum detector."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -221,6 +227,7 @@ class TestDecreaseCUSUMDetectorModel(TestCase):
     def test_score_tsd(
         self, name: str, func_: Callable[[TimeSeriesData], float], attr: str
     ) -> None:
+        """Test score time series data."""
         self.assertEqual(func_(attrgetter(attr)(self)), self.test_data_window)
 
 
@@ -375,13 +382,17 @@ class TestMissingDataCUSUMDetectorModel(TestCase):
         ).scores
 
     def test_missing_data_length_match(self) -> None:
+        """Test missing data length match."""
         self.assertEqual(len(self.score_tsd), len(self.tsd))
 
     def test_missing_data_value_match(self) -> None:
+        """Test missing data value match."""
         self.assertTrue((self.score_tsd.time.values == self.tsd.time.values).all())
 
 
 class TestStreamingCUSUMDetectorModel(TestCase):
+    """Test streaming cusum detector model."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -435,6 +446,8 @@ class TestStreamingCUSUMDetectorModel(TestCase):
 
 
 class TestTZAwareDataCUSUMDetectorModel(TestCase):
+    """Test timezone aware data cusum detector model."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -475,7 +488,7 @@ class TestTZAwareDataCUSUMDetectorModel(TestCase):
         )
 
     def test_tzaware_data(self) -> None:
-        # Priming the model
+        """Test timezone aware data."""
         model = CUSUMDetectorModel(
             historical_window=self.historical_window, scan_window=self.scan_window
         )
@@ -505,7 +518,7 @@ class TestTZAwareDataCUSUMDetectorModel(TestCase):
         self.assertTrue((anomaly_score.time.values == self.tsd[48:].time.values).all())
 
     def test_irregular_tzaware_data(self) -> None:
-        # Priming the model
+        """Test irregular timezone aware data."""
         model = CUSUMDetectorModel(
             historical_window=self.historical_window, scan_window=self.scan_window
         )
@@ -539,6 +552,8 @@ class TestTZAwareDataCUSUMDetectorModel(TestCase):
 
 
 class TestDecomposingSeasonalityCUSUMDetectorModel(TestCase):
+    """Test decomposing seasonality cusum detector."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -627,12 +642,15 @@ class TestDecomposingSeasonalityCUSUMDetectorModel(TestCase):
         attr2: str,
         func_sup: Callable[[float, float], bool],
     ) -> None:
+        """Test score time series data."""
         self.assertTrue(
             func_sup(func_1(attrgetter(attr1)(self)), func_2(attrgetter(attr2)(self)))
         )
 
 
 class TestMissingDataRemoveSeasonalityCUSUMDetectorModel(TestCase):
+    """Test missing data + removed seasonality for cusum detector model."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(0)
@@ -655,6 +673,8 @@ class TestMissingDataRemoveSeasonalityCUSUMDetectorModel(TestCase):
 
 
 class TestRaiseCUSUMDetectorModel(TestCase):
+    """Test raise cusum detector model."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -672,6 +692,7 @@ class TestRaiseCUSUMDetectorModel(TestCase):
         self.tsd = TimeSeriesData(df_increase)
 
     def test_raise_direction(self) -> None:
+        """Test raise direction."""
         with self.assertRaisesRegex(
             InternalError, "direction can only be right or left"
         ):
@@ -681,6 +702,7 @@ class TestRaiseCUSUMDetectorModel(TestCase):
             model._time2idx(self.tsd, self.tsd.time.iloc[0], "")
 
     def test_raise_model_instantiation(self) -> None:
+        """Test init model error."""
         with self.assertRaisesRegex(
             ParameterError,
             "You must provide either serialized model or values for scan_window and historical_window.",
@@ -688,6 +710,7 @@ class TestRaiseCUSUMDetectorModel(TestCase):
             _ = CUSUMDetectorModel()
 
     def test_raise_time_series_freq(self) -> None:
+        """Test raise time series frequency."""
         with self.assertRaisesRegex(
             IrregularGranularityException, IRREGULAR_GRANULARITY_ERROR
         ):
@@ -715,6 +738,7 @@ class TestRaiseCUSUMDetectorModel(TestCase):
             )
 
     def test_raise_predict_not_implemented(self) -> None:
+        """Test raise predict not implemented."""
         with self.assertRaisesRegex(
             InternalError, r"predict is not implemented, call fit_predict\(\) instead"
         ):
@@ -725,6 +749,8 @@ class TestRaiseCUSUMDetectorModel(TestCase):
 
 
 class TestDeltaReturnCUSUMDetectorModel(TestCase):
+    """Test delta return cusum detector model."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -758,16 +784,15 @@ class TestDeltaReturnCUSUMDetectorModel(TestCase):
         ]
     )
     def test_change_tsd(
-        self,
-        name: str,
-        func_: Callable[[TimeSeriesData], float],
-        attr1: str,
-        # attr2: str,
+        self, name: str, func_: Callable[[TimeSeriesData], float], attr1: str
     ) -> None:
+        """Test change tsd."""
         self.assertTrue(func_(attrgetter(attr1)(self)) > 0)
 
 
 class TestCUSUMDetectorModelWindowsErrors(TestCase):
+    """Test cusum detector model windows errors."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -776,7 +801,7 @@ class TestCUSUMDetectorModelWindowsErrors(TestCase):
         self.data_ts = TimeSeriesData(time=control_time, value=pd.Series(control_val))
 
     def test_errors(self) -> None:
-        # case 1: scan_window < 2 * frequency_sec
+        """Test errors."""
         model = CUSUMDetectorModel(
             scan_window=1 * 24 * 60 * 60, historical_window=2 * 24 * 60 * 60
         )
@@ -807,6 +832,8 @@ class TestCUSUMDetectorModelWindowsErrors(TestCase):
 
 
 class TestCUSUMDetectorModelChangeDirection(TestCase):
+    """Test cusum detector model change direction."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -815,6 +842,7 @@ class TestCUSUMDetectorModelChangeDirection(TestCase):
         self.data_ts = TimeSeriesData(time=control_time, value=pd.Series(control_val))
 
     def test_direction_list(self) -> None:
+        """Test direction list."""
         model = CUSUMDetectorModel(
             scan_window=10 * 24 * 60 * 60,
             historical_window=10 * 24 * 60 * 60,
@@ -828,7 +856,7 @@ class TestCUSUMDetectorModelChangeDirection(TestCase):
         self.assertEqual(len(anom.scores), len(self.data_ts))
 
     def test_direction_str(self) -> None:
-        # case 1: scan_window < 2 * frequency_sec
+        """Test direction string."""
         model = CUSUMDetectorModel(
             scan_window=10 * 24 * 60 * 60,
             historical_window=10 * 24 * 60 * 60,
@@ -844,6 +872,8 @@ class TestCUSUMDetectorModelChangeDirection(TestCase):
 
 
 class TestCUSUMDetectorModelIrregularGranularityError(TestCase):
+    """Test cusum detector model irregularity granularity error."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(100)
@@ -857,6 +887,7 @@ class TestCUSUMDetectorModelIrregularGranularityError(TestCase):
         self.data_ts = TimeSeriesData(time=pd.Series(ts_time), value=pd.Series(ts_val))
 
     def test_irregular_granularity_error(self) -> None:
+        """Test irregular granularity error."""
         model = CUSUMDetectorModel(
             scan_window=10 * 60,
             historical_window=10 * 60,
@@ -875,6 +906,8 @@ class TestCUSUMDetectorModelIrregularGranularityError(TestCase):
 
 
 class TestVectorizedCUSUMDetectorModel(TestCase):
+    """Test vectorized cusum detector."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(0)
@@ -894,6 +927,7 @@ class TestVectorizedCUSUMDetectorModel(TestCase):
         )
 
     def test_percentage_change_results(self) -> None:
+        """Test percentage change results."""
         tsmul = TimeSeriesData(self.y)
 
         for score_func, apm in [
@@ -952,6 +986,7 @@ class TestVectorizedCUSUMDetectorModel(TestCase):
                 )
 
     def test_seasonality_results(self) -> None:
+        """Test seasonality results."""
         tsmul = TimeSeriesData(self.y)
 
         for score_func in [
@@ -1008,6 +1043,8 @@ class TestVectorizedCUSUMDetectorModel(TestCase):
 
 
 class TestCallVectorizedCUSUM(TestCase):
+    """Test call vectorized cusum."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(2)
@@ -1045,6 +1082,7 @@ class TestCallVectorizedCUSUM(TestCase):
         )
 
     def test_vectorized_true_results(self) -> None:
+        """Test vectorized results."""
         d = CUSUMDetectorModel(
             scan_window=3600 * 24 * 8,
             historical_window=3600 * 24 * 10,
@@ -1078,6 +1116,7 @@ class TestCallVectorizedCUSUM(TestCase):
         )
 
     def test_vectorized_true_results_tz_aware(self) -> None:
+        """Test vectorized timezone aware results."""
         d = CUSUMDetectorModel(
             scan_window=3600 * 24 * 8,
             historical_window=3600 * 24 * 10,
@@ -1115,6 +1154,7 @@ class TestCallVectorizedCUSUM(TestCase):
         )
 
     def test_vectorized_true_results_irregular_granularity(self) -> None:
+        """Test vectorized results with irregular granularity."""
         d = CUSUMDetectorModel(
             scan_window=3600 * 24 * 8,
             historical_window=3600 * 24 * 10,
@@ -1153,6 +1193,7 @@ class TestCallVectorizedCUSUM(TestCase):
         )
 
     def test_vectorized_true_seasonality_true_results(self) -> None:
+        """Test vectorized true seasonality true results."""
         d = CUSUMDetectorModel(
             scan_window=3600 * 24 * 8,
             historical_window=3600 * 24 * 10,
@@ -1186,6 +1227,7 @@ class TestCallVectorizedCUSUM(TestCase):
         )
 
     def test_vetorized_delta_std_ratio_results(self) -> None:
+        """Test vectorized delta std ratio results."""
         d = CUSUMDetectorModel(
             scan_window=3600 * 24 * 8,
             historical_window=3600 * 24 * 10,
@@ -1215,6 +1257,8 @@ class TestCallVectorizedCUSUM(TestCase):
 
 
 class CUSUMDetectorTest(TestCase):
+    """Cusum detector test."""
+
     def setUp(self) -> None:
         """Setup test data."""
         np.random.seed(10)
@@ -1350,17 +1394,21 @@ class CUSUMDetectorTest(TestCase):
         ]
     )
     def test_cp_len(self, cp_name: str, expected: int) -> None:
+        """Test cp length."""
         self.assertEqual(len(attrgetter(cp_name)(self)), expected)
 
     def test_increasing_mu(self) -> None:
+        """Test increasing mu."""
         self.assertLess(self.inc_metadata.mu0, self.inc_metadata.mu1)
 
     def test_increasing_correct_delta(self) -> None:
+        """Test increasing correct delta."""
         self.assertEqual(
             self.inc_metadata.delta, self.inc_metadata.mu1 - self.inc_metadata.mu0
         )
 
     def test_increasing_regression(self) -> None:
+        """Test increasing regression."""
         self.assertTrue(self.inc_metadata.regression_detected)
 
     @parameterized.expand(
@@ -1370,18 +1418,22 @@ class CUSUMDetectorTest(TestCase):
         ]
     )
     def test_p_val(self, pval_name: str, llr_name: str) -> None:
+        """Test p-value."""
         self.assertEqual(
             attrgetter(pval_name)(self),
             1 - chi2.cdf(attrgetter(llr_name)(self), 2),
         )
 
     def test_increasing_p_val_nan(self) -> None:
+        """Increasing p-value nan."""
         self.assertTrue(np.isnan(self.inc_metadata.p_value_int))
 
     def test_increasing_llr_int(self) -> None:
+        """Increasing llr int."""
         self.assertEqual(self.inc_metadata.llr_int, np.inf)
 
     def test_increasing_stable_changepoint(self) -> None:
+        """Increasing stable changepoint."""
         self.assertTrue(self.inc_metadata.stable_changepoint)
 
     @parameterized.expand(
@@ -1395,6 +1447,7 @@ class CUSUMDetectorTest(TestCase):
         ]
     )
     def test_plot(self, detector_name: str, cp_name: str) -> None:
+        """Test plot."""
         attrgetter(detector_name)(self).plot(attrgetter(cp_name)(self))
 
     @staticmethod
@@ -1404,6 +1457,7 @@ class CUSUMDetectorTest(TestCase):
         noise_std: float = 1.0,
         harmonics: Optional[float] = None,
     ) -> np.ndarray:
+        """Simulate seasonal term."""
         duration = periodicity * total_cycles
         assert duration == int(duration)
         duration = int(duration)
@@ -1440,13 +1494,14 @@ class CUSUMDetectorTest(TestCase):
         return wanted_series
 
     def test_seasonality_with_increasing_trend_cp_index(self) -> None:
+        """Test seasonality with increasing trend cp index."""
         self.assertGreaterEqual(
             self.season_metadata.cp_index,
             self.periodicity * (self.total_cycles - 1),
         )
 
     def test_logging_multivariate_error(self) -> None:
-        # test multivariate error
+        """Test multivariate error."""
         np.random.seed(10)
         df_multi_var = pd.DataFrame(
             {
@@ -1468,7 +1523,7 @@ class CUSUMDetectorTest(TestCase):
         ]
     )
     def test_logging_neg_magnitude(self, level, mag_q) -> None:
-        # test logging setup - negative in magnitude
+        """Test logging setup - negative in magnitude."""
         np.random.seed(10)
         df_neg = pd.DataFrame({"no_change": -np.random.normal(1, 0.2, 60)})
 
@@ -1483,6 +1538,7 @@ class CUSUMDetectorTest(TestCase):
             )
 
     def test_ts_without_name(self) -> None:
+        """Test timeseries without name."""
         n = 10
         time = pd.Series(pd.date_range(start="2018-01-01", periods=n, freq="D"))
         value = pd.Series(np.arange(n))
@@ -1494,6 +1550,8 @@ class CUSUMDetectorTest(TestCase):
 
 
 class MultiCUSUMDetectorTest(TestCase):
+    """Mutli cusum detector."""
+
     def setUp(self) -> None:
         """Setup test data."""
         # increasing setup
@@ -1541,6 +1599,7 @@ class MultiCUSUMDetectorTest(TestCase):
         ]
     )
     def test_cp_len(self, cp_name: str) -> None:
+        """Test cp len."""
         self.assertEqual(len(attrgetter(cp_name)(self)), 1)
 
     @parameterized.expand(
@@ -1550,6 +1609,7 @@ class MultiCUSUMDetectorTest(TestCase):
         ]
     )
     def test_cp_index(self, cp_name: str) -> None:
+        """Test cp index."""
         self.assertLessEqual(abs(attrgetter(cp_name)(self).cp_index - 59), 1)
 
     @parameterized.expand(
@@ -1559,6 +1619,7 @@ class MultiCUSUMDetectorTest(TestCase):
         ]
     )
     def test_mu(self, m1_name: str, m2_name: str) -> None:
+        """Test mu."""
         for m1, m2 in zip(attrgetter(m1_name)(self), attrgetter(m2_name)(self)):
             self.assertLess(m1, m2)
 
@@ -1571,6 +1632,7 @@ class MultiCUSUMDetectorTest(TestCase):
     def test_correct_delta(
         self, metadata_name: str, mu0_name: str, mu1_name: str
     ) -> None:
+        """Test correct delta."""
         for d, diff in zip(
             attrgetter(metadata_name)(self).delta,
             attrgetter(mu1_name)(self) - attrgetter(mu0_name)(self),
@@ -1584,6 +1646,7 @@ class MultiCUSUMDetectorTest(TestCase):
         ]
     )
     def test_regression(self, metadata_name: str) -> None:
+        """Test regression."""
         self.assertTrue(attrgetter(metadata_name)(self).regression_detected)
 
     @parameterized.expand(
@@ -1593,6 +1656,7 @@ class MultiCUSUMDetectorTest(TestCase):
         ]
     )
     def test_p_val(self, metadata_name: str) -> None:
+        """Test p-value."""
         self.assertEqual(
             attrgetter(metadata_name)(self).p_value,
             1 - chi2.cdf(attrgetter(metadata_name)(self).llr, self.D + 1),

@@ -165,11 +165,9 @@ class DetectorModel(metaclass=DetectorModelRegistry):
     def serialize(self) -> bytes:
         """Serialize the model.
 
-        It's required that the serialized model can be unserialized
-        by the next version of the same DetectorModel class.
-        During upgrade of a model class, version 1 to 2, the version 2 code will
-        unserialize version 1 model, create the new model (version 2) instance,
-        the serialize out the version 2 instance, thus completing the upgrade.
+        It's required that the serialized model can be unserialized by the next version of the same DetectorModel class.
+        During upgrade of a model class, version 1 to 2, the version 2 code will unserialize version 1 model, create the
+        new model (version 2) instance, the serialize out the version 2 instance, thus completing the upgrade.
         """
         raise NotImplementedError()
 

@@ -33,7 +33,7 @@ class MetricType(Enum):
     """Metrics can be scores, errors, or neither."""
 
     NONE = 0
-    """Neither score nor error"""
+    """Neither score nor error."""
 
     SCORE = 1
     """Larger is better (1 is better than 0)"""
@@ -45,9 +45,8 @@ class MetricType(Enum):
 class Directionality(IntEnum):
     """Metrics can improve in a direction (up or down) or lack clear direction.
 
-    Non-negative error metrics are negative and vice-versa because lower values
-    are also closer to zero. However, metrics that can result in negative values
-    cannot be simultaneously NEGATIVE and ERROR.
+    Non-negative error metrics are negative and vice-versa because lower values are also closer to zero. However,
+    metrics that can result in negative values cannot be simultaneously NEGATIVE and ERROR.
     """
 
     NONE = 0

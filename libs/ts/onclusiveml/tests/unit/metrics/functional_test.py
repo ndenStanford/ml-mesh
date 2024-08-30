@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+"""Functional tests."""
 
 # Standard Library
 from typing import List, Optional, Union
@@ -17,9 +18,12 @@ from onclusiveml.ts.metrics import functional as F
 
 
 class MetricsTest(TestCase):
+    """Metrics test."""
+
     def validate(
         self, expected: Union[float, np.ndarray], result: Union[float, np.ndarray]
     ) -> None:
+        """Validate assertion."""
         if isinstance(expected, float):
             self.assertTrue(isinstance(result, float))
             if np.isnan(expected):
@@ -29,8 +33,6 @@ class MetricsTest(TestCase):
         else:
             self.assertTrue(isinstance(result, np.ndarray))
             npt.assert_array_almost_equal(np.array(expected), result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -43,16 +45,16 @@ class MetricsTest(TestCase):
     def test__arrays(
         self, _name: str, expected: List[List[float]], arrs: List[List[float]]
     ) -> None:
+        """Test array metric."""
         result = list(F._arrays(*arrs))
         self.assertEqual(len(expected), len(result))
         for e, a in zip(expected, result):
             npt.assert_almost_equal(np.array(e), a)
 
     def test__arrays_mismatched(self) -> None:
+        """Test arrays mismatched."""
         with self.assertRaises(ValueError):
             _ = list(F._arrays([1], [2, 3]))
-
-    ...
 
     @parameterized.expand(
         [
@@ -71,6 +73,7 @@ class MetricsTest(TestCase):
         indeterminate: float = 0.0,
         nan: float = np.nan,
     ) -> None:
+        """Test safe divide."""
         expected = np.array(exp)
         numerator = np.array(num)
         denominator = np.array(denom)
@@ -85,8 +88,6 @@ class MetricsTest(TestCase):
                 nan,
             ),
         )
-
-    ...
 
     @parameterized.expand(
         [
@@ -104,10 +105,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test error."""
         result = F.error(y_true, y_pred, weights)
         self.validate(np.array(expected), result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -125,10 +125,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test absolute error."""
         result = F.absolute_error(y_true, y_pred, weights)
         self.validate(np.array(expected), result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -152,10 +151,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test percentage error."""
         result = F.percentage_error(y_true, y_pred, weights)
         self.validate(np.array(expected), result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -173,10 +171,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test absolute percentage error."""
         result = F.absolute_percentage_error(y_true, y_pred, weights)
         self.validate(np.array(expected), result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -194,10 +191,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test continuous rank probability score."""
         result = F.crps(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -213,10 +209,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         threshold: float,
     ) -> None:
+        """Test continuous rank probability score."""
         result = F.frequency_exceeds_relative_threshold(y_true, y_pred, threshold)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -234,10 +229,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test linear error in probability space."""
         result = F.leps(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -253,10 +247,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test median absolute error."""
         result = F.mdae(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -272,10 +265,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test MAP error."""
         result = F.mdape(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -318,14 +310,14 @@ class MetricsTest(TestCase):
         weights: Optional[List[float]] = None,
         multioutput: Union[str, List[float]] = "uniform_average",
     ) -> None:
+        """Test MAE metric."""
         result = F.mae(y_true, y_pred, weights, multioutput)
         self.validate(expected, result)
 
     def test_invalid_mean_absolute_error_multioutput(self) -> None:
+        """Test invalud MAE."""
         with self.assertRaises(ValueError):
             _ = F.mae([], [], [], "mango")
-
-    ...
 
     @parameterized.expand(
         [
@@ -342,10 +334,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test mean absolute scaled error."""
         result = F.mase(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -361,10 +352,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test mean absolute percentage error."""
         result = F.mape(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -380,10 +370,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test mean error."""
         result = F.me(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -399,10 +388,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test mean percentage error."""
         result = F.mpe(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -420,10 +408,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test mean squared error."""
         result = F.mse(y_true, y_pred, weights)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -441,10 +428,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test mean squared error."""
         result = F.rmse(y_true, y_pred, weights)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -462,10 +448,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test mean squared log error."""
         result = F.rmsle(y_true, y_pred, weights)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -483,10 +468,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         weights: Optional[List[float]] = None,
     ) -> None:
+        """Test root mean squared percentage error."""
         result = F.rmspe(y_true, y_pred, weights)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -502,10 +486,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test scaled symmetric MAP error."""
         result = F.scaled_smape(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -522,10 +505,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test symmetric bias."""
         result = F.sbias(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -547,10 +529,9 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test symmetric MAP error."""
         result = F.smape(y_true, y_pred)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -566,20 +547,21 @@ class MetricsTest(TestCase):
         y_true: List[float],
         y_pred: List[float],
     ) -> None:
+        """Test tracking signal."""
         result = F.tracking_signal(y_true, y_pred)
         self.validate(expected, result)
 
     def test_metric(self) -> None:
+        """Test metric."""
         self.assertEqual(F.mae, F.metric("mae"))
         with self.assertRaises(ValueError):
             _ = F.metric("mango")
 
     def test_core_metric(self) -> None:
+        """Test core metric."""
         self.assertEqual(F.mae, F.core_metric("mae"))
         with self.assertRaises(ValueError):
             _ = F.metric("mango")
-
-    ...
 
     @parameterized.expand(
         [
@@ -656,10 +638,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         threshold: List[float],
     ) -> None:
+        """Test multivariate exceed."""
         result = F.mult_exceed(y_true, y_pred, threshold)
         self.validate(np.array(expected), result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -679,10 +660,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         threshold: float,
     ) -> None:
+        """Test pinball loss."""
         result = F.pinball_loss(y_true, y_pred, threshold)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -715,10 +695,9 @@ class MetricsTest(TestCase):
         y_pred: List[float],
         threshold: float,
     ) -> None:
+        """Test exceed."""
         result = F.exceed(y_true, y_pred, threshold)
         self.validate(expected, round(result, 2))
-
-    ...
 
     @parameterized.expand(
         [
@@ -734,10 +713,9 @@ class MetricsTest(TestCase):
         y_lower: List[float],
         y_upper: List[float],
     ) -> None:
+        """Test coverage score."""
         result = F.coverage(y_true, y_lower, y_upper)
         self.validate(expected, round(result, 2))
-
-    ...
 
     @parameterized.expand(
         [
@@ -761,10 +739,9 @@ class MetricsTest(TestCase):
         y_upper: List[float],
         rolling_window: Union[None, int],
     ) -> None:
+        """Test multivariate coverage score."""
         result = F.mult_coverage(y_true, y_lower, y_upper, rolling_window)
         self.validate(expected, result)
-
-    ...
 
     @parameterized.expand(
         [
@@ -781,10 +758,9 @@ class MetricsTest(TestCase):
         y_upper: List[float],
         alpha: float,
     ) -> None:
+        """Test interval score."""
         result = F.interval_score(y_true, y_lower, y_upper)
         self.validate(expected, round(result, 2))
-
-    ...
 
     @parameterized.expand(
         [
@@ -810,5 +786,6 @@ class MetricsTest(TestCase):
         alpha: float,
         rolling_window: Union[None, int],
     ) -> None:
+        """Test multiple interval score."""
         result = F.mult_interval_score(y_true, y_lower, y_upper, alpha, rolling_window)
         self.validate(expected, result)

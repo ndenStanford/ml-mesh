@@ -49,8 +49,8 @@ def generate_ts_data(
 def generate_data_with_sudden_granularity_changes(length: int = 200) -> TimeSeriesData:
     """Generate data with sudden changes in data granularity.
 
-    (e.g., before 2 weeks ago, hourly data; after 2 weeks ago, 15 minute granularity)
-    Common with ODS data because of ODS rollups
+    (e.g., before 2 weeks ago, hourly data; after 2 weeks ago, 15 minute granularity) Common with ODS data because of
+    ODS rollups
     """
     np.random.seed(0)
     len_list = [length // 4, length // 4, length // 4, length - length // 4 * 3]

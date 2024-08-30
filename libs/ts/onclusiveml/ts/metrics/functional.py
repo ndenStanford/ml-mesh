@@ -26,14 +26,14 @@ class ArrayMetric(Protocol):
         y_pred: ArrayLike,
         sample_weight: Optional[ArrayLike] = ...,
     ) -> np.ndarray:
-        ...  # pragma: no cover
+        """Call method."""
 
 
 class Metric(Protocol):
     """Metric."""
 
     def __call__(self, y_true: ArrayLike, y_pred: ArrayLike) -> float:
-        ...  # pragma: no cover
+        """Call method."""
 
 
 class WeightedMetric(Protocol):
@@ -45,7 +45,7 @@ class WeightedMetric(Protocol):
         y_pred: ArrayLike,
         sample_weight: Optional[ArrayLike] = ...,
     ) -> float:
-        ...  # pragma: no cover
+        """Call method."""
 
 
 class MultiOutputMetric(Protocol):
@@ -58,7 +58,7 @@ class MultiOutputMetric(Protocol):
         sample_weight: Optional[ArrayLike] = ...,
         multioutput: Union[str, ArrayLike] = ...,
     ) -> float:
-        ...  # pragma: no cover
+        """Call method."""
 
 
 class ThresholdMetric(Protocol):
@@ -70,7 +70,7 @@ class ThresholdMetric(Protocol):
         y_pred: ArrayLike,
         threshold: float,
     ) -> float:
-        ...  # pragma: no cover
+        """Call method."""
 
 
 class MultiThresholdMetric(Protocol):
@@ -82,7 +82,7 @@ class MultiThresholdMetric(Protocol):
         y_pred: ArrayLike,
         threshold: ArrayLike,
     ) -> np.ndarray:
-        ...  # pragma: no cover
+        """Call method."""
 
 
 MetricT = Union[
@@ -168,6 +168,7 @@ def _safe_divide(
 def _err(
     y_true: np.ndarray, y_pred: np.ndarray, sample_weight: Optional[np.ndarray] = None
 ) -> np.ndarray:
+    """Error implementation."""
     if sample_weight is None:
         return y_true - y_pred
     return _safe_divide(
@@ -804,7 +805,6 @@ def interval_score(
 
     Returns:
         A float value of mean interval score
-
     """
     y_true, y_lower, y_upper = _arrays(y_true, y_lower, y_upper)
     lower_diff = y_true - y_lower < 0

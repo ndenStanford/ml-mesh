@@ -110,8 +110,7 @@ class TimeSeriesDecomposition:
     def __clean_ts(self) -> pd.DataFrame:
         """Internal function to clean the time series.
 
-        Internal function to interpolate time series and infer frequency of
-        time series required for decomposition.
+        Internal function to interpolate time series and infer frequency of time series required for decomposition.
         """
         original = self.data.to_dataframe()
         original.set_index(self.data.time_col_name, inplace=True)
@@ -273,8 +272,8 @@ class TimeSeriesDecomposition:
 
 
 class SeasonalityHandler:
-    """
-    SeasonalityHandler is a class that do timeseries STL decomposition for detecors
+    """SeasonalityHandler is a class that do timeseries STL decomposition for detecors.
+
     Attributes:
         data: TimeSeriesData that need to be decomposed
         seasonal_period: str, default value is 'daily'.

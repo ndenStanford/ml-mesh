@@ -25,6 +25,8 @@ from onclusiveml.ts.timeseries import TimeSeriesData
 
 
 class DecompositionTest(TestCase):
+    """Decomposition test."""
+
     def setUp(self) -> None:
         """Setup test data."""
         data = load_air_passengers(return_ts=False)
@@ -44,10 +46,12 @@ class DecompositionTest(TestCase):
         self.TSData_multi = TimeSeriesData(DATA_multi)
 
     def test_asserts(self) -> None:
+        """Test asserts."""
         with self.assertRaises(ValueError):
             TimeSeriesDecomposition(self.TSData_multi, "additive")
 
     def test_defaults(self) -> None:
+        """Test defaults."""
         m1 = TimeSeriesDecomposition(self.ts_data, "additive")
         output1 = m1.decomposer()
 
@@ -70,6 +74,7 @@ class DecompositionTest(TestCase):
         self.assertEqual(output1["rem"].value.all(), output3["rem"].value.all())
 
     def test_nonstandard_time_col_name(self) -> None:
+        """Test nonstandard time column name."""
         m = TimeSeriesDecomposition(self.ts_data_nonstandard_name, "multiplicative")
         m.decomposer()
         self.assertEqual(
@@ -85,6 +90,7 @@ class DecompositionTest(TestCase):
         )
 
     def test_decomposition_additive(self) -> None:
+        """Test decomposition additive."""
         m = TimeSeriesDecomposition(self.ts_data, "additive")
         output = m.decomposer()
 
@@ -190,6 +196,7 @@ class DecompositionTest(TestCase):
         )
 
     def test_decomposition_multiplicative(self) -> None:
+        """Test decomposition multiplicative."""
         m = TimeSeriesDecomposition(self.ts_data, "multiplicative")
         output = m.decomposer()
 
@@ -294,12 +301,14 @@ class DecompositionTest(TestCase):
         )
 
     def test_plot(self) -> None:
+        """Test plot."""
         m = TimeSeriesDecomposition(self.ts_data, "multiplicative")
         m.decomposer()
 
         m.plot()
 
-    def test_seasnality_handler(self) -> None:
+    def test_seasonality_handler(self) -> None:
+        """Test seaconality handler."""
         sh_data = SeasonalityHandler(
             data=self.ts_data_daily, seasonal_period=24 * 60 * 60
         )
@@ -311,6 +320,7 @@ class DecompositionTest(TestCase):
         self.assertNotEqual(self.ts_data_daily, historical_data)
 
     def test_multiplicative_assert(self) -> None:
+        """Test multiplicative assert."""
         data_new = self.ts_data.to_dataframe().copy()
         data_new["y"] = -1.0 * data_new["y"]
         ts_data_new = TimeSeriesData(data_new)
@@ -320,6 +330,7 @@ class DecompositionTest(TestCase):
             m.decomposer()
 
     def test_new_freq(self) -> None:
+        """Test new frequency."""
         DATA_multi = self.TSData_multi.to_dataframe()
         df_15_min = DATA_multi[["time", "1"]]
         df_15_min["time"] = list(
@@ -336,6 +347,7 @@ class DecompositionTest(TestCase):
         m2.decomposer()
 
     def test_10_minutes_level_dense_data(self) -> None:
+        """Test 10 minutes level dense data."""
         sim = Simulator(
             n=2 * 144, freq="10T", start=pd.to_datetime("2021-01-01")
         )  # 2 days of data
@@ -424,7 +436,7 @@ class DecompositionTest(TestCase):
         )
 
     def test_10_minutes_level_sparse_data(self) -> None:
-        # create data
+        """Test 10 minutes level sparse data."""
         sim = Simulator(
             n=2 * 144, freq="10T", start=pd.to_datetime("2021-01-01")
         )  # 2 days of data
@@ -523,7 +535,10 @@ class DecompositionTest(TestCase):
 
 
 class SimulatorTest(TestCase):
+    """Simulator test."""
+
     def test_arima_sim(self) -> None:
+        """Test ARIMA simulation."""
         sim = Simulator(n=10, freq="MS", start=pd.to_datetime("2011-01-01 00:00:00"))
 
         np.random.seed(100)
@@ -547,7 +562,7 @@ class SimulatorTest(TestCase):
         self.assertEqual(len(ts.time), 10)
 
     def test_stl_sim_additive(self) -> None:
-        # Create a STL-based simulated object
+        """Create a STL-based simulated object."""
         sim = Simulator(n=100, freq="1D", start=pd.to_datetime("2011-01-01"))
         np.random.seed(614)
         sim.add_trend(magnitude=10)
@@ -566,7 +581,7 @@ class SimulatorTest(TestCase):
         self.assertEqual(True, (gen_ts_series.time == sim_ts.time).all())
 
     def test_stl_sim_multiplicative(self) -> None:
-        # Create a STL-based simulated object
+        """Create a STL-based simulated object."""
         sim = Simulator(n=100, freq="1D", start=pd.to_datetime("2011-01-01"))
         np.random.seed(614)
         sim.add_trend(magnitude=5, multiply=True)
@@ -585,6 +600,7 @@ class SimulatorTest(TestCase):
         self.assertEqual(True, (gen_ts_series.time == sim_ts.time).all())
 
     def test_level_shift(self) -> None:
+        """Test level shift."""
         sim = Simulator(n=450, start="2018-01-01")
         ts = sim.level_shift_sim()
 
@@ -617,7 +633,7 @@ class SimulatorTest(TestCase):
         self.assertEqual(len(ts3), 450)
 
     def test_level_shift_mvn_indep(self) -> None:
-
+        """Test level shift multivariate independant."""
         sim = Simulator(n=450, start="2018-01-01")
         ts = sim.level_shift_multivariate_indep_sim()
         self.assertEqual(len(ts), 450)
@@ -640,6 +656,7 @@ class SimulatorTest(TestCase):
         self.assertEqual(ts2_df.shape[1], 4)  # time + n_dim
 
     def test_trend_shift(self) -> None:
+        """Test trend shift."""
         sim = Simulator(n=450, start="2018-01-01")
         ts = sim.trend_shift_sim()
         self.assertEqual(len(ts), 450)
@@ -673,6 +690,7 @@ class SimulatorTest(TestCase):
         self.assertEqual(len(ts3), 450)
 
     def test_injected_anomalies(self) -> None:
+        """Test injected anomaly."""
         date_start_str = "2020-03-01"
         date_start = datetime.strptime(date_start_str, "%Y-%m-%d")
         previous_seq = [date_start + timedelta(days=x) for x in range(60)]

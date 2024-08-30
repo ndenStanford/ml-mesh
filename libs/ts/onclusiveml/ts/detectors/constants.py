@@ -32,12 +32,15 @@ class SingleSpike:
 
     @property
     def time_str(self) -> str:
+        """Time string."""
         return datetime.strftime(self.time, "%Y-%m-%d")
 
 
 # Changepoint Interval object
 @attr.s(auto_attribs=True)
 class ChangePointInterval:
+    """Change point interval."""
+
     start_time: datetime
     end_time: datetime
     previous_interval: Optional[ChangePointInterval] = attr.ib(default=None, init=False)
@@ -51,6 +54,7 @@ class ChangePointInterval:
 
     @property
     def data(self) -> Optional[ArrayLike]:
+        """Change point interval data getter."""
         df = self.data_df
         if df is None:
             return None
@@ -61,6 +65,7 @@ class ChangePointInterval:
 
     @data.setter
     def data(self, data: TimeSeriesData) -> None:
+        """Change point interval data setter."""
         if not data.is_univariate():
             self._ts_cols = list(data.value.columns)
             self.num_series = len(self._ts_cols)
@@ -73,6 +78,7 @@ class ChangePointInterval:
         self.data_df = all_data_df
 
     def _detect_spikes(self) -> Union[List[SingleSpike], List[List[SingleSpike]]]:
+        """Detect spikes."""
         df = self.data_df
         if df is None:
             raise ValueError("data must be set before spike detection")
@@ -127,14 +133,17 @@ class ChangePointInterval:
 
     @property
     def start_time_str(self) -> str:
+        """Start time str."""
         return datetime.strftime(self.start_time, "%Y-%m-%d")
 
     @property
     def end_time_str(self) -> str:
+        """End time str."""
         return datetime.strftime(self.end_time, "%Y-%m-%d")
 
     @property
     def mean_val(self) -> Union[float, ArrayLike]:
+        """Mean value."""
         if self.num_series == 1:
             vals = self.data
             return 0.0 if vals is None else np.mean(vals)
@@ -146,6 +155,7 @@ class ChangePointInterval:
 
     @property
     def variance_val(self) -> Union[float, ArrayLike]:
+        """Variance value."""
         if self.num_series == 1:
             vals = self.data
             # the t-test uses the sample standard deviation^2 instead of variance,
@@ -158,11 +168,13 @@ class ChangePointInterval:
             return np.array([np.var(data_df[c].values, ddof=1) for c in self._ts_cols])
 
     def __len__(self) -> int:
+        """Length."""
         df = self.data_df
         return 0 if df is None else len(df)
 
     @property
     def spikes(self) -> Union[List[SingleSpike], List[List[SingleSpike]]]:
+        """Spikes."""
         spikes = self._all_spikes
         if spikes is None:
             spikes = self._detect_spikes()
@@ -172,10 +184,11 @@ class ChangePointInterval:
 
 # Percentage Change Object
 class PercentageChange:
-    """
-    PercentageChange is a class which is widely used in detector models. It calculates how much current TS changes
-    compared to previous historical TS. It includes method to calculate t-scores, upper bound, lower bound, etc.,
-    for Statsig Detector model to detect significant change.
+    """PercentageChange is a class which is widely used in detector models.
+
+    It calculates how much current TS changes compared to previous historical TS.
+    It includes method to calculate t-scores, upper bound, lower bound, etc., for StatsigDetector
+    model to detect significant change.
 
     Attributes:
         current: ChangePointInterval. The TS interval we'd like to detect.
@@ -224,26 +237,31 @@ class PercentageChange:
 
     @property
     def ratio_estimate(self) -> Union[float, np.ndarray]:
+        """Ratio estimate."""
         return self.current.mean_val / self.previous.mean_val
 
     @property
     def perc_change(self) -> float:
+        """Percentage change."""
         return (self.ratio_estimate - 1.0) * 100.0
 
     @property
     def perc_change_upper(self) -> float:
+        """Percentage change upper."""
         if self.upper is None:
             self._delta_method()
         return (cast(Union[float, np.ndarray], self.upper) - 1) * 100.0
 
     @property
     def perc_change_lower(self) -> float:
+        """Percentage change lower."""
         if self.lower is None:
             self._delta_method()
         return (cast(Union[float, np.ndarray], self.lower) - 1) * 100.0
 
     @property
     def direction(self) -> Union[str, ArrayLike]:
+        """Direction."""
         if self.num_series > 1:
             return np.vectorize(lambda x: "up" if x > 0 else "down")(self.perc_change)
         elif self.perc_change > 0.0:
@@ -253,6 +271,7 @@ class PercentageChange:
 
     @property
     def stat_sig(self) -> Union[bool, ArrayLike]:
+        """Stat sig."""
         if self.upper is None:
             self._delta_method()
         if self.num_series > 1:
@@ -275,6 +294,7 @@ class PercentageChange:
 
     @property
     def score(self) -> float:
+        """Score."""
         if self._t_score is None:
             self._ttest()
 
@@ -292,18 +312,19 @@ class PercentageChange:
 
     @property
     def p_value(self) -> float:
+        """P-value."""
         if self._p_value is None:
             self._ttest()
         return cast(float, self._p_value)
 
     @property
     def mean_previous(self) -> Union[float, np.ndarray]:
+        """Computes mean previous."""
         return self.previous.mean_val
 
     @property
     def mean_difference(self) -> Union[float, np.ndarray]:
-        # pyre-ignore[6]: Expected `float` for 1st param but got `Union[float,
-        #  np.ndarray]`.
+        """Computes mean difference."""
         _mean_diff = self.current.mean_val - self.previous.mean_val
         return _mean_diff
 
@@ -343,7 +364,6 @@ class PercentageChange:
         References:
             - https://online.stat.psu.edu/stat500/lesson/7/7.3/7.3.1/7.3.1.1
         """
-
         s_1_sq = self.previous.variance_val
         s_2_sq = self.current.variance_val
         n_1 = len(self.previous)
@@ -470,6 +490,7 @@ class PercentageChange:
         return np.cov(current, previous)[0, 1] / n_min
 
     def _delta_method(self) -> None:
+        """Delta method computation."""
         test_mean = self.current.mean_val
         control_mean = self.previous.mean_val
         test_var = self.current.variance_val
@@ -496,6 +517,8 @@ class PercentageChange:
 
 @dataclass
 class ConfidenceBand:
+    """Confidence band."""
+
     lower: TimeSeriesData
     upper: TimeSeriesData
 

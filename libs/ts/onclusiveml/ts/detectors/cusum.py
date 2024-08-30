@@ -1409,7 +1409,7 @@ def percentage_change(
         data: The data need to calculate the score
         pre_mean: Baseline mean
     """
-    if type(data.value) == pd.DataFrame and data.value.shape[1] > 1:
+    if isinstance(data.value, pd.DataFrame) and data.value.shape[1] > 1:
         res = (data.value - pre_mean) / (pre_mean)
         return TimeSeriesData(value=res, time=data.time)
     else:
@@ -1425,7 +1425,7 @@ def change(
         data: The data need to calculate the score
         pre_mean: Baseline mean
     """
-    if type(data.value) == pd.DataFrame and data.value.shape[1] > 1:
+    if isinstance(data.value, pd.DataFrame) and data.value.shape[1] > 1:
         res = data.value - pre_mean
         return TimeSeriesData(value=res, time=data.time)
     else:
@@ -1450,7 +1450,7 @@ def z_score(
         pre_mean: Baseline mean
         pre_std: Baseline std
     """
-    if type(data.value) == pd.DataFrame and data.value.shape[1] > 1:
+    if isinstance(data.value, pd.DataFrame) and data.value.shape[1] > 1:
         res = (data.value - pre_mean) / (pre_std)
         return TimeSeriesData(value=res, time=data.time)
     else:
@@ -1882,11 +1882,11 @@ class CUSUMDetectorModel(DetectorModel):
         )
 
     def _check_window_sizes(self, frequency_sec: int) -> None:
-        """
-        Function to check if historical_window, scan_window, and step_window
-        are suitable for a given TS data and a given TS historical_data.
-        We have already checked if self.step_window < self.scan_window in init func
-        when self.step_window is not None.
+        """Checks window sizes.
+
+        Function to check if historical_window, scan_window, and step_window are suitable
+        for a given TS data and historical_data.
+        We have already checked if self.step_window < self.scan_window in init func when self.step_window is not None.
         """
         if self.step_window is not None:
             if self.step_window >= self.scan_window:
@@ -1920,7 +1920,9 @@ class CUSUMDetectorModel(DetectorModel):
         **kwargs: Any,
     ) -> AnomalyResponse:
         """This function combines fit and predict and return anomaly socre for data.
+
         It requires scan_window > step_window.
+
         The relationship between two consective cusum runs in the loop is shown as below:
 
         >>> |---historical_window---|---scan_window---|
@@ -2334,10 +2336,10 @@ class CUSUMDetectorModel(DetectorModel):
         return anom_scores_ts, anom_mag_ts
 
     def _time2idx(self, tsd: TimeSeriesData, time: datetime, direction: str) -> int:
-        """
-        This function get the index of the TimeSeries data given a datatime.
-        left takes the index on the left of the time stamp (inclusive)
-        right takes the index on the right of the time stamp (exclusive)
+        """This function get the index of the TimeSeries data given a datatime.
+
+        left takes the index on the left of the time stamp (inclusive) right takes the index on the right of the time
+        stamp (exclusive)
         """
         if direction == "right":
             return np.argwhere((tsd.time >= time).values).min()
@@ -2352,6 +2354,7 @@ class CUSUMDetectorModel(DetectorModel):
         historical_data: Optional[TimeSeriesData] = None,
         **kwargs: Any,
     ) -> None:
+        """Fit model."""
         self.fit_predict(data, historical_data)
 
     def predict(
@@ -2360,16 +2363,14 @@ class CUSUMDetectorModel(DetectorModel):
         historical_data: Optional[TimeSeriesData] = None,
         **kwargs: Any,
     ) -> AnomalyResponse:
-        """
-        predict is not implemented
-        """
+        """Predict is not implemented."""
         raise InternalError("predict is not implemented, call fit_predict() instead")
 
 
 class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
-    """VectorizedCUSUMDetectorModel detects change points for multivariate input timeseries
-    in vectorized form. The logic is based on CUSUMDetectorModel, and runs
-    VectorizedCUSUMDetector.
+    """VectorizedCUSUMDetectorModel detects change points for multivariate input timeseries in vectorized form.
+
+    The logic is based on CUSUMDetectorModel, and runs VectorizedCUSUMDetector.
 
     VectorizedCUSUMDetectorModel runs VectorizedCUSUMDetector multiple times to
     detect multiple change points.
@@ -2696,9 +2697,7 @@ class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
         data: TimeSeriesData,
         score_func: CusumScoreFunction = CusumScoreFunction.change,
     ) -> PredictFunctionValues:
-        """
-        data: the new data for the anoamly score calculation.
-        """
+        """Performs anomaly detection."""
         cp = [x[-1] if len(x) else None for x in self.cps]
         tz = data.tz()
         if tz is None:
@@ -2734,6 +2733,7 @@ class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
         return ret
 
     def _zeros_ts(self, data: TimeSeriesData) -> TimeSeriesData:
+        """Zero time series."""
         if len(data) > 0:
             return TimeSeriesData(
                 time=data.time,
@@ -2747,6 +2747,7 @@ class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
     def run_univariate_cusumdetectormodel(
         self, data: TimeSeriesData, historical_data: TimeSeriesData
     ) -> AnomalyResponse:
+        """Run univariate cusum detector model."""
         d = CUSUMDetectorModel(
             serialized_model=self.serialized_model,
             scan_window=self.scan_window,
@@ -2790,7 +2791,9 @@ class VectorizedCUSUMDetectorModel(CUSUMDetectorModel):
             The anomaly response contains the anomaly scores.
         """
         # init parameters after getting input data
-        num_timeseries = data.value.shape[1] if type(data.value) == pd.DataFrame else 1
+        num_timeseries = (
+            data.value.shape[1] if isinstance(data.value, pd.DataFrame) else 1
+        )
         if num_timeseries == 1:
             _log.info(
                 "Input timeseries is univariate. CUSUMDetectorModel is preferred."

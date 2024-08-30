@@ -71,8 +71,8 @@ def calculate_z_scores(
 ) -> Union[float, np.ndarray]:
     """Calculate the z-score of the last data point in data_list.
 
-    Or calculate the z-score of the last data point in each row of the data_list.
-    if data in the window (one row) is all nan, then return nan for that row.
+    Or calculate the z-score of the last data point in each row of the data_list. if data in the window (one row) is all
+    nan, then return nan for that row.
     """
     data_list_2dim = data_list.reshape((-1, data_list.shape[-1]))
 
@@ -274,12 +274,10 @@ class RollingStatsModel(DetectorModel):
     def _point_based_vectorized_data(self, data: np.ndarray) -> np.ndarray:
         """Point base vectorize data.
 
-        For Z-scores and its variants,
-        reshape the input data to shape (-1, self.rolling_window + 1)
-        Each row consists of [history window | one datapoint to evaluate]
+        For Z-scores and its variants, reshape the input data to shape (-1, self.rolling_window + 1) Each row consists
+        of [history window | one datapoint to evaluate]
 
-        For IQR and MAD,
-        reshape the input data to shape (-1, self.rolling_window)
+        For IQR and MAD, reshape the input data to shape (-1, self.rolling_window)
         """
         if self.extend_rolling_window:
             shape = data.shape[:-1] + (

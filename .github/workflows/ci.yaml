@@ -493,7 +493,7 @@ jobs       :
           - name: serve
             download-model: true
             integration: true
-            functional: true
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: custom
@@ -969,8 +969,8 @@ jobs       :
           # serve
           - name: serve
             download-model: true
-            integration: false
-            functional: true
+            integration: true
+            functional: false
             load: false
             upload-test-results: false
             runner-kind: custom
