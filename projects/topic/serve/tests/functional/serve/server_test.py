@@ -81,6 +81,41 @@ def test_model_server_bio():
                         "content": "London is a wonderful city. John is a terrible man.",
                     },
                     "parameters": {
+                        "language": "en-GB",
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "topic",
+                    "attributes": {
+                        "topic_id": "861",
+                        "topic_representation": [
+                            "conventional",
+                            "wars",
+                            "conflicts",
+                            "humanitarian",
+                            "informal",
+                            "afghanistan",
+                            "ocean",
+                            "migration",
+                            "warfare",
+                            "indian",
+                        ],
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "namespace": "topic",
+                    "attributes": {
+                        "content": "London is a wonderful city. John is a terrible man.",
+                    },
+                    "parameters": {
                         "language": "xyz",
                     },
                 }
