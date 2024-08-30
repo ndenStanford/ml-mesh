@@ -273,9 +273,6 @@ class TopicHandler:
     ) -> Dict[str, Dict[str, Union[str, ImpactCategoryLabel]]]:
         """Transfer the topic inference output to multi-layer json."""
         final_topic: Dict[str, Dict[str, Union[str, ImpactCategoryLabel]]] = {}
-        print("\n")
-        print("\n")
-        print("TOPIC RESULT :", topic_result)
         for key, value in topic_result.items():
             if "_" in key:
                 prefix, suffix = key.split("_")
