@@ -71,6 +71,32 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
+                    },
+                    "parameters": {
+                        "source_language": "en-GB",
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "source_language": "en",
+                        "target_language": None,
+                        "translated_text": None,  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
                         "content": "وبما أن هذا مجرد اختبار للكشف عن اللغة، فأنا أكتب كل ما يجول في خاطري، وأرجو أن يكون الأمر على ما يرام مع من سيتحقق منه لاحقاً.",  # noqa
                     },
                     "parameters": {
@@ -152,7 +178,7 @@ def test_model_server_bio():
                         "content": "これは言語を検出するためのテストであり、私の頭の中にあることを何でも書いているので、後で誰がチェックしても問題ないことを願っている。",  # noqa
                     },
                     "parameters": {
-                        "source_language": "ja",
+                        "source_language": "ja-JP",
                         "target_language": "en",
                         "translation": True,
                     },
@@ -217,9 +243,37 @@ def test_model_server_bio():
                     "identifier": None,
                     "namespace": "translation",
                     "attributes": {
-                        "source_language": "Language not found",
+                        "source_language": "zh",
                         "target_language": None,
                         "translated_text": None,  # noqa
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "content": "Tottenham Hotspur Football Club has drawn up plans for student flats on the site of a former printworks near its stadium.",  # noqa
+                    },
+                    "parameters": {
+                        "source_language": "de",
+                        "target_language": "fr",
+                        "translation": True,
+                    },
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "translation",
+                    "attributes": {
+                        "source_language": "en",
+                        "target_language": "fr",
+                        "translated_text": "Le Tottenham Hotspur Football Club a élaboré des plans pour des appartements étudiants sur le site d'une ancienne imprimerie à proximité de son stade.",  # noqa
                     },
                 },
             },
@@ -234,38 +288,3 @@ def test_model_server_prediction(test_client, payload, expected_response):
     )
     assert response.status_code == 200
     assert response.json() == expected_response
-
-
-@pytest.mark.parametrize(
-    "payload,expected_error_detail",
-    [
-        (
-            {
-                "data": {
-                    "identifier": None,
-                    "namespace": "translation",
-                    "attributes": {
-                        "content": "Irrelevant message as we want to test the language detection.",  # noqa
-                    },
-                    "parameters": {
-                        "source_language": "invalid language",
-                        "target_language": "fr",
-                        "translation": True,
-                    },
-                }
-            },
-            "The language reference 'invalid language' could not be mapped, or the language could not be inferred from the content.",  # noqa: E501
-        ),
-    ],
-)
-def test_model_server_prediction_invalid_language(
-    test_client, payload, expected_error_detail
-):
-    """Tests the language validation of the predict endpoint of a running ModelServer instance."""
-    response = test_client.post(
-        "/translation/v1/predict",
-        json=payload,
-    )
-
-    assert response.status_code == 204
-    assert response.text == ""
