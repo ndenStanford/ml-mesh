@@ -10,7 +10,6 @@ jupyterlab = "4.2.4"
 notebook = "7.2.1"
 ipykernel = "6.29.5"
 core = {path = "../../libs/core"}
-data = {path = "../../libs/data"}
 nlp = {path = "../../libs/nlp"}
 serving = {path = "../../libs/serving"}
 neptune-notebooks = "^0.9.3"
@@ -20,13 +19,10 @@ torch = "1.12.1"
 elasticsearch = "^7.0.0"
 elasticsearch-dsl = "^7.0.0"
 pandasticsearch = {extras = ["pandas"], version = "0.6.0"}
-<<<<<<< HEAD
 transformers = "4.43.2"
 numpy = "1.24.4"
 simplejson = "3.0.9"
-=======
 feature_store = {path = "../../libs/feature_store"}
->>>>>>> develop
 
 [build-system]
 requires = ["poetry-core"]

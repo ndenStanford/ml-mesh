@@ -11,14 +11,9 @@ torch = "1.12.1"
 transformers = "4.33.1"
 accelerate="0.20.3"
 tracking = {path = "../../../libs/tracking"}
-<<<<<<< HEAD
-data = {path = "../../../libs/data"}
-training = {path = "../../../libs/training"}
-=======
 feature_store = {path = "../../../libs/feature_store"}
-train = {path = "../../../libs/training"}
+training = {path = "../../../libs/training"}
 aiohttp = "<3.10.5"
->>>>>>> develop
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

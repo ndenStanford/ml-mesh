@@ -6,13 +6,8 @@ authors = ["Nutchapol Dendumrongsup <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-<<<<<<< HEAD
 python = "3.9.19"
-data = {path = "../../../libs/data"}
-=======
-python = "3.8.16"
 beam = {path = "../../../libs/beam"}
->>>>>>> develop
 core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
 

@@ -8,13 +8,9 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "3.9.19"
 core = {path = "../../../libs/core"}
-<<<<<<< HEAD
-data = {path = "../../../libs/data"}
-=======
 feature_store = {path = "../../../libs/feature_store"}
 protobuf = "4.23"
 aiohttp = "<3.10.5"
->>>>>>> develop
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
