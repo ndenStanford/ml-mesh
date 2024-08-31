@@ -8,7 +8,7 @@ from apache_beam import Create, DoFn, ParDo, PCollection, PTransform
 from kafka import KafkaConsumer
 
 # Internal libraries
-from onclusiveml.data.beam.exceptions import KafkaConsumerException
+from onclusiveml.beam.exceptions import KafkaConsumerException
 
 
 class KafkaConsume(PTransform):
@@ -34,7 +34,7 @@ class KafkaConsume(PTransform):
 
             import apache_beam as beam
             from apache_beam.options.pipeline_options import PipelineOptions
-            from onclusiveml.data.beam.transforms.io import kafka
+            from onclusiveml.beam.transforms.io import kafka
 
             consumer_config = {"bootstrap_servers": "localhost:9092",
                                "group_id": "notification_consumer_group"}

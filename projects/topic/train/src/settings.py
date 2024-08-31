@@ -5,7 +5,7 @@ import os
 from typing import List, Tuple
 
 # Internal libraries
-from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,

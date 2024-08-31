@@ -9,7 +9,8 @@ import boto3
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel
-from onclusiveml.nlp.language import detect_language, filter_language
+from onclusiveml.core.logging import get_default_logger
+from onclusiveml.nlp.language import constants, detect_language, filter_language
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.nlp.language.lang_exception import (
     LanguageDetectionException,
@@ -27,6 +28,7 @@ from src.settings import get_settings
 
 
 settings = get_settings()
+logger = get_default_logger(__name__)
 
 
 class TranslationModel(ServedModel):
@@ -59,27 +61,43 @@ class TranslationModel(ServedModel):
 
         content = attributes.content
         target_language = parameters.target_language
-        source_language = parameters.source_language
+        # reference language will serve as the provided language, source_language os the detected language # noqa
+        source_language = reference_language = parameters.source_language
         translation = parameters.translation
 
         content = self.pre_process(content)
         translated_text = None
 
-        if not source_language:
+        if reference_language:
+            # getting the iso value of the provided language
             try:
-                iso_language = self._detect_language(content=content, language=None)
-                if iso_language:
-                    source_language = iso_language.value
-                else:
-                    source_language = "Language not found"
-            except LanguageDetectionException as language_exception:
-                raise LanguageDetectionException(
-                    status_code=204,
-                    detail=language_exception.message,
-                )
+                reference_language = constants.LanguageIso.from_locale_and_language_iso(
+                    reference_language
+                ).value
+            except Exception:
+                reference_language = None
+
+        try:
+            # detecting the language of the text
+            iso_language = self._detect_language(content=content, language=None)
+            if iso_language:
+                source_language = iso_language.value
+            else:
+                source_language = "Language not found"
+        except LanguageDetectionException as language_exception:
+            raise LanguageDetectionException(
+                status_code=204,
+                detail=language_exception.message,
+            )
 
         if translation is True:
+            if reference_language != source_language:
+                # display warning if detected language is different from provided language
+                logger.warning(
+                    f"Source language does not match detected language: '{source_language}'. Overriding with detected language."  # noqa
+                )
             try:
+                # regardless, we are using the detecting language
                 output = self._predict(
                     content=content,
                     language=source_language,

@@ -134,6 +134,8 @@ def test_handler_aggregate_with_boolean_query(
     assert isinstance(gpt_inference[1], bool)
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -154,6 +156,8 @@ def test_not_trending(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -162,10 +166,14 @@ def test_not_trending(
     mock_boolean_check,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -183,6 +191,8 @@ def test_not_trending(
     assert res[1] is None
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -203,6 +213,8 @@ def test_trending(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -211,10 +223,14 @@ def test_trending(
     mock_boolean_check,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -232,6 +248,8 @@ def test_trending(
     assert res[1] == pd.Timestamp("2024-03-25 12:00:00+0000")
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -253,6 +271,8 @@ def test_not_trending_query_id(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -262,6 +282,8 @@ def test_not_trending_query_id(
     mock_reponses_production_tool,
     mock_topic_profile_es_result_not_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.side_effect = [
@@ -269,6 +291,8 @@ def test_not_trending_query_id(
         mock_boolean_query_translated,
     ]
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_not_trending,
@@ -286,6 +310,8 @@ def test_not_trending_query_id(
     assert res[1] is None
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.trend_detection.Elasticsearch")
@@ -307,6 +333,8 @@ def test_trending_query_id(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     start_time,
@@ -316,6 +344,8 @@ def test_trending_query_id(
     mock_reponses_production_tool,
     mock_topic_profile_es_result_trending,
     mock_profile_es_result,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.side_effect = [
@@ -323,6 +353,8 @@ def test_trending_query_id(
         mock_boolean_query_translated,
     ]
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_profile_es_result,
         mock_topic_profile_es_result_trending,
@@ -340,6 +372,8 @@ def test_trending_query_id(
     assert res[1] == pd.Timestamp("2024-03-25 12:00:00+0000")
 
 
+@patch("requests.delete")
+@patch("requests.post")
 @patch("requests.put")
 @patch("requests.get")
 @patch("src.serve.impact_quantification.Elasticsearch")
@@ -358,6 +392,8 @@ def test_impact_quantification(
     mock_elasticsearch,
     mock_get,
     mock_put,
+    mock_post,
+    mock_delete,
     profile,
     topic_id,
     mock_boolean_query_translated,
@@ -366,10 +402,14 @@ def test_impact_quantification(
     mock_topic_global_query,
     mock_all_profile_boolean_query,
     mock_topic_profile_query,
+    mock_add_query_to_database,
+    mock_query_del,
 ):
     """Test single topic trend function."""
     mock_get.return_value = mock_boolean_query_translated
     mock_put.return_value = mock_boolean_check
+    mock_post.return_value = mock_add_query_to_database
+    mock_delete.return_value = mock_query_del
     mock_elasticsearch.return_value.search.side_effect = [
         mock_all_global_query,
         mock_topic_global_query,

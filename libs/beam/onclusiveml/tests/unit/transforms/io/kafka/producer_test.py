@@ -12,7 +12,7 @@ from kafka import KafkaProducer
 from kafka.client_async import KafkaClient
 
 # Internal libraries
-from onclusiveml.data.beam.transforms.io.kafka import KafkaProduce
+from onclusiveml.beam.transforms.io.kafka import KafkaProduce
 
 
 @pytest.mark.parametrize(

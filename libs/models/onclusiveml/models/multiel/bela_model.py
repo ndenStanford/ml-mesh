@@ -144,6 +144,8 @@ class BelaModel:
         for ent in datamodule.ent_catalogue.idx:
             self.ent_idx.append(ent)
 
+        self.max_length = 256
+
     def lookup_faiss(
         self,
         query: torch.Tensor,
@@ -417,7 +419,25 @@ class BelaModel:
 
         model_inputs = self.transform(transformed_batch)
 
-        token_ids = model_inputs["input_ids"].to(self.device)
+        token_ids = model_inputs["input_ids"]
+
+        if token_ids.shape[1] > self.max_length:
+            token_ids = token_ids[:, : self.max_length]
+
+        logger.info(f"Token IDs: {token_ids}")
+        logger.info(
+            f"Are the token IDs contiguous? {'Yes' if token_ids.is_contiguous() else 'No'}"
+        )
+        if torch.isnan(token_ids).any() or torch.isinf(token_ids).any():
+            logger.error("Token IDs contain NaNs or Infs!")
+        logger.info(f"Token IDs dtype: {token_ids.dtype}")
+        logger.info(f"Token IDs shape: {token_ids.shape}")
+
+        test_tensor = torch.randn(len(token_ids)).to(self.device)
+        test_tensor.to(self.device)
+
+        token_ids = token_ids.to(self.device)
+
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()

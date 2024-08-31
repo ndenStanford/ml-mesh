@@ -65,6 +65,7 @@ class ServedBelaModel(ServedModel):
         """Load the model artifacts and prepare the model for prediction."""
         # Load model artifacts into ready CompiledContentScoring instance
         content_model_directory = self.served_model_artifacts.model_artifact_directory
+
         self._model = BELA(
             md_threshold=settings.md_threshold,
             el_threshold=settings.el_threshold,
@@ -73,6 +74,7 @@ class ServedBelaModel(ServedModel):
             config_name=settings.config_name,
             repo=content_model_directory,
         )
+
         # Load model card JSON file into dict
         self.model_card = self.served_model_artifacts.model_card
 

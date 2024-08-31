@@ -5,7 +5,7 @@ import pytest
 from feast.value_type import ValueType
 
 # Internal libraries
-from onclusiveml.data.feature_store.redshift_source import RedshiftSourceCustom
+from onclusiveml.feature_store.redshift_source import RedshiftSourceCustom
 
 
 @pytest.fixture

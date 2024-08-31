@@ -1,7 +1,13 @@
 """Exceptions."""
 
 # Internal libraries
-from onclusiveml.data.exceptions import DataException
+from onclusiveml.core.base import OnclusiveException
+
+
+class DataException(OnclusiveException):
+    """Data exception."""
+
+    message_format = "Unknown data lib error."
 
 
 class BeamPipelineException(DataException):

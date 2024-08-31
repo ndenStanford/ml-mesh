@@ -8,7 +8,7 @@ from apache_beam import DoFn, ParDo, PCollection, PTransform
 from pydantic import SecretStr
 
 # Internal libraries
-from onclusiveml.data.beam.exceptions import BeamPipelineException
+from onclusiveml.beam.exceptions import BeamPipelineException
 from onclusiveml.serving.client import OnclusiveApiClient
 
 

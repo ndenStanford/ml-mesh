@@ -7,7 +7,7 @@ from abc import abstractmethod
 from transformers import EarlyStoppingCallback, Trainer, TrainingArguments
 
 # Internal libraries
-from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 

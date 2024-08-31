@@ -1,4 +1,4 @@
-# topic-summarization
+# Topic Summarization
 
 This project does not require a model artifact.
 

@@ -9,7 +9,7 @@ from apache_beam import DoFn, ParDo, PCollection, PTransform
 from kafka import KafkaProducer
 
 # Internal libraries
-from onclusiveml.data.beam.exceptions import KafkaProducerException
+from onclusiveml.beam.exceptions import KafkaProducerException
 
 
 class KafkaProduce(PTransform):
@@ -30,7 +30,7 @@ class KafkaProduce(PTransform):
             from __future__ import print_function
             import apache_beam as beam
             from apache_beam.options.pipeline_options import PipelineOptions
-            from onclusiveml.data.beam.transforms.io import kafka
+            from onclusiveml.beam.transforms.io import kafka
 
             with beam.Pipeline(options=PipelineOptions()) as p:
                 notifications = ( p

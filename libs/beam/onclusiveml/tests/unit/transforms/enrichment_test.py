@@ -11,9 +11,7 @@ from apache_beam.testing.util import assert_that, equal_to
 from pydantic import SecretStr
 
 # Internal libraries
-from onclusiveml.data.beam.transforms.enrichment import (
-    MachineLearningEnrichment,
-)
+from onclusiveml.beam.transforms.enrichment import MachineLearningEnrichment
 
 
 @pytest.mark.parametrize(

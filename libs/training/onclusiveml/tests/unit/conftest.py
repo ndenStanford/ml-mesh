@@ -3,7 +3,7 @@
 import pytest
 
 # Internal libraries
-from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,

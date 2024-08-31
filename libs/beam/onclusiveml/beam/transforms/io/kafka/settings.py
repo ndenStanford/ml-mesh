@@ -7,10 +7,8 @@ from typing import Dict, Optional
 from pydantic import Field, SecretStr
 
 # Internal libraries
+from onclusiveml.beam.transforms.io.kafka.constants import KafkaConsumerOffset
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.beam.transforms.io.kafka.constants import (
-    KafkaConsumerOffset,
-)
 
 
 class KafkaBaseSettings(OnclusiveBaseSettings):

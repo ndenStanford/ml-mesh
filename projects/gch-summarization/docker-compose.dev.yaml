@@ -109,10 +109,10 @@ services:
       - onclusive-net
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/gch-summarization/v1/ready]
-      interval: 10s
+      interval: 60s
       retries: 5
-      start_period: 5s
-      timeout: 15s
+      start_period: 90s
+      timeout: 40s
 
   serve-debug:
     build:

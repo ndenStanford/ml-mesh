@@ -9,9 +9,7 @@ import pytest
 from moto import mock_s3
 
 # Internal libraries
-from onclusiveml.data.feature_store.feature_store_handle import (
-    FeatureStoreHandle,
-)
+from onclusiveml.feature_store.feature_store_handle import FeatureStoreHandle
 
 
 @pytest.fixture
@@ -27,27 +25,27 @@ def feature_store_handle_instance(mocker):
     """
     mock_feature_store = mocker.Mock()
     mocker.patch(
-        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore",
+        "onclusiveml.feature_store.feature_store_handle.FeatureStore",
         return_value=mock_feature_store,
     )
     mocker.patch(
-        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.apply",
+        "onclusiveml.feature_store.feature_store_handle.FeatureStore.apply",
         return_value=None,
     )
     mocker.patch(
-        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.list_entities",
+        "onclusiveml.feature_store.feature_store_handle.FeatureStore.list_entities",
         return_value=None,
     )
     mocker.patch(
-        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.list_feature_views",
+        "onclusiveml.feature_store.feature_store_handle.FeatureStore.list_feature_views",
         return_value=None,
     )
     mocker.patch(
-        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.list_data_sources",
+        "onclusiveml.feature_store.feature_store_handle.FeatureStore.list_data_sources",
         return_value=None,
     )
     mocker.patch(
-        "onclusiveml.data.feature_store.feature_store_handle.FeatureStore.get_historical_features",
+        "onclusiveml.feature_store.feature_store_handle.FeatureStore.get_historical_features",
         return_value=None,
     )
 

@@ -9,10 +9,7 @@ from feast.types import String
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.feature_store import (
-    FeatureStoreHandle,
-    RedshiftSourceCustom,
-)
+from onclusiveml.feature_store import FeatureStoreHandle, RedshiftSourceCustom
 
 
 class FeatureStoreParams(OnclusiveBaseSettings):
