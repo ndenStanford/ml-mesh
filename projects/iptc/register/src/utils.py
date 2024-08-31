@@ -17,6 +17,10 @@ from src.class_dict import (
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
 )
+from src.name_mapping_dict import (
+    NAME_MAPPING_DICT_FIRST,
+    NAME_MAPPING_DICT_SECOND
+)
 
 
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
@@ -44,11 +48,13 @@ def get_candidate_list(row, level):
         )
     elif level == 2:
         node_name = row["topic_1"]
+        node_name = NAME_MAPPING_DICT_FIRST.get(node_name, node_name)
         candidate_list = list(
             CANDIDATE_DICT_SECOND.get(node_name, {"dummy": "dummy"}).values()
         )
     elif level == 3:
         node_name = row["topic_2"]
+        node_name = NAME_MAPPING_DICT_SECOND.get(node_name, node_name)
         candidate_list = list(
             CANDIDATE_DICT_THIRD.get(node_name, {"dummy": "dummy"}).values()
         )
