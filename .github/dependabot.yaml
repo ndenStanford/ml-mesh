@@ -218,10 +218,10 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # data lib
+  # beam lib
 
   - package-ecosystem: pip
-    directory: /libs/data
+    directory: /libs/beam
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:

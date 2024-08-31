@@ -674,9 +674,6 @@ feast = {version = "0.36.0", extras = ["aws"]}
 kafka-python = "^2.0.2"
 serving = {path = "../serving"}
 
-[package.source]
-type = "directory"
-url = "../../../libs/data"
 
 [[package]]
 name = "debugpy"

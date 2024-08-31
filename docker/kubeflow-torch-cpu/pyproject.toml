@@ -15,7 +15,6 @@ seaborn = "^0.12.2"
 pandas = "~1.4.3"
 simplejson = "3.0.9"
 core = {path = "../../libs/core"}
-data = {path = "../../libs/data"}
 nlp = {path = "../../libs/nlp"}
 serving = {path = "../../libs/serving"}
 
