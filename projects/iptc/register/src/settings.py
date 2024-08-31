@@ -14,7 +14,7 @@ from onclusiveml.data.feature_store import (
 )
 
 # Source
-from src.utils import (
+from onclusiveml.models.iptc.on_demand import (  # noqa: F401
     iptc_first_level_on_demand_feature_view,
     iptc_second_level_on_demand_feature_view,
     iptc_third_level_on_demand_feature_view,

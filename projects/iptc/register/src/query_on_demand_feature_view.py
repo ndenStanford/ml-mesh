@@ -37,8 +37,6 @@ print(time.time() - start)
 print(df.head())
 
 
-
-
 feature_view = [
     feature_view
     for feature_view in fs_handle.list_feature_views()
@@ -62,7 +60,6 @@ print("=" * 20)
 print("10 samples")
 print(time.time() - start)
 print(df.head())
-
 
 
 feature_view = [
