@@ -2,7 +2,7 @@
 import time
 
 # Internal libraries
-from onclusiveml.data.feature_store import FeastRepoBuilder
+from onclusiveml.feature_store import FeastRepoBuilder
 
 # Source
 from src.settings import FeatureRegistrationParams

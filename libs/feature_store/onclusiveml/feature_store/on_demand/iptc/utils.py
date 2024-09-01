@@ -12,12 +12,12 @@ import pandas as pd
 import requests
 
 # Source
-from onclusiveml.models.iptc.on_demand.class_dict import (
+from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
 )
-from onclusiveml.models.iptc.on_demand.name_mapping_dict import (
+from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
     NAME_MAPPING_DICT_SECOND,
 )
