@@ -8,7 +8,7 @@ from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.feature_store import FeatureStoreParams
 
 
 class FeatureRegistrationParams(FeatureStoreParams):

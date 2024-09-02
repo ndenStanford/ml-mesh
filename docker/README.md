@@ -15,7 +15,7 @@ should be caught early on.
 | `python-base`            | n/a                         | Python base for core and project components            | cpu             |          |
 | `gpu-base`               | `nvidia/cuda` (external)    | Flexible GPU base (w/o torch)                          | gpu             |     x    |
 | `gpu-train`              | `python-base`               | GPU base for project train components (w/ torch & hf)  | gpu             |     x    |
-| `neuron-compile`         | `python-base`               | Neuron base for project compile components             | inf1            |     x    |
+| `neuron-inference`         | `python-base`               | Neuron base for project compile components             | inf1            |     x    |
 | `neuron-inference`       | `python-base`               | Neuron base for neuron inference-only components       | inf1            |     x    |
 | `fastapi-serve`          | `python-base`               | Serving base for project serve components              | cpu             |          |
 | `kubeflow-jupyter`       | `python-base`               | Kubeflow base for jupyter                              | cpu             |          |

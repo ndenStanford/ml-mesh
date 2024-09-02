@@ -17,19 +17,35 @@ DOCKER_FLAGS?=
 PORT?=8888
 ENVIRONMENT?=dev
 
+## low level dependencies
+PYTHON_VERSION=$(shell cat .python-version)
+PYTHON_SHORT_VERSION=$(shell grep -Eo '[0-9]\.[0-9]+' .python-version  | head -1)
+POETRY_VERSION=$(shell cat .poetry-version)
+PIP_VERSION=$(shell cat .pip-version)
+SCALA_VERSION=$(shell cat .scala-version)
+CUDA_VERSION=$(shell cat .cuda-version)
+FLINK_VERSION=$(shell cat .flink-version)
+BEAM_VERSION=$(shell cat .beam-version)
+BEAM_SHORT_VERSION=$(shell grep -Eo '[0-9]\.[0-9]+' .beam-version  | head -1)
+DASK_VERSION=$(shell cat .dask-version)
+AWS_CLI_VERSION=$(shell cat .aws-cli-version)
+S6_VERSION=$(shell cat .s6-version)
+KUBECTL_VERSION=$(shell cat .kubectl-version)
+JAVA_VERSION=$(shell cat .java-version)
+NODE_VERSION=$(shell cat .node-version)
+UBUNTU_VERSION=$(shell cat .ubuntu-version)
+
 ## VARIABLES
 ifeq ($(USE_DOCKER_CACHE),false)
 	DOCKER_FLAGS += --no-cache
 endif
 
+
 # all core docker images
 ALL_DOCKER_IMGS:= \
 	python-base \
 	gpu-base \
-	gpu-train \
-	neuron-compile \
 	neuron-inference \
-	fastapi-serve \
 	kubeflow-jupyter \
 	kubeflow-torch-cpu \
 	kubeflow-torch-gpu \
@@ -49,7 +65,8 @@ ALL_LIBS:= \
 	tracking \
 	hashing \
 	training \
-	llms
+	llms \
+	ts
 
 # libraries included in sonarqube coverage tests
 COVERED_LIBS:= \

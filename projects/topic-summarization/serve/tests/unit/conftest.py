@@ -1,4 +1,5 @@
 """Conftest."""
+
 # isort: skip_file
 
 # Standard Library

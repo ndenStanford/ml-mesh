@@ -42,7 +42,7 @@ on  :
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
       self-hosted-runner-ami:
         required: false
-        default: ami-0ce64505c663ca986
+        default: ami-00ca6f88d3e1669fb
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       self-hosted-runner-neuron:
@@ -73,7 +73,7 @@ on  :
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.project }} compilation'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -115,7 +115,7 @@ jobs:
   set-runner-specs:
     name: 'Resolve runner specs: ${{ inputs.project }} compilation'
     needs: provision-customized-runner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
     outputs:
@@ -213,7 +213,7 @@ jobs:
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }} compilation'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, compile-model]
     environment: ${{ inputs.environment }}

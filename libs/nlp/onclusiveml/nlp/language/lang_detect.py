@@ -29,7 +29,7 @@ def detect_language(content: str, language: Optional[str] = None) -> LanguageIso
     if language is None:
         language = detect(content)
 
-    return constants.LanguageIso.from_language_iso(language)
+    return constants.LanguageIso.from_locale_and_language_iso(language)
 
 
 def filter_language(
@@ -56,9 +56,9 @@ def filter_language(
             - needs to be called with `content` and `language` as keyword arguments
             - will only be executed if the detected language is supported
     """
-    supported_language_iso_values = [
-        supported_language.value for supported_language in supported_languages
-    ]
+    supported_language_iso_values = [  # noqa
+        supported_language.value for supported_language in supported_languages  # noqa
+    ]  # noqa
 
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> Any:

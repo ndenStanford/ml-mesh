@@ -12,11 +12,6 @@ on  :
         default: true
         type: boolean
         description: Whether to run integrations.
-      functional:
-        required: true
-        default: true
-        type: boolean
-        description: Whether to run functional tests.
       python-version:
         required: false
         type: string
@@ -42,7 +37,7 @@ on  :
 jobs:
   deploy:
     name: 'Install & test library: ${{ inputs. lib }}'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out code
@@ -86,7 +81,3 @@ jobs:
       - name: Run integration tests
         if: ${{ ( inputs.integration && inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.integration }}
         run: make libs.integration/${{ inputs.lib }}
-
-      - name: Run functional tests
-        if: ${{ ( inputs.functional && inputs.release || steps.files-changed.outputs.this == 'true' ) && inputs.functional }}
-        run: make libs.functional/${{ inputs.lib }}

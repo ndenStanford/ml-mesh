@@ -18,7 +18,7 @@ from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
 # Internal libraries
-from onclusiveml.data.feature_store import FeatureStoreParams
+from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,

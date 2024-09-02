@@ -1,6 +1,22 @@
 docker.build/%: docker.set ## Build app
 	@echo "::group::Build$(notdir $@) (system architecture)"
-	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml build $(notdir $@) $(DOCKER_FLAGS)
+	docker compose -f ./docker/docker-compose.$(ENVIRONMENT).yaml build $(notdir $@) $(DOCKER_FLAGS) \
+			--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
+			--build-arg PYTHON_SHORT_VERSION=$(PYTHON_SHORT_VERSION) \
+			--build-arg PIP_VERSION=$(PIP_VERSION) \
+			--build-arg POETRY_VERSION=$(POETRY_VERSION) \
+			--build-arg SCALA_VERSION=$(SCALA_VERSION) \
+			--build-arg CUDA_VERSION=$(CUDA_VERSION) \
+			--build-arg FLINK_VERSION=$(FLINK_VERSION) \
+			--build-arg BEAM_VERSION=$(BEAM_VERSION) \
+			--build-arg DASK_VERSION=$(DASK_VERSION) \
+			--build-arg AWS_CLI_VERSION=$(AWS_CLI_VERSION) \
+			--build-arg S6_VERSION=$(S6_VERSION) \
+			--build-arg KUBECTL_VERSION=$(KUBECTL_VERSION) \
+			--build-arg JAVA_VERSION=$(JAVA_VERSION) \
+			--build-arg NODE_VERSION=$(NODE_VERSION) \
+			--build-arg UBUNTU_VERSION=$(UBUNTU_VERSION)
+
 	@echo "::endgroup::"
 
 docker.start/%: ## run a bash in interactive mode

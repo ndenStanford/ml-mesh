@@ -6,7 +6,7 @@ authors = ["Rene Jean Corneille <rene-jean.corneille@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 faiss-gpu = "1.7.2"
 pytorch_lightning = "2.1.4"
 transformers = "4.29.2"
@@ -32,5 +32,4 @@ build-backend = "poetry.core.masonry.api"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = "supplemental"
