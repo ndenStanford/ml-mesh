@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -37,7 +37,7 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -48,6 +48,6 @@ WORKDIR "${HOME}"
 RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

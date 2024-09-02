@@ -6,7 +6,7 @@ authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 serving = {path = "../../../libs/serving"}
 tracking = {path = "../../../libs/tracking"}
 rapidfuzz = "3.7.0"

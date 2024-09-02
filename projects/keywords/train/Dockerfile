@@ -5,22 +5,11 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_T
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/bin \
- && chown -R ${USER}:users /usr/local/lib \
- && chown -R ${USER}:users /usr/local/share
-
-USER app
+USER ${USER}
 
 # setup workspace
 WORKDIR "/"
@@ -46,7 +35,7 @@ RUN poetry install --no-interaction --no-ansi --only main && \
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 # install development dependencies
 RUN poetry install \
@@ -63,6 +52,6 @@ RUN poetry install \
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

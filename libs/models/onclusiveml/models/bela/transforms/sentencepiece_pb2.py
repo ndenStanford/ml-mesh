@@ -269,9 +269,9 @@ _NBESTSENTENCEPIECETEXT = _descriptor.Descriptor(
 )
 
 _SENTENCEPIECETEXT_SENTENCEPIECE.containing_type = _SENTENCEPIECETEXT
-_SENTENCEPIECETEXT.fields_by_name[
-    "pieces"
-].message_type = _SENTENCEPIECETEXT_SENTENCEPIECE
+_SENTENCEPIECETEXT.fields_by_name["pieces"].message_type = (
+    _SENTENCEPIECETEXT_SENTENCEPIECE
+)
 _NBESTSENTENCEPIECETEXT.fields_by_name["nbests"].message_type = _SENTENCEPIECETEXT
 DESCRIPTOR.message_types_by_name["SentencePieceText"] = _SENTENCEPIECETEXT
 DESCRIPTOR.message_types_by_name["NBestSentencePieceText"] = _NBESTSENTENCEPIECETEXT
@@ -286,12 +286,12 @@ SentencePieceText = _reflection.GeneratedProtocolMessageType(
             (_message.Message,),
             {
                 "DESCRIPTOR": _SENTENCEPIECETEXT_SENTENCEPIECE,
-                "__module__": "sentencepiece_pb2"
+                "__module__": "sentencepiece_pb2",
                 # @@protoc_insertion_point(class_scope:sentencepiece.SentencePieceText.SentencePiece)
             },
         ),
         "DESCRIPTOR": _SENTENCEPIECETEXT,
-        "__module__": "sentencepiece_pb2"
+        "__module__": "sentencepiece_pb2",
         # @@protoc_insertion_point(class_scope:sentencepiece.SentencePieceText)
     },
 )
@@ -303,7 +303,7 @@ NBestSentencePieceText = _reflection.GeneratedProtocolMessageType(
     (_message.Message,),
     {
         "DESCRIPTOR": _NBESTSENTENCEPIECETEXT,
-        "__module__": "sentencepiece_pb2"
+        "__module__": "sentencepiece_pb2",
         # @@protoc_insertion_point(class_scope:sentencepiece.NBestSentencePieceText)
     },
 )

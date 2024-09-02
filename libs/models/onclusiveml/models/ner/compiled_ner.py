@@ -165,9 +165,9 @@ class CompiledNER:
             List[List[InferenceOutput]]: List of extracted named
                 entities in dictionary format.
         """
-        output_list: List[
-            List[InferenceOutput]
-        ] = []  # List to store the postprocessed NER labels
+        output_list: List[List[InferenceOutput]] = (
+            []
+        )  # List to store the postprocessed NER labels
 
         sentence_index = 0  # Initialize sentence index for tracking
         # Loop through each sublist of NER labels (one sublist per sentence)

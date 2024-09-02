@@ -1,4 +1,5 @@
 """Model server tests."""
+
 # Standard Library
 
 # 3rd party libraries

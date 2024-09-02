@@ -1,11 +1,12 @@
 """Document Collector."""
+
 # isort: skip_file
 
 # Standard Library
 from typing import List
+from datetime import datetime
 
 # 3rd party libraries
-import pandas as pd
 from elasticsearch import Elasticsearch
 
 # Internal libraries
@@ -34,16 +35,16 @@ class DocumentCollector:
         self,
         query_profile: BaseQueryProfile,
         topic_id: str,
-        start_time: pd.datetime,
-        end_time: pd.datetime,
+        start_time: datetime,
+        end_time: datetime,
     ) -> List[str]:
         """Return documents for single topic and keyword within a timeframe.
 
         Args:
             query_profile (BaseQueryProfile): boolean query of a profile e.g. a company
             topic_id (str): topic id
-            start_time (pd.datetime): start time range of documents to be collected
-            end_time (pd.datetime): end time range of documents to be collected
+            start_time (datetime): start time range of documents to be collected
+            end_time (datetime): end time range of documents to be collected
         Output:
             List[str]: List of content from elastic search
         """

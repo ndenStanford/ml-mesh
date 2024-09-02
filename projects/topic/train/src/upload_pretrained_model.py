@@ -46,7 +46,7 @@ def main() -> None:
     sample_topics = [str(i) for i in sample_topics]
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
-    for (test_file, test_file_attribute_path) in [
+    for test_file, test_file_attribute_path in [
         (sample_docs, model_card.model_test_files.inputs),
         (
             model_card.model_params.model_dump(),

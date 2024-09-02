@@ -3,12 +3,13 @@
 
 # Standard Library
 from typing import Tuple, Union, List
+from datetime import datetime
 
 # 3rd party libraries
 import pandas as pd
 from elasticsearch import Elasticsearch
-from kats.consts import TimeSeriesData
-from kats.detectors.cusum_detection import CUSUMDetector
+from onclusiveml.ts.timeseries import TimeSeriesData
+from onclusiveml.ts.detectors.cusum import CUSUMDetector
 from pandas import Timestamp
 
 # Internal libraries
@@ -56,8 +57,8 @@ class TrendDetection:
         self,
         query_profile: BaseQueryProfile,
         topic_id: str,
-        start_time: pd.datetime,
-        end_time: pd.datetime,
+        start_time: datetime,
+        end_time: datetime,
         topic_document_threshold: float,
         trend_time_interval: int,
     ) -> Tuple[
@@ -71,8 +72,8 @@ class TrendDetection:
         Args:
             query_profile (BaseQueryProfile): profile to fetch query from
             topic_id (str): topic id
-            start_time (pd.datetime): start time range of documents to be collected
-            end_time (pd.datetime): end time range of documents to be collected
+            start_time (datetime): start time range of documents to be collected
+            end_time (datetime): end time range of documents to be collected
             topic_document_threshold (float): minimum document threshold scalar
             trend_time_interval(int): time interaval when measuring trend
         Output:
