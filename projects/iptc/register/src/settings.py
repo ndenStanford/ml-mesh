@@ -12,8 +12,6 @@ from onclusiveml.feature_store import (
     FeatureStoreParams,
     OnDemandFeatureStoreParams,
 )
-
-# Source
 from onclusiveml.feature_store.on_demand.iptc import (  # noqa: F401
     iptc_first_level_on_demand_feature_view,
     iptc_second_level_on_demand_feature_view,

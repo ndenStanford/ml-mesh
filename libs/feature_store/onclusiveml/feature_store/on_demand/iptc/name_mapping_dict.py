@@ -1,3 +1,5 @@
+"""IPTC name mapping dictionary from legacy to current label."""
+
 NAME_MAPPING_DICT_FIRST = {
     "conflicts, war and peace": "conflict, war and peace",
 }

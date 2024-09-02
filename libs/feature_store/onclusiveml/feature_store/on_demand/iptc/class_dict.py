@@ -1,3 +1,6 @@
+# flake8: noqa: E501
+"""IPTC label to topic dictionary."""
+
 CANDIDATE_DICT_FIRST = {
     "root": {
         "0": {

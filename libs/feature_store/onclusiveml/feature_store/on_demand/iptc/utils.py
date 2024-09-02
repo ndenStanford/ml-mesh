@@ -2,16 +2,14 @@
 
 # Standard Library
 import asyncio
-import json
 # from src.settings import PromptBackendAPISettings
 from typing import Dict
 
 # 3rd party libraries
 import aiohttp
 import pandas as pd
-import requests
 
-# Source
+# Internal libraries
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
@@ -41,6 +39,7 @@ settings = PromptBackendAPISettings()
 
 
 def get_candidate_list(row, level):
+    """Get a candidate topic of a given node."""
     if level == 1:
         node_name = "root"
         candidate_list = list(
@@ -63,13 +62,13 @@ def get_candidate_list(row, level):
 
 
 def get_col_name(level):
+    """Get a column name of each level."""
     col_name = f"topic_{level}_llm"
     return col_name
 
 
 async def generate_label_llm(row, session, level):
     """Invoke LLM to generate IPTC asynchronously."""
-
     candidate_list = get_candidate_list(row, level)
 
     input_dict = {
