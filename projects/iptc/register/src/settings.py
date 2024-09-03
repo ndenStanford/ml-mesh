@@ -8,7 +8,13 @@ from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store import FeatureStoreParams, OnDemandFeatureStoreParams
+
+from onclusiveml.feature_store.on_demand.iptc import (  # noqa: F401
+    iptc_first_level_on_demand_feature_view,
+    iptc_second_level_on_demand_feature_view,
+    iptc_third_level_on_demand_feature_view,
+)
 
 
 class FeatureRegistrationParams(FeatureStoreParams):
@@ -30,8 +36,8 @@ class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
     feast_config_bucket: str
     config_file: str = "feature_store.yaml"
     local_config_dir: str = "local-config-dir"
-    redshift_database: str
-    redshift_table: str = "iptc"
+    # redshift_database: str
+    # redshift_table: str = "iptc"
     redshift_schema: str = "feast"
     fields: Optional[List[Tuple[str, str]]] = None
     sources: List[str] = ["iptc_feature_view"]
