@@ -61,8 +61,8 @@ class GlobalSettings(
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     TopicSettings,
-    TopicTrackedModelSettings,
     OnclusiveLogSettings,
+    TopicTrackedModelSettings,
 ):
     """Global server settings."""
 

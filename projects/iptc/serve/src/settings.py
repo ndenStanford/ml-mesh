@@ -36,8 +36,8 @@ class GlobalSettings(
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     ServerModelSettings,
-    IPTCTrackedModelSettings,
     OnclusiveLogSettings,
+    IPTCTrackedModelSettings,
 ):
     """Global server settings."""
 
