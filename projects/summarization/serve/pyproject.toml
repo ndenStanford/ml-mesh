@@ -6,7 +6,7 @@ authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 openai = "0.27.2"
 regex = "2022.10.31"
 

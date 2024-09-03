@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
 
 ARG PROJECT
 ARG COMPONENT
@@ -33,7 +33,6 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
-    MINIMAL_KATS=1 pip install --no-cache-dir kats==0.2.0 &&\
     chown -R "${USER}:users" "${HOME}"
 
 
@@ -41,7 +40,7 @@ RUN poetry install --without dev --no-root --no-interaction --no-ansi && \
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 

@@ -1,18 +1,20 @@
 ARG CUDA_VERSION
+ARG UBUNTU_VERSION
 
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04 as builder
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.8.16
+ARG PYTHON_VERSION
+ARG POETRY_VERSION
+ARG PIP_VERSION
 
-ENV POETRY_VERSION=1.3.2
-ENV PIP_VERSION=22.3.1
-ENV POETRY_HOME="/home/.poetry"
-ENV PATH="$POETRY_HOME/bin:$PATH"
-ENV POETRY_VIRTUALENVS_CREATE=false
-ENV PATH="${PATH}:/root/.local/bin"
+ENV HOME="/docker/${IMAGE_NAME}"
 
-ENV LD_LIBRARY_PATH="/usr/local/cuda-11.6/compat:${LD_LIBRARY_PATH}"
+ENV POETRY_HOME="${HOME}/.poetry" \
+    POETRY_VIRTUALENVS_CREATE=false \
+    PYENV_ROOT="/pyenv"
+
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -49,29 +51,20 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         sudo \
     && apt-get autoremove -y \
     && apt-get clean \
+    && apt-get remove -yq nodejs npm python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# python
-# hadolint ignore=DL3003,SC2046
-RUN curl -o "Python-${PYTHON_VERSION}.tgz" "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz" \
-    && tar -xf "Python-${PYTHON_VERSION}.tgz" \
-    && cd "Python-${PYTHON_VERSION}" \
-    && ./configure --enable-optimizations --with-ensurepip \
-    && make -j $(nproc) \
-    && make install \
-    && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
+# setup python
+RUN curl https://pyenv.run | bash \
+    && pyenv install ${PYTHON_VERSION} \
+    && eval "$(pyenv init -)"
 
-# create symlink: typing "python" will invoke /usr/local/bin/python3.8
-RUN ln -s /usr/local/bin/python3.8 /usr/local/bin/python
-
-# python dependencies
-RUN pip3 install poetry==${POETRY_VERSION} --no-cache-dir && \
-    python -V
-
-ENTRYPOINT []
+RUN pyenv global ${PYTHON_VERSION} \
+    && pip install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
+    && python -V
 
 # poetry requirements
-COPY "docker/${IMAGE_NAME}/poetry.lock" "docker/${IMAGE_NAME}/pyproject.toml" ./
+COPY "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./
 
 # install production dependencies
 RUN poetry install \
@@ -84,22 +77,23 @@ RUN poetry install \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-FROM builder as development
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-runtime-ubuntu${UBUNTU_VERSION} as production
 
-# install production dependencies
-RUN poetry install \
-    --only dev \
-    --no-root \
-    --no-interaction \
-    --no-ansi \
-    -v && \
-    rm -rf ~/.cache/pypoetry/cache && \
-    rm -rf ~/.cache/pypoetry/artifacts && \
-    poetry cache clear pypi --all -q
+ARG IMAGE_NAME
 
-# develop tests
-COPY "docker/${IMAGE_NAME}/tests" "docker/${IMAGE_NAME}/tests"
+ENV HOME="/home"
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_HOME="${HOME}/.poetry" \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_NO_INTERACTION=1 \
+    RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1 \
+    PYENV_ROOT="/pyenv"
 
-WORKDIR "/docker/${IMAGE_NAME}"
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-FROM builder as production
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /pyenv /pyenv
+COPY --from=builder /docker/${IMAGE_NAME} ${HOME}
+
+FROM production as development

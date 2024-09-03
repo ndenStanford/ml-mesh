@@ -2,6 +2,7 @@
 
 # Standard Library
 import re
+import ssl
 import subprocess
 from typing import Any, Dict, List
 
@@ -12,7 +13,15 @@ import spacy
 from konoha import WordTokenizer
 
 
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
 nltk.download("punkt")
+nltk.download("punkt_tab")
 command = "python -m spacy download ko_core_news_sm"
 subprocess.run(command, shell=True, check=True)
 
@@ -97,7 +106,6 @@ class SpacyWordTokenizer(BaseWordTokenizer):
         """
         # Process the content using SpaCy
         doc = self.nlp[language](content)
-
         # Extract the words from the SpaCy doc
         words = [token.text for token in doc if not token.is_space]
 

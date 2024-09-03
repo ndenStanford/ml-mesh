@@ -1,4 +1,5 @@
 """Test samples."""
+
 TEST_SAMPLES = {
     "00000000": (
         """Music Listens: 28 Styles: Breaks Duration: 4:37 Size: 8.4Mb

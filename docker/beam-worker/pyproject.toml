@@ -5,7 +5,7 @@ description = "Apache Beam worker dependencies"
 authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 beam = {path = "../../libs/beam"}
 
 

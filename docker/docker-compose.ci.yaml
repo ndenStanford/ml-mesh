@@ -17,30 +17,8 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
-        PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: python-base
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/python-base:${IMAGE_TAG}
-
-  # ===========================================================
-  # FASTAPI SERVE
-  # ===========================================================ech
-
-  fastapi-serve:
-    build:
-      context: ..
-      dockerfile: ./docker/fastapi-serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=fastapi-serve,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=fastapi-serve
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: fastapi-serve
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:${IMAGE_TAG}
-    depends_on:
-      - python-base
 
   # ===========================================================
   # GPU BASE
@@ -56,92 +34,9 @@ services:
         - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=gpu-base
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        CUDA_VERSION: 11.7.1
-        PYTHON_VERSION: ${PYTHON_VERSION:-3.8.16}
         IMAGE_NAME: gpu-base
         IMAGE_TAG: ${IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
-
-  gpu-base-tests:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-            # that's the closest analogue to --gpus; provide
-            # an integer amount of devices or 'all'
-              count: 1
-            # Devices are reserved using a list of capabilities, making
-            # capabilities the only required field. A device MUST
-            # satisfy all the requested capabilities for a successful
-            # reservation.
-              capabilities: [gpu]
-    command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:${IMAGE_TAG}
-
-  # ===========================================================
-  # GPU TRAIN
-  # ===========================================================
-  gpu-train:
-    build:
-      context: ..
-      dockerfile: ./docker/gpu-train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=gpu-train,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=gpu-train
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: gpu-train
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
-
-  gpu-train-tests:
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-            # that's the closest analogue to --gpus; provide
-            # an integer amount of devices or 'all'
-              count: 1
-            # Devices are reserved using a list of capabilities, making
-            # capabilities the only required field. A device MUST
-            # satisfy all the requested capabilities for a successful
-            # reservation.
-              capabilities: [gpu]
-    command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/gpu-train:${IMAGE_TAG}
-
-  # ===========================================================
-  # NEURON COMPILE
-  # ===========================================================
-
-  neuron-compile:
-    build:
-      context: ..
-      dockerfile: ./docker/neuron-compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=neuron-compile,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=neuron-compile
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: neuron-compile
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
-
-  neuron-compile-tests:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    volumes:
-      - neuron-vol:/docker/neuron-compile/tests/output_compile
-    environment:
-      NEURON_COMPILE_OUTPUT_DIR: tests/output_compile #  /docker/neuron-compile/tests/output_compile in container
-    command: [pytest, tests/core, -ra, -vv, --capture=no]
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-compile:${IMAGE_TAG}
 
   # ===========================================================
   # NEURON INFERENCE
@@ -160,36 +55,8 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: neuron-inference
-        NEURON_COMPILE_OUTPUT_DIR: tests/input_inference # /docker/neuron-inference/tests/input_inference in container
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
-
-  neuron-inference-tests:
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    environment:
-      NEURON_COMPILE_OUTPUT_DIR: tests/input_inference # must match the "NEURON_COMPILE_OUTPUT_DIR" build argument, i.e. /docker/neuron-inference/tests/input_inference in container
-    command: [pytest, tests/core, -ra, -vv, --capture=no, -m, inference]
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/neuron-inference:${IMAGE_TAG}
-
-  # ===========================================================
-  # KUBEFLOW JUPYTER
-  # ===========================================================
-
-  kubeflow-jupyter:
-    build:
-      context: ..
-      dockerfile: ./docker/kubeflow-jupyter/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-jupyter
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: kubeflow-jupyter
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-jupyter:${IMAGE_TAG}
-    entrypoint: [pwd]
 
   # ===========================================================
   # KUBEFLOW TORCH CPU
@@ -208,27 +75,8 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-cpu
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-cpu:${IMAGE_TAG}
-    entrypoint: [pwd]
-
-  # ===========================================================
-  # KUBEFLOW DATA SCIENCE
-  # ===========================================================
-
-  kubeflow-data-science:
-    build:
-      context: ..
-      dockerfile: ./docker/kubeflow-data-science/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=kubeflow-data-science
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        IMAGE_TAG: ${IMAGE_TAG}
-        IMAGE_NAME: kubeflow-data-science
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-data-science:${IMAGE_TAG}
     entrypoint: [pwd]
 
   # ===========================================================
@@ -248,6 +96,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-gpu
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-gpu:${IMAGE_TAG}
     entrypoint: [pwd]
 
@@ -288,6 +137,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-inf
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     entrypoint: [pwd]
 

@@ -15,7 +15,6 @@ bin/ @RonsenbergVI @meganeinu7
 
 /libs @airpr/mlops-engineers @ndenStanford
 /libs/training @airpr/mlops-engineers @vishaalsin
-/libs/data @airpr/mlops-engineers @vishaalsin @ndenStanford
 
 ## MLE owns the project implementation
 

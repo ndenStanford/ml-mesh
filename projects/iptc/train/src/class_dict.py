@@ -1,4 +1,5 @@
 """IPTC label to topic dictionary."""
+
 CLASS_DICT_FIRST = {
     "root": {
         0: "arts, culture, entertainment and media",

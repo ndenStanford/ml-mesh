@@ -6,7 +6,7 @@ authors = ["Nutchapol Dendumrongsup <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 core = {path = "../../../libs/core"}
 models = {path = "../../../libs/models", extras = ["topic"]}
 serving = {path = "../../../libs/serving"}
@@ -30,5 +30,4 @@ build-backend = "poetry.core.masonry.api"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = "supplemental"

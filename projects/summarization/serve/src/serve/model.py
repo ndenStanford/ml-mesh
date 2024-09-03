@@ -174,7 +174,7 @@ class SummarizationServedModel(ServedModel):
         multiple_article_summary = False
         try:
             content = eval(content)
-            if type(content) == list:
+            if isinstance(content, list):
                 multiple_article_summary = True
                 content = {
                     f"Article {i}": f"```{article}```"
