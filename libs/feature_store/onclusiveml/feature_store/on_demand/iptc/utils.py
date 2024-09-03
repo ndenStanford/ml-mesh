@@ -1,7 +1,9 @@
+# isort: skip_file
 """Feature registration utils."""
 
 # Standard Library
 import asyncio
+
 # from src.settings import PromptBackendAPISettings
 from typing import Dict
 
