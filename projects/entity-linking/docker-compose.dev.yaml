@@ -105,8 +105,6 @@ services:
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     ports:
       - 8000:8000
-    environment:
-      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
     volumes:
       - type: bind
         source: ${HOME}/data

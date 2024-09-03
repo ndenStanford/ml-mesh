@@ -101,13 +101,3 @@ class IptcThirdLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     udf: Callable = iptc_third_level_on_demand_feature_view
     model_config = SettingsConfigDict(env_prefix="third_level_on_demand_")
 
-
-class IptcLLMLabelFeatureRegistrationParams(OnclusiveBaseSettings):
-    """Feature registration inputs."""
-
-    entity_name: str
-    feature_view_name: str
-    redshift_table: str
-    fields: List[Tuple[str, str]]
-
-    model_config = SettingsConfigDict(env_prefix="llm_label_")
