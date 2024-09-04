@@ -92,8 +92,8 @@ def register(
     logger.info("Creating featureview...")
     feast_repo_builder.build_featureview()
     # plan_repo_contents(feast_repo_builder)
-    # if feature_registration_params.register_features:
-    register_repo_contents(feast_repo_builder)
+    if feature_registration_params.register_features:
+        register_repo_contents(feast_repo_builder)
 
 
 def register_on_demand(
