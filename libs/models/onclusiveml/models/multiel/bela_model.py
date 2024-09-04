@@ -442,6 +442,9 @@ class BelaModel:
         mention_lengths = model_inputs["mention_lengths"]
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()
 
+        logger.info("mention_offsets: {}".format(mention_offsets))
+        logger.info("mention_offsets_shape: {}".format(mention_offsets.shape))
+
         with torch.no_grad():
             _, last_layer = self.task.encoder(token_ids)
             text_encodings = last_layer

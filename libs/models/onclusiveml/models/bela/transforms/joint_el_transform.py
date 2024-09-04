@@ -1,6 +1,7 @@
 """EL Transform."""
 
 # Standard Library
+import logging
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -11,6 +12,9 @@ from torch.nn.utils.rnn import pad_sequence
 # Internal libraries
 from onclusiveml.models.bela.transforms.hf_transform import HFTransform
 from onclusiveml.models.bela.transforms.spm_transform import SPMTransform
+
+
+logger = logging.getLogger(__name__)
 
 
 class ReadState(Enum):
@@ -795,6 +799,8 @@ class JointELXlmrRawTextTransform(SPMTransform):
         texts = batch[self.texts_column]
         assert torch.jit.isinstance(texts, List[str])
 
+        logger.info("Hello I am here")
+
         insertions: List[List[int]] = []
         if self.insert_spaces:
             texts, insertions = self._insert_spaces_to_texts(texts)
@@ -875,6 +881,8 @@ class JointELXlmrRawTextTransform(SPMTransform):
             mentions_seq_lens: List[int] = [
                 len(example_mention_offsets) for example_mention_offsets in sp_offsets
             ]
+
+            logger.info("sp_offsets: {}".format(sp_offsets))
 
             output[self.mention_offsets_column] = sp_offsets
             output[self.mention_lengths_column] = sp_lengths
