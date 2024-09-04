@@ -408,6 +408,10 @@ class BelaModel:
             "entities": entities,
         }
 
+        logger.info(f"TEXTS length: {len(texts)}")
+
+        logger.info(f"PRE transformation offsets: {mention_offsets}")
+
         # Apply transformation with max mention position logic
         transformed_batch = self.apply_transformation_with_max_mention_pos(
             texts=batch["texts"],
@@ -417,14 +421,18 @@ class BelaModel:
             transform=self.transform,
         )
 
+        logger.info(f"transformed_btach: {transformed_batch}")
+
         model_inputs = self.transform(transformed_batch)
+
+        logger.info(f"model_inputs: {model_inputs}")
 
         token_ids = model_inputs["input_ids"]
 
         if token_ids.shape[1] > self.max_length:
             token_ids = token_ids[:, : self.max_length]
 
-        logger.info(f"Token IDs: {token_ids}")
+
         logger.info(
             f"Are the token IDs contiguous? {'Yes' if token_ids.is_contiguous() else 'No'}"
         )

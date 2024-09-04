@@ -357,6 +357,8 @@ class JointELCollate(torch.nn.Module):
                 dtype=torch.long,
             )
 
+        logger.info("collate model inputs: {}".format(model_inputs))
+
         return model_inputs
 
 
@@ -418,6 +420,8 @@ class JointELTransform(HFTransform):
         Returns:
             Dict[str, Any]: A dictionary containing transformed data including tokenized inputs.
         """
+        logger.info("SOMETHING IS HERE")
+
         texts = batch[self.texts_column]
         torch.jit.isinstance(texts, List[List[str]])
         mention_offsets = batch[self.mention_offsets_column]
