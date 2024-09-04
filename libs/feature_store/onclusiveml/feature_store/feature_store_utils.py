@@ -38,8 +38,6 @@ class OnDemandFeatureStoreParams(OnclusiveBaseSettings):
     feast_config_bucket: str
     config_file: str = "feature_store.yaml"
     local_config_dir: str = "local-config-dir"
-    redshift_database: str
-    redshift_schema: str = "feast"
     redshift_table: Optional[str] = None
     sources: List[str]
     udf: Callable
