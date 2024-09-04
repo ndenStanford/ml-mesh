@@ -19,7 +19,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.9.1-pre.6ddcfa9f}
+        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
@@ -115,7 +115,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.9.1-pre.6ddcfa9f} #should have been v23.8.4?
+        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
