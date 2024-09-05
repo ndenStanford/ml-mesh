@@ -92,6 +92,19 @@ ENV PYTHONUNBUFFERED=1 \
 
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
+# hadolint ignore=DL3008
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update -qy \
+    && apt-get install \
+        -y \
+        --reinstall build-essential \
+        --no-install-recommends \
+        curl \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && apt-get remove -yq nodejs npm python3 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /pyenv /pyenv
 COPY --from=builder /docker/${IMAGE_NAME} ${HOME}
