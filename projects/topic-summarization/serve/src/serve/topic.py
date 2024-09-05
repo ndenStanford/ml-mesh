@@ -39,6 +39,9 @@ class TopicHandler:
         "low": ImpactCategoryLabel.LOW,
         "medium": ImpactCategoryLabel.MID,
         "high": ImpactCategoryLabel.HIGH,
+        "low impact": ImpactCategoryLabel.LOW,
+        "medium impact": ImpactCategoryLabel.MID,
+        "high impact": ImpactCategoryLabel.HIGH,
     }
 
     def call_api(
@@ -280,6 +283,11 @@ class TopicHandler:
                 if category not in final_topic:
                     final_topic[category] = {}
                 final_topic[category][suffix] = value
+            elif "-" in key:
+                prefix, suffix = key.split("-")
+                category = prefix + "_" + suffix
+                if category not in final_topic:
+                    final_topic[category] = value
             else:
                 category = key
                 if category not in final_topic and value != "N/A":

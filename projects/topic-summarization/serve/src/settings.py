@@ -46,7 +46,7 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     GPT_TOPIC_ALIAS: str = "ml-topic-summarization-citations-gpt"
     GPT_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-gpt"
     GPT_TOPIC_WITH_ENTITY_SENTIMENT_ALIAS: str = (
-        "ml-topic-summarization-entity-sentiment-citation"
+        "ml-topic-summarization-entity-sentiment-impact-citation"
     )
 
     CLAUDE_SUMMARY_QUALITY_ALIAS: str = "ml-topic-summarization-summary-quality"
@@ -95,6 +95,9 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT: Dict[str, str] = TOPIC_RESPONSE_SCHEMA.copy()
     TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['sentiment'] = (
         "The overall sentiment focusing on given entity, based on all the input articles"
+    )
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['entity-impact'] = (
+        "The overall impact focusing on given entity, based on all the input articles"
     )
     # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {

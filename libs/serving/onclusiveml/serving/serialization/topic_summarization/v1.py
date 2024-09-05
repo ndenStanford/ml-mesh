@@ -66,6 +66,7 @@ class Topic(JsonApiSchema):
     summary: str
     theme: str
     sentiment: Optional[str] = None
+    entity_impact: Optional[str] = None
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
