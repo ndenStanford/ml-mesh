@@ -6,7 +6,7 @@ authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 neptune = "1.1.1"
 boto3 = "^1.28.29"
 numpy = ">=1.18"

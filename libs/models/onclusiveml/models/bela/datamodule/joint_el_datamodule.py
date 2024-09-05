@@ -206,29 +206,35 @@ class JointELDataModule(LightningDataModule):
         self.shuffle = shuffle
 
         self.datasets = {
-            "train": ElMatchaDataset(
-                train_path,
-                self.ent_catalogue,
-                use_raw_text=use_raw_text,
-                use_augmentation=use_augmentation,
-                augmentation_frequency=augmentation_frequency,
-            )
-            if train_path
-            else None,
-            "valid": ElMatchaDataset(
-                val_path,
-                self.ent_catalogue,
-                use_raw_text=use_raw_text,
-            )
-            if val_path
-            else None,
-            "test": ElMatchaDataset(
-                test_path,
-                self.ent_catalogue,
-                use_raw_text=use_raw_text,
-            )
-            if test_path
-            else None,
+            "train": (
+                ElMatchaDataset(
+                    train_path,
+                    self.ent_catalogue,
+                    use_raw_text=use_raw_text,
+                    use_augmentation=use_augmentation,
+                    augmentation_frequency=augmentation_frequency,
+                )
+                if train_path
+                else None
+            ),
+            "valid": (
+                ElMatchaDataset(
+                    val_path,
+                    self.ent_catalogue,
+                    use_raw_text=use_raw_text,
+                )
+                if val_path
+                else None
+            ),
+            "test": (
+                ElMatchaDataset(
+                    test_path,
+                    self.ent_catalogue,
+                    use_raw_text=use_raw_text,
+                )
+                if test_path
+                else None
+            ),
         }
 
     def train_dataloader(self):

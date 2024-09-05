@@ -24,7 +24,7 @@ assignees: ""
     strategy:
       max-parallel: 10
       matrix:
-        poetry-version: ["1.3.2"]
+        poetry-version: ["1.8.0"]
         projects:
           # NOTE: list of project components to run
           ...
@@ -32,7 +32,7 @@ assignees: ""
           - name: <new project>
             component: <project component>
             integration: false
-            python-version: "3.8.16"
+            python-version: "3.9.19"
 ```
 
 - [ ] update dependabot configuration to keep dependencies up to date.

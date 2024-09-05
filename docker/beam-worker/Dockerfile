@@ -1,11 +1,15 @@
-FROM apache/beam_python3.8_sdk:2.49.0 as builder
+ARG PYTHON_SHORT_VERSION
+ARG BEAM_VERSION
+
+FROM apache/beam_python${PYTHON_SHORT_VERSION}_sdk:${BEAM_VERSION} as builder
 
 ARG IMAGE_NAME
-ARG PYTHON_VERSION=3.8.16
+ARG PYTHON_VERSION
+ARG PIP_VERSION
+ARG POETRY_VERSION
 
-
-ENV USER=app
-ENV HOME="docker/${IMAGE_NAME}"
+ENV USER=onclusiveml
+ENV HOME="/docker/${IMAGE_NAME}"
 
 # set shell to bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -16,12 +20,12 @@ WORKDIR "/"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_VERSION=22.3.1 \
+    PIP_VERSION=${PIP_VERSION} \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.3.2 \
-    POETRY_HOME="/${HOME}/.poetry" \
+    POETRY_VERSION=${POETRY_VERSION} \
+    POETRY_HOME="${HOME}/.poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_NO_INTERACTION=1 \
     RUN_PYTHON_SDK_IN_DEFAULT_ENVIRONMENT=1
@@ -29,48 +33,14 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 # hadolint ignore=DL3008
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && apt-get update -qy \
-    && apt-get install \
-        -y \
-        --reinstall build-essential \
-        --no-install-recommends \
-        curl \
-        make \
-        gcc \
-        git \
-        openssh-server \
-        build-essential \
-        zlib1g-dev \
-        libncurses5-dev \
-        libgdbm-dev \
-        libnss3-dev \
-        libssl-dev \
-        libreadline-dev \
-        libffi-dev \
-        libsqlite3-dev \
-        libbz2-dev \
-        libpq-dev \
-        lzma \
-        liblzma-dev \
-        unzip \
-        ca-certificates \
-        groff \
-        mandoc \
-        sudo \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# python
-# hadolint ignore=DL3003,SC2046
-RUN curl -o Python-${PYTHON_VERSION}.tgz "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz" \
-    && tar -xf Python-${PYTHON_VERSION}.tgz \
-    && cd  Python-${PYTHON_VERSION} \
-    && ./configure --enable-optimizations --with-ensurepip \
-    && make -j $(nproc) \
-    && make install \
-    && python3 -m pip --no-cache-dir install --upgrade pip setuptools wheel
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get -y install --no-install-recommends \
+                            build-essential \
+                            ca-certificates \
+                            liblzma-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # python package management setup
 RUN pip3 install --upgrade pip==${PIP_VERSION} poetry==${POETRY_VERSION} --no-cache-dir \
@@ -95,21 +65,22 @@ WORKDIR "/"
 COPY --chown=${USER}:users libs/ libs/
 
 # install - poetry requirements
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" .${HOME}/
 
 WORKDIR "${HOME}"
 
-RUN poetry install --no-dev --no-root --no-interaction --no-ansi && \
+RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
-
 WORKDIR "${HOME}"
 
 # --- production stage
-FROM builder as production
+FROM apache/beam_python${PYTHON_SHORT_VERSION}_sdk:${BEAM_VERSION} as production
+
+COPY --from=builder /usr/local /usr/local
 
 # --- test build stage
-FROM builder as development
+FROM production as development

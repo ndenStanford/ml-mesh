@@ -1,4 +1,5 @@
 """Endpoints."""
+
 # Standard
 
 # 3rd party libraries

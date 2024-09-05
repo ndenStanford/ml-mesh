@@ -6,13 +6,14 @@ authors = ["Jian <jian.tong@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 torch = "1.12.1"
 transformers = "4.33.1"
 accelerate="0.20.3"
 tracking = {path = "../../../libs/tracking"}
-data = {path = "../../../libs/data"}
-train = {path = "../../../libs/training"}
+feature_store = {path = "../../../libs/feature_store"}
+training = {path = "../../../libs/training"}
+aiohttp = "<3.10.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"
@@ -21,8 +22,9 @@ pytest = "7.2.0"
 debugpy = "1.8.1"
 
 [[tool.poetry.source]]
-name = "pipy-nvidia"
+name = "pypi-nvidia"
 url = "https://pypi.nvidia.com"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
