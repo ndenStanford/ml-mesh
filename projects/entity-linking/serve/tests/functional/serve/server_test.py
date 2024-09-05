@@ -34,83 +34,113 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
+                    "attributes": {"content": "Jobs was CEO of Apple"},  # noqa
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
                     "attributes": {
-                        "content": "In the heart of Paris, one can find the enchanting Notre-Dame Cathedral, a masterpiece of French Gothic architecture. Built between 1163 and 1345, Notre-Dame has been a witness to many of the city's most significant historical events. It stands proudly on the Île de la Cité, surrounded by the Seine River, and its intricate façade and towering spires have captivated visitors for centuries. Not far from Notre-Dame, the Louvre Museum houses one of the most impressive art collections in the world. Originally a royal palace, the Louvre was transformed into a public museum during the French Revolution. It is now home to thousands of works of art, including the iconic Mona Lisa by Leonardo da Vinci. The museum's glass pyramid entrance, designed by architect I. M. Pei, is a modern contrast to the historical building and has become a symbol of the museum's commitment to both tradition and innovation. Paris is also renowned for its culinary scene, with countless bistros and cafés serving delicious French cuisine. The Eiffel Tower, an iron lattice tower constructed for the 1889 Exposition Universelle, offers breathtaking views of the city. Named after the engineer Gustave Eiffel, who designed it, the tower has become an enduring symbol of Paris and a must-see for anyone visiting the city. Whether exploring the art treasures of the Louvre, admiring the architectural grandeur of Notre-Dame, or enjoying a meal with a view of the Eiffel Tower, Paris offers an unforgettable experience that blends history, culture, and gastronomy.",
                         "entities": [
                             {
                                 "entity_type": None,
-                                "entity_text": "Paris",
-                                "score": 0.4507485330104828,
+                                "entity_text": "CEO",
+                                "score": 0.24852901697158813,
                                 "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
                             },
                             {
                                 "entity_type": None,
-                                "entity_text": "Notre-Dame Cathedral",
-                                "score": 0.8289842009544373,
+                                "entity_text": "Apple",
+                                "score": 0.7043066024780273,
                                 "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {"content": "Jobs was CEO of Apple"},  # noqa
+                    "parameters": {"lang": "en-US"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": None,
+                                "entity_text": "CEO",
+                                "score": 0.24852901697158813,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
                             },
                             {
                                 "entity_type": None,
-                                "entity_text": "Île de la Cité",
-                                "score": 0.9111210703849792,
+                                "entity_text": "Apple",
+                                "score": 0.7043066024780273,
                                 "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {"content": "Jobs war der CEO von Apple"},  # noqa
+                    "parameters": {"lang": "de"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": None,
+                                "entity_text": "CEO",
+                                "score": 0.46443355083465576,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
                             },
                             {
                                 "entity_type": None,
-                                "entity_text": "Seine River",
-                                "score": 0.7985472083091736,
+                                "entity_text": "Apple",
+                                "score": 0.79751056432724,
                                 "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
                             },
-                            {
-                                "entity_type": None,
-                                "entity_text": "Louvre Museum",
-                                "score": 0.8049250245094299,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "French Revolution",
-                                "score": 0.7658177018165588,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "Mona Lisa",
-                                "score": 0.7146372199058533,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "Leonardo da Vinci",
-                                "score": 0.876043438911438,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "I. M. Pei",
-                                "score": 0.5038636922836304,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "bistros",
-                                "score": 0.2330305576324463,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "French cuisine",
-                                "score": 0.21205313503742218,
-                                "sentence_index": [0],
-                            },
-                            {
-                                "entity_type": None,
-                                "entity_text": "Eiffel Tower",
-                                "score": 0.8133144974708557,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q243",
-                            },
-                        ],
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Steve Jobs was CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla."  # noqa
                     },  # noqa
                     "parameters": {"lang": "en"},
                 }
@@ -124,87 +154,533 @@ def test_model_server_readiness(test_client):
                         "entities": [
                             {
                                 "entity_type": None,
-                                "entity_text": "Paris",
-                                "score": 0.4507485330104828,
+                                "entity_text": "Steve Jobs",
+                                "score": 0.8623836040496826,
                                 "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q19837",
+                            },
+                            {
+                                "entity_type": None,
+                                "entity_text": "Apple",
+                                "score": 0.6849206686019897,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                            },
+                            {
+                                "entity_type": None,
+                                "entity_text": "Elon Musk",
+                                "score": 0.8932482004165649,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q317521",
+                            },
+                            {
+                                "entity_type": None,
+                                "entity_text": "Tesla",
+                                "score": 0.6265523433685303,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q478214",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Steve Jobs was the CEO of Apple. Hello, nothing to see here. Elon Musk is the CEO of Tesla. That is it.",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Steve Jobs",
+                                "score": 0.9995638926823934,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Apple",
+                                "score": 0.999211311340332,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Elon Musk",
+                                "score": 0.9523038864135742,
+                                "sentence_index": [2],
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Tesla",
+                                "score": 0.9936597347259521,
+                                "sentence_index": [2],
+                            },
+                        ],
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Steve Jobs",
+                                "score": 0.9995638926823934,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q19837",
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Apple",
+                                "score": 0.999211311340332,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Elon Musk",
+                                "score": 0.9523038864135742,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q317521",
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Tesla",
+                                "score": 0.9936597347259521,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q478214",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Die Olympischen Sommerspiele 2024 (französisch: Jeux olympiques d'été de 2024), offiziell die Spiele der XXXIII. Olympiade (französisch: Jeux de la XXXIIIe Olympiade) und allgemein bekannt als Paris 2024, sind ein bevorstehendes internationales Multisport-Ereignis, das vom 26. Juli bis zum 11. August 2024 in Frankreich stattfinden soll, mit Paris als Hauptaustragungsort und 16 weiteren Städten, die über das französische Mutterland verteilt sind, sowie einem Unteraustragungsort in Tahiti - einer Insel innerhalb des französischen Überseegebiets und der Überseekollektivität Französisch-Polynesien.",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Die Olympischen Sommerspiele Spiele X",
+                                "score": 0.9277721921602885,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "MISC",
+                                "entity_text": "Olympiade",
+                                "score": 0.8323558866977692,
+                                "sentence_index": [1],
+                            },
+                            {
+                                "entity_type": "MISC",
+                                "entity_text": "Je de la XX Olympiade",
+                                "score": 0.9006950344358172,
+                                "sentence_index": [1],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Paris",
+                                "score": 0.9990205764770508,
+                                "sentence_index": [1],
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Multisport",
+                                "score": 0.8727646172046661,
+                                "sentence_index": [1],
+                            },
+                            {
+                                "entity_type": "ORG",
+                                "entity_text": "Ereignis",
+                                "score": 0.7371097579598427,
+                                "sentence_index": [1],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Frankreich",
+                                "score": 0.5097579459349314,
+                                "sentence_index": [3],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Paris",
+                                "score": 0.9968839287757874,
+                                "sentence_index": [3],
+                            },
+                        ],
+                    },
+                    "parameters": {"lang": "de"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "MISC",
+                                "entity_text": "Olympiade",
+                                "score": 0.8323558866977692,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q221956",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Paris",
+                                "score": 0.9990205764770508,
+                                "sentence_index": [1],
                                 "wiki_link": "https://www.wikidata.org/wiki/Q90",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Notre-Dame Cathedral",
-                                "score": 0.8289842009544373,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q2981",
+                                "entity_type": "ORG",
+                                "entity_text": "Multisport",
+                                "score": 0.8727646172046661,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q167170",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Île de la Cité",
-                                "score": 0.9111210703849792,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q190063",
+                                "entity_type": "ORG",
+                                "entity_text": "Ereignis",
+                                "score": 0.7371097579598427,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q167170",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Seine River",
-                                "score": 0.7985472083091736,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q1471",
+                                "entity_type": "LOC",
+                                "entity_text": "Frankreich",
+                                "score": 0.5097579459349314,
+                                "sentence_index": [3],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q142",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Louvre Museum",
-                                "score": 0.8049250245094299,
+                                "entity_type": "LOC",
+                                "entity_text": "Paris",
+                                "score": 0.9968839287757874,
+                                "sentence_index": [3],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q90",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "ピョートル大帝は今日、最も強大な皇帝の一人と考えられている。ピョートル大帝は、全ヨーロッパに潜入した後、サンクトペテルブルクを建設した。モンゴル帝国との数世紀にわたる戦いの後、ロシアはついに西洋のルネサンスに追いついた。",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "ピョートル",
+                                "score": 0.9994430939356486,
                                 "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q19675",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "French Revolution",
-                                "score": 0.7658177018165588,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q6534",
+                                "entity_type": "PER",
+                                "entity_text": "ピョートル",
+                                "score": 0.9992485443751017,
+                                "sentence_index": [1],
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Mona Lisa",
-                                "score": 0.7146372199058533,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q12418",
+                                "entity_type": "LOC",
+                                "entity_text": "ヨーロッパ",
+                                "score": 0.9485726952552795,
+                                "sentence_index": [1],
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Leonardo da Vinci",
-                                "score": 0.876043438911438,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q762",
+                                "entity_type": "LOC",
+                                "entity_text": "サンクトペテルブルク",
+                                "score": 0.9998002648353577,
+                                "sentence_index": [1],
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "I. M. Pei",
-                                "score": 0.5038636922836304,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q46868",
+                                "entity_type": "LOC",
+                                "entity_text": "モンゴル",
+                                "score": 0.9997795621554056,
+                                "sentence_index": [2],
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "bistros",
-                                "score": 0.2330305576324463,
+                                "entity_type": "LOC",
+                                "entity_text": "ロシア",
+                                "score": 0.9998742341995239,
+                                "sentence_index": [2],
+                            },
+                        ],
+                    },
+                    "parameters": {"lang": "ja"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "ピョートル",
+                                "score": 0.9994430939356486,
                                 "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q866742",
+                                "wiki_link": "https://www.wikidata.org/wiki/Q8479",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "French cuisine",
-                                "score": 0.21205313503742218,
-                                "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q6661",
+                                "entity_type": "PER",
+                                "entity_text": "ピョートル",
+                                "score": 0.9992485443751017,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q8479",
                             },
                             {
-                                "entity_type": None,
-                                "entity_text": "Eiffel Tower",
-                                "score": 0.8133144974708557,
+                                "entity_type": "LOC",
+                                "entity_text": "ヨーロッパ",
+                                "score": 0.9485726952552795,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q46",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "サンクトペテルブルク",
+                                "score": 0.9998002648353577,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q656",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "モンゴル",
+                                "score": 0.9997795621554056,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q12557",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "ロシア",
+                                "score": 0.9998742341995239,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q159",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "Albert Einstein è considerato uno dei più grandi fisici di tutti i tempi. Anche se il suo lavoro si basava su quello di Plank e su altri risultati, ha rivoluzionato il mondo della fisica in un'epoca in cui si pensava che la scienza fosse completamente conosciuta. Questo portò anche gli Stati Uniti sulla strada del progetto Manhattan.",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Albert Einstein",
+                                "score": 0.9796470701694489,
                                 "sentence_index": [0],
-                                "wiki_link": "https://www.wikidata.org/wiki/Q243",
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Plank",
+                                "score": 0.8112821578979492,
+                                "sentence_index": [1],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Stati Uniti",
+                                "score": 0.8701310634613037,
+                                "sentence_index": [2],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Manhattan",
+                                "score": 0.5701310634613037,
+                                "sentence_index": [2],
+                            },
+                        ],
+                    },
+                    "parameters": {"lang": "it"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Albert Einstein",
+                                "score": 0.9796470701694489,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q937",
+                            },
+                            {
+                                "entity_type": "PER",
+                                "entity_text": "Plank",
+                                "score": 0.8112821578979492,
+                                "sentence_index": [1],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q9021",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Stati Uniti",
+                                "score": 0.8701310634613038,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q30",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Manhattan",
+                                "score": 0.5701310634613037,
+                                "sentence_index": [2],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q127050",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": "None",
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": "NOAA says Earth's oceans becoming more acidic\n\n\u00a0\n\nAccording by the National Oceanic and Atmospheric Administration's  National Oceanic and Atmospheric Administration's National Oceanic and Atmospheric Administration's National Oceanic and Atmospheric Administration's National Oceanic and Atmospheric Administration's National Oceanic and Atmospheric Administration's (NOAA) Pacific Marine Environmental Laboratory, the level of acid in the world's oceans is rising, decades before scientists expected the levels to rise.\n\nThe study was performed on the coastal waters of the Pacific Ocean from Baja California, Mexico to Vancouver, British Columbia, where tests showed that acid levels in some areas near the edge of the Continental Shelf were high enough to corrode the shells of some sea creatures as well as some corals. Some areas showed excessive levels of acid less than  coastline in the United States.\n\n\"What we found ... was truly astonishing. This means ocean acidification may be seriously impacting marine life on the continental shelf right now. The models suggested they wouldn't be corrosive at the surface until sometime during the second half of this century,\" said Richard A. Feely, an oceanographer from the NOAA.\n\nThe natural processes of the seas and oceans constantly clean the Earth's air, absorbing 1/3 to 1/2 of the carbon dioxide generated by humans. As the oceans absorb more of the gas, the water becomes more acidic, reducing the amount of carbonate which shellfish such as clams and oysters use to form their shells, and increasing the levels of carbonic acid. Although levels are high, they are not yet high enough to threaten humans directly.\n\n\"Scientists have also seen a reduced ability of marine algae and free-floating plants and animals to produce protective carbonate shells,\" added Feely.\n\nFeely noted that, according to the study, the oceans and seas have absorbed more than 525 billion tons of carbon dioxide since the Industrial Revolution began.",  # noqa
+                        "entities": [
+                            {
+                                "entity_type": None,
+                                "entity_text": "carbon dioxide",
+                                "score": 1.0,
+                                "sentence_index": [4],
+                            }
+                        ],
+                    },
+                    "parameters": {"lang": "en"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": None,
+                                "entity_text": "carbon dioxide",
+                                "score": 1.0,
+                                "sentence_index": [4],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q1997",
+                            }
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": "de-72969",
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "content": (
+                            "Saudischer Kronprinz Naif ibn Abd al-Aziz gestorben Riad (Saudi-Arabien), 17.06.2012 – Der saudische Thronfolger Naif ibn Abd al-Aziz ist tot. Der 78-jährige seit 1975 amtierende Innenminister und Halbbruder von König Abdullah starb in der Schweiz, wo er sich zur Krankenbehandlung aufhielt. An welcher gesundheitlichen Beeinträchtigung der Prinz litt, ist nicht bekannt. Naif hatte im Oktober seinen an Krebs verstorbenen Bruder Sultan ibn Abd al-Aziz abgelöst. Das politische Vermächtnis von Prinz Naif wird unterschiedlich beurteilt. Als Verdienst rechnet man ihm sein kompromissloses Vorgehen gegen das Terroristennetzwerk al-Qaida an, als er zwischen 2003 und 2008 deren Zellen in Saudi-Arabien zerschlug. Doch Kritiker werfen ihm die Unterdrückung der Opposition im Lande vor. Auch von Frauenrechtlerinnen wurde der verstorbene Kronprinz kritisiert, weil er gegen die Forderungen der saudi-arabischen Frauen gewesen sei, alleine Autofahren zu dürfen. Außerdem habe er die Reformversuche des 87-jährigen Königs Abdullah behindert, etwa bei der Einführung des Wahlrechts für Frauen bei Kommunalwahlen. Nun wird zum zweiten Mal innerhalb eines Jahres nach einem Thronfolger für den 87-jährigen Herrscher gesucht. Dabei wurde von Beobachtern der 76 Jahre alte derzeitige Verteidigungsminister Salman ibn Abd al-Aziz als Favorit genannt. Der frühere Gouverneur von Riad gilt als eher aufgeschlossen für Reformen. Die Thronfolge ist in Saudi-Arabien, im Gegensatz zu Königshäusern in Europa, nicht festgelegt. Der jeweilige Thronfolger wird von einem Familiengremium bestimmt. Dieses wird als neuen Thronfolger einen der etwa zwanzig noch lebenden Söhne des Staatsgründers Ibn Saud auswählen. König Ibn Saud starb 1953, und ihm folgten seitdem fünf seiner Söhne auf den Thron. Die Beerdigung Naif ibn Abd al-Aziz' ist für den 17.06.2012 in Mekka vorgesehen. König Abdullah ist hierzu bereits in Mekka eingetroffen."  # noqa
+                        ),
+                        "entities": [
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Saudi-Arabien",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Naif ibn Abd al-Aziz",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Salman ibn Abd al-Aziz",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Ibn Saud",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Mekka",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                            },
+                        ],
+                    },
+                    "parameters": {"lang": "de"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Saudi-Arabien",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q851",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Naif ibn Abd al-Aziz",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q317832",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Salman ibn Abd al-Aziz",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q367825",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Ibn Saud",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q151509",
+                            },
+                            {
+                                "entity_type": "LOC",
+                                "entity_text": "Mekka",
+                                "score": 1.0,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q5806",
                             },
                         ]
                     },
