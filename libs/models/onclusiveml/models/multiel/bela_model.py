@@ -471,10 +471,6 @@ class BelaModel:
             "entities": entities,
         }
 
-        logger.info(f"TEXTS length: {len(texts)}")
-
-        logger.info(f"PRE transformation offsets: {mention_offsets}")
-
         # Apply transformation with max mention position logic
         transformed_batch = self.apply_transformation_with_max_mention_pos(
             texts=batch["texts"],
@@ -484,23 +480,11 @@ class BelaModel:
             transform=self.transform,
         )
 
-        logger.info(f"transformed_btach: {transformed_batch}")
-
         model_input = self.transform(transformed_batch)
 
         model_inputs = self.adjust_model_inputs(model_input)
 
-        logger.info(f"adjusted_model_inputs: {model_inputs}")
-
         token_ids = model_inputs["input_ids"]
-
-        logger.info(
-            f"Are the token IDs contiguous? {'Yes' if token_ids.is_contiguous() else 'No'}"
-        )
-        if torch.isnan(token_ids).any() or torch.isinf(token_ids).any():
-            logger.error("Token IDs contain NaNs or Infs!")
-        logger.info(f"Token IDs dtype: {token_ids.dtype}")
-        logger.info(f"Token IDs shape: {token_ids.shape}")
 
         test_tensor = torch.randn(len(token_ids)).to(self.device)
         test_tensor.to(self.device)
@@ -510,9 +494,6 @@ class BelaModel:
         mention_offsets = model_inputs["mention_offsets"]
         mention_lengths = model_inputs["mention_lengths"]
         sp_tokens_boundaries = model_inputs["sp_tokens_boundaries"].tolist()
-
-        logger.info("mention_offsets: {}".format(mention_offsets))
-        logger.info("mention_offsets_shape: {}".format(mention_offsets.shape))
 
         with torch.no_grad():
             _, last_layer = self.task.encoder(token_ids)
