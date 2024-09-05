@@ -105,6 +105,9 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       REGISTER_FEATURES: ${REGISTER_FEATURES}
     env_file: register/config/dev.env
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
