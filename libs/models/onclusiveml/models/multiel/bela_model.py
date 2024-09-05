@@ -386,6 +386,69 @@ class BelaModel:
             "entities": transformed_entities,
         }
 
+    def adjust_model_inputs(self, model_inputs, max_length=256, center_position=128):
+        """Adjusts model inputs to ensure the mention is placed at the center_position (128th token).
+
+        Args:
+            model_inputs (dict): A dictionary containing various model inputs such as input_ids.
+            max_length (int): The maximum token length allowed for input sequences. Default is 256.
+            center_position (int): The position where the mention should be placed. Default is 128.
+
+        Returns:
+            dict: The adjusted model inputs with the mention centered at the center_position
+                and updates to the other fields.
+        """
+        input_ids = model_inputs["input_ids"]
+        attention_mask = model_inputs["attention_mask"]
+        tokens_mapping = model_inputs.get("tokens_mapping")
+        mention_offsets = model_inputs["mention_offsets"]
+        mention_lengths = model_inputs.get("mention_lengths")
+        sp_tokens_boundaries = model_inputs.get("sp_tokens_boundaries")
+
+        mention_start = mention_offsets[0][0].item()
+
+        # Calculate how much to shift the window to make the mention start at the center_position
+        shift = mention_start - center_position
+
+        # Ensure that start_idx and end_idx stay within valid bounds
+        start_idx = max(0, shift)
+        end_idx = start_idx + max_length
+
+        # Trim input_ids to the appropriate window
+        trimmed_input_ids = input_ids[:, start_idx:end_idx]
+
+        # Trim attention_mask accordingly
+        trimmed_attention_mask = attention_mask[:, start_idx:end_idx]
+
+        # If tokens_mapping exists, trim it
+        if tokens_mapping is not None:
+            trimmed_tokens_mapping = tokens_mapping[:, start_idx:end_idx]
+        else:
+            trimmed_tokens_mapping = None
+
+        # If sp_tokens_boundaries exists, trim it
+        if sp_tokens_boundaries is not None:
+            trimmed_sp_tokens_boundaries = sp_tokens_boundaries[:, start_idx:end_idx]
+        else:
+            trimmed_sp_tokens_boundaries = None
+
+        # Adjust the mention_offsets only if the mention offset is larger than 128
+        adjusted_mention_offsets = mention_offsets.clone()
+        if mention_start >= center_position:
+            adjusted_mention_offsets[0][0] = center_position
+
+        # Update model_inputs with trimmed data
+        updated_model_inputs = {
+            "input_ids": trimmed_input_ids,
+            "attention_mask": trimmed_attention_mask,
+            "tokens_mapping": trimmed_tokens_mapping,
+            "mention_offsets": adjusted_mention_offsets,
+            "mention_lengths": mention_lengths,
+            "sp_tokens_boundaries": trimmed_sp_tokens_boundaries,
+        }
+
+        return updated_model_inputs
+
     def process_disambiguation_batch(
         self, texts, mention_offsets, mention_lengths, entities
     ):
@@ -423,15 +486,13 @@ class BelaModel:
 
         logger.info(f"transformed_btach: {transformed_batch}")
 
-        model_inputs = self.transform(transformed_batch)
+        model_input = self.transform(transformed_batch)
 
-        logger.info(f"model_inputs: {model_inputs}")
+        model_inputs = self.adjust_model_inputs(model_input)
+
+        logger.info(f"adjusted_model_inputs: {model_inputs}")
 
         token_ids = model_inputs["input_ids"]
-
-        if token_ids.shape[1] > self.max_length:
-            token_ids = token_ids[:, : self.max_length]
-
 
         logger.info(
             f"Are the token IDs contiguous? {'Yes' if token_ids.is_contiguous() else 'No'}"
