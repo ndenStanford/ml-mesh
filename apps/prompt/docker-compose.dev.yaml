@@ -104,7 +104,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
@@ -140,7 +139,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
@@ -219,7 +217,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       backend:
@@ -265,7 +262,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
