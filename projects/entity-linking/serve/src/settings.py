@@ -48,7 +48,7 @@ class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "entity-linking"
-    model_directory: Union[str, Path] = "."
+    model_directory: Union[str, Path]
     md_threshold: float = 0.2
     el_threshold: float = 0.4
     checkpoint_name: str = "wiki"
@@ -76,4 +76,6 @@ class GlobalSettings(
 @lru_cache
 def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
+    print(GlobalSettings())
+
     return GlobalSettings()
