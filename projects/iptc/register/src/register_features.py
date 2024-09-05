@@ -7,7 +7,7 @@ from typing import Any
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.logging.constants import OnclusiveService
-from onclusiveml.data.feature_store import FeastRepoBuilder, FeatureStoreParams
+from onclusiveml.feature_store import FeastRepoBuilder, FeatureStoreParams
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]; FeatureRegistrationLLMParams,
@@ -92,8 +92,8 @@ def register(
     logger.info("Creating featureview...")
     feast_repo_builder.build_featureview()
     # plan_repo_contents(feast_repo_builder)
-    # if feature_registration_params.register_features:
-    register_repo_contents(feast_repo_builder)
+    if feature_registration_params.register_features:
+        register_repo_contents(feast_repo_builder)
 
 
 def register_on_demand(

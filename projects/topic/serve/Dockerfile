@@ -37,7 +37,7 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -52,6 +52,6 @@ RUN poetry install --no-interaction --with dev
 USER root
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

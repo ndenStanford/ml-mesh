@@ -8,13 +8,11 @@ from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.feature_store import (
+from onclusiveml.feature_store import (
     FeatureStoreParams,
     OnDemandFeatureStoreParams,
 )
-
-# Source
-from src.utils import (
+from onclusiveml.feature_store.on_demand.iptc import (  # noqa: F401
     iptc_first_level_on_demand_feature_view,
     iptc_second_level_on_demand_feature_view,
     iptc_third_level_on_demand_feature_view,
@@ -40,8 +38,8 @@ class OnDemandFeatureRegistrationParams(OnDemandFeatureStoreParams):
     feast_config_bucket: str
     config_file: str = "feature_store.yaml"
     local_config_dir: str = "local-config-dir"
-    redshift_database: str
-    redshift_table: str = "iptc"
+    # redshift_database: str
+    # redshift_table: str = "iptc"
     redshift_schema: str = "feast"
     fields: Optional[List[Tuple[str, str]]] = None
     sources: List[str] = ["iptc_feature_view"]
@@ -110,14 +108,3 @@ class IptcThirdLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     fields: Optional[List[Tuple[str, str]]] = None
     udf: Callable = iptc_third_level_on_demand_feature_view
     model_config = SettingsConfigDict(env_prefix="third_level_on_demand_")
-
-
-class IptcLLMLabelFeatureRegistrationParams(OnclusiveBaseSettings):
-    """Feature registration inputs."""
-
-    entity_name: str
-    feature_view_name: str
-    redshift_table: str
-    fields: List[Tuple[str, str]]
-
-    model_config = SettingsConfigDict(env_prefix="llm_label_")

@@ -6,7 +6,7 @@ from typing import Any
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.logging.constants import OnclusiveService
-from onclusiveml.data.feature_store import FeastRepoBuilder
+from onclusiveml.feature_store import FeastRepoBuilder
 
 # Source
 from src.settings import FeatureRegistrationParams  # type: ignore[attr-defined]

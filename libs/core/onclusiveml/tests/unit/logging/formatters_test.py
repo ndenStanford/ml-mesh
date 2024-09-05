@@ -15,6 +15,11 @@ from onclusiveml.core.logging import (
 )
 
 
+def dummy_format_time(self, record, datefmt=None):
+    """Dummy time formatter."""
+    return "dummy time stamp"
+
+
 @pytest.mark.parametrize("service", ["test-service", "onclusive-ml"])
 def test_onclusive_log_record(service):
     """Tests the OnclusiveJSONLogRecord constructor with basic sample inputs."""
@@ -54,10 +59,6 @@ def test_onclusive_log_record(service):
 )
 def test_onclusive_formatter_format(monkeypatch, fmt, expected_formatted_message):
     """Tests the OnclusiveFormatter's `format` method."""
-    # patch Formatter.formatTime with dummy time stamp
-    def dummy_format_time(self, record, datefmt=None):
-        return "dummy time stamp"
-
     monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
 
     formatter = OnclusiveFormatter(service="test-service", fmt=fmt.value)
@@ -104,10 +105,6 @@ def test_onclusive_formatter_format(monkeypatch, fmt, expected_formatted_message
 )
 def test_onclusive_json_formatter_format(monkeypatch, fmt, expected_formatted_message):
     """Tests the OnclusiveJSONFormatter's `format` method."""
-    # patch Formatter.formatTime with dummy time stamp
-    def dummy_format_time(self, record, datefmt=None):
-        return "dummy time stamp"
-
     monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
 
     formatter = OnclusiveJSONFormatter(service="test-service", fmt=fmt)

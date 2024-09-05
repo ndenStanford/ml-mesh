@@ -17,7 +17,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic-summarization
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.4.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
     command: [python, -m, src.serve.__main__]
     profiles: [serve, integration, functional]
@@ -57,7 +57,7 @@ services:
 
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     environment:
@@ -68,7 +68,7 @@ services:
 
   serve-integration:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -95,7 +95,7 @@ services:
   # functional tests
   serve-functional:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-serve:${IMAGE_TAG:-latest}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     environment:
       ONCLUSIVEML_SERVING_UVICORN_PORT: 8888
@@ -132,7 +132,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.4.2}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [serve, integration, functional]
@@ -220,7 +220,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: topic-summarization
         COMPONENT: backfill
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: backfill/src
@@ -257,7 +257,7 @@ services:
         source: backfill
         target: /projects/topic-summarization/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/topic-summarization-backfill:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
       HOST: test.onclusive.com
@@ -310,7 +310,7 @@ services:
       - backfill-volume:/tmp/beam-artifact-staging
 
   jobserver:
-    image: apache/beam_flink1.16_job_server:2.49.0
+    image: apache/beam_flink1.16_job_server:2.54.0
     command:
       - --flink-master=jobmanager:8081
     ports:

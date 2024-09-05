@@ -14,7 +14,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: frontend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: [npm, start]
     profiles: [frontend]
@@ -42,7 +42,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: frontend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-frontend:${IMAGE_TAG}
     command: [/bin/sh, -c, sleep 3s]
     profiles: [frontend, unit]
@@ -71,9 +71,9 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [backend, functional]
     healthcheck:
       test: [CMD-SHELL, sleep 50s || exit 1]
@@ -99,10 +99,11 @@ services:
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
       DOCS_URL: /docs
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
@@ -122,7 +123,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload]
     profiles: [debug]
@@ -138,7 +139,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
@@ -158,9 +158,9 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     volumes:
       - type: bind
@@ -194,9 +194,9 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     profiles: [functional]
     volumes:
       - type: bind
@@ -217,7 +217,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       backend:
@@ -240,9 +239,9 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     volumes:
       - type: bind
@@ -263,7 +262,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:

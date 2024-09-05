@@ -69,6 +69,41 @@ def test_model_server_readiness(test_client):
                 "data": {
                     "identifier": None,
                     "namespace": "entity-linking",
+                    "attributes": {"content": "Jobs was CEO of Apple"},  # noqa
+                    "parameters": {"lang": "en-US"},
+                }
+            },
+            {
+                "version": 1,
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
+                    "attributes": {
+                        "entities": [
+                            {
+                                "entity_type": None,
+                                "entity_text": "CEO",
+                                "score": 0.24852901697158813,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q484876",
+                            },
+                            {
+                                "entity_type": None,
+                                "entity_text": "Apple",
+                                "score": 0.7043066024780273,
+                                "sentence_index": [0],
+                                "wiki_link": "https://www.wikidata.org/wiki/Q312",
+                            },
+                        ]
+                    },
+                },
+            },
+        ),
+        (
+            {
+                "data": {
+                    "identifier": None,
+                    "namespace": "entity-linking",
                     "attributes": {"content": "Jobs war der CEO von Apple"},  # noqa
                     "parameters": {"lang": "de"},
                 }

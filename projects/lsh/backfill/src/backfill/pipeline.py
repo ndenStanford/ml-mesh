@@ -7,14 +7,14 @@ import json
 import apache_beam as beam
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.core.base.pydantic import cast
-from onclusiveml.data.beam.transforms import MachineLearningEnrichment
-from onclusiveml.data.beam.transforms.io.kafka import KafkaConsume, KafkaProduce
-from onclusiveml.data.beam.transforms.io.kafka.settings import (
+from onclusiveml.beam.transforms import MachineLearningEnrichment
+from onclusiveml.beam.transforms.io.kafka import KafkaConsume, KafkaProduce
+from onclusiveml.beam.transforms.io.kafka.settings import (
     KafkaConsumerSettings,
     KafkaProducerSettings,
 )
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.base.pydantic import cast
 
 
 def get_pipeline(root: beam.Pipeline, settings: OnclusiveBaseSettings) -> beam.Pipeline:

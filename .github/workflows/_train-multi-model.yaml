@@ -82,7 +82,7 @@ on  :
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.project }} training'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -102,7 +102,7 @@ jobs:
   train-model:
     name: '(Train &) register model: ${{ inputs.project }}'
     needs: check-run-criteria
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: ${{ needs.check-run-criteria.outputs.run == 'true' }}
     environment: ${{ inputs.environment }}
 

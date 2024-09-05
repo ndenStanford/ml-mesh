@@ -1,4 +1,5 @@
 """Service initialization."""
+
 # isort: skip_file
 
 # Internal libraries

@@ -11,10 +11,7 @@ from botocore.client import BaseClient
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
-from onclusiveml.data.feature_store import (
-    FeatureStoreHandle,
-    FeatureStoreParams,
-)
+from onclusiveml.feature_store import FeatureStoreHandle, FeatureStoreParams
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.tracking.optimization import OnclusiveModelOptimizer
 
@@ -145,7 +142,6 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self.dataset_df.to_parquet(self.parquet_buffer, index=False)
 
         s3_bucket = self.data_fetch_params.dataset_upload_bucket
-
         # assemble full s3 uri for file
         s3_model_version_full_prefix = (
             self.tracked_model_version.derive_model_version_s3_prefix()

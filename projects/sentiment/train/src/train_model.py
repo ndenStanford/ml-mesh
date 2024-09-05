@@ -65,7 +65,7 @@ def main() -> None:
     # --- add assets to registered model version on neptune ai
     # testing assets - inputs, inference specs and outputs
     logger.info("Pushing assets to neptune AI")
-    for (test_file, test_file_attribute_path) in [
+    for test_file, test_file_attribute_path in [
         (model_card.model_inputs.sample_documents, model_card.model_test_files.inputs),
         (sent_settings, model_card.model_test_files.inference_params),
         (sent_predictions, model_card.model_test_files.predictions),

@@ -6,7 +6,7 @@ authors = ["Sebastian Scherer <sebastian.scherer@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 keybert = "^0.7.0"
 torch = "1.12.1"
 transformers = "^4.27.4"

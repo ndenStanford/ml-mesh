@@ -3,53 +3,6 @@
 services:
 
   # =============================================
-  # INGEST
-  # =============================================
-
-  ingest:
-    build:
-      context: ../../
-      dockerfile: projects/iptc/ingest/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      cache_to:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=iptc-ingest,mode=max
-      cache_from:
-        - type=s3,bucket=ecr-cache-sub-${DEPLOYMENT},region=us-east-2,name=iptc-ingest
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: iptc
-        COMPONENT: ingest
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    volumes:
-      - type: bind
-        source: ingest/src
-        target: /home/projects/iptc/ingest/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
-    command: [python, -m, src.ingest]
-    profiles: [ingest]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: ingest/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  ingest-unit:
-    volumes:
-      - type: bind
-        source: ingest/
-        target: /home/projects/iptc/ingest/
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-ingest:${IMAGE_TAG}
-    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: ingest/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  # =============================================
   # TRAIN
   # =============================================
 
@@ -66,7 +19,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
@@ -83,7 +36,7 @@ services:
 
   train-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       TRAINED_PROJECT: ${TRAINED_PROJECT}
@@ -92,7 +45,7 @@ services:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: ingest/config/${DEPLOYMENT:-prod}.env
+    env_file: train/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -113,7 +66,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: register
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
     volumes:
       - type: bind
         source: register/src
@@ -135,7 +88,7 @@ services:
         source: register/
         target: /projects/iptc/register/
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-register:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
     env_file: register/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
@@ -162,7 +115,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.1} #should have been v23.8.4?
+        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
@@ -179,9 +132,9 @@ services:
 
   compile-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
-    env_file: ingest/config/${DEPLOYMENT:-prod}.env
+    env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -279,7 +232,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -317,7 +270,7 @@ services:
   # - do NOT include REST model server process
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -333,7 +286,7 @@ services:
     volumes:
       - serve-volume:/projects/iptc/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [integration]
     hostname: onclusiveml
@@ -347,7 +300,7 @@ services:
     volumes:
       - serve-volume:/projects/iptc/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
     hostname: onclusiveml

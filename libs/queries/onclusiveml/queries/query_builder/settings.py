@@ -17,7 +17,9 @@ class ApiSettings(OnclusiveBaseSettings):
 class EntityLinkingProdSettings(ApiSettings):
     """EL."""
 
-    predict_url = "https://internal.api.ml.prod.onclusive.com/entity-linking/v1/predict"
+    predict_url: str = (
+        "https://internal.api.ml.prod.onclusive.com/entity-linking/v1/predict"
+    )
 
     class Config:
         env_prefix = "onclusiveml_query_entity_linking_prod_"
@@ -26,7 +28,7 @@ class EntityLinkingProdSettings(ApiSettings):
 class EntityLinkingStageSettings(ApiSettings):
     """EL."""
 
-    predict_url = (
+    predict_url: str = (
         "https://internal.api.ml.stage.onclusive.com/entity-linking/v1/predict"
     )
 
@@ -37,7 +39,7 @@ class EntityLinkingStageSettings(ApiSettings):
 class NERProdSettings(ApiSettings):
     """NER Prod."""
 
-    predict_url = "https://internal.api.ml.prod.onclusive.com/ner/v1/predict"
+    predict_url: str = "https://internal.api.ml.prod.onclusive.com/ner/v1/predict"
 
     class Config:
         env_prefix = "onclusiveml_query_ner_prod_"
@@ -46,7 +48,7 @@ class NERProdSettings(ApiSettings):
 class NERStageSettings(ApiSettings):
     """NER Stage."""
 
-    predict_url = "https://internal.api.ml.stage.onclusive.com/ner/v1/predict"
+    predict_url: str = "https://internal.api.ml.stage.onclusive.com/ner/v1/predict"
 
     class Config:
         env_prefix = "onclusiveml_query_ner_stage_"

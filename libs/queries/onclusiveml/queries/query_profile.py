@@ -1,4 +1,5 @@
 """Queries."""
+
 # isort: skip_file
 
 # from abc import abstractmethod
@@ -44,7 +45,9 @@ class MediaAPISettings(OnclusiveBaseSettings):
 
     grant_type: str = "client_credentials"
     scope: str = "c68b92d0-445f-4db0-8769-6d4ac5a4dbd8/.default"
-    authentication_url: str = "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
+    authentication_url: str = (
+        "https://login.microsoftonline.com/a4002d19-e8b4-4e6e-a00a-95d99cc7ef9a/oauth2/v2.0/token"  # noqa: E501
+    )
     PRODUCTION_TOOL_ENDPOINT: str = (
         "https://staging-querytool-api.platform.onclusive.org"
     )
@@ -64,9 +67,9 @@ class BaseQueryProfile(OnclusiveBaseModel):
 
     def _token(self, settings: MediaAPISettings) -> Optional[str]:
         settings_dict = settings.model_dump()
-        settings_dict[
-            "client_secret"
-        ] = settings.media_api_client_secret.get_secret_value()
+        settings_dict["client_secret"] = (
+            settings.media_api_client_secret.get_secret_value()
+        )
         settings_dict["client_id"] = settings.media_api_client_id.get_secret_value()
         settings_dict.pop("PRODUCTION_TOOL_ENDPOINT")
         settings_dict.pop("MEDIA_API_URL")
