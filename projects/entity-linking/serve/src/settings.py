@@ -76,6 +76,4 @@ class GlobalSettings(
 @lru_cache
 def get_settings() -> OnclusiveBaseSettings:
     """Returns instanciated global settings class."""
-    print(GlobalSettings())
-
     return GlobalSettings()
