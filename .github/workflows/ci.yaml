@@ -120,6 +120,31 @@ jobs       :
           if_true: ${{ github.base_ref }}
           if_false: ${{ github.ref_name }}
 
+
+  # ===============================================
+  # UPLOAD BOOTSTRAP SCRIPT
+  # ===============================================
+
+  upload-bootstrap:
+    name: Upload bootstrap script
+    runs-on: ubuntu-22.04
+    needs: [run-code-quality-checks]
+    environment: prod
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Upload bootstrap script to S3
+        if: ${{ !github.event_name == 'pull_request' }}
+        run: aws s3 cp ./bin/bootstrap/linux s3://installation-script-dev/
+
   # ===============================================
   # TEST LIBS
   # ===============================================
