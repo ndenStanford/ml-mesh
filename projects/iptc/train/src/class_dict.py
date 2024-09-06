@@ -1,1922 +1,829 @@
 # flake8: noqa
 """IPTC label to topic dictionary."""
-CANDIDATE_DICT_FIRST = {
-    "root": {
-        "0": {
-            "name": "arts, culture, entertainment and media",
-            "description": "All forms of arts, entertainment, cultural heritage and media",
-        },
-        "1": {
-            "name": "conflict, war and peace",
-            "description": "Acts of socially or politically motivated protest or violence, military activities, geopolitical conflicts, as well as resolution efforts",  # noqa: E501
-        },
-        "2": {
-            "name": "crime, law and justice",
-            "description": "The establishment and/or statement of the rules of behaviour in society, the enforcement of these rules, breaches of the rules, the punishment of offenders and the organisations and bodies involved in these activities",  # noqa: E501
-        },
-        "3": {
-            "name": "disaster, accident and emergency incident",
-            "description": "Man made or natural event resulting in loss of life or injury to living creatures and/or damage to inanimate objects or property",  # noqa: E501
-        },
-        "4": {
-            "name": "economy, business and finance",
-            "description": "All matters concerning the planning, production and exchange of wealth.",  # noqa: E501
-        },
-        "5": {
-            "name": "education",
-            "description": "All aspects of furthering knowledge, formally or informally",
-        },
-        "6": {
-            "name": "environment",
-            "description": "All aspects of protection, damage, and condition of the ecosystem of the planet earth and its surroundings.",  # noqa: E501
-        },
-        "7": {
-            "name": "health",
-            "description": "All aspects of physical and mental well-being",
-        },
-        "8": {
-            "name": "human interest",
-            "description": "Item that discusses individuals, groups, animals, plants or other objects in an emotional way",  # noqa: E501
-        },
-        "9": {
-            "name": "labour",
-            "description": "Social aspects, organisations, rules and conditions affecting the employment of human effort for the generation of wealth or provision of services and the economic support of the unemployed.",  # noqa: E501
-        },
-        "10": {
-            "name": "lifestyle and leisure",
-            "description": "Activities undertaken for pleasure, relaxation or recreation outside paid employment, including eating and travel.",  # noqa: E501
-        },
-        "11": {
-            "name": "politics",
-            "description": "Local, regional, national and international exercise of power, or struggle for power, and the relationships between governing bodies and states.",  # noqa: E501
-        },
-        "12": {
-            "name": "religion",
-            "description": "Belief systems, institutions and people who provide moral guidance to followers",  # noqa: E501
-        },
-        "13": {
-            "name": "science and technology",
-            "description": "All aspects pertaining to human understanding of, as well as methodical study and research of natural, formal and social sciences, such as astronomy, linguistics or economics",  # noqa: E501
-        },
-        "14": {
-            "name": "society",
-            "description": "The concerns, issues, affairs and institutions relevant to human social interactions, problems and welfare, such as poverty, human rights and family planning",  # noqa: E501
-        },
-        "15": {
-            "name": "sport",
-            "description": "Competitive activity or skill that involves physical and/or mental effort and organisations and bodies involved in these activities",  # noqa: E501
-        },
-        "16": {
-            "name": "weather",
-            "description": "The study, prediction and reporting of meteorological phenomena",
-        },
-    }
-}
-
-CANDIDATE_DICT_SECOND = {
-    "arts, culture, entertainment and media": {
-        "0": {
-            "name": "arts and entertainment",
-            "description": "All forms of arts and entertainment",
-        },
-        "1": {
-            "name": "culture",
-            "description": "The ideas, customs, arts, traditions of a particular group of persons",
-        },
-        "2": {"name": "mass media", "description": "Media addressing a large audience"},
-    },
-    "conflict, war and peace": {
-        "0": {
-            "name": "act of terror",
-            "description": "Act of violence, often resulting in casualties, designed to raise fear and anxiety in a population",
-        },
-        "1": {
-            "name": "armed conflict",
-            "description": "Disputes between opposing groups involving the use of weapons, but not necessarily formally declared wars",
-        },
-        "2": {
-            "name": "civil unrest",
-            "description": "Rallies, strikes, demonstrations, riots or other disturbances by a population, often in protest to a government or other organization's policies or actions",
-        },
-        "3": {
-            "name": "coup d'etat",
-            "description": "The overthrow of an established government by an organised military or political group",
-        },
-        "4": {
-            "name": "massacre",
-            "description": "The mass killing of people, usually civilians, during wartime hostilities",
-        },
-        "5": {
-            "name": "peace process",
-            "description": "Organized actions to end a war or conflict, usually involving peace negotiations and agreements",
-        },
-        "6": {
-            "name": "post-war reconstruction",
-            "description": "Actions to rebuild a society, economy or political system in an area affected by war",
-        },
-    },
-    "crime, law and justice": {
-        "0": {
-            "name": "crime",
-            "description": "Violations of laws by individuals, companies or organisations",
-        },
-        "1": {"name": "judiciary", "description": "The system of courts of law"},
-        "2": {"name": "law", "description": "The codification of rules of behaviour"},
-        "3": {
-            "name": "law enforcement",
-            "description": "Agencies that attempt to prevent disobedience to established laws or bring to justice those who disobey those laws",
-        },
-    },
-    "disaster, accident and emergency incident": {
-        "0": {
-            "name": "accident and emergency incident",
-            "description": "A sudden, unexpected event that causes unwanted consequences or requires immediate action",
-        },
-        "1": {
-            "name": "disaster",
-            "description": "A sudden, unplanned event that causes great damage or loss of life, such as an accident or a natural catastrophe",
-        },
-        "2": {
-            "name": "emergency response",
-            "description": "The planning and efforts made by people and organizations to help victims of a sudden, unplanned event, natural disaster or crisis",
-        },
-    },
-    "economy, business and finance": {
-        "0": {
-            "name": "business information",
-            "description": "Information about individual business entities, including companies, corporations, charities",
-        },
-        "1": {
-            "name": "economy",
-            "description": "Production, consumption, distribution and trade activities affecting regions or countries as a whole",
-        },
-        "2": {
-            "name": "market and exchange",
-            "description": "Market for buying and selling stocks, currencies, commodities and other goods",
-        },
-    },
-    "education": {
-        "0": {
-            "name": "school",
-            "description": "A building or institution in which education is provided",
-        }
-    },
-    "environment": {
-        "0": {
-            "name": "climate change",
-            "description": "Significant change in measures of climate (such as temperature, precipitation, or wind) lasting for an extended period",
-        },
-        "1": {
-            "name": "conservation",
-            "description": "Preservation of wilderness areas, flora and fauna, including species extinction",
-        },
-        "2": {
-            "name": "environmental pollution",
-            "description": "Corruption of air, water, land etc. by harmful substances",
-        },
-        "3": {
-            "name": "natural resources",
-            "description": "Environmental issues related to the exploitation of natural resources",
-        },
-        "4": {"name": "nature", "description": "The natural world in its entirety"},
-    },
-    "health": {
-        "0": {
-            "name": "disease and condition",
-            "description": "Any health conditions affecting humans",
-        },
-        "1": {
-            "name": "government health care",
-            "description": "Health care provided by governments at any level",
-        },
-        "2": {
-            "name": "health facility",
-            "description": "Facilities used for any kind of health care",
-        },
-        "3": {
-            "name": "health insurance",
-            "description": "Insurance covering medical costs",
-        },
-        "4": {
-            "name": "health treatment and procedure",
-            "description": "Remedies, therapies, interventions, medications, testing and treatments to prevent, diagnose, manage or improve a health condition",
-        },
-        "5": {
-            "name": "medical profession",
-            "description": "Profession requiring formal training in the study, diagnosis, treatment, care and prevention of disease, medical condition or injury",
-        },
-    },
-    "labour": {
-        "0": {
-            "name": "employment",
-            "description": "The state of having work, usually paid, for a company, organisation, or individual",
-        },
-        "1": {
-            "name": "labour relations",
-            "description": "The relationship between workers and employers",
-        },
-        "2": {"name": "retirement", "description": "The years after work"},
-        "3": {
-            "name": "unemployment",
-            "description": "The state of being available to work but not having a job",
-        },
-    },
-    "lifestyle and leisure": {
-        "0": {
-            "name": "leisure",
-            "description": "Activities carried out in ones' spare time and not in a competitive way.",
-        },
-        "1": {
-            "name": "lifestyle",
-            "description": "The way in which a person lives, including their style and possessions",
-        },
-    },
-    "politics": {
-        "0": {
-            "name": "election",
-            "description": "The selection of representatives by the casting of votes",
-        },
-        "1": {
-            "name": "fundamental rights",
-            "description": "The political, social and economic rights to which all creatures are entitled, usually upheld by law.",
-        },
-        "2": {"name": "government", "description": "The system for ruling a country"},
-        "3": {
-            "name": "government policy",
-            "description": "An overall plan or course of action set out by a government intended to influence and guide decisions and actions towards a desired outcome.",
-        },
-        "4": {
-            "name": "international relations",
-            "description": "Non-violent relations between nations through negotiation, treaty, or personal meetings",
-        },
-        "5": {
-            "name": "political process",
-            "description": "The art or science of participating in the affairs of government, a state of political party",
-        },
-    },
-    "religion": {
-        "0": {
-            "name": "belief systems",
-            "description": "A set of beliefs prescribed by an institution or text often focusing on the worship of a higher power and the outlining of moral guidelines",
-        },
-        "1": {
-            "name": "religious facility",
-            "description": "Any facility where a group carries out its religious rites",
-        },
-        "2": {
-            "name": "religious text",
-            "description": "Texts regarded as holy or important by a religion",
-        },
-    },
-    "science and technology": {
-        "0": {
-            "name": "biomedical science",
-            "description": "The application of biology-based science to medical fields such as research, health monitoring or medical treatment",
-        },
-        "1": {
-            "name": "mathematics",
-            "description": "The study of structure, space, change and number in abstract, often using symbolic logic and language, and including subjects such as geometry, algebra or trigonometry",
-        },
-        "2": {
-            "name": "natural science",
-            "description": "The sciences that deal with matter, energy and the physical world, including physics, biology, chemistry and astronomy",
-        },
-        "3": {
-            "name": "scientific research",
-            "description": "The scientific and methodical investigation of events, procedures and interactions to explain why they occur, or to find solutions for problems",
-        },
-        "4": {
-            "name": "social sciences",
-            "description": "The study of human society in such aspects as linguistics, anthropology, economics or sociology",
-        },
-        "5": {
-            "name": "technology and engineering",
-            "description": "The study and practice of industrial or applied sciences such as physics, hydrodynamics or thermodynamics",
-        },
-        "6": {
-            "name": "mechanical engineering",
-            "description": "The study and application of the design, construction and operation of mechanical systems",
-        },
-    },
-    "society": {
-        "0": {
-            "name": "communities",
-            "description": "A group of individuals actively sharing a common value or interest",
-        },
-        "1": {
-            "name": "demographics",
-            "description": "The study of human populations and their characteristics, for example statistics or trends around aging populations in a particular geographic region",
-        },
-        "2": {
-            "name": "discrimination",
-            "description": "Unfair treatment of, or policies or practices against, individuals or groups of people on the basis of real or perceived membership in a group, such as race, sexual orientation, political or religious beliefs, age or height",
-        },
-        "3": {
-            "name": "family",
-            "description": "A group of people related genetically or by a legal bond, or who consider themselves part of a familial unit regardless of genetic or legal status",
-        },
-        "4": {
-            "name": "mankind",
-            "description": "Human beings taken as a whole, or described as members of particular groups such as teenagers, women, or people with disabilities",
-        },
-        "5": {
-            "name": "social condition",
-            "description": "The circumstances or state of affairs affecting a person's life, welfare and relations with others in a society",
-        },
-        "6": {
-            "name": "social problem",
-            "description": "Issues related to human rights, human welfare and other areas of societal concern",
-        },
-        "7": {
-            "name": "values",
-            "description": "A person's or group's principles or standards of behaviour, which guide their way of living and choices made",
-        },
-        "8": {
-            "name": "welfare",
-            "description": "Help for those in need of food, housing, health and other services",
-        },
-    },
-    "sport": {
-        "0": {
-            "name": "competition discipline",
-            "description": "Different types of sport which can be executed in competitions",
-        },
-        "1": {
-            "name": "drug use in sport",
-            "description": "Drug use associated with sport activities, including doping, abuse, testing and permitted medical uses",
-        },
-    },
-    "weather": {
-        "0": {
-            "name": "weather forecast",
-            "description": "The long- or short-term meteorological prediction and reporting of the upcoming weather for a given region",
-        },
-        "1": {
-            "name": "weather warning",
-            "description": "Alerts issued to the public about severe or notable weather in their area",
-        },
-    },
-}
-
-
-CANDIDATE_DICT_THIRD = {
-    "economic sector": {
-        "0": {
-            "name": "agriculture",
-            "description": "The growing and raising of plants and animals for consumption and the processing, cleaning, packing or storage of these products",
-        },
-        "1": {
-            "name": "chemicals",
-            "description": "Natural or manmade materials used to produce other materials",
-        },
-        "2": {
-            "name": "computing and information technology",
-            "description": "Computers and the transmission of information",
-        },
-        "3": {
-            "name": "construction and property",
-            "description": "All items pertaining to the construction and sale of property",
-        },
-        "4": {
-            "name": "consumer goods",
-            "description": "Items produced for and sold to individuals",
-        },
-        "5": {
-            "name": "energy and resource",
-            "description": "The use of natural resources to generate energy",
-        },
-        "6": {
-            "name": "manufacturing and engineering",
-            "description": "Manufacturers of electrical, electronic and mechanical equipment but does not cover civil engineering.",
-        },
-        "7": {
-            "name": "transport",
-            "description": "The means of getting people or goods from one place to another",
-        },
-    },
-    "business information": {
-        "0": {
-            "name": "human resources",
-            "description": "People working for a business and how they are managed",
-        }
-    },
-    "market and exchange": {
-        "0": {
-            "name": "foreign exchange market",
-            "description": "The market for international currency",
-        },
-        "1": {
-            "name": "loan market",
-            "description": "The market where financial organisations provide loans to borrowers and sell them on to investors",
-        },
-    },
-    "disaster": {
-        "0": {
-            "name": "famine",
-            "description": "Severe lack of food for a large population",
-        },
-        "1": {
-            "name": "fire",
-            "description": "Fires started by an accidental or unknown source. For wildfires, use wildfire. For fires started with a criminal intent, use arson.",
-        },
-    },
-    "accident and emergency incident": {
-        "0": {
-            "name": "explosion accident and incident",
-            "description": "Explosions caused by an accidental, non-combat, or non-terrorism source. Also use when the source of the explosion is non-specified or unknown",
-        },
-        "1": {
-            "name": "industrial accident and incident",
-            "description": "Any unplanned event or mishap in an industrial setting that result in injuries to people and damage to property or the environment",
-        },
-    },
-    "natural science": {
-        "0": {
-            "name": "astronomy",
-            "description": "The study of celestial objects through direct observation and theoretical models",
-        },
-        "1": {
-            "name": "biology",
-            "description": "The study of the anatomy, behaviour, origin, physiology and other aspects of living organisms",
-        },
-        "2": {
-            "name": "chemistry",
-            "description": "The study of the composition and properties of matter on the scale of atoms and molecules, and of the reactions between compounds",
-        },
-        "3": {
-            "name": "cosmology",
-            "description": "The study of the origin, evolution, organisation and structure of the universe",
-        },
-        "4": {
-            "name": "geology",
-            "description": "The study of Earth's physical processes, material structures and its properties",
-        },
-        "5": {
-            "name": "horticulture",
-            "description": "The study and art of plant cultivation, including landscape and garden design and plant conservation",
-        },
-        "6": {
-            "name": "marine science",
-            "description": "The study of living organisms and environments in saltwater ecosystems",
-        },
-        "7": {
-            "name": "meteorology",
-            "description": "The study of atmospheric chemistry and physics, with a focus on weather forecasting",
-        },
-        "8": {
-            "name": "physics",
-            "description": "The study of the movement and structure of matter, and how it relates to energy",
-        },
-    },
-    "technology and engineering": {
-        "0": {
-            "name": "aerospace engineering",
-            "description": "The study, design, development and construction of aircraft, spacecraft and missile systems",
-        },
-        "1": {
-            "name": "civil engineering",
-            "description": "The study, design, development and construction of structures such as buildings, bridges, tunnels, irrigation and sewage systems, streets or railroads",
-        },
-        "2": {
-            "name": "electronic engineering",
-            "description": "The study, design, development and application of systems built on the exchange of electrical charges, such as consumer devices, communications systems or industrial computers",
-        },
-        "3": {
-            "name": "information technology and computer science",
-            "description": "The study and design of computer systems, software and networks",
-        },
-        "4": {
-            "name": "micro science",
-            "description": "The study of and technologies built at a microscopic scale, such as microbiology or microcomputing",
-        },
-    },
-    "social sciences": {
-        "0": {
-            "name": "anthropology",
-            "description": "The study of human behaviour and social interactions across time",
-        },
-        "1": {
-            "name": "archaeology",
-            "description": "The study of human activity throughout time and cultural history, using artefacts left behind by ancient peoples",
-        },
-        "2": {
-            "name": "economics",
-            "description": "The study of the laws and principles of economies, such as the production and distribution of goods and services",
-        },
-        "3": {
-            "name": "geography",
-            "description": "The study of the physical features of the surface of Earth and its political divisions",
-        },
-        "4": {
-            "name": "history",
-            "description": "The study of human events of the past",
-        },
-        "5": {
-            "name": "information science",
-            "description": "The study and practice of collecting, classifying, storing, retrieving and disseminating information",
-        },
-        "6": {
-            "name": "linguistics",
-            "description": "The study of all aspects of human language such as syntax, phonetics, written and spoken forms and variations over time",
-        },
-        "7": {
-            "name": "philosophy",
-            "description": "The study of the principles and fundamental questions about matters such as the mind, reason, morality or values",
-        },
-        "8": {
-            "name": "political science",
-            "description": "The study of the principles of political and governmental systems, political thought and practices",
-        },
-        "9": {
-            "name": "psychology",
-            "description": "The study of the human mind, mental characteristics and emotional processes",
-        },
-        "10": {
-            "name": "sociology",
-            "description": "The study of human social organisation, social relationships and societal changes",
-        },
-    },
-    "scientific research": {
-        "0": {
-            "name": "medical research",
-            "description": "Investigation conducted in the fields of health and medicine, such as genetic studies, disease research or pharmaceutical drug trials",
-        },
-        "1": {
-            "name": "scientific exploration",
-            "description": "Land, sea or space journeys undertaken to discover new information",
-        },
-    },
-    "judiciary": {
-        "0": {
-            "name": "court",
-            "description": "Place where legal cases are heard and decided",
-        },
-        "1": {
-            "name": "out of court procedures",
-            "description": "Legal issues which are settled outside of court",
-        },
-    },
-    "law enforcement": {
-        "0": {"name": "arrest", "description": "The detention of a suspect of a crime"},
-        "1": {
-            "name": "investigation (criminal)",
-            "description": "Inquiry into an alleged crime, including searching, interviews, interrogations and evidence collection",
-        },
-        "2": {
-            "name": "police",
-            "description": "Civil force of a national, regional or local government that is responsible for the prevention and detection of crime and the maintenance of public order",
-        },
-    },
-    "law": {
-        "0": {
-            "name": "civil law",
-            "description": "The system of law focused on private rights and disputes between individuals in such areas as contracts, torts, property, and family law",
-        },
-        "1": {
-            "name": "criminal law",
-            "description": "The system of law concerned with the punishment of those who commit crimes",
-        },
-        "2": {
-            "name": "international law",
-            "description": "The system of laws embraced by all nations, such as the Geneva Convention and the International Law of the Seas",
-        },
-    },
-    "crime": {
-        "0": {
-            "name": "arson",
-            "description": "The intentional setting of fires with criminal intent",
-        },
-        "1": {
-            "name": "assault",
-            "description": "Physical crime against a person, including battery, brawls and threat of bodily harm",
-        },
-        "2": {
-            "name": "corporate crime",
-            "description": "Crimes committed by a corporation or by individuals acting on behalf of a corporation",
-        },
-        "3": {
-            "name": "corruption",
-            "description": "Dishonest actions by a person in power in return for pecuniary or personal gain",
-        },
-        "4": {
-            "name": "drug related crimes",
-            "description": "Illegal activities involving illicit substances, including buying, distribution, selling and smuggling",
-        },
-        "5": {
-            "name": "fraud",
-            "description": "Intentional deception for personal or financial gain",
-        },
-        "6": {
-            "name": "hijacking",
-            "description": "Taking over a transportation vehicle by force",
-        },
-        "7": {
-            "name": "homicide",
-            "description": "The killing of one person by another, including murder and manslaughter",
-        },
-        "8": {
-            "name": "kidnapping",
-            "description": "To seize and detain a person against that person's will by unlawful threat, force or fraud",
-        },
-        "9": {
-            "name": "organised crime",
-            "description": "Crimes committed by gangs or criminal organizations, such as the mafia",
-        },
-        "10": {
-            "name": "terrorism",
-            "description": "Violence against people to create fear in order to achieve political or ideological objectives",
-        },
-        "11": {
-            "name": "war crime",
-            "description": "Crimes committed during a war or armed conflict, usually against civilians or prisoners of war, including the prosecution of such crimes",
-        },
-    },
-    "health treatment and procedure": {
-        "0": {
-            "name": "diet",
-            "description": "Ways of eating to benefit health or treat a condition, such as plant-based, low-salt, high-fibre or gluten-free",
-        },
-        "1": {
-            "name": "therapy",
-            "description": "Treatment of physical, mental or medical conditions by non-surgical means",
-        },
-    },
-    "disease and condition": {
-        "0": {
-            "name": "cancer",
-            "description": "A serious and often fatal disease caused when normal cells mutate into tumours",
-        },
-        "1": {
-            "name": "communicable disease",
-            "description": "Diseases that can be transmitted from one person or animal to another",
-        },
-        "2": {
-            "name": "heart disease",
-            "description": "Diseases and conditions affecting the heart such as heart attacks, the narrowing of arteries, arrhythmia or cardiomyopathy",
-        },
-        "3": {
-            "name": "injury",
-            "description": "Harm caused to the human body by external forces such as falls, weapons or accidents",
-        },
-        "4": {
-            "name": "obesity",
-            "description": "A condition of body weight generally considered 20 percent above the norm for gender, age, height and bone structure",
-        },
-    },
-    "non-human diseases": {
-        "0": {"name": "animal disease", "description": "Disease affecting animals"},
-        "1": {
-            "name": "plant disease",
-            "description": "Disorders affecting plants caused either by parasites or environmental factors",
-        },
-    },
-    "leisure": {
-        "0": {
-            "name": "club and association",
-            "description": "Organisations joined by individuals because of similar interests",
-        },
-        "1": {"name": "game", "description": "Contests generally for one's amusement"},
-        "2": {
-            "name": "gaming and lottery",
-            "description": "Gambling, often involving selection of sets of numbers one expects to come up",
-        },
-        "3": {"name": "hobby", "description": "Recreational pursuit"},
-        "4": {
-            "name": "holiday",
-            "description": "Time spent not at work for rest and relaxation",
-        },
-        "5": {
-            "name": "leisure venue",
-            "description": "A place where people go to be entertained or amused. For sporting events, use sport venue.",
-        },
-    },
-    "lifestyle": {
-        "0": {
-            "name": "house and home",
-            "description": "Interest in maintaining and decorating one's home",
-        },
-        "1": {
-            "name": "party",
-            "description": "A social gathering of invited guests, often involving eating, drinking, dancing or the playing of games",
-        },
-        "2": {
-            "name": "trend",
-            "description": "Interest in what is considered hip or popular at a certain point in time",
-        },
-    },
-    "armed conflict": {
-        "0": {
-            "name": "military occupation",
-            "description": "The temporary forceful taking over of a country or region by invading military forces",
-        },
-        "1": {
-            "name": "war",
-            "description": "Armed hostilities by one group or geopolitical entity against another",
-        },
-    },
-    "civil unrest": {
-        "0": {
-            "name": "demonstration",
-            "description": "A non-violent public show of support for or opposition to a cause, idea or policy, in the form of a mass meeting or march",
-        },
-        "1": {
-            "name": "rebellion",
-            "description": "Organized actions of opposition to a government or ruling party by a country's residents, often violent and with the aim of overthrowing the government",
-        },
-        "2": {
-            "name": "revolution",
-            "description": "A forcible and often violent change to, or overthrow of, a country's political system or social order by internal forces, in favour of a new system",
-        },
-        "3": {
-            "name": "riot",
-            "description": "Violent, destructive events of civil disorder by groups of people, usually in response to a grievance or as acts of opposition, often involving injury to individuals and destruction of property",
-        },
-    },
-    "act of terror": {
-        "0": {
-            "name": "act of bioterrorism",
-            "description": "Attacks using biological agents intended to raise the level of fear within a population",
-        }
-    },
-    "competition discipline": {
-        "0": {
-            "name": "American football",
-            "description": "Team ball game that opposes two teams of 11 that have offence and defence sections. Each offence attempts to move an oval ball down the 120 yards long field. Points are scored by advancing the ball into the opposing team s end zone.",
-        },
-        "1": {
-            "name": "Australian rules football",
-            "description": "A form of football played by two teams of 18 competing on a pitch by running with and passing an oval ball. Points are scored by moving the ball between goal posts. Governed by the Australian Football League.",
-        },
-        "2": {
-            "name": "Jai Alai (Pelota)",
-            "description": "A fast ball play using either the bare hand or a wicker scoop in an arena of walls of different outlay and size",
-        },
-        "3": {
-            "name": "archery",
-            "description": "Archers use bows and arrows to aim at targets 1.22 metres in diameter which are on average 70 metres distant.",
-        },
-        "4": {
-            "name": "badminton",
-            "description": "Two players or two teams of two compete by hitting a shuttlecock weighing approximately five grams over a high net. The aim for each player/team is to prevent the shuttlecock landing on their side of the court.",
-        },
-        "5": {
-            "name": "bandy",
-            "description": "Played outdoors on ice. The size of the ice rink is about the size of a soccer field. Skates like ice hockey. A small hard ball is used for playing. Players play with sticks, much like in ice hockey, but the sticks are shorter and more rounded than in ice",
-        },
-        "6": {
-            "name": "baseball",
-            "description": "A game between two teams of nine played on an enclosed ground. The team which scores the most points wins. A point is scored when a player runs around the ground marked out by four bases. To do this he has to hit the ball thrown at him by a rival player.",
-        },
-        "7": {
-            "name": "basketball",
-            "description": "Game played between two teams of five - points are scored by placing the large inflated ball into a net fixed on a ring 3.05m above the ground.",
-        },
-        "8": {
-            "name": "biathlon",
-            "description": "A combination of cross-country skiing and target shooting on a 12.5 K course in a pursuit format.",
-        },
-        "9": {
-            "name": "billiards",
-            "description": "A cue sport with balls on a table without a specific order to play them",
-        },
-        "10": {
-            "name": "bobsleigh",
-            "description": "One, two or four people racing down a course in a sled that consists of a main hull, a frame, two axles and sets of runners. The total time of all heats in a competition is added together to determine the winner.",
-        },
-        "11": {
-            "name": "boxing",
-            "description": "Combat sport in which two men/women fight using only their fists covered by padded gloves in a square ring measuring 6m a side. The fight is usually split into 12 rounds of three minutes each.",
-        },
-        "12": {
-            "name": "bullfighting",
-            "description": "Classical contest pitting man against the bull",
-        },
-        "13": {
-            "name": "canoeing",
-            "description": "Competition involving canoes which are generally kneeled and paddled with a single-bladed paddle",
-        },
-        "14": {
-            "name": "chess",
-            "description": "Competition between two players using a chequered board with 16 pieces to each side, each with specific ranges of movement depending on their identity",
-        },
-        "15": {
-            "name": "cricket",
-            "description": "Ball sport involving two teams of 11 players, balls, bats and wickets. The aim is to score as many runs as possible, and to get the opposing team 'out'. A 'run' involves a player running between two wickets. The opposing team try to get their rivals 'out'",
-        },
-        "16": {
-            "name": "curling",
-            "description": "A game played on ice with large flat round stones. A player throws the stone, aiming at a target. Teammates of the player who has thrown the stone can sweep the ice in front of the stone to help smooth its path towards the target.",
-        },
-        "17": {
-            "name": "cycling",
-            "description": "A race over a given distance on bicycles.",
-        },
-        "18": {
-            "name": "darts",
-            "description": "The sport in which small darts are thrown at a dartboard, a circular target divided into numbered sections.",
-        },
-        "19": {
-            "name": "diving",
-            "description": "Competitors dive off a fixed or spring board and are assessed by seven judges giving marks up to ten for their acrobatic moves.",
-        },
-        "20": {"name": "dog racing", "description": "Dogs racing around a track"},
-        "21": {"name": "fencing", "description": "Combat sport using a sword or foil."},
-        "22": {
-            "name": "field hockey",
-            "description": "A ball sport involving two teams of 11 players using curved sticks. The aim is to score as many goals as possible.",
-        },
-        "23": {
-            "name": "figure skating",
-            "description": "To obtain the best marks possible from nine judges who award scores after two prepared sections - both skated to music - during which competitors must attempt to achieve the greatest possible harmony between artistic flair and technical precision.",
-        },
-        "24": {
-            "name": "floorball",
-            "description": "Played indoors in a court the size of a basketball court. 6 players per team, of which one is a goalkeeper. He/she operates kneeling but there is no goal-stick like in ice hockey. The players use plastic clubs and a light plastic ball to pass and shot goal",
-        },
-        "25": {
-            "name": "golf",
-            "description": "A game to hit a small hard ball with different clubs around a course of typically 18 holes varying in distance and during a round. The object, depending on the scoring formulae, is to make the fewest strokes possible",
-        },
-        "26": {
-            "name": "gymnastics",
-            "description": "A sport consisting of a variety of disciplines in which gymnasts perform artistic and acrobatic moves using different apparatus.",
-        },
-        "27": {
-            "name": "handball (team)",
-            "description": "A ball game using the hands contested by two teams of seven trying to throw the ball into the opponents goal.",
-        },
-        "28": {"name": "horse racing", "description": "Mounted horse races."},
-        "29": {
-            "name": "hurling",
-            "description": "A game played by two teams of fifteen each with a curved wooden stick called a hurley. The object is to score a goal by hitting the small ball between the opponents' goalposts either over the crossbar or under it into a net guarded by a goalkeeper.",
-        },
-        "30": {
-            "name": "ice hockey",
-            "description": "Two teams of six heavily padded skaters try and outscore each other by hitting a puck into the opponents goal.",
-        },
-        "31": {
-            "name": "kabaddi",
-            "description": "The attacking side scores by touching, and the side to guard scores by capturing. The attacker continues calling it 'kabaddi'.",
-        },
-        "32": {
-            "name": "kayaking",
-            "description": "Competition involving kayaks where the paddler sits with their legs facing forward using a double-bladed paddle",
-        },
-        "33": {
-            "name": "lacrosse",
-            "description": "Two teams of helmeted and padded players try and outscore each other using a netted stick and hard ball.",
-        },
-        "34": {
-            "name": "luge",
-            "description": "Luge (French word for sled) is competed in singles or doubles. The competitor(s) lay on their back on an open sled and race down a course. The competitor(s) and the sled must be in contact when passing the finishing line. The competitor can steer the sled",
-        },
-        "35": {
-            "name": "marathon",
-            "description": "A road race where competitors run 42.195km, generally through city streets",
-        },
-        "36": {
-            "name": "martial arts",
-            "description": "Martial arts are codified systems and traditions of combat practices, which are practiced for a variety of reasons: self-defence, competition, physical health and fitness, entertainment, as well as mental, physical, and spiritual development.",
-        },
-        "37": {
-            "name": "modern pentathlon",
-            "description": "The Modern Pentathlon comprises five events run over a single day in the following order: shooting, fencing, swimming, horse riding and running.",
-        },
-        "38": {"name": "motor car racing", "description": "Racing with cars"},
-        "39": {
-            "name": "motorcycling",
-            "description": "Races with 2, 3 or 4 wheels vehicles with a saddle and handlebars",
-        },
-        "40": {
-            "name": "mountain climbing",
-            "description": "Moving up mountains using hands and feet",
-        },
-        "41": {
-            "name": "netball",
-            "description": "A woman's sport similar to basketball though without a board behind the basket",
-        },
-        "42": {
-            "name": "orienteering",
-            "description": "An individual time-trial over a route marked out by beacons. The competitor has to search out and find in a specific order. The contestant makes his way with the help of a compass and map",
-        },
-        "43": {
-            "name": "parachuting",
-            "description": "Jumping from an aeroplane using a parachute, competitions are precision landings, voltige, individual and team",
-        },
-        "44": {
-            "name": "polo",
-            "description": "With the aid of a mallet two teams of four horsemen try and knock a bamboo ball into the opponents goal over a pitch 250m long and 150m wide. The game is divided into 4, 6, or 8 time periods of 7min 30sec called chukkas.",
-        },
-        "45": {
-            "name": "pool",
-            "description": "A cue sport on a table with pockets, played with different numbers of balls",
-        },
-        "46": {
-            "name": "rodeo",
-            "description": "A discipline where wild horses or bulls must be mounted and mastered",
-        },
-        "47": {
-            "name": "roller sports",
-            "description": "Various competitions using wheeled equipment such as roller skates, inline skates, and skateboards.",
-        },
-        "48": {
-            "name": "rowing",
-            "description": "Boat racing usually on flat calm waters with boats for 1, 2, 4 or 8 rowers",
-        },
-        "49": {
-            "name": "rugby league",
-            "description": "A type of rugby where two teams of 13 compete on a pitch by running with and passing an oval ball. Points are scored by touching down the ball behind the goal line or kicking it between goal posts. Governed by Rugby League International Federation.",
-        },
-        "50": {
-            "name": "rugby union",
-            "description": "A type of rugby where two teams of 15 compete on a pitch by running with and passing an oval ball. Points are scored by touching down the ball behind the goal line or kicking it between goal posts. Governed by the World Rugby organization.",
-        },
-        "51": {"name": "sailing", "description": "Sailing boat racing over a route"},
-        "52": {
-            "name": "shinty",
-            "description": "A ball game involving 2 teams with curved sticks called camans. The object is to score goals by hitting the small leather ball through the goals.",
-        },
-        "53": {
-            "name": "skeleton",
-            "description": "In skeleton the competitor lies on his/her stomach when racing down the course. The competitor must be on the sled when crossing the finishing line.",
-        },
-        "54": {
-            "name": "skiing",
-            "description": "A winter sport using different types of skis",
-        },
-        "55": {
-            "name": "snooker",
-            "description": "A cue sport with balls on a table to be potted in a specific order",
-        },
-        "56": {
-            "name": "snowboarding",
-            "description": "Practiced with a single board (rather than two skis)",
-        },
-        "57": {
-            "name": "soccer",
-            "description": "A form of football played by two teams competing on a pitch by kicking a spherical ball. Points are scored by kicking or heading the ball into a goal. Governed by the Fédération Internationale de Football Association",
-        },
-        "58": {
-            "name": "softball",
-            "description": "Similar to baseball but with a larger and softer ball, a thinner bat, shorter gaps between bases and less innings",
-        },
-        "59": {
-            "name": "speed skating",
-            "description": "Timed races competed by two or more skaters at a time on an oval ice track",
-        },
-        "60": {
-            "name": "sport shooting",
-            "description": "Precision sport using a hand gun, rifle or shotgun",
-        },
-        "61": {
-            "name": "squash",
-            "description": "A racquet sport of strategy and endurance played by singles or doubles teams in a walled court with a small rubber ball",
-        },
-        "62": {
-            "name": "sumo wrestling",
-            "description": "A combat sport of speed and rapidity with much ceremony where two contestants try to throw or slap a competitor out of a marked area. Generally practiced in Japan by large men.",
-        },
-        "63": {
-            "name": "surfing",
-            "description": "Water sport where contestants catch and ride waves upright on a surfboard",
-        },
-        "64": {
-            "name": "swimming",
-            "description": "A water sport where contestants swim as fast as possible in a given style and win races by being the first to touch home",
-        },
-        "65": {
-            "name": "table tennis",
-            "description": "A racquet sport for two or four (in doubles), who compete at a table divided by a net using a small bat to play a lightweight ball",
-        },
-        "66": {
-            "name": "tennis",
-            "description": "A sport where two players, four in doubles, equipped with a racket compete by hitting the ball over a net into the opponent's side of the court with the aim of putting it out of reach within the regulation lines, thus winning points.",
-        },
-        "67": {
-            "name": "triathlon",
-            "description": "An endurance multi-sport where competitors first swim, then cycle and then run a road race. Distances vary according to the competition.",
-        },
-        "68": {
-            "name": "volleyball",
-            "description": "Two teams of six record points by hitting a ball over a net into the opponent's half of the court, keeping it in the air at all times. Points are won when opponents fail to return the ball.",
-        },
-        "69": {
-            "name": "water polo",
-            "description": "Played in a pool between two teams of 7, who must stay afloat and can only use one hand to pass the ball or swim with it before trying to throw it into the opponents net to score goals.",
-        },
-        "70": {
-            "name": "wrestling",
-            "description": "Combat sport where each wrestler attempts to win over his adversary, by holding both shoulders on the ground (fall) long enough to be in control. Points can also be decisive.",
-        },
-    },
-    "arts and entertainment": {
-        "0": {
-            "name": "animation",
-            "description": "Stories told through animated drawings in either full-length or short format",
-        },
-        "1": {
-            "name": "cartoon",
-            "description": "Drawings, such as editorial cartoons and comic strips, often using humour or satire",
-        },
-        "2": {
-            "name": "cinema",
-            "description": "Stories told through motion pictures, such as full-length or short format documentary or fictional features",
-        },
-        "3": {
-            "name": "dance",
-            "description": "A form of performing art consisting of purposefully selected sequences of human movement",
-        },
-        "4": {
-            "name": "fashion",
-            "description": "Styles and trends in clothing, footwear, accessories, including the design, presentation and wearing of these styles and trends",
-        },
-        "5": {
-            "name": "literature",
-            "description": "The telling of a story through written language",
-        },
-        "6": {
-            "name": "music",
-            "description": "A form of performing art using instruments or voice to create different sounds, tones and harmonies",
-        },
-        "7": {
-            "name": "theatre",
-            "description": "A form of performing art where live performers portray a narrative to an audience through dialogue and action",
-        },
-        "8": {
-            "name": "opera",
-            "description": "A form of performing art where classically trained musicians and singers perform a musical and dramatic work",
-        },
-        "9": {
-            "name": "visual arts",
-            "description": "A form of art which appeals primarily to the visual senses, such as ceramics, drawing, painting, sculpture, printmaking, design, crafts, photography, video, filmmaking, and architecture.",
-        },
-        "10": {
-            "name": "art exhibition",
-            "description": "Temporary presentation of art in museums, art halls or galleries",
-        },
-    },
-    "culture": {
-        "0": {
-            "name": "language",
-            "description": "The method of human communication, either spoken or written, consisting of words that are used in a structured and conventional way",
-        },
-        "1": {
-            "name": "library and museum",
-            "description": "Institutions that house collections of books, music, art, or objects from the past and present optionally for public use and display",
-        },
-        "2": {
-            "name": "monument and heritage site",
-            "description": "Commemorations of historical people, events, or the areas containing them, in the form of structures such as sculptures, statues or buildings",
-        },
-    },
-    "mass media": {
-        "0": {
-            "name": "news media",
-            "description": "The presentation of news to the public through different platforms, such as TV, radio, newspapers, magazines, web pages and blogs",
-        },
-        "1": {
-            "name": "newspaper",
-            "description": "Daily or weekly publication that presents the news, locally, regionally or globally, as well as features, opinion columns, comics and other content",
-        },
-        "2": {
-            "name": "periodical",
-            "description": "Publication that is usually published weekly, bi-weekly, monthly or annually, such as magazines, journals or newsletters",
-        },
-        "3": {
-            "name": "radio",
-            "description": "Audio content, such as news, entertainment or information, distributed via broadcast or internet",
-        },
-        "4": {
-            "name": "television",
-            "description": "Video content, such as news, entertainment or information, distributed via broadcast or internet",
-        },
-    },
-    "natural resources": {
-        "0": {
-            "name": "renewable energy",
-            "description": "Energy derived from sustainable sources",
-        },
-        "1": {
-            "name": "land resources",
-            "description": "That portion of a nation or state that is above water and available for development either for profit or for the general good of the public",
-        },
-        "2": {
-            "name": "population growth",
-            "description": "People and their growth and development within a natural setting",
-        },
-        "3": {
-            "name": "water",
-            "description": "Environmental issues about bodies of water, including oceans, lakes, streams and reservoirs, as well as ice, glaciers and forms of precipitation",
-        },
-    },
-    "environmental pollution": {
-        "0": {
-            "name": "air pollution",
-            "description": "Solid or gaseous matter affecting the quality of air that we breathe",
-        },
-        "1": {
-            "name": "water pollution",
-            "description": "Solids or liquids that corrupt the quality of water that could be used for drinking or irrigation",
-        },
-    },
-    "nature": {
-        "0": {
-            "name": "ecosystem",
-            "description": "A system of plants, animals and bacteria interrelated in its physical/chemical environment",
-        },
-        "1": {
-            "name": "endangered species",
-            "description": "Those species in danger of disappearing, largely because of changes in environment, hunting, or weather",
-        },
-        "2": {
-            "name": "invasive species",
-            "description": "Non-native plants, animals and other organisms that tend to take over native species",
-        },
-    },
-    "belief systems": {
-        "0": {
-            "name": "Buddhism",
-            "description": "An Asian religion founded in the 6th century BC in India based on the teachings of the Buddha with the goal of overcoming suffering and transcending desire and the individual self to achieve nirvana",
-        },
-        "1": {
-            "name": "Christianity",
-            "description": "Religions that follow the teachings of Jesus Christ and the Bible",
-        },
-        "2": {
-            "name": "Confucianism",
-            "description": "A system of thought and behaviour originating in ancient China and based on the teachings of the philosopher Confucius",
-        },
-        "3": {
-            "name": "Hinduism",
-            "description": "A religion and social system originating in India that includes a caste system, a belief in reincarnation and the worship of multiple deities",
-        },
-        "4": {
-            "name": "Islam",
-            "description": "Monotheistic religion that considers Muhammad as a prophet and the Qur'an as holy scripture",
-        },
-        "5": {
-            "name": "Jainism",
-            "description": "A religion beginning in the 7th-5th century BC in India that teaches a path to spiritual purity and enlightenment through a disciplined mode of life founded upon the tradition of ahimsa, nonviolence to all living creatures",
-        },
-        "6": {
-            "name": "Judaism",
-            "description": "A monotheistic religion and culture that follows the teachings of the Torah",
-        },
-        "7": {
-            "name": "Scientology",
-            "description": "A set of beliefs and practices invented by American science fiction author L. Ron Hubbard asserting that a human is an immortal, spiritual being (Thetan) that is resident in a physical body",
-        },
-        "8": {
-            "name": "Shintoism",
-            "description": "An indigenous Japanese polytheistic religion that revolves around kami, supernatural entities believed to inhabit all things",
-        },
-        "9": {
-            "name": "Sikhism",
-            "description": "An Indian Dharmic religion that originated at the end of the 15th century CE in the Punjab region, developed from the spiritual teachings of Guru Nanak",
-        },
-        "10": {
-            "name": "Taoism",
-            "description": "A philosophical and spiritual tradition originating in the 4th century BCE in China which emphasizes living in harmony with the Tao, the source, pattern and substance of everything that exists",
-        },
-    },
-    "religious text": {
-        "0": {"name": "Bible", "description": "Holy book of Christianity"},
-        "1": {"name": "Qur'an", "description": "Holy book of Islam"},
-        "2": {"name": "Torah", "description": "Holy book of Judaism"},
-    },
-    "religious facility": {
-        "0": {
-            "name": "church",
-            "description": "A building used as a place of worship for the Christian religion",
-        },
-        "1": {
-            "name": "mosque",
-            "description": "A building used as a place of worship for the Islamic religion",
-        },
-        "2": {
-            "name": "synagogue",
-            "description": "A building used as a place of worship for the Jewish religion",
-        },
-    },
-    "government": {
-        "0": {
-            "name": "civil and public service",
-            "description": "The paid service by civilians for the government, and the often non-paid service of individuals for the benefit of others (public service)",
-        },
-        "1": {
-            "name": "constitution (law)",
-            "description": "Usually a written document setting forth the operations of a government and the rights of the citizens therein",
-        },
-        "2": {
-            "name": "defence",
-            "description": "Anything involving the protection of one's own country",
-        },
-        "3": {
-            "name": "espionage and intelligence",
-            "description": "Covert collection of information",
-        },
-        "4": {
-            "name": "executive (government)",
-            "description": "That portion of a ruling body involving the overall operation of government",
-        },
-        "5": {
-            "name": "government budget",
-            "description": "The expenses and revenues approved by the legislature.",
-        },
-        "6": {
-            "name": "heads of state",
-            "description": "Symbolic or actual chief representative of a nation, such as royalty, or president or emir, for example",
-        },
-        "7": {
-            "name": "impeachment",
-            "description": "The process of bringing a public official before a tribunal to answer charges of wrongdoing",
-        },
-        "8": {
-            "name": "legislative body",
-            "description": "A legislature of elected officials representing the people that has the authority to make laws",
-        },
-        "9": {
-            "name": "local government and authority",
-            "description": "Authorities at borough, city or county level",
-        },
-    },
-    "election": {
-        "0": {"name": "electoral system", "description": "Voting systems"},
-        "1": {
-            "name": "local elections",
-            "description": "Choosing individuals for government at the basic level, whether city, village or county",
-        },
-        "2": {
-            "name": "political campaigns",
-            "description": "Campaigns for public office",
-        },
-        "3": {
-            "name": "referenda",
-            "description": "Political proposals, laws and actions suggested by non-government officials to be voted on by the entire voting body",
-        },
-        "4": {
-            "name": "voting",
-            "description": "The act of selecting an individual you would like to represent your interests in government",
-        },
-    },
-    "international relations": {
-        "0": {
-            "name": "diplomacy",
-            "description": "The use of verbal and written skills for persuading others to your point of view",
-        },
-        "1": {
-            "name": "foreign aid",
-            "description": "Help provided by one nation to another",
-        },
-        "2": {
-            "name": "refugees and internally displaced people",
-            "description": "A person seeking shelter in another country because of some fear of persecution in his own country",
-        },
-    },
-    "government policy": {
-        "0": {
-            "name": "economic policy",
-            "description": "Government directed policy on production, taxes, tariffs and things that affect the direction and health of the economy",
-        },
-        "1": {
-            "name": "migration policy",
-            "description": "Movement of one body of persons from one place to another",
-        },
-        "2": {
-            "name": "nuclear policy",
-            "description": "Government policies as regards to use of nuclear fuels for power production or weapons",
-        },
-        "3": {
-            "name": "regulation of industry",
-            "description": "The rules and bodies, both national and international, that govern conflict of interest and good practice regulations.",
-        },
-        "4": {
-            "name": "safety of citizens",
-            "description": "Government policies to protect the well-being of its citizens",
-        },
-        "5": {
-            "name": "sports policies",
-            "description": "Government policies affecting sports",
-        },
-        "6": {
-            "name": "taxation",
-            "description": "A levy to fund government expenditure",
-        },
-    },
-    "fundamental rights": {
-        "0": {
-            "name": "censorship and freedom of speech",
-            "description": "Attempts by any group to control freedoms of speech, religion, and ideas distributed in print, graphics, cyberspace and other ways. Does not include official standards such as cinema ratings, advertising and broadcast standards.",
-        },
-        "1": {
-            "name": "freedom of the press",
-            "description": "Mass media rights and freedoms, pressure and intimidation of the journalists, censorship in mass media, activities of government bodies, journalistic associations and/or organisations and other NGOs in regards to press freedom",
-        },
-        "2": {
-            "name": "human rights",
-            "description": "Rights entitled to be enjoyed by all citizens universally",
-        },
-    },
-    "political process": {
-        "0": {
-            "name": "lobbying",
-            "description": "The attempt by non-government bodies and individuals to affect the outcome of legislation through verbal, or other, persuasion",
-        },
-        "1": {
-            "name": "political parties and movements",
-            "description": "Covers both formally recognised and informal political associations",
-        },
-        "2": {
-            "name": "political system",
-            "description": "System designed to provide order to government",
-        },
-    },
-    "family": {
-        "0": {
-            "name": "adoption",
-            "description": "The legal process of transferring parental rights to someone other than a person's birth parents, that person usually being a child",
-        },
-        "1": {
-            "name": "divorce",
-            "description": "The process by which a marriage is legally dissolved",
-        },
-        "2": {
-            "name": "family planning",
-            "description": "Services and education aimed at informing individual decisions about reproduction, such as fertility, in vitro fertilisation, contraception or abortion",
-        },
-        "3": {
-            "name": "marriage",
-            "description": "The legal or socially recognised union of individuals, which establishes rights and obligations between them",
-        },
-    },
-    "values": {
-        "0": {
-            "name": "death and dying",
-            "description": "Social, medical and mental health issues relating to people at the end of their lives",
-        },
-        "1": {
-            "name": "ethics",
-            "description": "The moral values and standards that define right and wrong actions or decisions",
-        },
-        "2": {
-            "name": "pornography",
-            "description": "The depiction of sexually explicit acts in various media renditions, such as video or photos, often considered obscene or immoral",
-        },
-    },
-    "social problem": {
-        "0": {
-            "name": "addiction",
-            "description": "The habitual and compulsive use of substances such as alcohol or drugs, or behaviour such as gambling, gaming or sex, often causing detrimental effects on the body, brain, and relationships with others",
-        },
-        "1": {
-            "name": "juvenile delinquency",
-            "description": "Unlawful conduct perpetrated by minors, often on a repeated basis",
-        },
-        "2": {
-            "name": "prostitution",
-            "description": "The business of engaging in sexual activity in exchange for payment",
-        },
-        "3": {
-            "name": "slavery",
-            "description": "The ownership of people as property, and the involuntary servitude of those people to their owners, which includes unpaid labour and coerced actions",
-        },
-    },
-    "discrimination": {
-        "0": {
-            "name": "ageism",
-            "description": "Discrimination against individuals or groups of people on the basis of age",
-        },
-        "1": {
-            "name": "racism",
-            "description": "Discrimination against individuals or groups of people on the basis of race",
-        },
-        "2": {
-            "name": "sexism",
-            "description": "Discrimination against individuals or groups of people, usually women, on the basis of gender",
-        },
-    },
-    "social condition": {
-        "0": {
-            "name": "homelessness",
-            "description": "The social condition defined by lack of permanent residence, living in shelters or on streets, and the issues and problems associated with it",
-        },
-        "1": {
-            "name": "poverty",
-            "description": "The lack of sufficient resources and means to provide basic needs such as food, clothing or shelter for oneself and one's family",
-        },
-    },
-    "mankind": {
-        "0": {
-            "name": "children",
-            "description": "Young people, usually pre-pubescent, who are legally considered minors and are in a guardianship relationship with adults",
-        },
-        "1": {
-            "name": "gender",
-            "description": "The classification of individuals as male, female, or a non-binary designation",
-        },
-        "2": {
-            "name": "infants",
-            "description": "Very young people, usually defined as being just born up to the age of two",
-        },
-        "3": {
-            "name": "senior citizens",
-            "description": "People having passed the age of retirement",
-        },
-        "4": {
-            "name": "teenagers",
-            "description": "Young people between the ages that describe childhood and adulthood",
-        },
-    },
-}
-
 CLASS_DICT_FIRST = {
     "root": {
         0: "arts, culture, entertainment and media",
-        1: "conflict, war and peace",
-        2: "crime, law and justice",
-        3: "disaster, accident and emergency incident",
-        4: "economy, business and finance",
-        5: "education",
-        6: "environment",
-        7: "health",
-        8: "labour",
-        9: "lifestyle and leisure",
-        10: "politics",
-        11: "religion",
-        12: "science and technology",
-        13: "society",
-        14: "sport",
-        15: "weather",
+        1: "conflict, war and peace",  # name update #2 changes #to retrain
+        2: "crime, law and justice",  # 1 changes #to retrain
+        3: "disaster, accident and emergency incident",  # 2 changes #to retrain
+        4: "economy, business and finance",  # 2 changes #to retrain
+        5: "education",  # 10 changes #to retrain
+        6: "environment",  # 1 changes #to retrain
+        7: "health",  # 3 changes #to retrain
+        8: "labour",  # 3 changes #to retrain
+        9: "lifestyle and leisure",  # 1 changes #to retrain
+        10: "politics",  # 3 changes #to retrain
+        11: "religion",  # 7 changes #to retrain
+        12: "science and technology",  # 3 changes #to retrain
+        13: "society",  # 2 changes #to retrain
+        14: "sport",  # 10 changes #to retrain
+        15: "weather",  # 2 changes #to retrain
     }
 }
 
 CLASS_DICT_SECOND = {
     "arts, culture, entertainment and media": {
-        0: "arts and entertainment",
-        1: "culture",
-        2: "mass media",
+        0: "arts and entertainment",  # 2 changes #to retrain
+        1: "culture",  # 3 changes #to retrain
+        2: "mass media",  # 3 changes #to retrain
     },
-    "conflicts, war and peace": {
-        0: "armed conflict",
-        1: "civil unrest",
-        2: "act of terror",
-        3: "massacre",
-        4: "peace process",
-        5: "post-war reconstruction",
-        6: "coup d'etat",
+    "conflict, war and peace": {
+        0: "act of terror",  # 1 change #to retrain
+        1: "armed conflict",  # 2 changes #to retrain
+        2: "civil unrest",
+        3: "coup d'etat",
+        4: "cyber warfare",  # new Field #to train
+        5: "massacre",
+        6: "peace process",  # 5 changes #to retrain
+        7: "post-war reconstruction",  # 1 change #to retrain
+        8: "war victims",  # new Field #to train
     },
     "crime, law and justice": {
-        0: "judiciary",
-        1: "law enforcement",
-        2: "law",
-        3: "crime",
-        4: "justice and rights",
+        0: "crime",  # 10 changes #to retrain
+        1: "judiciary",  # 1 change #to retrain
+        2: "justice",  # name update
+        3: "law",  # 1 change #to retrain
+        4: "law enforcement",  # 1 change #to retrain
     },
     "disaster, accident and emergency incident": {
-        0: "disaster",
-        1: "accident and emergency incident",
-        2: "emergency response",
+        0: "accident and emergency incident",  # 3 changes #to retrain
+        1: "disaster",  # 1 change #to retrain
+        2: "emergency incident",  # name update #3 changes #to retrain
+        3: "emergency planning",  # new Field #to train
+        4: "emergency response",
     },
     "economy, business and finance": {
-        0: "economy",
-        1: "economic sector",
-        2: "business information",
-        3: "market and exchange",
+        0: "business enterprise",  # name update #3 changes #to retrain
+        1: "business information",  # 4 changes #to retrain
+        2: "economy",  # 9 changes #to retrain
+        3: "market and exchange",  # 2 changes #to retrain
+        4: "products and services",  # new Field #to train
     },
-    "education": {0: "school", 1: "teaching and learning"},
+    "education": {
+        0: "curriculum",  # new Field #to train
+        1: "educational grading",  # new Field #to train
+        2: "educational testing and examinations",  # new Field #to train
+        3: "entrance examination",  # new Field #to train
+        4: "online and remote learning",  # new Field #to train
+        5: "parents group",  # new Field #to train
+        6: "religious education",  # new Field #to train
+        7: "school",  # 11 changes #to retrain
+        8: "social learning",  # new Field #to train
+        9: "students",  # new Field #to train
+        10: "teachers",  # new Field #to train
+        11: "teaching and learning",
+        12: "vocational education",  # new Field #to train
+    },
     "environment": {
-        0: "natural resources",
-        1: "conservation",
-        2: "environmental pollution",
-        3: "climate change",
-        4: "nature",
-        5: "environmental politics",
+        0: "climate change",  # 1 change #to retrain
+        1: "conservation",  # 2 changes #to retrain
+        2: "environmental pollution",  # 3 changes #to retrain
+        3: "natural resources",  # 1 change #to retrain
+        4: "nature",  # 2 changes #to retrain
+        5: "sustainability",  # new Field #to train
     },
     "health": {
-        0: "health treatment and procedure",
-        1: "disease and condition",  # 'diseases and conditions',
-        2: "government health care",  # now in politics
+        0: "disease and condition",  # 4 changes #to retrain
+        1: "government health care",  # 2 changes #to retrain
+        2: "health facility",  # 2 changes #to retrain
         3: "health insurance",
-        4: "health facility",
-        5: "medical profession",
-        6: "non-human diseases",
+        4: "health organisation",  # new Field #to train
+        5: "health treatment and procedure",  # 8 changes #to retrain
+        6: "medical profession",  # 3 changes #to retrain
+        7: "non-human diseases",
+        8: "private health care",  # new Field #to train
+        9: "public health",  # new Field #to train
     },
     "labour": {
-        0: "employment",
-        1: "retirement",
-        2: "unemployment",
-        3: "labour relations",
+        0: "employment",  # 11 changes #to retrain
+        1: "employment legislation",  # new Field #to train
+        2: "labour market",  # new Field #to train
+        3: "labour relations",  # 2 changes #to retrain
+        4: "retirement",  # 1 changes #to retrain
+        5: "unemployment",  # 2 changes #to retrain
+        6: "unions",  # new Field #to train
     },
-    "lifestyle and leisure": {0: "leisure", 1: "lifestyle"},
+    "lifestyle and leisure": {
+        0: "leisure",  # 2 changes #to retrain
+        1: "lifestyle",  # 1 change #to retrain
+        2: "wellness",  # new Field #to train
+    },
     "politics": {
-        0: "government",
-        1: "election",
-        2: "international relations",
-        3: "government policy",
-        4: "fundamental rights",
-        5: "political process",
+        0: "election",  # 8 changes #to retrain
+        1: "fundamental rights",  # 4 changes #to retrain
+        2: "government",  # 9 changes #to retrain
+        3: "government policy",  # 6 changes #to retrain
+        4: "international relations",  # 3 changes #to retrain
+        5: "non-governmental organisation",  # new Field #to train
+        6: "political crisis",  # new Field #to train
+        7: "political dissent",  # new Field #to train
+        8: "political process",  # 1 change #to retrain
     },
     "religion": {
-        0: "belief systems",  # religious belief
-        1: "religious text",
-        2: "religious facilities",
-        3: "religious festival or holiday",
-    },  # religious event
+        0: "belief systems",  # 6 changes #to retrain
+        1: "interreligious dialogue",  # new Field #to train
+        2: "relations between religion and government",  # new Field #to train
+        3: "religious conflict",  # new Field #to train
+        4: "religious event",  # new Field #to train
+        5: "religious facility",
+        6: "religious festival and holiday",  # name update
+        7: "religious leader",  # new Field #to train
+        8: "religious ritual",  # new Field #to train
+        9: "religious text",
+    },
     "science and technology": {
-        0: "natural science",
-        1: "technology and engineering",
-        2: "biomedical science",
-        3: "social sciences",
-        4: "mathematics",
-        5: "scientific research",  # 'research',
-        6: "mechanical engineering",
+        0: "biomedical science",  # 1 change #to retrain
+        1: "mathematics",  # new Field #to train
+        2: "natural science",
+        3: "scientific institution",  # new Field #to train
+        4: "scientific research",  # 2 changes #to retrain
+        5: "scientific standards",  # new Field #to train
+        6: "social sciences",  # 1 change #to retrain
+        7: "technology and engineering",  # 3 changes #to retrain
     },
     "society": {
-        0: "demographics",
-        1: "family",
-        2: "values",
-        3: "social problem",
-        4: "discrimination",
-        5: "welfare",
-        6: "social condition",
-        7: "mankind",
-        8: "communities",
+        0: "communities",  # 2 changes #to retrain
+        1: "demographics",  # 1 change #to retrain
+        2: "discrimination",  # 1 change #to retrain
+        3: "diversity, equity and inclusion",  # new Field #to train
+        4: "emigration",  # new Field #to train
+        5: "family",  # 3 changes #to retrain
+        6: "immigration",  # 1 change #to retrain
+        7: "mankind",  # 8 changes #to retrain
+        8: "social condition",
+        9: "social problem",  # 3 changes #to retrain
+        10: "values",  # 1 change #to retrain
+        11: "welfare",  # 6 changes #to retrain
     },
-    "sport": {0: "competition discipline", 1: "drug use in sport"},
-    "weather": {0: "weather forecast", 1: "weather warning"},
+    "sport": {
+        0: "competition discipline",
+        1: "disciplinary action in sport",  # new Field #to train
+        2: "drug use in sport",  # 3 changes #to retrain
+        3: "sport achievement",  # new Field #to train
+        4: "sport event",  # new Field #to train
+        5: "sport industry",  # new Field #to train
+        6: "sport organisation",  # new Field #to train
+        7: "sport venue",  # new Field #to train
+        8: "sports coaching",  # new Field #to train
+        9: "sports management and ownership",  # new Field #to train
+        10: "sports officiating",  # new Field #to train
+        11: "sports transaction",  # new Field #to train
+    },
+    "weather": {
+        0: "weather forecast",
+        1: "weather phenomena",  # new Field #to train
+        2: "weather statistic",  # new Field #to train
+        3: "weather warning",
+    },
 }
 
+
 CLASS_DICT_THIRD = {
-    # removed economy
-    "economic sector": {
-        0: "energy and resource",  # changed order
-        1: "computing and information technology",
-        2: "transport",
-        3: "media",
-        4: "consumer goods",
-        5: "agriculture",
-        6: "construction and property",
-        7: "financial and business service",
-        8: "chemicals",
-        9: "tourism and leisure",
-        10: "metal and mineral",
-        11: "manufacturing and engineering",
-        12: "process industry",
-    },
-    "business information": {
-        0: "human resources",  # changed order
-        1: "strategy and marketing",
-        2: "business finance",
-    },
-    "market and exchange": {
-        0: "securities",  # changed order
-        1: "stocks",
-        2: "commodity market",
-        3: "foreign exchange market",
-        4: "loan market",
-    },
-    "disaster": {0: "natural disasters", 1: "fire", 2: "famine"},  # manually added
-    "accident and emergency incident": {
-        0: "transport accident and incident",  # manually added
-        1: "industrial accident and incident",
-        2: "explosion accident and incident",
-    },
-    "natural science": {
-        0: "meteorology",  # changed order
-        1: "biology",
-        2: "physics",
-        3: "astronomy",
-        4: "geology",
-        5: "horticulture",
-        6: "chemistry",
-        7: "cosmology",
-        8: "marine science",
-    },
-    "technology and engineering": {
-        0: "aerospace engineering",  # changed order
-        1: "electronic engineering",
-        2: "micro science",
-        3: "information technology and computer science",  # IT/computer sciences
-        4: "civil engineering",
-    },
-    # removed biomedical science
-    "social sciences": {
-        0: "economics",  # changed order
-        1: "philosophy",
-        2: "psychology",
-        3: "archaeology",
-        4: "geography",
-        5: "information science",
-        6: "linguistics",
-        7: "history",
-        8: "political science",
-        9: "sociology",
-        10: "anthropology",
-    },
-    "scientific research": {
-        0: "scientific exploration",  # changed order
-        1: "medical research",
-    },
-    "judiciary": {0: "prosecution", 1: "court", 2: "out of court procedures"},
-    "law enforcement": {
-        0: "police",
-        1: "punishment (criminal)",
-        2: "arrest",
-        3: "investigation (criminal)",
-    },
-    "law": {0: "civil law", 1: "criminal law", 2: "international law"},  # changed order
-    "crime": {
-        0: "drug related crimes",  # changed order
-        1: "fraud",
-        2: "terrorism",
-        3: "homicide",
-        4: "kidnapping",
-        5: "corruption",
-        6: "assault",
-        7: "theft",
-        8: "arson",
-        9: "hijacking",
-        10: "corporate crime",
-        11: "computer crime",
-        12: "organised crime",
-        13: "war crime",
-    },
-    "health treatment and procedure": {
-        0: "medicine",
-        1: "medical procedure/test",
-        2: "preventative medicine",
-        3: "diet",
-        4: "physical fitness",
-        5: "therapy",
-        6: "medical drugs",
-    },  # manually added
-    "disease and condition": {
-        0: "illness",  # changed order
-        1: "communicable disease",
-        2: "injury",
-        3: "heart disease",
-        4: "cancer",
-        5: "obesity",
-        6: "mental and behavioural disorder",
-    },
-    # removed healthcare policy
-    "non-human diseases": {0: "animal disease", 1: "plant disease"},  # manually added
-    "leisure": {
-        0: "game",  # changed order
-        1: "travel",
-        2: "holiday",
-        3: "recreational activities",
-        4: "club and association",
-        5: "leisure venue",
-        6: "gaming and lottery",
-        7: "hobby",
-    },
-    "lifestyle": {0: "food and drink", 1: "trend", 2: "house and home", 3: "party"},
-    "armed conflict": {0: "war", 1: "military occupation"},  # added armed conflict
-    "civil unrest": {
-        0: "riot",  # changed order
-        1: "demonstration",
-        2: "revolution",
-        3: "rebellion",
-    },
-    "act of terror": {0: "bombings", 1: "act of bioterrorism"},
-    "competition discipline": {
-        0: "soccer",  # manually added
-        1: "baseball",
-        2: "motor car racing",
-        3: "cycling",
-        4: "motorcycling",
-        5: "swimming",
-        6: "golf",
-        7: "sailing",
-        8: "canoeing",
-        9: "wrestling",
-        10: "boxing",
-        11: "tennis",
-        12: "rugby union",
-        13: "basketball",
-        14: "volleyball",
-        15: "athletics, track and field",
-        16: "speed skating",
-        17: "snooker",
-        18: "polo",
-        19: "triathlon",
-        20: "American football",
-        21: "gymnastics",
-        22: "mountain climbing",
-        23: "cricket",
-        24: "martial arts",
-        25: "ice hockey",
-        26: "horse racing",
-        27: "rodeo",
-        28: "weightlifting",
-        29: "bullfighting",
-        30: "diving",
-        31: "skiing",
-        32: "equestrianism",
-        33: "rowing",
-        34: "luge",
-        35: "fencing",
-        36: "handball (team)",
-        37: "marathon",
-        38: "figure skating",
-        39: "rugby league",
-        40: "chess",
-        41: "water polo",
-        42: "roller sports",
-        43: "squash",
-        44: "parachuting",
-        45: "badminton",
-        46: "hurling",
-        47: "surfing",
-        48: "field hockey",
-        49: "archery",
-        50: "netball",
-        51: "kabaddi",
-        52: "softball",
-        53: "shinty",
-        54: "lacrosse",
-        55: "bobsleigh",
-        56: "bandy",
-        57: "curling",
-        58: "skeleton",
-        59: "sport shooting",
-        60: "table tennis",
-        61: "modern pentathlon",
-        62: "sumo wrestling",
-        63: "darts",
-        64: "pool",
-        65: "orienteering",
-        66: "billiards",
-        67: "snowboarding",
-        68: "biathlon",
-        69: "kayaking",
-        70: "Jai Alai (Pelota)",
-        71: "dog racing",
-        72: "Australian rules football",
-        73: "inline skating",
-        74: "floorball",
-    },
     "arts and entertainment": {
-        0: "music",  # changed order
-        1: "fashion",
-        2: "theatre",
-        3: "literature",
-        4: "opera",
-        5: "cinema",
-        6: "dance",
-        7: "visual arts",
-        8: "cartoon",
-        9: "art exhibition",
-        10: "animation",
+        0: "animation",
+        1: "cartoon",
+        2: "cinema",
+        3: "dance",
+        4: "fashion",
+        5: "festival",  # new Field
+        6: "literature",
+        7: "music",
+        8: "series",  # new Field
+        9: "theatre",
+        10: "visual arts",
     },
     "culture": {
-        0: "language",  # changed order
-        1: "library and museum",
-        2: "monument and heritage site",
+        0: "art exhibition",
+        1: "cultural development",  # new Field
+        2: "customs and tradition",  # new Field
+        3: "festive event (culture)",  # new Field
+        4: "language",
+        5: "library and museum",
+        6: "monument and heritage site",
     },
     "mass media": {
-        0: "television",  # changed order
-        1: "newspaper",
-        2: "radio",
-        3: "news media",
+        0: "disinformation and misinformation",  # new Field
+        1: "news media",
+        2: "newspaper",
+        3: "online media outlet",  # new Field
         4: "periodical",
+        5: "radio",
+        6: "social media",  # new Field
+        7: "television",
+    },
+    "act of terror": {0: "act of bioterrorism", 1: "terrorist bombings"},  # name update
+    "armed conflict": {
+        0: "guerrilla activity",  # new Field
+        1: "international military intervention",  # new Field
+        2: "military occupation",
+        3: "war",
+    },
+    "civil unrest": {0: "demonstration", 1: "rebellion", 2: "revolution", 3: "riot"},
+    "peace process": {
+        0: "disarmament",  # new Field
+        1: "peace envoy",  # new Field
+        2: "peace plan",  # new Field
+        3: "peace talks",  # new Field
+        4: "peacekeeping force",  # new Field
+    },
+    "post-war reconstruction": {0: "ordnance clearance"},  # new Field
+    "war victims": {
+        0: "missing in action",  # new Field
+        1: "prisoners of war",  # new Field
+    },
+    "crime": {
+        0: "animal abuse",  # new Field
+        1: "arson",
+        2: "assault",
+        3: "corporate crime",
+        4: "corruption",
+        5: "cyber crime",  # name update
+        6: "drug related crimes",
+        7: "fraud",
+        8: "genocide",  # new Field
+        9: "hijacking",
+        10: "homicide",
+        11: "human smuggling and trafficking",  # new Field
+        12: "kidnapping",
+        13: "organised crime",
+        14: "reckless driving",  # new Field
+        15: "robbery and theft",  # name update
+        16: "shootings",  # new Field
+        17: "terrorism",
+        18: "torture",  # new Field
+        19: "vandalism",  # new Field
+        20: "war crime",
+    },
+    "judiciary": {
+        0: "court",
+        1: "out of court procedures",
+        2: "prosecution and prosecutors",  # name update
+    },
+    "law": {
+        0: "administrative law",  # new Field
+        1: "civil law",
+        2: "criminal law",
+        3: "international law",
+    },
+    "law enforcement": {
+        0: "arrest",
+        1: "investigation (criminal)",
+        2: "police",
+        3: "surveillance",  # new Field
+    },
+    "accident and emergency incident": {
+        0: "drowning",  # new Field
+        1: "explosion accident and incident",
+        2: "industrial accident and incident",
+        3: "structural failure",  # new Field
+        4: "transportation accident and incident",  # name update
+    },
+    "disaster": {0: "famine", 1: "fire", 2: "natural disaster"},  # name update
+    "emergency incident": {0: "transport incident"},  # new Field
+    "business enterprise": {
+        0: "cooperative",  # new Field
+        1: "small and medium enterprise",  # new Field
+        2: "start-up and entrepreneurial business",  # new Field
+    },
+    "business information": {
+        0: "business finance",
+        1: "business financing",  # new Field
+        2: "business governance",  # new Field
+        3: "business reporting and performance",  # new Field
+        4: "business restructuring",  # new Field
+        5: "business strategy and marketing",
+        6: "human resources",
+    },
+    "economy": {
+        0: "central bank",  # new Field
+        1: "currency",
+        2: "economic organisation",  # new Field
+        3: "economic trends and indicators",  # new Field
+        4: "emerging market",  # new Field
+        5: "international economic institution",  # new Field
+        6: "international trade",  # new Field
+        7: "monetary policy",  # new Field
+        8: "mutual funds",  # new Field
+        9: "sharing economy",  # new Field
+    },
+    "market and exchange": {
+        0: "commodities market",  # name update
+        1: "debt market",  # name update
+        2: "foreign exchange market",
+        3: "loan market",
+    },
+    "products and services": {
+        0: "agriculture",
+        1: "business service",  # name update
+        2: "chemicals",
+        3: "commercial fishing",  # name update
+        4: "computing and information technology",
+        5: "construction and property",
+        6: "consumer goods",
+        7: "energy and resource",
+        8: "financial and business service",
+        9: "financial service",  # name update
+        10: "forestry and timber",  # name update
+        11: "healthcare industry",  # name update
+        12: "manufacturing and engineering",
+        13: "media and entertainment industry",  # name update
+        14: "metal and mineral mining and refining",  # name update
+        15: "plastic",  # new Field
+        16: "process industry",
+        17: "sales channel",  # new Field
+        18: "tourism and leisure industry",  # name update
+        19: "transport",
+        20: "utilities",  # new Field
+    },
+    "school": {
+        0: "adult and continuing education",  # new Field
+        1: "college and university",  # name update
+        2: "early childhood education",  # new Field
+        3: "further education",  # new Field
+        4: "independent school",  # new Field
+        5: "lower secondary education",  # new Field
+        6: "primary education",  # new Field
+        7: "private school",  # new Field
+        8: "religious school",  # new Field
+        9: "state school",  # new Field
+        10: "upper secondary education",  # new Field
+    },
+    "climate change": {0: "global warming"},  # new Field
+    "conservation": {0: "energy saving", 1: "parks"},  # new Field  # new Field
+    "environmental pollution": {
+        0: "air pollution",
+        1: "environmental clean-up",  # new Field
+        2: "hazardous materials",  # new Field
+        3: "waste materials",  # new Field
+        4: "water pollution",
     },
     "natural resources": {
-        0: "water",
+        0: "energy resources",  # name update
         1: "land resources",
         2: "population growth",
         3: "renewable energy",
-    },  # manually added
-    "environmental pollution": {
-        0: "water pollution",
-        1: "air pollution",
-    },  # manually added
+        4: "water",
+    },
     "nature": {
-        0: "ecosystem",
-        1: "endangered species",
-        2: "invasive species",
-    },  # manually added
-    "belief systems": {
-        0: "Islam",
-        1: "Christianity",
-        2: "Shintoism",
-        3: "Scientology",
-        4: "Buddhism",
-        5: "Judaism",
-        6: "Hinduism",
-        7: "Sikhism",
-        8: "Confucianism",
-        9: "Taoism",
-        10: "cult and sect",
-        11: "Jainism",
-    },  # manually added
-    "religious text": {0: "Torah", 1: "Bible", 2: "Qur'an"},  # manually added
-    "religious facilities": {
-        0: "church",
-        1: "temple",
-        2: "mosque",
-        3: "synagogue",
-    },  # manually added
-    "government": {
-        0: "legislative body",  # changed order
-        1: "defence",
-        2: "heads of state",
-        3: "impeachment",
-        4: "espionage and intelligence",
-        5: "government budget",
-        6: "constitution (law)",
-        7: "ministers (government)",
-        8: "executive (government)",
-        9: "local government and authority",
-        10: "civil and public service",
+        0: "animal",  # new Field
+        1: "ecosystem",
+        2: "endangered species",
+        3: "flowers and plants",  # new Field
+        4: "invasive species",
+    },
+    "disease and condition": {
+        0: "cancer",
+        1: "communicable disease",
+        2: "developmental disorder",  # new Field
+        3: "heart disease",
+        4: "illness",
+        5: "injury",
+        6: "medical condition",  # new Field
+        7: "mental health and disorder",  # name update
+        8: "poisoning",  # new Field
+    },
+    "government health care": {0: "Medicaid", 1: "Medicare"},  # new Field  # new Field
+    "health facility": {
+        0: "healthcare clinic",  # new Field
+        1: "hospital",  # new Field
+    },
+    "health treatment and procedure": {
+        0: "diet",
+        1: "drug rehabilitation",  # new Field
+        2: "emergency care",  # new Field
+        3: "health care approach",  # new Field
+        4: "medical test",  # name update
+        5: "non-prescription drug",  # new Field
+        6: "physical fitness",
+        7: "prescription drug",  # new Field
+        8: "preventative medicine",
+        9: "surgery",  # new Field
+        10: "therapy",
+        11: "vaccine",  # new Field
+    },
+    "medical profession": {
+        0: "medical service",  # new Field
+        1: "medical specialisation",  # new Field
+        2: "medical staff",  # new Field
+    },
+    "employment": {
+        0: "apprenticeship",  # new Field
+        1: "child labour",  # new Field
+        2: "commuting",  # new Field
+        3: "employee",  # new Field
+        4: "employer",  # new Field
+        5: "employment training",  # new Field
+        6: "occupations",  # new Field
+        7: "parental leave",  # new Field
+        8: "self-employment",  # new Field
+        9: "volunteering",  # new Field
+        10: "wages and benefits",  # new Field
+    },
+    "employment legislation": {0: "workplace health and safety"},  # new Field
+    "labour market": {0: "gig economy"},  # new Field
+    "labour relations": {
+        0: "collective agreements",  # new Field
+        1: "labour dispute",  # new Field
+    },
+    "retirement": {0: "pension"},  # new Field
+    "unemployment": {
+        0: "job layoffs",  # new Field
+        1: "unemployment benefits",  # new Field
+    },
+    "leisure": {
+        0: "club and association",
+        1: "game",
+        2: "gaming and lottery",
+        3: "hobby",
+        4: "holiday",
+        5: "leisure venue",
+        6: "outdoor recreational activities",  # name update
+        7: "travel and tourism",  # name update
+    },
+    "lifestyle": {
+        0: "house and home",
+        1: "organic food",  # new Field
+        2: "party",
+        3: "trend",
+    },
+    "wellness": {
+        0: "exercise and fitness",  # name update
+        1: "mental wellbeing",  # name update
     },
     "election": {
-        0: "electoral system",
-        1: "voting",
-        2: "local elections",
-        3: "referenda",
-        4: "political campaigns",
-    },  # removed regional elections
-    "international relations": {
-        0: "diplomacy",
-        1: "refugees and internally displaced people",
-        2: "foreign aid",
+        0: "church elections",  # new Field
+        1: "citizens' initiative and recall",  # new Field
+        2: "electoral system",
+        3: "intergovernmental elections",  # new Field
+        4: "local elections",
+        5: "national elections",  # new Field
+        6: "political campaigns",
+        7: "political candidates",  # new Field
+        8: "political debates",  # new Field
+        9: "primary elections",  # new Field
+        10: "referenda",
+        11: "regional elections",  # new Field
+        12: "voting",
+    },
+    "fundamental rights": {
+        0: "censorship and freedom of speech",
+        1: "civil rights",  # name update
+        2: "freedom of religion",  # new Field
+        3: "freedom of the press",
+        4: "human rights",
+        5: "privacy",  # new Field
+        6: "women's rights",  # new Field
+    },
+    "government": {
+        0: "civil and public service",
+        1: "constitution (law)",
+        2: "defence",
+        3: "espionage and intelligence",
+        4: "executive (government)",
+        5: "government budget",
+        6: "government department",  # name update
+        7: "heads of government",  # name update
+        8: "heads of state",
+        9: "impeachment",
+        10: "legislative body",
+        11: "local government and authority",
+        12: "minister and secretary (government)",  # name update
+        13: "national government",  # name update
+        14: "political committees",  # new Field
+        15: "political convention",  # new Field
+        16: "public inquiry",  # new Field
+        17: "regional government and authority",  # name update
+        18: "regulatory authority",  # new Field
     },
     "government policy": {
-        0: "sports policies",  # changed order
-        1: "nuclear policy",
-        2: "regulation of industry",
-        3: "safety of citizens",
-        4: "taxation",
-        5: "migration policy",  # migration of people
-        6: "economic policy",
-    },  # manually added
-    "fundamental rights": {
-        0: "human rights",
-        1: "censorship and freedom of speech",  # censorship
-        2: "freedom of the press",
+        0: "cultural policies",  # new Field
+        1: "economic policy",
+        2: "education policy",  # new Field
+        3: "environmental policy",  # new Field
+        4: "healthcare policy",  # new Field
+        5: "interior policy",  # new Field
+        6: "local government policy",  # new Field
+        7: "migration policy",
+        8: "nuclear policy",
+        9: "regulation of industry",
+        10: "safety of citizens",
+        11: "sports policies",
+        12: "taxation",
+    },
+    "international relations": {
+        0: "border disputes",  # new Field
+        1: "diplomacy",
+        2: "economic sanction",  # new Field
+        3: "foreign aid",
+        4: "international organisation",  # new Field
+        5: "refugees and internally displaced people",
     },
     "political process": {
-        0: "political parties and movements",
-        1: "political system",
-        2: "lobbying",
+        0: "lobbying",
+        1: "political development",  # new Field
+        2: "political parties and movements",
+        3: "political system",
+    },
+    "belief systems": {
+        0: "Buddhism",
+        1: "Christianity",
+        2: "Confucianism",
+        3: "Freemasonry",  # new Field
+        4: "Hinduism",
+        5: "Islam",
+        6: "Jainism",
+        7: "Judaism",
+        8: "Scientology",
+        9: "Shintoism",
+        10: "Sikhism",
+        11: "Taoism",
+        12: "Unificationism",  # new Field
+        13: "Zoroastrianism",  # new Field
+        14: "atheism and agnosticism",  # new Field
+        15: "cult",  # name update
+        16: "nature religion",  # new Field
+    },
+    "religious facility": {0: "church", 1: "mosque", 2: "synagogue", 3: "temple"},
+    "religious festival and holiday": {
+        0: "All Saints Day",  # new Field
+        1: "Christmas",
+        2: "Easter",
+        3: "Eid al-Adha",  # new Field
+        4: "Hanukkah",  # new Field
+        5: "Pentecost",  # new Field
+        6: "Ramadan",  # new Field
+        7: "Walpurgis night",  # new Field
+        8: "Yom Kippur",  # new Field
+    },
+    "religious leader": {0: "pope"},  # new Field
+    "religious ritual": {
+        0: "baptism",  # new Field
+        1: "bar and bat mitzvah",  # new Field
+        2: "canonisation",  # new Field
+    },
+    "religious text": {0: "Bible", 1: "Qur'an", 2: "Torah"},
+    "biomedical science": {0: "biotechnology"},  # new Field
+    "natural science": {
+        0: "astronomy",
+        1: "biology",
+        2: "chemistry",
+        3: "cosmology",
+        4: "geology",
+        5: "horticulture",
+        6: "marine science",
+        7: "meteorology",
+        8: "physics",
+    },
+    "scientific research": {
+        0: "medical research",
+        1: "scientific exploration",
+        2: "scientific innovation",  # new Field
+        3: "scientific publication",  # new Field
+    },
+    "social sciences": {
+        0: "anthropology",
+        1: "archaeology",
+        2: "economics",
+        3: "geography",
+        4: "history",
+        5: "information science",
+        6: "linguistics",
+        7: "philosophy",
+        8: "political science",
+        9: "psychology",
+        10: "sociology",
+        11: "study of law",  # new Field
+    },
+    "technology and engineering": {
+        0: "aerospace engineering",
+        1: "agricultural technology",  # new Field
+        2: "civil engineering",
+        3: "electronic engineering",
+        4: "identification technology",  # new Field
+        5: "information technology and computer science",
+        6: "materials science",  # new Field
+        7: "mechanical engineering",
+        8: "micro science",
+    },
+    "communities": {
+        0: "fraternal and community group",  # new Field
+        1: "social networking",  # new Field
+    },
+    "demographics": {0: "population and census"},  # new Field
+    "discrimination": {
+        0: "ageism",
+        1: "racism",
+        2: "religious discrimination",  # new Field
+        3: "sexism",
     },
     "family": {
-        0: "family planning",
-        1: "divorce",
-        2: "marriage",
-        3: "parent and child",
-        4: "adoption",
+        0: "Dating and Relationships",  # name update
+        1: "adoption",
+        2: "divorce",
+        3: "family planning",
+        4: "marriage",
+        5: "parenting",  # name update
+        6: "pregnancy and childbirth",  # name update
+    },
+    "immigration": {0: "illegal immigration"},  # new Field
+    "mankind": {
+        0: "LGBTQ",  # name update
+        1: "adults",  # new Field
+        2: "children",
+        3: "disabilities",  # new Field
+        4: "gender",
+        5: "indigenous people",  # new Field
+        6: "infants",
+        7: "men",  # new Field
+        8: "national or ethnic minority",  # name update
+        9: "nuclear radiation victims",  # new Field
+        10: "senior citizens",
+        11: "teenagers",
+        12: "women",  # new Field
+    },
+    "social condition": {0: "homelessness", 1: "poverty"},
+    "social problem": {
+        0: "abusive behaviour",  # new Field
+        1: "addiction",
+        2: "bullying",  # new Field
+        3: "juvenile delinquency",
+        4: "prostitution",
+        5: "sexual misconduct",  # new Field
+        6: "slavery",
     },
     "values": {
-        0: "ethics",
+        0: "corrupt practices",
         1: "death and dying",
-        2: "pornography",
-        3: "corrupt practices",
-    },  # manually added
-    "social problem": {
-        0: "addiction",
-        1: "slavery",
-        2: "prostitution",
-        3: "juvenile delinquency",
-    },  # manually added
-    "discrimination": {0: "racism", 1: "sexism", 2: "ageism"},  # manually added
-    "social condition": {0: "homelessness", 1: "poverty"},  # manually added
-    "mankind": {
-        0: "teenagers",
-        1: "gender",
-        2: "gays and lesbians",
-        3: "senior citizens",
-        4: "infants",
-        5: "children",
-    },  # manually added
+        2: "ethics",
+        3: "pornography",
+        4: "sexual behaviour",  # new Field
+    },
+    "welfare": {
+        0: "charity",  # new Field
+        1: "child care",  # new Field
+        2: "elderly care",  # new Field
+        3: "long-term care",  # new Field
+        4: "public housing",  # new Field
+        5: "social services",  # new Field
+    },
+    "competition discipline": {
+        0: "3x3 basketball",  # new Field
+        1: "American football",
+        2: "Australian rules football",
+        3: "Canadian football",  # new Field
+        4: "Gaelic football",  # new Field
+        5: "Jai Alai (Pelota)",
+        6: "archery",
+        7: "arm wrestling",  # new Field
+        8: "artistic swimming",  # new Field
+        9: "athletics",  # name update
+        10: "badminton",
+        11: "bandy",
+        12: "baseball",
+        13: "basketball",
+        14: "biathlon",
+        15: "billiards",
+        16: "bobsleigh",
+        17: "bodybuilding",  # new Field
+        18: "boules",  # new Field
+        19: "boxing",
+        20: "bullfighting",
+        21: "canoe slalom",  # new Field
+        22: "canoe sprint",  # new Field
+        23: "canoeing",
+        24: "casting (fishing)",  # new Field
+        25: "cheerleading",  # new Field
+        26: "chess",
+        27: "competitive dancing",  # new Field
+        28: "cricket",
+        29: "croquet",  # new Field
+        30: "curling",
+        31: "cycling",
+        32: "darts",
+        33: "diving",
+        34: "dog racing",
+        35: "duathlon",  # new Field
+        36: "eSports",  # new Field
+        37: "equestrian",  # name update
+        38: "fencing",
+        39: "field hockey",
+        40: "figure skating",
+        41: "fist ball",  # new Field
+        42: "floorball",
+        43: "flying disc",  # new Field
+        44: "football 5-a-side",  # new Field
+        45: "goalball",  # new Field
+        46: "golf",
+        47: "gymnastics",
+        48: "handball (team)",
+        49: "hornuss",  # new Field
+        50: "horse racing",
+        51: "hurling",
+        52: "ice hockey",
+        53: "inline skating",
+        54: "kabaddi",
+        55: "kayaking",
+        56: "kiting",  # new Field
+        57: "lacrosse",
+        58: "luge",
+        59: "marathon",
+        60: "martial arts",
+        61: "modern pentathlon",
+        62: "motor car racing",
+        63: "motorboat racing",  # new Field
+        64: "motorcycling",
+        65: "mountain climbing",
+        66: "netball",
+        67: "orienteering",
+        68: "padel",  # new Field
+        69: "parachuting",
+        70: "polo",
+        71: "pool",
+        72: "power boating",  # new Field
+        73: "racquetball",  # new Field
+        74: "ringette",  # new Field
+        75: "road cycling",  # new Field
+        76: "rodeo",
+        77: "roller sports",
+        78: "rowing",
+        79: "rugby",  # name update
+        80: "sailing",
+        81: "sepak takraw",  # new Field
+        82: "shinty",
+        83: "short track speed skating",  # new Field
+        84: "skeleton",
+        85: "skiing",
+        86: "sky diving",  # new Field
+        87: "snooker",
+        88: "snowboarding",
+        89: "soccer",
+        90: "softball",
+        91: "speed skating",
+        92: "sport climbing",  # new Field
+        93: "sport shooting",  # name update
+        94: "squash",
+        95: "stand up paddleboarding (SUP)",  # new Field
+        96: "sumo wrestling",
+        97: "surfing",
+        98: "swimming",
+        99: "table tennis",
+        100: "ten pin bowling",  # new Field
+        101: "tennis",
+        102: "track cycling",  # new Field
+        103: "triathlon",
+        104: "tug-of-war",  # new Field
+        105: "underwater sports",  # new Field
+        106: "volleyball",
+        107: "water polo",
+        108: "water skiing",  # new Field
+        109: "weightlifting and powerlifting",  # name update
+        110: "windsurfing",  # new Field
+        111: "wrestling",
+    },
+    "drug use in sport": {
+        0: "drug abuse in sport",  # new Field
+        1: "drug testing in sport",  # new Field
+        2: "medical drug use in sport",  # new Field
+    },
+    "sport achievement": {
+        0: "sports honour",  # new Field
+        1: "sports medal and trophy",  # new Field
+        2: "sports record",  # new Field
+    },
+    "sport event": {
+        0: "Olympic Games",  # new Field
+        1: "Paralympic Games",  # new Field
+        2: "continental championship",  # new Field
+        3: "continental cup",  # new Field
+        4: "continental games",  # new Field
+        5: "final game",  # new Field
+        6: "international championship",  # new Field
+        7: "international cup",  # new Field
+        8: "international games",  # new Field
+        9: "national championship",  # new Field
+        10: "national cup",  # new Field
+        11: "national games",  # new Field
+        12: "playoff championship",  # new Field
+        13: "regional championship",  # new Field
+        14: "regional cup",  # new Field
+        15: "regional games",  # new Field
+        16: "regular competition",  # new Field
+        17: "world championship",  # new Field
+        18: "world cup",  # new Field
+        19: "world games",  # new Field
+    },
 }
+
 
 CLASS_DICT = {**CLASS_DICT_FIRST, **CLASS_DICT_SECOND, **CLASS_DICT_THIRD}
 
 ID_TO_TOPIC = {
     "00000000": "root",
     "01000000": "arts, culture, entertainment and media",
-    "16000000": "conflicts, war and peace",
-    "02000000": "crime, law and justice",
-    "03000000": "disaster, accident and emergency incident",
-    "04000000": "economy, business and finance",
-    "05000000": "education",
-    "06000000": "environment",
-    "07000000": "health",
-    "08000000": "human interest",
-    "09000000": "labour",
-    "10000000": "lifestyle and leisure",
-    "11000000": "politics",
-    "12000000": "religion",
-    "13000000": "science and technology",
-    "14000000": "society",
-    "15000000": "sport",
-    "17000000": "weather",
     "20000002": "arts and entertainment",
     "20000038": "culture",
     "20000045": "mass media",
+    "16000000": "conflict, war and peace",
     "20000053": "act of terror",
     "20000056": "armed conflict",
     "20000065": "civil unrest",
@@ -1925,21 +832,26 @@ ID_TO_TOPIC = {
     "20000071": "massacre",
     "20000073": "peace process",
     "20000077": "post-war reconstruction",
-    "20000080": "prisoners of war",
+    "20001377": "war victims",
+    "02000000": "crime, law and justice",
     "20000082": "crime",
     "20000106": "judiciary",
     "20000119": "justice",
     "20000121": "law",
     "20000129": "law enforcement",
+    "03000000": "disaster, accident and emergency incident",
     "20000139": "accident and emergency incident",
     "20000148": "disaster",
     "20000160": "emergency incident",
     "20000167": "emergency planning",
     "20000168": "emergency response",
+    "04000000": "economy, business and finance",
+    "20000349": "business enterprise",
     "20000170": "business information",
-    "20000209": "economic sector",
     "20000344": "economy",
     "20000385": "market and exchange",
+    "20000209": "products and services",
+    "05000000": "education",
     "20000412": "curriculum",
     "20001217": "educational grading",
     "20000413": "educational testing and examinations",
@@ -1953,11 +865,14 @@ ID_TO_TOPIC = {
     "20000416": "teachers",
     "20000411": "teaching and learning",
     "20001216": "vocational education",
+    "06000000": "environment",
     "20000418": "climate change",
     "20000420": "conservation",
     "20000424": "environmental pollution",
     "20000430": "natural resources",
     "20000441": "nature",
+    "20001374": "sustainability",
+    "07000000": "health",
     "20000446": "disease and condition",
     "20000480": "government health care",
     "20000461": "health facility",
@@ -1968,6 +883,7 @@ ID_TO_TOPIC = {
     "20000493": "non-human diseases",
     "20000484": "private health care",
     "20001358": "public health",
+    "08000000": "human interest",
     "20000497": "accomplishment",
     "20001237": "anniversary",
     "20000498": "award and prize",
@@ -1978,6 +894,7 @@ ID_TO_TOPIC = {
     "20000503": "human mishap",
     "20000502": "people",
     "20000499": "record and achievement",
+    "09000000": "labour",
     "20000509": "employment",
     "20000521": "employment legislation",
     "20000523": "labour market",
@@ -1985,9 +902,11 @@ ID_TO_TOPIC = {
     "20000531": "retirement",
     "20000533": "unemployment",
     "20000536": "unions",
+    "10000000": "lifestyle and leisure",
     "20000538": "leisure",
     "20000565": "lifestyle",
     "20001339": "wellness",
+    "11000000": "politics",
     "20000574": "election",
     "20000587": "fundamental rights",
     "20000593": "government",
@@ -1997,16 +916,18 @@ ID_TO_TOPIC = {
     "20000647": "political crisis",
     "20000648": "political dissent",
     "20000649": "political process",
+    "12000000": "religion",
     "20000657": "belief systems",
     "20000687": "interreligious dialogue",
     "20000702": "relations between religion and government",
     "20000688": "religious conflict",
     "20000689": "religious event",
-    "20000697": "religious facilities",
+    "20000697": "religious facility",
     "20000690": "religious festival and holiday",
     "20000703": "religious leader",
     "20000696": "religious ritual",
     "20000705": "religious text",
+    "13000000": "science and technology",
     "20000710": "biomedical science",
     "20000715": "mathematics",
     "20000717": "natural science",
@@ -2015,9 +936,11 @@ ID_TO_TOPIC = {
     "20000755": "scientific standards",
     "20000742": "social sciences",
     "20000756": "technology and engineering",
+    "14000000": "society",
     "20000768": "communities",
     "20000770": "demographics",
     "20000775": "discrimination",
+    "20001373": "diversity, equity and inclusion",
     "20000772": "emigration",
     "20000780": "family",
     "20000771": "immigration",
@@ -2026,6 +949,7 @@ ID_TO_TOPIC = {
     "20000802": "social problem",
     "20000808": "values",
     "20000817": "welfare",
+    "15000000": "sport",
     "20000822": "competition discipline",
     "20001103": "disciplinary action in sport",
     "20001104": "drug use in sport",
@@ -2038,35 +962,21 @@ ID_TO_TOPIC = {
     "20001324": "sports management and ownership",
     "20001325": "sports officiating",
     "20001148": "sports transaction",
+    "17000000": "weather",
     "20001128": "weather forecast",
     "20001129": "weather phenomena",
     "20001130": "weather statistic",
     "20001131": "weather warning",
-    "20000479": "healthcare policy",
 }
+
 
 ID_TO_LEVEL = {
     "00000000": 1,
     "01000000": 2,
-    "16000000": 2,
-    "02000000": 2,
-    "03000000": 2,
-    "04000000": 2,
-    "05000000": 2,
-    "06000000": 2,
-    "07000000": 2,
-    "08000000": 2,
-    "09000000": 2,
-    "10000000": 2,
-    "11000000": 2,
-    "12000000": 2,
-    "13000000": 2,
-    "14000000": 2,
-    "15000000": 2,
-    "17000000": 2,
     "20000002": 3,
     "20000038": 3,
     "20000045": 3,
+    "16000000": 2,
     "20000053": 3,
     "20000056": 3,
     "20000065": 3,
@@ -2075,21 +985,26 @@ ID_TO_LEVEL = {
     "20000071": 3,
     "20000073": 3,
     "20000077": 3,
-    "20000080": 3,
+    "20001377": 3,
+    "02000000": 2,
     "20000082": 3,
     "20000106": 3,
     "20000119": 3,
     "20000121": 3,
     "20000129": 3,
+    "03000000": 2,
     "20000139": 3,
     "20000148": 3,
     "20000160": 3,
     "20000167": 3,
     "20000168": 3,
+    "04000000": 2,
+    "20000349": 3,
     "20000170": 3,
-    "20000209": 3,
     "20000344": 3,
     "20000385": 3,
+    "20000209": 3,
+    "05000000": 2,
     "20000412": 3,
     "20001217": 3,
     "20000413": 3,
@@ -2103,11 +1018,14 @@ ID_TO_LEVEL = {
     "20000416": 3,
     "20000411": 3,
     "20001216": 3,
+    "06000000": 2,
     "20000418": 3,
     "20000420": 3,
     "20000424": 3,
     "20000430": 3,
     "20000441": 3,
+    "20001374": 3,
+    "07000000": 2,
     "20000446": 3,
     "20000480": 3,
     "20000461": 3,
@@ -2118,6 +1036,7 @@ ID_TO_LEVEL = {
     "20000493": 3,
     "20000484": 3,
     "20001358": 3,
+    "08000000": 2,
     "20000497": 3,
     "20001237": 3,
     "20000498": 3,
@@ -2128,6 +1047,7 @@ ID_TO_LEVEL = {
     "20000503": 3,
     "20000502": 3,
     "20000499": 3,
+    "09000000": 2,
     "20000509": 3,
     "20000521": 3,
     "20000523": 3,
@@ -2135,9 +1055,11 @@ ID_TO_LEVEL = {
     "20000531": 3,
     "20000533": 3,
     "20000536": 3,
+    "10000000": 2,
     "20000538": 3,
     "20000565": 3,
     "20001339": 3,
+    "11000000": 2,
     "20000574": 3,
     "20000587": 3,
     "20000593": 3,
@@ -2147,6 +1069,7 @@ ID_TO_LEVEL = {
     "20000647": 3,
     "20000648": 3,
     "20000649": 3,
+    "12000000": 2,
     "20000657": 3,
     "20000687": 3,
     "20000702": 3,
@@ -2157,6 +1080,7 @@ ID_TO_LEVEL = {
     "20000703": 3,
     "20000696": 3,
     "20000705": 3,
+    "13000000": 2,
     "20000710": 3,
     "20000715": 3,
     "20000717": 3,
@@ -2165,9 +1089,11 @@ ID_TO_LEVEL = {
     "20000755": 3,
     "20000742": 3,
     "20000756": 3,
+    "14000000": 2,
     "20000768": 3,
     "20000770": 3,
     "20000775": 3,
+    "20001373": 3,
     "20000772": 3,
     "20000780": 3,
     "20000771": 3,
@@ -2176,6 +1102,7 @@ ID_TO_LEVEL = {
     "20000802": 3,
     "20000808": 3,
     "20000817": 3,
+    "15000000": 2,
     "20000822": 3,
     "20001103": 3,
     "20001104": 3,
@@ -2188,9 +1115,9 @@ ID_TO_LEVEL = {
     "20001324": 3,
     "20001325": 3,
     "20001148": 3,
+    "17000000": 2,
     "20001128": 3,
     "20001129": 3,
     "20001130": 3,
     "20001131": 3,
-    "20000479": 3,
 }
