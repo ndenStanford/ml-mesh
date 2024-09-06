@@ -118,9 +118,9 @@ class OnclusivePath(ABC):
     def __init__(self, path, *paths):
         _path = self.pathmod.join(path, *paths) if paths else path
         _parts = self.pathmod.split(_path)
-        self._parts, self._scheme = _parts[0], _parts[1] if len(_parts) > 0 else [
-            self.pathmod.sep
-        ]
+        self._parts, self._scheme = _parts[0], (
+            _parts[1] if len(_parts) > 0 else [self.pathmod.sep]
+        )
         if self._parts == [self.pathmod.sep]:
             self._raw_path = self.pathmod.sep
         else:
