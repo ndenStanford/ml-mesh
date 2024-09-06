@@ -117,8 +117,8 @@ class GlobalSettings(
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
     SentimentSettings,
-    TrackedCompiledModelSpecs,
     OnclusiveLogSettings,
+    TrackedCompiledModelSpecs,
 ):
     """Global server settings."""
 
