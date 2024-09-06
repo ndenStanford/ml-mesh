@@ -103,6 +103,7 @@ services:
     profiles: [serve, integration, functional]
     environment:
       REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${ONCLUSIVEML_NEPTUNE_API_TOKEN}
     ports:
       - 8000:8000
     volumes:

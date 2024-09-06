@@ -9,6 +9,7 @@ packages = [{include = "src"}]
 python = "3.9.19"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
+compile = {path = "../../../libs/compile"}
 sentencepiece = "^0.1.99"
 protobuf = "^3.20"
 
