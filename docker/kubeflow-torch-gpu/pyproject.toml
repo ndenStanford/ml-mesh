@@ -5,21 +5,23 @@ description = "Kubeflow image for torch (GPU available)"
 authors = ["Ivan Okhotnikov <ivan.okhotnikov@onclusive.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
-jupyterlab = "3.6.5"
-notebook = "6.4.12"
-ipykernel = "6.25.0"
+python = "3.9.19"
+jupyterlab = "4.2.4"
+notebook = "7.2.1"
+ipykernel = "6.29.5"
 core = {path = "../../libs/core"}
 nlp = {path = "../../libs/nlp"}
 serving = {path = "../../libs/serving"}
-tracking = {path = "../../libs/tracking"}
 neptune-notebooks = "^0.9.3"
-matplotlib = "^3.7.2"
-seaborn = "^0.12.2"
+matplotlib = "^3.9.2"
+seaborn = "^0.13.2"
 torch = "1.12.1"
 elasticsearch = "^7.0.0"
 elasticsearch-dsl = "^7.0.0"
 pandasticsearch = {extras = ["pandas"], version = "0.6.0"}
+transformers = "4.43.2"
+numpy = "1.24.4"
+simplejson = "3.0.9"
 feature_store = {path = "../../libs/feature_store"}
 
 [build-system]

@@ -67,7 +67,7 @@ class OnclusiveModelOptimizer(ABC):
 
         Returns: None
         """
-        for (test_file, test_file_attribute_path) in zip(
+        for test_file, test_file_attribute_path in zip(
             test_files, test_file_attribute_paths
         ):
             self.tracked_model_version.upload_config_to_model_version(

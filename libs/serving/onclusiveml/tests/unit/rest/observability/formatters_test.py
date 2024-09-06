@@ -56,14 +56,13 @@ def test_onclusive_serving_json_access_formatter_format(
     monkeypatch, fmt, expected_formatted_message
 ):
     """Tests the OnclusiveServingJSONAccessFormatter `format` method."""
-    # patch Formatter.formatTime with dummy time stamp
+
     def dummy_format_time(self, record, datefmt=None):
+        # patch Formatter.formatTime with dummy time stamp
         return "dummy time stamp"
 
     monkeypatch.setattr(logging.Formatter, "formatTime", dummy_format_time)
-
     formatter = OnclusiveServingJSONAccessFormatter(service="test-service", fmt=fmt)
-
     test_record = logging.LogRecord(
         name="test logger",
         level=20,

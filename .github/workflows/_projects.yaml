@@ -15,6 +15,16 @@ on  :
         required: true
         type: string
         description: Component to build, test and deploy.
+      base-image:
+        required: false
+        default:
+        type: string
+        description: Base image ECR repo name.
+      base-region:
+        required: false
+        default: us-east-2
+        type: string
+        description: Base image ECR repo region.
       tag:
         required: true
         type: string
@@ -60,7 +70,7 @@ on  :
         description: Which EC2 instance type to provide as a self hosted runner. Only relevant if `runner-kind`='custom'.
       self-hosted-runner-ami:
         required: false
-        default: ami-078fc5aa9eaf20502
+        default: ami-046f0b2604eaac9c4
         type: string
         description: The EC2 AMI of the self hosted runner. Default value is in-house AL2 based AMI.
       self-hosted-runner-neuron:
@@ -133,7 +143,7 @@ on  :
 jobs:
   check-run-criteria:
     name: 'Run criteria: ${{ inputs.project }}-${{ inputs.component }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     outputs:
       run: ${{ inputs.release || steps.files-changed.outputs.this == 'true' }}
@@ -168,7 +178,7 @@ jobs:
 
   set-runner-specs:
     name: 'Resolve runner specs: ${{ inputs.project }}-${{ inputs.component }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, provision-customized-runner]
     if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' }}
@@ -233,6 +243,21 @@ jobs:
       - name: Get ECR credentials | ${{ inputs.environment }} ${{ inputs.project }}-${{ inputs.component }}
         run: make docker.login AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}"
 
+      - name: Get base image tag lookup | ${{ inputs.environment }} ${{ inputs.image }}
+        uses: haya14busa/action-cond@v1
+        id: get-base-image-tag-lookup
+        if: ${{ inputs.base-image != null }}
+        with:
+          cond: ${{ github.event_name == 'pull_request' }}
+          if_true: ""
+          if_false: v
+
+      - name: Get base image tag | ${{ inputs.environment }} ${{ inputs.image }}
+        id: get-base-image-tag
+        if: ${{ inputs.base-image != null }}
+        run: |
+          echo "::set-output name=tag::$(aws ecr describe-images --region us-east-1 --repository-name python-base --query "reverse(sort_by(imageDetails,& imagePushedAt))[*].imageTags[?starts_with(@, \`${{ steps.get-base-image-tag-lookup.outputs.value }}\`) == \`true\`][] | [0]")"
+
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         uses: nick-fields/retry@v3
         with:
@@ -244,6 +269,7 @@ jobs:
               AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
               DEPLOYMENT="${{ inputs.environment }}" \
               IMAGE_TAG="${{ inputs.tag }}" \
+              BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
               TARGET_BUILD_STAGE="development" \
               PLATFORM="linux/amd64" \
               ENVIRONMENT="ci" \
@@ -343,11 +369,12 @@ jobs:
         run: |
           make projects.build/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            DEPLOYMENT="${{ inputs.environment }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
+            BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
             TARGET_BUILD_STAGE="production" \
             PLATFORM="linux/amd64" \
             ENVIRONMENT="ci" \
-            DEPLOYMENT="${{ inputs.environment }}" \
             USE_DOCKER_CACHE="true"
 
       - name: Push Docker image with version | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
@@ -363,11 +390,12 @@ jobs:
 
   stop-customized-runner:
     name: 'Stop runner: ${{ inputs.project }}-${{ inputs.component }}'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     needs: [check-run-criteria, set-runner-specs, deploy]
     environment: ${{ inputs.environment }}
-    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }} # required to stop the runner even if the error happened in the previous jobs
+    # NOTE: required to stop the runner even if the error happened in the previous jobs
+    if: ${{ always() && needs.check-run-criteria.outputs.run == 'true' && inputs.runner-kind == 'custom' }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

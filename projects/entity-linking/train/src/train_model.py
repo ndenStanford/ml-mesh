@@ -51,7 +51,7 @@ def main() -> None:
     )
 
     logger.info("Pushing assets to neptune AI")
-    for (test_file, test_file_attribute_path) in [
+    for test_file, test_file_attribute_path in [
         (entity_linking_settings, model_card.model_test_files.inference_params),
     ]:
         model_version.upload_config_to_model_version(

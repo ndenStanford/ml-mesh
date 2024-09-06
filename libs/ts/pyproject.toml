@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "ts"
+version = "0.1.0"
+description = "Time series (Facebook's Kat's fork)"
+authors = ["Rene-Jean Corneille <rene-jean.corneille@onclusive.com>"]
+packages = [{include = "onclusiveml"}]
+
+[tool.poetry.dependencies]
+python = "3.9.19"
+attrs = "^21.2.0"
+deprecated = "^1.2.12"
+holidays = "0.24"
+numpy = "1.26.4"
+pandas = ">=2"
+packaging = "^23.1"
+python-dateutil = "^2.8.0"
+scikit-learn = "1.5.1"
+scipy = "^1.10.0"
+seaborn = "^0.13"
+statsmodels = "^0.14"
+parameterized = "0.9.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

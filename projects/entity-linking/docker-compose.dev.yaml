@@ -1,122 +1,6 @@
 ---
 
 services:
-  # =============================================
-  # INGEST
-  # =============================================
-
-  ingest:
-    volumes:
-      - type: bind
-        source: ingest/src
-        target: /projects/entity-linking/ingest/src
-      - type: bind
-        source: ${HOME}/data/models
-        target: /projects/entity-linking/ingest
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/ingest/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: entity-linking
-        COMPONENT: ingest
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, src.build_vector_store]
-    profiles: [ingest]
-    environment:
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
-      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
-      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/ingest/model_artifacts/index.txt}
-      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/ingest/model_artifacts/embeddings.pt}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  ingest-flush:
-    volumes:
-      - type: bind
-        source: ingest/src
-        target: /projects/entity-linking/ingest/src
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/ingest/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: entity-linking
-        COMPONENT: ingest
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, src.utils.flush]
-    profiles: [ingest]
-    environment:
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
-      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
-      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/ingest/model_artifacts/index.txt}
-      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/ingest/model_artifacts/embeddings.pt}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  ingest-download-embeddings:
-    volumes:
-      - type: bind
-        source: ingest/src
-        target: /projects/entity-linking/ingest/src
-      - type: bind
-        source: ${HOME}/data
-        target: /projects/entity-linking/ingest
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, src.download_embeddings]
-    profiles: [ingest]
-    environment:
-      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      NEPTUNE_CLIENT_MODE: read-only
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
-      NEPTUNE_MODEL_VERSION_ID: EL-TRAINED-22
-      ONCLUSIVEML_SERVING_MODEL_DIRECTORY: models/EL-TRAINED-22
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  ingest-debug:
-    volumes:
-      - type: bind
-        source: ingest/src
-        target: /projects/entity-linking/ingest/src
-      - type: bind
-        source: ${HOME}/data/models
-        target: /projects/entity-linking/ingest
-    build:
-      context: ../../
-      dockerfile: projects/entity-linking/ingest/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-debugger}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: entity-linking
-        COMPONENT: ingest
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-ingest:${IMAGE_TAG:-latest}
-    command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.build_vector_store]
-    ports:
-      - 5678:5678
-    profiles: [debug]
-    environment:
-      NEPTUNE_PROJECT: onclusive/entity-linking
-      NEPTUNE_MODEL_ID: EL-TRAINED
-      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
-      INDEX_FILE: ${INDEX_FILE:-/projects/entity-linking/ingest/model_artifacts/index.txt}
-      EMBEDDINGS_FILE: ${EMBEDDINGS_FILE:-/projects/entity-linking/ingest/model_artifacts/embeddings.pt}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
 
   # =============================================
   # TRAIN
@@ -139,7 +23,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: entity-linking
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-train:${IMAGE_TAG:-latest}
     command: [python, -m, src.train_model]
     profiles: [train]
@@ -161,7 +45,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: entity-linking
         COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-train:${IMAGE_TAG:-latest}
     command: [python, -m, debugpy, --listen, 0.0.0.0:5678, --wait-for-client, -m, src.train_model]
     ports:
@@ -181,7 +65,7 @@ services:
         source: train
         target: /projects/entity-linking/train
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-train:${IMAGE_TAG:-latest}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -205,7 +89,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: entity-linking
         COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     deploy:
@@ -216,7 +100,10 @@ services:
               count: 1
               capabilities: [gpu]
     env_file: serve/config/dev.env
-    profiles: [serve, integration, functional, load]
+    profiles: [serve, integration, functional]
+    environment:
+      REDIS_CONNECTION_STRING: ${REDIS_CONNECTION_STRING}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${ONCLUSIVEML_NEPTUNE_API_TOKEN}
     ports:
       - 8000:8000
     volumes:
@@ -231,10 +118,10 @@ services:
       - onclusive-net
     healthcheck:
       test: [CMD, curl, -f, http://serve:8000/entity-linking/v1/ready]
-      interval: 60s
-      retries: 10
-      start_period: 30s
-      timeout: 300s
+      interval: 1m30s
+      retries: 3
+      start_period: 1m
+      timeout: 1m10s
 
   # utility service: downloading the trained model artifact that will be served
   serve-download-model:
@@ -274,7 +161,7 @@ services:
         target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
     env_file: serve/config/dev.env
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     networks:
@@ -293,13 +180,10 @@ services:
         source: serve/tests
         target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     profiles: [integration]
     env_file: serve/config/dev.env
     hostname: onclusiveml
-    depends_on:
-      serve:
-        condition: service_healthy
     networks:
       - onclusive-net
 
@@ -318,7 +202,7 @@ services:
         source: serve/tests
         target: /projects/entity-linking/serve/tests
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-serve:${IMAGE_TAG}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     deploy:
       resources:
         reservations:
@@ -335,7 +219,6 @@ services:
       serve:
         condition: service_healthy
 
-
   # =============================================
   # BACKFILL
   # =============================================
@@ -350,7 +233,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: entity-linking
         COMPONENT: backfill
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: backfill/src
@@ -387,7 +270,7 @@ services:
         source: backfill
         target: /projects/entity-linking/backfill
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/entity-linking-backfill:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
     profiles: [unit]
     environment:
       HOST: test.onclusive.com
@@ -440,7 +323,7 @@ services:
       - backfill-volume:/tmp/beam-artifact-staging
 
   jobserver:
-    image: apache/beam_flink1.16_job_server:2.49.0
+    image: apache/beam_flink1.16_job_server:2.58.0
     command:
       - --flink-master=jobmanager:8081
     ports:

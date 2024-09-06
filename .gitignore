@@ -17,6 +17,9 @@ projects/**/serve/models/
 # project component caches
 projects/**/**/projects
 
+# nltk files
+projects/**/serve/nltk_data/
+
 # test configurations for data lib
 test-config-dir/
 

@@ -1,7 +1,7 @@
 ARG AWS_ACCOUNT_ID
 ARG BASE_IMAGE_TAG
 
-FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/fastapi-serve:$BASE_IMAGE_TAG as builder
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/python-base:$BASE_IMAGE_TAG as builder
 
 ARG APP_NAME
 ARG APP_COMPONENT
@@ -16,7 +16,7 @@ WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" .${HOME}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
@@ -34,13 +34,15 @@ RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     poetry cache clear pypi --all -q && \
     chown -R "${USER}:users" "${HOME}"
 
+RUN eval "$(pyenv init --path)"
+
 USER ${USER}
 
 # --- production stage
 FROM builder as production
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -55,6 +57,6 @@ RUN poetry install --no-interaction --with dev
 USER ${USER}
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

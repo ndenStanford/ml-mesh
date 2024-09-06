@@ -19,39 +19,6 @@ updates:
   # DOCKER
   # ====================================
 
-  # fastapi-serve
-
-  - package-ecosystem: pip
-    directory: /docker/fastapi-serve
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "10:00"
-      timezone: "Europe/London"
-      day: "monday"
-
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
-  # kubeflow data science
-
-  - package-ecosystem: pip
-    directory: /docker/kubeflow-data-science
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "11:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
   # kubeflow torch cpu
 
   - package-ecosystem: pip
@@ -63,40 +30,6 @@ updates:
       time: "12:00"
       timezone: "Europe/London"
       day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-  # kubeflow jupyter
-
-  - package-ecosystem: pip
-    directory: /docker/kubeflow-jupyter
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "13:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
-  # neuron-compile
-
-  - package-ecosystem: pip
-    directory: /docker/neuron-compile
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "14:00"
-      timezone: "Europe/London"
-      day: "monday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
 
   # neuron-inference
 
@@ -106,7 +39,7 @@ updates:
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
-      time: "15:00"
+      time: "14:00"
       timezone: "Europe/London"
       day: "monday"
     ignore:
@@ -158,30 +91,30 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # gpu train
+  # beam-backfill
 
   - package-ecosystem: pip
-    directory: /docker/gpu-train
+    directory: /docker/beam-backfill
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
-      time: "19:00"
+      time: "18:00"
       timezone: "Europe/London"
       day: "monday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # dask base
+  # beam worker
 
   - package-ecosystem: pip
-    directory: /docker/dask-base
+    directory: /docker/beam-worker
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
-      time: "20:00"
+      time: "18:00"
       timezone: "Europe/London"
       day: "monday"
     ignore:
@@ -297,6 +230,36 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
+  # beam lib
+
+  - package-ecosystem: pip
+    directory: /libs/beam
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "03:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # queries lib
+
+  - package-ecosystem: pip
+    directory: /libs/queries
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "03:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
   # ====================================
   # PROJECTS
   # ====================================
@@ -346,7 +309,6 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-
   # SUMMARIZATION
 
   ## serve
@@ -357,23 +319,6 @@ updates:
     schedule:
       interval: "monthly"
       time: "07:00"
-      timezone: "Europe/London"
-      day: "tuesday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-
-  # GCH-SUMMARIZATION
-
-  ## train
-  - package-ecosystem: pip
-    directory: /projects/gch-summarization/train
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "08:00"
       timezone: "Europe/London"
       day: "tuesday"
     ignore:
@@ -396,31 +341,14 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # NER
-
-  ## compile
-
+  ## backfill
   - package-ecosystem: pip
-    directory: /projects/ner/compile
+    directory: /projects/entity-linking/backfill
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
-      time: "10:00"
-      timezone: "Europe/London"
-      day: "tuesday"
-    ignore:
-      - dependency-name: '*'
-        update-types: [version-update:semver-patch]
-
-  ## serve
-  - package-ecosystem: pip
-    directory: /projects/ner/serve
-    target-branch: develop
-    open-pull-requests-limit: 1
-    schedule:
-      interval: "monthly"
-      time: "11:00"
+      time: "09:00"
       timezone: "Europe/London"
       day: "tuesday"
     ignore:
@@ -429,19 +357,19 @@ updates:
 
   ## train
   - package-ecosystem: pip
-    directory: /projects/ner/train
+    directory: /projects/entity-linking/train
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
-      time: "12:00"
+      time: "09:00"
       timezone: "Europe/London"
       day: "tuesday"
     ignore:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
-  # Sentiment
+  # SENTIMENT
 
   ## compile
 
@@ -486,16 +414,224 @@ updates:
       - dependency-name: '*'
         update-types: [version-update:semver-patch]
 
+  ## backfill
+  - package-ecosystem: pip
+    directory: /projects/sentiment/backfill
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "15:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
   # IPTC
 
-  ## ingest
+  ## compile
   - package-ecosystem: pip
-    directory: /projects/iptc/ingest
+    directory: /projects/iptc/compile
     target-branch: develop
     open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
       time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## register
+  - package-ecosystem: pip
+    directory: /projects/iptc/register
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/iptc/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## train
+  - package-ecosystem: pip
+    directory: /projects/iptc/train
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # TOPIC
+
+  ## compile
+  - package-ecosystem: pip
+    directory: /projects/topic/compile
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## register
+  - package-ecosystem: pip
+    directory: /projects/topic/register
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/topic/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## train
+  - package-ecosystem: pip
+    directory: /projects/topic/train
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # IPTC-MULTI
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/iptc-multi/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # LSH
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/lsh/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  ## backfill
+  - package-ecosystem: pip
+    directory: /projects/lsh/backfill
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "16:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # TOPIC SUMMARIZATION
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/topic-summarization/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "07:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # TRANSLATION
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/translation/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "07:00"
+      timezone: "Europe/London"
+      day: "tuesday"
+    ignore:
+      - dependency-name: '*'
+        update-types: [version-update:semver-patch]
+
+  # TRANSCRIPT SEGMENTATION
+
+  ## serve
+  - package-ecosystem: pip
+    directory: /projects/transcript-segmentation/serve
+    target-branch: develop
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "monthly"
+      time: "07:00"
       timezone: "Europe/London"
       day: "tuesday"
     ignore:

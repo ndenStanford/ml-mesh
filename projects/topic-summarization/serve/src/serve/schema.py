@@ -1,4 +1,5 @@
 """Prediction data schemas."""
+
 # isort: skip_file
 
 # Internal libraries

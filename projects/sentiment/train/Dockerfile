@@ -7,20 +7,9 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/bin \
- && chown -R ${USER}:users /usr/local/lib \
- && chown -R ${USER}:users /usr/local/share
-
-USER app
+USER ${USER}
 
 # setup workspace
 WORKDIR "/"
@@ -48,7 +37,7 @@ FROM builder as production
 ENV PYTHONPATH=${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -59,6 +48,6 @@ WORKDIR "${HOME}"
 RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

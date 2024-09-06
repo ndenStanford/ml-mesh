@@ -7,7 +7,6 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
 
@@ -26,17 +25,14 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-USER root
+# switch user
+USER ${USER}
+
 
 RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
-
-RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
-
-# switch user
-USER ${USER}
 
 # --- production stage
 FROM builder as production
@@ -44,7 +40,7 @@ FROM builder as production
 ENV PYTHONPATH=${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -59,6 +55,6 @@ RUN poetry install --no-interaction --with dev
 USER ${USER}
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug
