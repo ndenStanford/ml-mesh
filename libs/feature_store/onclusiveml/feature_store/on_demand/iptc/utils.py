@@ -1,7 +1,9 @@
+# isort: skip_file
 """Feature registration utils."""
 
 # Standard Library
 import asyncio
+
 # from src.settings import PromptBackendAPISettings
 from typing import Dict
 
@@ -14,7 +16,7 @@ from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
-    CANDIDATE_DICT_FOURTH
+    CANDIDATE_DICT_FOURTH,
 )
 from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
@@ -146,6 +148,7 @@ def iptc_third_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Dat
     col_name = get_col_name(level)
     df[col_name] = features_df_with_label[col_name].astype(pd.StringDtype())
     return df
+
 
 def iptc_fourth_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
