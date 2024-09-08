@@ -185,6 +185,10 @@ jobs       :
             integration: false
             functional: false
 
+          - name: io
+            integration: true
+            functional: false
+
           - name: feature_store
             integration: false
 
@@ -193,6 +197,7 @@ jobs       :
 
           - name: ts
             integration: false
+
 
     with:
       lib: ${{ matrix.libs.name }}

@@ -1,5 +1,4 @@
 ---
-
 services:
   # =====================================================
   # FRONTEND
@@ -61,6 +60,7 @@ services:
   # =====================================================
   # BACKEND
   # =====================================================
+
   backend:
     build:
       context: ../../
@@ -88,9 +88,6 @@ services:
       - type: bind
         source: backend/tests
         target: /apps/prompt/backend/tests
-      - type: bind
-        source: ~/.aws/
-        target: /apps/prompt/backend/.aws/
     ports:
       - 4000:4000
     environment:
