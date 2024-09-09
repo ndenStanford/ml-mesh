@@ -1121,3 +1121,14 @@ ID_TO_LEVEL = {
     "20001130": 3,
     "20001131": 3,
 }
+
+NAME_MAPPING_DICT_FIRST = {
+    "arts, culture, entertainment and media": "arts, culture and entertainment",
+    "conflict, war and peace": "conflicts, war and peace",
+}
+
+NAME_MAPPING_DICT_SECOND = {
+    # Category: 'crime, law and justice'
+    "justice": "justice and rights",  # Renamed
+    "religious facility": "religious facilities",
+}

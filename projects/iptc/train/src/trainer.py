@@ -26,7 +26,13 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
-from src.class_dict import CLASS_DICT_SECOND, ID_TO_LEVEL, ID_TO_TOPIC
+from src.class_dict import (
+    CLASS_DICT_SECOND,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+    NAME_MAPPING_DICT_FIRST,
+    NAME_MAPPING_DICT_SECOND,
+)
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -59,6 +65,12 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.model_id = extract_model_id(tracked_model_specs.project)
         self.level = ID_TO_LEVEL[self.model_id]
         self.iptc_label = ID_TO_TOPIC[self.model_id]
+        if self.iptc_label in NAME_MAPPING_DICT_FIRST.keys():
+            filtered_value = NAME_MAPPING_DICT_FIRST[self.iptc_label]
+        elif self.iptc_label in NAME_MAPPING_DICT_SECOND.keys():
+            filtered_value = NAME_MAPPING_DICT_SECOND[self.iptc_label]
+        else:
+            filtered_value = self.iptc_label
         # Access the is_on_demand flag from data_fetch_params
         self.is_on_demand = data_fetch_params.is_on_demand
         # Update data_fetch_params dynamically
@@ -80,7 +92,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "feature_view_name": "iptc_second_level_feature_view",
                 "redshift_table": "iptc_second_level",
                 "filter_columns": ["topic_1"],
-                "filter_values": [self.iptc_label],
+                "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
@@ -92,7 +104,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "feature_view_name": "iptc_third_level_feature_view",
                 "redshift_table": "iptc_third_level",
                 "filter_columns": ["topic_2"],
-                "filter_values": [self.iptc_label],
+                "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
