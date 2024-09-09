@@ -28,7 +28,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     """API configuration."""
 
     PROMPT_API: str = "http://prompt-backend:4000"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-fS9sLj7vjCu4hlz6ADbnV1DhRpdufXrE"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
