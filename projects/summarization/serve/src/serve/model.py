@@ -178,7 +178,6 @@ class SummarizationServedModel(ServedModel):
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
         try:
-            # content = eval(content)
             if content[0] == "[" and content[-1] == "]":
                 content = eval(content)
             if isinstance(content, list):
