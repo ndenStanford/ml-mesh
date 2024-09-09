@@ -164,16 +164,22 @@ class SummarizationServedModel(ServedModel):
         """
         parameters = payload.parameters
         content = payload.attributes.content
-        input_language = LanguageIso.from_language_iso(
-            payload.parameters.input_language
-        )
+        if payload.parameters.input_language is None:
+            input_language = self._identify_language(content)
+            logger.debug(f"Detected content language: {input_language}")
+
+        else:
+            input_language = LanguageIso.from_language_iso(
+                payload.parameters.input_language
+            )
         output_language = LanguageIso.from_language_iso(
             payload.parameters.output_language
         )
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
         try:
-            content = eval(content)
+            if content[0] == "[" and content[-1] == "]":
+                content = eval(content)
             if isinstance(content, list):
                 multiple_article_summary = True
                 content = {
@@ -198,7 +204,7 @@ class SummarizationServedModel(ServedModel):
                 summary_type=parameters.summary_type,
                 multiple_article_summary=multiple_article_summary,
             )
-        except LanguageNotSupportedException as e:
+        except Exception as e:
             logger.error(f"Summarization language {input_language} not supported.")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
