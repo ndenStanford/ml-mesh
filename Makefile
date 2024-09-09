@@ -70,15 +70,20 @@ ALL_LIBS:= \
 
 # libraries included in sonarqube coverage tests
 COVERED_LIBS:= \
+	beam \
 	compile \
 	core \
-	data \
+	feature_store \
+	hashing \
+	io \
+	llms \
 	models \
 	nlp \
+	queries \
 	serving \
 	tracking \
-	hashing \
-	llms
+	ts
+
 
 # all projects
 ALL_PROJECTS:= \

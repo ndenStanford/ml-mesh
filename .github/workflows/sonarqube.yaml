@@ -4,6 +4,7 @@ on  :
   push:
     branches:
       - develop
+      - bugfix/sonarqube-checks-failing
 jobs:
   build:
     name: Build
