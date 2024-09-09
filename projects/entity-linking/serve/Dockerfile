@@ -16,9 +16,6 @@ RUN mkdir -p "${HOME}" && \
 
 WORKDIR "/"
 
-# hadolint ignore=DL3009,DL3015,DL3008
-RUN apt-get update && apt-get install -y curl
-
 
 # install - poetry requirements
 # hadolint ignore=DL3045
