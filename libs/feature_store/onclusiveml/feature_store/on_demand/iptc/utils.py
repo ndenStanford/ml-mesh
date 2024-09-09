@@ -28,7 +28,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     """API configuration."""
 
     PROMPT_API: str = "http://prompt-backend:4000"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-fS9sLj7vjCu4hlz6ADbnV1DhRpdufXrE"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
@@ -134,6 +134,17 @@ def iptc_second_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Da
 def iptc_third_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
     level = 3
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df, level))
+
+    df = pd.DataFrame()
+    col_name = get_col_name(level)
+    df[col_name] = features_df_with_label[col_name].astype(pd.StringDtype())
+    return df
+
+
+def iptc_fourth_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
+    """Wrapper function to run the async enrichment."""
+    level = 4
     features_df_with_label = asyncio.run(enrich_dataframe(features_df, level))
 
     df = pd.DataFrame()
