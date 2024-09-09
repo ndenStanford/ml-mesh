@@ -72,7 +72,6 @@ ALL_LIBS:= \
 COVERED_LIBS:= \
 	compile \
 	core \
-	beam \
 	feature_store \
 	models \
 	nlp \
