@@ -218,6 +218,33 @@ def test_served_topic_model_predict_skip_trend(
         assert test_actual_predict_output.attributes.topic is not None
 
 
+@freeze_time("2024-03-15 15:01:00", tick=True)
+@pytest.mark.order(7)
+def test_served_topic_model_predict_sentiment(test_inference_params, test_new_es_index):
+    """Tests ServedTopicModel's predict method without trend detection."""
+    served_topic_model = ServedTopicModel()
+    served_topic_model.load()
+    with patch.object(
+        served_topic_model.trend_detector, "es_index", new=test_new_es_index
+    ), patch.object(
+        served_topic_model.document_collector, "es_index", new=test_new_es_index
+    ), patch.object(
+        served_topic_model.impact_quantifier, "es_index", new=test_new_es_index
+    ):
+
+        test_input = PredictRequestSchema.from_data(
+            namespace=settings.model_name,
+            parameters=test_inference_params,
+            attributes={
+                "query_string": """((amex OR "american express" OR americanexpress) AND NOT ("nyse amex" OR "stade amex" OR abonnez-vous OR "American Express Global Business Travel" OR "american express gbt" OR "amex gbt" OR "amex global business travel" OR "William Muller" OR Sarrebourg )) OR "aXHH-Hotel hub" OR Euraxo OR aXcent OR "Carte Optima" OR "Carte SBS" OR "Carte Blue" OR Uvet OR Mobilextend OR Resoclub OR Resoclick OR Pcard OR "Nathalie Estrada" OR "Eric Tredjeu" OR "Sophie Janvier" OR "Cathy Notlet" OR "Claudine Hameau" OR "Stéphanie Laroque" OR "PF Brezes" OR "Hervé Sedky" OR "Gabrielle Elbaz" OR "Yves Pechon" OR  "Christophe Haviland" OR "Espace Voyages professionnels" OR Tripcase""",  # noqa: E501
+                "topic_id": 19,
+                "sentiment_impact_flag": True,
+            },
+        )
+        test_actual_predict_output = served_topic_model.predict(test_input)
+        assert test_actual_predict_output.attributes.topic is not None
+
+
 @pytest.mark.order(8)
 def test_served_topic_model_predict_sample_content(
     test_predict_input, test_inference_params

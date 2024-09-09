@@ -110,11 +110,12 @@ class OnclusiveBaseSettings(BaseSettings):
                 )
             )
         except ValidationError as e:
-            # patch error locations, replacing the field name by the expected environment variable
-            env_prefix: str = __pydantic_self__.__class__.model_config["env_prefix"]
             message: str = "Missing environment variables"
             env_vars: List[str] = []
             for err in e.errors():
+                env_prefix: str = __pydantic_self__._get_base_class(
+                    err["loc"][0]
+                ).model_config["env_prefix"]
                 env_var = f"{env_prefix.upper()}{err['loc'][0].upper()}"
                 env_vars.append(env_var)
             raise ValueError(f"{message}: {str(env_vars)}")
