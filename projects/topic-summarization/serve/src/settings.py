@@ -46,6 +46,9 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
     INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
     GPT_TOPIC_ALIAS: str = "ml-topic-summarization-citations-gpt"
     GPT_TOPIC_WITH_ENTITY_ALIAS: str = "ml-topic-summarization-entity-focus-gpt"
+    GPT_TOPIC_WITH_ENTITY_SENTIMENT_ALIAS: str = (
+        "ml-topic-summarization-entity-sentiment-impact-citation"
+    )
 
     CLAUDE_SUMMARY_QUALITY_ALIAS: str = "ml-topic-summarization-summary-quality"
     GPT_SUMMARY_ALIAS: str = "ml-topic-summarization-multi-articles-summary-gpt"
@@ -89,6 +92,14 @@ class PromptBackendAPISettings(OnclusiveFrozenSettings):
             ]
         )
     )
+
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT: Dict[str, str] = TOPIC_RESPONSE_SCHEMA.copy()
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['sentiment'] = (
+        "The overall sentiment focusing on given entity, based on all the input articles"
+    )
+    TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT['entity-impact'] = (
+        "The overall impact focusing on given entity, based on all the input articles"
+    )
     # fmt: on
     SUMMARY_RESPONSE_SCHEMA: Dict[str, str] = {
         "summary": "Your synthesized summary based on all the summaries I provided",
@@ -131,7 +142,7 @@ class TrendSummarizationSettings(OnclusiveBaseSettings):
     """Trend Summarization Settings."""
 
     # No of documents to collect for summarization
-    NUM_DOCUMENTS: int = 5
+    NUM_DOCUMENTS: int = 25
     # Lookback days to assess trend
     TREND_LOOKBACK_DAYS: int = 14
     # Number of documents per interval

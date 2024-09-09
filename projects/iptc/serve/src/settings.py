@@ -33,11 +33,11 @@ class IPTCTrackedModelSettings(TrackedModelSettings):
 
 
 class GlobalSettings(
+    ServerModelSettings,
+    OnclusiveLogSettings,
     TrackedGithubActionsSpecs,
     TrackedImageSpecs,
-    ServerModelSettings,
     IPTCTrackedModelSettings,
-    OnclusiveLogSettings,
 ):
     """Global server settings."""
 
