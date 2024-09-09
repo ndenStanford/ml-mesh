@@ -25,18 +25,18 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
+      ONCLUSIVEML_NEPTUNE_PROJECT: ${ONCLUSIVEML_NEPTUNE_PROJECT}
+      ONCLUSIVEML_NEPTUNE_MODEL: ${ONCLUSIVEML_NEPTUNE_MODEL}
       NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
-    hostname: onclusive-ml
     depends_on:
       prompt-backend:
         condition: service_healthy
+    hostname: onclusive-ml
     networks: [onclusive-net]
 
   train-debug:
@@ -77,8 +77,8 @@ services:
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
+      ONCLUSIVEML_NEPTUNE_PROJECT: ${ONCLUSIVEML_NEPTUNE_PROJECT}
+      ONCLUSIVEML_NEPTUNE_MODEL: ${ONCLUSIVEML_NEPTUNE_MODEL}
       NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       NEPTUNE_NAME: ${NEPTUNE_NAME}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
