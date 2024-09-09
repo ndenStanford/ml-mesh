@@ -16,7 +16,6 @@ RUN mkdir -p "${HOME}" && \
 
 WORKDIR "/"
 
-
 # install - poetry requirements
 # hadolint ignore=DL3045
 COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
