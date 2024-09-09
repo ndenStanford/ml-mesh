@@ -57,6 +57,7 @@ ALL_DOCKER_IMGS:= \
 ALL_LIBS:= \
 	compile \
 	core \
+	io \
 	data \
 	models \
 	nlp \
@@ -71,13 +72,15 @@ ALL_LIBS:= \
 COVERED_LIBS:= \
 	compile \
 	core \
-	data \
+	feature_store \
 	models \
 	nlp \
+	queries \
 	serving \
 	tracking \
 	hashing \
 	llms
+
 
 # all projects
 ALL_PROJECTS:= \
