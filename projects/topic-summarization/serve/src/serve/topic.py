@@ -93,14 +93,14 @@ class TopicHandler:
         self,
         articles: List[str],
         entity_list: Optional[str] = None,
-        sentiment_flag: Optional[bool] = False,
+        sentiment_impact_flag: Optional[bool] = False,
     ) -> Dict[str, str]:
         """LLM inference function for the articles.
 
         Args:
             articles(list): list of str
             entity_list(Optional[str]): string representing a list of entities in the query
-            sentiment_flag (Optional[bool]): boolean query for detecting sentiment or not
+            sentiment_impact_flag (Optional[bool]): boolean query for detecting sentiment or not
         Output:
             topic summary & impact(dict): dict[str,str]
         """
@@ -112,7 +112,7 @@ class TopicHandler:
         llm_default_model = settings.DEFAULT_MODEL
 
         if entity_list:
-            if sentiment_flag:
+            if sentiment_impact_flag:
                 topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_SENTIMENT_ALIAS
                 output_schema = settings.TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT
             else:
@@ -340,7 +340,7 @@ class TopicHandler:
         self,
         article: List[str],
         boolean_query: Optional[str] = None,
-        sentiment_flag: Optional[bool] = False,
+        sentiment_impact_flag: Optional[bool] = False,
     ) -> Tuple[
         Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
         Union[bool, None],
@@ -350,7 +350,7 @@ class TopicHandler:
         Args:
             article(list): list of str
             boolean_query(Optional[bool]): boolean query
-            sentiment_flag (Optional[bool]): boolean query for detecting sentiment or not
+            sentiment_impact_flag (Optional[bool]): boolean query for detecting sentiment or not
         Output:
             merged_result (dict): dict
         """
@@ -361,7 +361,7 @@ class TopicHandler:
         else:
             entity_list = None
 
-        topic_result = self.topic_inference(article, entity_list, sentiment_flag)
+        topic_result = self.topic_inference(article, entity_list, sentiment_impact_flag)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article, entity_list)
         topic_summary_quality = self.summary_quality(

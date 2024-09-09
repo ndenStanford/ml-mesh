@@ -107,7 +107,7 @@ class ServedTopicModel(ServedModel):
         save_report_dynamodb = inputs.save_report_dynamodb
         query_all_doc_count = None
         query_topic_doc_count = None
-        sentiment_flag = inputs.sentiment_flag
+        sentiment_impact_flag = inputs.sentiment_impact_flag
         if not content:
             topic_id = inputs.topic_id
             query_profile = self.get_query_profile(inputs)
@@ -181,7 +181,7 @@ class ServedTopicModel(ServedModel):
                     topic,
                     topic_summary_quality,
                 ) = self.model_aggregate_and_handle_exceptions(
-                    content, boolean_query, sentiment_flag
+                    content, boolean_query, sentiment_impact_flag
                 )
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
@@ -192,7 +192,7 @@ class ServedTopicModel(ServedModel):
                 topic_summary_quality = None
         else:
             topic, topic_summary_quality = self.model_aggregate_and_handle_exceptions(
-                content, sentiment_flag
+                content, sentiment_impact_flag
             )
             impact_category = None
         if save_report_dynamodb:
@@ -240,7 +240,7 @@ class ServedTopicModel(ServedModel):
         self,
         content: List[str],
         boolean_query: Optional[str] = None,
-        sentiment_flag: Optional[bool] = False,
+        sentiment_impact_flag: Optional[bool] = False,
     ) -> Tuple[
         Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
         Union[bool, None],
@@ -250,11 +250,11 @@ class ServedTopicModel(ServedModel):
         Args:
             content (List[str]): article content.
             boolean_query (Optional[str]): boolean query
-            sentiment_flag (Optional[bool]): boolean query for detecting sentiment or not
+            sentiment_impact_flag (Optional[bool]): boolean query for detecting sentiment or not
         """
         try:
             topic, topic_summary_quality = self.model.aggregate(
-                content, boolean_query, sentiment_flag
+                content, boolean_query, sentiment_impact_flag
             )
             return topic, topic_summary_quality
         except (

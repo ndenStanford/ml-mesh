@@ -238,7 +238,7 @@ def test_served_topic_model_predict_sentiment(test_inference_params, test_new_es
             attributes={
                 "query_string": """((amex OR "american express" OR americanexpress) AND NOT ("nyse amex" OR "stade amex" OR abonnez-vous OR "American Express Global Business Travel" OR "american express gbt" OR "amex gbt" OR "amex global business travel" OR "William Muller" OR Sarrebourg )) OR "aXHH-Hotel hub" OR Euraxo OR aXcent OR "Carte Optima" OR "Carte SBS" OR "Carte Blue" OR Uvet OR Mobilextend OR Resoclub OR Resoclick OR Pcard OR "Nathalie Estrada" OR "Eric Tredjeu" OR "Sophie Janvier" OR "Cathy Notlet" OR "Claudine Hameau" OR "Stéphanie Laroque" OR "PF Brezes" OR "Hervé Sedky" OR "Gabrielle Elbaz" OR "Yves Pechon" OR  "Christophe Haviland" OR "Espace Voyages professionnels" OR Tripcase""",  # noqa: E501
                 "topic_id": 19,
-                "sentiment_flag": True,
+                "sentiment_impact_flag": True,
             },
         )
         test_actual_predict_output = served_topic_model.predict(test_input)
