@@ -73,7 +73,7 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [backend, functional]
     healthcheck:
       test: [CMD-SHELL, sleep 50s || exit 1]
@@ -96,12 +96,12 @@ services:
       PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID-:}
       PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY-:}
       DOCS_URL: /docs
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
       VALIDATE_PROMPT_INJECTION: true
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       dynamodb:
         condition: service_healthy
@@ -136,7 +136,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
@@ -215,7 +214,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       backend:
@@ -261,7 +259,6 @@ services:
       REDIS_CONNECTION_STRING: redis://redisdb:6379
       DYNAMODB_HOST: http://dynamodb:8000
       BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-      AWS_PROFILE: dev
       VALIDATE_PROMPT_INJECTION: true
     depends_on:
       dynamodb:
