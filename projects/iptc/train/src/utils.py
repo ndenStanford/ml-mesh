@@ -1,11 +1,9 @@
 """Utility functions."""
 
 # Standard Library
-import logging
 import re
 
 # 3rd party libraries
-# 3rd party libraries pd
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 # Source
