@@ -3,6 +3,7 @@
 # 3rd party libraries
 import pytest
 from pydantic import ValidationError
+from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseModel, OnclusiveBaseSettings
@@ -13,6 +14,24 @@ class TestSettings(OnclusiveBaseSettings):
 
     setting1: str
     setting2: int
+
+
+class TestSettingsBase1(OnclusiveBaseSettings):
+    """Test settings."""
+
+    s1: str
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_test_base1_")
+
+
+class TestSettingsBase2(OnclusiveBaseSettings):
+    """Test settings."""
+
+    s2: str
+    model_config = SettingsConfigDict(env_prefix="onclusiveml_test_base2_")
+
+
+class TestSettings2(TestSettingsBase1, TestSettingsBase2):
+    """Test settings inheritence."""
 
 
 class TestModel(OnclusiveBaseModel):
@@ -76,3 +95,14 @@ def test_model_type_validation():
     """Test object modified behaviour."""
     with pytest.raises(ValidationError):
         _ = TestModel(attribute1="a", attribute2="a")
+
+
+def test_missing_settings_with_multiple_base_classes():
+    """Test settings missing variable."""
+    with pytest.raises(ValueError) as excinfo:
+        _ = TestSettings2()
+
+    assert (
+        str(excinfo.value)
+        == "Missing environment variables: ['ONCLUSIVEML_TEST_BASE2_S2', 'ONCLUSIVEML_TEST_BASE1_S1']"
+    )
