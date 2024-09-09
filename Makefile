@@ -57,6 +57,7 @@ ALL_DOCKER_IMGS:= \
 ALL_LIBS:= \
 	compile \
 	core \
+	io \
 	data \
 	models \
 	nlp \
