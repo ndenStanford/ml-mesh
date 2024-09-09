@@ -40,6 +40,9 @@ class TopicHandler:
         "low": ImpactCategoryLabel.LOW,
         "medium": ImpactCategoryLabel.MID,
         "high": ImpactCategoryLabel.HIGH,
+        "low impact": ImpactCategoryLabel.LOW,
+        "medium impact": ImpactCategoryLabel.MID,
+        "high impact": ImpactCategoryLabel.HIGH,
     }
 
     def call_api(
@@ -87,13 +90,17 @@ class TopicHandler:
         return q
 
     def topic_inference(
-        self, articles: List[str], entity_list: Optional[str] = None
+        self,
+        articles: List[str],
+        entity_list: Optional[str] = None,
+        sentiment_impact_flag: Optional[bool] = False,
     ) -> Dict[str, str]:
         """LLM inference function for the articles.
 
         Args:
             articles(list): list of str
             entity_list(Optional[str]): string representing a list of entities in the query
+            sentiment_impact_flag (Optional[bool]): boolean query for detecting sentiment or not
         Output:
             topic summary & impact(dict): dict[str,str]
         """
@@ -105,10 +112,15 @@ class TopicHandler:
         llm_default_model = settings.DEFAULT_MODEL
 
         if entity_list:
-            topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_ALIAS
+            if sentiment_impact_flag:
+                topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_SENTIMENT_ALIAS
+                output_schema = settings.TOPIC_RESPONSE_SCHEMA_WITH_SENTIMENT
+            else:
+                topic_alias_gpt = settings.GPT_TOPIC_WITH_ENTITY_ALIAS
+                output_schema = settings.TOPIC_RESPONSE_SCHEMA
             input_dict = {
                 "input": {"articles": processed_article, "entity_list": entity_list},
-                "output": settings.TOPIC_RESPONSE_SCHEMA,
+                "output": output_schema,
             }
         else:
             topic_alias_gpt = settings.GPT_TOPIC_ALIAS
@@ -272,11 +284,18 @@ class TopicHandler:
                 if category not in final_topic:
                     final_topic[category] = {}
                 final_topic[category][suffix] = value
+            elif "-" in key:
+                prefix, suffix = key.split("-")
+                category = prefix + "_" + suffix
+                if category not in final_topic:
+                    final_topic[category] = value
             else:
                 category = key
                 if category not in final_topic and value != "N/A":
-                    final_topic[category] = {"summary": value}
+                    final_topic[category] = value
         for key in final_topic:
+            if not isinstance(final_topic[key], dict):
+                continue
             impact_value = final_topic[key]["impact"].lower()
             final_topic[key]["impact"] = self.impact_map[impact_value]
 
@@ -318,7 +337,10 @@ class TopicHandler:
             return not_different_themes and entities_related
 
     def aggregate(
-        self, article: List[str], boolean_query: Optional[str] = None
+        self,
+        article: List[str],
+        boolean_query: Optional[str] = None,
+        sentiment_impact_flag: Optional[bool] = False,
     ) -> Tuple[
         Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
         Union[bool, None],
@@ -328,6 +350,7 @@ class TopicHandler:
         Args:
             article(list): list of str
             boolean_query(Optional[bool]): boolean query
+            sentiment_impact_flag (Optional[bool]): boolean query for detecting sentiment or not
         Output:
             merged_result (dict): dict
         """
@@ -338,7 +361,7 @@ class TopicHandler:
         else:
             entity_list = None
 
-        topic_result = self.topic_inference(article, entity_list)
+        topic_result = self.topic_inference(article, entity_list, sentiment_impact_flag)
         topic_final_result = self.post_process(topic_result)
         summary_result = self.summary_inference(article, entity_list)
         topic_summary_quality = self.summary_quality(

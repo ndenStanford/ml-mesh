@@ -19,7 +19,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: train
-        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-train:${IMAGE_TAG}
     command: [python, -m, src.train_model]
     profiles: [train]
@@ -66,7 +66,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: register
-        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     volumes:
       - type: bind
         source: register/src
@@ -115,7 +115,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: compile
-        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
     command: [python, -m, src.compile_model]
     profiles: [compile, unit, integration, pipeline]
@@ -232,7 +232,7 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         PROJECT: iptc
         COMPONENT: serve
-        BASE_IMAGE_TAG: v24.9.1-pre.6ddcfa9f
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-serve:${IMAGE_TAG}
     command: [python, -m, src.serve.__main__]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
