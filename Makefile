@@ -75,7 +75,6 @@ COVERED_LIBS:= \
 	core \
 	feature_store \
 	hashing \
-	io \
 	llms \
 	models \
 	nlp \
