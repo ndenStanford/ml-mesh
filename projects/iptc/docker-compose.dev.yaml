@@ -34,6 +34,9 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
     hostname: onclusive-ml
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     networks: [onclusive-net]
 
   train-debug:
@@ -59,6 +62,9 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
