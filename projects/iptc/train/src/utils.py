@@ -10,9 +10,6 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from src.class_dict import CLASS_DICT_FIRST, CLASS_DICT_SECOND, CLASS_DICT_THIRD
 
 
-logging.basicConfig(level=logging.INFO)
-
-
 def compute_metrics(pred):  # type: ignore[no-untyped-def]
     """Compute metrics function for binary classification."""
     labels = pred.label_ids

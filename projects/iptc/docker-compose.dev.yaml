@@ -172,7 +172,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     ports:
       - 4000:4000
     volumes:
@@ -214,7 +214,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -233,7 +233,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
