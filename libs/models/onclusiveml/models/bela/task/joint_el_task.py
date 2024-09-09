@@ -657,7 +657,11 @@ class JointELTask(LightningModule):
         # compute scores for positive entities
         pos_scores = self.sim_score(flat_mentions_repr, entities_repr)
         # retrieve candidates indices
-        (_, neg_cand_indices, neg_cand_repr,) = self.faiss_index.search_and_reconstruct(
+        (
+            _,
+            neg_cand_indices,
+            neg_cand_repr,
+        ) = self.faiss_index.search_and_reconstruct(
             flat_mentions_repr.detach().cpu().numpy().astype(np.float32),
             self.n_retrieve_candidates,
         )

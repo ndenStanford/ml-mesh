@@ -7,9 +7,9 @@ import logging
 import apache_beam as beam
 
 # Internal libraries
+from onclusiveml.beam.settings import PipelineSettings
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.base.pydantic import cast
-from onclusiveml.data.beam.settings import PipelineSettings
 
 # Source
 from src.backfill.pipeline import get_pipeline

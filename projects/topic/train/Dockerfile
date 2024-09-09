@@ -7,18 +7,7 @@ ARG PROJECT
 ARG COMPONENT
 ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
 
-ENV USER=app
 ENV HOME="${PROJECT_DIR}"
-
-# create non root user
-RUN useradd -l -M -s /bin/bash -N -u 1000 app \
- && mkdir -p "${HOME}" \
- && mkdir -p "${POETRY_HOME}" \
- && chown -R ${USER}:users "${HOME}" \
- && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/bin \
- && chown -R ${USER}:users /usr/local/lib \
- && chown -R ${USER}:users /usr/local/share
 
 # setup workspace
 WORKDIR "/"
@@ -43,26 +32,20 @@ RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/artifacts && \
     poetry cache clear pypi --all -q
 
-RUN sed -i '/from umap import UMAP/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/_bertopic.py && \
-    sed -i 's/: UMAP//g' /usr/local/lib/python3.8/site-packages/bertopic/_bertopic.py && \
-    sed -i ':a;N;$!ba;s/or[[:space:]]\+UMAP([^)]\+self\.low_memory)//' /usr/local/lib/python3.8/site-packages/bertopic/_bertopic.py && \
-    sed -i '/from umap import UMAP/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_topics.py && \
-    sed -i '/embeddings = UMAP(n_neighbors=2, n_components=2, metric='"'"'hellinger'"'"', random_state=42).fit_transform(embeddings)/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_topics.py && \
-    sed -i '/embeddings = UMAP(n_neighbors=2, n_components=2, metric='"'"'cosine'"'"', random_state=42).fit_transform(embeddings)/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_topics.py && \
-    sed -i '/from umap import UMAP/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_hierarchical_documents.py && \
-    sed -i '/umap_model = UMAP(n_neighbors=10, n_components=2, min_dist=0.0, metric='"'"'cosine'"'"').fit(embeddings_to_reduce)/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_hierarchical_documents.py && \
-    sed -i 's/embeddings_2d = umap_model.embedding_/pass/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_hierarchical_documents.py && \
-    sed -i '/from umap import UMAP/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_documents.py && \
-    sed -i '/umap_model = UMAP(n_neighbors=10, n_components=2, min_dist=0.0, metric='"'"'cosine'"'"').fit(embeddings_to_reduce)/s/^/#/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_documents.py && \
-    sed -i 's/embeddings_2d = umap_model.embedding_/pass/' /usr/local/lib/python3.8/site-packages/bertopic/plotting/_documents.py
+ARG BERTOPIC_PATH=/pyenv/versions/3.9.19/lib/python3.9/site-packages/bertopic
 
+COPY "${HOME}/modify_bertopic_files.sh" "/usr/local/bin/modify_bertopic_files.sh"
+
+# modify bertopic files
+RUN chmod +x /usr/local/bin/modify_bertopic_files.sh && \
+    /usr/local/bin/modify_bertopic_files.sh $BERTOPIC_PATH
 
 # --- production stage
 FROM builder as production
 
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 # install development dependencies
 RUN poetry install \
@@ -78,9 +61,9 @@ RUN poetry install \
 
 COPY --chown=${USER}:users "${HOME}/tests" ./tests
 
-USER app
+USER ${USER}
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

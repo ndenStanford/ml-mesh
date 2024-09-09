@@ -5,18 +5,19 @@ FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/gpu-base:$BASE_IMAGE_TAG 
 
 ARG PROJECT
 ARG COMPONENT
-ARG PROJECT_DIR="projects/${PROJECT}/${COMPONENT}"
+ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
 ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 
-# create non root user
+# create non root user (currently not provided in gpu base)
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
  && mkdir -p "${HOME}" \
  && mkdir -p "${POETRY_HOME}" \
  && chown -R ${USER}:users "${HOME}" \
  && chown -R ${USER}:users "${POETRY_HOME}" \
- && chown -R ${USER}:users /usr/local/
+ && chown -R ${USER}:users /usr/local/ \
+ && chown -R ${USER}:users /pyenv/
 
 USER app
 
@@ -48,7 +49,7 @@ FROM builder as production
 ENV PYTHONPATH=${HOME}
 
 # --- test build stage
-FROM builder as development
+FROM production as development
 
 WORKDIR "/"
 
@@ -59,6 +60,6 @@ WORKDIR "${HOME}"
 RUN poetry install --no-interaction --with dev
 
 # --- debugger stage
-FROM builder as debugger
+FROM development as debugger
 
 RUN poetry install --no-interaction --with debug

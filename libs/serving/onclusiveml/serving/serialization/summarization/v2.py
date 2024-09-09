@@ -11,7 +11,7 @@ class PredictRequestAttributeSchemaV2(JsonApiSchema):
     """Prediction request data.
 
     Attributes:
-        content (str):
+        content (str): Content for prediction.
     """
 
     content: str = ""

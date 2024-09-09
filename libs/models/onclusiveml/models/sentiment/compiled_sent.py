@@ -157,9 +157,9 @@ class CompiledSentiment:
         sentiment_result["positive_prob"] = agg_sentiment_probs[2]
 
         if entities is not None:
-            entity_sentiment: List[
-                Dict[str, Union[str, List[Any]]]
-            ] = self._add_entity_sentiment(list_sentences, sentiment_result, entities)
+            entity_sentiment: List[Dict[str, Union[str, List[Any]]]] = (
+                self._add_entity_sentiment(list_sentences, sentiment_result, entities)
+            )
             sentiment_result["entities"] = entity_sentiment
 
         return sentiment_result
@@ -184,11 +184,11 @@ class CompiledSentiment:
         val = (
             "positive"
             if (pos > neg) and (pos > neu)
-            else "neutral"
-            if (neu > neg) and (neu > pos)
-            else "negative"
-            if (neg > pos) and (neg > neu)
-            else "neutral"
+            else (
+                "neutral"
+                if (neu > neg) and (neu > pos)
+                else "negative" if (neg > pos) and (neg > neu) else "neutral"
+            )
         )
         return val
 

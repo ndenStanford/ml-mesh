@@ -4,15 +4,15 @@
 from functools import lru_cache
 
 # Internal libraries
-from onclusiveml.core.base import OnclusiveBaseSettings
-from onclusiveml.data.beam.settings import (
+from onclusiveml.beam.settings import (
     EnrichmentPipelineSettings,
     PipelineSettings,
 )
-from onclusiveml.data.beam.transforms.io.kafka.settings import (
+from onclusiveml.beam.transforms.io.kafka.settings import (
     KafkaConsumerSettings,
     KafkaProducerSettings,
 )
+from onclusiveml.core.base import OnclusiveBaseSettings
 
 
 class GlobalSettings(

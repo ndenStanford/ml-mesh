@@ -1,4 +1,5 @@
 """Prediction model tests."""
+
 # isort: skip_file
 from unittest.mock import patch
 

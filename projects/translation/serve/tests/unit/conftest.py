@@ -15,9 +15,6 @@ from src.serve.model import TranslationModel
 from src.settings import get_settings
 
 
-settings = get_settings()
-
-
 @pytest.fixture(scope="function")
 def settings():
     """Settings fixture."""
@@ -34,7 +31,7 @@ def translation_model(settings) -> FastAPI:
 @pytest.fixture(scope="function")
 def model_server(settings, translation_model) -> FastAPI:
     """Server fixture."""
-    return ModelServer(configuration=settings, model=translation_model)
+    return ModelServer(configuration=get_settings(), model=translation_model)
 
 
 @pytest.fixture

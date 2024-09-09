@@ -6,9 +6,10 @@ authors = ["Nutch <nutch.den@onclusive.com>"]
 packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.8.16"
+python = "3.9.19"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
+compile = {path = "../../../libs/compile"}
 sentencepiece = "^0.1.99"
 protobuf = "^3.20"
 
@@ -21,8 +22,7 @@ debugpy = "1.8.1"
 [[tool.poetry.source]]
 name = "aws-neuron"
 url = "https://pip.repos.neuron.amazonaws.com/"
-default = false
-secondary = true
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
