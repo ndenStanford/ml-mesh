@@ -64,6 +64,7 @@ class Topic(JsonApiSchema):
     environment: Analysis = Analysis()
     summary: str
     theme: str
+    # lead_journalists: str
 
 
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
