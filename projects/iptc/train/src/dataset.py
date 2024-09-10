@@ -4,7 +4,12 @@
 import torch
 
 # Source
-from src.class_dict import CLASS_DICT_FIRST, CLASS_DICT_SECOND, CLASS_DICT_THIRD
+from src.class_dict import (
+    CLASS_DICT_FIRST,
+    CLASS_DICT_FOURTH,
+    CLASS_DICT_SECOND,
+    CLASS_DICT_THIRD,
+)
 
 
 # Dataset class
@@ -29,6 +34,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         selected_text,
         first_level_root=None,
         second_level_root=None,
+        third_level_root=None,
         max_length=128,
         is_on_demand=False,  # New parameter to handle on-demand dataset
     ):
@@ -37,6 +43,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         self.selected_text = selected_text
         self.first_level_root = first_level_root
         self.second_level_root = second_level_root
+        self.third_level_root = third_level_root
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.is_on_demand = is_on_demand  # Initialize is_on_demand
@@ -69,6 +76,10 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                 return list(CLASS_DICT_THIRD[self.second_level_root].values()).index(
                     self.df.iloc[idx]["topic_3_llm"]
                 )
+            elif self.level == 4:
+                return list(CLASS_DICT_FOURTH[self.third_level_root].values()).index(
+                    self.df.iloc[idx]["topic_4_llm"]
+                )
             else:
                 raise ValueError("undefined level")
         else:  # If not on-demand, use the original labels
@@ -83,6 +94,10 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
             elif self.level == 3:
                 return list(CLASS_DICT_THIRD[self.second_level_root].values()).index(
                     self.df.iloc[idx]["topic_3"]
+                )
+            elif self.level == 4:
+                return list(CLASS_DICT_FOURTH[self.third_level_root].values()).index(
+                    self.df.iloc[idx]["topic_4"]
                 )
             else:
                 raise ValueError("undefined level")
