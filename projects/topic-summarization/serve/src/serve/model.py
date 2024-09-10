@@ -173,9 +173,15 @@ class ServedTopicModel(ServedModel):
                     )
 
                 # collect documents of profile
-                content = self.document_collector.get_documents(
-                    query_profile, topic_id, doc_start_time, doc_end_time
+                content, lead_journalists_attributes = (
+                    self.document_collector.get_documents_and_lead_journalists_attributes(
+                        query_profile, topic_id, doc_start_time, doc_end_time
+                    )
                 )
+
+                # retrieve lead journalists
+                self.retrieve_lead_journalists_if_exists(lead_journalists_attributes)
+
                 (
                     topic,
                     topic_summary_quality,
@@ -263,3 +269,27 @@ class ServedTopicModel(ServedModel):
             namespace=settings.model_name,
             attributes={"model_name": settings.model_name},
         )
+
+    def retrieve_lead_journalists_if_exists(
+        self, lead_journalists_attributes: List[Dict]
+    ) -> List[str]:
+        """Determine if some articles are written by leading journalists and/or published on high tier websites.
+
+        Args:
+            lead_journalists_attributes (List[Dict]): List of Dicts containing attributes that can help determine
+            if lead journalists exists.
+        """
+        for attributes in lead_journalists_attributes:
+            if "author" in attributes:
+                author = attributes["author"]
+
+            if author.strip() and "Unkown" in author:
+
+                if "pagerank" in attributes:
+                    pagerank = attributes["pagerank"]
+
+                    if pagerank > settings.PAGE_RANK_THRESH:
+                        logger.debug(f"pagerank is above threshold {pagerank}")
+
+                    else:
+                        logger.debug(f"pagerank is bellow threshold {pagerank}")
