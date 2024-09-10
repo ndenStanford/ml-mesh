@@ -64,7 +64,7 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG} #should have been v23.8.4?
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile_model]
+    command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -83,7 +83,7 @@ services:
     volumes:
       - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.download_uncompiled_model]
+    command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -111,7 +111,7 @@ services:
     volumes:
       - compile-volume:/projects/sentiment/compile/outputs # must be same as `IO_OUTPATH` env var
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.upload_compiled_model]
+    command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
