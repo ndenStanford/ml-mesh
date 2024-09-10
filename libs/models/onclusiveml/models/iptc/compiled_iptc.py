@@ -19,7 +19,6 @@ from onclusiveml.core.base import OnclusiveBaseModel
 from onclusiveml.core.logging import get_default_logger
 from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
 from onclusiveml.nlp import preprocess
-from onclusiveml.tracking import TrackedModelSettings
 
 
 logger = get_default_logger(__name__, level=20)
@@ -60,13 +59,6 @@ def extract_number_from_label(label: str) -> int:
         raise ValueError(f"Invalid label format: {label}")
 
 
-class CompiledTrackedModelSettings(TrackedModelSettings):
-    """Compiled model settings."""
-
-    project: str = "onclusive/iptc-00000000"
-    model: str = "IP00000000-COMPILED"
-
-
 class PostProcessOutput(OnclusiveBaseModel):
     """output data structure."""
 
@@ -79,20 +71,18 @@ class CompiledIPTC:
 
     def __init__(
         self,
+        project: str,
         compiled_iptc_pipeline: CompiledPipeline,
     ):
         """Initalize the CompiledIPTC object.
 
         Args:
+            project: neptune project (needed to get model id)
             compiled_iptc_pipeline (CompiledPipeline): The compiled iptc pipline used for inference
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.model_spec = CompiledTrackedModelSettings()
-        if self.model_spec.project == "onclusive/iptc":
-            self.model_id = "00000000"
-        else:
-            self.model_id = extract_model_id(self.model_spec.project)
+        self.model_id = project.split("-")[0]
         self.id2label = CLASS_DICT[ID_TO_TOPIC[self.model_id]]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
