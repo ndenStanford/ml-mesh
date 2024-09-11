@@ -82,7 +82,7 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.model_id = project.split("-")[0]
+        self.model_id = project.split("-")[1]
         self.id2label = CLASS_DICT[ID_TO_TOPIC[self.model_id]]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
