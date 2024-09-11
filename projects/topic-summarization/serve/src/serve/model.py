@@ -9,6 +9,7 @@ from datetime import datetime
 
 from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
+from collections import Counter
 
 # 3rd party libraries
 from fastapi import HTTPException, status
@@ -180,7 +181,9 @@ class ServedTopicModel(ServedModel):
                 )
 
                 # retrieve lead journalists
-                self.retrieve_lead_journalists_if_exists(lead_journalists_attributes)
+                leading_journalist_str = self.retrieve_lead_journalists_if_exists(
+                    lead_journalists_attributes
+                )
 
                 (
                     topic,
@@ -189,6 +192,7 @@ class ServedTopicModel(ServedModel):
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
+                topic["lead_journalists"] = leading_journalist_str
             else:
                 topic = None
                 impact_category = None
@@ -272,24 +276,61 @@ class ServedTopicModel(ServedModel):
 
     def retrieve_lead_journalists_if_exists(
         self, lead_journalists_attributes: List[Dict]
-    ) -> List[str]:
+    ) -> Union[str, None]:
         """Determine if some articles are written by leading journalists and/or published on high tier websites.
 
         Args:
             lead_journalists_attributes (List[Dict]): List of Dicts containing attributes that can help determine
             if lead journalists exists.
         """
+        author_list = []
+        pagerank_record = {}
         for attributes in lead_journalists_attributes:
+            # if "author" in attributes:
+            #     author = attributes["author"]
+
+            # if author.strip() and "Unkown" in author:
+
+            #     if "pagerank" in attributes:
+            #         pagerank = attributes["pagerank"]
+
+            #         if pagerank > settings.PAGE_RANK_THRESH:
+            #             logger.debug(f"pagerank is above threshold {pagerank}")
+
+            #         else:
+            #             logger.debug(f"pagerank is bellow threshold {pagerank}")
+
             if "author" in attributes:
                 author = attributes["author"]
-
-            if author.strip() and "Unkown" in author:
+                if author.strip():
+                    author_list.append(author)
 
                 if "pagerank" in attributes:
                     pagerank = attributes["pagerank"]
-
                     if pagerank > settings.PAGE_RANK_THRESH:
                         logger.debug(f"pagerank is above threshold {pagerank}")
 
                     else:
                         logger.debug(f"pagerank is bellow threshold {pagerank}")
+                    # store the highest pagerank for each author
+                    if (
+                        author not in pagerank_record
+                        or pagerank > pagerank_record[author]
+                    ):
+                        pagerank_record[author] = pagerank
+
+            else:
+                continue
+
+        # count the frequency of each author
+        author_frequency = Counter(author_list)
+        # leading_journalist_list = [item for item, count in frequency_count.most_common()]
+        leading_author_list = max(
+            author_frequency.items(),
+            key=lambda x: (
+                x[1],
+                pagerank_record[x[0]],
+            ),  # Sort by frequency first, then pagerank
+        )
+        leading_author = leading_author_list[0] if leading_author_list else None
+        return leading_author
