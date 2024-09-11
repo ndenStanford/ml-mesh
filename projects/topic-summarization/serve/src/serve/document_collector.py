@@ -91,17 +91,10 @@ class DocumentCollector:
         content_list: List[str] = [
             h["_source"]["content"] for h in results["hits"]["hits"]
         ]
-        """
-        "author", "author_canonical_name", "is_verified_author", "is_valid_author",
-        "verified_author.canon_name", "verified_author.reach", "verified_author.subjects",
-        "verified_author.full_name", "verified_author.title", "pagerank", "publication_details.publication_tier",
-        "publication_details.publication_type", "moreover_publication.editorial_rank",
-        "moreover_publication.feed_rank", "domain_details.global_rank", "social_counts.total_shares"
-        """
-        # print(results["hits"]["hits"][0]["_source"])
+
         lead_journalists_attributes_list: List[Dict] = []
         for h in results["hits"]["hits"]:
-            logger.debug(f'hit url : {h["_source"]["url"]}')
+            # logger.debug(f'hit url : {h["_source"]["url"]}')
             attributes: Dict = {}
             for attr in settings.LEAD_JOURNALISTS_ATTRIBUTES:
                 if attr in h["_source"]:
