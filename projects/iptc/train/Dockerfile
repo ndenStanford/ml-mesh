@@ -11,22 +11,13 @@ ENV USER=app
 ENV HOME="${PROJECT_DIR}"
 ENV POETRY_HOME="${HOME}/.poetry"
 
-# Ensure correct Python version
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.9=3.9.19-1~20.04 \
-    python3.9-dev=3.9.19-1~20.04 \
-    python3.9-venv=3.9.19-1~20.04 && \
-    rm -rf /var/lib/apt/lists/*
-
 # create non root user (currently not provided in gpu base)
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
     && mkdir -p "${HOME}" \
     && mkdir -p "${POETRY_HOME}" \
-    && mkdir -p /pyenv \
     && chown -R ${USER}:users "${HOME}" \
     && chown -R ${USER}:users "${POETRY_HOME}" \
     && chown -R ${USER}:users /usr/local/ \
-    && chown -R ${USER}:users /pyenv/
 
 USER app
 
@@ -46,8 +37,6 @@ COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
 
-# Set Poetry to use Python 3.9
-RUN poetry env use python3.9
 
 RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
