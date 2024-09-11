@@ -396,6 +396,38 @@
             ]
         },
         {
+            "name": "visitor estimation register",
+            "type": "debugpy",
+            "request": "attach",
+            "justMyCode": false,
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/visitor-estimation/register",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
+            "name": "visitor estimation train",
+            "type": "debugpy",
+            "request": "attach",
+            "justMyCode": false,
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/projects/visitor-estimation/train",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
             "name": "iptc ingest",
             "type": "debugpy",
             "request": "attach",

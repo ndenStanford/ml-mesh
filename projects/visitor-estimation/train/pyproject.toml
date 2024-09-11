@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "visitor-estimation-train"
+version = "0.1.0"
+description = "Docker image for registering model for named entity recognition"
+authors = ["Jian <jian.tong@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.9.19"
+torch = "1.12.1"
+transformers = "4.33.1"
+accelerate="0.20.3"
+tracking = {path = "../../../libs/tracking"}
+feature_store = {path = "../../../libs/feature_store"}
+training = {path = "../../../libs/training"}
+aiohttp = "<3.10.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
+
+[[tool.poetry.source]]
+name = "pypi-nvidia"
+url = "https://pypi.nvidia.com"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
