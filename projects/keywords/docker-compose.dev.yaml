@@ -78,8 +78,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/keywords/compile/models
     build:
       context: ../../
       dockerfile: projects/keywords/compile/Dockerfile
@@ -133,8 +136,11 @@ services:
   compile-unit:
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/keywords/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
@@ -144,8 +150,11 @@ services:
   compile-download-model:
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/keywords/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.download]
     profiles: [pipeline]
@@ -162,8 +171,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/keywords/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
     profiles: [pipeline]
@@ -176,8 +188,11 @@ services:
   compile-upload-model:
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/keywords/compile/
+        source: compile/src
+        target: /projects/keywords/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/keywords/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, src.upload]
     profiles: [pipeline]
