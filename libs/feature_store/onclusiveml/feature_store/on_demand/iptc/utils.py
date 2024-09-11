@@ -16,10 +16,12 @@ from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
+    CANDIDATE_DICT_FOURTH,
 )
 from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
     NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
 )
 
 
@@ -58,6 +60,12 @@ def get_candidate_list(row, level):
         node_name = NAME_MAPPING_DICT_SECOND.get(node_name, node_name)
         candidate_list = list(
             CANDIDATE_DICT_THIRD.get(node_name, {"dummy": "dummy"}).values()
+        )
+    elif level == 4:
+        node_name = row["topic_3"]
+        node_name = NAME_MAPPING_DICT_THIRD.get(node_name, node_name)
+        candidate_list = list(
+            CANDIDATE_DICT_FOURTH.get(node_name, {"dummy": "dummy"}).values()
         )
 
     return candidate_list
@@ -134,6 +142,17 @@ def iptc_second_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.Da
 def iptc_third_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
     """Wrapper function to run the async enrichment."""
     level = 3
+    features_df_with_label = asyncio.run(enrich_dataframe(features_df, level))
+
+    df = pd.DataFrame()
+    col_name = get_col_name(level)
+    df[col_name] = features_df_with_label[col_name].astype(pd.StringDtype())
+    return df
+
+
+def iptc_fourth_level_on_demand_feature_view(features_df: pd.DataFrame) -> pd.DataFrame:
+    """Wrapper function to run the async enrichment."""
+    level = 4
     features_df_with_label = asyncio.run(enrich_dataframe(features_df, level))
 
     df = pd.DataFrame()
