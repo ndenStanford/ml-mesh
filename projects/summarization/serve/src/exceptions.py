@@ -15,6 +15,14 @@ class PromptBackendException(OnclusiveException):
 
     message_format = "Prompt backend error: {message}."
 
+    def __init__(self, message=None, **kwargs):
+        # Ensure that a message is provided, raise an error if not
+        if message is None:
+            raise ValueError("A 'message' must be provided for PromptBackendException.")
+
+        # Pass the message to the base class (OnclusiveException)
+        super().__init__(message=message, **kwargs)
+
 
 class SummaryTypeNotSupportedException(OnclusiveException):
     """Summary type not supported exception."""
