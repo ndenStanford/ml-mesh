@@ -1,10 +1,10 @@
 """Utilities for feast feature store."""
 
 # Standard Library
-from typing import Any
+from typing import Any, Callable, List, Optional
 
 # 3rd party libraries
-from feast import Entity, FeatureView, Field
+from feast import Entity, FeatureView, Field, OnDemandFeatureView
 from feast.types import String
 
 # Internal libraries
@@ -15,7 +15,8 @@ from onclusiveml.feature_store import FeatureStoreHandle, RedshiftSourceCustom
 class FeatureStoreParams(OnclusiveBaseSettings):
     """Base class for all parameter classes in the featurestore module in data library.
 
-    Subclassing from BaseSettings allows for configuring parameters via environment variables.
+    Subclassing from OnclusiveBaseSettings allows for configuring parameters
+    via environment variables.
     """
 
     feast_config_bucket: str
@@ -25,6 +26,21 @@ class FeatureStoreParams(OnclusiveBaseSettings):
     redshift_schema: str = "feast"
     redshift_table: str
     redshift_timestamp_field: str = "event_timestamp"
+
+
+class OnDemandFeatureStoreParams(OnclusiveBaseSettings):
+    """Base class for all parameter classes in the on-demand featurestore module in data library.
+
+    Subclassing from OnclusiveBaseSettings allows for configuring parameters
+    via environment variables.
+    """
+
+    feast_config_bucket: str
+    config_file: str = "feature_store.yaml"
+    local_config_dir: str = "local-config-dir"
+    redshift_table: Optional[str] = None
+    sources: List[str]
+    udf: Callable
 
 
 class FeastRepoBuilder:
@@ -150,4 +166,36 @@ class FeastRepoBuilder:
             # Tags are user defined key/value pairs that are attached to each
             # feature view
             tags={},
+        )
+
+    def build_on_demand_featureview(self) -> None:
+        """Builds a Feast OnDemandFeatureView.
+
+        This method constructs a OnDemandFeatureView object and assigns it to the
+        `feature_view` attribute using the parameters specified in the
+        `feature_registration_params` attribute. It also resolves Feast data types
+        using the `resolve_feast_types` method and sets up the feature view's schema.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        fields = [
+            (field[0], self.resolve_feast_types(field[1]))
+            for field in self.feature_registration_params.fields
+        ]
+
+        self.feature_view_sources = [
+            self.fs_handle.fs.get_feature_view(source)
+            for source in self.feature_registration_params.sources
+        ]
+
+        self.feature_view = OnDemandFeatureView(
+            name=self.feature_registration_params.udf.__name__,
+            sources=self.feature_view_sources,
+            schema=[Field(name=field[0], dtype=field[1]) for field in fields],
+            udf=self.feature_registration_params.udf,
         )

@@ -136,7 +136,7 @@ jobs:
       - name: Changelog
         id: changelog
         if: ${{ inputs.pull-request && inputs.base-ref == 'main' }}
-        uses: mikepenz/release-changelog-builder-action@v4.2.2
+        uses: mikepenz/release-changelog-builder-action@v5
         with:
           configuration: .github/changelog.json
           ignorePreReleases: false

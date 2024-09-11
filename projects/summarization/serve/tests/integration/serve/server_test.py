@@ -85,5 +85,40 @@ def test_invalid_language(test_client, payload):
     response = test_client.post("/summarization/v2/predict", json=payload)
     assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
     assert response.json()["detail"] == (
-        f"Summary language '{LanguageIso.from_language_iso(payload['data']['parameters']['input_language'])}' and or '{payload['data']['parameters']['summary_type']}' not supported."  # noqa: E501,W505
+        f"Prompt not found. Summary language '{LanguageIso.from_language_iso(payload['data']['parameters']['input_language'])}' and or '{payload['data']['parameters']['summary_type']}' not supported."  # noqa: E501,W505
     )
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "output_language": "en",
+                    "summary_type": "section",
+                    "desired_length": 50,
+                },
+            }
+        },
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "output_language": "fr",
+                    "summary_type": "section",
+                    "desired_length": 100,
+                },
+            }
+        },
+    ],
+)
+def test_no_input_language(test_client, payload):
+    """Test when the input_language parameter is not provided."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
