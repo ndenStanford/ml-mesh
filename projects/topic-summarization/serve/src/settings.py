@@ -157,16 +157,13 @@ class LeadJournalistsSettings(OnclusiveBaseSettings):
 
     LEAD_JOURNALISTS_ATTRIBUTES: List = [
         "author",
-        "is_verified_author",
         "is_valid_author",
         "pagerank",
         "publication_details.publication_tier",
-        "publication_details.publication_type",
-        "moreover_publication.editorial_rank",
-        "moreover_publication.feed_rank",
-        "domain_details.global_rank",
     ]
-    PAGE_RANK_THRESH: int = 4
+    PAGE_RANK_THRESHOLD: int = 1
+    PUBLICATION_TIER_THRESHOLD: int = 5
+    AUTHOR_FREQUENCY_THRESHOLD: int = 1
 
 
 class GlobalSettings(
