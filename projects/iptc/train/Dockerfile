@@ -9,6 +9,9 @@ ARG PROJECT_DIR="/projects/${PROJECT}/${COMPONENT}"
 
 ENV USER=app
 ENV HOME="${PROJECT_DIR}"
+ENV POETRY_HOME="${HOME}/.poetry"
+
+RUN mkdir -p /pyenv && chown -R app:users /pyenv/
 
 # create non root user (currently not provided in gpu base)
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
