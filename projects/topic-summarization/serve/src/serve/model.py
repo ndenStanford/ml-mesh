@@ -181,7 +181,7 @@ class ServedTopicModel(ServedModel):
                 )
 
                 # retrieve lead journalists
-                leading_journalist_str = self.retrieve_lead_journalists_if_exists(
+                leading_journalists = self.retrieve_lead_journalists_if_exists(
                     lead_journalists_attributes
                 )
 
@@ -192,7 +192,7 @@ class ServedTopicModel(ServedModel):
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
-                topic["lead_journalists"] = leading_journalist_str
+                topic["lead_journalists"] = leading_journalists
             else:
                 topic = None
                 impact_category = None
@@ -276,7 +276,7 @@ class ServedTopicModel(ServedModel):
 
     def retrieve_lead_journalists_if_exists(
         self, lead_journalists_attributes: List[Dict]
-    ) -> Union[str, None]:
+    ) -> Union[List[str], None]:
         """Determine if some articles are written by leading journalists and/or published on high tier websites.
 
         Args:
@@ -284,53 +284,77 @@ class ServedTopicModel(ServedModel):
             if lead journalists exists.
         """
         author_list = []
-        pagerank_record = {}
+        # pagerank_record = {}
+        high_pagerank_authors = {}
+        top_publication_tier_authors = {}
+        valid_authors = {}
         for attributes in lead_journalists_attributes:
-            # if "author" in attributes:
-            #     author = attributes["author"]
 
-            # if author.strip() and "Unkown" in author:
-
-            #     if "pagerank" in attributes:
-            #         pagerank = attributes["pagerank"]
-
-            #         if pagerank > settings.PAGE_RANK_THRESH:
-            #             logger.debug(f"pagerank is above threshold {pagerank}")
-
-            #         else:
-            #             logger.debug(f"pagerank is bellow threshold {pagerank}")
-
-            if "author" in attributes:
-                author = attributes["author"]
-                if author.strip():
-                    author_list.append(author)
-
-                if "pagerank" in attributes:
-                    pagerank = attributes["pagerank"]
-                    if pagerank > settings.PAGE_RANK_THRESH:
-                        logger.debug(f"pagerank is above threshold {pagerank}")
-
-                    else:
-                        logger.debug(f"pagerank is bellow threshold {pagerank}")
-                    # store the highest pagerank for each author
-                    if (
-                        author not in pagerank_record
-                        or pagerank > pagerank_record[author]
-                    ):
-                        pagerank_record[author] = pagerank
-
-            else:
+            author = attributes.get("author", "").strip()
+            # if author name is empty or unkown continue
+            if not author or "unkown" in author.lower():
                 continue
+
+            author_list.append(author)
+
+            is_valid_author = attributes.get("is_valid_author", False)
+            if is_valid_author:
+                valid_authors.append(author)
+
+            pagerank = attributes.get("pagerank", 0)
+            # Check if pagerank is above threshold to add it to
+            if pagerank > settings.PAGE_RANK_THRESHOLD:
+                logger.debug(
+                    f"pagerank {pagerank} is above threshold {settings.PAGE_RANK_THRESHOLD}"
+                )
+
+                if (
+                    author not in high_pagerank_authors
+                    or pagerank > high_pagerank_authors[author]
+                ):
+                    high_pagerank_authors[author] = pagerank
+
+                # if (
+                #     author not in pagerank_record
+                #     or pagerank > pagerank_record[author]
+                # ):
+                #     pagerank_record[author] = pagerank
+
+            publication_tier = attributes.get("publication_details.publication_tier", 5)
+            # Check if publication tier is lower than or equal the threshold
+            if publication_tier <= settings.PUBLICATION_TIER_THRESHOLD:
+                logger.debug(
+                    f"publication tier {publication_tier} is below threshold {settings.PUBLICATION_TIER_THRESHOLD}"
+                )
+                if (
+                    author not in top_publication_tier_authors
+                    or publication_tier > top_publication_tier_authors[author]
+                ):
+                    top_publication_tier_authors[author] = publication_tier
 
         # count the frequency of each author
         author_frequency = Counter(author_list)
-        # leading_journalist_list = [item for item, count in frequency_count.most_common()]
-        leading_author_list = max(
-            author_frequency.items(),
-            key=lambda x: (
-                x[1],
-                pagerank_record[x[0]],
-            ),  # Sort by frequency first, then pagerank
+        # filter frequent authors
+        frequent_authors = {
+            auth: freq
+            for auth, freq in author_frequency.items()
+            if freq >= settings.AUTHOR_FREQUENCY_THRESHOLD
+        }
+
+        logger.debug(f"Valid authors: {valid_authors}")
+        logger.debug(f"Frequent authors: {frequent_authors}")
+        logger.debug(f"High pagerank authors : {high_pagerank_authors}")
+        logger.debug(f"Top publication tier authors : {top_publication_tier_authors}")
+
+        # get the union of the three list of authors filter by each criteria
+        lead_journalists = list(
+            set().union(
+                frequent_authors, high_pagerank_authors, top_publication_tier_authors
+            )
         )
-        leading_author = leading_author_list[0] if leading_author_list else None
-        return leading_author
+
+        # TODO do intersection to valid authors to
+
+        logger.debug(f"lead journalists: {lead_journalists}")
+
+        return lead_journalists
