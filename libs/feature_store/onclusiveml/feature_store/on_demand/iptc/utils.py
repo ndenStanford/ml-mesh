@@ -16,10 +16,12 @@ from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
+    CANDIDATE_DICT_FOURTH,
 )
 from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
     NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
 )
 
 
@@ -58,6 +60,12 @@ def get_candidate_list(row, level):
         node_name = NAME_MAPPING_DICT_SECOND.get(node_name, node_name)
         candidate_list = list(
             CANDIDATE_DICT_THIRD.get(node_name, {"dummy": "dummy"}).values()
+        )
+    elif level == 4:
+        node_name = row["topic_3"]
+        node_name = NAME_MAPPING_DICT_THIRD.get(node_name, node_name)
+        candidate_list = list(
+            CANDIDATE_DICT_FOURTH.get(node_name, {"dummy": "dummy"}).values()
         )
 
     return candidate_list
