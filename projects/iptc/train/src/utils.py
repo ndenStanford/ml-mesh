@@ -7,7 +7,12 @@ import re
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 # Source
-from src.class_dict import CLASS_DICT_FIRST, CLASS_DICT_SECOND, CLASS_DICT_THIRD
+from src.class_dict import (
+    CLASS_DICT_FIRST,
+    CLASS_DICT_FOURTH,
+    CLASS_DICT_SECOND,
+    CLASS_DICT_THIRD,
+)
 
 
 def compute_metrics(pred):  # type: ignore[no-untyped-def]
@@ -22,7 +27,7 @@ def compute_metrics(pred):  # type: ignore[no-untyped-def]
 
 
 def find_num_labels(  # type: ignore[no-untyped-def]
-    level, first_level_root=None, second_level_root=None
+    level, first_level_root=None, second_level_root=None, third_level_root=None
 ):
     """Retrieve the number of labels from the CLASS_DICT file."""
     if level == 1:
@@ -31,6 +36,8 @@ def find_num_labels(  # type: ignore[no-untyped-def]
         return len(CLASS_DICT_SECOND[first_level_root])
     elif level == 3:
         return len(CLASS_DICT_THIRD[second_level_root])
+    elif level == 4:
+        return len(CLASS_DICT_FOURTH[third_level_root])
 
 
 def extract_model_id(project: str) -> str:

@@ -34,7 +34,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
-        "iptc category": "Answer the IPTC category",
+        "iptc category": "Answer the IPTC category, output should be none if the given subset is not applicable",
     }
     DEFAULT_MODEL: str = "gpt-4o-mini"
 

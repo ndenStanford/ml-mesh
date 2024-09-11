@@ -118,8 +118,8 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             },
             4: {
                 "entity_name": "iptc_fourth_level",
-                "feature_view_name": "iptc_fourth_level_feature_view",
-                "redshift_table": "iptc_fourth_level",
+                "feature_view_name": "iptc_third_level_feature_view",
+                "redshift_table": "iptc_third_level",
                 "filter_columns": ["topic_3"],
                 "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],
@@ -297,6 +297,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.model_card.model_params.selected_text,
                 self.first_level_root,
                 self.second_level_root,
+                self.third_level_root,
                 self.model_card.model_params.max_length,
                 is_on_demand=self.is_on_demand,  # Pass the on-demand flag
             )
