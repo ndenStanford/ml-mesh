@@ -7,7 +7,6 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.9.19"
-transformers = "4.31.0"
 tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models"}
 

@@ -59,6 +59,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
         project=settings.project,
         compiled_iptc_pipeline=compiled_iptc_pipeline,
     )
+
     # export compiled iptc model for next workflow component: test
     compiled_iptc.save_pretrained(
         settings.model_directory(CompileWorkflowTasks.COMPILE)
