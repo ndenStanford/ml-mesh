@@ -181,11 +181,6 @@ class ServedTopicModel(ServedModel):
                     )
                 )
 
-                # retrieve lead journalists
-                leading_journalists = self.retrieve_lead_journalists_if_exists(
-                    lead_journalists_attributes
-                )
-
                 (
                     topic,
                     topic_summary_quality,
@@ -195,6 +190,12 @@ class ServedTopicModel(ServedModel):
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
+
+                # retrieve lead journalists
+                leading_journalists = self.retrieve_lead_journalists_if_exists(
+                    lead_journalists_attributes, topic
+                )
+
                 topic["lead_journalists"] = leading_journalists
             else:
                 topic = None
@@ -284,86 +285,129 @@ class ServedTopicModel(ServedModel):
         )
 
     def retrieve_lead_journalists_if_exists(
-        self, lead_journalists_attributes: List[Dict]
+        self,
+        lead_journalists_attributes: List[Dict],
+        topic: Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
     ) -> Union[List[str], None]:
         """Determine if some articles are written by leading journalists and/or published on high tier websites.
 
         Args:
             lead_journalists_attributes (List[Dict]): List of Dicts containing attributes that can help determine
             if lead journalists exists.
+            topic (Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]): topic for
+            citations filtering
         """
-        author_list = []
-        # pagerank_record = {}
-        high_pagerank_authors = {}
-        top_publication_tier_authors = {}
-        valid_authors = {}
-        for attributes in lead_journalists_attributes:
+        try:
+            # check for authors with frequent cited articles in the topic summaries
+            citations_list = []
+            themes = [
+                "opportunities",
+                "risk",
+                "threats",
+                "company",
+                "brand",
+                "ceo",
+                "customer",
+                "stock",
+                "industry",
+                "environment",
+            ]
+            for theme in themes:
+                citations = topic[theme]["sources"].split(",")
+                logger.debug(f"citations : {citations}")
+                citations = [int(c.strip()) for c in citations if c and c.isdigit()]
+                citations_list += citations
 
-            author = attributes.get("author", "").strip()
-            # if author name is empty or unkown continue
-            if not author or "unkown" in author.lower():
-                continue
+            citations_frequency = Counter(citations_list)
+            # TODO filter citations above thresh
+            citations_frequency = {
+                c: f
+                for c, f in citations_frequency.items()
+                if f >= settings.CITATIONS_THRESHOLD
+            }
+            logger.debug(f"citations frequency : {citations_frequency} {topic.keys()}")
 
-            author_list.append(author)
+            author_list = []
+            high_pagerank_authors = {}
+            top_publication_tier_authors = {}
+            valid_authors = []
+            most_cited_authors = {}
+            for i, attributes in enumerate(lead_journalists_attributes):
 
-            is_valid_author = attributes.get("is_valid_author", False)
-            if is_valid_author:
-                valid_authors.append(author)
+                author = attributes.get("author", "").strip()
+                # if author name is empty or unkown continue
+                if not author or "unkown" in author.lower():
+                    continue
 
-            pagerank = attributes.get("pagerank", 0)
-            # Check if pagerank is above threshold to add it to
-            if pagerank > settings.PAGE_RANK_THRESHOLD:
-                logger.debug(
-                    f"pagerank {pagerank} is above threshold {settings.PAGE_RANK_THRESHOLD}"
+                author_list.append(author)
+
+                # add author to list of most cited if its ids in citations frequency
+                if i in citations_frequency:
+                    most_cited_authors[author] = citations_frequency[i]
+
+                is_valid_author = attributes.get("is_valid_author", False)
+                if is_valid_author:
+                    valid_authors.append(author)
+
+                pagerank = attributes.get("pagerank", 0)
+                # Check if pagerank is above threshold to add it to
+                if pagerank >= settings.PAGE_RANK_THRESHOLD:
+                    logger.debug(
+                        f"pagerank {pagerank} is above threshold {settings.PAGE_RANK_THRESHOLD}"
+                    )
+
+                    if (
+                        author not in high_pagerank_authors
+                        or pagerank > high_pagerank_authors[author]
+                    ):
+                        high_pagerank_authors[author] = pagerank
+
+                publication_tier = attributes.get(
+                    "publication_details.publication_tier", 5
                 )
+                # Check if publication tier is lower than or equal the threshold
+                if publication_tier <= settings.PUBLICATION_TIER_THRESHOLD:
+                    logger.debug(
+                        f"publication tier {publication_tier} is below threshold {settings.PUBLICATION_TIER_THRESHOLD}"
+                    )
+                    if (
+                        author not in top_publication_tier_authors
+                        or publication_tier > top_publication_tier_authors[author]
+                    ):
+                        top_publication_tier_authors[author] = publication_tier
 
-                if (
-                    author not in high_pagerank_authors
-                    or pagerank > high_pagerank_authors[author]
-                ):
-                    high_pagerank_authors[author] = pagerank
+            # count the frequency of each author
+            author_frequency = Counter(author_list)
+            # filter frequent authors
+            frequent_authors = {
+                auth: freq
+                for auth, freq in author_frequency.items()
+                if freq >= settings.AUTHOR_FREQUENCY_THRESHOLD
+            }
 
-                # if (
-                #     author not in pagerank_record
-                #     or pagerank > pagerank_record[author]
-                # ):
-                #     pagerank_record[author] = pagerank
-
-            publication_tier = attributes.get("publication_details.publication_tier", 5)
-            # Check if publication tier is lower than or equal the threshold
-            if publication_tier <= settings.PUBLICATION_TIER_THRESHOLD:
-                logger.debug(
-                    f"publication tier {publication_tier} is below threshold {settings.PUBLICATION_TIER_THRESHOLD}"
-                )
-                if (
-                    author not in top_publication_tier_authors
-                    or publication_tier > top_publication_tier_authors[author]
-                ):
-                    top_publication_tier_authors[author] = publication_tier
-
-        # count the frequency of each author
-        author_frequency = Counter(author_list)
-        # filter frequent authors
-        frequent_authors = {
-            auth: freq
-            for auth, freq in author_frequency.items()
-            if freq >= settings.AUTHOR_FREQUENCY_THRESHOLD
-        }
-
-        logger.debug(f"Valid authors: {valid_authors}")
-        logger.debug(f"Frequent authors: {frequent_authors}")
-        logger.debug(f"High pagerank authors : {high_pagerank_authors}")
-        logger.debug(f"Top publication tier authors : {top_publication_tier_authors}")
-
-        # get the union of the three list of authors filter by each criteria
-        lead_journalists = list(
-            set().union(
-                frequent_authors, high_pagerank_authors, top_publication_tier_authors
+            logger.debug(f"Valid authors: {valid_authors}")
+            logger.debug(f"Frequent authors: {frequent_authors}")
+            logger.debug(f"High pagerank authors : {high_pagerank_authors}")
+            logger.debug(
+                f"Top publication tier authors : {top_publication_tier_authors}"
             )
-        )
+            logger.debug(f"Most cited authors: {most_cited_authors}")
 
-        # TODO do intersection to valid authors to
+            # get the union of the lists of authors filtered by each criteria
+            lead_journalists = list(
+                set().union(
+                    frequent_authors,
+                    high_pagerank_authors,
+                    top_publication_tier_authors,
+                    most_cited_authors,
+                )
+            )
 
-        logger.debug(f"lead journalists: {lead_journalists}")
+            # TODO do intersection to valid authors to
 
-        return lead_journalists
+            logger.debug(f"lead journalists: {lead_journalists}")
+
+            return lead_journalists
+        except Exception as e:
+            logger.error(e)
+            return []
