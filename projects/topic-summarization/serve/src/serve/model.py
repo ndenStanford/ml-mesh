@@ -321,13 +321,13 @@ class ServedTopicModel(ServedModel):
 
             publication_tier = attributes.get("publication_details.publication_tier", 5)
             # Check if publication tier is lower than or equal the threshold
-            if publication_tier <= settings.PUBLICATION_TIER_THRESHOLD:
+            if publication_tier < settings.PUBLICATION_TIER_THRESHOLD:
                 logger.debug(
                     f"publication tier {publication_tier} is below threshold {settings.PUBLICATION_TIER_THRESHOLD}"
                 )
                 if (
                     author not in top_publication_tier_authors
-                    or publication_tier > top_publication_tier_authors[author]
+                    or publication_tier < top_publication_tier_authors[author]
                 ):
                     top_publication_tier_authors[author] = publication_tier
 

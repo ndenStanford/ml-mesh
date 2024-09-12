@@ -152,9 +152,17 @@ def leading_journalists_attributes_samples():
             "pagerank": 3,
             "publication_tier": 2,
         },
-        {"author": "Name 1", "is_valid_author": True, "publication_tier": 6},
+        {
+            "author": "Name 1",
+            "is_valid_author": True,
+            "publication_details.publication_tier": 6,
+        },
         {"author": "Name 3", "is_valid_author": True, "pagerank": 5},
-        {"author": "Name 4", "is_valid_author": True, "publication_tier": 2},
+        {
+            "author": "Name 4",
+            "is_valid_author": True,
+            "publication_details.publication_tier": 2,
+        },
     ]
 
 
