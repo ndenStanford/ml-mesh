@@ -369,15 +369,6 @@ class ServedTopicModel(ServedModel):
                 )
             )
 
-            # logger.debug(f"Frequent authors: {frequent_authors}")
-            # logger.debug(f"High pagerank authors : {high_pagerank_authors}")
-            # logger.debug(
-            #     f"Top publication tier authors : {top_publication_tier_authors}"
-            # )
-            # logger.debug(f"Most cited authors: {most_cited_authors}")
-            # logger.debug(f"citations frequency : {citations_frequency}")
-            # logger.debug(f"lead journalists: {lead_journalists}")
-
             return lead_journalists
         except Exception as e:
             logger.error(e)
