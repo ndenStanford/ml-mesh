@@ -166,12 +166,6 @@ class ImpactQuantificationSettings(OnclusiveBaseSettings):
 class LeadJournalistsSettings(OnclusiveBaseSettings):
     """Lead journalists Settings."""
 
-    LEAD_JOURNALISTS_ATTRIBUTES: List = [
-        "author",
-        "is_valid_author",
-        "pagerank",
-        "publication_details.publication_tier",
-    ]
     PAGE_RANK_THRESHOLD: int = 4
     PUBLICATION_TIER_THRESHOLD: int = 3
     AUTHOR_FREQUENCY_THRESHOLD: int = 2
