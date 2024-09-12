@@ -67,11 +67,11 @@ services:
     command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [backend, functional]
     healthcheck:
-      test: [CMD-SHELL, sleep 60s || exit 1]
-      interval: 1m30s
-      retries: 3
-      start_period: 1m
-      timeout: 1m10s
+      test: [CMD-SHELL, sleep 120s || exit 1]
+      interval: 2m30s
+      retries: 4
+      start_period: 2m
+      timeout: 2m10s
     ports:
       - 4000:4000
     environment:
