@@ -24,6 +24,7 @@ mock_generate.return_value = [
 from src.serve.topic import TopicHandler
 from src.serve.trend_detection import TrendDetection
 from src.serve.impact_quantification import ImpactQuantification
+from src.serve.model import ServedTopicModel
 from onclusiveml.serving.serialization.topic_summarization.v1 import ImpactCategoryLabel
 from onclusiveml.queries.query_profile import (
     StringQueryProfile,
@@ -444,3 +445,14 @@ def test_topic_handler_json_decode_exception(
 
     with pytest.raises(TopicSummarizationJSONDecodeException):
         _ = _service.topic_inference(["Article content"])
+
+
+def test_retrieve_lead_journalists_if_exists(
+    leading_journalists_attributes_samples, leading_journalists_expected_output
+):
+    """Test leading journalist function."""
+    model = ServedTopicModel()
+    res = model.retrieve_lead_journalists_if_exists(
+        leading_journalists_attributes_samples, {}
+    )
+    assert set(res) == set(leading_journalists_expected_output)
