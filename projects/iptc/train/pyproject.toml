@@ -24,6 +24,7 @@ debugpy = "1.8.1"
 [[tool.poetry.source]]
 name = "pypi-nvidia"
 url = "https://pypi.nvidia.com"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
