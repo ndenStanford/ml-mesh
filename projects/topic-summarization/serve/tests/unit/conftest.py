@@ -137,6 +137,42 @@ def article_input():
 
 
 @pytest.fixture
+def leading_journalists_attributes_samples():
+    """Sample author input."""
+    return [
+        {
+            "author": "Name 1",
+            "is_valid_author": True,
+            "pagerank": 3,
+            "publication_tier": 2,
+        },
+        {
+            "author": "Name 2",
+            "is_valid_author": False,
+            "pagerank": 3,
+            "publication_tier": 2,
+        },
+        {
+            "author": "Name 1",
+            "is_valid_author": True,
+            "publication_details.publication_tier": 6,
+        },
+        {"author": "Name 3", "is_valid_author": True, "pagerank": 5},
+        {
+            "author": "Name 4",
+            "is_valid_author": True,
+            "publication_details.publication_tier": 2,
+        },
+    ]
+
+
+@pytest.fixture
+def leading_journalists_expected_output():
+    """Expected output for leading journalist test."""
+    return ["Name 1", "Name 3", "Name 4"]
+
+
+@pytest.fixture
 def mock_boolean_check():
     """Mock response for request.put."""
     mock_response = MagicMock()

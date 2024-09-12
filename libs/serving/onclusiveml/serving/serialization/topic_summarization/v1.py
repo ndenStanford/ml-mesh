@@ -69,6 +69,7 @@ class Topic(JsonApiSchema):
     entity_impact: Optional[str] = None
     lead_journalists: Optional[List[str]] = None
 
+
 class PredictResponseAttributeSchemaV1(JsonApiSchema):
     """Prediction request data."""
 

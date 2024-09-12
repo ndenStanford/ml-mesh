@@ -228,6 +228,10 @@ class ServedTopicModel(ServedModel):
                 "query_topic_doc_count": query_topic_doc_count,
                 "topic_summary_quality": topic_summary_quality,
             }
+            print("\n")
+            print("\n")
+            print("\n")
+            print("DB INPUT :", dynamodb_dict)
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
             try:
@@ -362,19 +366,17 @@ class ServedTopicModel(ServedModel):
                     ):
                         high_pagerank_authors[author] = pagerank
 
-                publication_tier = attributes.get(
-                    "publication_details.publication_tier", 5
+            publication_tier = attributes.get("publication_details.publication_tier", 5)
+            # Check if publication tier is lower than or equal the threshold
+            if publication_tier < settings.PUBLICATION_TIER_THRESHOLD:
+                logger.debug(
+                    f"publication tier {publication_tier} is below threshold {settings.PUBLICATION_TIER_THRESHOLD}"
                 )
-                # Check if publication tier is lower than or equal the threshold
-                if publication_tier <= settings.PUBLICATION_TIER_THRESHOLD:
-                    logger.debug(
-                        f"publication tier {publication_tier} is below threshold {settings.PUBLICATION_TIER_THRESHOLD}"
-                    )
-                    if (
-                        author not in top_publication_tier_authors
-                        or publication_tier > top_publication_tier_authors[author]
-                    ):
-                        top_publication_tier_authors[author] = publication_tier
+                if (
+                    author not in top_publication_tier_authors
+                    or publication_tier < top_publication_tier_authors[author]
+                ):
+                    top_publication_tier_authors[author] = publication_tier
 
             # count the frequency of each author
             author_frequency = Counter(author_list)
@@ -385,7 +387,6 @@ class ServedTopicModel(ServedModel):
                 if freq >= settings.AUTHOR_FREQUENCY_THRESHOLD
             }
 
-            logger.debug(f"Valid authors: {valid_authors}")
             logger.debug(f"Frequent authors: {frequent_authors}")
             logger.debug(f"High pagerank authors : {high_pagerank_authors}")
             logger.debug(
