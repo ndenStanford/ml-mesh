@@ -300,18 +300,7 @@ class ServedTopicModel(ServedModel):
         try:
             # check for authors with frequent cited articles in the topic summaries
             citations_list = []
-            themes = [
-                "opportunities",
-                "risk",
-                "threats",
-                "company",
-                "brand",
-                "ceo",
-                "customer",
-                "stock",
-                "industry",
-                "environment",
-            ]
+            themes = settings.IMPACT_CATEGORIES.keys()
             for theme in themes:
                 if theme in topic:
                     citations = topic[theme]["sources"].split(",")
