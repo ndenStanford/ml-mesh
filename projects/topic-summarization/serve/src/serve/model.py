@@ -227,10 +227,6 @@ class ServedTopicModel(ServedModel):
                 "query_topic_doc_count": query_topic_doc_count,
                 "topic_summary_quality": topic_summary_quality,
             }
-            print("\n")
-            print("\n")
-            print("\n")
-            print("DB INPUT :", dynamodb_dict)
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
             try:
