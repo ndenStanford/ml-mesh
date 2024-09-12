@@ -162,17 +162,17 @@ numpy = {version = ">=1.19.0", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "boto3"
-version = "1.35.16"
+version = "1.35.18"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.35.16-py3-none-any.whl", hash = "sha256:9c5b0ce4a25bb78d659478d1c552f1dbb7ff275aab3263bb41cdbef8bca28693"},
-    {file = "boto3-1.35.16.tar.gz", hash = "sha256:9b96c210678cf430b16b49dee87db30f46044602bb9a605a465e1900f468a43f"},
+    {file = "boto3-1.35.18-py3-none-any.whl", hash = "sha256:71e237d3997cf93425947854d7b121c577944f391ba633afb0659e1015364704"},
+    {file = "boto3-1.35.18.tar.gz", hash = "sha256:fd130308f1f49d748a5fc63de92de79a995b51c79af3947ddde8815fcf0684fe"},
 ]
 
 [package.dependencies]
-botocore = ">=1.35.16,<1.36.0"
+botocore = ">=1.35.18,<1.36.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -181,13 +181,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.35.16"
+version = "1.35.18"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.35.16-py3-none-any.whl", hash = "sha256:3564a980d95ff2861a6ca74313173d8778aa659125c63cf49c93ad23896c63b1"},
-    {file = "botocore-1.35.16.tar.gz", hash = "sha256:1b48c94e8a4bbe23143f3d1c21a32b9ffc7476b651ef42371ab45d678f6dbfbc"},
+    {file = "botocore-1.35.18-py3-none-any.whl", hash = "sha256:1027083aeb1fe74057273410fd768e018e22f85adfbd717b5a69f578f7812b80"},
+    {file = "botocore-1.35.18.tar.gz", hash = "sha256:e59da8b91ab06683d2725b6cbbb0383b30c68a241c3c63363f4c5bff59b3c0c0"},
 ]
 
 [package.dependencies]
@@ -502,10 +502,11 @@ develop = false
 
 [package.dependencies]
 core = {path = "../core"}
-neuron-cc = "1.21.0.0"
+neuron-cc = "1.20.3.0"
 pandas = "1.3.1"
 protobuf = "3.20.1"
 tensorflow = "1.15.5.post1"
+torch-neuron = "1.12.1.2.9.6.0"
 transformers = "4.44.2"
 urllib3 = "<2.0.0"
 
@@ -719,12 +720,12 @@ files = [
 
 [[package]]
 name = "dmlc-nnvm"
-version = "1.18.2.0+0"
+version = "1.18.1.0+0"
 description = "NNVM: Open Compiler for AI Frameworks"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dmlc_nnvm-1.18.2.0+0-py3-none-any.whl", hash = "sha256:740a63b1e0eb49b28c9610bb7e64fe81726647a1582f8636961b526f6e6d4c0e"},
+    {file = "dmlc_nnvm-1.18.1.0+0-py3-none-any.whl", hash = "sha256:651483a378f2353ca114632921a1b1b0b7d6abc42b347b93e337b09fb86c79a0"},
 ]
 
 [package.dependencies]
@@ -737,12 +738,12 @@ reference = "aws-neuron"
 
 [[package]]
 name = "dmlc-topi"
-version = "1.18.2.0+0"
+version = "1.18.1.0+0"
 description = "TOPI: TVM operator index"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dmlc_topi-1.18.2.0+0-py3-none-any.whl", hash = "sha256:6937d0371ab49a3d543c946fe3170bdc9c335398c238b2744244f06f8102eddf"},
+    {file = "dmlc_topi-1.18.1.0+0-py3-none-any.whl", hash = "sha256:23808d499eb3104dc9294029dd458648d03f9581a723bf629a38a46a228bc57f"},
 ]
 
 [package.dependencies]
@@ -757,14 +758,14 @@ reference = "aws-neuron"
 
 [[package]]
 name = "dmlc-tvm"
-version = "1.18.2.0+0"
+version = "1.18.1.0+0"
 description = "TVM: An End to End Tensor IR/DSL Stack for Deep Learning Systems"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dmlc_tvm-1.18.2.0+0-cp310-cp310-linux_x86_64.whl", hash = "sha256:be7f119b73745d50659703f3189070e393a579c32f1670d9a4ba083e6de77b28"},
-    {file = "dmlc_tvm-1.18.2.0+0-cp38-cp38-linux_x86_64.whl", hash = "sha256:4eee38fa719bf0ba268b4042677ec10fcf494946c96f57c493b59f085d5681ca"},
-    {file = "dmlc_tvm-1.18.2.0+0-cp39-cp39-linux_x86_64.whl", hash = "sha256:6915c21194260888cd001a52af92431f3794ef5a476b097b613a6eb4f43b35f0"},
+    {file = "dmlc_tvm-1.18.1.0+0-cp310-cp310-linux_x86_64.whl", hash = "sha256:8766c4b7f602af43d0c46284e024ff61942c4242457d2764c267e25cc1e40176"},
+    {file = "dmlc_tvm-1.18.1.0+0-cp38-cp38-linux_x86_64.whl", hash = "sha256:0d5a8fe70ab71ae6bcbdf91815d509338715a2d69eaa7d9f7e5c6f329b731718"},
+    {file = "dmlc_tvm-1.18.1.0+0-cp39-cp39-linux_x86_64.whl", hash = "sha256:09f0906c1514ec5d2959a55e37db792ae808e668554c8acc5901d4139c82abb7"},
 ]
 
 [package.dependencies]
@@ -1111,13 +1112,13 @@ numpy = ">=1.14.5"
 
 [[package]]
 name = "huggingface-hub"
-version = "0.24.6"
+version = "0.24.7"
 description = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "huggingface_hub-0.24.6-py3-none-any.whl", hash = "sha256:a990f3232aa985fe749bc9474060cbad75e8b2f115f6665a9fda5b9c97818970"},
-    {file = "huggingface_hub-0.24.6.tar.gz", hash = "sha256:cc2579e761d070713eaa9c323e3debe39d5b464ae3a7261c39a9195b27bb8000"},
+    {file = "huggingface_hub-0.24.7-py3-none-any.whl", hash = "sha256:a212c555324c8a7b1ffdd07266bb7e7d69ca71aa238d27b7842d65e9a26ac3e5"},
+    {file = "huggingface_hub-0.24.7.tar.gz", hash = "sha256:0ad8fb756e2831da0ac0491175b960f341fe06ebcf80ed6f8728313f95fc0207"},
 ]
 
 [package.dependencies]
@@ -1156,22 +1157,26 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "8.4.0"
+version = "8.5.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-8.4.0-py3-none-any.whl", hash = "sha256:66f342cc6ac9818fc6ff340576acd24d65ba0b3efabb2b4ac08b598965a4a2f1"},
-    {file = "importlib_metadata-8.4.0.tar.gz", hash = "sha256:9a547d3bc3608b025f93d403fdd1aae741c24fbb8314df4b155675742ce303c5"},
+    {file = "importlib_metadata-8.5.0-py3-none-any.whl", hash = "sha256:45e54197d28b7a7f1559e60b95e7c567032b602131fbd588f1497f47880aa68b"},
+    {file = "importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7"},
 ]
 
 [package.dependencies]
-zipp = ">=0.5"
+zipp = ">=3.20"
 
 [package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+enabler = ["pytest-enabler (>=2.2)"]
 perf = ["ipython"]
-test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-perf (>=0.9.2)", "pytest-ruff (>=0.2.1)"]
+test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-perf (>=0.9.2)"]
+type = ["pytest-mypy"]
 
 [[package]]
 name = "importlib-resources"
@@ -1197,14 +1202,14 @@ type = ["pytest-mypy"]
 
 [[package]]
 name = "inferentia-hwm"
-version = "1.16.2.0+295b36a2b"
+version = "1.16.1.0+295b36a2b"
 description = "Inferentia hardware model"
 optional = false
 python-versions = "*"
 files = [
-    {file = "inferentia_hwm-1.16.2.0+295b36a2b-cp310-cp310-linux_x86_64.whl", hash = "sha256:8e98285e00d35f22f28f85b8719f0b4efad1b2b56c1247f49c8dc0f7513d7904"},
-    {file = "inferentia_hwm-1.16.2.0+295b36a2b-cp38-cp38-linux_x86_64.whl", hash = "sha256:bb20b033b098e442bab76dcc20a7e991b4313086d9bef463354460d30f0e3fec"},
-    {file = "inferentia_hwm-1.16.2.0+295b36a2b-cp39-cp39-linux_x86_64.whl", hash = "sha256:b6c7658ed95c817c2addb96f3b5627467263d2619aab9e77183123e1e863fb9a"},
+    {file = "inferentia_hwm-1.16.1.0+295b36a2b-cp310-cp310-linux_x86_64.whl", hash = "sha256:f3dc92c739a8eaf0a557d6e155c1c07104992f0b773ee49b65043200b8312322"},
+    {file = "inferentia_hwm-1.16.1.0+295b36a2b-cp38-cp38-linux_x86_64.whl", hash = "sha256:ca80b3a2fc7992bea31a454d28c7adec8f472de975272f7299d50f0af7292728"},
+    {file = "inferentia_hwm-1.16.1.0+295b36a2b-cp39-cp39-linux_x86_64.whl", hash = "sha256:434cf70adffb57fbbc6524ca86ac4a0fd3a9d909b22acf07b6d28dc42669272e"},
 ]
 
 [package.dependencies]
@@ -2042,21 +2047,21 @@ test = ["codecov (>=2.1)", "pytest (>=6.2)", "pytest-cov (>=2.12)"]
 
 [[package]]
 name = "neuron-cc"
-version = "1.21.0.0+6cae3b7b8"
+version = "1.20.3.0+ed6db4a2e"
 description = "AWS Neuron SDK compiler"
 optional = false
 python-versions = "*"
 files = [
-    {file = "neuron_cc-1.21.0.0+6cae3b7b8-cp310-cp310-linux_x86_64.whl", hash = "sha256:10fdd00daae6223a65e4e7fcf943bd432b16230bc42828d6bfecad864768ddcc"},
-    {file = "neuron_cc-1.21.0.0+6cae3b7b8-cp38-cp38-linux_x86_64.whl", hash = "sha256:2fa9186c070dc1e07f6bcaba80dd82cb1650ed086afe9886a45cd5c83d8f7cfa"},
-    {file = "neuron_cc-1.21.0.0+6cae3b7b8-cp39-cp39-linux_x86_64.whl", hash = "sha256:f676dde51678759770ee6e9a2e285de3776db661c4aa6bc4877e79b5749ffe48"},
+    {file = "neuron_cc-1.20.3.0+ed6db4a2e-cp310-cp310-linux_x86_64.whl", hash = "sha256:bea31b9b59f4a8aaee5ddf9dcca4e1850595121b75d9e60bf5351b5d23ea83e4"},
+    {file = "neuron_cc-1.20.3.0+ed6db4a2e-cp38-cp38-linux_x86_64.whl", hash = "sha256:b0896db4d320c3693691a85f9792ecbf74ee24961f79de4bbf9e496d4101e8e3"},
+    {file = "neuron_cc-1.20.3.0+ed6db4a2e-cp39-cp39-linux_x86_64.whl", hash = "sha256:f0aaaf3ba7a8cd855da91885cee14589c1b507dd8de5c035d676cf94a9bdaaed"},
 ]
 
 [package.dependencies]
-dmlc-nnvm = "1.18.2.0"
-dmlc-topi = "1.18.2.0"
-dmlc-tvm = "1.18.2.0"
-inferentia-hwm = "1.16.2.0"
+dmlc-nnvm = "1.18.1.0"
+dmlc-topi = "1.18.1.0"
+dmlc-tvm = "1.18.1.0"
+inferentia-hwm = "1.16.1.0"
 islpy = ">2021.1,<=2023.1"
 networkx = "<=2.6.3"
 numpy = ">=1.22.2,<=1.25.2"
@@ -4050,6 +4055,28 @@ files = [
 
 [package.dependencies]
 typing-extensions = "*"
+
+[[package]]
+name = "torch-neuron"
+version = "1.12.1.2.9.6.0"
+description = "UNKNOWN"
+optional = false
+python-versions = "*"
+files = [
+    {file = "torch_neuron-1.12.1.2.9.6.0-py3-none-linux_x86_64.whl", hash = "sha256:1d178859c40d623552ff54ace542cd8c1f4784cf3a25bb6675273cd10065c762"},
+]
+
+[package.dependencies]
+torch = "1.12.1"
+
+[package.extras]
+cc = ["neuron-cc"]
+experimental = ["fvcore"]
+
+[package.source]
+type = "legacy"
+url = "https://pip.repos.neuron.amazonaws.com"
+reference = "aws-neuron"
 
 [[package]]
 name = "tqdm"
