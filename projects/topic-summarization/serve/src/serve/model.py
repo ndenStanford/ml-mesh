@@ -227,6 +227,10 @@ class ServedTopicModel(ServedModel):
                 "query_topic_doc_count": query_topic_doc_count,
                 "topic_summary_quality": topic_summary_quality,
             }
+            print("\n")
+            print("\n")
+            print("\n")
+            print("DB INPUT :", dynamodb_dict)
             client = TopicSummaryDynamoDB(**dynamodb_dict)
 
             try:
@@ -293,22 +297,14 @@ class ServedTopicModel(ServedModel):
             if lead journalists exists.
         """
         author_list = []
-        # pagerank_record = {}
         high_pagerank_authors = {}
         top_publication_tier_authors = {}
-        valid_authors = {}
         for attributes in lead_journalists_attributes:
 
             author = attributes.get("author", "").strip()
-            # if author name is empty or unkown continue
-            if not author or "unkown" in author.lower():
-                continue
-
-            author_list.append(author)
-
             is_valid_author = attributes.get("is_valid_author", False)
-            if is_valid_author:
-                valid_authors.append(author)
+            if (not author) or ("unkown" in author.lower()) or (not is_valid_author):
+                continue
 
             pagerank = attributes.get("pagerank", 0)
             # Check if pagerank is above threshold to add it to
@@ -322,12 +318,6 @@ class ServedTopicModel(ServedModel):
                     or pagerank > high_pagerank_authors[author]
                 ):
                     high_pagerank_authors[author] = pagerank
-
-                # if (
-                #     author not in pagerank_record
-                #     or pagerank > pagerank_record[author]
-                # ):
-                #     pagerank_record[author] = pagerank
 
             publication_tier = attributes.get("publication_details.publication_tier", 5)
             # Check if publication tier is lower than or equal the threshold
@@ -350,7 +340,6 @@ class ServedTopicModel(ServedModel):
             if freq >= settings.AUTHOR_FREQUENCY_THRESHOLD
         }
 
-        logger.debug(f"Valid authors: {valid_authors}")
         logger.debug(f"Frequent authors: {frequent_authors}")
         logger.debug(f"High pagerank authors : {high_pagerank_authors}")
         logger.debug(f"Top publication tier authors : {top_publication_tier_authors}")
@@ -361,8 +350,6 @@ class ServedTopicModel(ServedModel):
                 frequent_authors, high_pagerank_authors, top_publication_tier_authors
             )
         )
-
-        # TODO do intersection to valid authors to
 
         logger.debug(f"lead journalists: {lead_journalists}")
 
