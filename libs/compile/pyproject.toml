@@ -9,10 +9,10 @@ packages = [{include = "onclusiveml"}]
 python = "3.9.19"
 protobuf = "3.20.1"
 pandas = "1.3.1"
-neuron-cc = {version = "1.21.0.0", source = "aws-neuron"}
+neuron-cc = {version = "1.20.3.0", source = "aws-neuron"}
 tensorflow = {version = "1.15.5.post1", source = "aws-neuron"}
 transformers = "4.44.2"
-torch-neuron = {version = "1.12.1.2.9.74.0", source = "aws-neuron"}
+torch-neuron = {version = "1.12.1.2.9.6.0", source = "aws-neuron"}
 core = {path = "../core"}
 urllib3 = "<2.0.0"
 

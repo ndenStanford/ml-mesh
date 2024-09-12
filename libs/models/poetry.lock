@@ -466,10 +466,11 @@ develop = false
 
 [package.dependencies]
 core = {path = "../core"}
-neuron-cc = "1.21.0.0"
+neuron-cc = "1.20.3.0"
 pandas = "1.3.1"
 protobuf = "3.20.1"
 tensorflow = "1.15.5.post1"
+torch-neuron = "1.12.1.2.9.6.0"
 transformers = "4.44.2"
 urllib3 = "<2.0.0"
 
@@ -652,12 +653,12 @@ files = [
 
 [[package]]
 name = "dmlc-nnvm"
-version = "1.18.2.0+0"
+version = "1.18.1.0+0"
 description = "NNVM: Open Compiler for AI Frameworks"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dmlc_nnvm-1.18.2.0+0-py3-none-any.whl", hash = "sha256:740a63b1e0eb49b28c9610bb7e64fe81726647a1582f8636961b526f6e6d4c0e"},
+    {file = "dmlc_nnvm-1.18.1.0+0-py3-none-any.whl", hash = "sha256:651483a378f2353ca114632921a1b1b0b7d6abc42b347b93e337b09fb86c79a0"},
 ]
 
 [package.dependencies]
@@ -670,12 +671,12 @@ reference = "aws-neuron"
 
 [[package]]
 name = "dmlc-topi"
-version = "1.18.2.0+0"
+version = "1.18.1.0+0"
 description = "TOPI: TVM operator index"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dmlc_topi-1.18.2.0+0-py3-none-any.whl", hash = "sha256:6937d0371ab49a3d543c946fe3170bdc9c335398c238b2744244f06f8102eddf"},
+    {file = "dmlc_topi-1.18.1.0+0-py3-none-any.whl", hash = "sha256:23808d499eb3104dc9294029dd458648d03f9581a723bf629a38a46a228bc57f"},
 ]
 
 [package.dependencies]
@@ -690,14 +691,14 @@ reference = "aws-neuron"
 
 [[package]]
 name = "dmlc-tvm"
-version = "1.18.2.0+0"
+version = "1.18.1.0+0"
 description = "TVM: An End to End Tensor IR/DSL Stack for Deep Learning Systems"
 optional = false
 python-versions = "*"
 files = [
-    {file = "dmlc_tvm-1.18.2.0+0-cp310-cp310-linux_x86_64.whl", hash = "sha256:be7f119b73745d50659703f3189070e393a579c32f1670d9a4ba083e6de77b28"},
-    {file = "dmlc_tvm-1.18.2.0+0-cp38-cp38-linux_x86_64.whl", hash = "sha256:4eee38fa719bf0ba268b4042677ec10fcf494946c96f57c493b59f085d5681ca"},
-    {file = "dmlc_tvm-1.18.2.0+0-cp39-cp39-linux_x86_64.whl", hash = "sha256:6915c21194260888cd001a52af92431f3794ef5a476b097b613a6eb4f43b35f0"},
+    {file = "dmlc_tvm-1.18.1.0+0-cp310-cp310-linux_x86_64.whl", hash = "sha256:8766c4b7f602af43d0c46284e024ff61942c4242457d2764c267e25cc1e40176"},
+    {file = "dmlc_tvm-1.18.1.0+0-cp38-cp38-linux_x86_64.whl", hash = "sha256:0d5a8fe70ab71ae6bcbdf91815d509338715a2d69eaa7d9f7e5c6f329b731718"},
+    {file = "dmlc_tvm-1.18.1.0+0-cp39-cp39-linux_x86_64.whl", hash = "sha256:09f0906c1514ec5d2959a55e37db792ae808e668554c8acc5901d4139c82abb7"},
 ]
 
 [package.dependencies]
@@ -1010,13 +1011,13 @@ scipy = ">=1.0"
 
 [[package]]
 name = "huggingface-hub"
-version = "0.24.6"
+version = "0.24.7"
 description = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
 optional = false
 python-versions = ">=3.8.0"
 files = [
-    {file = "huggingface_hub-0.24.6-py3-none-any.whl", hash = "sha256:a990f3232aa985fe749bc9474060cbad75e8b2f115f6665a9fda5b9c97818970"},
-    {file = "huggingface_hub-0.24.6.tar.gz", hash = "sha256:cc2579e761d070713eaa9c323e3debe39d5b464ae3a7261c39a9195b27bb8000"},
+    {file = "huggingface_hub-0.24.7-py3-none-any.whl", hash = "sha256:a212c555324c8a7b1ffdd07266bb7e7d69ca71aa238d27b7842d65e9a26ac3e5"},
+    {file = "huggingface_hub-0.24.7.tar.gz", hash = "sha256:0ad8fb756e2831da0ac0491175b960f341fe06ebcf80ed6f8728313f95fc0207"},
 ]
 
 [package.dependencies]
@@ -1055,33 +1056,37 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "8.4.0"
+version = "8.5.0"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-8.4.0-py3-none-any.whl", hash = "sha256:66f342cc6ac9818fc6ff340576acd24d65ba0b3efabb2b4ac08b598965a4a2f1"},
-    {file = "importlib_metadata-8.4.0.tar.gz", hash = "sha256:9a547d3bc3608b025f93d403fdd1aae741c24fbb8314df4b155675742ce303c5"},
+    {file = "importlib_metadata-8.5.0-py3-none-any.whl", hash = "sha256:45e54197d28b7a7f1559e60b95e7c567032b602131fbd588f1497f47880aa68b"},
+    {file = "importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7"},
 ]
 
 [package.dependencies]
-zipp = ">=0.5"
+zipp = ">=3.20"
 
 [package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
 doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+enabler = ["pytest-enabler (>=2.2)"]
 perf = ["ipython"]
-test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-perf (>=0.9.2)", "pytest-ruff (>=0.2.1)"]
+test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-perf (>=0.9.2)"]
+type = ["pytest-mypy"]
 
 [[package]]
 name = "inferentia-hwm"
-version = "1.16.2.0+295b36a2b"
+version = "1.16.1.0+295b36a2b"
 description = "Inferentia hardware model"
 optional = false
 python-versions = "*"
 files = [
-    {file = "inferentia_hwm-1.16.2.0+295b36a2b-cp310-cp310-linux_x86_64.whl", hash = "sha256:8e98285e00d35f22f28f85b8719f0b4efad1b2b56c1247f49c8dc0f7513d7904"},
-    {file = "inferentia_hwm-1.16.2.0+295b36a2b-cp38-cp38-linux_x86_64.whl", hash = "sha256:bb20b033b098e442bab76dcc20a7e991b4313086d9bef463354460d30f0e3fec"},
-    {file = "inferentia_hwm-1.16.2.0+295b36a2b-cp39-cp39-linux_x86_64.whl", hash = "sha256:b6c7658ed95c817c2addb96f3b5627467263d2619aab9e77183123e1e863fb9a"},
+    {file = "inferentia_hwm-1.16.1.0+295b36a2b-cp310-cp310-linux_x86_64.whl", hash = "sha256:f3dc92c739a8eaf0a557d6e155c1c07104992f0b773ee49b65043200b8312322"},
+    {file = "inferentia_hwm-1.16.1.0+295b36a2b-cp38-cp38-linux_x86_64.whl", hash = "sha256:ca80b3a2fc7992bea31a454d28c7adec8f472de975272f7299d50f0af7292728"},
+    {file = "inferentia_hwm-1.16.1.0+295b36a2b-cp39-cp39-linux_x86_64.whl", hash = "sha256:434cf70adffb57fbbc6524ca86ac4a0fd3a9d909b22acf07b6d28dc42669272e"},
 ]
 
 [package.dependencies]
@@ -1772,21 +1777,21 @@ test = ["codecov (>=2.1)", "pytest (>=6.2)", "pytest-cov (>=2.12)"]
 
 [[package]]
 name = "neuron-cc"
-version = "1.21.0.0+6cae3b7b8"
+version = "1.20.3.0+ed6db4a2e"
 description = "AWS Neuron SDK compiler"
 optional = false
 python-versions = "*"
 files = [
-    {file = "neuron_cc-1.21.0.0+6cae3b7b8-cp310-cp310-linux_x86_64.whl", hash = "sha256:10fdd00daae6223a65e4e7fcf943bd432b16230bc42828d6bfecad864768ddcc"},
-    {file = "neuron_cc-1.21.0.0+6cae3b7b8-cp38-cp38-linux_x86_64.whl", hash = "sha256:2fa9186c070dc1e07f6bcaba80dd82cb1650ed086afe9886a45cd5c83d8f7cfa"},
-    {file = "neuron_cc-1.21.0.0+6cae3b7b8-cp39-cp39-linux_x86_64.whl", hash = "sha256:f676dde51678759770ee6e9a2e285de3776db661c4aa6bc4877e79b5749ffe48"},
+    {file = "neuron_cc-1.20.3.0+ed6db4a2e-cp310-cp310-linux_x86_64.whl", hash = "sha256:bea31b9b59f4a8aaee5ddf9dcca4e1850595121b75d9e60bf5351b5d23ea83e4"},
+    {file = "neuron_cc-1.20.3.0+ed6db4a2e-cp38-cp38-linux_x86_64.whl", hash = "sha256:b0896db4d320c3693691a85f9792ecbf74ee24961f79de4bbf9e496d4101e8e3"},
+    {file = "neuron_cc-1.20.3.0+ed6db4a2e-cp39-cp39-linux_x86_64.whl", hash = "sha256:f0aaaf3ba7a8cd855da91885cee14589c1b507dd8de5c035d676cf94a9bdaaed"},
 ]
 
 [package.dependencies]
-dmlc-nnvm = "1.18.2.0"
-dmlc-topi = "1.18.2.0"
-dmlc-tvm = "1.18.2.0"
-inferentia-hwm = "1.16.2.0"
+dmlc-nnvm = "1.18.1.0"
+dmlc-topi = "1.18.1.0"
+dmlc-tvm = "1.18.1.0"
+inferentia-hwm = "1.16.1.0"
 islpy = ">2021.1,<=2023.1"
 networkx = "<=2.6.3"
 numpy = ">=1.22.2,<=1.25.2"
@@ -2097,13 +2102,13 @@ xmp = ["defusedxml"]
 
 [[package]]
 name = "plotly"
-version = "5.24.0"
+version = "5.24.1"
 description = "An open-source, interactive data visualization library for Python"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "plotly-5.24.0-py3-none-any.whl", hash = "sha256:0e54efe52c8cef899f7daa41be9ed97dfb6be622613a2a8f56a86a0634b2b67e"},
-    {file = "plotly-5.24.0.tar.gz", hash = "sha256:eae9f4f54448682442c92c1e97148e3ad0c52f0cf86306e1b76daba24add554a"},
+    {file = "plotly-5.24.1-py3-none-any.whl", hash = "sha256:f67073a1e637eb0dc3e46324d9d51e2fe76e9727c892dde64ddf1e1b51f29089"},
+    {file = "plotly-5.24.1.tar.gz", hash = "sha256:dbc8ac8339d248a4bcc36e08a5659bacfe1b079390b8953533f4eb22169b4bae"},
 ]
 
 [package.dependencies]
@@ -2802,32 +2807,32 @@ torch = ["safetensors[numpy]", "torch (>=1.10)"]
 
 [[package]]
 name = "scikit-learn"
-version = "1.5.1"
+version = "1.5.2"
 description = "A set of python modules for machine learning and data mining"
 optional = true
 python-versions = ">=3.9"
 files = [
-    {file = "scikit_learn-1.5.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:781586c414f8cc58e71da4f3d7af311e0505a683e112f2f62919e3019abd3745"},
-    {file = "scikit_learn-1.5.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:f5b213bc29cc30a89a3130393b0e39c847a15d769d6e59539cd86b75d276b1a7"},
-    {file = "scikit_learn-1.5.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1ff4ba34c2abff5ec59c803ed1d97d61b036f659a17f55be102679e88f926fac"},
-    {file = "scikit_learn-1.5.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:161808750c267b77b4a9603cf9c93579c7a74ba8486b1336034c2f1579546d21"},
-    {file = "scikit_learn-1.5.1-cp310-cp310-win_amd64.whl", hash = "sha256:10e49170691514a94bb2e03787aa921b82dbc507a4ea1f20fd95557862c98dc1"},
-    {file = "scikit_learn-1.5.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:154297ee43c0b83af12464adeab378dee2d0a700ccd03979e2b821e7dd7cc1c2"},
-    {file = "scikit_learn-1.5.1-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:b5e865e9bd59396220de49cb4a57b17016256637c61b4c5cc81aaf16bc123bbe"},
-    {file = "scikit_learn-1.5.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:909144d50f367a513cee6090873ae582dba019cb3fca063b38054fa42704c3a4"},
-    {file = "scikit_learn-1.5.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:689b6f74b2c880276e365fe84fe4f1befd6a774f016339c65655eaff12e10cbf"},
-    {file = "scikit_learn-1.5.1-cp311-cp311-win_amd64.whl", hash = "sha256:9a07f90846313a7639af6a019d849ff72baadfa4c74c778821ae0fad07b7275b"},
-    {file = "scikit_learn-1.5.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:5944ce1faada31c55fb2ba20a5346b88e36811aab504ccafb9f0339e9f780395"},
-    {file = "scikit_learn-1.5.1-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:0828673c5b520e879f2af6a9e99eee0eefea69a2188be1ca68a6121b809055c1"},
-    {file = "scikit_learn-1.5.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:508907e5f81390e16d754e8815f7497e52139162fd69c4fdbd2dfa5d6cc88915"},
-    {file = "scikit_learn-1.5.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:97625f217c5c0c5d0505fa2af28ae424bd37949bb2f16ace3ff5f2f81fb4498b"},
-    {file = "scikit_learn-1.5.1-cp312-cp312-win_amd64.whl", hash = "sha256:da3f404e9e284d2b0a157e1b56b6566a34eb2798205cba35a211df3296ab7a74"},
-    {file = "scikit_learn-1.5.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:88e0672c7ac21eb149d409c74cc29f1d611d5158175846e7a9c2427bd12b3956"},
-    {file = "scikit_learn-1.5.1-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:7b073a27797a283187a4ef4ee149959defc350b46cbf63a84d8514fe16b69855"},
-    {file = "scikit_learn-1.5.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b59e3e62d2be870e5c74af4e793293753565c7383ae82943b83383fdcf5cc5c1"},
-    {file = "scikit_learn-1.5.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1bd8d3a19d4bd6dc5a7d4f358c8c3a60934dc058f363c34c0ac1e9e12a31421d"},
-    {file = "scikit_learn-1.5.1-cp39-cp39-win_amd64.whl", hash = "sha256:5f57428de0c900a98389c4a433d4a3cf89de979b3aa24d1c1d251802aa15e44d"},
-    {file = "scikit_learn-1.5.1.tar.gz", hash = "sha256:0ea5d40c0e3951df445721927448755d3fe1d80833b0b7308ebff5d2a45e6414"},
+    {file = "scikit_learn-1.5.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:299406827fb9a4f862626d0fe6c122f5f87f8910b86fe5daa4c32dcd742139b6"},
+    {file = "scikit_learn-1.5.2-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:2d4cad1119c77930b235579ad0dc25e65c917e756fe80cab96aa3b9428bd3fb0"},
+    {file = "scikit_learn-1.5.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8c412ccc2ad9bf3755915e3908e677b367ebc8d010acbb3f182814524f2e5540"},
+    {file = "scikit_learn-1.5.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3a686885a4b3818d9e62904d91b57fa757fc2bed3e465c8b177be652f4dd37c8"},
+    {file = "scikit_learn-1.5.2-cp310-cp310-win_amd64.whl", hash = "sha256:c15b1ca23d7c5f33cc2cb0a0d6aaacf893792271cddff0edbd6a40e8319bc113"},
+    {file = "scikit_learn-1.5.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:03b6158efa3faaf1feea3faa884c840ebd61b6484167c711548fce208ea09445"},
+    {file = "scikit_learn-1.5.2-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:1ff45e26928d3b4eb767a8f14a9a6efbf1cbff7c05d1fb0f95f211a89fd4f5de"},
+    {file = "scikit_learn-1.5.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f763897fe92d0e903aa4847b0aec0e68cadfff77e8a0687cabd946c89d17e675"},
+    {file = "scikit_learn-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f8b0ccd4a902836493e026c03256e8b206656f91fbcc4fde28c57a5b752561f1"},
+    {file = "scikit_learn-1.5.2-cp311-cp311-win_amd64.whl", hash = "sha256:6c16d84a0d45e4894832b3c4d0bf73050939e21b99b01b6fd59cbb0cf39163b6"},
+    {file = "scikit_learn-1.5.2-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:f932a02c3f4956dfb981391ab24bda1dbd90fe3d628e4b42caef3e041c67707a"},
+    {file = "scikit_learn-1.5.2-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:3b923d119d65b7bd555c73be5423bf06c0105678ce7e1f558cb4b40b0a5502b1"},
+    {file = "scikit_learn-1.5.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f60021ec1574e56632be2a36b946f8143bf4e5e6af4a06d85281adc22938e0dd"},
+    {file = "scikit_learn-1.5.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:394397841449853c2290a32050382edaec3da89e35b3e03d6cc966aebc6a8ae6"},
+    {file = "scikit_learn-1.5.2-cp312-cp312-win_amd64.whl", hash = "sha256:57cc1786cfd6bd118220a92ede80270132aa353647684efa385a74244a41e3b1"},
+    {file = "scikit_learn-1.5.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:757c7d514ddb00ae249832fe87100d9c73c6ea91423802872d9e74970a0e40b9"},
+    {file = "scikit_learn-1.5.2-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:52788f48b5d8bca5c0736c175fa6bdaab2ef00a8f536cda698db61bd89c551c1"},
+    {file = "scikit_learn-1.5.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:643964678f4b5fbdc95cbf8aec638acc7aa70f5f79ee2cdad1eec3df4ba6ead8"},
+    {file = "scikit_learn-1.5.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ca64b3089a6d9b9363cd3546f8978229dcbb737aceb2c12144ee3f70f95684b7"},
+    {file = "scikit_learn-1.5.2-cp39-cp39-win_amd64.whl", hash = "sha256:3bed4909ba187aca80580fe2ef370d9180dcf18e621a27c4cf2ef10d279a7efe"},
+    {file = "scikit_learn-1.5.2.tar.gz", hash = "sha256:b4237ed7b3fdd0a4882792e68ef2545d5baa50aca3bb45aa7df468138ad8f94d"},
 ]
 
 [package.dependencies]
@@ -2839,11 +2844,11 @@ threadpoolctl = ">=3.1.0"
 [package.extras]
 benchmark = ["matplotlib (>=3.3.4)", "memory_profiler (>=0.57.0)", "pandas (>=1.1.5)"]
 build = ["cython (>=3.0.10)", "meson-python (>=0.16.0)", "numpy (>=1.19.5)", "scipy (>=1.6.0)"]
-docs = ["Pillow (>=7.1.2)", "matplotlib (>=3.3.4)", "memory_profiler (>=0.57.0)", "numpydoc (>=1.2.0)", "pandas (>=1.1.5)", "plotly (>=5.14.0)", "polars (>=0.20.23)", "pooch (>=1.6.0)", "pydata-sphinx-theme (>=0.15.3)", "scikit-image (>=0.17.2)", "seaborn (>=0.9.0)", "sphinx (>=7.3.7)", "sphinx-copybutton (>=0.5.2)", "sphinx-design (>=0.5.0)", "sphinx-gallery (>=0.16.0)", "sphinx-prompt (>=1.4.0)", "sphinx-remove-toctrees (>=1.0.0.post1)", "sphinxcontrib-sass (>=0.3.4)", "sphinxext-opengraph (>=0.9.1)"]
+docs = ["Pillow (>=7.1.2)", "matplotlib (>=3.3.4)", "memory_profiler (>=0.57.0)", "numpydoc (>=1.2.0)", "pandas (>=1.1.5)", "plotly (>=5.14.0)", "polars (>=0.20.30)", "pooch (>=1.6.0)", "pydata-sphinx-theme (>=0.15.3)", "scikit-image (>=0.17.2)", "seaborn (>=0.9.0)", "sphinx (>=7.3.7)", "sphinx-copybutton (>=0.5.2)", "sphinx-design (>=0.5.0)", "sphinx-design (>=0.6.0)", "sphinx-gallery (>=0.16.0)", "sphinx-prompt (>=1.4.0)", "sphinx-remove-toctrees (>=1.0.0.post1)", "sphinxcontrib-sass (>=0.3.4)", "sphinxext-opengraph (>=0.9.1)"]
 examples = ["matplotlib (>=3.3.4)", "pandas (>=1.1.5)", "plotly (>=5.14.0)", "pooch (>=1.6.0)", "scikit-image (>=0.17.2)", "seaborn (>=0.9.0)"]
 install = ["joblib (>=1.2.0)", "numpy (>=1.19.5)", "scipy (>=1.6.0)", "threadpoolctl (>=3.1.0)"]
 maintenance = ["conda-lock (==2.5.6)"]
-tests = ["black (>=24.3.0)", "matplotlib (>=3.3.4)", "mypy (>=1.9)", "numpydoc (>=1.2.0)", "pandas (>=1.1.5)", "polars (>=0.20.23)", "pooch (>=1.6.0)", "pyamg (>=4.0.0)", "pyarrow (>=12.0.0)", "pytest (>=7.1.2)", "pytest-cov (>=2.9.0)", "ruff (>=0.2.1)", "scikit-image (>=0.17.2)"]
+tests = ["black (>=24.3.0)", "matplotlib (>=3.3.4)", "mypy (>=1.9)", "numpydoc (>=1.2.0)", "pandas (>=1.1.5)", "polars (>=0.20.30)", "pooch (>=1.6.0)", "pyamg (>=4.0.0)", "pyarrow (>=12.0.0)", "pytest (>=7.1.2)", "pytest-cov (>=2.9.0)", "ruff (>=0.2.1)", "scikit-image (>=0.17.2)"]
 
 [[package]]
 name = "scipy"
@@ -2889,27 +2894,27 @@ test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeo
 
 [[package]]
 name = "sentence-transformers"
-version = "3.0.1"
+version = "3.1.0"
 description = "Multilingual text embeddings"
 optional = true
-python-versions = ">=3.8.0"
+python-versions = ">=3.8"
 files = [
-    {file = "sentence_transformers-3.0.1-py3-none-any.whl", hash = "sha256:01050cc4053c49b9f5b78f6980b5a72db3fd3a0abb9169b1792ac83875505ee6"},
-    {file = "sentence_transformers-3.0.1.tar.gz", hash = "sha256:8a3d2c537cc4d1014ccc20ac92be3d6135420a3bc60ae29a3a8a9b4bb35fbff6"},
+    {file = "sentence_transformers-3.1.0-py3-none-any.whl", hash = "sha256:94ff19c478ada7340ee8bd5ed46db1e322f8c98a16b04a337634956ac9d4530d"},
+    {file = "sentence_transformers-3.1.0.tar.gz", hash = "sha256:5e5b7bd84c634c11cb127b840ff96215a456de2dc9c5ecf97ecfa67002b1116f"},
 ]
 
 [package.dependencies]
-huggingface-hub = ">=0.15.1"
-numpy = "*"
+huggingface-hub = ">=0.19.3"
+numpy = "<2.0.0"
 Pillow = "*"
 scikit-learn = "*"
 scipy = "*"
 torch = ">=1.11.0"
 tqdm = "*"
-transformers = ">=4.34.0,<5.0.0"
+transformers = ">=4.38.0,<5.0.0"
 
 [package.extras]
-dev = ["accelerate (>=0.20.3)", "datasets", "pre-commit", "pytest", "ruff (>=0.3.0)"]
+dev = ["accelerate (>=0.20.3)", "datasets", "pre-commit", "pytest", "pytest-cov"]
 train = ["accelerate (>=0.20.3)", "datasets"]
 
 [[package]]
@@ -3595,6 +3600,28 @@ files = [
 
 [package.dependencies]
 typing-extensions = "*"
+
+[[package]]
+name = "torch-neuron"
+version = "1.12.1.2.9.6.0"
+description = "UNKNOWN"
+optional = false
+python-versions = "*"
+files = [
+    {file = "torch_neuron-1.12.1.2.9.6.0-py3-none-linux_x86_64.whl", hash = "sha256:1d178859c40d623552ff54ace542cd8c1f4784cf3a25bb6675273cd10065c762"},
+]
+
+[package.dependencies]
+torch = "1.12.1"
+
+[package.extras]
+cc = ["neuron-cc"]
+experimental = ["fvcore"]
+
+[package.source]
+type = "legacy"
+url = "https://pip.repos.neuron.amazonaws.com"
+reference = "aws-neuron"
 
 [[package]]
 name = "tqdm"
