@@ -172,9 +172,9 @@ class LeadJournalistsSettings(OnclusiveBaseSettings):
         "pagerank",
         "publication_details.publication_tier",
     ]
-    PAGE_RANK_THRESHOLD: int = 1
+    PAGE_RANK_THRESHOLD: int = 4
     PUBLICATION_TIER_THRESHOLD: int = 3
-    AUTHOR_FREQUENCY_THRESHOLD: int = 1
+    AUTHOR_FREQUENCY_THRESHOLD: int = 2
     CITATIONS_THRESHOLD: int = 2
 
 
