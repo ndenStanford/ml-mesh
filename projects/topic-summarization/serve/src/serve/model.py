@@ -324,7 +324,6 @@ class ServedTopicModel(ServedModel):
                 for c, f in citations_frequency.items()
                 if f >= settings.CITATIONS_THRESHOLD
             }
-            logger.debug(f"citations frequency : {citations_frequency}")
 
             author_list = []
             high_pagerank_authors = {}
@@ -352,9 +351,7 @@ class ServedTopicModel(ServedModel):
                         pagerank,
                     )
 
-                publication_tier = attributes.get(
-                    "publication_details.publication_tier", 5
-                )
+                publication_tier = attributes.get("publication_tier", 3)
                 # Check if publication tier is lower than or equal the threshold
                 if publication_tier < settings.PUBLICATION_TIER_THRESHOLD:
                     top_publication_tier_authors[author] = min(
@@ -389,6 +386,7 @@ class ServedTopicModel(ServedModel):
             #     f"Top publication tier authors : {top_publication_tier_authors}"
             # )
             # logger.debug(f"Most cited authors: {most_cited_authors}")
+            # logger.debug(f"citations frequency : {citations_frequency}")
             # logger.debug(f"lead journalists: {lead_journalists}")
 
             return lead_journalists
