@@ -453,6 +453,6 @@ def test_retrieve_lead_journalists_if_exists(
     """Test leading journalist function."""
     model = ServedTopicModel()
     res = model.retrieve_lead_journalists_if_exists(
-        leading_journalists_attributes_samples
+        leading_journalists_attributes_samples, {}
     )
     assert set(res) == set(leading_journalists_expected_output)
