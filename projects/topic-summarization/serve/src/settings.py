@@ -175,6 +175,7 @@ class LeadJournalistsSettings(OnclusiveBaseSettings):
     PAGE_RANK_THRESHOLD: int = 1
     PUBLICATION_TIER_THRESHOLD: int = 5
     AUTHOR_FREQUENCY_THRESHOLD: int = 1
+    CITATIONS_THRESHOLD: int = 2
 
 
 class GlobalSettings(
