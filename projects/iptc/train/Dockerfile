@@ -12,14 +12,14 @@ ENV HOME="${PROJECT_DIR}"
 
 # create non root user (currently not provided in gpu base)
 RUN useradd -l -M -s /bin/bash -N -u 1000 app \
-&& mkdir -p "${HOME}" \
-&& mkdir -p "${POETRY_HOME}" \
-&& chown -R ${USER}:users "${HOME}" \
-&& chown -R ${USER}:users "${POETRY_HOME}" \
-&& chown -R ${USER}:users /usr/local/ \
-&& chown -R ${USER}:users /pyenv/
-USER app
+ && mkdir -p "${HOME}" \
+ && mkdir -p "${POETRY_HOME}" \
+ && chown -R ${USER}:users "${HOME}" \
+ && chown -R ${USER}:users "${POETRY_HOME}" \
+ && chown -R ${USER}:users /usr/local/ \
+ && chown -R ${USER}:users /pyenv/
 
+USER app
 
 # setup workspace
 WORKDIR "/"
@@ -35,7 +35,6 @@ COPY --chown=${USER}:users libs/ libs/
 COPY --chown=${USER}:users "${HOME}/src" "${HOME}/src"
 
 WORKDIR "${HOME}"
-
 
 RUN poetry install --no-interaction --no-ansi --only main && \
     rm -rf ~/.cache/pypoetry/cache && \
