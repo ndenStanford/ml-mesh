@@ -19,6 +19,11 @@ from sklearn.model_selection import train_test_split
 
 # Internal libraries
 from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_SECOND,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+)
 from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
     NAME_MAPPING_DICT_SECOND,
@@ -30,7 +35,6 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
-from src.class_dict import CLASS_DICT_SECOND, ID_TO_LEVEL, ID_TO_TOPIC
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -137,7 +141,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         elif self.level == 3:
             self.second_level_root = self.iptc_label
             self.first_level_root = find_category_for_subcategory(
-                CLASS_DICT_SECOND, self.second_level_root
+                CANDIDATE_DICT_SECOND, self.second_level_root
             )
         self.model_name = self.model_card.model_params.model_name
         self.num_labels = find_num_labels(
