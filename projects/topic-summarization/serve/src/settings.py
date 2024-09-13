@@ -163,6 +163,15 @@ class ImpactQuantificationSettings(OnclusiveBaseSettings):
     mf_tau_cutoff: float = 0.8
 
 
+class LeadJournalistsSettings(OnclusiveBaseSettings):
+    """Lead journalists Settings."""
+
+    PAGE_RANK_THRESHOLD: int = 4
+    PUBLICATION_TIER_THRESHOLD: int = 3
+    AUTHOR_FREQUENCY_THRESHOLD: int = 2
+    CITATIONS_THRESHOLD: int = 2
+
+
 class GlobalSettings(
     ServerModelSettings,
     TrackedGithubActionsSpecs,
@@ -172,6 +181,7 @@ class GlobalSettings(
     DynamoDBSettings,
     ImpactQuantificationSettings,
     TrendSummarizationSettings,
+    LeadJournalistsSettings,
 ):
     """Global server settings."""
 
