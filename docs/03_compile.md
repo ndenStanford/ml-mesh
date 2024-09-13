@@ -14,9 +14,9 @@ A project's `compile` container image provides the code and runtime environment 
 
 Each of the 4 steps corresponds to a (set of) python module(s):
 
-1. `src/download_uncompiled_model.py`
-2. `src/compile_model.py`
-3. Regression test suite inside `src/test_compiled_model` directory:
+1. `src/download.py`
+2. `src/compile.py`
+3. Regression test suite inside `src/tests` directory:
    - `pytest.ini`
    - `conftest.py`
    - `compiled_model_test.py`
