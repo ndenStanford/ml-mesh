@@ -79,6 +79,7 @@ services:
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
+    env_file: train/config/${DEPLOYMENT:-prod}.env
 
   compile-download-model:
     volumes:

@@ -121,11 +121,6 @@ services:
     profiles: [compile, unit, integration, pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -148,11 +143,6 @@ services:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -167,11 +157,6 @@ services:
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -184,28 +169,8 @@ services:
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
-      GITHUB_ACTOR: ${GITHUB_ACTOR}
-      GITHUB_ENV: ${GITHUB_ENV}
-      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
-      GITHUB_JOB: ${GITHUB_JOB}
-      GITHUB_REF: ${GITHUB_REF}
-      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
-      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
-      GITHUB_SHA: ${GITHUB_SHA}
-      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
-      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
-      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
-      RUNNER_ARCH: ${RUNNER_ARCH}
-      RUNNER_NAME: ${RUNNER_NAME}
-      RUNNER_OS: ${RUNNER_OS}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/${DEPLOYMENT:-prod}.env
     hostname: onclusive-ml
     networks: [onclusive-net]

@@ -144,6 +144,7 @@ services:
         target: /projects/sentiment/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    env_file: compile/config/dev.env
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]

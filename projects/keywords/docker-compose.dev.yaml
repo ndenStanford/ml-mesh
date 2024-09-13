@@ -143,6 +143,7 @@ services:
         target: /projects/keywords/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/keywords-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    env_file: compile/config/dev.env
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
