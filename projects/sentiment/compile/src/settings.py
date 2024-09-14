@@ -113,7 +113,10 @@ class TrackedModelCard(TrackedModelCard):
     """Model card."""
 
     model: ModelTrackedSettings = ModelTrackedSettings()
+    compilation_settings: CompilationTestSettings = PipelineCompilationSettings()
     compilation_test_settings: CompilationTestSettings = CompilationTestSettings()
+    model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
+    tokenizer_settings: TokenizerSettings = TokenizerSettings()
 
 
 class GlobalSettings(
@@ -126,8 +129,6 @@ class GlobalSettings(
     OnclusiveLogSettings,
 ):
     """Global server settings."""
-
-    model_card: TrackedModelCard = TrackedModelCard()
 
 
 @lru_cache

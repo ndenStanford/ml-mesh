@@ -1,8 +1,5 @@
 """Download trained model."""
 
-# Standard Library
-from typing import Dict
-
 # Internal libraries
 from onclusiveml.compile.constants import CompileWorkflowTasks
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -26,17 +23,21 @@ def main(settings: OnclusiveBaseSettings) -> None:
     model_version = TrackedModelVersion(
         with_id=settings.with_id,
         mode=settings.mode,
-        api_token=settings.api_token.get_secret_value(),
+        api_token=(
+            settings.api_token.get_secret_value()
+            if settings.api_token is not None
+            else None
+        ),
         project=settings.project,
     )
     # get model card
-    model_card: Dict = model_version.download_config_from_model_version(
+    model_card: TrackedModelCard = model_version.download_config_from_model_version(
         "model/model_card"
     )
     # download model artifact
     model_version.download_directory_from_model_version(
         local_directory_path=settings.model_directory(CompileWorkflowTasks.DOWNLOAD),
-        neptune_attribute_path=model_card["model_artifact_attribute_path"],
+        neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
 
     logger.info(

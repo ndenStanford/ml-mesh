@@ -26,7 +26,11 @@ def main(settings: OnclusiveBaseSettings) -> None:
     # --- upload compiled model
     compiled_model_version = TrackedModelVersion(
         model=settings.compiled_model,
-        api_token=settings.api_token.get_secret_value(),
+        api_token=(
+            settings.api_token.get_secret_value()
+            if settings.api_token is not None
+            else None
+        ),
         project=settings.project,
     )
 
