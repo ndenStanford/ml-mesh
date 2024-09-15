@@ -34,9 +34,20 @@ def test_client():
 
 
 @pytest.fixture
-def test_df():
+def test_df_path_raw():
+    """Path to raw dataframe."""
+    return "tests/integration/data/abstractive_summarization_benchmark_dataset.csv"
+
+
+@pytest.fixture
+def test_df_path_enriched():
+    """Path to enriched dataframe."""
+    return "tests/integration/data/abstractive_summarization_benchmark_dataset_enriched.csv"
+
+
+@pytest.fixture
+def test_df(test_df_path_raw):
     """Query dataframe from Redshift."""
     # Standard Library
-    path = "tests/integration/data/abstractive_summarization_benchmark_dataset.csv"
-    df = pd.read_csv(path)
+    df = pd.read_csv(test_df_path_raw)
     return df.head(2)

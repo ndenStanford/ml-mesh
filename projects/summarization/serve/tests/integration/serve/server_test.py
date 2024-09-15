@@ -124,7 +124,7 @@ def test_no_input_language(test_client, payload):
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
 
 
-def test_prompt_evaluation(test_client, test_df):
+def test_prompt_evaluation(test_client, test_df, test_df_path_enriched):
     """Test the prompt performance using LLM."""
 
     def enrich_row(row):
@@ -144,13 +144,12 @@ def test_prompt_evaluation(test_client, test_df):
         return response.json()["data"]["attributes"]["summary"]
 
     test_df["summary"] = test_df.apply(enrich_row, axis=1)
-    path = "tests/integration/data/abstractive_summarization_benchmark_dataset_enriched.csv"
-    test_df.to_csv(path)
+    test_df.to_csv(test_df_path_enriched)
 
     dataset = EvaluationDataset()
     dataset.add_test_cases_from_csv_file(
         # file_path is the absolute path to you .csv file
-        file_path=path,
+        file_path=test_df_path_enriched,
         input_col_name="content",
         actual_output_col_name="generated_summary",
     )
