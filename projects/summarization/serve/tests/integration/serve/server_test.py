@@ -2,6 +2,8 @@
 
 # 3rd party libraries
 import pytest
+from deepeval.dataset import EvaluationDataset
+from deepeval.metrics import SummarizationMetric
 from fastapi import status
 
 # Internal libraries
@@ -47,7 +49,6 @@ content = """
 def test_integration_summarization_model(test_client, payload):
     """Integration test for SummarizationServedModel."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
 
@@ -119,6 +120,43 @@ def test_invalid_language(test_client, payload):
 def test_no_input_language(test_client, payload):
     """Test when the input_language parameter is not provided."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
+
+
+def test_prompt_evaluation(test_client, test_df):
+    """Test the prompt performance using LLM."""
+
+    def enrich_row(row):
+        content = row["content"]
+        payload = {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "output_language": "en",
+                    "summary_type": "section",
+                    "desired_length": 50,
+                },
+            }
+        }
+        response = test_client.post("/summarization/v2/predict", json=payload)
+        return response.json()["data"]["attributes"]["summary"]
+
+    test_df["summary"] = test_df.apply(enrich_row, axis=1)
+    path = "tests/integration/data/abstractive_summarization_benchmark_dataset_enriched.csv"
+    test_df.to_csv(path)
+
+    dataset = EvaluationDataset()
+    dataset.add_test_cases_from_csv_file(
+        # file_path is the absolute path to you .csv file
+        file_path=path,
+        input_col_name="content",
+        actual_output_col_name="generated_summary",
+    )
+
+    metric = SummarizationMetric(threshold=0.5, model="gpt-4", verbose_mode=True)
+
+    result = dataset.evaluate([metric])
+    precent_success = sum([r.success for r in result]) / len(result)
+    assert precent_success > 0.4

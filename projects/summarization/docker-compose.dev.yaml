@@ -111,6 +111,7 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -163,7 +164,7 @@ services:
         APP_COMPONENT: backend
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [serve, integration, debug]
     ports:
       - 4000:4000

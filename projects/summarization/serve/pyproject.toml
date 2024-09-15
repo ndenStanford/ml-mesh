@@ -7,8 +7,10 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.9.19"
-openai = "0.27.2"
+openai = ">1.6.1"
 regex = "2022.10.31"
+deepeval = "1.1.6"
+pandas = "<2.2.2"
 
 core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
