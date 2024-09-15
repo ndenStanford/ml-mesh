@@ -107,10 +107,13 @@ class CompiledIPTC:
         )
 
     @classmethod
-    def from_pretrained(cls, directory: Union[Path, str]) -> "CompiledIPTC":
+    def from_pretrained(
+        cls, project: str, directory: Union[Path, str]
+    ) -> "CompiledIPTC":
         """Load compilediptc object from specfied directory.
 
         Args:
+            project (str): IPTC neptune project.
             directory (Union[Path, str]): The directory path contained the pretrained compiled
                 iptc pipeline
         Returns:
@@ -121,6 +124,7 @@ class CompiledIPTC:
         )
 
         return cls(
+            project=project,
             compiled_iptc_pipeline=compiled_iptc_pipeline,
         )
 
