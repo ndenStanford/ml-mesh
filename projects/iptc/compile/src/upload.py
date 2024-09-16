@@ -69,8 +69,10 @@ def main(settings: OnclusiveBaseSettings) -> None:
     )
 
     if trained_model_version.exists("model/compiled_model_versions"):
-        compiled_model_versions = base_model_version.download_config_from_model_version(
-            neptune_attribute_path="model/compiled_model_versions"
+        compiled_model_versions = (
+            trained_model_version.download_config_from_model_version(
+                neptune_attribute_path="model/compiled_model_versions"
+            )
         )
     else:
         compiled_model_versions = []
@@ -92,7 +94,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
     logger.info(
         f"Succesfully added new compiled model {compiled_model_version._sys_id} to the "
         f"list of compiled model versions of the uncompiled model "
-        f"{base_model_specs.with_id}"
+        f"{settings.with_id}"
     )
 
 
