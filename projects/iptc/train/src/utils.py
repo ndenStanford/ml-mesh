@@ -6,12 +6,12 @@ import re
 # 3rd party libraries
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
-# Source
-from src.class_dict import (
-    CLASS_DICT_FIRST,
-    CLASS_DICT_FOURTH,
-    CLASS_DICT_SECOND,
-    CLASS_DICT_THIRD,
+# Internal libraries
+from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
 )
 
 
@@ -31,13 +31,13 @@ def find_num_labels(  # type: ignore[no-untyped-def]
 ):
     """Retrieve the number of labels from the CLASS_DICT file."""
     if level == 1:
-        return len(CLASS_DICT_FIRST["root"])
+        return len(CANDIDATE_DICT_FIRST["root"])
     elif level == 2:
-        return len(CLASS_DICT_SECOND[first_level_root])
+        return len(CANDIDATE_DICT_SECOND[first_level_root])
     elif level == 3:
-        return len(CLASS_DICT_THIRD[second_level_root])
+        return len(CANDIDATE_DICT_THIRD[second_level_root])
     elif level == 4:
-        return len(CLASS_DICT_FOURTH[third_level_root])
+        return len(CANDIDATE_DICT_FOURTH[third_level_root])
 
 
 def extract_model_id(project: str) -> str:
@@ -62,10 +62,12 @@ def extract_model_id(project: str) -> str:
 def find_category_for_subcategory(  # type: ignore[no-untyped-def]
     class_dict, target_subcategory
 ):
-    """Function to find the top-level category for a given sub-category."""
+    """Function to find the top-level category for a given sub-category by searching for the 'name' field."""
     for top_category, subcategories in class_dict.items():
-        if target_subcategory in subcategories.values():
-            return top_category
+        for subcategory in subcategories.values():
+            if subcategory["name"] == target_subcategory:
+                return top_category
+    return None  # Return None if the subcategory is not found
 
 
 def topic_conversion(df):  # type: ignore[no-untyped-def]

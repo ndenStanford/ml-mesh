@@ -19,6 +19,17 @@ from sklearn.model_selection import train_test_split
 
 # Internal libraries
 from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+)
+from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
+    NAME_MAPPING_DICT_FIRST,
+    NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
+)
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
@@ -26,15 +37,6 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
-from src.class_dict import (
-    CLASS_DICT_SECOND,
-    CLASS_DICT_THIRD,
-    ID_TO_LEVEL,
-    ID_TO_TOPIC,
-    NAME_MAPPING_DICT_FIRST,
-    NAME_MAPPING_DICT_SECOND,
-    NAME_MAPPING_DICT_THIRD,
-)
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -67,12 +69,18 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.model_id = extract_model_id(tracked_model_specs.project)
         self.level = ID_TO_LEVEL[self.model_id]
         self.iptc_label = ID_TO_TOPIC[self.model_id]
-        if self.iptc_label in NAME_MAPPING_DICT_FIRST.keys():
-            filtered_value = NAME_MAPPING_DICT_FIRST[self.iptc_label]
-        elif self.iptc_label in NAME_MAPPING_DICT_SECOND.keys():
-            filtered_value = NAME_MAPPING_DICT_SECOND[self.iptc_label]
-        elif self.iptc_label in NAME_MAPPING_DICT_THIRD.keys():
-            filtered_value = NAME_MAPPING_DICT_THIRD[self.iptc_label]
+        # Reverse the keys and values of both dictionaries
+        reversed_name_mapping_first = {v: k for k, v in NAME_MAPPING_DICT_FIRST.items()}
+        reversed_name_mapping_second = {
+            v: k for k, v in NAME_MAPPING_DICT_SECOND.items()
+        }
+        reversed_name_mapping_third = {v: k for k, v in NAME_MAPPING_DICT_THIRD.items()}
+        if self.iptc_label in reversed_name_mapping_first.keys():
+            filtered_value = reversed_name_mapping_first[self.iptc_label]
+        elif self.iptc_label in reversed_name_mapping_second.keys():
+            filtered_value = reversed_name_mapping_second[self.iptc_label]
+        elif self.iptc_label in reversed_name_mapping_third.keys():
+            filtered_value = reversed_name_mapping_third[self.iptc_label]
         else:
             filtered_value = self.iptc_label
         # Access the is_on_demand flag from data_fetch_params
@@ -151,15 +159,15 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         elif self.level == 3:
             self.second_level_root = self.iptc_label
             self.first_level_root = find_category_for_subcategory(
-                CLASS_DICT_SECOND, self.second_level_root
+                CANDIDATE_DICT_SECOND, self.second_level_root
             )
         elif self.level == 4:
             self.third_level_root = self.iptc_label
             self.second_level_root = find_category_for_subcategory(
-                CLASS_DICT_THIRD, self.third_level_root
+                CANDIDATE_DICT_THIRD, self.third_level_root
             )
             self.first_level_root = find_category_for_subcategory(
-                CLASS_DICT_SECOND, self.second_level_root
+                CANDIDATE_DICT_SECOND, self.second_level_root
             )
         self.model_name = self.model_card.model_params.model_name
         self.num_labels = find_num_labels(

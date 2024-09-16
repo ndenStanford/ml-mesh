@@ -3,12 +3,12 @@
 # ML libs
 import torch
 
-# Source
-from src.class_dict import (
-    CLASS_DICT_FIRST,
-    CLASS_DICT_FOURTH,
-    CLASS_DICT_SECOND,
-    CLASS_DICT_THIRD,
+# Internal libraries
+from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
 )
 
 
@@ -63,42 +63,53 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         Raises:
             Exception: If the classification level is undefined.
         """
+
+        def get_index_from_dict(candidate_dict, label):
+            """Helper function to get the index of a label from a nested dictionary's 'name' field."""
+            return list(
+                candidate["name"] for candidate in candidate_dict.values()
+            ).index(label)
+
         if self.is_on_demand:  # If on-demand, use the LLM labels
             if self.level == 1:
-                return list(CLASS_DICT_FIRST["root"].values()).index(
-                    self.df.iloc[idx]["topic_1_llm"]
+                return get_index_from_dict(
+                    CANDIDATE_DICT_FIRST["root"], self.df.iloc[idx]["topic_1_llm"]
                 )
             elif self.level == 2:
-                return list(CLASS_DICT_SECOND[self.first_level_root].values()).index(
-                    self.df.iloc[idx]["topic_2_llm"]
+                return get_index_from_dict(
+                    CANDIDATE_DICT_SECOND[self.first_level_root],
+                    self.df.iloc[idx]["topic_2_llm"],
                 )
             elif self.level == 3:
-                return list(CLASS_DICT_THIRD[self.second_level_root].values()).index(
-                    self.df.iloc[idx]["topic_3_llm"]
+                return get_index_from_dict(
+                    CANDIDATE_DICT_THIRD[self.second_level_root],
+                    self.df.iloc[idx]["topic_3_llm"],
                 )
             elif self.level == 4:
-                return list(CLASS_DICT_FOURTH[self.third_level_root].values()).index(
-                    self.df.iloc[idx]["topic_4_llm"]
-                )
+                return list(
+                    CANDIDATE_DICT_FOURTH[self.third_level_root].values()
+                ).index(self.df.iloc[idx]["topic_4_llm"])
             else:
                 raise ValueError("undefined level")
         else:  # If not on-demand, use the original labels
             if self.level == 1:
-                return list(CLASS_DICT_FIRST["root"].values()).index(
-                    self.df.iloc[idx]["topic_1"]
+                return get_index_from_dict(
+                    CANDIDATE_DICT_FIRST["root"], self.df.iloc[idx]["topic_1"]
                 )
             elif self.level == 2:
-                return list(CLASS_DICT_SECOND[self.first_level_root].values()).index(
-                    self.df.iloc[idx]["topic_2"]
+                return get_index_from_dict(
+                    CANDIDATE_DICT_SECOND[self.first_level_root],
+                    self.df.iloc[idx]["topic_2"],
                 )
             elif self.level == 3:
-                return list(CLASS_DICT_THIRD[self.second_level_root].values()).index(
-                    self.df.iloc[idx]["topic_3"]
+                return get_index_from_dict(
+                    CANDIDATE_DICT_THIRD[self.second_level_root],
+                    self.df.iloc[idx]["topic_3"],
                 )
             elif self.level == 4:
-                return list(CLASS_DICT_FOURTH[self.third_level_root].values()).index(
-                    self.df.iloc[idx]["topic_4"]
-                )
+                return list(
+                    CANDIDATE_DICT_FOURTH[self.third_level_root].values()
+                ).index(self.df.iloc[idx]["topic_4"])
             else:
                 raise ValueError("undefined level")
 
