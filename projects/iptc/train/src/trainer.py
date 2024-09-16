@@ -19,6 +19,15 @@ from sklearn.model_selection import train_test_split
 
 # Internal libraries
 from onclusiveml.feature_store import FeatureStoreParams
+from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_SECOND,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+)
+from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
+    NAME_MAPPING_DICT_FIRST,
+    NAME_MAPPING_DICT_SECOND,
+)
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
@@ -26,7 +35,6 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
-from src.class_dict import CLASS_DICT_SECOND, ID_TO_LEVEL, ID_TO_TOPIC
 from src.dataset import IPTCDataset
 from src.utils import (
     compute_metrics,
@@ -59,6 +67,20 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.model_id = extract_model_id(tracked_model_specs.project)
         self.level = ID_TO_LEVEL[self.model_id]
         self.iptc_label = ID_TO_TOPIC[self.model_id]
+        # Reverse the keys and values of both dictionaries
+        reversed_name_mapping_first = {v: k for k, v in NAME_MAPPING_DICT_FIRST.items()}
+        reversed_name_mapping_second = {
+            v: k for k, v in NAME_MAPPING_DICT_SECOND.items()
+        }
+
+        if self.iptc_label in reversed_name_mapping_first.keys():
+            filtered_value = reversed_name_mapping_first[self.iptc_label]
+        elif self.iptc_label in reversed_name_mapping_second.keys():
+            filtered_value = reversed_name_mapping_second[self.iptc_label]
+        else:
+            filtered_value = self.iptc_label
+        # Access the is_on_demand flag from data_fetch_params
+        self.is_on_demand = data_fetch_params.is_on_demand
         # Update data_fetch_params dynamically
         self.data_fetch_params = data_fetch_params
         data_fetch_configurations = {
@@ -71,7 +93,6 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "comparison_operators": [],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
-                    "topic_1",
                 ],
             },
             2: {
@@ -79,12 +100,11 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "feature_view_name": "iptc_second_level_feature_view",
                 "redshift_table": "iptc_second_level",
                 "filter_columns": ["topic_1"],
-                "filter_values": [self.iptc_label],
+                "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
                     "topic_1",
-                    "topic_2",
                 ],
             },
             3: {
@@ -92,13 +112,12 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 "feature_view_name": "iptc_third_level_feature_view",
                 "redshift_table": "iptc_third_level",
                 "filter_columns": ["topic_2"],
-                "filter_values": [self.iptc_label],
+                "filter_values": [filtered_value],
                 "comparison_operators": ["equal"],
                 "non_nullable_columns": [
                     model_card.model_params.selected_text,
                     "topic_1",
                     "topic_2",
-                    "topic_3",
                 ],
             },
         }
@@ -122,7 +141,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         elif self.level == 3:
             self.second_level_root = self.iptc_label
             self.first_level_root = find_category_for_subcategory(
-                CLASS_DICT_SECOND, self.second_level_root
+                CANDIDATE_DICT_SECOND, self.second_level_root
             )
         self.model_name = self.model_card.model_params.model_name
         self.num_labels = find_num_labels(
@@ -163,9 +182,9 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         # Log the size and class distribution after dropping nulls
         num_datapoints = len(self.dataset_df)
         self.logger.info(f"Number of datapoints after dropping nulls: {num_datapoints}")
-        class_distribution = self.dataset_df[f"topic_{self.level}"].value_counts(
-            normalize=True
-        )
+        class_distribution = self.dataset_df[
+            f"topic_{self.level}_llm" if self.is_on_demand else f"topic_{self.level}"
+        ].value_counts(normalize=True)
         self.logger.info(
             f"Class distribution after dropping nulls: \n{class_distribution}"
         )
@@ -191,6 +210,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.first_level_root,
             self.second_level_root,
             self.model_card.model_params.max_length,
+            is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
         self.eval_dataset = IPTCDataset(
             self.eval_df,
@@ -200,6 +220,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.first_level_root,
             self.second_level_root,
             self.model_card.model_params.max_length,
+            is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
 
     def train(self) -> None:
@@ -233,7 +254,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
     def save(self) -> None:
         """Save the model."""
         self.iptc_model_local_dir = os.path.join(
-            self.model_card.local_output_dir, f"{self.tracked_model_specs.model}"
+            self.model_card.local_output_dir, f"{self.tracked_model_settings.model}"
         )
         self.trainer.save_model(self.iptc_model_local_dir)
 
@@ -256,6 +277,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.first_level_root,
                 self.second_level_root,
                 self.model_card.model_params.max_length,
+                is_on_demand=self.is_on_demand,  # Pass the on-demand flag
             )
             sample_predictions = self.predict(sample_dataset)
 
