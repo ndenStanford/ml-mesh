@@ -1,12 +1,14 @@
 """IPTC name mapping dictionary from legacy to current label."""
 
 NAME_MAPPING_DICT_FIRST = {
+    "arts, culture and entertainment": "arts, culture, entertainment and media",
     "conflicts, war and peace": "conflict, war and peace",
 }
 
 NAME_MAPPING_DICT_SECOND = {
     # Category: 'crime, law and justice'
     "justice and rights": "justice",  # Renamed
+    "religious facilities": "religious facility",
 }
 
 NAME_MAPPING_DICT_THIRD = {
@@ -41,4 +43,5 @@ NAME_MAPPING_DICT_THIRD = {
     "Dating and Relationships": "Dating and Relationships",  # Renamed
     "parenting": "parenting",  # Renamed
     "pregnancy and childbirth": "pregnancy and childbirth",  # Renamed
+    "bullfighting ": "bullfighting",
 }

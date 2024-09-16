@@ -25,13 +25,15 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      SAVE_ARTIFACT: ${SAVE_ARTIFACT}
     env_file: train/config/dev.env
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -52,10 +54,14 @@ services:
       - 5678:5678
     profiles: [debug]
     environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -68,9 +74,6 @@ services:
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -162,7 +165,7 @@ services:
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     ports:
       - 4000:4000
     volumes:
@@ -204,7 +207,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -223,7 +226,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
