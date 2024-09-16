@@ -2,7 +2,6 @@
 
 # Standard Library
 import os
-import re
 from pathlib import Path
 from typing import List, Union
 
@@ -24,41 +23,6 @@ from onclusiveml.nlp import preprocess
 logger = get_default_logger(__name__, level=20)
 
 
-def extract_model_id(project: str) -> str:
-    """Extracts the model ID from a project string.
-
-    Args:
-        project (str): The project string, e.g., 'onclusive/iptc-00000000'.
-
-    Returns:
-        str: The extracted model ID.
-
-    Raises:
-        ValueError: If the model ID cannot be found in the project string.
-    """
-    match = re.search(r"onclusive/iptc-(.+)", project)
-    if match:
-        return match.group(1)  # Return the matched group, which is the model ID
-    else:
-        raise ValueError(f"Model ID not found in project string: '{project}'")
-
-
-def extract_number_from_label(label: str) -> int:
-    """Extracts the numeric part from a label string.
-
-    Args:
-        label (str): The label string, e.g., 'LABEL_0'.
-
-    Returns:
-        int: The extracted number as an integer.
-    """
-    match = re.search(r"\d+$", label)
-    if match:
-        return int(match.group())
-    else:
-        raise ValueError(f"Invalid label format: {label}")
-
-
 class PostProcessOutput(OnclusiveBaseModel):
     """output data structure."""
 
@@ -68,6 +32,11 @@ class PostProcessOutput(OnclusiveBaseModel):
 
 class CompiledIPTC:
     """Class for performing iptc using neuron compiled IPTC pipeline."""
+
+    @property
+    def model_id(self) -> str:
+        """Model ID."""
+        return self._model_id
 
     def __init__(
         self,
@@ -82,7 +51,7 @@ class CompiledIPTC:
         """
         self.compiled_iptc_pipeline = compiled_iptc_pipeline
         self.unicode_strp = regex.compile(r"\p{P}")
-        self.model_id = project.split("-")[1]
+        self._model_id = project.split("-")[1]
         self.id2label = CLASS_DICT[ID_TO_TOPIC[self.model_id]]
         self.NUM_LABELS = len(self.id2label)
         self.MAX_SEQ_LENGTH = (
