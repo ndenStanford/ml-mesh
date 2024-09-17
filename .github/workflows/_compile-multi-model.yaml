@@ -190,11 +190,6 @@ jobs:
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
-            UNCOMPILED_PROJECT="${{ inputs.uncompiled-project }}" \
-            UNCOMPILED_MODEL="${{ inputs.uncompiled-model }}" \
-            UNCOMPILED_WITH_ID="${{ inputs.uncompiled-with-id }}" \
-            COMPILED_PROJECT="${{ inputs.compiled-project }}" \
-            COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Compile Model
@@ -207,11 +202,6 @@ jobs:
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
-            UNCOMPILED_PROJECT="${{ inputs.uncompiled-project }}" \
-            UNCOMPILED_MODEL="${{ inputs.uncompiled-model }}" \
-            UNCOMPILED_WITH_ID="${{ inputs.uncompiled-with-id }}" \
-            COMPILED_PROJECT="${{ inputs.compiled-project }}" \
-            COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Validate Compiled Model
@@ -225,11 +215,6 @@ jobs:
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
-            UNCOMPILED_PROJECT="${{ inputs.uncompiled-project }}" \
-            UNCOMPILED_MODEL="${{ inputs.uncompiled-model }}" \
-            UNCOMPILED_WITH_ID="${{ inputs.uncompiled-with-id }}" \
-            COMPILED_PROJECT="${{ inputs.compiled-project }}" \
-            COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
       - name: Upload Compiled Model
@@ -244,11 +229,6 @@ jobs:
             AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             ONCLUSIVEML_NEPTUNE_API_TOKEN="${{ secrets.NEPTUNE_API_TOKEN }}" \
-            UNCOMPILED_PROJECT="${{ inputs.uncompiled-project }}" \
-            UNCOMPILED_MODEL="${{ inputs.uncompiled-model }}" \
-            UNCOMPILED_WITH_ID="${{ inputs.uncompiled-with-id }}" \
-            COMPILED_PROJECT="${{ inputs.compiled-project }}" \
-            COMPILED_MODEL="${{ inputs.compiled-model }}" \
             IMAGE_TAG="${{ inputs.tag }}"
 
   stop-customized-runner:

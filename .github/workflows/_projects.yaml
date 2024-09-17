@@ -256,7 +256,7 @@ jobs:
         id: get-base-image-tag
         if: ${{ inputs.base-image != null }}
         run: |
-          echo "::set-output name=tag::$(aws ecr describe-images --region us-east-1 --repository-name python-base --query "reverse(sort_by(imageDetails,& imagePushedAt))[*].imageTags[?starts_with(@, \`${{ steps.get-base-image-tag-lookup.outputs.value }}\`) == \`true\`][] | [0]")"
+          echo "tag=$(aws ecr describe-images --region us-east-1 --repository-name ${{ inputs.base-image }} --query "reverse(sort_by(imageDetails,& imagePushedAt))[*].imageTags[?starts_with(@, \`${{ steps.get-base-image-tag-lookup.outputs.value }}\`) == \`true\`][] | [0]")" >> $GITHUB_OUTPUT
 
       - name: Build Project Docker Image | ${{ inputs.environment }}  ${{ inputs.project }}-${{ inputs.component }}
         uses: nick-fields/retry@v3

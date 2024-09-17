@@ -4,7 +4,7 @@
 from typing import Optional
 
 # 3rd party libraries
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
@@ -89,7 +89,7 @@ class TrackedModelSettings(OnclusiveBaseSettings):
     # neptune ai model registry specs
     project: str
     model: str
-    api_token: Optional[OnclusiveSecretStr] = None
+    api_token: Optional[OnclusiveSecretStr] = Field(default=None, exclude=True)
     with_id: Optional[str] = None
 
     model_config = SettingsConfigDict(env_prefix="onclusiveml_neptune_")

@@ -16,7 +16,7 @@ WORKDIR "/"
 
 # install - poetry requirements
 # hadolint ignore=DL3045
-COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ./${HOME}/
+COPY --chown=${USER}:users "${HOME}/poetry.lock" "${HOME}/pyproject.toml" ${HOME}/
 
 # copy libraries
 COPY --chown=${USER}:users libs/ libs/
@@ -29,6 +29,20 @@ WORKDIR "${HOME}"
 # required to access mounted docker volume with write permission
 # hadolint ignore=DL3002
 USER root
+
+# hadolint ignore=DL3008
+RUN apt-get update -yq && \
+    apt-get install --no-install-recommends gcc \
+                    clang \
+                    cmake \
+                    ninja-build \
+                    pkg-config \
+                    libgtk-3-dev \
+                    liblzma-dev \
+                    libstdc++-12-dev \
+                    -yq && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \

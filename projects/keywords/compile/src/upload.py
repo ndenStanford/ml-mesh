@@ -26,11 +26,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
     # --- upload compiled model
     compiled_model_version = TrackedModelVersion(
         model=settings.compiled_model,
-        api_token=(
-            settings.api_token.get_secret_value()
-            if settings.api_token is not None
-            else None
-        ),
+        api_token=settings.api_token.get_secret_value(),
         project=settings.project,
     )
 
@@ -38,7 +34,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
         config=settings.model_card.model_dump(exclude={"api_token"}),
         neptune_attribute_path="model/model_card",
     )
-    # upload compiled iptc model artifact
+    # upload compiled model artifact
     compiled_model_version.upload_directory_to_model_version(
         local_directory_path=settings.model_directory(CompileWorkflowTasks.COMPILE),
         neptune_attribute_path=settings.model_card.model_artifact_attribute_path,
