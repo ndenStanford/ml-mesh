@@ -31,6 +31,7 @@ class PredictRequestParametersSchemaV2(JsonApiSchema):
     keywords: List[str] = []
     title: Optional[bool] = False
     desired_length: int = 100
+    custom_instructions: Optional[List] = None
 
 
 class PredictResponseAttributeSchemaV2(JsonApiSchema):

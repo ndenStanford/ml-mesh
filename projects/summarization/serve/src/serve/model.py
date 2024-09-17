@@ -107,7 +107,7 @@ class SummarizationServedModel(ServedModel):
             else:
                 alias = settings.summarization_prompts[LanguageIso.EN][
                     settings.multi_article_summary
-                ]
+                ][summary_type]
         except KeyError:
             raise PromptNotFoundException(
                 language=input_language, summary_type=summary_type
