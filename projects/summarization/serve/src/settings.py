@@ -31,7 +31,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     summarization_default_model: str = "gpt-4o-mini"
     multi_article_summary: str = "multi-article-summary"
 
-    summarization_prompts: Dict[LanguageIso, Dict[str, str]] = {
+    summarization_prompts: Dict[LanguageIso, Dict[str, Union[str, Dict[str, str]]]] = {
         LanguageIso.EN: {
             "section": "ml-summarization-english",
             "bespoke": "bespokse-summary-uk",
