@@ -35,7 +35,7 @@ def download_model(settings: OnclusiveBaseSettings) -> None:
     if not os.path.isdir(settings.model_directory):
         # if the target dir does not exist, download all model artifacts for the model version to
         # local
-        print("settings.model_directory: ", settings.model_directory)
+        logger.debug("settings.model_directory: ", settings.model_directory)
 
         mv.download_directory_from_model_version(
             local_directory_path=settings.model_directory,
