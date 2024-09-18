@@ -37,6 +37,7 @@ class CrawlerItemsFeatureRegistrationParams(OnclusiveBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="crawler_items_")
 
+
 class EclrLinksFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for ECLR_LINKS."""
 
@@ -48,6 +49,7 @@ class EclrLinksFeatureRegistrationParams(OnclusiveBaseSettings):
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="eclr_links_")
+
 
 class EntityConnectionsFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for ENTITY_CONNECTIONS."""
@@ -61,6 +63,7 @@ class EntityConnectionsFeatureRegistrationParams(OnclusiveBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="entity_connections_")
 
+
 class EntityEaPerFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for ENTITY_EA_PR."""
 
@@ -72,6 +75,7 @@ class EntityEaPerFeatureRegistrationParams(OnclusiveBaseSettings):
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="entity_ea_per_")
+
 
 class EntityLinksLmdFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for ENTITY_LINKS_LMD."""
@@ -85,6 +89,7 @@ class EntityLinksLmdFeatureRegistrationParams(OnclusiveBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="entity_links_lmd_")
 
+
 class EntityLinksFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for ENTITY_LINKS."""
 
@@ -97,6 +102,7 @@ class EntityLinksFeatureRegistrationParams(OnclusiveBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="entity_links_")
 
+
 class ProfileCompanySectorsFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for PROFILE_COMPANY_SECTORS."""
 
@@ -108,6 +114,7 @@ class ProfileCompanySectorsFeatureRegistrationParams(OnclusiveBaseSettings):
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="profile_company_sectors_")
+
 
 class SearchSeedsFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for SEARCH_SEEDS."""
@@ -133,6 +140,7 @@ class DomainsFeatureRegistrationParams(OnclusiveBaseSettings):
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="domains_")
+
 
 class ProfileEntityRelationshipsFeatureRegistrationParams(OnclusiveBaseSettings):
     """Feature registration inputs for PROFILE_ENTITY_RELATIONSHIPS."""

@@ -11,63 +11,76 @@ from onclusiveml.feature_store import FeastRepoBuilder, FeatureStoreParams
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    FeatureRegistrationParams,
     CrawlerItemsFeatureRegistrationParams,
+    DomainsFeatureRegistrationParams,
+    EclrLinksFeatureRegistrationParams,
     EntityConnectionsFeatureRegistrationParams,
     EntityEaPerFeatureRegistrationParams,
-    EntityLinksLmdFeatureRegistrationParams,
     EntityLinksFeatureRegistrationParams,
+    EntityLinksLmdFeatureRegistrationParams,
+    FeatureRegistrationParams,
     ProfileCompanySectorsFeatureRegistrationParams,
-    SearchSeedsFeatureRegistrationParams,
-    DomainsFeatureRegistrationParams,
     ProfileEntityRelationshipsFeatureRegistrationParams,
-    EclrLinksFeatureRegistrationParams
+    SearchSeedsFeatureRegistrationParams,
 )
 
 
-logger = get_default_logger(name=__name__, service=OnclusiveService.VISITOR_ESTIMATION.value)
+logger = get_default_logger(
+    name=__name__, service=OnclusiveService.VISITOR_ESTIMATION.value
+)
 
 
 def main() -> None:
     """Register features."""
     feature_registration_params = FeatureRegistrationParams()
-
     # Instantiate each feature registration class
     crawler_items_feature_registration_params = CrawlerItemsFeatureRegistrationParams()
-    entity_connections_feature_registration_params = EntityConnectionsFeatureRegistrationParams()
+    entity_connections_feature_registration_params = (
+        EntityConnectionsFeatureRegistrationParams()
+    )
     entity_ea_pr_feature_registration_params = EntityEaPerFeatureRegistrationParams()
-    entity_links_lmd_feature_registration_params = EntityLinksLmdFeatureRegistrationParams()
+    entity_links_lmd_feature_registration_params = (
+        EntityLinksLmdFeatureRegistrationParams()
+    )
     entity_links_feature_registration_params = EntityLinksFeatureRegistrationParams()
-    profile_company_sectors_feature_registration_params = ProfileCompanySectorsFeatureRegistrationParams()
+    profile_company_sectors_feature_registration_params = (
+        ProfileCompanySectorsFeatureRegistrationParams()
+    )
     search_seeds_feature_registration_params = SearchSeedsFeatureRegistrationParams()
     domains_feature_registration_params = DomainsFeatureRegistrationParams()
-    profile_entity_relationships_feature_registration_params = ProfileEntityRelationshipsFeatureRegistrationParams()
+    profile_entity_relationships_feature_registration_params = (
+        ProfileEntityRelationshipsFeatureRegistrationParams()
+    )
     eclr_links_feature_registration_params = EclrLinksFeatureRegistrationParams()
-
     # Register each feature
     register(feature_registration_params, crawler_items_feature_registration_params)
-    register(feature_registration_params, entity_connections_feature_registration_params)
+    register(
+        feature_registration_params, entity_connections_feature_registration_params
+    )
     register(feature_registration_params, entity_ea_pr_feature_registration_params)
     register(feature_registration_params, entity_links_lmd_feature_registration_params)
     register(feature_registration_params, entity_links_feature_registration_params)
-    register(feature_registration_params, profile_company_sectors_feature_registration_params)
+    register(
+        feature_registration_params, profile_company_sectors_feature_registration_params
+    )
     register(feature_registration_params, search_seeds_feature_registration_params)
     register(feature_registration_params, domains_feature_registration_params)
-    register(feature_registration_params, profile_entity_relationships_feature_registration_params)
+    register(
+        feature_registration_params,
+        profile_entity_relationships_feature_registration_params,
+    )
     register(feature_registration_params, eclr_links_feature_registration_params)
 
     logger.info("Feature registration completed successfully.")
+
 
 def register(
     feature_registration_params: FeatureStoreParams,
     ve_feature_registration_params: OnclusiveBaseSettings,
 ) -> None:
     """Register features."""
-
     print(ve_feature_registration_params.entity_name)
-    feature_registration_params.entity_name = (
-        ve_feature_registration_params.entity_name
-    )
+    feature_registration_params.entity_name = ve_feature_registration_params.entity_name
     feature_registration_params.feature_view_name = (
         ve_feature_registration_params.feature_view_name
     )
@@ -95,9 +108,7 @@ def register(
 
     logger.info("Creating featureview...")
     feast_repo_builder.build_featureview()
-
     # plan_repo_contents(feast_repo_builder)
-
     # if feature_registration_params.register_features:
     register_repo_contents(feast_repo_builder)
 
