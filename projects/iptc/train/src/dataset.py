@@ -86,9 +86,10 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                     self.df.iloc[idx]["topic_3_llm"],
                 )
             elif self.level == 4:
-                return list(
-                    CANDIDATE_DICT_FOURTH[self.third_level_root].values()
-                ).index(self.df.iloc[idx]["topic_4_llm"])
+                return get_index_from_dict(
+                    CANDIDATE_DICT_FOURTH[self.third_level_root],
+                    self.df.iloc[idx]["topic_4_llm"],
+                )
             else:
                 raise ValueError("undefined level")
         else:  # If not on-demand, use the original labels
@@ -107,9 +108,10 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                     self.df.iloc[idx]["topic_3"],
                 )
             elif self.level == 4:
-                return list(
-                    CANDIDATE_DICT_FOURTH[self.third_level_root].values()
-                ).index(self.df.iloc[idx]["topic_4"])
+                return get_index_from_dict(
+                    CANDIDATE_DICT_FOURTH[self.third_level_root],
+                    self.df.iloc[idx]["topic_4"],
+                )
             else:
                 raise ValueError("undefined level")
 

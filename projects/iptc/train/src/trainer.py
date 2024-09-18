@@ -153,10 +153,13 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         if self.level == 1:
             self.first_level_root = None
             self.second_level_root = None
+            self.third_level_root = None
         elif self.level == 2:
             self.first_level_root = self.iptc_label
             self.second_level_root = None
+            self.third_level_root = None
         elif self.level == 3:
+            self.third_level_root = None
             self.second_level_root = self.iptc_label
             self.first_level_root = find_category_for_subcategory(
                 CANDIDATE_DICT_SECOND, self.second_level_root
