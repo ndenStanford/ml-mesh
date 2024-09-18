@@ -31,7 +31,6 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
-    _syncronize_prompts()
 
 
 def _create_tables(tables: List[Type[Dyntastic]]) -> None:
