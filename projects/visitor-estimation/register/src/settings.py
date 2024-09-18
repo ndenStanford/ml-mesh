@@ -16,11 +16,11 @@ class FeatureRegistrationParams(FeatureStoreParams):
 
     feast_config_bucket: str
     redshift_database: str
-    redshift_table: str = "iptc"
-    entity_name: str = "iptc"
-    feature_view_name: str = "iptc_feature_view"
+    redshift_table: str = "visitor-estimation"
+    entity_name: str = "visitor-estimation"
+    feature_view_name: str = "visitor_estimation_feature_view"
     fields: Optional[List[Tuple[str, str]]] = None
-    entity_join_key: str = "iptc_id"
+    entity_join_key: str = "visitor_estimation_id"
     register_features: bool = False
     timestamp_field: str = "event_timestamp"
 
