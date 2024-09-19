@@ -14,7 +14,10 @@ content = """
         Musk, 51, has seen his wealth plummet to $137 billion after Tesla shares tumbled in recent weeks, including an 11% drop on Tuesday, according to the Bloomberg Billionaires Index. His fortune peaked at $340 billion on Nov. 4, 2021, and he remained the world's richest person until he was overtaken this month by Bernard Arnault, the French tycoon behind luxury-goods powerhouse LVMH.
         The round-number milestone reflects just how high Musk soared during the run-up in asset prices during the easy-money pandemic era. Tesla exceeded a $1 trillion market capitalization for the first time in October 2021, joining the likes of ubiquitous technology companies Apple Inc., Microsoft Corp., Amazon.com Inc. and Google parent Alphabet Inc., even though its electric vehicles represented only a sliver of the overall auto market."""  # noqa: E501
 
-multi_article_content = """['The German Research Foundation (DFG) is a major research funding organization in Germany.', 'In 2019, the DFG had a budget of €3.3 billion for research funding.']"""  # noqa: E501
+multi_article_content = [
+    "The German Research Foundation (DFG) is a major research funding organization in Germany.",
+    "In 2019, the DFG had a budget of €3.3 billion for research funding.",
+]  # noqa: E501
 
 
 @pytest.mark.parametrize(
@@ -76,6 +79,17 @@ def test_integration_summarization_model(test_client, payload):
                     "input_language": "en",
                     "output_language": "en",
                     "summary_type": "bespoke",
+                    "custom_instructions": [
+                        "You are a scientific researcher.",
+                        "I want the summary to have a neutral sentiment.",
+                        "The tone should be formal.",
+                        "Please remove any quoted text.",
+                        "Use UK English spelling.",
+                        "Apply sentence case capitalization.",
+                        "Use the 24-hour time format.",
+                        "Hyphenate compound words.",
+                        "Use metric units for any measurements.",
+                    ],
                 },
             }
         },
