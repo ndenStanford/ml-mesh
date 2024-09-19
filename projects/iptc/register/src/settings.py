@@ -14,6 +14,7 @@ from onclusiveml.feature_store import (
 )
 from onclusiveml.feature_store.on_demand.iptc import (  # noqa: F401
     iptc_first_level_on_demand_feature_view,
+    iptc_fourth_level_on_demand_feature_view,
     iptc_second_level_on_demand_feature_view,
     iptc_third_level_on_demand_feature_view,
 )
@@ -108,3 +109,13 @@ class IptcThirdLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
     fields: Optional[List[Tuple[str, str]]] = None
     udf: Callable = iptc_third_level_on_demand_feature_view
     model_config = SettingsConfigDict(env_prefix="third_level_on_demand_")
+
+
+class IptcFourthLevelOnDemandFeatureRegistrationParams(OnclusiveBaseSettings):
+    """On-demand feature registration inputs."""
+
+    feature_view_name: str = "iptc_on_demand_feature_view"
+    sources: List[str]
+    fields: Optional[List[Tuple[str, str]]] = None
+    udf: Callable = iptc_fourth_level_on_demand_feature_view
+    model_config = SettingsConfigDict(env_prefix="fourth_level_on_demand_")

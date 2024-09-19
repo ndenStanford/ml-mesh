@@ -98,7 +98,7 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG:-latest}
-    command: [python, -m, src.compile_model]
+    command: [python, -m, src.compile]
     profiles: [compile, unit, integration, pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -124,8 +124,8 @@ services:
       - /bin/sh
       - -c
       - |
-        python -m src.download_uncompiled_model
-        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile_model
+        python -m src.download
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile
     ports:
       - 5678:5678
     profiles: [debug]
@@ -144,6 +144,7 @@ services:
         target: /projects/sentiment/compile
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no, -s]
+    env_file: compile/config/dev.env
     profiles: [unit]
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -151,10 +152,13 @@ services:
   compile-download-model:
     volumes:
       - type: bind
-        source: compile/
-        target: /projects/sentiment/compile/
+        source: compile/src
+        target: /projects/sentiment/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/sentiment/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.download_uncompiled_model]
+    command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
@@ -169,8 +173,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/sentiment/compile
+        source: compile/src
+        target: /projects/sentiment/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/sentiment/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
     profiles: [pipeline]
@@ -183,10 +190,13 @@ services:
   compile-upload-model:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/sentiment/compile
+        source: compile/src
+        target: /projects/sentiment/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/sentiment/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/sentiment-compile:${IMAGE_TAG}
-    command: [python, -m, src.upload_compiled_model]
+    command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
