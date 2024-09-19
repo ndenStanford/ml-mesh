@@ -148,7 +148,6 @@ def test_prompt_evaluation(test_client, test_df, test_df_path_enriched):
 
     dataset = EvaluationDataset()
     dataset.add_test_cases_from_csv_file(
-        # file_path is the absolute path to you .csv file
         file_path=test_df_path_enriched,
         input_col_name="content",
         actual_output_col_name="generated_summary",
@@ -158,4 +157,4 @@ def test_prompt_evaluation(test_client, test_df, test_df_path_enriched):
 
     result = dataset.evaluate([metric])
     precent_success = sum([r.success for r in result]) / len(result)
-    assert precent_success > 0.4
+    assert precent_success > 0.6

@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -64,9 +64,34 @@ class ApplicationSettings(OnclusiveBaseSettings):
     }
 
 
+class AWSSettings(OnclusiveBaseSettings):
+    """AWS settings to retrieve data for test."""
+
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    REGION_NAME: Optional[str] = None
+
+    class Config:
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class RedshiftSettings(OnclusiveBaseSettings):
+    """Redshift settings to retrieve data for test."""
+
+    CLUSTER_ID: Optional[str] = None
+    DATABASE: Optional[str] = None
+    DB_USER: Optional[str] = None
+    SQL: Optional[str] = None
+
+    class Config:
+        env_prefix = "redshift_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
 class GlobalSettings(
-    ServerModelSettings,
-    ApplicationSettings,
+    ServerModelSettings, ApplicationSettings, AWSSettings, RedshiftSettings
 ):
     """Global server settings."""
 

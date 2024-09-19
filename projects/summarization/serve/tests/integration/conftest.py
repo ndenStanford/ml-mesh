@@ -1,10 +1,10 @@
 """Conftest."""
 
 # 3rd party libraries
-import pandas as pd
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from utils import retrieve_redshift_dataframe
 
 # Source
 from src.serve.model import SummarizationServedModel
@@ -48,6 +48,5 @@ def test_df_path_enriched():
 @pytest.fixture
 def test_df(test_df_path_raw):
     """Query dataframe from Redshift."""
-    # Standard Library
-    df = pd.read_csv(test_df_path_raw)
-    return df.head(2)
+    df = retrieve_redshift_dataframe()
+    return df
