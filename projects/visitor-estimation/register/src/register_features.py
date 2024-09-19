@@ -93,10 +93,6 @@ def register(
         ve_feature_registration_params.join_key
     )
 
-    feature_registration_params.timestamp_field = (
-        ve_feature_registration_params.timestamp_field
-    )
-
     logger.info("Creating feast-repo builder...")
     feast_repo_builder = FeastRepoBuilder(feature_registration_params)
 

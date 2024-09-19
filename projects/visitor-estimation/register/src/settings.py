@@ -32,7 +32,6 @@ class CrawlerItemsFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="crawler_items_")
@@ -45,7 +44,6 @@ class EclrLinksFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="eclr_links_")
@@ -58,7 +56,6 @@ class EntityConnectionsFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="entity_connections_")
@@ -71,7 +68,6 @@ class EntityEaPerFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="entity_ea_per_")
@@ -84,7 +80,6 @@ class EntityLinksLmdFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="entity_links_lmd_")
@@ -97,7 +92,6 @@ class EntityLinksFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="entity_links_")
@@ -110,7 +104,6 @@ class ProfileCompanySectorsFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="profile_company_sectors_")
@@ -123,7 +116,6 @@ class SearchSeedsFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="search_seeds_")
@@ -136,7 +128,6 @@ class DomainsFeatureRegistrationParams(OnclusiveBaseSettings):
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="domains_")
@@ -149,7 +140,6 @@ class ProfileEntityRelationshipsFeatureRegistrationParams(OnclusiveBaseSettings)
     feature_view_name: str
     redshift_table: str
     fields: List[Tuple[str, str]]
-    timestamp_field: str
     join_key: str
 
     model_config = SettingsConfigDict(env_prefix="profile_entity_relationships_")
