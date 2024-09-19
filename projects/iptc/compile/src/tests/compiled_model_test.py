@@ -7,35 +7,28 @@ import json
 import torch
 
 # Internal libraries
-from onclusiveml.models.iptc.compiled_iptc import extract_model_id
-
-# Source
-from src.settings import TrackedModelSettings  # type: ignore[attr-defined]
+from onclusiveml.compile.constants import CompileWorkflowTasks
 
 
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
-    io_settings,
+    settings,
     compiled_iptc,
     test_files,
-    compilation_test_settings,
     class_dict,
     id_to_topic,
 ):
     """Perform regression testing for the compiled iptc model.
 
     Args:
-        io_settings: IO settigns for workflow component
+        settings: IO settigns for workflow component
         compiled_iptc: Compiled IPTC model instance
         test_files: Dictionary containing test input
-        compilation_test_settings: Compilation settings
         class_dict: Dictionary containing class name
         id_to_topic: model_id to class name
     """
     assert len(test_files["inputs"]) == len(test_files["predictions"]["labels"])
     total_sample_size = len(test_files["inputs"])
-    model_specs = TrackedModelSettings()
-    model_id = extract_model_id(model_specs.project)
-    class_dict_dict = class_dict[id_to_topic[model_id]]
+    class_dict_dict = class_dict[id_to_topic[compiled_iptc.model_id]]
     for test_sample_index in range(total_sample_size):
 
         compiled_pred = compiled_iptc(test_files["inputs"][test_sample_index])
@@ -49,14 +42,14 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         torch.testing.assert_close(
             compiled_predictions["score"],
             max_prob.item(),
-            atol=compilation_test_settings.regression_atol,
-            rtol=compilation_test_settings.regression_rtol,
+            atol=settings.regression_atol,
+            rtol=settings.regression_rtol,
         )
         assert compiled_predictions["label"] == class_dict_dict[max_index.item()]
         # create new export file or append prediction to existing exported prediction file
         try:
             with open(
-                io_settings.test.test_files["predictions"]
+                settings.test_files(CompileWorkflowTasks.TEST)["predictions"]
             ) as compiled_predictions_file:
                 all_compiled_predictions = json.load(compiled_predictions_file)
         except (FileExistsError, FileNotFoundError):
@@ -65,7 +58,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         all_compiled_predictions.append(compiled_predictions)
 
         with open(
-            io_settings.test.test_files["predictions"], "w"
+            settings.test_files(CompileWorkflowTasks.TEST)["predictions"], "w"
         ) as compiled_predictions_file:
             json.dump(all_compiled_predictions, compiled_predictions_file)
 
@@ -81,9 +74,7 @@ def compiled_model_entity_iptc_test(  # type: ignore[no-untyped-def]
                             and each value is a tuple containing the sample content to be tested
                             and the expected sample response.
     """
-    model_specs = TrackedModelSettings()
-    model_id = extract_model_id(model_specs.project)
-    test_sample_content, test_sample_response = test_samples[model_id]
+    test_sample_content, test_sample_response = test_samples[compiled_iptc.model_id]
     compiled_pred = compiled_iptc(test_sample_content)
     compiled_predictions = [iptc.model_dump() for iptc in compiled_pred][0]
     assert compiled_predictions["label"] == test_sample_response["label"]

@@ -1,65 +1,69 @@
 """Download trained model."""
 
-# Standard Library
-from typing import Dict
-
 # Internal libraries
+from onclusiveml.compile.constants import CompileWorkflowTasks
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.base.pydantic import cast
 from onclusiveml.core.logging import (
-    OnclusiveLogMessageFormat,
+    OnclusiveLogSettings,
     get_default_logger,
+    init_logging,
 )
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
-from src.settings import (  # type: ignore[attr-defined]
-    IOSettings,
-    TrackedModelSettings,
-)
+from src.settings import get_settings
 
 
-def download_uncompiled_model() -> None:
+def main(settings: OnclusiveBaseSettings) -> None:
     """Download trained model."""
-    io_settings = IOSettings()
-    logger = get_default_logger(
-        name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED,
-        level=io_settings.log_level,
+    logger = get_default_logger(__name__)
+    # model registry reference to the desired (compiled) model version
+    # initialize client for specific model version
+    model_version = TrackedModelVersion(
+        with_id=settings.with_id,
+        mode=settings.mode,
+        api_token=(
+            settings.api_token.get_secret_value()
+            if settings.api_token is not None
+            else None
+        ),
+        project=settings.project,
     )
-    # get read-only base model version
-    base_model_specs = TrackedModelSettings()
-    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
-    # get base model version assets to local disk
-    base_model_card: Dict = base_model_version.download_config_from_model_version(
-        neptune_attribute_path="model/model_card"
+    # get model card
+    model_card: TrackedModelCard = model_version.download_config_from_model_version(
+        "model/model_card"
     )
     # download model artifact
-    base_model_version.download_directory_from_model_version(
-        local_directory_path=io_settings.download.model_directory,
-        neptune_attribute_path=base_model_card["model_artifact_attribute_path"],
+    model_version.download_directory_from_model_version(
+        local_directory_path=settings.model_directory(CompileWorkflowTasks.DOWNLOAD),
+        neptune_attribute_path=model_card.model_artifact_attribute_path,
     )
 
     logger.info(
-        f"Successfully downloaded uncompiled sent model into "
-        f"{io_settings.download.model_directory}"
+        f"Successfully downloaded trained iptc model into "
+        f"{settings.model_directory(CompileWorkflowTasks.DOWNLOAD)}"
     )
     # download model test files
-    test_file_references = base_model_card["model_test_files"].keys()
+    test_file_references = model_card["model_test_files"].keys()
     # 'inputs', 'inference_params' & 'predictions'
     for test_file_reference in test_file_references:
-        base_model_version.download_file_from_model_version(
-            neptune_attribute_path=base_model_card["model_test_files"][
+        model_version.download_file_from_model_version(
+            neptune_attribute_path=model_card["model_test_files"][test_file_reference],
+            local_file_path=settings.test_files(CompileWorkflowTasks.DOWNLOAD)[
                 test_file_reference
             ],
-            local_file_path=io_settings.download.test_files[test_file_reference],
         )
 
         logger.info(
             f'Successfully downloaded test file "{test_file_reference}" into '
-            f"{io_settings.download.test_files[test_file_reference]}"
+            f"{settings.test_files(CompileWorkflowTasks.DOWNLOAD)[test_file_reference]}"
         )
 
-    base_model_version.stop()
+    model_version.stop()
 
 
 if __name__ == "__main__":
-    download_uncompiled_model()
+    settings = get_settings()
+    init_logging(cast(settings, OnclusiveLogSettings))
+    main(settings)

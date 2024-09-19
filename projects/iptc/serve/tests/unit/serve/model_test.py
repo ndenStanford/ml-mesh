@@ -8,6 +8,7 @@ from onclusiveml.models.iptc import CompiledIPTC
 
 # Source
 from src.serve.artifacts import ServedModelArtifacts
+from src.settings import get_settings
 
 
 def test_served_model_init(served_model):
@@ -24,5 +25,6 @@ def test_served_model_load(mock_from_pretrained, served_model):
     assert served_model.ready
 
     mock_from_pretrained.assert_called_with(
-        served_model.served_model_artifacts.model_artifact_directory
+        get_settings().project,
+        served_model.served_model_artifacts.model_artifact_directory,
     )

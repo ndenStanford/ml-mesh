@@ -60,6 +60,7 @@ class DataFetchParams(FeatureStoreParams):
     filter_values: List[str] = []
     comparison_operators: List[str] = []
     non_nullable_columns: List[str] = ["content", "topic_1"]
+    is_on_demand: bool = False
 
 
 class TrackedIPTCBaseModelCard(TrackedModelCard):

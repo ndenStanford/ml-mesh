@@ -1,23 +1,17 @@
 """Settings test."""
 
+# Standard Library
+from unittest import TestCase
+
 # Source
-from src.settings import (
-    CompiledIPTCTrackedModelCard,
-    CompiledTrackedModelSettings,
-    IOSettings,
-)
+from src.settings import get_settings
 
 
-def test_io_settings():
-    """IO settings fixture."""
-    IOSettings()
+class SettingsTest(TestCase):
+    """Settings test."""
 
-
-def test_compiled_tracked_model_specs():
-    """Compiled tracked model settings."""
-    CompiledTrackedModelSettings()
-
-
-def test_compiled_iptc_tracked_model_card():
-    """Compiled IPTC tracked model card."""
-    CompiledIPTCTrackedModelCard()
+    def test_initialisation(self) -> None:
+        """Test initialize settings."""
+        settings = get_settings()
+        assert isinstance(settings.model_dump(), dict)
+        assert isinstance(settings.model_dump_json(), str)
