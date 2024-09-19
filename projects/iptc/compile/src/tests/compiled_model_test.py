@@ -6,6 +6,9 @@ import json
 # ML libs
 import torch
 
+# Internal libraries
+from onclusiveml.compile.constants import CompileWorkflowTasks
+
 
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     settings,
@@ -17,10 +20,9 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     """Perform regression testing for the compiled iptc model.
 
     Args:
-        settings: global compile settings
+        settings: IO settigns for workflow component
         compiled_iptc: Compiled IPTC model instance
         test_files: Dictionary containing test input
-        compilation_test_settings: Compilation settings
         class_dict: Dictionary containing class name
         id_to_topic: model_id to class name
     """
@@ -40,14 +42,14 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         torch.testing.assert_close(
             compiled_predictions["score"],
             max_prob.item(),
-            atol=compilation_test_settings.regression_atol,
-            rtol=compilation_test_settings.regression_rtol,
+            atol=settings.regression_atol,
+            rtol=settings.regression_rtol,
         )
         assert compiled_predictions["label"] == class_dict_dict[max_index.item()]
         # create new export file or append prediction to existing exported prediction file
         try:
             with open(
-                io_settings.test.test_files["predictions"]
+                settings.test_files(CompileWorkflowTasks.TEST)["predictions"]
             ) as compiled_predictions_file:
                 all_compiled_predictions = json.load(compiled_predictions_file)
         except (FileExistsError, FileNotFoundError):
@@ -56,7 +58,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         all_compiled_predictions.append(compiled_predictions)
 
         with open(
-            io_settings.test.test_files["predictions"], "w"
+            settings.test_files(CompileWorkflowTasks.TEST)["predictions"], "w"
         ) as compiled_predictions_file:
             json.dump(all_compiled_predictions, compiled_predictions_file)
 
