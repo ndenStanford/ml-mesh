@@ -9,6 +9,7 @@ from datetime import datetime
 
 from onclusiveml.core.base import OnclusiveBaseModel
 import pandas as pd
+from collections import Counter
 
 # 3rd party libraries
 from fastapi import HTTPException, status
@@ -174,9 +175,12 @@ class ServedTopicModel(ServedModel):
                     )
 
                 # collect documents of profile
-                content = self.document_collector.get_documents(
-                    query_profile, topic_id, doc_start_time, doc_end_time
+                content, lead_journalists_attributes = (
+                    self.document_collector.get_documents_and_lead_journalists_attributes(
+                        query_profile, topic_id, doc_start_time, doc_end_time
+                    )
                 )
+
                 (
                     topic,
                     topic_summary_quality,
@@ -186,6 +190,13 @@ class ServedTopicModel(ServedModel):
                 impact_category = self.impact_quantifier.quantify_impact(
                     query_profile, topic_id
                 )
+
+                # retrieve lead journalists
+                leading_journalists = self.retrieve_lead_journalists_if_exists(
+                    lead_journalists_attributes, topic
+                )
+
+                topic["lead_journalists"] = leading_journalists
             else:
                 topic = None
                 impact_category = None
@@ -272,3 +283,93 @@ class ServedTopicModel(ServedModel):
             namespace=settings.model_name,
             attributes={"model_name": settings.model_name},
         )
+
+    def retrieve_lead_journalists_if_exists(
+        self,
+        lead_journalists_attributes: List[Dict],
+        topic: Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]],
+    ) -> Union[List[str], None]:
+        """Determine if some articles are written by leading journalists and/or published on high tier websites.
+
+        Args:
+            lead_journalists_attributes (List[Dict]): List of Dicts containing attributes that can help determine
+            if lead journalists exists.
+            topic (Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]): topic for
+            citations filtering
+        """
+        try:
+            # check for authors with frequent cited articles in the topic summaries
+            citations_list = []
+            themes = settings.IMPACT_CATEGORIES.keys()
+            for theme in themes:
+                if theme in topic:
+                    citations = topic[theme]["sources"].split(",")
+                    citations = [int(c.strip()) for c in citations if c and c.isdigit()]
+                    citations_list += citations
+
+            citations_frequency = Counter(citations_list)
+            citations_frequency = {
+                c: f
+                for c, f in citations_frequency.items()
+                if f >= settings.CITATIONS_THRESHOLD
+            }
+
+            author_list = []
+            high_pagerank_authors = {}
+            top_publication_tier_authors = {}
+            most_cited_authors = {}
+            for i, attributes in enumerate(lead_journalists_attributes):
+
+                author = attributes.get("author", "").strip()
+                is_valid_author = attributes.get("is_valid_author", False)
+                # if author name is empty or unkown or invalid then continue
+                if not author or "unkown" in author.lower() or not is_valid_author:
+                    continue
+
+                author_list.append(author)
+
+                # add author to list of most cited if its ids in citations frequency
+                if i in citations_frequency:
+                    most_cited_authors[author] = citations_frequency[i]
+
+                pagerank = attributes.get("pagerank", 0)
+                # Check if pagerank is above threshold to add it to
+                if pagerank >= settings.PAGE_RANK_THRESHOLD:
+                    high_pagerank_authors[author] = max(
+                        high_pagerank_authors.get(author, settings.PAGE_RANK_THRESHOLD),
+                        pagerank,
+                    )
+
+                publication_tier = attributes.get("publication_tier", 3)
+                # Check if publication tier is lower than or equal the threshold
+                if publication_tier < settings.PUBLICATION_TIER_THRESHOLD:
+                    top_publication_tier_authors[author] = min(
+                        top_publication_tier_authors.get(
+                            author, settings.PUBLICATION_TIER_THRESHOLD
+                        ),
+                        publication_tier,
+                    )
+
+            # count the frequency of each author
+            author_frequency = Counter(author_list)
+            # filter frequent authors
+            frequent_authors = {
+                auth: freq
+                for auth, freq in author_frequency.items()
+                if freq >= settings.AUTHOR_FREQUENCY_THRESHOLD
+            }
+
+            # get the union of the lists of authors filtered by each criteria
+            lead_journalists = list(
+                set().union(
+                    frequent_authors,
+                    high_pagerank_authors,
+                    top_publication_tier_authors,
+                    most_cited_authors,
+                )
+            )
+
+            return lead_journalists
+        except Exception as e:
+            logger.error(e)
+            return []

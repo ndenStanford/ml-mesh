@@ -11,8 +11,8 @@ from typing import Any, Dict, Union
 from transformers.pipelines import Pipeline, pipeline
 
 # Internal libraries
-from onclusiveml.compile.compiled_model import CompiledModel
-from onclusiveml.compile.compiled_tokenizer import CompiledTokenizer
+from onclusiveml.compile.model import CompiledModel
+from onclusiveml.compile.tokenizer import CompiledTokenizer
 
 
 class CompiledPipeline(object):

@@ -76,11 +76,11 @@ services:
     command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
     profiles: [backend, functional]
     healthcheck:
-      test: [CMD-SHELL, sleep 50s || exit 1]
-      interval: 5s
-      retries: 5
-      start_period: 15s
-      timeout: 60s
+      test: [CMD-SHELL, sleep 120s || exit 1]
+      interval: 2m30s
+      retries: 4
+      start_period: 2m
+      timeout: 2m10s
     volumes:
       - type: bind
         source: backend/src

@@ -3,7 +3,7 @@
 # isort: skip_file
 
 # Standard Library
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 
 # 3rd party libraries
@@ -11,12 +11,14 @@ from elasticsearch import Elasticsearch
 
 # Internal libraries
 from onclusiveml.queries.query_profile import BaseQueryProfile, MediaAPISettings
+from onclusiveml.core.logging import get_default_logger
 
 # Source
 from src.serve.utils import topic_profile_documents_query
 from src.settings import get_settings
 
 settings = get_settings()
+logger = get_default_logger(__name__)
 
 
 class DocumentCollector:
@@ -31,7 +33,7 @@ class DocumentCollector:
         )
         self.es_index = settings.es_index
 
-    def get_documents(
+    def get_documents_and_lead_journalists_attributes(
         self,
         query_profile: BaseQueryProfile,
         topic_id: str,
@@ -59,4 +61,17 @@ class DocumentCollector:
         content_list: List[str] = [
             h["_source"]["content"] for h in results["hits"]["hits"]
         ]
-        return content_list
+
+        lead_journalists_attributes_list: List[Dict] = [
+            {
+                "author": h["_source"].get("author", ""),
+                "is_valid_author": h["_source"].get("is_valid_author", False),
+                "pagerank": h["_source"].get("pagerank", 0),
+                "publication_tier": h["_source"]
+                .get("publication_details", {})
+                .get("publication_tier", 3),
+            }
+            for h in results["hits"]["hits"]
+        ]
+
+        return content_list, lead_journalists_attributes_list

@@ -25,13 +25,15 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      SAVE_ARTIFACT: ${SAVE_ARTIFACT}
     env_file: train/config/dev.env
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -52,10 +54,14 @@ services:
       - 5678:5678
     profiles: [debug]
     environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
+    depends_on:
+      prompt-backend:
+        condition: service_healthy
     hostname: onclusive-ml
     networks: [onclusive-net]
 
@@ -68,9 +74,6 @@ services:
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -159,10 +162,10 @@ services:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         APP_NAME: prompt
         APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
     command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     ports:
       - 4000:4000
     volumes:
@@ -204,7 +207,7 @@ services:
       - 8000
     ports:
       - 8000:8000
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -223,7 +226,7 @@ services:
       - 6379
     ports:
       - 6379:6379
-    profiles: [register, serve, integration, functional, debug]
+    profiles: [register, train, serve, integration, functional, debug]
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
@@ -261,15 +264,10 @@ services:
         COMPONENT: compile
         BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG:-latest}
-    command: [python, -m, src.compile_model]
+    command: [python, -m, src.compile]
     profiles: [register, compile, unit, integration, pipeline]
     environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -292,8 +290,8 @@ services:
       - /bin/sh
       - -c
       - |
-        python -m src.download_uncompiled_model
-        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile_model
+        python -m src.download
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile
     ports:
       - 5678:5678
     profiles: [debug]
@@ -328,17 +326,12 @@ services:
         source: ${HOME}/data
         target: /projects/iptc/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
-    command: [python, -m, src.download_uncompiled_model]
+    command: [python, -m, src.download]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -354,15 +347,10 @@ services:
         source: ${HOME}/data
         target: /projects/iptc/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
+    command: [python, -m, pytest, src/tests, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
@@ -376,17 +364,12 @@ services:
         source: ${HOME}/data
         target: /projects/iptc/compile/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/iptc-compile:${IMAGE_TAG}
-    command: [python, -m, src.upload_compiled_model]
+    command: [python, -m, src.upload]
     profiles: [pipeline]
     environment:
       ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      UNCOMPILED_PROJECT: ${UNCOMPILED_PROJECT}
-      UNCOMPILED_MODEL: ${UNCOMPILED_MODEL}
-      UNCOMPILED_WITH_ID: ${UNCOMPILED_WITH_ID}
-      COMPILED_PROJECT: ${COMPILED_PROJECT}
-      COMPILED_MODEL: ${COMPILED_MODEL}
     env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
