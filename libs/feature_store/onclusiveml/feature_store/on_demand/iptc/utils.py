@@ -29,8 +29,8 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     # Placed in this file due to the circular import issue.
     """API configuration."""
 
-    PROMPT_API: str = "http://prompt-backend:4000"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
+    PROMPT_API: str = "https://internal.api.ml.prod.onclusive.com"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
@@ -91,15 +91,37 @@ async def generate_label_llm(row, session, level):
     }
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
-    async with session.post(
-        "{}/api/v2/prompts/{}/generate/model/{}".format(
-            settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
-        ),
-        headers=headers,
-        json=input_dict,
-    ) as response:
-        output_content = await response.json()
-        return output_content["iptc category"]
+    try:
+        async with session.post(
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
+                settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
+            ),
+            headers=headers,
+            json=input_dict,
+        ) as response:
+            # Attempt to parse the response as JSON
+            try:
+                output_content = await response.json()
+            except aiohttp.ContentTypeError:
+                response_text = await response.text()
+                print(f"Failed to parse response as JSON. Response: {response_text}")
+                return "NA"
+
+            # Check if the expected key is present in the response
+            if "iptc category" in output_content:
+                return output_content["iptc category"]
+            else:
+                print(f"'iptc category' not found in the response: {output_content}")
+                return "NA"
+
+    except aiohttp.ClientError as e:
+        # Handle any aiohttp client errors (e.g., network errors)
+        print(f"Failed to make the API call. Error: {e}")
+        return "NA"
+    except Exception as e:
+        # General exception handling
+        print(f"An unexpected error occurred. {e}")
+        return "NA"
 
 
 async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:

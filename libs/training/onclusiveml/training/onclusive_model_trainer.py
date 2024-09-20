@@ -104,9 +104,20 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             comparison_operators=self.data_fetch_params.comparison_operators,
             non_nullable_columns=self.data_fetch_params.non_nullable_columns,
         )
-        self.logger.info(self.dataset_df.head())
+        # Logging the initial dataset size
+        self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
+
+        # Drop rows with NA values in the necessary columns (e.g., topic_1_llm, or other label columns)
+        self.dataset_df = self.dataset_df.dropna(
+            subset=["topic_1_llm"]
+        )  # Update column name as needed
+
+        # Logging the size after filtering
+        self.logger.info(f"Filtered dataset size (no NAs): {self.dataset_df.shape}")
+
+        # Displaying the first few rows of the filtered dataset
         self.logger.info(
-            f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
+            f"Fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
         )
 
         self.docs = self.dataset_df["content"].apply(str).values.tolist()
