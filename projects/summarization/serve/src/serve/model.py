@@ -158,7 +158,7 @@ class SummarizationServedModel(ServedModel):
         if q.status_code == 200:
             return eval(q.content)["generated"]
         elif q.status_code == 400:
-            return PromptInjectionException(prompt=input_dict)
+            raise PromptInjectionException(content=content)
         else:
             raise PromptBackendException(message=str(q.content))
 

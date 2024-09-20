@@ -13,7 +13,7 @@ class PromptNotFoundException(OnclusiveException):
 class PromptInjectionException(OnclusiveException):
     """Prompt injection exception."""
 
-    message_format = "Prompt injection detected: '{prompt}'"
+    message_format = "Prompt injection detected by the following content: '{content}'"
 
 
 class PromptBackendException(OnclusiveException):
