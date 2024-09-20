@@ -9,8 +9,6 @@ packages = [{include = "src"}]
 python = "3.9.19"
 openai = ">1.6.1"
 regex = "2022.10.31"
-deepeval = "1.1.6"
-pandas = "<2.2.2"
 
 core = {path = "../../../libs/core"}
 serving = {path = "../../../libs/serving"}
@@ -20,6 +18,8 @@ nlp = {path = "../../../libs/nlp"}
 pytest = "7.2.0"
 pytest-mock = "3.10.0"
 pytest-order = "1.1.0"
+deepeval = "1.1.6"
+pandas = "<2.2.2"
 
 [tool.poetry.group.debug.dependencies]
 debugpy = "1.8.1"

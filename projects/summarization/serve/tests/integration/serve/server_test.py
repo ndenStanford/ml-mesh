@@ -3,7 +3,6 @@
 # 3rd party libraries
 import pytest
 from deepeval.dataset import EvaluationDataset
-from deepeval.metrics import SummarizationMetric
 from fastapi import status
 
 # Internal libraries
@@ -124,11 +123,14 @@ def test_no_input_language(test_client, payload):
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
 
 
-def test_prompt_evaluation(test_client, test_df, test_df_path_enriched):
+def test_prompt_evaluation(
+    settings, test_client, test_df, test_df_path_enriched, metric
+):
     """Test the prompt performance using LLM."""
 
     def enrich_row(row):
         content = row["content"]
+        desired_length = len(content) // int(settings.SUMMARIZATION_COMPRESSION_RATIO)
         payload = {
             "data": {
                 "namespace": "summarization",
@@ -136,7 +138,7 @@ def test_prompt_evaluation(test_client, test_df, test_df_path_enriched):
                 "parameters": {
                     "output_language": "en",
                     "summary_type": "section",
-                    "desired_length": 50,
+                    "desired_length": desired_length,
                 },
             }
         }
@@ -150,11 +152,9 @@ def test_prompt_evaluation(test_client, test_df, test_df_path_enriched):
     dataset.add_test_cases_from_csv_file(
         file_path=test_df_path_enriched,
         input_col_name="content",
-        actual_output_col_name="generated_summary",
+        actual_output_col_name="summary",
     )
 
-    metric = SummarizationMetric(threshold=0.5, model="gpt-4", verbose_mode=True)
-
     result = dataset.evaluate([metric])
-    precent_success = sum([r.success for r in result]) / len(result)
-    assert precent_success > 0.6
+    percent_success = sum([r.success for r in result]) / len(result)
+    assert percent_success > float(settings.PERCENT_SUCCESS)

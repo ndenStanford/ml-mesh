@@ -90,8 +90,26 @@ class RedshiftSettings(OnclusiveBaseSettings):
         env_file_encoding = "utf-8"
 
 
+class DeepEvalSettings(OnclusiveBaseSettings):
+    """Deepeval settings for integration test."""
+
+    PERCENT_SUCCESS: Optional[str] = None
+    THRESHOLD: Optional[str] = None
+    MODEL: Optional[str] = None
+    SUMMARIZATION_COMPRESSION_RATIO: Optional[str] = 4
+
+    class Config:
+        env_prefix = "deepeval_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
 class GlobalSettings(
-    ServerModelSettings, ApplicationSettings, AWSSettings, RedshiftSettings
+    ServerModelSettings,
+    ApplicationSettings,
+    AWSSettings,
+    RedshiftSettings,
+    DeepEvalSettings,
 ):
     """Global server settings."""
 
