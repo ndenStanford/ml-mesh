@@ -74,6 +74,14 @@ class GithubClient(OnclusiveFrozenModel):
                 result.append(content_file.path)
         return result
 
+    def exists(self, path: str) -> bool:
+        """Check if a file or folder exists in the repo."""
+        try:
+            self.repo.get_contents(path)
+            return True
+        except Exception:
+            return False
+    
     def rm(self, path: str, commit: str) -> None:
         """Removes content from repo."""
         contents = self.repo.get_contents(path)
