@@ -81,7 +81,7 @@ class GithubClient(OnclusiveFrozenModel):
             return True
         except Exception:
             return False
-    
+
     def rm(self, path: str, commit: str) -> None:
         """Removes content from repo."""
         contents = self.repo.get_contents(path)
