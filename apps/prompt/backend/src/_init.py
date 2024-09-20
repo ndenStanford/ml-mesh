@@ -12,7 +12,6 @@ from dyntastic import Dyntastic
 from onclusiveml.core.logging import get_default_logger
 
 # Source
-from src.extensions.github import github
 from src.model.constants import DEFAULT_MODELS
 from src.model.tables import LanguageModel
 from src.project.tables import Project
