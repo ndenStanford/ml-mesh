@@ -8,6 +8,8 @@ from typing import Any, Dict
 import pytest
 
 # Internal libraries
+from onclusiveml.compile.constants import CompileWorkflowTasks
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging import (
     OnclusiveLogMessageFormat,
     get_default_logger,
@@ -17,49 +19,43 @@ from onclusiveml.models.iptc.class_dict import CLASS_DICT, ID_TO_TOPIC
 from onclusiveml.models.iptc.test_samples import TEST_SAMPLES
 
 # Source
-from src.settings import CompilationTestSettings, IOSettings
+from src.settings import get_settings
 
 
 @pytest.fixture
-def io_settings() -> IOSettings:
+def settings() -> OnclusiveBaseSettings:
     """IO Settings."""
-    return IOSettings()
-
-
-@pytest.fixture
-def compilation_test_settings() -> CompilationTestSettings:
-    """Compilation settings fixture."""
-    return CompilationTestSettings()
+    return get_settings()
 
 
 @pytest.fixture()
-def logger(io_settings: IOSettings) -> Any:
+def logger(settings: OnclusiveBaseSettings) -> Any:
     """Logger fixture."""
     return get_default_logger(
-        name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
-        level=io_settings.log_level,
+        name=__name__, fmt_level=OnclusiveLogMessageFormat.DETAILED
     )
 
 
 @pytest.fixture
-def compiled_iptc(io_settings: IOSettings) -> CompiledIPTC:
+def compiled_iptc(settings: OnclusiveBaseSettings) -> CompiledIPTC:
     """Compiled iptc model fixture."""
     # load compiled iptc from previous workflow component
-    compiled_iptc = CompiledIPTC.from_pretrained(io_settings.compile.model_directory)
+    compiled_iptc = CompiledIPTC.from_pretrained(
+        settings.project, settings.model_directory(CompileWorkflowTasks.COMPILE)
+    )
 
     return compiled_iptc
 
 
 @pytest.fixture
-def test_files(io_settings: IOSettings) -> Dict[str, Any]:
+def test_files(settings: OnclusiveBaseSettings) -> Dict[str, Any]:
     """Test files fixtures."""
     # get test files & load directly into dict
-    test_files = io_settings.download.test_files.copy()
+    test_files = settings.test_files(CompileWorkflowTasks.DOWNLOAD)
     # 'inputs', 'inference_params' & 'predictions'
     for test_file_reference in test_files:
         with open(
-            io_settings.download.test_files[test_file_reference], "r"
+            settings.test_files(CompileWorkflowTasks.DOWNLOAD)[test_file_reference], "r"
         ) as test_file:
             test_files[test_file_reference] = json.load(test_file)
 

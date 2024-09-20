@@ -8,9 +8,8 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "3.9.19"
 core = {path = "../../../libs/core"}
-tracking = {path = "../../../libs/tracking"}
 models = {path = "../../../libs/models", extras = ["keywords"]}
-compile = {path = "../../../libs/compile"}
+tracking = {path = "../../../libs/tracking"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.2.0"

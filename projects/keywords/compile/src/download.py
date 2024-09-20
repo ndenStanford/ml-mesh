@@ -40,7 +40,7 @@ def main(settings: OnclusiveBaseSettings) -> None:
     )
 
     logger.info(
-        f"Successfully downloaded trained iptc model into "
+        f"Successfully downloaded trained model into "
         f"{settings.model_directory(CompileWorkflowTasks.DOWNLOAD)}"
     )
     # download model test files
