@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import List, Optional, Type
+from typing import List, Optional, Type, Union
 
 # 3rd party libraries
 import requests
@@ -107,7 +107,7 @@ class SummarizationServedModel(ServedModel):
             else:
                 alias = settings.summarization_prompts[LanguageIso.EN][
                     settings.multi_article_summary
-                ]
+                ][summary_type]
         except KeyError:
             raise PromptNotFoundException(
                 language=input_language, summary_type=summary_type
@@ -116,22 +116,24 @@ class SummarizationServedModel(ServedModel):
 
     def _inference(
         self,
-        content: str,
+        content: Union[str, dict],
         prompt_alias: str,
         desired_length: int,
         keywords: List[str],
         title: bool,
+        custom_instructions: Optional[List],
         theme: Optional[str] = None,
     ) -> str:
         """Summarization prediction handler method.
 
         Args:
-            content (str): Text to summarize
+            content (str or dict): Text to summarize
             prompt_alias (str): prompt template alias
             desired_length (int): desired length of the summary
             keywords (List[str]): relevant keywords/topics in the content for creating the summary
             title (bool): if title has to be returned
             theme (str): specific theme in the content for creating the summary
+            custom_instructions (List): user instructions that define the requirements for the summary
         """
         input_dict = {
             "input": {
@@ -139,6 +141,7 @@ class SummarizationServedModel(ServedModel):
                 "content": content,
                 "keywords": ", ".join(keywords),
                 "theme": theme,
+                "custom_instructions": custom_instructions,
             }
         }
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
@@ -178,8 +181,6 @@ class SummarizationServedModel(ServedModel):
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
         try:
-            if content[0] == "[" and content[-1] == "]":
-                content = eval(content)
             if isinstance(content, list):
                 multiple_article_summary = True
                 content = {
@@ -188,9 +189,6 @@ class SummarizationServedModel(ServedModel):
                 }
         except Exception as e:
             logger.warn("Cannot eval content. Assuming it to be string type.", e)
-        if input_language is None:
-            input_language = self._identify_language(content)
-            logger.debug(f"Detected content language: {input_language}")
         if output_language is None:
             output_language = input_language
         # retrieve prompt
@@ -226,6 +224,7 @@ class SummarizationServedModel(ServedModel):
             keywords=parameters.keywords,
             title=parameters.title,
             theme=parameters.theme,
+            custom_instructions=parameters.custom_instructions,
             prompt_alias=prompt_alias,
         )
 
