@@ -103,6 +103,16 @@ class SummarizationServedModel(ServedModel):
             multiple_article_summary (bool): whether it is a multi-article summary
         """
         try:
+            # Check if the input language exists in the summarization_prompts dictionary
+            if (
+                input_language in LanguageIso
+                and input_language not in settings.summarization_prompts
+            ):
+                logger.warning(
+                    f"Language {input_language} currently not supported. Using English as default."
+                )
+                input_language = LanguageIso.EN
+
             if not multiple_article_summary:
                 alias = settings.summarization_prompts[input_language][summary_type]
             else:
@@ -206,7 +216,7 @@ class SummarizationServedModel(ServedModel):
                 multiple_article_summary=multiple_article_summary,
             )
         except Exception as e:
-            logger.error(f"Summarization language {input_language} not supported.")
+            logger.error(f"Summarization input language {input_language} is invalid.")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
