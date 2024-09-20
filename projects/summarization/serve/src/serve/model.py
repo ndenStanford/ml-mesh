@@ -19,6 +19,7 @@ from onclusiveml.serving.rest.serve import ServedModel
 # Source
 from src.exceptions import (
     PromptBackendException,
+    PromptInjectionException,
     PromptNotFoundException,
     SummaryTypeNotSupportedException,
 )
@@ -156,6 +157,8 @@ class SummarizationServedModel(ServedModel):
 
         if q.status_code == 200:
             return eval(q.content)["generated"]
+        elif q.status_code == 400:
+            return PromptInjectionException(prompt=input_dict)
         else:
             raise PromptBackendException(message=str(q.content))
 
