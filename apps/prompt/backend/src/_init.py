@@ -48,17 +48,3 @@ def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
         row = table.safe_get(value["alias"])
         if row is None:
             table(**value).save()
-
-
-def _syncronize_prompts():
-    """Save prompts from registry in dynamoDB if non-exisant."""
-    files = github.ls("")
-    for file in files:
-        project_alias, *prompt_alias = file.split("/")
-        project = Project.safe_get(project_alias)
-        if project is None:
-            Project(alias=project_alias).sync()
-        if len(prompt_alias) > 0:
-            PromptTemplate(
-                alias=prompt_alias[0], template=github.read(file), project=project_alias
-            ).sync()

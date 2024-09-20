@@ -67,12 +67,13 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
 
     def save(self) -> None:
         """Creates prompt template in github."""
-        commit = github.write(
-            self.path,
-            f"Add new prompt {self.alias}",
-            self.template,
-        )
-        self.sha = commit["commit"].sha
+        if not github.file_exists(self.path):
+            commit = github.write(
+                self.path,
+                f"Add new prompt {self.alias}",
+                self.template,
+            )
+            self.sha = commit["commit"].sha
         return super(PromptTemplate, self).save()
 
     def update(self) -> None:
