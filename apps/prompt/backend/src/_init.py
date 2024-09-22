@@ -10,6 +10,7 @@ from dyntastic import Dyntastic
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.system import SystemInfo
 
 # Source
 from src.extensions.github import github
@@ -31,6 +32,8 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
+    if SystemInfo.in_docker():
+        _syncronize_prompts()
 
 
 def _create_tables(tables: List[Type[Dyntastic]]) -> None:
