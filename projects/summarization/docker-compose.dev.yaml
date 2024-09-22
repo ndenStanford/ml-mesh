@@ -151,7 +151,7 @@ services:
       test: [CMD, curl, -f, http://translation-serve:8001/translation/v1/ready]
       interval: 5s
       retries: 5
-      start_period: 5s
+      start_period: 30s
       timeout: 10s
     networks:
       - onclusive-net
