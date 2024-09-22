@@ -10,6 +10,12 @@ class PromptNotFoundException(OnclusiveException):
     message_format = "Prompt not found. Summary language '{language}' and or '{summary_type}' not supported."  # noqa: E501
 
 
+class PromptInjectionException(OnclusiveException):
+    """Prompt injection exception."""
+
+    message_format = "Prompt injection detected by the following content: '{content}'"
+
+
 class PromptBackendException(OnclusiveException):
     """Language not supported exception."""
 

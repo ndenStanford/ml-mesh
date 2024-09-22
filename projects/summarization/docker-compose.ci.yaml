@@ -69,6 +69,8 @@ services:
     depends_on:
       prompt-backend:
         condition: service_healthy
+      translation-serve:
+        condition: service_healthy
     hostname: onclusiveml
     networks:
       - onclusive-net
