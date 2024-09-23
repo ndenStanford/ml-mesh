@@ -30,7 +30,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.stage.onclusive.com"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "xx"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
@@ -87,31 +87,42 @@ async def generate_label_llm(row, session, level):
             "article": row["content"],
             "candidates": candidate_list,
         },
-        "output": settings.IPTC_RESPONSE_SCHEMA,
+        "output": settings.IPTC_RESPONSE_SCHEMA,  # Expected response schema
     }
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
-    async with session.post(
-        "{}/api/v2/prompts/{}/generate/model/{}".format(
-            settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
-        ),
-        headers=headers,
-        json=input_dict,
-    ) as response:
-        try:
-            output_content = await response.json()
-        except aiohttp.ContentTypeError:
-            response_text = await response.text()
-            print(f"Failed to parse response as JSON. Response: {response_text}")
-            return None
+    try:
+        async with session.post(
+            "{}/api/v2/prompts/{}/generate/model/{}".format(
+                settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
+            ),
+            headers=headers,
+            json=input_dict,
+        ) as response:
 
-        if "iptc_category" in output_content:
-            return output_content["iptc_category"]
-        else:
-            print(
-                f"'iptc_category' not found in the generated content: {output_content}"
-            )
-            return None
+            try:
+                output_content = await response.json()
+            except aiohttp.ContentTypeError:
+                response_text = await response.text()
+                print(f"Failed to parse response as JSON. Response: {response_text}")
+                return None
+
+                # Check if 'iptc_category' is in the response            if "iptc category" in output_content:
+                return output_content["iptc category"]
+            else:
+                print(
+                    f"'iptc category' not found in the generated content: {output_content}"
+                )
+                return None
+
+    except aiohttp.ClientError as e:
+        # Handle network-related errors
+        print(f"Network error occurred: {e}")
+        return None
+    except TimeoutError as e:
+        # Handle any other unexpected errors
+        print(f"An timeout error occurred: {e}")
+        return None
 
 
 async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:
