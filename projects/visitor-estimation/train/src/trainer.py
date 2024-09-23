@@ -25,6 +25,8 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         """
         # Update data_fetch_params dynamically
         self.data_fetch_params = data_fetch_params
+        self.dataset_df = None
+        self.dataset_dict = {}
 
         super().__init__(
             tracked_model_specs=tracked_model_specs,
@@ -55,6 +57,13 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         """Save the model."""
         pass
 
+    def build_dataset_dict(self) -> None:
+        """Build the dataset dictionary."""
+        self.dataset_dict[self.data_fetch_params.feature_view_name] = self.dataset_df
+
+
+
     def __call__(self) -> None:
         """Call Method."""
         super(VisitorEstimationTrainer, self).__call__()
+        self.build_dataset_dict()
