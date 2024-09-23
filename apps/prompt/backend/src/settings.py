@@ -59,6 +59,9 @@ class Settings(OnclusiveBaseSettings):
     PROMPT_REGISTRY_APP_PRIVATE_KEY: SecretStr
     GITHUB_REPOSITORY: str = "AirPR/ml-prompt-registry"
 
+    # flag to sync prompts
+    SYNC_PROMPTS_TO_DYNAMODB: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -113,8 +113,7 @@ class PromptTemplate(Dyntastic, LangchainConvertibleMixin):
         result = super(PromptTemplate, cls).get(
             hash_key, range_key, consistent_read=consistent_read
         )
-        # get template from github
-        result.template = github.read(result.path)
+
         return result
 
     @classmethod
