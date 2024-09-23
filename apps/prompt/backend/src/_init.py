@@ -35,6 +35,9 @@ def init() -> None:
     if SystemInfo.in_docker():
         _syncronize_prompts()
 
+    if SystemInfo.in_docker():
+        _syncronize_prompts()
+
 
 def _create_tables(tables: List[Type[Dyntastic]]) -> None:
     """Create Tables."""
