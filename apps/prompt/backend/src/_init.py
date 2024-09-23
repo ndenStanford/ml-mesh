@@ -65,3 +65,4 @@ def _syncronize_prompts():
             PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             ).sync()
+            
