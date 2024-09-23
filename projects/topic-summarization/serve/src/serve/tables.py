@@ -35,7 +35,7 @@ class TopicSummaryDynamoDB(Dyntastic):
     topic_id: int
     trending: Optional[bool] = None
     analysis: Optional[
-        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, None]]
+        Dict[str, Union[Dict[str, Union[str, ImpactCategoryLabel]], str, List, None]]
     ] = None
     impact_category: Optional[ImpactCategoryLabel] = None
     query_id: Optional[str] = None

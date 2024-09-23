@@ -3,9 +3,6 @@
 # Standard Library
 import os
 
-# Internal libraries
-from onclusiveml.core.logging import get_default_logger
-
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     DataFetchParams,
@@ -13,9 +10,6 @@ from src.settings import (  # type: ignore[attr-defined]
     TrackedIPTCModelSpecs,
 )
 from src.trainer import IPTCTrainer
-
-
-logger = get_default_logger(__name__)
 
 
 def main() -> None:
