@@ -103,6 +103,16 @@ class SummarizationServedModel(ServedModel):
             multiple_article_summary (bool): whether it is a multi-article summary
         """
         try:
+            # Check if the input language exists in the summarization_prompts dictionary
+            if (
+                input_language in LanguageIso
+                and input_language not in settings.summarization_prompts
+            ):
+                logger.warning(
+                    f"Language {input_language} currently not supported. Using English as default."
+                )
+                input_language = LanguageIso.EN
+
             if not multiple_article_summary:
                 alias = settings.summarization_prompts[input_language][summary_type]
             else:
@@ -170,6 +180,7 @@ class SummarizationServedModel(ServedModel):
         """
         parameters = payload.parameters
         content = payload.attributes.content
+        # check if input_language is provided
         if payload.parameters.input_language is None:
             input_language = self._identify_language(content)
             logger.debug(f"Detected content language: {input_language}")
@@ -178,9 +189,13 @@ class SummarizationServedModel(ServedModel):
             input_language = LanguageIso.from_language_iso(
                 payload.parameters.input_language
             )
-        output_language = LanguageIso.from_language_iso(
-            payload.parameters.output_language
-        )
+        # check if output_language is provided
+        if payload.parameters.output_language is None:
+            output_language = input_language
+        else:
+            output_language = LanguageIso.from_language_iso(
+                payload.parameters.output_language
+            )
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
         try:
@@ -192,8 +207,6 @@ class SummarizationServedModel(ServedModel):
                 }
         except Exception as e:
             logger.warn("Cannot eval content. Assuming it to be string type.", e)
-        if output_language is None:
-            output_language = input_language
         # retrieve prompt
         # depending on request parameters, we can determine what prompt to use.
         if parameters.summary_type not in ("bespoke", "section"):
@@ -206,7 +219,7 @@ class SummarizationServedModel(ServedModel):
                 multiple_article_summary=multiple_article_summary,
             )
         except Exception as e:
-            logger.error(f"Summarization language {input_language} not supported.")
+            logger.error(f"Summarization input language {input_language} is invalid.")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
@@ -233,7 +246,7 @@ class SummarizationServedModel(ServedModel):
 
         summary = re.sub("\n+", " ", summary)
 
-        if not input_language == output_language:
+        if input_language not in LanguageIso or input_language != output_language:
             summary = self._translate_sumary(
                 content=summary,
                 input_language=input_language,
