@@ -58,7 +58,7 @@ class ServedIPTCModel(ServedModel):
         """Load the model artifacts and prepare the model for prediction."""
         # load model artifacts into ready CompiledIPTC instance
         self._model = CompiledIPTC.from_pretrained(
-            self.served_model_artifacts.model_artifact_directory
+            settings.project, self.served_model_artifacts.model_artifact_directory
         )
         # load model card json file into dict
         self.model_card = self.served_model_artifacts.model_card
