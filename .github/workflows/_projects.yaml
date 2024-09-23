@@ -306,7 +306,7 @@ jobs:
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
-            REGION_NAME="${{ us-east-2 }}" \
+            REGION_NAME="us-east-2" \
             IMAGE_TAG="${{ inputs.tag }}" \
             BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
             TARGET_BUILD_STAGE="development" \
