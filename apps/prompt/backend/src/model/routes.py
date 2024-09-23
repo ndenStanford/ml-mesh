@@ -11,7 +11,6 @@ from fastapi import APIRouter, Header, HTTPException, status
 # Source
 from src.model.tables import LanguageModel
 from src.prompt import functional as F
-from src.prompt_validator import PromptInjectionException
 
 
 router = APIRouter(
@@ -52,16 +51,10 @@ def get_model(alias: str):
 @router.post("/{alias}/generate", status_code=status.HTTP_200_OK)
 def generate(alias: str, prompt: str, model_parameters: str = Header(None)):
     """Generates text using a prompt template."""
-    try:
-        if model_parameters is not None:
-            model_parameters = json.loads(model_parameters)
-        return {
-            "generated": F.generate_from_prompt(
-                prompt, alias, model_parameters=model_parameters
-            )
-        }
-    except PromptInjectionException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+    if model_parameters is not None:
+        model_parameters = json.loads(model_parameters)
+    return {
+        "generated": F.generate_from_prompt(
+            prompt, alias, model_parameters=model_parameters
         )
+    }
