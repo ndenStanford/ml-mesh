@@ -33,7 +33,7 @@ def init() -> None:
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
 
-    if SystemInfo.in_docker() or settings.SYNC_PROMPTS_TO_DYNAMODB:
+    if SystemInfo.in_docker():
         _syncronize_prompts()
 
 
