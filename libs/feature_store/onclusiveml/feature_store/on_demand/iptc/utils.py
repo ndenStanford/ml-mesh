@@ -3,7 +3,6 @@
 
 # Standard Library
 import asyncio
-import json
 
 # from src.settings import PromptBackendAPISettings
 from typing import Dict
@@ -31,7 +30,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.stage.onclusive.com"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
+    INTERNAL_ML_ENDPOINT_API_KEY: str = "xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
 
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
@@ -82,71 +81,37 @@ async def generate_label_llm(row, session, level):
     """Invoke LLM to generate IPTC asynchronously."""
     candidate_list = get_candidate_list(row, level)
 
-    # Construct the prompt string
-    prompt = (
-        "You are a topic analysis expert.\n"
-        "You will be provided an article, delimited by < and >, and its title, delimited by $ and $. And a list of candidate categories, delimited by * and *.\n"
-        "You need to classify the article into the most proper category, based on the article content and its title.\n\n"
-        "You must do the analysis following the steps below:\n"
-        "1. Read the article and its title to understand the main idea.\n"
-        "2. Go through all the candidate categories which include the category name and its description, and think about the difference between the candidate categories.\n"
-        "3. Classify the article into the most proper category.\n\n"
-        "Output Constraint:\n"
-        "Provide the output as a JSON object with the key 'iptc_category' and the value as the most proper category from the list of candidates.\n\n"
-        "<article>{article}</article>\n"
-        "<Title>{title}</Title>\n"
-        "<Candidates>{candidates}</Candidates>"
-    ).format(article=row["content"], title=row["title"], candidates=candidate_list)
-
+    input_dict = {
+        "input": {
+            "title": row["title"],
+            "article": row["content"],
+            "candidates": candidate_list,
+        },
+        "output": settings.IPTC_RESPONSE_SCHEMA,
+    }
     headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
 
-    try:
-        # Construct the URL with the endpoint and prompt
-        url = "{}/api/v2/models/{}/generate?prompt={}".format(
-            settings.PROMPT_API,
-            settings.DEFAULT_MODEL,
-            aiohttp.helpers.quote(prompt),  # Encode the prompt to be URL-safe
-        )
-        async with session.post(url, headers=headers, json={}) as response:
-            try:
-                output_content = await response.json()
-            except aiohttp.ContentTypeError:
-                response_text = await response.text()
-                print(f"Failed to parse response as JSON. Response: {response_text}")
-                return None
+    async with session.post(
+        "{}/api/v2/prompts/{}/generate/model/{}".format(
+            settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
+        ),
+        headers=headers,
+        json=input_dict,
+    ) as response:
+        try:
+            output_content = await response.json()
+        except aiohttp.ContentTypeError:
+            response_text = await response.text()
+            print(f"Failed to parse response as JSON. Response: {response_text}")
+            return None
 
-            if "generated" in output_content:
-                try:
-                    # Strip the '```json' and '```' markers if present and parse the 'generated' field as JSON
-                    generated_text = (
-                        output_content["generated"]
-                        .strip("```json")
-                        .strip("```")
-                        .strip()
-                    )
-                    generated_content = json.loads(generated_text)
-
-                    # Check if the parsed 'generated' JSON contains 'iptc_category'
-                    if "iptc_category" in generated_content:
-                        return generated_content["iptc_category"]
-                    else:
-                        print(
-                            f"'iptc_category' not found in the generated content: {generated_content}"
-                        )
-                        return None
-                except json.JSONDecodeError:
-                    print(
-                        f"Failed to parse 'generated' content as JSON: {output_content['generated']}"
-                    )
-                    return None
-            else:
-                print(f"'generated' key not found in the response: {output_content}")
-                return None
-
-    except Exception as e:
-        # General exception handling for any other errors
-        print(f"An unexpected error occurred. {e}")
-        return None
+        if "iptc_category" in output_content:
+            return output_content["iptc_category"]
+        else:
+            print(
+                f"'iptc_category' not found in the generated content: {output_content}"
+            )
+            return None
 
 
 async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:
