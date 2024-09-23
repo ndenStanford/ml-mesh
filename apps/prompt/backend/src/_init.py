@@ -13,12 +13,12 @@ from onclusiveml.core.logging import get_default_logger
 from onclusiveml.core.system import SystemInfo
 
 # Source
+from src.extensions.github import github
 from src.model.constants import DEFAULT_MODELS
 from src.model.tables import LanguageModel
 from src.project.tables import Project
 from src.prompt.tables import PromptTemplate
 from src.settings import get_settings
-from src.extensions.github import github
 
 
 settings = get_settings()
@@ -53,6 +53,7 @@ def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
         if row is None:
             table(**value).save()
 
+
 def _syncronize_prompts():
     """Save prompts from registry in dynamoDB if non-exisant."""
     files = github.ls("")
@@ -65,4 +66,3 @@ def _syncronize_prompts():
             PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             ).sync()
-            
