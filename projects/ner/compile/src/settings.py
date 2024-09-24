@@ -9,12 +9,10 @@ from neptune.types.mode import Mode
 from pydantic import Field
 
 # Internal libraries
-from onclusiveml.core.logging import INFO
-from onclusiveml.tracking import (
-    TrackedModelCard,
-    TrackedModelSpecs,
-    TrackedParams,
-)
+from onclusiveml.core.logging import DEBUG
+from onclusiveml.tracking import TrackedModelCard
+from onclusiveml.tracking import TrackedModelSettings as TrackedModelSpecs
+from onclusiveml.tracking import TrackingSettings as TrackedParams
 
 
 # --- atomic settings and models
@@ -157,9 +155,8 @@ class IOSettings(TrackedParams):
     compile: WorkflowComponentIOSettings = WorkflowComponentIOSettings(COMPILE)
     test: WorkflowComponentIOSettings = WorkflowComponentIOSettings(TEST)
     upload: WorkflowComponentIOSettings = WorkflowComponentIOSettings(UPLOAD)
-
     # logging
-    log_level: int = INFO
+    log_level: int = DEBUG
 
     class Config:
         env_prefix = "io_"
@@ -240,7 +237,7 @@ class NERPipelineCompilationSettings(PipelineCompilationSettings):
     """
 
     pipeline_name: str = "ner_model"
-    max_length = 128
+    max_length: int = 128
 
     class Config:
         env_prefix = "ner_pipeline_compilation_settings_"
