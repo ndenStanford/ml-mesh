@@ -28,7 +28,7 @@ from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
 )
 
 # Make sure to replace this with your OpenAI API key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "sk-xx"
 
 # Configure the OpenAI API key
 openai.api_key = OPENAI_API_KEY
@@ -42,7 +42,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
 
     INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
-    OPENAI_API_KEY: str = "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"
+    OPENAI_API_KEY: str = "sk-xx"
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
         "iptc category": "Answer the IPTC category",
     }
