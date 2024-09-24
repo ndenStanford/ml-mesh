@@ -10,6 +10,7 @@ packages = [{include = "onclusiveml"}]
 python = "3.9.19"
 boto3 = "^1.20.23"
 dill = "^0.3.7"
+openai = "==0.28.0"
 boto3-type-annotations = "^0.3.1"
 feast = {version = "0.36.0", extras = ["aws"]}
 serving = {path = "../serving"}

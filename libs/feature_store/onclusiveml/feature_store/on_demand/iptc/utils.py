@@ -3,6 +3,7 @@
 
 # Standard Library
 import asyncio
+import json
 
 # from src.settings import PromptBackendAPISettings
 from typing import Dict
@@ -10,6 +11,8 @@ from typing import Dict
 # 3rd party libraries
 import aiohttp
 import pandas as pd
+import openai
+
 
 # Internal libraries
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
@@ -24,15 +27,22 @@ from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_THIRD,
 )
 
+# Make sure to replace this with your OpenAI API key
+OPENAI_API_KEY = "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"
+
+# Configure the OpenAI API key
+openai.api_key = OPENAI_API_KEY
+
 
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     # Placed in this file due to the circular import issue.
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.stage.onclusive.com"
+
     INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
-
+    OPENAI_API_KEY: str = "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"
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
         "iptc category": "Answer the IPTC category",
     }
@@ -77,51 +87,71 @@ def get_col_name(level):
     return col_name
 
 
-async def generate_label_llm(row, session, level):
+def run_gpt(prompt):
+    """Run the GPT-4 model with the given prompt."""
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # Use the correct model name for GPT-4
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5,
+        )
+        return response["choices"][0]["message"]["content"]
+    except openai.OpenAIError as e:
+        print(f"An error occurred while calling OpenAI API: {e}")
+        return None
+
+
+async def generate_label_llm(row, level):
     """Invoke LLM to generate IPTC asynchronously."""
     candidate_list = get_candidate_list(row, level)
 
-    input_dict = {
-        "input": {
-            "title": row["title"],
-            "article": row["content"],
-            "candidates": candidate_list,
-        },
-        "output": settings.IPTC_RESPONSE_SCHEMA,  # Expected response schema
-    }
-    headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+    # Format the prompt for OpenAI
+    prompt = (
+        "You are a topic analysis expert.\n"
+        "You will be provided an article, delimited by < and >, and its title, delimited by $ and $. And a list of candidate categories, delimited by * and *.\n"
+        "You need to classify the article into the most proper category, based on the article content and its title.\n\n"
+        "You must do the analysis following the steps below:\n"
+        "1. Read the article and its title to understand the main idea.\n"
+        "2. Go through all the candidate categories which include the category name and its description, and think about the difference between the candidate categories.\n"
+        "3. Classify the article into the most proper category.\n\n"
+        "Output Constraint:\n"
+        "Provide the output as a JSON object with the key 'iptc_category' and the value as the most proper category from the list of candidates.\n\n"
+        "<article>{article}</article>\n"
+        "<Title>{title}</Title>\n"
+        "<Candidates>{candidates}</Candidates>"
+    ).format(
+        article=row["content"],
+        title=row["title"],
+        candidates="*".join([candidate["name"] for candidate in candidate_list]),
+    )
 
     try:
-        async with session.post(
-            "{}/api/v2/prompts/{}/generate/model/{}".format(
-                settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
-            ),
-            headers=headers,
-            json=input_dict,
-        ) as response:
+        # Call OpenAI's API using the run_gpt function
+        response = run_gpt(prompt)
 
-            try:
-                output_content = await response.json()
-            except aiohttp.ContentTypeError:
-                response_text = await response.text()
-                print(f"Failed to parse response as JSON. Response: {response_text}")
-                return None
+        # Parse the response
+        try:
+            output_content = json.loads(response)
+        except json.JSONDecodeError:
+            print(f"Failed to parse the response as JSON: {response}")
+            return None
 
-                # Check if 'iptc_category' is in the response            if "iptc category" in output_content:
-                return output_content["iptc category"]
-            else:
-                print(
-                    f"'iptc category' not found in the generated content: {output_content}"
-                )
-                return None
+        # Check if 'iptc_category' is in the response
+        if "iptc_category" in output_content:
+            return output_content["iptc_category"]
+        else:
+            print(
+                f"'iptc_category' not found in the generated content: {output_content}"
+            )
+            return None
 
-    except aiohttp.ClientError as e:
-        # Handle network-related errors
-        print(f"Network error occurred: {e}")
+    except openai.OpenAIError as e:
+        # Handle OpenAI-related errors
+        print(f"OpenAI API error occurred: {e}")
         return None
-    except TimeoutError as e:
+    except Exception as e:
         # Handle any other unexpected errors
-        print(f"An timeout error occurred: {e}")
+        print(f"An error occurred: {e}")
         return None
 
 
@@ -131,10 +161,9 @@ async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:
     features_df_copy = features_df.copy()
     col_name = get_col_name(level)
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         tasks = [
-            generate_label_llm(row, session, level)
-            for _, row in features_df_copy.iterrows()
+            generate_label_llm(row, level) for _, row in features_df_copy.iterrows()
         ]
         features_df_copy[col_name] = await asyncio.gather(*tasks)
     return features_df_copy
