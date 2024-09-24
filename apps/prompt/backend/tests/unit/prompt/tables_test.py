@@ -87,18 +87,15 @@ def test_as_langchain(alias, template, project):
         ("prompt-1", "input: {text}", "project-1"),
     ],
 )
-@patch.object(GithubClient, "read")
 @patch.object(Dyntastic, "get")
-def test_get(mock_dyntastic_get, mock_github_read, alias, template, project):
+def test_get(mock_dyntastic_get, alias, template, project):
     """Test get."""
     mock_dyntastic_get.return_value = PromptTemplate(
-        alias=alias, project=project, template=""
+        alias=alias, project=project, template=template
     )
-    mock_github_read.return_value = template
 
     result = PromptTemplate.get(alias)
 
-    mock_github_read.assert_called_with(os.path.join(project, alias))
     assert result == PromptTemplate(alias=alias, project=project, template=template)
 
 
