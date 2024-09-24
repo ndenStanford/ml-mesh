@@ -35,9 +35,6 @@ def init() -> None:
     if SystemInfo.in_docker():
         _syncronize_prompts()
 
-    if SystemInfo.in_docker():
-        _syncronize_prompts()
-
 
 def _create_tables(tables: List[Type[Dyntastic]]) -> None:
     """Create Tables."""
@@ -65,6 +62,10 @@ def _syncronize_prompts():
         if project is None:
             Project(alias=project_alias).sync()
         if len(prompt_alias) > 0:
+            print(f"prompt alias: {prompt_alias}")
+            print(f"prompt alias 0: {prompt_alias[0]}")
+            print(f"template: {github.read(file)}")
+            print(f"project_alias: {project_alias}")
             PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             ).sync()
