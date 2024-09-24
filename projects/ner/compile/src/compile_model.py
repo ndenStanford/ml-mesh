@@ -28,7 +28,7 @@ def compile_model() -> None:
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED,
         level=io_settings.log_level,
     )
     # get read-only base model version
