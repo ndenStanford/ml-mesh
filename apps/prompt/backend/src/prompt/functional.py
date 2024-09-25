@@ -14,12 +14,10 @@ from onclusiveml.core.retry import retry
 from src.extensions.redis import redis
 from src.model.tables import LanguageModel
 from src.prompt.tables import PromptTemplate
-from src.prompt_validator import PromptInjectionValidator
 from src.settings import get_settings
 
 
 settings = get_settings()
-field_validator = PromptInjectionValidator()
 
 
 @retry(
@@ -49,11 +47,6 @@ def generate_from_prompt_template(
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
 
-    if settings.VALIDATE_PROMPT_INJECTION:
-        validate_input = prompt.as_langchain().messages[0].prompt.template
-        validate_input = validate_input.format(**inputs)
-        field_validator.validate_prompt(validate_input)
-
     return chain.invoke(inputs)
 
 
@@ -63,8 +56,6 @@ def generate_from_prompt(
     prompt: str, model_alias: str, model_parameters: Dict = None
 ) -> Dict[str, str]:
     """Generates chat message from input prompt and model."""
-    if settings.VALIDATE_PROMPT_INJECTION:
-        field_validator.validate_prompt(prompt)
     llm = LanguageModel.get(model_alias).as_langchain(model_parameters=model_parameters)
     conversation = ConversationChain(llm=llm, memory=ConversationBufferMemory())
     return conversation.predict(input=prompt)
@@ -89,10 +80,5 @@ def generate_from_default_model(prompt_alias: str, **kwargs) -> Dict[str, str]:
 
     inputs = kwargs.get("input", dict())
     inputs.update({"format_instructions": prompt.format_instructions})
-
-    if settings.VALIDATE_PROMPT_INJECTION:
-        validate_input = prompt.as_langchain().messages[0].prompt.template
-        validate_input = validate_input.format(**inputs)
-        field_validator.validate_prompt(validate_input)
 
     return chain.invoke(inputs)

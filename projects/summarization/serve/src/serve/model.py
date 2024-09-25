@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import List, Optional, Type
+from typing import List, Optional, Type, Union
 
 # 3rd party libraries
 import requests
@@ -19,6 +19,7 @@ from onclusiveml.serving.rest.serve import ServedModel
 # Source
 from src.exceptions import (
     PromptBackendException,
+    PromptInjectionException,
     PromptNotFoundException,
     SummaryTypeNotSupportedException,
 )
@@ -102,12 +103,22 @@ class SummarizationServedModel(ServedModel):
             multiple_article_summary (bool): whether it is a multi-article summary
         """
         try:
+            # Check if the input language exists in the summarization_prompts dictionary
+            if (
+                input_language in LanguageIso
+                and input_language not in settings.summarization_prompts
+            ):
+                logger.warning(
+                    f"Language {input_language} currently not supported. Using English as default."
+                )
+                input_language = LanguageIso.EN
+
             if not multiple_article_summary:
                 alias = settings.summarization_prompts[input_language][summary_type]
             else:
                 alias = settings.summarization_prompts[LanguageIso.EN][
                     settings.multi_article_summary
-                ]
+                ][summary_type]
         except KeyError:
             raise PromptNotFoundException(
                 language=input_language, summary_type=summary_type
@@ -116,22 +127,24 @@ class SummarizationServedModel(ServedModel):
 
     def _inference(
         self,
-        content: str,
+        content: Union[str, dict],
         prompt_alias: str,
         desired_length: int,
         keywords: List[str],
         title: bool,
+        custom_instructions: Optional[List],
         theme: Optional[str] = None,
     ) -> str:
         """Summarization prediction handler method.
 
         Args:
-            content (str): Text to summarize
+            content (str or dict): Text to summarize
             prompt_alias (str): prompt template alias
             desired_length (int): desired length of the summary
             keywords (List[str]): relevant keywords/topics in the content for creating the summary
             title (bool): if title has to be returned
             theme (str): specific theme in the content for creating the summary
+            custom_instructions (List): user instructions that define the requirements for the summary
         """
         input_dict = {
             "input": {
@@ -139,6 +152,7 @@ class SummarizationServedModel(ServedModel):
                 "content": content,
                 "keywords": ", ".join(keywords),
                 "theme": theme,
+                "custom_instructions": custom_instructions,
             }
         }
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
@@ -153,6 +167,8 @@ class SummarizationServedModel(ServedModel):
 
         if q.status_code == 200:
             return eval(q.content)["generated"]
+        elif q.status_code == 400:
+            raise PromptInjectionException(content=content)
         else:
             raise PromptBackendException(message=str(q.content))
 
@@ -164,6 +180,7 @@ class SummarizationServedModel(ServedModel):
         """
         parameters = payload.parameters
         content = payload.attributes.content
+        # check if input_language is provided
         if payload.parameters.input_language is None:
             input_language = self._identify_language(content)
             logger.debug(f"Detected content language: {input_language}")
@@ -172,14 +189,16 @@ class SummarizationServedModel(ServedModel):
             input_language = LanguageIso.from_language_iso(
                 payload.parameters.input_language
             )
-        output_language = LanguageIso.from_language_iso(
-            payload.parameters.output_language
-        )
+        # check if output_language is provided
+        if payload.parameters.output_language is None:
+            output_language = input_language
+        else:
+            output_language = LanguageIso.from_language_iso(
+                payload.parameters.output_language
+            )
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
         try:
-            if content[0] == "[" and content[-1] == "]":
-                content = eval(content)
             if isinstance(content, list):
                 multiple_article_summary = True
                 content = {
@@ -188,11 +207,6 @@ class SummarizationServedModel(ServedModel):
                 }
         except Exception as e:
             logger.warn("Cannot eval content. Assuming it to be string type.", e)
-        if input_language is None:
-            input_language = self._identify_language(content)
-            logger.debug(f"Detected content language: {input_language}")
-        if output_language is None:
-            output_language = input_language
         # retrieve prompt
         # depending on request parameters, we can determine what prompt to use.
         if parameters.summary_type not in ("bespoke", "section"):
@@ -205,7 +219,7 @@ class SummarizationServedModel(ServedModel):
                 multiple_article_summary=multiple_article_summary,
             )
         except Exception as e:
-            logger.error(f"Summarization language {input_language} not supported.")
+            logger.error(f"Summarization input language {input_language} is invalid.")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e),
@@ -226,12 +240,13 @@ class SummarizationServedModel(ServedModel):
             keywords=parameters.keywords,
             title=parameters.title,
             theme=parameters.theme,
+            custom_instructions=parameters.custom_instructions,
             prompt_alias=prompt_alias,
         )
 
         summary = re.sub("\n+", " ", summary)
 
-        if not input_language == output_language:
+        if input_language not in LanguageIso or input_language != output_language:
             summary = self._translate_sumary(
                 content=summary,
                 input_language=input_language,
