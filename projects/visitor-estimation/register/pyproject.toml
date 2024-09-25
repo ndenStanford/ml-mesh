@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "iptc"
+version = "0.1.0"
+description = "IPTC features registration"
+authors = ["vishal-singh <vishal.singh@onclusive.com>"]
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.9.19"
+core = {path = "../../../libs/core"}
+feature_store = {path = "../../../libs/feature_store"}
+protobuf = "4.23"
+aiohttp = "<3.10.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "7.3.2"
+
+[tool.poetry.group.debug.dependencies]
+debugpy = "1.8.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
