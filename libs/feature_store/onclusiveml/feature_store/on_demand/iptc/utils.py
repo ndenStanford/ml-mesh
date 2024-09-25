@@ -101,11 +101,11 @@ def run_gpt(prompt):
         return None
 
 
-async def generate_label_llm(row, level):
-    """Invoke LLM to generate IPTC asynchronously."""
+async def generate_label_llm(row, session, level):
+    """Invoke LLM to generate IPTC asynchronously using OpenAI's API."""
     candidate_list = get_candidate_list(row, level)
 
-    # Format the prompt for OpenAI
+    # Construct the prompt with placeholders
     prompt = (
         "You are a topic analysis expert.\n"
         "You will be provided an article, delimited by < and >, and its title, delimited by $ and $. And a list of candidate categories, delimited by * and *.\n"
@@ -122,36 +122,67 @@ async def generate_label_llm(row, level):
     ).format(
         article=row["content"],
         title=row["title"],
-        candidates="*".join([candidate["name"] for candidate in candidate_list]),
+        candidates=candidate_list,
     )
 
+    # OpenAI API endpoint and headers
+    api_endpoint = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+    }
+
+    # Request payload
+    payload = {
+        "model": "gpt-4o-mini",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7,
+        "response_format": {"type": "json_object"},
+    }
+
     try:
-        # Call OpenAI's API using the run_gpt function
-        response = run_gpt(prompt)
+        # Call OpenAI's API using aiohttp session
+        async with session.post(
+            api_endpoint, headers=headers, json=payload
+        ) as response:
+            # Parse the response
+            if response.status == 200:
+                response_json = await response.json()
+                generated_content = (
+                    response_json.get("choices", [])[0]
+                    .get("message", {})
+                    .get("content", "")
+                    .strip()
+                )
 
-        # Parse the response
-        try:
-            output_content = json.loads(response)
-        except json.JSONDecodeError:
-            print(f"Failed to parse the response as JSON: {response}")
-            return None
+                try:
+                    # Try parsing the generated content as JSON
+                    output_content = json.loads(generated_content)
+                except json.JSONDecodeError:
+                    print(f"Failed to parse the response as JSON: {generated_content}")
+                    return None
 
-        # Check if 'iptc_category' is in the response
-        if "iptc_category" in output_content:
-            return output_content["iptc_category"]
-        else:
-            print(
-                f"'iptc_category' not found in the generated content: {output_content}"
-            )
-            return None
+                # Check if 'iptc_category' is in the response
+                if "iptc_category" in output_content:
+                    return output_content["iptc_category"]
+                else:
+                    print(
+                        f"'iptc_category' not found in the generated content: {output_content}"
+                    )
+                    return None
+            else:
+                print(
+                    f"Failed to get a valid response from OpenAI API: {response.status}"
+                )
+                response_text = await response.text()
+                print(f"Response text: {response_text}")
+                return None
 
-    except openai.OpenAIError as e:
-        # Handle OpenAI-related errors
-        print(f"OpenAI API error occurred: {e}")
+    except aiohttp.ClientError as e:
+        print(f"Network error occurred while calling OpenAI API: {e}")
         return None
     except Exception as e:
-        # Handle any other unexpected errors
-        print(f"An error occurred: {e}")
+        print(f"An unexpected error occurred: {e}")
         return None
 
 
@@ -161,9 +192,10 @@ async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:
     features_df_copy = features_df.copy()
     col_name = get_col_name(level)
 
-    async with aiohttp.ClientSession():
+    async with aiohttp.ClientSession() as session:
         tasks = [
-            generate_label_llm(row, level) for _, row in features_df_copy.iterrows()
+            generate_label_llm(row, session, level)
+            for _, row in features_df_copy.iterrows()
         ]
         features_df_copy[col_name] = await asyncio.gather(*tasks)
     return features_df_copy
