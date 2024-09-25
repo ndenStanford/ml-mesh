@@ -20,7 +20,10 @@ from sklearn.model_selection import train_test_split
 # Internal libraries
 from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
     CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
     ID_TO_LEVEL,
     ID_TO_TOPIC,
 )
@@ -130,6 +133,45 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             data_fetch_params=self.data_fetch_params,
         )
 
+    def get_candidate_list(self, level: int) -> list:
+        """Generate a list of candidate names based on the input level.
+
+        Args:
+            level (int): The level of categorization (1, 2, 3, or 4).
+
+        Returns:
+            list: A list of candidate names.
+        """
+        if level == 1:
+            # Get all candidate names from CANDIDATE_DICT_FIRST
+            return [
+                category["name"] for category in CANDIDATE_DICT_FIRST["root"].values()
+            ]
+
+        elif level == 2:
+            # Get all candidate names from all categories in CANDIDATE_DICT_SECOND
+            return [
+                category["name"]
+                for subcategories in CANDIDATE_DICT_SECOND.values()
+                for category in subcategories.values()
+            ]
+
+        elif level == 3:
+            # Assuming a CANDIDATE_DICT_THIRD with similar structure as SECOND
+            return [
+                category["name"]
+                for subcategories in CANDIDATE_DICT_THIRD.values()
+                for category in subcategories.values()
+            ]
+
+        elif level == 4:
+            # Assuming a CANDIDATE_DICT_FOURTH with similar structure as SECOND
+            return [
+                category["name"]
+                for subcategories in CANDIDATE_DICT_FOURTH.values()
+                for category in subcategories.values()
+            ]
+
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
         if self.level == 1:
@@ -177,6 +219,29 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.dataset_df: DataFrame = self.dataset_df.dropna(
             subset=self.data_fetch_params.non_nullable_columns
         )  # type: ignore
+        # Filter out rows with invalid labels not in the candidate list
+        self.logger.info("Filtering rows with invalid labels...")
+        valid_labels = self.get_candidate_list(
+            level=self.level
+        )  # Implement this method to return the candidate dictionary
+        initial_row_count = len(self.dataset_df)
+        # Apply the filter
+        self.dataset_df = self.dataset_df[
+            self.dataset_df["topic_1_llm"].isin(valid_labels)
+        ]
+        # Log the size after removing invalid labels
+        filtered_row_count = len(self.dataset_df)
+        removed_rows = initial_row_count - filtered_row_count
+        self.logger.info(
+            f"Removed {removed_rows} rows with invalid labels. Filtered dataset size: {self.dataset_df.shape}"
+        )
+
+        if filtered_row_count == 0:
+            self.logger.warning(
+                "No valid rows remaining after filtering. Please check the input data or candidate list."
+            )
+        # Display the first few rows of the filtered dataset
+        self.logger.info(f"Final preprocessed dataset:\n{self.dataset_df.head()}")
         # fix the topic discrepencies
         self.dataset_df = topic_conversion(self.dataset_df)
         # Log the size and class distribution after dropping nulls
