@@ -73,6 +73,8 @@ class OnclusiveService(OnclusiveStrEnum):
     PROMPT_BACKEND_SERVE = "prompt-backend-serve"
     # --- Transcript Segmentation
     TRANSCRIPT_SEGMENTATION = "transcript-segmentation-serve"
+    # --- Visitor Estimation
+    VISITOR_ESTIMATION = "visitor-estimation-register"
 
 
 class OnclusiveLogMessageFormat(OnclusiveStrEnum):
