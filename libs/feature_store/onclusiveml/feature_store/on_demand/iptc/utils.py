@@ -11,10 +11,10 @@ from typing import Dict
 # 3rd party libraries
 import aiohttp
 import pandas as pd
-import openai
 
 
 # Internal libraries
+from onclusiveml.core.logging import get_default_logger
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
@@ -27,19 +27,12 @@ from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_THIRD,
 )
 
-# Make sure to replace this with your OpenAI API key
-OPENAI_API_KEY = "sk-xx"
-
-# Configure the OpenAI API key
-openai.api_key = OPENAI_API_KEY
-
 
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     # Placed in this file due to the circular import issue.
     """API configuration."""
 
     PROMPT_API: str = "https://internal.api.ml.stage.onclusive.com"
-
     INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
     OPENAI_API_KEY: str = "sk-xx"
@@ -50,6 +43,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
 
 
 settings = PromptBackendAPISettings()
+logger = get_default_logger(__name__)
 
 
 def get_candidate_list(row, level):
@@ -85,20 +79,6 @@ def get_col_name(level):
     """Get a column name of each level."""
     col_name = f"topic_{level}_llm"
     return col_name
-
-
-def run_gpt(prompt):
-    """Run the GPT-4 model with the given prompt."""
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # Use the correct model name for GPT-4
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.5,
-        )
-        return response["choices"][0]["message"]["content"]
-    except openai.OpenAIError as e:
-        print(f"An error occurred while calling OpenAI API: {e}")
-        return None
 
 
 async def generate_label_llm(row, session, level):
@@ -159,30 +139,32 @@ async def generate_label_llm(row, session, level):
                     # Try parsing the generated content as JSON
                     output_content = json.loads(generated_content)
                 except json.JSONDecodeError:
-                    print(f"Failed to parse the response as JSON: {generated_content}")
+                    logger.info(
+                        f"Failed to parse the response as JSON: {generated_content}"
+                    )
                     return None
 
                 # Check if 'iptc_category' is in the response
                 if "iptc_category" in output_content:
                     return output_content["iptc_category"]
                 else:
-                    print(
+                    logger.info(
                         f"'iptc_category' not found in the generated content: {output_content}"
                     )
                     return None
             else:
-                print(
+                logger.info(
                     f"Failed to get a valid response from OpenAI API: {response.status}"
                 )
                 response_text = await response.text()
-                print(f"Response text: {response_text}")
+                logger.info(f"Response text: {response_text}")
                 return None
 
     except aiohttp.ClientError as e:
-        print(f"Network error occurred while calling OpenAI API: {e}")
+        logger.info(f"Network error occurred while calling OpenAI API: {e}")
         return None
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.info(f"An unexpected error occurred: {e}")
         return None
 
 

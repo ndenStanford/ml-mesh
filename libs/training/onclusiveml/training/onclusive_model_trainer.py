@@ -107,10 +107,8 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         # Logging the initial dataset size
         self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
 
-        # Drop rows with NA values in the necessary columns (e.g., topic_1_llm, or other label columns)
-        self.dataset_df = self.dataset_df.dropna(
-            subset=["topic_1_llm"]
-        )  # Update column name as needed
+        # Drop rows with NA values
+        self.dataset_df = self.dataset_df.dropna()
 
         # Logging the size after filtering
         self.logger.info(f"Filtered dataset size (no NAs): {self.dataset_df.shape}")
