@@ -56,19 +56,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             data_fetch_params=self.data_fetch_params,
         )
 
-    def build_dataset_dict(self) -> None:
-        """Build the dataset dictionary from the fetched data."""
-        self.dataset_dict[self.data_fetch_params.feature_view_name] = self.dataset_df
-
-    def initialize_model(self) -> None:
-        """Initialize the RandomForestRegressor model."""
-        self.model = RandomForestRegressor(
-            max_depth=self.model_card.model_params.max_depth,
-            n_estimators=self.model_card.model_params.n_estimators,
-            random_state=42,
-        )
-        self.logger.info("Model initialized: RandomForestRegressor")
-
     def create_training_argument(self) -> None:
         """Create training argument object."""
         self.min_window = self.model_card.model_params.min_window
@@ -81,6 +68,10 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         self.interact = self.model_card.model_params.interact
         self.min_entity_date = self.model_card.model_params.min_entity_date
         self.remove_zero_visitor = self.model_card.model_params.remove_zero_visitor
+
+    def build_dataset_dict(self) -> None:
+        """Build the dataset dictionary from the fetched data."""
+        self.dataset_dict[self.data_fetch_params.feature_view_name] = self.dataset_df
 
     def data_preprocess(self) -> None:
         """Process the dataframes."""
@@ -263,6 +254,15 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
 
         self.logger.info("Data preprocessing complete.")
 
+    def initialize_model(self) -> None:
+        """Initialize the RandomForestRegressor model."""
+        self.model = RandomForestRegressor(
+            max_depth=self.model_card.model_params.max_depth,
+            n_estimators=self.model_card.model_params.n_estimators,
+            random_state=42,
+        )
+        self.logger.info("Model initialized: RandomForestRegressor")
+
     def make_pipeline(
         self, nfm, index_features, encode_features, interact, exclude_features
     ):
@@ -395,6 +395,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def __call__(self) -> None:
         """Call Method to run the training process."""
         super(VisitorEstimationTrainer, self).__call__()
+        self.create_training_argument()
         self.build_dataset_dict()
         self.data_preprocess()
         self.initialize_model()
