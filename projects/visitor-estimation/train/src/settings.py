@@ -8,33 +8,37 @@ from typing import List
 from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
+from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.tracking import (
     TrackedModelCard,
     TrackedModelSettings,
-    TrackingSettings
+    TrackingSettings,
 )
-from onclusiveml.core.base import OnclusiveBaseSettings
+
+
 class DataFetchParams(FeatureStoreParams):
     """Feature registration inputs."""
 
     dataset_upload_bucket: str
     dataset_upload_dir: str
-    entity_name: str = 'visitor-estimation'
-    entity_join_key: str = 'visitor_estimation_id'
-    redshift_table: str = 'stg_visitor_estimation'
-    feature_view_name: str = 'visitor_estimation_feature_view'
+    entity_name: str = "visitor-estimation"
+    entity_join_key: str = "visitor_estimation_id"
+    redshift_table: str = "stg_visitor_estimation"
+    feature_view_name: str = "visitor_estimation_feature_view"
     redshift_timestamp_field: str
     save_artifact: bool = False
     n_records_sample: int
-    n_records_full: int 
+    n_records_full: int
     filter_columns: List[str] = []
     filter_values: List[str] = []
     comparison_operators: List[str] = []
     non_nullable_columns: List[str] = []
 
+
 class CrawlerItemsDataFetchParams(OnclusiveBaseSettings):
     """Feature registration inputs."""
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -42,9 +46,10 @@ class CrawlerItemsDataFetchParams(OnclusiveBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="crawler_items_")
 
+
 class EclrLinksDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for ECLR_LINKS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -55,7 +60,7 @@ class EclrLinksDataFetchParams(OnclusiveBaseSettings):
 
 class EntityConnectionsDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for ENTITY_CONNECTIONS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -66,7 +71,7 @@ class EntityConnectionsDataFetchParams(OnclusiveBaseSettings):
 
 class EntityEaPerDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for ENTITY_EA_PR."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -77,7 +82,7 @@ class EntityEaPerDataFetchParams(OnclusiveBaseSettings):
 
 class EntityLinksLmdDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for ENTITY_LINKS_LMD."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -88,7 +93,7 @@ class EntityLinksLmdDataFetchParams(OnclusiveBaseSettings):
 
 class EntityLinksDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for ENTITY_LINKS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -99,7 +104,7 @@ class EntityLinksDataFetchParams(OnclusiveBaseSettings):
 
 class ProfileCompanySectorsDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for PROFILE_COMPANY_SECTORS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -110,7 +115,7 @@ class ProfileCompanySectorsDataFetchParams(OnclusiveBaseSettings):
 
 class SearchSeedsDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for SEARCH_SEEDS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -121,7 +126,7 @@ class SearchSeedsDataFetchParams(OnclusiveBaseSettings):
 
 class DomainsDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for DOMAINS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -132,7 +137,7 @@ class DomainsDataFetchParams(OnclusiveBaseSettings):
 
 class ProfileEntityRelationshipsDataFetchParams(OnclusiveBaseSettings):
     """Data fetch parameters for PROFILE_ENTITY_RELATIONSHIPS."""
-    
+
     entity_name: str
     entity_join_key: str
     redshift_table: str
@@ -140,17 +145,30 @@ class ProfileEntityRelationshipsDataFetchParams(OnclusiveBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="profile_entity_relationships_")
 
+
 class TrackedVEModelSpecs(TrackedModelSettings):
     """Tracked iptc model settings."""
 
     project: str = "onclusive/visitor-estimation"
     model: str = "VE-TRAINED"
 
+
 class VEModelParams(TrackingSettings):
     """the training argument for huggingface trainer."""
 
     epochs: int = 3
-    
+    min_windows: int = 30
+    max_windows: int = 30
+    excluded_profiles: str = "2,12,20,28"
+    included_profiles: str = None
+    index_features: list = ["type", "category_id", "company_sector_id"]
+    encode_features: list = ["type", "category_id"]
+    exclude_features: list = []
+    interact: list = []
+    min_entity_date: str = "2012-01-01"
+    remove_zero_visitor: bool = False
+
+
 class TrackedVEBaseModelCard(TrackedModelCard):
     """The model card for the base model of the iptc ML project."""
 

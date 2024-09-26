@@ -108,7 +108,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
         self.logger.info(
             f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
         )
-        if 'content' in self.dataset_df.columns:
+        if "content" in self.dataset_df.columns:
             self.docs = self.dataset_df["content"].apply(str).values.tolist()
 
     def get_featurestore_handle(self) -> None:
