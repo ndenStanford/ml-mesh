@@ -272,8 +272,15 @@ class SummarizationServedModel(ServedModel):
                     output_language=output_language,
                 )
 
-        return PredictResponseSchema.from_data(
-            version=int(settings.api_version[1:]),
-            namespace=settings.model_name,
-            attributes={"summary": summary, "title": title},
-        )
+        if len(title) > 0:
+            return PredictResponseSchema.from_data(
+                version=int(settings.api_version[1:]),
+                namespace=settings.model_name,
+                attributes={"summary": summary, "title": title},
+            )
+        else:
+            return PredictResponseSchema.from_data(
+                version=int(settings.api_version[1:]),
+                namespace=settings.model_name,
+                attributes={"summary": summary},
+            )
