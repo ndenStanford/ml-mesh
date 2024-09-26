@@ -42,7 +42,7 @@ class PredictResponseAttributeSchemaV2(JsonApiSchema):
     """
 
     summary: str
-    title: str
+    title: Optional[str]
 
 
 class BioRequestAttributeSchemaV2(JsonApiSchema):
