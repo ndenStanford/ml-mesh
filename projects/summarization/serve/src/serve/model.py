@@ -155,6 +155,10 @@ class SummarizationServedModel(ServedModel):
                 "custom_instructions": custom_instructions,
             }
         }
+
+        if title:
+            input_dict["output"] = settings.output_schema_with_title
+
         headers = {"x-api-key": settings.internal_ml_endpoint_api_key}
 
         q = requests.post(
@@ -166,7 +170,10 @@ class SummarizationServedModel(ServedModel):
         )
 
         if q.status_code == 200:
-            return eval(q.content)["generated"]
+            if title:
+                return eval(q.content)
+            else:
+                return eval(q.content)["generated"]
         elif q.status_code == 400:
             raise PromptInjectionException(content=content)
         else:
@@ -244,6 +251,12 @@ class SummarizationServedModel(ServedModel):
             prompt_alias=prompt_alias,
         )
 
+        title = ""
+        if "title" in summary:
+            title = summary["title"]
+            summary = summary["summary"]
+
+        title = re.sub("\n+", " ", title)
         summary = re.sub("\n+", " ", summary)
 
         if input_language not in LanguageIso or input_language != output_language:
@@ -252,9 +265,14 @@ class SummarizationServedModel(ServedModel):
                 input_language=input_language,
                 output_language=output_language,
             )
+            title = self._translate_sumary(
+                content=title,
+                input_language=input_language,
+                output_language=output_language,
+            )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
             namespace=settings.model_name,
-            attributes={"summary": summary},
+            attributes={"summary": summary, "title": title},
         )
