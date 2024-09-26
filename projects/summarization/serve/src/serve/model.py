@@ -265,11 +265,12 @@ class SummarizationServedModel(ServedModel):
                 input_language=input_language,
                 output_language=output_language,
             )
-            title = self._translate_sumary(
-                content=title,
-                input_language=input_language,
-                output_language=output_language,
-            )
+            if len(title) > 0:
+                title = self._translate_sumary(
+                    content=title,
+                    input_language=input_language,
+                    output_language=output_language,
+                )
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
