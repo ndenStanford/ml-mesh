@@ -30,18 +30,12 @@ def main() -> None:
     model_specs = TrackedVEModelSpecs()
     model_card = TrackedVEBaseModelCard()
     data_fetch_params = DataFetchParams()
-    crawler_items_data_fetch_params = CrawlerItemsDataFetchParams()
-    data_fetch_params.entity_name = crawler_items_data_fetch_params.entity_name
-    data_fetch_params.entity_join_key = crawler_items_data_fetch_params.entity_join_key
-    data_fetch_params.redshift_table = crawler_items_data_fetch_params.redshift_table
-    data_fetch_params.feature_view_name = (
-        crawler_items_data_fetch_params.feature_view_name
-    )
 
     trainer = VisitorEstimationTrainer(model_specs, model_card, data_fetch_params)
-    trainer()
 
+    # create the dataset dictionary
     for params in [
+        CrawlerItemsDataFetchParams(),
         EclrLinksDataFetchParams(),
         EntityConnectionsDataFetchParams(),
         EntityEaPerDataFetchParams(),
@@ -56,9 +50,11 @@ def main() -> None:
         trainer.data_fetch_params.entity_join_key = params.entity_join_key
         trainer.data_fetch_params.redshift_table = params.redshift_table
         trainer.data_fetch_params.feature_view_name = params.feature_view_name
-        trainer()
+        trainer.build_dataset_dict()
+    logger.info(trainer.dataset_dict)
+
     # Start the training and register models to neptune
-    print(trainer.dataset_dict)
+    trainer()
 
 
 if __name__ == "__main__":

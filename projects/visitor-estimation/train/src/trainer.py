@@ -46,7 +46,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     ) -> None:
         """Initialize the VisitorEstimationTrainer."""
         self.data_fetch_params = data_fetch_params
-        self.dataset_df = None
         self.dataset_dict = {}
         self.logger = get_default_logger(__name__)
 
@@ -71,6 +70,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
 
     def build_dataset_dict(self) -> None:
         """Build the dataset dictionary from the fetched data."""
+        super(VisitorEstimationTrainer, self).__call__()
         self.dataset_dict[self.data_fetch_params.feature_view_name] = self.dataset_df
 
     def data_preprocess(self) -> None:
@@ -86,6 +86,11 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         df_ent = self.dataset_dict.get("entity_links_feature_view")
         df_dom = self.dataset_dict.get("domains_feature_view")
         df_connect = self.dataset_dict.get("entity_connections_feature_view")
+
+        # adjust column names
+        df_lmd = df_lmd.rename(columns={"link_metadata_timestamp": "timestamp"})
+        df_ea = df_ea.rename(columns={"ea_timestamp": "timestamp"})
+
         # Step 1: Join entity analytics with link metadata
         profileDF = joinEntityAnalyticsWithLinkMetadata(
             df_lmd, df_ea, df_per, self.min_window, self.max_window
@@ -124,7 +129,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         entityInfo = df_ent[
             [
                 "entity_id",
-                "entity_timestamp",
+                "entities_entity_timestamp",
                 "pagerank",
                 "type_cd",
                 "article_type_cd",
@@ -134,7 +139,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         ].rename(
             columns={
                 "entity_id": "entityID",
-                "entity_timestamp": "entityTimestamp",
+                "entities_entity_timestamp": "entityTimestamp",
                 "pagerank": "pageRank",
                 "type_cd": "type",
                 "article_type_cd": "articleType",
@@ -249,6 +254,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             .merge(domainLinkCounts, on=["entityID", "profileID"], how="left")
             .drop(columns=["rn", "daysLag"])
         )
+        profileDF5 = profileDF5.loc[:, ~profileDF5.columns.duplicated()]
         # Save preprocessed data in the dataset_dict for further use
         self.dataset_dict["profileDF5"] = profileDF5
 
@@ -394,9 +400,9 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
 
     def __call__(self) -> None:
         """Call Method to run the training process."""
-        super(VisitorEstimationTrainer, self).__call__()
+        # super(VisitorEstimationTrainer, self).__call__()
         self.create_training_argument()
-        self.build_dataset_dict()
+        # self.build_dataset_dict()
         self.data_preprocess()
         self.initialize_model()
         self.make_pipeline()
