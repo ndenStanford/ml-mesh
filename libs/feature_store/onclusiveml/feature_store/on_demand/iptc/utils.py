@@ -6,9 +6,6 @@ import asyncio
 import json
 import os
 
-# from src.settings import PromptBackendAPISettings
-from typing import Dict
-
 # 3rd party libraries
 import aiohttp
 import pandas as pd
@@ -29,20 +26,6 @@ from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
 )
 
 
-class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
-    # Placed in this file due to the circular import issue.
-    """API configuration."""
-
-    PROMPT_API: str = "https://internal.api.ml.stage.onclusive.com"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
-    CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
-    IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
-        "iptc category": "Answer the IPTC category",
-    }
-    DEFAULT_MODEL: str = "gpt-4o-mini"
-
-
-settings = PromptBackendAPISettings()
 logger = get_default_logger(__name__)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", default=None)
 
