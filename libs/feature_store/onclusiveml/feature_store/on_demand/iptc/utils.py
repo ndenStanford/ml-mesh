@@ -4,6 +4,7 @@
 # Standard Library
 import asyncio
 import json
+import os
 
 # from src.settings import PromptBackendAPISettings
 from typing import Dict
@@ -35,7 +36,6 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     PROMPT_API: str = "https://internal.api.ml.stage.onclusive.com"
     INTERNAL_ML_ENDPOINT_API_KEY: str = "sk-xx"
     CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
-    OPENAI_API_KEY: str = "sk-xx"
     IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
         "iptc category": "Answer the IPTC category",
     }
@@ -44,6 +44,7 @@ class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
 
 settings = PromptBackendAPISettings()
 logger = get_default_logger(__name__)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", default=None)
 
 
 def get_candidate_list(row, level):
@@ -109,7 +110,7 @@ async def generate_label_llm(row, session, level):
     api_endpoint = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
     }
 
     # Request payload
