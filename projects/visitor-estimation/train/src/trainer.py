@@ -63,7 +63,9 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def initialize_model(self) -> None:
         """Initialize the RandomForestRegressor model."""
         self.model = RandomForestRegressor(
-            max_depth=10, n_estimators=20, random_state=42
+            max_depth=self.model_card.model_params.max_depth,
+            n_estimators=self.model_card.model_params.n_estimators,
+            random_state=42,
         )
         self.logger.info("Model initialized: RandomForestRegressor")
 
@@ -395,7 +397,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         super(VisitorEstimationTrainer, self).__call__()
         self.build_dataset_dict()
         self.data_preprocess()
-        self.make_pipeline()
         self.initialize_model()
+        self.make_pipeline()
         self.train()
         self.save()

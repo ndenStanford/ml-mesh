@@ -154,13 +154,14 @@ class TrackedVEModelSpecs(TrackedModelSettings):
 
 
 class VEModelParams(TrackingSettings):
-    """the training argument for huggingface trainer."""
+    """the training argument for visitor estimation training."""
 
-    epochs: int = 3
-    min_windows: int = 30
-    max_windows: int = 30
+    max_depth: int = 10
+    n_estimators: int = 20
+    min_window: int = 30
+    max_window: int = 30
     excluded_profiles: str = "2,12,20,28"
-    included_profiles: str = None
+    included_profiles: str = ""
     index_features: list = ["type", "category_id", "company_sector_id"]
     encode_features: list = ["type", "category_id"]
     exclude_features: list = []

@@ -26,10 +26,7 @@ services:
     command: [python, -m, src.train_model]
     profiles: [train]
     environment:
-      TRAINED_PROJECT: ${TRAINED_PROJECT}
-      TRAINED_MODEL: ${TRAINED_MODEL}
-      NEPTUNE_PROJECT: ${NEPTUNE_PROJECT}
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
@@ -53,7 +50,23 @@ services:
       - 5678:5678
     profiles: [debug]
     environment:
-      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/visitor-estimation/train
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-train:${IMAGE_TAG:-latest}
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     env_file: train/config/dev.env
