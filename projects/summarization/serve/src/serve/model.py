@@ -74,7 +74,7 @@ class SummarizationServedModel(ServedModel):
 
         return LanguageIso.from_language_iso(response.data.attributes.source_language)
 
-    def _translate_sumary(
+    def _translate(
         self, content: str, input_language: LanguageIso, output_language: LanguageIso
     ) -> str:
         """Translate summary.
@@ -260,13 +260,13 @@ class SummarizationServedModel(ServedModel):
         summary = re.sub("\n+", " ", summary)
 
         if input_language not in LanguageIso or input_language != output_language:
-            summary = self._translate_sumary(
+            summary = self._translate(
                 content=summary,
                 input_language=input_language,
                 output_language=output_language,
             )
             if len(title) > 0:
-                title = self._translate_sumary(
+                title = self._translate(
                     content=title,
                     input_language=input_language,
                     output_language=output_language,
