@@ -14,7 +14,6 @@ from langchain_core.exceptions import OutputParserException
 from src.project.tables import Project
 from src.prompt import functional as F
 from src.prompt.tables import PromptTemplate
-from src.prompt_validator import PromptInjectionException
 from src.settings import get_settings
 
 
@@ -147,11 +146,6 @@ def generate_text_from_prompt_template(
         return F.generate_from_prompt_template(
             alias, model, **values, model_parameters=model_parameters
         )
-    except PromptInjectionException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
     except (JSONDecodeError, OutputParserException) as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -167,11 +161,4 @@ def generate_text_from_default_model(alias: str, values: Dict[str, Any]):
         alias (str): prompt alias
         values (Dict[str, Any]): values to fill in template.
     """
-    print(values)
-    try:
-        return F.generate_from_default_model(alias, **values)
-    except PromptInjectionException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
+    return F.generate_from_default_model(alias, **values)
