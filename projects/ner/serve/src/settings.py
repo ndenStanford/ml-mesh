@@ -10,6 +10,7 @@ from neptune.types.mode import Mode
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.nlp.language.constants import LanguageIso
 from onclusiveml.serving.params import ServingBaseParams
 from onclusiveml.serving.rest.serve.params import ServingParams
@@ -95,18 +96,21 @@ class NERSettings(TrackingSettings):
     supported_languages: List[LanguageIso] = NER_SUPPORTED_LANGUAGE
 
 
+class TrackedCompiledModelSpecs(TrackedModelSettings):
+    """Tracked compiled model settings."""
+
+    # we need an additional version tag since we are referencing an EXISTING model version, rather
+    # than creating a new one
+    with_id: str
+    # we only need to download from the base model, not upload
+    mode: str = Mode.READ_ONLY
+
+
 class ServerModelSettings(ServingParams):
     """Serve model parameters."""
 
     model_name: str = "ner"
     model_directory: Union[str, Path] = "."
-
-
-class CompiledNERTrackedModelSettings(TrackedModelSettings):
-    """Tracked compiled model settings."""
-
-    with_id: str
-    mode: str = Mode.READ_ONLY
 
 
 class DownloadSettings(ServingBaseParams):
@@ -117,11 +121,12 @@ class DownloadSettings(ServingBaseParams):
 
 class GlobalSettings(
     ServerModelSettings,
-    NERSettings,
+    TrackedGithubActionsSpecs,
     DownloadSettings,
     TrackedImageSpecs,
-    TrackedGithubActionsSpecs,
-    CompiledNERTrackedModelSettings,
+    NERSettings,
+    OnclusiveLogSettings,
+    TrackedCompiledModelSpecs,
 ):
     """Global server settings."""
 

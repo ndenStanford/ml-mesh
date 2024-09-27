@@ -1,142 +1,6 @@
 ---
-version : '3.9'
 
 services:
-  # =============================================
-  # TRAIN
-  # =============================================
-
-  train:
-    build:
-      context: ../../
-      dockerfile: projects/ner/train/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-production}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: ner
-        COMPONENT: train
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
-    command: [python, -m, src.train_model]
-    profiles: [train]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: train/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  train-unit:
-    volumes:
-      - type: bind
-        source: train/src
-        target: /projects/ner/train/src
-      - type: bind
-        source: train/tests
-        target: /projects/ner/train/tests
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-train:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [train, unit]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-
-  # =============================================
-  # COMPILE
-  # =============================================
-
-  compile:
-    volumes:
-      - compile-volume:/projects/ner/compile/outputs
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    build:
-      context: ../../
-      dockerfile: projects/ner/compile/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: ner
-        COMPONENT: compile
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.compile_model]
-    profiles: [compile, unit, integration, pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-unit:
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
-    profiles: [unit]
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-download-model:
-    volumes:
-      - compile-volume:/projects/ner/compile/outputs
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.download_uncompiled_model]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-validate-model:
-    volumes:
-      - compile-volume:/projects/ner/compile/outputs
-    devices:
-      - /dev/neuron0:/dev/neuron0
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  compile-upload-model:
-    volumes:
-      - compile-volume:/projects/ner/compile/outputs
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
-    command: [python, -m, src.upload_compiled_model]
-    profiles: [pipeline]
-    environment:
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
-      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
-      GITHUB_ACTOR: ${GITHUB_ACTOR}
-      GITHUB_ENV: ${GITHUB_ENV}
-      GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}
-      GITHUB_JOB: ${GITHUB_JOB}
-      GITHUB_REF: ${GITHUB_REF}
-      GITHUB_BASE_REF: ${GITHUB_BASE_REF}
-      GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}
-      GITHUB_SHA: ${GITHUB_SHA}
-      GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
-      GITHUB_RUN_ID: ${GITHUB_RUN_ID}
-      GITHUB_RUN_NUMBER: ${GITHUB_RUN_NUMBER}
-      RUNNER_ARCH: ${RUNNER_ARCH}
-      RUNNER_NAME: ${RUNNER_NAME}
-      RUNNER_OS: ${RUNNER_OS}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: compile/config/${DEPLOYMENT:-prod}.env
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
   # =============================================
   # SERVE
   # =============================================
@@ -183,7 +47,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: read-only
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     hostname: onclusiveml
@@ -194,7 +58,7 @@ services:
   # - do NOT include REST model server process
   serve-unit:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [unit]
     hostname: onclusiveml
     env_file: serve/config/${DEPLOYMENT:-prod}.env
@@ -210,7 +74,7 @@ services:
     volumes:
       - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [pytest, tests/integration, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [integration]
     hostname: onclusiveml
@@ -224,7 +88,7 @@ services:
     volumes:
       - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [pytest, tests/functional, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     profiles: [functional]
     hostname: onclusiveml
@@ -241,7 +105,7 @@ services:
     volumes:
       - serve-volume:/projects/ner/serve/models
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
-    command: [pytest, tests/load, -ra, -vv, --capture=no]
+    command: [python, -m, pytest, tests/load, -ra, -vv, --capture=no]
     environment:
       # load test params
       ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
@@ -269,7 +133,7 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       NEPTUNE_CLIENT_MODE: async
       DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve
       DOCKER_IMAGE_TAG: ${IMAGE_TAG}
@@ -293,162 +157,8 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-  # =============================================
-  # BACKFILL
-  # =============================================
-
-  backfill:
-    build:
-      context: ../../
-      dockerfile: projects/ner/backfill/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: ner
-        COMPONENT: backfill
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.6}
-    volumes:
-      - backfill-volume:/tmp/beam-artifact-staging
-      - type: bind
-        source: backfill/src
-        target: /projects/ner/backfill/src
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
-    entrypoint: [python, -m, src.backfill.__main__]
-    profiles: [backfill]
-    network_mode: service:taskmanager
-    environment:
-      HOST: internal.api.ml.stage.onclusive.com
-      NAMESPACE: ner
-      VERSION: 1
-      API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY}
-      SECURE: true
-      JOB_NAME: ner-backfill
-      RUNNER: PortableRunner
-      STREAMING: true
-      ARTIFACT_ENDPOINT: jobserver:8098
-      JOB_ENDPOINT: jobserver:8099
-      ENVIRONMENT_TYPE: LOOPBACK
-      SOURCE_TOPIC: beam-input
-      TARGET_TOPIC: beam-output
-      BOOTSTRAP_SERVERS: kafka:9092
-      GROUP_ID: notification_consumer_group
-      AUTO_OFFSET_RESET: earliest
-    depends_on:
-      - jobserver
-      - kafka
-      - zookeeper
-
-  backfill-unit:
-    volumes:
-      - type: bind
-        source: backfill
-        target: /projects/ner/backfill
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-backfill:${IMAGE_TAG}
-    command: [pytest, tests/unit, -ra, -vv, --capture=no, -s]
-    profiles: [unit]
-    environment:
-      HOST: test.onclusive.com
-      NAMESPACE: ner
-      VERSION: 1
-      API_KEY: test
-      SECURE: true
-      JOB_NAME: ner-backfill
-      RUNNER: PortableRunner
-      STREAMING: true
-      ARTIFACT_ENDPOINT: jobserver:8098
-      JOB_ENDPOINT: jobserver:8099
-      ENVIRONMENT_TYPE: LOOPBACK
-      SOURCE_TOPIC: test-input
-      TARGET_TOPIC: test-output
-      BOOTSTRAP_SERVERS: kafka:9092
-      GROUP_ID: notification_consumer_group
-      AUTO_OFFSET_RESET: earliest
-    hostname: onclusive-ml
-    networks: [onclusive-net]
-
-  jobmanager:
-    image: apache/flink:1.16-scala_2.12-java11
-    command: [jobmanager]
-    ports:
-      - 8081:8081
-    profiles: [backfill]
-    networks: [onclusive-net]
-    environment:
-      FLINK_PROPERTIES: |
-        jobmanager.rpc.address: jobmanager
-        parallelism.default: 1
-
-  taskmanager:
-    image: apache/flink:1.16-scala_2.12-java11
-    scale: 1
-    depends_on:
-      - jobmanager
-    command: [taskmanager]
-    ports:
-      - 8100-8200:8100-8200
-    profiles: [backfill]
-    networks: [onclusive-net]
-    environment:
-      FLINK_PROPERTIES: |
-        jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 2
-        parallelism.default: 1
-    volumes:
-      - backfill-volume:/tmp/beam-artifact-staging
-
-  jobserver:
-    image: apache/beam_flink1.16_job_server:2.49.0
-    command:
-      - --flink-master=jobmanager:8081
-    ports:
-      - 8097:8097
-      - 8098:8098
-      - 8099:8099
-    depends_on:
-      - jobmanager
-    profiles: [backfill]
-    networks: [onclusive-net]
-    volumes:
-      - backfill-volume:/tmp/beam-artifact-staging
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper
-    profiles: [backfill]
-    networks: [onclusive-net]
-    ports:
-      - 2181:2181
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_SYNC_LIMIT: 2
-
-  kafka:
-    image: confluentinc/cp-kafka:6.1.13
-    profiles: [backfill]
-    networks: [onclusive-net]
-    ports:
-      - 9092:9092
-      - 9094:9094
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
-      LAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_CREATE_TOPICS: beam-input:1:1,beam-output:1:1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      TOPIC_AUTO_CREATE: true
-
 networks:
   onclusive-net:
 
 volumes :
-  compile-volume:
   serve-volume:
-  backfill-volume:
