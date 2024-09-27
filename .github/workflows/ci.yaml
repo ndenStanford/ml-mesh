@@ -835,7 +835,7 @@ jobs       :
   # ner
 
   run-ner-project:
-    name: NER multi-model Project
+    name: NER Project
     uses: ./.github/workflows/_projects.yaml
     needs: [get-environment, run-repository-state, run-libs-tests, get-target-branch-name]
     strategy:
@@ -852,7 +852,9 @@ jobs       :
             functional: true
             load: false
             upload-test-results: false
-            runner-kind: ubuntu-22.04
+            runner-kind: custom
+            self-hosted-runner-type: inf1.xlarge
+            self-hosted-runner-ami: ami-00ca6f88d3e1669fb
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
@@ -870,6 +872,7 @@ jobs       :
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
+      self-hosted-runner-ami: ${{ matrix.components.self-hosted-ami }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
