@@ -62,7 +62,7 @@ def _syncronize_prompts():
         project = Project.safe_get(project_alias)
         if project is None:
             Project(alias=project_alias).sync()
-        if len(prompt_alias) > 0:
+        if project_alias != ".github" and len(prompt_alias) > 0:
             PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             ).sync()
