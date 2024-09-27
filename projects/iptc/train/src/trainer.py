@@ -227,7 +227,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         initial_row_count = len(self.dataset_df)
         # Apply the filter
         self.dataset_df = self.dataset_df[
-            self.dataset_df["topic_1_llm"].isin(valid_labels)
+            self.dataset_df[f"topic_{self.level}_llm"].isin(valid_labels)
         ]
         # Log the size after removing invalid labels
         filtered_row_count = len(self.dataset_df)
