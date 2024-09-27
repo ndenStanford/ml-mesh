@@ -855,7 +855,6 @@ jobs       :
             runner-kind: custom
             self-hosted-runner-type: inf1.xlarge
             self-hosted-runner-ami: ami-00ca6f88d3e1669fb
-            self-hosted-runner-neuron: true
             use-cache: true
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: neuron-inference
@@ -874,7 +873,6 @@ jobs       :
       runner-kind: ${{ matrix.components.runner-kind }}
       self-hosted-runner-type: ${{ matrix.components.self-hosted-runner-type }}
       self-hosted-runner-ami: ${{ matrix.components.self-hosted-runner-ami }}
-      self-hosted-runner-neuron: $${{ matrix.components.self-hosted-runner-neuron }}
       use-cache: ${{ matrix.components.use-cache }}
       push-image: ${{ matrix.components.push-image }}
       base-image: ${{ matrix.components.base-image }}
@@ -1386,6 +1384,7 @@ jobs       :
       - run-sentiment-project
       - run-iptc-project
       - run-iptc-multi-project
+      - run-ner-project
       - run-translation-project
       - run-lsh-project
       - run-topic-project
