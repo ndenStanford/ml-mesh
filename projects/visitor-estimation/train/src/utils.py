@@ -24,8 +24,8 @@ def read_yaml(yaml_str):
         return (
             yaml.safe_load(yaml_str) if yaml_str and isinstance(yaml_str, str) else []
         )
-    except yaml.YAMLError as e:
-        print(f"Error parsing YAML: {e}")
+    except yaml.YAMLError:
+        # print(f"Error parsing YAML: {e}")
         return []
 
 
@@ -126,10 +126,11 @@ def getTopEntityMatchingSearchSeeds(df_ss, df_crl):
     for index, row in df_crl.iterrows():
         yaml_data = read_yaml(row["extracted_entities"])
         for x in yaml_data:
-            entity_type = x.get("type") or x.get("entity_type")
-            text = x.get("text") or x.get("representative")
-            frequency = x.get("frequency")
-            crawlerItems.append([row["entity_id"], entity_type, text, frequency])
+            if isinstance(x, dict):
+                entity_type = x.get("type") or x.get("entity_type")
+                text = x.get("text") or x.get("representative")
+                frequency = x.get("frequency")
+                crawlerItems.append([row["entity_id"], entity_type, text, frequency])
 
     crawlerItemsDF = pd.DataFrame(
         crawlerItems,
@@ -221,15 +222,15 @@ def filterEntityAnalytics(df_ea):
     cleaned = cleaned[cleaned["link_visitors"].notnull()]
 
     good_entities = (
-        cleaned.groupby("entity_id").agg({"secondsLag": "min"}).reset_index()
+        cleaned.groupby("entity_id").agg({"secondslag": "min"}).reset_index()
     )
-    good_entities = good_entities[good_entities["secondsLag"] > -86400]
+    good_entities = good_entities[good_entities["secondslag"] > -86400]
     good_entities = good_entities[["entity_id"]]
 
     ea_table_groups = cleaned.merge(good_entities, on="entity_id")
     ea_table_groups = ea_table_groups[ea_table_groups["link_visitors"].notnull()]
-    ea_table_groups = ea_table_groups[ea_table_groups["secondsLag"] < 604800 * 4]
-    ea_table_groups = ea_table_groups.drop(columns=["secondsLag"]).sort_values(
+    ea_table_groups = ea_table_groups[ea_table_groups["secondslag"] < 604800 * 4]
+    ea_table_groups = ea_table_groups.drop(columns=["secondslag"]).sort_values(
         by=["entity_id", "profile_id", "timestamp"]
     )
     return ea_table_groups
@@ -667,11 +668,11 @@ def add_temporal_features(X):
     X["analyticsTimestamp"] = pd.to_datetime(X["analyticsTimestamp"])
     X["entityTimestamp"] = pd.to_datetime(X["entityTimestamp"])
     X["year"] = X["analyticsTimestamp"].dt.year
-    X["month"] = X["analyticsTimestamp"].dt.month
+    X["month"] = X["analyticsTimestamp"].dt.monthsecondsLag
     X["dayOfMonth"] = X["analyticsTimestamp"].dt.day
     X["daysLag"] = (X["analyticsTimestamp"] - X["entityTimestamp"]).dt.days
     X["dayOfWeek"] = X["analyticsTimestamp"].dt.dayofweek + 1
-    X["secondsLag"] = (
+    X["secondslag"] = (
         X["analyticsTimestamp"] - X["entityTimestamp"]
     ).dt.total_seconds()
     return X
