@@ -191,11 +191,11 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # database is ready to receive requests.
-      test: [CMD-SHELL, sleep 150s || exit 1]
-      interval: 10s
+      test: [CMD-SHELL, sleep 120s || exit 1]
+      interval: 2m30s
       retries: 4
-      start_period: 2m30s
-      timeout: 5s
+      start_period: 2m
+      timeout: 2m10s
     networks:
       - onclusive-net
 
