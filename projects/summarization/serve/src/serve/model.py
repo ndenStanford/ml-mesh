@@ -173,7 +173,7 @@ class SummarizationServedModel(ServedModel):
             if title:
                 return eval(q.content)
             else:
-                return eval(q.content)["generated"]
+                return {"summary": eval(q.content)["generated"]}
         elif q.status_code == 400:
             raise PromptInjectionException(content=content)
         else:
@@ -241,7 +241,7 @@ class SummarizationServedModel(ServedModel):
 
         content = re.sub("\n+", " ", str(content))
 
-        summary = self._inference(
+        result = self._inference(
             content=content,
             desired_length=parameters.desired_length,
             keywords=parameters.keywords,
@@ -251,12 +251,12 @@ class SummarizationServedModel(ServedModel):
             prompt_alias=prompt_alias,
         )
 
-        title = ""
-        if "title" in summary:
-            title = summary["title"]
-            summary = summary["summary"]
+        title = result.get("title", None)
+        summary = result.get("summary")
 
-        title = re.sub("\n+", " ", title)
+        if title is not None:
+            title = re.sub("\n+", " ", title)
+
         summary = re.sub("\n+", " ", summary)
 
         if input_language not in LanguageIso or input_language != output_language:
@@ -265,22 +265,15 @@ class SummarizationServedModel(ServedModel):
                 input_language=input_language,
                 output_language=output_language,
             )
-            if len(title) > 0:
+            if title is not None:
                 title = self._translate(
                     content=title,
                     input_language=input_language,
                     output_language=output_language,
                 )
 
-        if len(title) > 0:
-            return PredictResponseSchema.from_data(
-                version=int(settings.api_version[1:]),
-                namespace=settings.model_name,
-                attributes={"summary": summary, "title": title},
-            )
-        else:
-            return PredictResponseSchema.from_data(
-                version=int(settings.api_version[1:]),
-                namespace=settings.model_name,
-                attributes={"summary": summary},
-            )
+        return PredictResponseSchema.from_data(
+            version=int(settings.api_version[1:]),
+            namespace=settings.model_name,
+            attributes={"summary": summary, "title": title},
+        )
