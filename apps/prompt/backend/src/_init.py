@@ -10,6 +10,7 @@ from dyntastic import Dyntastic
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
+from onclusiveml.core.system import SystemInfo
 
 # Source
 from src.extensions.github import github
@@ -31,7 +32,9 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
-    _syncronize_prompts()
+
+    if SystemInfo.in_docker():
+        _syncronize_prompts()
 
 
 def _create_tables(tables: List[Type[Dyntastic]]) -> None:
@@ -59,7 +62,7 @@ def _syncronize_prompts():
         project = Project.safe_get(project_alias)
         if project is None:
             Project(alias=project_alias).sync()
-        if len(prompt_alias) > 0:
+        if project_alias != ".github" and len(prompt_alias) > 0:
             PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             ).sync()
