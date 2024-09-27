@@ -866,7 +866,7 @@ jobs       :
 
     with:
       project: ner
-      environment: ${{ needs.get-environment.outputs.name }}
+      environment: prod
       component: ${{ matrix.components.name }}
       tag: ${{ needs.run-repository-state.outputs.tag }}
       download-model: ${{ matrix.components.download-model }}
