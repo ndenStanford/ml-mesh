@@ -126,36 +126,6 @@ services:
     networks:
       - onclusive-net
 
-  translation-serve:
-    build:
-      context: ../../
-      dockerfile: projects/translation/serve/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        PROJECT: translation
-        COMPONENT: serve
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG:-latest}
-    command: [python, -m, src.serve.__main__]
-    profiles: [serve, integration, debug]
-    ports:
-      - 8001:8001
-    volumes:
-      - type: bind
-        source: ~/.aws/
-        target: /projects/translation/serve/.aws/
-    env_file: ../../projects/translation/serve/config/dev.env
-    healthcheck:
-      test: [CMD, curl, -f, http://translation-serve:8001/translation/v1/ready]
-      interval: 5s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-    networks:
-      - onclusive-net
-
   prompt-backend:
     build:
       context: ../../
@@ -198,6 +168,37 @@ services:
       timeout: 2m10s
     networks:
       - onclusive-net
+
+  translation-serve:
+    build:
+      context: ../../
+      dockerfile: projects/translation/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: translation
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/translation-serve:${IMAGE_TAG:-latest}
+    command: [python, -m, src.serve.__main__]
+    profiles: [serve, integration, debug]
+    ports:
+      - 8001:8001
+    volumes:
+      - type: bind
+        source: ~/.aws/
+        target: /projects/translation/serve/.aws/
+    env_file: ../../projects/translation/serve/config/dev.env
+    healthcheck:
+      test: [CMD, curl, -f, http://translation-serve:8001/translation/v1/ready]
+      interval: 5s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    networks:
+      - onclusive-net
+
 
   dynamodb:
     command: -jar DynamoDBLocal.jar -sharedDb

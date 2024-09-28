@@ -70,9 +70,9 @@ class ApplicationSettings(OnclusiveBaseSettings):
 class AWSSettings(OnclusiveBaseSettings):
     """AWS settings to retrieve data for test."""
 
-    AWS_ACCESS_KEY_ID: Optional[str] = None
-    AWS_SECRET_ACCESS_KEY: Optional[str] = None
-    REGION_NAME: Optional[str] = None
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    REGION_NAME: str
 
     class Config:
         env_file = "config/dev.env"
@@ -82,10 +82,10 @@ class AWSSettings(OnclusiveBaseSettings):
 class RedshiftSettings(OnclusiveBaseSettings):
     """Redshift settings to retrieve data for test."""
 
-    CLUSTER_ID: Optional[str] = None
-    DATABASE: Optional[str] = None
-    DB_USER: Optional[str] = None
-    SQL: Optional[str] = None
+    CLUSTER_ID: str
+    DATABASE: str
+    DB_USER: str
+    SQL: str
 
     class Config:
         env_prefix = "redshift_"
@@ -96,8 +96,8 @@ class RedshiftSettings(OnclusiveBaseSettings):
 class DeepEvalSettings(OnclusiveBaseSettings):
     """Deepeval settings for integration test."""
 
-    PERCENT_SUCCESS: Optional[str] = None
-    THRESHOLD: Optional[str] = None
+    PERCENT_SUCCESS: Optional[float] = 0, 5
+    THRESHOLD: Optional[float] = 0.5
     MODEL: Optional[str] = None
     SUMMARIZATION_COMPRESSION_RATIO: Optional[str] = 4
 
