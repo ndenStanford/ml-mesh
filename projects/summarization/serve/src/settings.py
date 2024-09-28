@@ -67,18 +67,6 @@ class ApplicationSettings(OnclusiveBaseSettings):
     }
 
 
-# class AWSSettings(OnclusiveBaseSettings):
-#     """AWS settings to retrieve data for test."""
-
-#     # AWS_ACCESS_KEY_ID: str
-#     # AWS_SECRET_ACCESS_KEY: str
-#     REGION_NAME: str
-
-#     class Config:
-#         env_file = "config/dev.env"
-#         env_file_encoding = "utf-8"
-
-
 class RedshiftSettings(OnclusiveBaseSettings):
     """Redshift settings to retrieve data for test."""
 
@@ -111,7 +99,6 @@ class DeepEvalSettings(OnclusiveBaseSettings):
 class GlobalSettings(
     ServerModelSettings,
     ApplicationSettings,
-    # AWSSettings,
     RedshiftSettings,
     DeepEvalSettings,
 ):
