@@ -160,34 +160,26 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             list: A list of candidate names.
         """
         if level == 1:
-            # Get all candidate names from CANDIDATE_DICT_FIRST
-            return [
+            candidate_list = [
                 category["name"] for category in CANDIDATE_DICT_FIRST["root"].values()
             ]
-
         elif level == 2:
-            # Get all candidate names from all categories in CANDIDATE_DICT_SECOND
-            return [
+            candidate_list = [
                 category["name"]
-                for subcategories in CANDIDATE_DICT_SECOND.values()
-                for category in subcategories.values()
+                for category in CANDIDATE_DICT_SECOND[self.iptc_label].values()
             ]
-
         elif level == 3:
-            # Assuming a CANDIDATE_DICT_THIRD with similar structure as SECOND
-            return [
+            candidate_list = [
                 category["name"]
-                for subcategories in CANDIDATE_DICT_THIRD.values()
-                for category in subcategories.values()
+                for category in CANDIDATE_DICT_THIRD[self.iptc_label].values()
+            ]
+        elif level == 4:
+            candidate_list = [
+                category["name"]
+                for category in CANDIDATE_DICT_FOURTH[self.iptc_label].values()
             ]
 
-        elif level == 4:
-            # Assuming a CANDIDATE_DICT_FOURTH with similar structure as SECOND
-            return [
-                category["name"]
-                for subcategories in CANDIDATE_DICT_FOURTH.values()
-                for category in subcategories.values()
-            ]
+        return candidate_list
 
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
