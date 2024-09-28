@@ -31,7 +31,7 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
-    logger.info("Finish tables creation...")
+    logger.info("Finish tables initialization")
     if SystemInfo.in_docker():
         _syncronize_prompts()
 
