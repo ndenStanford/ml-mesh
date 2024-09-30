@@ -62,6 +62,7 @@ def test_integration_summarization_model(test_client, payload):
     response = test_client.post("/summarization/v2/predict", json=payload)
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
 
 
 @pytest.mark.parametrize(
@@ -108,6 +109,45 @@ def test_multi_article(test_client, payload):
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": multi_article_content},
+                "parameters": {
+                    "input_language": "en",
+                    "output_language": "en",
+                    "summary_type": "bespoke",
+                    "title": True,
+                    "custom_instructions": [
+                        "You are a scientific researcher.",
+                        "I want the summary to have a neutral sentiment.",
+                        "The tone should be formal.",
+                        "Please remove any quoted text.",
+                        "Use UK English spelling.",
+                        "Apply sentence case capitalization.",
+                        "Use the 24-hour time format.",
+                        "Hyphenate compound words.",
+                        "Use metric units for any measurements.",
+                    ],
+                },
+            }
+        },
+    ],
+)
+def test_multi_article_title(test_client, payload):
+    """Test for multi-article summarization."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is not None
+    assert len(response.json()["data"]["attributes"]["title"]) > 0
 
 
 @pytest.mark.parametrize(
@@ -133,6 +173,7 @@ def test_unsupported_language(test_client, payload):
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
 
 
 @pytest.mark.parametrize(
@@ -205,6 +246,7 @@ def test_no_input_language(test_client, payload):
     response = test_client.post("/summarization/v2/predict", json=payload)
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
 
 
 def test_prompt_evaluation(
