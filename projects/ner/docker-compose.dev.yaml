@@ -241,8 +241,5 @@ services:
     hostname: onclusive-ml
     networks: [onclusive-net]
 
-volumes :
-  serve-volume:
-
 networks:
   onclusive-net:

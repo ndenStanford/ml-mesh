@@ -48,7 +48,7 @@ class CompiledNER:
             directory (Union[Path, str]): Directory to save the compiled NER pipeline
         """
         self.compiled_ner_pipeline.save_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline")
+            os.path.join(directory, "compiled_ner_pipeline_base")
         )
 
     @classmethod
@@ -62,7 +62,7 @@ class CompiledNER:
             CompiledNER: The loaded pre-trained CompiledNER object
         """
         compiled_ner_pipeline = CompiledPipeline.from_pretrained(
-            os.path.join(directory, "compiled_ner_pipeline")
+            os.path.join(directory, "compiled_ner_pipeline_base")
         )
 
         return cls(
