@@ -42,7 +42,7 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     mode: str = Field(Mode.READ_ONLY)
 
     class Config:
-        env_prefix = "COMPILED_PIPELINE_IO_UNCOMPILED_"
+        env_prefix = "ONCLUSIVEML_NEPTUNE_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
         case_sensitive = False
@@ -60,9 +60,10 @@ class CompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "NER-COMPILED"
 
     class Config:
-        env_prefix = "compiled_"
+        env_prefix = "ONCLUSIVEML_NEPTUNE_COMPILED_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
+        case_sensitive = False
 
 
 class WorkflowOutputDir(TrackedParams):
@@ -228,6 +229,12 @@ class PipelineCompilationSettings(TrackedParams):
     tokenizer_settings: TokenizerSettings = TokenizerSettings()
     model_tracing_settings: ModelTracingSettings = ModelTracingSettings()
 
+    class Config:
+        env_prefix = "PIPELINE_COMPILATION_SETTINGS_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+        protected_namespaces = ("settings_",)
+
 
 class NERPipelineCompilationSettings(PipelineCompilationSettings):
     """Tracked model card for a compiled NER model.
@@ -288,3 +295,4 @@ class CompiledNERTrackedModelCard(TrackedModelCard):
         env_prefix = "compiled_ner_tracked_model_card_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
+        protected_namespaces = ("settings_",)
