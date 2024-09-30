@@ -4,7 +4,7 @@ from typing import Type
 
 # 3rd party libraries
 from botocore.exceptions import ClientError
-from dyntastic import Dyntastic
+from dyntastic import Dyntastic, Index
 
 # Internal libraries
 from onclusiveml.core.logging import get_default_logger
@@ -27,6 +27,9 @@ def init() -> None:
 def _create_table(table: Type[Dyntastic]) -> None:
     """Create Tables."""
     try:
-        table.create_table()
+        timestamp_index = Index(
+            hash_key="timestamp_pk", range_key="timestamp", index_name="timestamp-index"
+        )
+        table.create_table(timestamp_index)
     except ClientError as e:
         logger.info("Table creation failed with error: {}".format(e))
