@@ -31,7 +31,8 @@ class TopicSummaryDynamoDB(Dyntastic):
     __table_host__ = settings.DYNAMODB_HOST
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime
+    timestamp_date: datetime
+    timestamp_time: datetime
     timestamp_pk: str = "TIMESTAMP_INDEX"
     topic_id: int
     trending: Optional[bool] = None

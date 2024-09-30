@@ -211,10 +211,18 @@ class ServedTopicModel(ServedModel):
                 query_string = query_profile.query
             elif inputs.media_api_query:
                 query_string = query_profile.media_query
+
+            current_time = datetime.now()
+            # Extract date
+            date_component = current_time.date()
+            # Extract time
+            time_component = current_time.time()
+
             dynamodb_dict = {
                 "topic_id": topic_id,
                 "trending": trend_found,
-                "timestamp": datetime.now(),
+                "timestamp_date": date_component,
+                "timestamp_time": time_component,
                 "query_id": inputs.query_id,
                 "query_string": query_string,
                 "analysis": topic,
