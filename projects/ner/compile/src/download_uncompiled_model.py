@@ -22,7 +22,7 @@ def download_uncompiled_model() -> None:
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED,
         level=io_settings.log_level,
     )
     # get read-only base model version
@@ -32,6 +32,9 @@ def download_uncompiled_model() -> None:
     base_model_card: Dict = base_model_version.download_config_from_model_version(
         neptune_attribute_path="model/model_card"
     )
+    # import os
+    # logger.info(f'env : {os.environ}')
+    # logger.info(f"model_artifact_attribute_path: {base_model_card['model_artifact_attribute_path']}")
     # download model artifact
     base_model_version.download_directory_from_model_version(
         local_directory_path=io_settings.download.model_directory,
