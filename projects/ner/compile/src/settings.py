@@ -37,14 +37,15 @@ class UncompiledTrackedModelSpecs(TrackedModelSpecs):
     model: str = "NER-TRAINED"
     # we need an additional version tag since we are referencing an EXISTING model version, rather
     # than creating a new one
-    with_id: str = "NER-TRAINED-41"
+    with_id: str = "NER-TRAINED-227"
     # we only need to download from the base model, not upload
     mode: str = Field(Mode.READ_ONLY)
 
     class Config:
-        env_prefix = "uncompiled_"
+        env_prefix = "COMPILED_PIPELINE_IO_UNCOMPILED_"
         env_file = "config/dev.env"
         env_file_encoding = "utf-8"
+        case_sensitive = False
 
 
 class CompiledTrackedModelSpecs(TrackedModelSpecs):
@@ -71,7 +72,7 @@ class WorkflowOutputDir(TrackedParams):
         outpath (str): The output directory path
     """
 
-    outpath: str = "./outputs"
+    outpath: str = "/projects/ner/compile/outputs"
 
     class Config:
         env_prefix = "compiled_pipeline_io_"
