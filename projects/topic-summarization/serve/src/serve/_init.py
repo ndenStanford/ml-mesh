@@ -28,9 +28,7 @@ def _create_table(table: Type[Dyntastic]) -> None:
     """Create Tables."""
     try:
         timestamp_index = Index(
-            hash_key="timestamp_date",
-            range_key="timestamp_time",
-            index_name="timestamp_date-index",
+            hash_key="timestamp_pk", range_key="timestamp", index_name="timestamp-index"
         )
         table.create_table(timestamp_index)
     except ClientError as e:
