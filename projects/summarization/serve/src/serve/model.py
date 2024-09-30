@@ -104,12 +104,12 @@ class SummarizationServedModel(ServedModel):
         """
         try:
             # Check if the input language exists in the summarization_prompts dictionary
-            if (
-                input_language in LanguageIso
-                and input_language not in settings.summarization_prompts
+            if input_language in LanguageIso and (
+                input_language not in settings.summarization_prompts
+                or summary_type not in settings.summarization_prompts[input_language]
             ):
                 logger.warning(
-                    f"Language {input_language} currently not supported. Using English as default."
+                    f"Language {input_language} and summary_type {summary_type} currently not supported. Using English as default."
                 )
                 input_language = LanguageIso.EN
 
@@ -187,22 +187,6 @@ class SummarizationServedModel(ServedModel):
         """
         parameters = payload.parameters
         content = payload.attributes.content
-        # check if input_language is provided
-        if payload.parameters.input_language is None:
-            input_language = self._identify_language(content)
-            logger.debug(f"Detected content language: {input_language}")
-
-        else:
-            input_language = LanguageIso.from_language_iso(
-                payload.parameters.input_language
-            )
-        # check if output_language is provided
-        if payload.parameters.output_language is None:
-            output_language = input_language
-        else:
-            output_language = LanguageIso.from_language_iso(
-                payload.parameters.output_language
-            )
         # identify language (needed to retrieve the appropriate prompt)
         multiple_article_summary = False
         try:
@@ -214,6 +198,33 @@ class SummarizationServedModel(ServedModel):
                 }
         except Exception as e:
             logger.warn("Cannot eval content. Assuming it to be string type.", e)
+
+        # detect content language
+        detected_language = self._identify_language(content)
+        logger.debug(f"Detected content language: {detected_language}")
+
+        if payload.parameters.input_language is not None:
+            input_language = LanguageIso.from_language_iso(
+                payload.parameters.input_language
+            )
+        else:
+            input_language = detected_language
+
+        if detected_language != input_language:
+            content = self._translate(
+                content=content,
+                input_language=detected_language,
+                output_language=input_language,
+            )
+
+        # check if output_language is provided
+        if payload.parameters.output_language is None:
+            output_language = input_language
+        else:
+            output_language = LanguageIso.from_language_iso(
+                payload.parameters.output_language
+            )
+
         # retrieve prompt
         # depending on request parameters, we can determine what prompt to use.
         if parameters.summary_type not in ("bespoke", "section"):
