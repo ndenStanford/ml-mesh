@@ -29,6 +29,12 @@ WORKDIR "${HOME}"
 # hadolint ignore=DL3002
 USER root
 
+# hadolint ignore=DL3008
+RUN apt-get update -yq && \
+    apt-get install --no-install-recommends build-essential binutils -yq && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN poetry install --only main --no-root --no-interaction --no-ansi && \
     rm -rf ~/.cache/pypoetry/cache && \
     rm -rf ~/.cache/pypoetry/artifacts && \
