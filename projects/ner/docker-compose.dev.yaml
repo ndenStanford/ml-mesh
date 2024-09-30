@@ -80,6 +80,9 @@ services:
       - type: bind
         source: compile/src
         target: /projects/ner/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/compile/outputs
     build:
       context: ../../
       dockerfile: projects/ner/compile/Dockerfile
@@ -146,6 +149,9 @@ services:
       - type: bind
         source: compile/src
         target: /projects/ner/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.download_uncompiled_model]
     profiles: [pipeline]
