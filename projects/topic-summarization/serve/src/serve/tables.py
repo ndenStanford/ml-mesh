@@ -3,7 +3,7 @@
 
 # Standard Library
 import uuid
-from datetime import datetime
+from datetime import date, time
 from typing import Dict, Optional, Union, List
 
 # 3rd party libraries
@@ -31,8 +31,8 @@ class TopicSummaryDynamoDB(Dyntastic):
     __table_host__ = settings.DYNAMODB_HOST
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp_date: datetime
-    timestamp_time: datetime
+    timestamp_date: date
+    timestamp_time: time
     topic_id: int
     trending: Optional[bool] = None
     analysis: Optional[
