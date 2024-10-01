@@ -1,0 +1,245 @@
+---
+
+services:
+
+  # =============================================
+  # SERVE
+  # =============================================
+
+  # serving image
+  serve:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/ner/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: ner
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v24.1.1}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.serve.__main__]
+    env_file: serve/config/dev.env
+    profiles: [serve, functional, load]
+    ports:
+      - 8000:8000
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    healthcheck:
+      test: [CMD, curl, -f, http://serve:8000/ner/v1/ready]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  # utility service: downloading the compiled model artifact that will be served
+  serve-download-model:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, src.download]
+    profiles: [serve, functional, load]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+    env_file: serve/config/dev.env
+    hostname: onclusiveml
+    networks: [onclusive-net]
+
+  serve-debug:
+    devices:
+      - /dev/neuron0:/dev/neuron0
+    build:
+      context: ../../
+      dockerfile: projects/ner/serve/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-debugger}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: ner
+        COMPONENT: serve
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG:-v23.11.3}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: read-only
+    env_file: serve/config/dev.env
+    profiles: [debug]
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python -m src.download
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.serve.__main__
+    ports:
+      - 5678:5678
+      - 8000:8000
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # unit tests
+  # - do NOT include model artifact
+  # - do NOT include REST model server process
+  serve-unit:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    env_file: serve/config/dev.env
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # integration tests
+  # - include model artifact
+  # - do NOT include REST model server process
+  serve-integration:
+    devices:
+      - /dev/neuron0:/dev/neuron0 # needs to be different from the `serve` service device
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/integration, -ra, -vv, --capture=no, -s]
+    env_file: serve/config/dev.env
+    profiles: [integration]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  # functional tests
+  # - include model artifact
+  # - include REST model server process
+  serve-functional:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/functional, -ra, -vv, --capture=no]
+    env_file: serve/config/dev.env
+    profiles: [functional]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # load tests
+  # - include model artifact
+  # - include REST model server process
+  serve-load:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+      - type: bind
+        source: serve/tests
+        target: /projects/ner/serve/tests
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, pytest, tests/load, -ra, -vv, --capture=no]
+    environment:
+      # load test params
+      ONCLUSIVEML_SERVING_NUM_USERS: 2 # numbers of users in load test
+      ONCLUSIVEML_SERVING_SPAWN_RATE: 2 # per second spawn rate of clients until `num_users` is reached
+      ONCLUSIVEML_SERVING_HOST: http://serve:8000 # base url of the host
+      ONCLUSIVEML_SERVING_RESET_STATS: No
+      ONCLUSIVEML_SERVING_RUN_TIME: 45s
+      ONCLUSIVEML_SERVING_LOGLEVEL: INFO
+    env_file: serve/config/dev.env
+    profiles: [load]
+    hostname: onclusiveml
+    networks:
+      - onclusive-net
+    depends_on:
+      serve:
+        condition: service_healthy
+
+  # utility service: uploading the relevant test results to the model registry
+  serve-upload-results:
+    volumes:
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/serve/models
+      - type: bind
+        source: serve/src
+        target: /projects/ner/serve/src
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve:${IMAGE_TAG}
+    command: [python, -m, python, -m, src.upload]
+    profiles: [serve]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      ONCLUSIVEML_NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      NEPTUNE_CLIENT_MODE: async
+      DOCKER_IMAGE_NAME: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-serve
+      DOCKER_IMAGE_TAG: ${IMAGE_TAG}
+      DOCKER_COMPOSE_ENVIRONMENT: ${ENVIRONMENT}
+      GITHUB_REPOSITORY: development-repository
+      GITHUB_ACTOR: development-actor
+      GITHUB_ENV: development-env
+      GITHUB_WORKFLOW: development-workflow
+      GITHUB_JOB: development-job
+      GITHUB_REF: development-ref
+      GITHUB_BASE_REF: development-base-ref
+      GITHUB_HEAD_REF: development-head-ref
+      GITHUB_SHA: development-sha
+      GITHUB_EVENT_NAME: development-event-name
+      GITHUB_RUN_ID: development-run-id
+      GITHUB_RUN_NUMBER: development-run-number
+      RUNNER_ARCH: development-arch
+      RUNNER_NAME: development-name
+      RUNNER_OS: development-os
+    env_file: serve/config/dev.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+networks:
+  onclusive-net:
