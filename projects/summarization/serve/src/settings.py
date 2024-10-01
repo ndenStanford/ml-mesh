@@ -92,7 +92,7 @@ class DeepEvalSettings(OnclusiveBaseSettings):
 
     PERCENT_SUCCESS: float
     THRESHOLD: float
-    MODEL: Optional[float] = "gpt-4"
+    MODEL: Optional[str] = "gpt-4"
     SUMMARIZATION_COMPRESSION_RATIO: Optional[str] = 4
 
     class Config:
