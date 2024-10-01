@@ -19,7 +19,7 @@ def test_list_models(app):
     "alias, provider",
     [
         (ChatModel.CLAUDE_3_SONNET, ChatModelProdiver.BEDROCK),
-        (ChatModel.GPT4_TURBO, ChatModelProdiver.OPENAI),
+        (ChatModel.GPT4_O, ChatModelProdiver.OPENAI),
     ],
 )
 def test_get_model(alias, provider, app):
