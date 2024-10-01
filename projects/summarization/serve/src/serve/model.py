@@ -200,7 +200,7 @@ class SummarizationServedModel(ServedModel):
             logger.warn("Cannot eval content. Assuming it to be string type.", e)
 
         # detect content language
-        detected_language = self._identify_language(content)
+        detected_language = self._identify_language(str(content))
         logger.debug(f"Detected content language: {detected_language}")
 
         if payload.parameters.input_language is not None:
