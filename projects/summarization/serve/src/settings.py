@@ -90,9 +90,9 @@ class RedshiftSettings(OnclusiveBaseSettings):
 class DeepEvalSettings(OnclusiveBaseSettings):
     """Deepeval settings for integration test."""
 
-    PERCENT_SUCCESS: Optional[float] = 0, 5
-    THRESHOLD: Optional[float] = 0.5
-    MODEL: Optional[str] = None
+    PERCENT_SUCCESS: float
+    THRESHOLD: float
+    MODEL: Optional[float] = "gpt-4"
     SUMMARIZATION_COMPRESSION_RATIO: Optional[str] = 4
 
     class Config:
