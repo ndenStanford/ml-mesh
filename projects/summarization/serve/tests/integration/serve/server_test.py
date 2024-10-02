@@ -184,6 +184,40 @@ def test_unsupported_language(test_client, payload):
                 "namespace": "summarization",
                 "attributes": {"content": content},
                 "parameters": {
+                    "input_language": "xxx",
+                    "output_language": "xxx",
+                    "summary_type": "bespoke",
+                },
+            }
+        },
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "input_language": "xxx",
+                    "output_language": "xxx",
+                    "summary_type": "bespoke",
+                    "desired_length": 100,
+                },
+            }
+        },
+    ],
+)
+def test_invalid_language(test_client, payload):
+    """Test for invalid language xxx."""
+    response = test_client.post("/summarization/v2/predict", json=payload)
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
                     "output_language": "en",
                     "summary_type": "section",
                     "desired_length": 50,
