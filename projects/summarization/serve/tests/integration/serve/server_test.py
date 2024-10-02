@@ -207,11 +207,8 @@ def test_unsupported_language(test_client, payload):
 def test_invalid_language(test_client, payload):
     """Test for invalid language xxx."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-    assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-    assert (
-        response.json()["detail"]
-        == "unsupported operand type(s) for 'in': 'NoneType' and 'EnumMeta'"
-    )
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
 
 
 @pytest.mark.parametrize(

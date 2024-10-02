@@ -29,7 +29,7 @@ services:
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
-      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8000
+      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8001
 
     env_file: serve/config/${DEPLOYMENT:-prod}.env
     depends_on:
@@ -104,11 +104,11 @@ services:
     healthcheck:
       # NOTE: This hack is required so that the integration tests only start when the
       # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 30s || exit 1]
-      interval: 60s
-      timeout: 40s
+      test: [CMD-SHELL, sleep 120s || exit 1]
+      interval: 2m30s
+      timeout: 2m10s
       retries: 5
-      start_period: 90s
+      start_period: 2m
     networks:
       - onclusive-net
 
@@ -131,12 +131,12 @@ services:
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    env_file: ../../projects/translation/serve/config/dev.env
+    env_file: ../../projects/translation/serve/config/prod.env
     healthcheck:
-      test: [CMD, curl, -f, http://translation-serve:8000/translation/v1/ready]
+      test: [CMD, curl, -f, http://translation-serve:8001/translation/v1/ready]
       interval: 5s
       retries: 5
-      start_period: 5s
+      start_period: 30s
       timeout: 10s
     networks:
       - onclusive-net
