@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -72,9 +72,40 @@ class ApplicationSettings(OnclusiveBaseSettings):
     }
 
 
+class RedshiftSettings(OnclusiveBaseSettings):
+    """Redshift settings to retrieve data for test."""
+
+    CLUSTER_ID: str
+    DATABASE: str
+    DB_USER: str
+    SQL: str
+    REGION_NAME: Optional[str] = "us-east-2"
+
+    class Config:
+        env_prefix = "redshift_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
+class DeepEvalSettings(OnclusiveBaseSettings):
+    """Deepeval settings for integration test."""
+
+    PERCENT_SUCCESS: float
+    THRESHOLD: float
+    MODEL: Optional[str] = "gpt-4"
+    SUMMARIZATION_COMPRESSION_RATIO: Optional[str] = 4
+
+    class Config:
+        env_prefix = "deepeval_"
+        env_file = "config/dev.env"
+        env_file_encoding = "utf-8"
+
+
 class GlobalSettings(
     ServerModelSettings,
     ApplicationSettings,
+    RedshiftSettings,
+    DeepEvalSettings,
 ):
     """Global server settings."""
 

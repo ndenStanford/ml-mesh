@@ -2,8 +2,10 @@
 
 # 3rd party libraries
 import pytest
+from deepeval.metrics import SummarizationMetric
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from utils import retrieve_redshift_dataframe
 
 # Source
 from src.serve.model import SummarizationServedModel
@@ -30,3 +32,25 @@ def test_client():
     model_server = get_model_server()
 
     return TestClient(model_server)
+
+
+@pytest.fixture
+def test_df_path_enriched():
+    """Path to enriched dataframe."""
+    return "tests/integration/abstractive_summarization_benchmark_dataset_enriched.csv"
+
+
+@pytest.fixture
+def test_df():
+    """Query dataframe from Redshift."""
+    df = retrieve_redshift_dataframe()
+    return df
+
+
+@pytest.fixture
+def metric(settings):
+    """Deepeval metric."""
+    metric = SummarizationMetric(
+        threshold=float(settings.THRESHOLD), model=settings.MODEL, verbose_mode=True
+    )
+    return metric
