@@ -87,7 +87,7 @@ export const generateTextFromPrompt = createAsyncThunk(
   ) => {
     var suffix = "";
     // Use different route if model is not gpt-3.5-turbo
-    if (modelName == "gpt-4") {
+    if (modelName == "gpt-4o") {
       suffix = `prompts/${alias}/generate/model/${modelName}`;
     } else {
       suffix = `prompts/${alias}/generate`;
@@ -119,7 +119,7 @@ export const generateText = createAsyncThunk(
     let body = {prompt: prompt}
     var suffix = "";
     // Use different route if model is not gpt-3.5-turbo
-    if (modelName == "gpt-4") {
+    if (modelName == "gpt-4o") {
       suffix = `prompts/generate/model/${modelName}`;
     } else {
       suffix = `prompts/generate`;

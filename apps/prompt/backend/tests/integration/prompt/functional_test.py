@@ -11,8 +11,8 @@ from src.prompt import functional as F
 @pytest.mark.parametrize(
     "model_alias, prompt",
     [
-        (ChatModel.GPT3_5, "Hello"),
-        (ChatModel.GPT4_TURBO, "This is an integration test."),
+        (ChatModel.GPT4_O_MINI, "Hello"),
+        (ChatModel.GPT4_O, "This is an integration test."),
     ],
 )
 @pytest.mark.order(10)
@@ -32,8 +32,8 @@ def test_generate_from_prompt(model_alias, prompt, app):
     "model_alias, prompt_alias, payload",
     [
         (ChatModel.CLAUDE_2_1, "prompt1", {}),
-        (ChatModel.GPT4_TURBO, "prompt2", {}),
-        (ChatModel.GPT4_TURBO, "prompt3", {"input": {"country": "Norway"}}),
+        (ChatModel.GPT4_O, "prompt2", {}),
+        (ChatModel.GPT4_O, "prompt3", {"input": {"country": "Norway"}}),
     ],
 )
 @pytest.mark.order(11)
