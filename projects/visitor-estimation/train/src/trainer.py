@@ -5,6 +5,7 @@ import os
 import pickle
 
 # 3rd party libraries
+import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
@@ -71,6 +72,8 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def build_dataset_dict(self) -> None:
         """Build the dataset dictionary from the fetched data."""
         super(VisitorEstimationTrainer, self).__call__()
+        # drop the first two columns: redshift id and event timestamp
+        self.dataset_df = self.dataset_df.drop(self.dataset_df.columns[:2], axis=1)
         self.dataset_dict[self.data_fetch_params.feature_view_name] = self.dataset_df
 
     def data_preprocess(self) -> None:
@@ -86,14 +89,45 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         df_ent = self.dataset_dict.get("entity_links_feature_view")
         df_dom = self.dataset_dict.get("domains_feature_view")
         df_connect = self.dataset_dict.get("entity_connections_feature_view")
-
-        # adjust column names
+        # adjust column names (need to fix in redshift)
         df_lmd = df_lmd.rename(columns={"link_metadata_timestamp": "timestamp"})
         df_ea = df_ea.rename(columns={"ea_timestamp": "timestamp"})
+        df_dom = df_dom.rename(columns={"id": "domain_id"})
+        # manipulate df_ea (temporary fix)
+        # For each entity_id in df_ea, replace it with a random entity_id from df_per where profile_id matches.
+        df_ea["entity_id"] = df_ea.apply(
+            lambda row: (
+                np.random.choice(
+                    df_per[df_per["profile_id"] == row["profile_id"]][
+                        "entity_id"
+                    ].values
+                )
+                if len(df_per[df_per["profile_id"] == row["profile_id"]]) > 0
+                else row["entity_id"]
+            ),
+            axis=1,
+        )
 
+        df_ss.to_csv(os.path.join("./raw_data", "df_ss.csv"), index=False)
+        df_eclr.to_csv(os.path.join("./raw_data", "df_eclr.csv"), index=False)
+        df_crl.to_csv(os.path.join("./raw_data", "df_crl.csv"), index=False)
+        df_per.to_csv(os.path.join("./raw_data", "df_per.csv"), index=False)
+        df_prof.to_csv(os.path.join("./raw_data", "df_prof.csv"), index=False)
+        df_lmd.to_csv(os.path.join("./raw_data", "df_lmd.csv"), index=False)
+        df_ea.to_csv(os.path.join("./raw_data", "df_ea.csv"), index=False)
+        df_ent.to_csv(os.path.join("./raw_data", "df_ent.csv"), index=False)
+        df_dom.to_csv(os.path.join("./raw_data", "df_dom.csv"), index=False)
+        df_connect.to_csv(os.path.join("./raw_data", "df_connect.csv"), index=False)
         # Step 1: Join entity analytics with link metadata
         profileDF = joinEntityAnalyticsWithLinkMetadata(
             df_lmd, df_ea, df_per, self.min_window, self.max_window
+        )
+        profileDF.to_csv(
+            os.path.join(
+                "./processed_data",
+                f"ea_lmd_{self.min_window}_{self.max_window}_cleaned.csv",
+            ),
+            index=False,
         )
         # Step 2: Drop unnecessary fields
         profileDF = profileDF.drop(
@@ -171,7 +205,14 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
                 "seed_type_cd",
                 "relevance_score",
                 "add_parent_company_name",
+                "updated_at_x",
+                "created_at_x",
+                "updated_at_y",
+                "created_at_y",
             ]
+        )
+        profileDF4.to_csv(
+            os.path.join("./processed_data", "profiledf4.csv"), index=False
         )
         # Step 6: Process visitor data
         profileDF4["analyticsTimestamp"] = pd.to_datetime(
@@ -185,6 +226,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             "daysLag"
         ].rank(method="first")
 
+        self.logger.info("daysLag values:", profileDF4["daysLag"])
         initVisitors = (
             profileDF4[profileDF4["rn"] <= 2]
             .sort_values(by=["profileID", "entityID", "analyticsTimestamp"])
@@ -198,6 +240,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             .rename(columns={1.0: "v0", 2.0: "v1"})
             .reset_index()
         )
+        self.logger.info("Columns in initVisitors:", initVisitors.columns.tolist())
         # Step 7: Process social media data
         socialCols = [
             "fbLikes",
@@ -255,6 +298,9 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             .drop(columns=["rn", "daysLag"])
         )
         profileDF5 = profileDF5.loc[:, ~profileDF5.columns.duplicated()]
+        profileDF5.to_csv(
+            os.path.join("./processed_data", "profiledf5.csv"), index=False
+        )
         # Save preprocessed data in the dataset_dict for further use
         self.dataset_dict["profileDF5"] = profileDF5
 
@@ -284,7 +330,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             "daysLag",
             "dayOfWeek",
             "dayOfMonth",
-            "secondsLag",
+            "secondslag",
         ]
 
         assert len(encode_only_features) == 0
@@ -358,12 +404,12 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             cleaned_data, test_size=0.2, random_state=42
         )
         # Initialize pipeline and train the model
-        data_pipe = make_pipeline(
-            train_data,
-            self.index_features,
-            self.encode_features,
-            self.interact,
-            self.exclude_features,
+        data_pipe = self.make_pipeline(
+            nfm=train_data,
+            index_features=self.index_features,
+            encode_features=self.encode_features,
+            interact=self.interact,
+            exclude_features=self.exclude_features,
         )
         # Train the model
         X_preprocessed = data_pipe.fit_transform(train_data)
@@ -405,6 +451,5 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         # self.build_dataset_dict()
         self.data_preprocess()
         self.initialize_model()
-        self.make_pipeline()
         self.train()
         self.save()

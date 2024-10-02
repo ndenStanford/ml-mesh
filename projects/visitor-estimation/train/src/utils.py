@@ -2,6 +2,7 @@
 
 # Standard Library
 from collections import defaultdict
+from datetime import timedelta
 
 # 3rd party libraries
 import numpy as np
@@ -109,6 +110,129 @@ def imputeByColumns(times, metadatas):
     columns = list(zip(*rowData))
     return list(
         zip(times, map(list, zip(*[imprec(times, column, None) for column in columns])))
+    )
+
+
+def imputeClean(times, column):
+    """Impute missing values in a column based on linear interpolation between known values.
+
+    Args:
+        times (list): List of times for which values need to be imputed.
+        column (list): List of tuples where each tuple contains a time and a value.
+
+    Returns:
+        list: List of imputed values for the given times.
+    """
+    acc = []
+    while times:
+        if not column:
+            acc += [None] * len(times)
+            break
+        t1, v1 = column[0]
+        if len(column) == 1:
+            acc += [v1 if t >= t1 else None for t in times]
+            break
+        t2, v2 = column[1]
+        preintervalTimes, times = [t for t in times if t < t1], [
+            t for t in times if t >= t1
+        ]
+        intervalTimes, times = [t for t in times if t < t2], [
+            t for t in times if t >= t2
+        ]
+        intervalSize = (t2 - t1).total_seconds()
+        imputed = [
+            int(
+                (1 - (t2 - t).total_seconds() / intervalSize) * v1
+                + (t2 - t).total_seconds() / intervalSize * v2
+            )
+            for t in intervalTimes
+        ]
+        acc += [None] * len(preintervalTimes) + imputed
+        column = column[1:]
+    return acc
+
+
+def imputeColumn(times, column):
+    """Filter out None values from the column and impute missing values.
+
+    Args:
+        times (list): List of times for which values need to be imputed.
+        column (list): List of tuples where each tuple contains a time and a value.
+
+    Returns:
+        list: List of imputed values for the given times.
+    """
+    return imputeClean(times, [(time, val) for time, val in column if val is not None])
+
+
+def fillWindow(t1, t2, hours):
+    """Fill time window with intervals of a specified duration between two times.
+
+    Args:
+        t1 (datetime): Start time of the window.
+        t2 (datetime): End time of the window.
+        hours (int): Interval duration in hours.
+
+    Returns:
+        list: List of times filled with the specified interval duration.
+    """
+    result = []
+    next_time = t1
+    while next_time < t2:
+        result.append(next_time)
+        next_time += timedelta(hours=hours)
+    result.append(t2)
+    return result
+
+
+def fillTimesDaily(times, minEntries, maxEntries):
+    """Fill daily times based on a minimum and maximum number of entries.
+
+    Args:
+        times (list): List of starting times.
+        minEntries (int): Minimum number of time entries required.
+        maxEntries (int): Maximum number of time entries allowed.
+
+    Returns:
+        list: List of filled daily times.
+    """
+    if not times:
+        return []
+    if len(times) == 1:
+        return fillWindow(
+            times[0], times[0] + timedelta(days=min(minEntries, maxEntries)), 24
+        )
+    window = fillWindow(times[0], times[1], 24)
+    return window + fillTimesDaily(
+        times[1:], minEntries - len(window), maxEntries - len(window)
+    )
+
+
+def fillVisitorsTimesDaily(timesVisitors, minEntries, maxEntries):
+    """Fill daily times with visitor counts based on a minimum and maximum number of entries.
+
+    Args:
+        timesVisitors (list): List of tuples where each tuple contains a time and a visitor count.
+        minEntries (int): Minimum number of entries required.
+        maxEntries (int): Maximum number of entries allowed.
+
+    Returns:
+        list: List of tuples containing filled times and visitor counts.
+    """
+    if not timesVisitors:
+        return []
+    if len(timesVisitors) == 1:
+        window = fillWindow(
+            timesVisitors[0][0],
+            timesVisitors[0][0] + timedelta(days=min(minEntries, maxEntries)),
+            24,
+        )
+        visitors = [timesVisitors[0][1]] + [0] * (len(window) - 1)
+        return list(zip(window, visitors))
+    window = fillWindow(timesVisitors[0][0], timesVisitors[1][0], 24)
+    visitors = [timesVisitors[0][1]] + [0] * (len(window) - 2) + [timesVisitors[1][1]]
+    return list(zip(window, visitors)) + fillVisitorsTimesDaily(
+        timesVisitors[1:], minEntries - len(window), maxEntries - len(window)
     )
 
 
