@@ -70,7 +70,7 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
-      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8000
+      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8001
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -201,7 +201,6 @@ services:
       timeout: 10s
     networks:
       - onclusive-net
-
 
   dynamodb:
     command: -jar DynamoDBLocal.jar -sharedDb
