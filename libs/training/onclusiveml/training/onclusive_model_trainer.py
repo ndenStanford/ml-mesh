@@ -87,7 +87,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
                 feature_view
                 for feature_view in self.fs_handle.list_on_demand_feature_views()
                 if feature_view.name
-                == f"{base_feature_view_name.replace('_feature_view', '')}_on_demand_feature_view"
+                == f"{self.data_fetch_params.entity_name}_on_demand_feature_view"
             ][0]
 
             on_demand_features = [

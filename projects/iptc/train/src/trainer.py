@@ -30,6 +30,7 @@ from onclusiveml.feature_store.on_demand.iptc.class_dict import (
 from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
     NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
 )
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
@@ -75,11 +76,13 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         reversed_name_mapping_second = {
             v: k for k, v in NAME_MAPPING_DICT_SECOND.items()
         }
-
+        reversed_name_mapping_third = {v: k for k, v in NAME_MAPPING_DICT_THIRD.items()}
         if self.iptc_label in reversed_name_mapping_first.keys():
             filtered_value = reversed_name_mapping_first[self.iptc_label]
         elif self.iptc_label in reversed_name_mapping_second.keys():
             filtered_value = reversed_name_mapping_second[self.iptc_label]
+        elif self.iptc_label in reversed_name_mapping_third.keys():
+            filtered_value = reversed_name_mapping_third[self.iptc_label]
         else:
             filtered_value = self.iptc_label
         # Access the is_on_demand flag from data_fetch_params
@@ -121,6 +124,20 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     model_card.model_params.selected_text,
                     "topic_1",
                     "topic_2",
+                ],
+            },
+            4: {
+                "entity_name": "iptc_fourth_level",
+                "feature_view_name": "iptc_third_level_feature_view",
+                "redshift_table": "iptc_third_level",
+                "filter_columns": ["topic_3"],
+                "filter_values": [filtered_value],
+                "comparison_operators": ["equal"],
+                "non_nullable_columns": [
+                    model_card.model_params.selected_text,
+                    "topic_1",
+                    "topic_2",
+                    "topic_3",
                 ],
             },
         }
@@ -169,11 +186,22 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         if self.level == 1:
             self.first_level_root = None
             self.second_level_root = None
+            self.third_level_root = None
         elif self.level == 2:
             self.first_level_root = self.iptc_label
             self.second_level_root = None
+            self.third_level_root = None
         elif self.level == 3:
+            self.third_level_root = None
             self.second_level_root = self.iptc_label
+            self.first_level_root = find_category_for_subcategory(
+                CANDIDATE_DICT_SECOND, self.second_level_root
+            )
+        elif self.level == 4:
+            self.third_level_root = self.iptc_label
+            self.second_level_root = find_category_for_subcategory(
+                CANDIDATE_DICT_THIRD, self.third_level_root
+            )
             self.first_level_root = find_category_for_subcategory(
                 CANDIDATE_DICT_SECOND, self.second_level_root
             )
@@ -182,6 +210,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.level,
             self.first_level_root,
             self.second_level_root,
+            self.third_level_root,
         )
         self.model = AutoModelForSequenceClassification.from_pretrained(
             self.model_name, num_labels=self.num_labels
@@ -266,6 +295,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
+            self.third_level_root,
             self.model_card.model_params.max_length,
             is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
@@ -276,6 +306,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
+            self.third_level_root,
             self.model_card.model_params.max_length,
             is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
@@ -333,6 +364,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.model_card.model_params.selected_text,
                 self.first_level_root,
                 self.second_level_root,
+                self.third_level_root,
                 self.model_card.model_params.max_length,
                 is_on_demand=self.is_on_demand,  # Pass the on-demand flag
             )
