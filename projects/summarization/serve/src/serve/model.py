@@ -203,7 +203,10 @@ class SummarizationServedModel(ServedModel):
         detected_language = self._identify_language(str(content))
         logger.debug(f"Detected content language: {detected_language}")
 
-        if payload.parameters.input_language is None or LanguageIso.from_language_iso(payload.parameters.input_language) is None:
+        if (
+            payload.parameters.input_language is None
+            or LanguageIso.from_language_iso(payload.parameters.input_language) is None
+        ):
             input_language = detected_language
         else:
             input_language = LanguageIso.from_language_iso(
@@ -218,7 +221,10 @@ class SummarizationServedModel(ServedModel):
             )
 
         # check if output_language is provided
-        if payload.parameters.output_language is None or LanguageIso.from_language_iso(payload.parameters.output_language) is None:
+        if (
+            payload.parameters.output_language is None
+            or LanguageIso.from_language_iso(payload.parameters.output_language) is None
+        ):
             output_language = input_language
         else:
             output_language = LanguageIso.from_language_iso(

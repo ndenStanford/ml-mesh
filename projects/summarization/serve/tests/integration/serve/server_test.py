@@ -210,6 +210,7 @@ def test_invalid_language(test_client, payload):
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
 
+
 @pytest.mark.parametrize(
     "payload",
     [
