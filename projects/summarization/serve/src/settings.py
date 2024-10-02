@@ -39,7 +39,7 @@ class ApplicationSettings(OnclusiveBaseSettings):
     summarization_prompts: Dict[LanguageIso, Dict[str, Union[str, Dict[str, str]]]] = {
         LanguageIso.EN: {
             "section": "ml-summarization-english",
-            "bespoke": "bespokse-summary-uk",
+            "bespoke": "bespoke-summary-uk",
             "multi-article-summary": {
                 "section": "ml-multi-articles-summarization",
                 "bespoke": "ml-multi-articles-summarization-bespoke",
@@ -47,23 +47,23 @@ class ApplicationSettings(OnclusiveBaseSettings):
         },
         LanguageIso.FR: {
             "section": "ml-summarization-french",
-            "bespoke": "bespokse-summary-fr",
+            "bespoke": "bespoke-summary-fr",
         },
         LanguageIso.DE: {
             "section": "ml-summarization-german",
-            "bespoke": "bespokse-summary-de",
+            "bespoke": "bespoke-summary-de",
         },
         LanguageIso.IT: {
             "section": "ml-summarization-italian",
-            "bespoke": "bespokse-summary-it-theme",
+            "bespoke": "bespoke-summary-it-theme",
         },
         LanguageIso.ES: {
             "section": "ml-summarization-spanish",
-            "bespoke": "bespokse-summary-es",
+            "bespoke": "bespoke-summary-es",
         },
         LanguageIso.CA: {
             "section": "ml-summarization-catalan",
-            "bespoke": "bespokse-summary-ca",
+            "bespoke": "bespoke-summary-ca",
         },
         LanguageIso.PT: {"section": "ml-summarization-portuguese"},
         LanguageIso.ZH: {"section": "ml-summarization-chinese_simplified"},
