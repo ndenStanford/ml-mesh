@@ -27,7 +27,17 @@ from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
 
 
 logger = get_default_logger(__name__)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", default=None)
+
+
+class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
+    # Placed in this file due to the circular import issue.
+    """API configuration."""
+
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", default=None)
+    DEFAULT_MODEL: str = "gpt-4o-mini"
+
+
+settings = PromptBackendAPISettings()
 
 
 def get_candidate_list(row, level):
@@ -93,12 +103,12 @@ async def generate_label_llm(row, session, level):
     api_endpoint = "https://api.openai.com/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
     }
 
     # Request payload
     payload = {
-        "model": "gpt-4o-mini",
+        "model": settings.DEFAULT_MODEL,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7,
         "response_format": {"type": "json_object"},
