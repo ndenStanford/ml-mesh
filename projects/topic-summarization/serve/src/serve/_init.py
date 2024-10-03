@@ -29,7 +29,6 @@ def _create_table(table: Type[Dyntastic]) -> None:
     try:
         timestamp_index = Index(
             hash_key="timestamp_date",
-            range_key="timestamp_time",
             index_name="timestamp_date-index",
         )
         table.create_table(timestamp_index)
