@@ -3,6 +3,52 @@
 services:
 
   # =============================================
+  # TRAIN
+  # =============================================
+
+  train:
+    build:
+      context: ../../
+      dockerfile: projects/visitor-estimation/train/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        PROJECT: visitor-estimation
+        COMPONENT: train
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/visitor-estimation/train
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-train:${IMAGE_TAG:-latest}
+    command: [python, -m, src.train_model]
+    profiles: [train]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  train-unit:
+    volumes:
+      - type: bind
+        source: train
+        target: /projects/visitor-estimation/train
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-train:${IMAGE_TAG:-latest}
+    command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
+    profiles: [unit]
+    environment:
+      NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: train/config/prod.env
+    hostname: onclusive-ml
+    networks: [onclusive-net]
+
+  # =============================================
   # REGISTER
   # =============================================
 
@@ -43,7 +89,7 @@ services:
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/visitor-estimation-register:${IMAGE_TAG}
     command: [python, -m, pytest, tests/unit, -ra, -vv, --capture=no]
     profiles: [register, unit]
-    env_file: register/config/dev.env
+    env_file: register/config/prod.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
