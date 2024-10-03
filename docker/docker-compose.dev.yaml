@@ -135,6 +135,7 @@ services:
       args:
         AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
         IMAGE_TAG: ${IMAGE_TAG}
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
         IMAGE_NAME: kubeflow-torch-inf
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-2.amazonaws.com/kubeflow-torch-inf:${IMAGE_TAG}
     ports:

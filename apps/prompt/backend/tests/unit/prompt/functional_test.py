@@ -19,7 +19,7 @@ from src.prompt.tables import PromptTemplate
 @pytest.mark.parametrize(
     "project, prompt_alias, template, text, model_alias, provider",
     [
-        ("new-project1", "prompt-1", "{text}", "hello", "gpt-4", "openai"),
+        ("new-project1", "prompt-1", "{text}", "hello", "gpt-4o", "openai"),
         (
             "new-project2",
             "prompt-2",
@@ -69,7 +69,7 @@ def test_generate_from_prompt_template(
 @pytest.mark.parametrize(
     "prompt, model_alias, provider",
     [
-        ("Hello there", "gpt-4", "openai"),
+        ("Hello there", "gpt-4o", "openai"),
         ("Good evening", "meta.llama2-70b-chat-v1", "bedrock"),
     ],
 )
@@ -106,7 +106,7 @@ def test_generate_from_prompt(
             "english-summarization",
             "What is the capital of {text}",
             "Turkey",
-            "gpt-4",
+            "gpt-4o",
             "openai",
         ),
         (

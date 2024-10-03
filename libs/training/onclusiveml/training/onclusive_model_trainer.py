@@ -87,7 +87,7 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
                 feature_view
                 for feature_view in self.fs_handle.list_on_demand_feature_views()
                 if feature_view.name
-                == f"{base_feature_view_name.replace('_feature_view', '')}_on_demand_feature_view"
+                == f"{self.data_fetch_params.entity_name}_on_demand_feature_view"
             ][0]
 
             on_demand_features = [
@@ -104,9 +104,18 @@ class OnclusiveModelTrainer(OnclusiveModelOptimizer):
             comparison_operators=self.data_fetch_params.comparison_operators,
             non_nullable_columns=self.data_fetch_params.non_nullable_columns,
         )
-        self.logger.info(self.dataset_df.head())
+        # Logging the initial dataset size
+        self.logger.info(f"Original dataset size: {self.dataset_df.shape}")
+
+        # Drop rows with NA values
+        self.dataset_df = self.dataset_df.dropna()
+
+        # Logging the size after filtering
+        self.logger.info(f"Filtered dataset size (no NAs): {self.dataset_df.shape}")
+
+        # Displaying the first few rows of the filtered dataset
         self.logger.info(
-            f"fetched dataset from feature-store : \n {self.dataset_df.head()}"
+            f"Fetched and filtered dataset from feature-store :\n{self.dataset_df.head()}"
         )
         if "content" in self.dataset_df.columns:
             self.docs = self.dataset_df["content"].apply(str).values.tolist()
