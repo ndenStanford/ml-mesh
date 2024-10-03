@@ -53,7 +53,7 @@ def logger(io_settings: IOSettings) -> Any:
     """
     return get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED,
         level=io_settings.log_level,
     )
 
