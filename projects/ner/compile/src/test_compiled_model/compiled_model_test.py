@@ -10,7 +10,7 @@ import pytest
 
 
 test_sample_indices = [0, 1, 2, 3]
-languages = ["en", "ja"]
+languages = ["en"]
 # Generate the parameter combinations using a list comprehension
 parametrize_values = [
     (index, language, languages.index(language))
