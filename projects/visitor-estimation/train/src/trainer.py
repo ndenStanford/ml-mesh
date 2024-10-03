@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder
 
@@ -89,12 +88,14 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         df_ent = self.dataset_dict.get("entity_links_feature_view")
         df_dom = self.dataset_dict.get("domains_feature_view")
         df_connect = self.dataset_dict.get("entity_connections_feature_view")
+
         # adjust column names (need to fix in redshift)
         df_lmd = df_lmd.rename(columns={"link_metadata_timestamp": "timestamp"})
         df_ea = df_ea.rename(columns={"ea_timestamp": "timestamp"})
         df_dom = df_dom.rename(columns={"id": "domain_id"})
-        # manipulate df_ea (temporary fix)
-        # For each entity_id in df_ea, replace it with a random entity_id from df_per where profile_id matches.
+
+        # manipulate df_ea and df_crl(temporary fix, needs to be removed)
+        # Get the matching entity_id values from df_per by profile_id and replace in order
         df_ea["entity_id"] = df_ea.apply(
             lambda row: (
                 np.random.choice(
@@ -107,27 +108,11 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             ),
             axis=1,
         )
+        df_crl["entity_id"] = df_ent["entity_id"]
 
-        df_ss.to_csv(os.path.join("./raw_data", "df_ss.csv"), index=False)
-        df_eclr.to_csv(os.path.join("./raw_data", "df_eclr.csv"), index=False)
-        df_crl.to_csv(os.path.join("./raw_data", "df_crl.csv"), index=False)
-        df_per.to_csv(os.path.join("./raw_data", "df_per.csv"), index=False)
-        df_prof.to_csv(os.path.join("./raw_data", "df_prof.csv"), index=False)
-        df_lmd.to_csv(os.path.join("./raw_data", "df_lmd.csv"), index=False)
-        df_ea.to_csv(os.path.join("./raw_data", "df_ea.csv"), index=False)
-        df_ent.to_csv(os.path.join("./raw_data", "df_ent.csv"), index=False)
-        df_dom.to_csv(os.path.join("./raw_data", "df_dom.csv"), index=False)
-        df_connect.to_csv(os.path.join("./raw_data", "df_connect.csv"), index=False)
         # Step 1: Join entity analytics with link metadata
         profileDF = joinEntityAnalyticsWithLinkMetadata(
             df_lmd, df_ea, df_per, self.min_window, self.max_window
-        )
-        profileDF.to_csv(
-            os.path.join(
-                "./processed_data",
-                f"ea_lmd_{self.min_window}_{self.max_window}_cleaned.csv",
-            ),
-            index=False,
         )
         # Step 2: Drop unnecessary fields
         profileDF = profileDF.drop(
@@ -211,9 +196,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
                 "created_at_y",
             ]
         )
-        profileDF4.to_csv(
-            os.path.join("./processed_data", "profiledf4.csv"), index=False
-        )
         # Step 6: Process visitor data
         profileDF4["analyticsTimestamp"] = pd.to_datetime(
             profileDF4["analyticsTimestamp"]
@@ -226,7 +208,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             "daysLag"
         ].rank(method="first")
 
-        self.logger.info("daysLag values:", profileDF4["daysLag"])
         initVisitors = (
             profileDF4[profileDF4["rn"] <= 2]
             .sort_values(by=["profileID", "entityID", "analyticsTimestamp"])
@@ -240,7 +221,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             .rename(columns={1.0: "v0", 2.0: "v1"})
             .reset_index()
         )
-        self.logger.info("Columns in initVisitors:", initVisitors.columns.tolist())
         # Step 7: Process social media data
         socialCols = [
             "fbLikes",
@@ -298,9 +278,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             .drop(columns=["rn", "daysLag"])
         )
         profileDF5 = profileDF5.loc[:, ~profileDF5.columns.duplicated()]
-        profileDF5.to_csv(
-            os.path.join("./processed_data", "profiledf5.csv"), index=False
-        )
         # Save preprocessed data in the dataset_dict for further use
         self.dataset_dict["profileDF5"] = profileDF5
 
@@ -316,7 +293,7 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         self.logger.info("Model initialized: RandomForestRegressor")
 
     def make_pipeline(
-        self, nfm, index_features, encode_features, interact, exclude_features
+        self, index_features, encode_features, interact, exclude_features
     ):
         """Create scikit-learn pipeline."""
         index_encode_features = list(
@@ -324,14 +301,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         )
         index_only_features = list(set(index_features) - set(index_encode_features))
         encode_only_features = list(set(encode_features) - set(index_encode_features))
-        temporal_features = [
-            "year",
-            "month",
-            "daysLag",
-            "dayOfWeek",
-            "dayOfMonth",
-            "secondslag",
-        ]
 
         assert len(encode_only_features) == 0
         # List of columns to remove
@@ -353,9 +322,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             - set([f"{feature}Index" for feature in index_only_features])
             - set([f"{feature}Vec" for feature in index_encode_features])
         )
-
-        data_cols = list(set(nfm.columns) - set(columns_to_remove)) + temporal_features
-        self.logger.info("Pipeline columns:", data_cols)
 
         temporal_transformer = FunctionTransformer(add_temporal_features)
         index_transformers = [
@@ -390,30 +356,28 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             jdbcDFprof, self.included_profiles, self.excluded_profiles
         )
         # Set time range for data
-        max_entity_date = profileDF5["entityTimestamp"].max()
+        self.max_entity_date = profileDF5["entityTimestamp"].max()
         # Clean the data
-        cleaned_data = final_data_clean(
+        self.train_data = final_data_clean(
             profileDF5,
             goodProfids,
             self.min_entity_date,
-            max_entity_date,
+            self.max_entity_date,
             self.remove_zero_visitor,
         )
-        # Split data into training and testing sets
-        train_data, test_data = train_test_split(
-            cleaned_data, test_size=0.2, random_state=42
-        )
+        self.logger.info("Cleaned data:", self.train_data)
+
         # Initialize pipeline and train the model
         data_pipe = self.make_pipeline(
-            nfm=train_data,
+            nfm=self.train_data,
             index_features=self.index_features,
             encode_features=self.encode_features,
             interact=self.interact,
             exclude_features=self.exclude_features,
         )
         # Train the model
-        X_preprocessed = data_pipe.fit_transform(train_data)
-        y = train_data["logvisitors"]
+        X_preprocessed = data_pipe.fit_transform(self.train_data)
+        y = self.train_data["logvisitors"]
         # Step 2: Train the model
         self.model.fit(X_preprocessed, y)
         # Save the trained model and the preprocessing pipeline together
@@ -421,11 +385,11 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             steps=[("data_pipe", data_pipe), ("model", self.model)]
         )
 
-    def predict(self, inputs: pd.DataFrame):
+    def predict(self, pipeline, inputs):
         """Make predictions using the trained model."""
         # Step 1: Apply the full pipeline (preprocessing + model)
-        X_preprocessed = self.full_pipeline.named_steps["data_pipe"].transform(inputs)
-        predictions = self.full_pipeline.named_steps["model"].predict(X_preprocessed)
+        X_preprocessed = pipeline.named_steps["data_pipe"].transform(inputs)
+        predictions = pipeline.named_steps["model"].predict(X_preprocessed)
         # Step 2: Apply the UnlogTransformer to transform the predictions
         result = inputs.copy()
         result["logPredictions"] = predictions
@@ -437,19 +401,41 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def save(self) -> None:
         """Save the trained pipeline."""
         # Save the model artifacts and any other required files
-        model_path = os.path.join(
-            self.tracked_model_specs.local_output_dir, "trained_pipeline"
+        self.ve_model_path = os.path.join(
+            self.model_card.local_output_dir, "trained_pipeline"
         )
-        with open(model_path, "wb") as f:
+        with open(self.ve_model_path, "wb") as f:
             pickle.dump(self.full_pipeline, f)
-        print(f"Trained model pipeline saved to {model_path}")
+        print(f"Trained model pipeline saved to {self.ve_model_path}")
 
     def __call__(self) -> None:
         """Call Method to run the training process."""
-        # super(VisitorEstimationTrainer, self).__call__()
         self.create_training_argument()
-        # self.build_dataset_dict()
         self.data_preprocess()
         self.initialize_model()
         self.train()
         self.save()
+
+        # register model to neptune
+        if self.data_fetch_params.save_artifact:
+            sample_df = self.train_data[:10]
+            sample_predictions = self.predict(self.full_pipeline, sample_df)
+            sample_df["analyticsTimestamp"] = sample_df["analyticsTimestamp"].astype(
+                str
+            )
+            sample_df["entityTimestamp"] = sample_df["entityTimestamp"].astype(str)
+            self.logger.info(sample_df)
+            super(OnclusiveModelTrainer, self).__call__(
+                [
+                    sample_df.to_dict(orient="records"),
+                    {
+                        "actual visitors": sample_df["visitors"].tolist(),
+                        "predicted visitors": sample_predictions.tolist(),
+                    },
+                ],
+                [
+                    self.model_card.model_test_files.inputs,
+                    self.model_card.model_test_files.predictions,
+                ],
+                self.model_card.local_output_dir,
+            )

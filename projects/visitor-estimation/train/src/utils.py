@@ -673,7 +673,7 @@ def final_data_clean(
             print("warning: ")
             print(t)
 
-    tdf = tdf.dropna()  # TODO: add back
+    # tdf = tdf.dropna()  # TODO: add back
 
     tdf = tdf[tdf["language"] == "en"].drop(columns=["language"])
     tdf["logvisitors"] = np.log2(tdf["visitors"] + 1)
@@ -792,7 +792,7 @@ def add_temporal_features(X):
     X["analyticsTimestamp"] = pd.to_datetime(X["analyticsTimestamp"])
     X["entityTimestamp"] = pd.to_datetime(X["entityTimestamp"])
     X["year"] = X["analyticsTimestamp"].dt.year
-    X["month"] = X["analyticsTimestamp"].dt.monthsecondsLag
+    X["month"] = X["analyticsTimestamp"].dt.month
     X["dayOfMonth"] = X["analyticsTimestamp"].dt.day
     X["daysLag"] = (X["analyticsTimestamp"] - X["entityTimestamp"]).dt.days
     X["dayOfWeek"] = X["analyticsTimestamp"].dt.dayofweek + 1

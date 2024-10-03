@@ -2,7 +2,7 @@
 
 # Standard Library
 import os
-from typing import List
+from typing import List, Optional
 
 # 3rd party libraries
 from pydantic_settings import SettingsConfigDict
@@ -160,8 +160,8 @@ class VEModelParams(TrackingSettings):
     n_estimators: int = 20
     min_window: int = 30
     max_window: int = 30
-    excluded_profiles: str = "2,12,20,28"
-    included_profiles: str = ""
+    excluded_profiles: Optional[str] = "2"
+    included_profiles: Optional[str] = None
     index_features: list = ["type", "category_id", "company_sector_id"]
     encode_features: list = ["type", "category_id"]
     exclude_features: list = []

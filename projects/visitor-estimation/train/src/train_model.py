@@ -51,7 +51,7 @@ def main() -> None:
         trainer.data_fetch_params.redshift_table = params.redshift_table
         trainer.data_fetch_params.feature_view_name = params.feature_view_name
         trainer.build_dataset_dict()
-    logger.info(trainer.dataset_dict)
+    logger.info("Dataset dictionary creation complete.")
 
     # Start the training and register models to neptune
     trainer()
