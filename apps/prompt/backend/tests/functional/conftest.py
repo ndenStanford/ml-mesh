@@ -7,7 +7,7 @@ import pytest
 @pytest.fixture
 def url_model_namespace():
     """Create model namespace url."""
-    return "http://backend:4000/api/v2/models/gpt-4/generate?prompt=tell%20me%20a%20joke!!!"
+    return "http://backend:4000/api/v2/models/gpt-4o/generate?prompt=tell%20me%20a%20joke!!!"
 
 
 @pytest.fixture

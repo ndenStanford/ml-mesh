@@ -33,7 +33,7 @@ services:
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
       ONCLUSIVEML_SERVING_BETTERSTACK_ENABLE: true
       ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN: ${ONCLUSIVEML_SERVING_BETTERSTACK_API_TOKEN}
-      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8000
+      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8001
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -70,9 +70,12 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      ONCLUSIVEML_SERVING_TRANSLATION_API: http://translation-serve:8001
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
+        condition: service_healthy
+      translation-serve:
         condition: service_healthy
     hostname: onclusiveml
     networks:
@@ -111,6 +114,11 @@ services:
         target: /projects/summarization/serve/tests
     environment:
       ONCLUSIVEML_SERVING_INTERNAL_ML_ENDPOINT_API_KEY: ${INTERNAL_ML_ENDPOINT_API_KEY:-1234}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      REGION_NAME: ${REGION_NAME}
+      BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -118,6 +126,49 @@ services:
       translation-serve:
         condition: service_healthy
     hostname: onclusiveml
+    networks:
+      - onclusive-net
+
+  prompt-backend:
+    build:
+      context: ../../
+      dockerfile: apps/prompt/backend/Dockerfile
+      target: ${TARGET_BUILD_STAGE:-development}
+      network: host
+      args:
+        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
+        APP_NAME: prompt
+        APP_COMPONENT: backend
+        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
+    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
+    command: [python, -m, uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
+    profiles: [serve, integration, debug]
+    ports:
+      - 4000:4000
+    environment:
+      ENVIRONMENT: dev
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
+      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
+      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
+      DOCS_URL: /docs
+      REDIS_CONNECTION_STRING: redis://redisdb:6379
+      DYNAMODB_HOST: http://dynamodb:8000
+      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+      redisdb:
+        condition: service_healthy
+    healthcheck:
+      # NOTE: This hack is required so that the integration tests only start when the
+      # database is ready to receive requests.
+      test: [CMD-SHELL, sleep 120s || exit 1]
+      interval: 2m30s
+      retries: 4
+      start_period: 2m
+      timeout: 2m10s
     networks:
       - onclusive-net
 
@@ -146,51 +197,8 @@ services:
       test: [CMD, curl, -f, http://translation-serve:8001/translation/v1/ready]
       interval: 5s
       retries: 5
-      start_period: 5s
+      start_period: 30s
       timeout: 10s
-    networks:
-      - onclusive-net
-
-  prompt-backend:
-    build:
-      context: ../../
-      dockerfile: apps/prompt/backend/Dockerfile
-      target: ${TARGET_BUILD_STAGE:-development}
-      network: host
-      args:
-        AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID:-690763002009}
-        APP_NAME: prompt
-        APP_COMPONENT: backend
-        BASE_IMAGE_TAG: ${BASE_IMAGE_TAG}
-    image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/prompt-backend:${IMAGE_TAG}
-    command: [uvicorn, src.app:app, --host, 0.0.0.0, --port, '4000', --reload, --log-level, debug]
-    profiles: [serve, integration, debug]
-    ports:
-      - 4000:4000
-    environment:
-      ENVIRONMENT: dev
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-anything}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-anything}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-none}
-      PROMPT_REGISTRY_APP_ID: ${PROMPT_REGISTRY_APP_ID}
-      PROMPT_REGISTRY_APP_PRIVATE_KEY: ${PROMPT_REGISTRY_APP_PRIVATE_KEY}
-      DOCS_URL: /docs
-      REDIS_CONNECTION_STRING: redis://redisdb:6379
-      DYNAMODB_HOST: http://dynamodb:8000
-      BETTERSTACK_KEY: ${BETTERSTACK_KEY:-none}
-    depends_on:
-      dynamodb:
-        condition: service_healthy
-      redisdb:
-        condition: service_healthy
-    healthcheck:
-      # NOTE: This hack is required so that the integration tests only start when the
-      # databse is ready to receive requests.
-      test: [CMD-SHELL, sleep 30s || exit 1]
-      interval: 60s
-      timeout: 40s
-      retries: 5
-      start_period: 90s
     networks:
       - onclusive-net
 
