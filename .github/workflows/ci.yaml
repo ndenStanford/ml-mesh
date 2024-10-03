@@ -1275,6 +1275,17 @@ jobs       :
             push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
 
+          # train
+          - name: train
+            download-model: false
+            integration: false
+            functional: false
+            load: false
+            upload-test-results: false
+            runner-kind: ubuntu-22.04
+            push-image: ${{ github.event_name != 'pull_request' }}
+            base-image: python-base
+
     with:
       project: visitor-estimation
       environment: prod
