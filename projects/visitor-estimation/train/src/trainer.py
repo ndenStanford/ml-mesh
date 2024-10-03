@@ -348,12 +348,12 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
     def train(self) -> None:
         """Train the RandomForest model."""
         # Load the dataframes for training
-        jdbcDFprof = self.dataset_dict.get("profile_company_sectors_feature_view")
-        jdbcDFprof["category_id"] = 1
+        df_prof = self.dataset_dict.get("profile_company_sectors_feature_view")
+        df_prof["category_id"] = 1
         profileDF5 = self.dataset_dict["profileDF5"]
         # Clean and preprocess data using helper methods
         goodProfids = good_profile_ids(
-            jdbcDFprof, self.included_profiles, self.excluded_profiles
+            df_prof, self.included_profiles, self.excluded_profiles
         )
         # Set time range for data
         self.max_entity_date = profileDF5["entityTimestamp"].max()
