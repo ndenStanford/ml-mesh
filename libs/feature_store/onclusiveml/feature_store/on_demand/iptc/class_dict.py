@@ -67,9 +67,11 @@ CANDIDATE_DICT_FIRST = {
             "name": "weather",
             "description": "The study, prediction and reporting of meteorological phenomena",
         },
+        "16": {"name": "none", "description": "none"},
     }
 }
 
+# Updated class_dic.py
 CANDIDATE_DICT_SECOND = {
     "arts, culture, entertainment and media": {
         "0": {
@@ -81,6 +83,7 @@ CANDIDATE_DICT_SECOND = {
             "description": "The ideas, customs, arts, traditions of a particular group of persons",
         },
         "2": {"name": "mass media", "description": "Media addressing a large audience"},
+        "3": {"name": "none", "description": "none"},
     },
     "conflict, war and peace": {
         "0": {
@@ -119,6 +122,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "war victims",
             "description": "Individuals who are injured or killed in a war or armed conflict, including civilians",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "crime, law and justice": {
         "0": {
@@ -131,6 +135,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "law enforcement",
             "description": "Agencies that attempt to prevent disobedience to established laws or bring to justice those who disobey those laws",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "disaster, accident and emergency incident": {
         "0": {
@@ -145,6 +150,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "emergency response",
             "description": "The planning and efforts made by people and organizations to help victims of a sudden, unplanned event, natural disaster or crisis",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "economy, business and finance": {
         "0": {
@@ -167,6 +173,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "products and services",
             "description": "Products and services consumed by companies and individuals and the companies that manufacture or manage them",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "education": {
         "0": {
@@ -217,6 +224,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "vocational education",
             "description": "Education that provides students with practical experience and training in a particular occupational field. It is sometimes referred to as career education or technical education",
         },
+        "12": {"name": "none", "description": "none"},
     },
     "environment": {
         "0": {
@@ -240,6 +248,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "sustainability",
             "description": "Actions by businesses, governments and individuals to counter major environmental problems, including climate change, loss of biodiversity, loss of ecosystem services, land degradation and air and water pollution",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "health": {
         "0": {
@@ -278,6 +287,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "public health",
             "description": "Organised public or private measures designed to prevent disease, promote health and prolong life among the population as a whole",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "labour": {
         "0": {
@@ -305,6 +315,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "unions",
             "description": "Groups established to represent bodies of workers in order to obtain better workplace conditions through collective bargaining",
         },
+        "7": {"name": "none", "description": "none"},
     },
     "lifestyle and leisure": {
         "0": {
@@ -319,6 +330,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "wellness",
             "description": "The active pursuit of good mental and physical health",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "politics": {
         "0": {
@@ -354,6 +366,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "political process",
             "description": "The art or science of participating in the affairs of government, a state of political party",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "religion": {
         "0": {
@@ -388,6 +401,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "religious text",
             "description": "Texts regarded as holy or important by a religion",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "science and technology": {
         "0": {
@@ -422,6 +436,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "technology and engineering",
             "description": "The study and practice of industrial or applied sciences such as physics, hydrodynamics or thermodynamics",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "society": {
         "0": {
@@ -472,6 +487,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "welfare",
             "description": "Help for those in need of food, housing, health and other services",
         },
+        "12": {"name": "none", "description": "none"},
     },
     "sport": {
         "0": {
@@ -522,6 +538,7 @@ CANDIDATE_DICT_SECOND = {
             "name": "sports transaction",
             "description": "The transfer of an athlete from one team to another, the hiring or drafting of an athlete onto a team or the change in professional status of a player on a team",
         },
+        "12": {"name": "none", "description": "none"},
     },
     "weather": {
         "0": {
@@ -540,9 +557,9 @@ CANDIDATE_DICT_SECOND = {
             "name": "weather warning",
             "description": "Alerts issued to the public about severe or notable weather in their area",
         },
+        "4": {"name": "none", "description": "none"},
     },
 }
-
 
 CANDIDATE_DICT_THIRD = {
     "arts and entertainment": {
@@ -590,6 +607,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "visual arts",
             "description": "A form of art which appeals primarily to the visual senses, such as ceramics, drawing, painting, sculpture, printmaking, design, crafts, photography, video, filmmaking, and architecture.",
         },
+        "11": {"name": "none", "description": "none"},
     },
     "culture": {
         "0": {
@@ -620,6 +638,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "monument and heritage site",
             "description": "Commemorations of historical people, events, or the areas containing them, in the form of structures such as sculptures, statues or buildings",
         },
+        "7": {"name": "none", "description": "none"},
     },
     "mass media": {
         "0": {
@@ -654,6 +673,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "television",
             "description": "Video content, such as news, entertainment or information, distributed via broadcast or internet",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "act of terror": {
         "0": {
@@ -664,6 +684,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "terrorist bombings",
             "description": "Intentional use of explosive devices on people, buildings or other structures",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "armed conflict": {
         "0": {
@@ -682,6 +703,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "war",
             "description": "Armed hostilities by one group or geopolitical entity against another",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "civil unrest": {
         "0": {
@@ -700,6 +722,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "riot",
             "description": "Violent, destructive events of civil disorder by groups of people, usually in response to a grievance or as acts of opposition, often involving injury to individuals and destruction of property",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "peace process": {
         "0": {
@@ -722,12 +745,14 @@ CANDIDATE_DICT_THIRD = {
             "name": "peacekeeping force",
             "description": "The military forces of a nation, or of several nations working together, whose mission is to maintain peace in areas of conflict",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "post-war reconstruction": {
         "0": {
             "name": "ordnance clearance",
             "description": "The removal or neutralisation of ordnance such as landmines or cluster bombs that may remain after a war or armed conflict on public ground",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "war victims": {
         "0": {
@@ -738,6 +763,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "prisoners of war",
             "description": "Individuals captured, imprisoned or detained by enemy factions during military conflicts or war",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "crime": {
         "0": {
@@ -824,6 +850,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "war crime",
             "description": "Crimes committed during a war or armed conflict, usually against civilians or prisoners of war, including the prosecution of such crimes",
         },
+        "21": {"name": "none", "description": "none"},
     },
     "judiciary": {
         "0": {
@@ -838,6 +865,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "prosecution and prosecutors",
             "description": "The process of holding a trial against a person who is accused of a crime to determine guilt and the lawyers and legal team who argue that the accused is guilty",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "law": {
         "0": {
@@ -856,6 +884,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "international law",
             "description": "The system of laws embraced by all nations, such as the Geneva Convention and the International Law of the Seas",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "law enforcement": {
         "0": {"name": "arrest", "description": "The detention of a suspect of a crime"},
@@ -871,6 +900,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "surveillance",
             "description": "Monitoring the activities of the individual through the use of cameras and data in order to prevent or uncover criminal activities",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "accident and emergency incident": {
         "0": {
@@ -893,6 +923,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "transportation accident and incident",
             "description": "An accident or incident involving one or more vehicles",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "disaster": {
         "0": {
@@ -907,8 +938,9 @@ CANDIDATE_DICT_THIRD = {
             "name": "natural disaster",
             "description": "Destructive incidents caused by nature, such as earthquakes and floods",
         },
+        "3": {"name": "none", "description": "none"},
     },
-    "emergency incident": {},
+    "emergency incident": {"0": {"name": "none", "description": "none"}},
     "business enterprise": {
         "0": {
             "name": "cooperative",
@@ -922,6 +954,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "start-up and entrepreneurial business",
             "description": "The process of designing, launching and running a new business",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "business information": {
         "0": {
@@ -948,6 +981,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "human resources",
             "description": "People working for a business and how they are managed",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "economy": {
         "0": {
@@ -990,6 +1024,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "sharing economy",
             "description": "Peer-to-peer-based sharing of access to goods and services",
         },
+        "10": {"name": "none", "description": "none"},
     },
     "market and exchange": {
         "0": {
@@ -1008,6 +1043,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "loan market",
             "description": "The market where financial organisations provide loans to borrowers and sell them on to investors",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "products and services": {
         "0": {
@@ -1086,6 +1122,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "utilities",
             "description": "The providing of basic services to the public, such as supplying water, waste removal, heating and cooling",
         },
+        "19": {"name": "none", "description": "none"},
     },
     "school": {
         "0": {
@@ -1128,12 +1165,14 @@ CANDIDATE_DICT_THIRD = {
             "name": "upper secondary education",
             "description": "Education and schools preparing students for tertiary education or providing skills relevant to employment through a curriculum with an increased range of subject options and streams",
         },
+        "10": {"name": "none", "description": "none"},
     },
     "climate change": {
         "0": {
             "name": "global warming",
             "description": "This category includes all issues relating to global warming including temperature research, remote sensing on temperature trends, debate on global warming, ways to reduce emissions and carbon trading.",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "conservation": {
         "0": {
@@ -1141,6 +1180,7 @@ CANDIDATE_DICT_THIRD = {
             "description": "Conservation of electrical, and other power sources",
         },
         "1": {"name": "parks", "description": "Areas set aside for preservation"},
+        "2": {"name": "none", "description": "none"},
     },
     "environmental pollution": {
         "0": {
@@ -1163,6 +1203,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "water pollution",
             "description": "Solids or liquids that corrupt the quality of water that could be used for drinking or irrigation",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "natural resources": {
         "0": {
@@ -1185,6 +1226,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "water",
             "description": "Environmental issues about bodies of water, including oceans, lakes, streams and reservoirs, as well as ice, glaciers and forms of precipitation",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "nature": {
         "0": {
@@ -1207,6 +1249,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "invasive species",
             "description": "Non-native plants, animals and other organisms that tend to take over native species",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "disease and condition": {
         "0": {
@@ -1241,8 +1284,9 @@ CANDIDATE_DICT_THIRD = {
             "name": "poisoning",
             "description": "When a substance in sufficient quantity adversely affects the body and its functions",
         },
+        "8": {"name": "none", "description": "none"},
     },
-    "government health care": {},
+    "government health care": {"0": {"name": "none", "description": "none"}},
     "health facility": {
         "0": {
             "name": "healthcare clinic",
@@ -1252,6 +1296,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "hospital",
             "description": "Medical facilities for the treatment of illnesses and injury",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "health treatment and procedure": {
         "0": {
@@ -1294,6 +1339,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "vaccine",
             "description": "Medications designed to create immunity to diseases",
         },
+        "10": {"name": "none", "description": "none"},
     },
     "medical profession": {
         "0": {
@@ -1308,6 +1354,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "medical staff",
             "description": "Doctors, nurses, interns and others in a medical facility",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "employment": {
         "0": {
@@ -1347,18 +1394,21 @@ CANDIDATE_DICT_THIRD = {
             "name": "wages and benefits",
             "description": "Money, or other items of value such as pension contributions and health insurance, paid to employees as compensation for their work",
         },
+        "10": {"name": "none", "description": "none"},
     },
     "employment legislation": {
         "0": {
             "name": "workplace health and safety",
             "description": "Laws protecting a safe and healthy work environment",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "labour market": {
         "0": {
             "name": "gig economy",
             "description": "a labour market consisting of individual suppliers on short-term contracts or freelance work as opposed to permanent jobs, such as drivers or delivery workers",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "labour relations": {
         "0": {
@@ -1369,18 +1419,21 @@ CANDIDATE_DICT_THIRD = {
             "name": "labour dispute",
             "description": "Disagreements between employers and employees regarding work conditions, pay or other issues",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "retirement": {
         "0": {
             "name": "pension",
             "description": "Payments, either government or private, to retired people",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "unemployment": {
         "0": {
             "name": "unemployment benefits",
             "description": "Monetary compensation paid to the jobless",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "leisure": {
         "0": {
@@ -1409,6 +1462,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "travel and tourism",
             "description": "Spending time away from home in pursuit of recreation, relaxation or pleasure",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "lifestyle": {
         "0": {
@@ -1427,6 +1481,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "trend",
             "description": "Interest in what is considered hip or popular at a certain point in time",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "wellness": {
         "0": {
@@ -1437,6 +1492,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "mental wellbeing",
             "description": "The personal pursuit of mental health through activities such as meditation, stress reduction, technology detoxes and journalling",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "election": {
         "0": {
@@ -1488,6 +1544,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "voting",
             "description": "The act of selecting an individual you would like to represent your interests in government",
         },
+        "13": {"name": "none", "description": "none"},
     },
     "fundamental rights": {
         "0": {
@@ -1518,6 +1575,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "women's rights",
             "description": "Feminism, restrictions on the rights of women and the fight for equality with men",
         },
+        "7": {"name": "none", "description": "none"},
     },
     "government": {
         "0": {
@@ -1596,6 +1654,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "regulatory authority",
             "description": "Authority responsible for the regulation or supervision of a business sector.",
         },
+        "19": {"name": "none", "description": "none"},
     },
     "government policy": {
         "0": {
@@ -1650,6 +1709,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "taxation",
             "description": "A levy to fund government expenditure",
         },
+        "13": {"name": "none", "description": "none"},
     },
     "international relations": {
         "0": {
@@ -1676,6 +1736,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "refugees and internally displaced people",
             "description": "A person seeking shelter in another country because of some fear of persecution in his own country",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "political process": {
         "0": {
@@ -1694,6 +1755,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "political system",
             "description": "System designed to provide order to government",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "belief systems": {
         "0": {
@@ -1760,6 +1822,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "nature religion",
             "description": "Religions that believe nature and the natural world is an embodiment of divinity, sacredness or spiritual power, including indigenous religions practiced in various parts of the world, and modern Pagan faiths, such as Wicca",
         },
+        "16": {"name": "none", "description": "none"},
     },
     "religious facility": {
         "0": {
@@ -1774,6 +1837,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "synagogue",
             "description": "A building used as a place of worship for the Jewish religion",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "religious festival and holiday": {
         "0": {
@@ -1812,12 +1876,14 @@ CANDIDATE_DICT_THIRD = {
             "name": "Yom Kippur",
             "description": "Most solemn of Jewish religious holidays, observed on the 10th day of the lunar month of tishri by fasting and prayer from sunset to sundown the following day",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "religious leader": {
         "0": {
             "name": "pope",
             "description": "Head of the Roman Catholic Church worldwide",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "religious ritual": {
         "0": {
@@ -1832,17 +1898,20 @@ CANDIDATE_DICT_THIRD = {
             "name": "canonisation",
             "description": "The declaration of a deceased person as an officially recognised saint",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "religious text": {
         "0": {"name": "Bible", "description": "Holy book of Christianity"},
         "1": {"name": "Qur'an", "description": "Holy book of Islam"},
         "2": {"name": "Torah", "description": "Holy book of Judaism"},
+        "3": {"name": "none", "description": "none"},
     },
     "biomedical science": {
         "0": {
             "name": "biotechnology",
             "description": "The scientific manipulation of living organisms and biological processes for scientific, medical or agricultural purposes",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "natural science": {
         "0": {
@@ -1881,6 +1950,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "physics",
             "description": "The study of the movement and structure of matter, and how it relates to energy",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "scientific research": {
         "0": {
@@ -1899,6 +1969,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "scientific publication",
             "description": "Academic research findings published in a journal, book or thesis",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "social sciences": {
         "0": {
@@ -1949,6 +2020,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "study of law",
             "description": "The study of legal systems and the philosophy of law",
         },
+        "12": {"name": "none", "description": "none"},
     },
     "technology and engineering": {
         "0": {
@@ -1987,6 +2059,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "micro science",
             "description": "The study of and technologies built at a microscopic scale, such as microbiology or microcomputing",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "communities": {
         "0": {
@@ -1997,12 +2070,14 @@ CANDIDATE_DICT_THIRD = {
             "name": "social networking",
             "description": "Social interactions, either in person or online, intended to share information and build relationships around common interests",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "demographics": {
         "0": {
             "name": "population and census",
             "description": "The official count of people living in a given geopolitical area, usually carried out by a governmental body",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "discrimination": {
         "0": {
@@ -2021,6 +2096,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "sexism",
             "description": "Discrimination against individuals or groups of people, usually women, on the basis of gender",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "family": {
         "0": {
@@ -2051,12 +2127,14 @@ CANDIDATE_DICT_THIRD = {
             "name": "pregnancy and childbirth",
             "description": "Social and medical issues around pregnancy and giving birth including, doulas and midwives, obstetrics and medical concerns",
         },
+        "7": {"name": "none", "description": "none"},
     },
     "immigration": {
         "0": {
             "name": "illegal immigration",
             "description": "The movement of individuals or groups of people from one country to another without legal authorisation from the destination country",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "mankind": {
         "0": {
@@ -2107,6 +2185,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "women",
             "description": "People who identify as female, focusing on the group as a demographic, and accomplishments, such as the first woman to achieve a milestone or serve in a role",
         },
+        "12": {"name": "none", "description": "none"},
     },
     "social condition": {
         "0": {
@@ -2117,6 +2196,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "poverty",
             "description": "The lack of sufficient resources and means to provide basic needs such as food, clothing or shelter for oneself and one's family",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "social problem": {
         "0": {
@@ -2147,6 +2227,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "slavery",
             "description": "The ownership of people as property, and the involuntary servitude of those people to their owners, which includes unpaid labour and coerced actions",
         },
+        "7": {"name": "none", "description": "none"},
     },
     "values": {
         "0": {
@@ -2165,6 +2246,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "sexual behaviour",
             "description": "The manner in which people express their sexuality in physical acts",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "welfare": {
         "0": {
@@ -2191,6 +2273,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "social services",
             "description": "Social programmes, usually publicly sponsored, aimed at promoting people's welfare, such as housing, health care or education services",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "competition discipline": {
         "0": {
@@ -2622,8 +2705,9 @@ CANDIDATE_DICT_THIRD = {
             "name": "wrestling",
             "description": "Combat sport where each wrestler attempts to win over his adversary, by holding both shoulders on the ground (fall) long enough to be in control. Points can also be decisive.",
         },
+        "111": {"name": "none", "description": "none"},
     },
-    "drug use in sport": {},
+    "drug use in sport": {"0": {"name": "none", "description": "none"}},
     "sport achievement": {
         "0": {
             "name": "sports honour",
@@ -2637,6 +2721,7 @@ CANDIDATE_DICT_THIRD = {
             "name": "sports record",
             "description": "The best performance to date by an athlete or team in a sport discipline",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "sport event": {
         "0": {
@@ -2659,9 +2744,9 @@ CANDIDATE_DICT_THIRD = {
             "name": "regular competition",
             "description": "A competitive sporting season where teams or individuals contend for a place in the standings or rankings",
         },
+        "5": {"name": "none", "description": "none"},
     },
 }
-
 
 CANDIDATE_DICT_FOURTH = {
     "dance": {
@@ -2677,6 +2762,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "traditional dance",
             "description": "Dance style that reflects the life and culture of a specific group of people or region, such as folk and ceremonial dance",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "fashion": {
         "0": {
@@ -2691,12 +2777,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "jewellery",
             "description": "Decorative items worn for personal expression and adornment, such as rings, necklaces, earrings",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "festival": {
         "0": {
             "name": "film festival",
             "description": "All forms of national and international film festivals",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "literature": {
         "0": {
@@ -2715,6 +2803,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "poetry",
             "description": "Written works that use the aesthetic and rhythmic qualities of language to express a message or emotion",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "music": {
         "0": {
@@ -2729,6 +2818,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "musical performance",
             "description": "Musicians performing for an audience for the purpose of entertainment",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "theatre": {
         "0": {
@@ -2755,6 +2845,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "stand-up comedy",
             "description": "A comic style in which a comedian performs a series of jokes or stories in front of a live audience, usually speaking directly to them",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "visual arts": {
         "0": {
@@ -2793,30 +2884,35 @@ CANDIDATE_DICT_FOURTH = {
             "name": "woodworking",
             "description": "The activity or skill of making items, such as furniture or cabinets, from wood",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "monument and heritage site": {
         "0": {
             "name": "restoration",
             "description": "Restoring historic or important properties or structures to a former better state by cleaning, repairing or rebuilding",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "social media": {
         "0": {
             "name": "influencers",
             "description": "Persons who distribute content on internet forums and social media and are followed by many people thereby influencing them to buy and use products",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "war": {
         "0": {
             "name": "civil war",
             "description": "Armed conflict between members of the same country, in some cases with the goal of dividing the country",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "assault": {
         "0": {
             "name": "sex crime",
             "description": "Sexual crimes against a person, such as rape, harassment, molestation or groping",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "corporate crime": {
         "0": {
@@ -2843,30 +2939,35 @@ CANDIDATE_DICT_FOURTH = {
             "name": "restraint of trade",
             "description": "Interference in free competition in business and trade",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "corruption": {
         "0": {
             "name": "bribery",
             "description": "The giving of money or favours in order to influence the judgment or conduct of a person in a position of power",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "drug related crimes": {
         "0": {
             "name": "drug trafficking",
             "description": "Dealing in illicit often harmful substances",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "fraud": {
         "0": {
             "name": "tax evasion",
             "description": "The illegal evasion of taxes by individuals, corporations, and trusts",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "organised crime": {
         "0": {
             "name": "gang activity",
             "description": "Criminal activities by groups of individuals, who are allied by common territories, languages or ethnic backgrounds and identify by a common group identity by using a shared name, tattoo, hand sign, clothing style or graffiti symbol",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "court": {
         "0": {
@@ -2885,18 +2986,21 @@ CANDIDATE_DICT_FOURTH = {
             "name": "trial (court)",
             "description": "The process by which evidence is presented and guilt, innocence or culpability is determined",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "out of court procedures": {
         "0": {
             "name": "arbitration and mediation",
             "description": "Resolution of disputed issues by a neutral panel, including conciliation, negotiation and tribunals",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "civil law": {
         "0": {
             "name": "regulations",
             "description": "laws that guide the conduct and organization of business corporations",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "international law": {
         "0": {
@@ -2907,6 +3011,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "international court and tribunal",
             "description": "The activities of courts under the authority of international organizations or formed by treaties between nations, such as the European Court for Human Rights and International Court of Justice",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "investigation (criminal)": {
         "0": {
@@ -2917,12 +3022,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "missing person",
             "description": "An adult whose disappearance is possibly not voluntary, or a child whose whereabouts are unknown to the child's legal guardian",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "industrial accident and incident": {
         "0": {
             "name": "nuclear accident and incident",
             "description": "Any unplanned event that causes unwanted consequences involving radioactive materials",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "transportation accident and incident": {
         "0": {
@@ -2941,12 +3048,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "road accident and incident",
             "description": "An accident or incident involving road vehicles.",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "fire": {
         "0": {
             "name": "wildfire",
             "description": "An uncontrolled fire in an area of combustible vegetation",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "natural disaster": {
         "0": {
@@ -2977,9 +3086,10 @@ CANDIDATE_DICT_FOURTH = {
             "name": "volcanic eruption",
             "description": "A rupture in the crust of the Earth allowing molten material to escape to the surface",
         },
+        "7": {"name": "none", "description": "none"},
     },
-    "transport incident": {},
-    "business finance": {},
+    "transport incident": {"0": {"name": "none", "description": "none"}},
+    "business finance": {"0": {"name": "none", "description": "none"}},
     "business financing": {
         "0": {
             "name": "bankruptcy",
@@ -3001,6 +3111,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "stocks and securities",
             "description": "Financial instruments such as company shares and bonds",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "business governance": {
         "0": {
@@ -3027,6 +3138,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "shareholder activity",
             "description": "Actions taken by owners of one or more shares of a company, including shareholder activism",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "business reporting and performance": {
         "0": {
@@ -3041,6 +3153,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "financial statement",
             "description": "Formal statements about the company financials typically delivered annually or quarterly",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "business restructuring": {
         "0": {
@@ -3063,6 +3176,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "merger or acquisition",
             "description": "Two or more companies forming a new company mergers, takeovers or acquisitions.",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "business strategy and marketing": {
         "0": {
@@ -3109,6 +3223,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "research and development",
             "description": "Research and expenditure on new product or service development",
         },
+        "11": {"name": "none", "description": "none"},
     },
     "human resources": {
         "0": {
@@ -3119,12 +3234,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "layoffs and downsizing",
             "description": "Planned or actual reductions in the labour force.",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "currency": {
         "0": {
             "name": "cryptocurrency",
             "description": "An internet-based medium of exchange using cryptography to conduct financial transactions",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "economic trends and indicators": {
         "0": {
@@ -3183,6 +3300,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "recession",
             "description": "A decrease in gross domestic product over a period of two quarters in a row",
         },
+        "14": {"name": "none", "description": "none"},
     },
     "international trade": {
         "0": {
@@ -3205,12 +3323,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "trade policy",
             "description": "Governmental decisions on tariffs, shipping, embargoes, and the types of goods and services to be imported and exported",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "monetary policy": {
         "0": {
             "name": "interest rates",
             "description": "The amount a lender charges a borrower as a percentage of the principal. Often set by a central bank or government.",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "commodities market": {
         "0": {
@@ -3221,8 +3341,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "metal",
             "description": "Markets for trading base metals such as copper, aluminium, steel, zinc etc",
         },
+        "2": {"name": "none", "description": "none"},
     },
-    "agriculture": {},
+    "agriculture": {"0": {"name": "none", "description": "none"}},
     "business service": {
         "0": {
             "name": "consultancy",
@@ -3252,8 +3373,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "trade show or expo",
             "description": "Market place to display and trade goods or services",
         },
+        "7": {"name": "none", "description": "none"},
     },
-    "chemicals": {},
+    "chemicals": {"0": {"name": "none", "description": "none"}},
     "computing and information technology": {
         "0": {
             "name": "computer and telecommunications hardware",
@@ -3279,6 +3401,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "wireless technology",
             "description": "Technology and services that permit the transfer of information between separated points without physical connection, including Bluetooth and Wi-Fi networks",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "construction and property": {
         "0": {
@@ -3297,6 +3420,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "residential real estate",
             "description": "The building and sale of property to be used as living space",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "consumer goods": {
         "0": {
@@ -3335,6 +3459,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "toy and game",
             "description": "Children's playthings or collectible items for adults, such as dolls, action figures and miniatures",
         },
+        "9": {"name": "none", "description": "none"},
     },
     "energy and resource": {
         "0": {
@@ -3357,8 +3482,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "renewable energy",
             "description": "Energy derived from sustainable sources",
         },
+        "5": {"name": "none", "description": "none"},
     },
-    "financial and business service": {},
+    "financial and business service": {"0": {"name": "none", "description": "none"}},
     "financial service": {
         "0": {
             "name": "accountancy and auditing",
@@ -3392,6 +3518,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "stock broking",
             "description": "The buying and selling of company shares on behalf of individuals or other entities",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "healthcare industry": {
         "0": {
@@ -3410,6 +3537,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "pharmaceutical",
             "description": "The production of medicines from various chemicals and natural substances and the research and discovery around new medications",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "manufacturing and engineering": {
         "0": {
@@ -3444,6 +3572,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "shipbuilding",
             "description": "Manufacturers of ships and submersibles and suppliers for the maintenance and repair of these vessels",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "media and entertainment industry": {
         "0": {
@@ -3490,14 +3619,16 @@ CANDIDATE_DICT_FOURTH = {
             "name": "television industry",
             "description": "The production and broadcasting of television content",
         },
+        "11": {"name": "none", "description": "none"},
     },
     "metal and mineral mining and refining": {
         "0": {
             "name": "precious material",
             "description": "The mining, refining and sale of materials such as gold, silver, precious metals, diamonds and rare earths",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
-    "process industry": {},
+    "process industry": {"0": {"name": "none", "description": "none"}},
     "sales channel": {
         "0": {
             "name": "auction",
@@ -3511,6 +3642,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "wholesale",
             "description": "The first link in the sales chain after production",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "tourism and leisure industry": {
         "0": {
@@ -3533,6 +3665,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "tour operator",
             "description": "Operators of trips either locally or internationally",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "transport": {
         "0": {
@@ -3567,6 +3700,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "waterway and maritime transport",
             "description": "Commercial movement of people or goods via boats, ships and water",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "utilities": {
         "0": {
@@ -3585,8 +3719,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "water supply",
             "description": "The business of providing water for household and commercial use",
         },
+        "4": {"name": "none", "description": "none"},
     },
-    "college and university": {},
+    "college and university": {"0": {"name": "none", "description": "none"}},
     "land resources": {
         "0": {
             "name": "forests",
@@ -3596,6 +3731,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "mountains",
             "description": "Elevated land masses formed over the ages either by erosion, volcanic eruption, or movement of massive geographical formations called plates",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "water": {
         "0": {
@@ -3610,6 +3746,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "wetlands",
             "description": "Areas generally marshy and not either under water or dry land. Often related to aquifers for water quality and/or wildlife",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "animal": {
         "0": {"name": "animal disease", "description": "Disease affecting animals"},
@@ -3617,12 +3754,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "pests",
             "description": "Animals or insects that invade a human space causing destruction or unsanitary conditions",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "flowers and plants": {
         "0": {
             "name": "plant disease",
             "description": "Disorders affecting plants caused either by parasites or environmental factors",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "communicable disease": {
         "0": {
@@ -3633,12 +3772,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "viral disease",
             "description": "Diseases caused by an infection by viruses",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "medical condition": {
         "0": {
             "name": "obesity",
             "description": "A condition of body weight generally considered 20 percent above the norm for gender, age, height and bone structure",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "mental health and disorder": {
         "0": {
@@ -3653,12 +3794,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "eating disorder",
             "description": "Anorexia, bulimia, overeating and similar illnesses",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "diet": {
         "0": {
             "name": "dietary supplement",
             "description": "Nutrients taken in addition to food to bolster health",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "health care approach": {
         "0": {
@@ -3677,6 +3820,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "traditional Chinese medicine",
             "description": "The practice of diagnosis, treatment and prevention of disease based on traditional methods developed in Eastern Asia",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "medical specialisation": {
         "0": {
@@ -3695,8 +3839,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "veterinary medicine",
             "description": "The medical profession and field of study devoted to diagnosis, prevention and treatment of medical conditions in animals",
         },
+        "4": {"name": "none", "description": "none"},
     },
-    "employment training": {},
+    "employment training": {"0": {"name": "none", "description": "none"}},
     "wages and benefits": {
         "0": {
             "name": "profit sharing",
@@ -3706,13 +3851,15 @@ CANDIDATE_DICT_FOURTH = {
             "name": "social security",
             "description": "a government system that provides monetary assistance to people with inadequate or no incomes, such as retirees, disabled people or carers",
         },
+        "2": {"name": "none", "description": "none"},
     },
-    "collective agreements": {},
+    "collective agreements": {"0": {"name": "none", "description": "none"}},
     "labour dispute": {
         "0": {
             "name": "labour strike",
             "description": "Groups of employees agreeing to cease work activities with the aim of achieving better pay or work conditions",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "game": {
         "0": {"name": "board game", "description": "A game played on a board"},
@@ -3732,6 +3879,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "video game",
             "description": "A game played using a video display",
         },
+        "8": {"name": "none", "description": "none"},
     },
     "hobby": {
         "0": {
@@ -3754,6 +3902,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "motorcycle enthusiasm",
             "description": "Interest in new and classic motor-powered cycles",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "holiday": {
         "0": {
@@ -3764,6 +3913,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "public holiday",
             "description": "A day of celebration declared by a government",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "leisure venue": {
         "0": {
@@ -3790,6 +3940,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "zoo",
             "description": "A park where visitors can see both wild and tame animals that are kept in cages or enclosed areas",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "outdoor recreational activities": {
         "0": {
@@ -3812,8 +3963,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "scuba diving",
             "description": "Underwater diving with the use of a self-contained underwater breathing apparatus",
         },
+        "5": {"name": "none", "description": "none"},
     },
-    "travel and tourism": {},
+    "travel and tourism": {"0": {"name": "none", "description": "none"}},
     "house and home": {
         "0": {
             "name": "gardening",
@@ -3827,18 +3979,21 @@ CANDIDATE_DICT_FOURTH = {
             "name": "interior decoration",
             "description": "Interest in decorating one's home",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "trend": {
         "0": {
             "name": "body modification",
             "description": "Actions taken to permanently or semi-permanently change body appearance, such as piercing and tattooing",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "political campaigns": {
         "0": {
             "name": "campaign finance",
             "description": "The money that makes campaigns for public office possible",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "civil and public service": {
         "0": {
@@ -3853,6 +4008,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "public officials",
             "description": "Individuals, usually elected, who are in public service or commonly in the public eye.",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "defence": {
         "0": {
@@ -3867,12 +4023,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "security measures (defence)",
             "description": "Means of making a nation, a state, a building or a person secure from harm and outside interference.",
         },
+        "3": {"name": "none", "description": "none"},
     },
     "government budget": {
         "0": {
             "name": "public finance",
             "description": "The money of government used for paying for public programmes and services and public debt",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "legislative body": {
         "0": {
@@ -3883,6 +4041,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "upper house (legislature)",
             "description": "Senior chamber of a legislative body, such as the US Senate or UK House of Lords",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "economic policy": {
         "0": {
@@ -3901,6 +4060,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "state-owned enterprise",
             "description": "The government as owner of companies, either complete or partial",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "interior policy": {
         "0": {
@@ -3943,12 +4103,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "regional development policy",
             "description": "Public or private actions carried out to develop a region.",
         },
+        "10": {"name": "none", "description": "none"},
     },
     "regulation of industry": {
         "0": {
             "name": "food and drink regulations",
             "description": "Government policies relating to food and drink",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "diplomacy": {
         "0": {
@@ -3959,12 +4121,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "treaty",
             "description": "A treaty (as defined by the Vienna Convention on the Law of Treaties) is a written agreement between international entities that is binding under international law.",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "political parties and movements": {
         "0": {
             "name": "political leadership",
             "description": "The leaders within a political party",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "political system": {
         "0": {
@@ -3975,6 +4139,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "dictatorship",
             "description": "Government in which a single individual or a small group of individuals hold power without consent of the people",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "Christianity": {
         "0": {
@@ -3993,6 +4158,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "Protestantism",
             "description": "Christian denominations that were formed through the 16th century Reformation movement",
         },
+        "4": {"name": "none", "description": "none"},
     },
     "Islam": {
         "0": {
@@ -4003,12 +4169,14 @@ CANDIDATE_DICT_FOURTH = {
             "name": "Sunni Islam",
             "description": "The largest branch of Islam believing that the Prophet Muhammad did not designate a successor",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "Judaism": {
         "0": {
             "name": "Hasidism",
             "description": "Jewish religious group that believes that the Torah is the literal word of God and that carrying out this word is what gives meaning and purpose to life",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "biology": {
         "0": {
@@ -4031,6 +4199,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "zoology",
             "description": "The study of the biology, physiology, development, behaviour or other aspects of animals",
         },
+        "5": {"name": "none", "description": "none"},
     },
     "physics": {
         "0": {
@@ -4041,30 +4210,35 @@ CANDIDATE_DICT_FOURTH = {
             "name": "nuclear physics",
             "description": "The study of the structure and behaviour of atomic nuclei",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "scientific exploration": {
         "0": {
             "name": "space exploration",
             "description": "The scientific exploration of outer space through manned and unmanned missions",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "aerospace engineering": {
         "0": {
             "name": "rocketry",
             "description": "The study, design, development and construction of rockets",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "information technology and computer science": {
         "0": {
             "name": "artificial intelligence",
             "description": "An attempt to let computers simulate how the human brain works by applying statistical, heuristic or machine learning methods and algorithms to large datasets. Enables a long range of automatic functions like image recognition and categorisation.",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "micro science": {
         "0": {
             "name": "nanotechnology",
             "description": "Manipulating objects at the molecular scale",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "family planning": {
         "0": {
@@ -4075,6 +4249,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "contraception",
             "description": "A method or device used to prevent pregnancy",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "death and dying": {
         "0": {
@@ -4085,6 +4260,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "suicide",
             "description": "The intentional taking of one's own life",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "archery": {
         "0": {
@@ -4095,6 +4271,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "longbow",
             "description": "Shooting with longbow on targets from different distances. The competition is held outdoors on an open (flat) field.",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "artistic swimming": {
         "0": {
@@ -4105,6 +4282,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "synchronised technical routine",
             "description": "Contestants obtain points from 10 sitting judges by executing certain synchronised artistic shapes and movements in the water. In the technical programme, competitors must execute a range of specific moves in a given order.",
         },
+        "2": {"name": "none", "description": "none"},
     },
     "athletics": {
         "0": {
@@ -4183,26 +4361,30 @@ CANDIDATE_DICT_FOURTH = {
             "name": "triple jump",
             "description": "Competitors build up speed over a short sprint and then attempt to jump as far forward as they can using a hop, skip and a jump technique.",
         },
+        "19": {"name": "none", "description": "none"},
     },
     "baseball": {
         "0": {
             "name": "rubberball baseball",
             "description": "Sometimes called ''soft baseball,'' the game is played with a rubber baseball of varying degrees of hardness depending upon the age and level of the players.",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
-    "boxing": {},
-    "canoeing": {},
+    "boxing": {"0": {"name": "none", "description": "none"}},
+    "canoeing": {"0": {"name": "none", "description": "none"}},
     "competitive dancing": {
         "0": {
             "name": "breaking (breakdance)",
             "description": "Dancing competition featuring an urban dance style that originated in the United States in the 1970s with roots in hip-hop culture and characterised by acrobatic movements, stylised footwork, and the key role played by the DJ and the MC during battles",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "curling": {
         "0": {
             "name": "icestock sport",
             "description": "Similar to curling, played on targets on ice, different stones with straight handle and different rules, played in alpine countries",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "cycling": {
         "0": {
@@ -4229,6 +4411,7 @@ CANDIDATE_DICT_FOURTH = {
             "name": "road cycling",
             "description": "Cycling events held on roads, including road races and time trials",
         },
+        "6": {"name": "none", "description": "none"},
     },
     "diving": {
         "0": {
@@ -4243,16 +4426,18 @@ CANDIDATE_DICT_FOURTH = {
             "name": "synchronised diving",
             "description": "Two competitors from the same team dive off at the same time from separate platforms or springboards. As well as being judged on the standard criteria they are also awarded marks for synchronisation.",
         },
+        "3": {"name": "none", "description": "none"},
     },
-    "dog racing": {},
-    "equestrian": {},
-    "fencing": {},
-    "figure skating": {},
+    "dog racing": {"0": {"name": "none", "description": "none"}},
+    "equestrian": {"0": {"name": "none", "description": "none"}},
+    "fencing": {"0": {"name": "none", "description": "none"}},
+    "figure skating": {"0": {"name": "none", "description": "none"}},
     "golf": {
         "0": {
             "name": "mini golf",
             "description": "A game where small hard balls must be holed on an artificial course in as few strokes from the club as possible",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "gymnastics": {
         "0": {
@@ -4267,15 +4452,17 @@ CANDIDATE_DICT_FOURTH = {
             "name": "trampoline",
             "description": "Competitors perform complicated twists and turns whilst bouncing on the trampoline.",
         },
+        "3": {"name": "none", "description": "none"},
     },
-    "horse racing": {},
+    "horse racing": {"0": {"name": "none", "description": "none"}},
     "ice hockey": {
         "0": {
             "name": "sledge hockey",
             "description": "Like ice hockey but instead of skates small sledges are used. Competitors move by pushing with the arms",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
-    "kayaking": {},
+    "kayaking": {"0": {"name": "none", "description": "none"}},
     "martial arts": {
         "0": {"name": "Taekwon-Do", "description": "A martial art of Korean origin"},
         "1": {"name": "judo", "description": "A defensive martial art."},
@@ -4316,21 +4503,24 @@ CANDIDATE_DICT_FOURTH = {
             "description": "Style of martial art originating in the Soviet Union that is recognised as a form of amateur wrestling",
         },
         "11": {"name": "wushu", "description": "Chinese traditional martial art"},
+        "12": {"name": "none", "description": "none"},
     },
-    "motor car racing": {},
-    "motorcycling": {},
+    "motor car racing": {"0": {"name": "none", "description": "none"}},
+    "motorcycling": {"0": {"name": "none", "description": "none"}},
     "mountain climbing": {
         "0": {
             "name": "ice climbing",
             "description": "Climbing of ice features such as icefalls and frozen cliffs",
         },
         "1": {"name": "mountaineering", "description": "Competitive alpine climbing"},
+        "2": {"name": "none", "description": "none"},
     },
     "orienteering": {
         "0": {
             "name": "ski orienteering",
             "description": "An individual ski time-trial over a route marked out by beacons, that the competitor has to search out and find in a specific order. The contestant makes his way with the help of a compass and map",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "rodeo": {
         "0": {"name": "bareback bronc", "description": "Rodeo discipline"},
@@ -4340,6 +4530,7 @@ CANDIDATE_DICT_FOURTH = {
         "4": {"name": "calf roping", "description": "Rodeo discipline"},
         "5": {"name": "goat roping", "description": "Rodeo discipline"},
         "6": {"name": "saddle bronc", "description": "Rodeo discipline"},
+        "7": {"name": "none", "description": "none"},
     },
     "roller sports": {
         "0": {
@@ -4350,8 +4541,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "skateboarding",
             "description": "Competitions involving stunts and acrobatic feats performed on a skateboard using various ramps and other obstacles",
         },
+        "2": {"name": "none", "description": "none"},
     },
-    "rowing": {},
+    "rowing": {"0": {"name": "none", "description": "none"}},
     "rugby": {
         "0": {
             "name": "rugby league",
@@ -4365,8 +4557,9 @@ CANDIDATE_DICT_FOURTH = {
             "name": "rugby union",
             "description": "A type of rugby where two teams of 15 compete on a pitch by running with and passing an oval ball. Points are scored by touching down the ball behind the goal line or kicking it between goal posts. Governed by the World Rugby organization.",
         },
+        "3": {"name": "none", "description": "none"},
     },
-    "sailing": {},
+    "sailing": {"0": {"name": "none", "description": "none"}},
     "skiing": {
         "0": {
             "name": "Nordic combined",
@@ -4396,21 +4589,24 @@ CANDIDATE_DICT_FOURTH = {
             "name": "ski jumping",
             "description": "Competitors descend a snow covered elevated ramp on skis and try to fly off it as far as possible, receiving marks for distance, style of flight and landing",
         },
+        "7": {"name": "none", "description": "none"},
     },
-    "sport shooting": {},
+    "sport shooting": {"0": {"name": "none", "description": "none"}},
     "swimming": {
         "0": {
             "name": "marathon swimming",
             "description": "A long distance open water swimming",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
     "volleyball": {
         "0": {
             "name": "beach volleyball",
             "description": "Two teams of two players compete on a sand court. Unlike indoor volleyball, points are scored only when the serving team wins a rally or forces an error. The sand surface makes it more physically demanding than volleyball",
-        }
+        },
+        "1": {"name": "none", "description": "none"},
     },
-    "weightlifting and powerlifting": {},
+    "weightlifting and powerlifting": {"0": {"name": "none", "description": "none"}},
     "wrestling": {
         "0": {
             "name": "Swiss wrestling",
@@ -4424,43 +4620,176 @@ CANDIDATE_DICT_FOURTH = {
             "name": "greco-roman",
             "description": "A style where the only holds allowed are those between the head and the belt",
         },
+        "3": {"name": "none", "description": "none"},
     },
 }
+
 
 ID_TO_TOPIC = {
     "00000000": "root",
     "01000000": "arts, culture, entertainment and media",
     "20000002": "arts and entertainment",
+    "20000003": "animation",
+    "20000004": "cartoon",
+    "20000005": "cinema",
+    "20000007": "dance",
+    "20000011": "fashion",
+    "20001181": "festival",
+    "20000013": "literature",
+    "20000018": "music",
+    "20001179": "series",
+    "20000029": "theatre",
+    "20000031": "visual arts",
     "20000038": "culture",
+    "20001135": "art exhibition",
+    "20000039": "cultural development",
+    "20000040": "customs and tradition",
+    "20000041": "festive event (culture)",
+    "20000042": "language",
+    "20000043": "library and museum",
+    "20000044": "monument and heritage site",
     "20000045": "mass media",
+    "20001319": "disinformation and misinformation",
+    "20000046": "news media",
+    "20000047": "newspaper",
+    "20000048": "online media outlet",
+    "20000049": "periodical",
+    "20000050": "radio",
+    "20001182": "social media",
+    "20000051": "television",
     "16000000": "conflict, war and peace",
     "20000053": "act of terror",
+    "20000054": "act of bioterrorism",
+    "20000055": "terrorist bombings",
     "20000056": "armed conflict",
+    "20000057": "guerrilla activity",
+    "20000058": "international military intervention",
+    "20000060": "military occupation",
+    "20000062": "war",
     "20000065": "civil unrest",
+    "20000066": "demonstration",
+    "20000067": "rebellion",
+    "20000068": "revolution",
+    "20000069": "riot",
     "20000070": "coup d'etat",
     "20001361": "cyber warfare",
     "20000071": "massacre",
     "20000073": "peace process",
+    "20000078": "disarmament",
+    "20000074": "peace envoy",
+    "20000075": "peace plan",
+    "20000076": "peace talks",
+    "20000059": "peacekeeping force",
     "20000077": "post-war reconstruction",
+    "20000079": "ordnance clearance",
     "20001377": "war victims",
+    "20000061": "missing in action",
+    "20001378": "missing in action",
+    "20000080": "prisoners of war",
     "02000000": "crime, law and justice",
     "20000082": "crime",
+    "20001314": "animal abuse",
+    "20000083": "arson",
+    "20000084": "assault",
+    "20000087": "corporate crime",
+    "20000093": "corruption",
+    "20000086": "cyber crime",
+    "20000095": "drug related crimes",
+    "20000097": "fraud",
+    "20000072": "genocide",
+    "20000098": "hijacking",
+    "20000099": "homicide",
+    "20001283": "human smuggling and trafficking",
+    "20000100": "kidnapping",
+    "20000101": "organised crime",
+    "20001196": "reckless driving",
+    "20000104": "robbery and theft",
+    "20001313": "shootings",
+    "20000103": "terrorism",
+    "20001320": "torture",
+    "20001285": "vandalism",
+    "20000105": "war crime",
     "20000106": "judiciary",
+    "20000107": "court",
+    "20000116": "out of court procedures",
+    "20000118": "prosecution and prosecutors",
     "20000119": "justice",
     "20000121": "law",
+    "20001197": "administrative law",
+    "20000122": "civil law",
+    "20000125": "criminal law",
+    "20000126": "international law",
     "20000129": "law enforcement",
+    "20000130": "arrest",
+    "20000131": "investigation (criminal)",
+    "20000133": "police",
+    "20001299": "surveillance",
     "03000000": "disaster, accident and emergency incident",
     "20000139": "accident and emergency incident",
+    "20001321": "drowning",
+    "20000140": "explosion accident and incident",
+    "20000141": "industrial accident and incident",
+    "20000161": "structural failure",
+    "20000143": "transportation accident and incident",
     "20000148": "disaster",
+    "20000149": "famine",
+    "20000150": "fire",
+    "20000151": "natural disaster",
     "20000160": "emergency incident",
+    "20000162": "transport incident",
     "20000167": "emergency planning",
     "20000168": "emergency response",
     "04000000": "economy, business and finance",
     "20000349": "business enterprise",
+    "20001278": "cooperative",
+    "20001172": "small and medium enterprise",
+    "20001158": "start-up and entrepreneurial business",
     "20000170": "business information",
+    "20000171": "business finance",
+    "20000183": "business financing",
+    "20000199": "business governance",
+    "20001365": "business reporting and performance",
+    "20001366": "business restructuring",
+    "20000192": "business strategy and marketing",
+    "20000188": "human resources",
     "20000344": "economy",
+    "20000350": "central bank",
+    "20000355": "currency",
+    "20000363": "economic organisation",
+    "20000346": "economic trends and indicators",
+    "20000364": "emerging market",
+    "20000372": "international economic institution",
+    "20000373": "international trade",
+    "20000379": "monetary policy",
+    "20000381": "mutual funds",
+    "20001171": "sharing economy",
     "20000385": "market and exchange",
+    "20000386": "commodities market",
+    "20000390": "debt market",
+    "20000391": "foreign exchange market",
+    "20000392": "loan market",
     "20000209": "products and services",
+    "20000210": "agriculture",
+    "20001371": "business service",
+    "20000217": "chemicals",
+    "20000213": "commercial fishing",
+    "20000225": "computing and information technology",
+    "20000235": "construction and property",
+    "20000243": "consumer goods",
+    "20000256": "energy and resource",
+    "20000271": "financial and business service",
+    "20001370": "financial service",
+    "20000214": "forestry and timber",
+    "20001354": "healthcare industry",
+    "20000294": "manufacturing and engineering",
+    "20000304": "media and entertainment industry",
+    "20000316": "metal and mineral mining and refining",
+    "20000224": "plastic",
+    "20000322": "process industry",
+    "20001289": "sales channel",
+    "20000331": "tourism and leisure industry",
+    "20000337": "transport",
+    "20001244": "utilities",
     "05000000": "education",
     "20000412": "curriculum",
     "20001217": "educational grading",
@@ -4470,6 +4799,17 @@ ID_TO_TOPIC = {
     "20000398": "parents group",
     "20000399": "religious education",
     "20000400": "school",
+    "20000403": "adult and continuing education",
+    "20000405": "college and university",
+    "20000409": "early childhood education",
+    "20000402": "further education",
+    "20001215": "independent school",
+    "20000408": "lower secondary education",
+    "20000401": "primary education",
+    "20001214": "private school",
+    "20001212": "religious school",
+    "20001213": "state school",
+    "20000404": "upper secondary education",
     "20000410": "social learning",
     "20000415": "students",
     "20000416": "teachers",
@@ -4477,19 +4817,65 @@ ID_TO_TOPIC = {
     "20001216": "vocational education",
     "06000000": "environment",
     "20000418": "climate change",
+    "20000419": "global warming",
     "20000420": "conservation",
+    "20000421": "energy saving",
+    "20000422": "parks",
     "20000424": "environmental pollution",
+    "20000425": "air pollution",
+    "20000426": "environmental clean-up",
+    "20000427": "hazardous materials",
+    "20000428": "waste materials",
+    "20000429": "water pollution",
     "20000430": "natural resources",
+    "20000431": "energy resources",
+    "20000432": "land resources",
+    "20000435": "population growth",
+    "20000436": "renewable energy",
+    "20000437": "water",
     "20000441": "nature",
+    "20000500": "animal",
+    "20000442": "ecosystem",
+    "20000443": "endangered species",
+    "20000507": "flowers and plants",
+    "20000444": "invasive species",
     "20001374": "sustainability",
     "07000000": "health",
     "20000446": "disease and condition",
+    "20000447": "cancer",
+    "20000448": "communicable disease",
+    "20001355": "developmental disorder",
+    "20000454": "heart disease",
+    "20000455": "illness",
+    "20000456": "injury",
+    "20000457": "medical condition",
+    "20000458": "mental health and disorder",
+    "20001322": "poisoning",
     "20000480": "government health care",
+    "20000481": "Medicaid",
+    "20000482": "Medicare",
     "20000461": "health facility",
+    "20001229": "healthcare clinic",
+    "20000462": "hospital",
     "20000483": "health insurance",
     "20000463": "health organisation",
     "20000464": "health treatment and procedure",
+    "20000465": "diet",
+    "20001219": "drug rehabilitation",
+    "20001221": "emergency care",
+    "20000470": "health care approach",
+    "20000469": "medical test",
+    "20000467": "non-prescription drug",
+    "20000475": "physical fitness",
+    "20000468": "prescription drug",
+    "20000476": "preventative medicine",
+    "20001228": "surgery",
+    "20000478": "therapy",
+    "20000477": "vaccine",
     "20000485": "medical profession",
+    "20000486": "medical service",
+    "20000487": "medical specialisation",
+    "20000492": "medical staff",
     "20000493": "non-human diseases",
     "20000484": "private health care",
     "20001358": "public health",
@@ -4500,71 +4886,428 @@ ID_TO_TOPIC = {
     "20001238": "birthday",
     "20000505": "celebrity",
     "20000501": "ceremony",
+    "20001235": "funeral and memorial service",
+    "20001234": "graduation",
+    "20001233": "name ceremony",
+    "20001236": "wedding",
     "20000504": "high society",
+    "20000506": "royalty",
     "20000503": "human mishap",
     "20000502": "people",
     "20000499": "record and achievement",
     "09000000": "labour",
     "20000509": "employment",
+    "20000510": "apprenticeship",
+    "20000511": "child labour",
+    "20000339": "commuting",
+    "20000512": "employee",
+    "20000513": "employer",
+    "20000514": "employment training",
+    "20000517": "occupations",
+    "20001276": "parental leave",
+    "20001206": "self-employment",
+    "20001277": "volunteering",
+    "20000518": "wages and benefits",
     "20000521": "employment legislation",
+    "20000522": "workplace health and safety",
     "20000523": "labour market",
+    "20001275": "gig economy",
     "20000524": "labour relations",
+    "20000525": "collective agreements",
+    "20000529": "labour dispute",
     "20000531": "retirement",
+    "20000532": "pension",
     "20000533": "unemployment",
+    "20000534": "job layoffs",
+    "20000535": "unemployment benefits",
     "20000536": "unions",
     "10000000": "lifestyle and leisure",
     "20000538": "leisure",
+    "20000539": "club and association",
+    "20000540": "game",
+    "20000549": "gaming and lottery",
+    "20000550": "hobby",
+    "20000551": "holiday",
+    "20000553": "leisure venue",
+    "20000560": "outdoor recreational activities",
+    "20000563": "travel and tourism",
     "20000565": "lifestyle",
+    "20000570": "house and home",
+    "20000569": "organic food",
+    "20001143": "party",
+    "20000572": "trend",
     "20001339": "wellness",
+    "20001239": "exercise and fitness",
+    "20001340": "mental wellbeing",
     "11000000": "politics",
     "20000574": "election",
+    "20001263": "church elections",
+    "20000575": "citizens' initiative and recall",
+    "20000576": "electoral system",
+    "20000577": "intergovernmental elections",
+    "20000578": "local elections",
+    "20000579": "national elections",
+    "20000580": "political campaigns",
+    "20000582": "political candidates",
+    "20001266": "political debates",
+    "20000583": "primary elections",
+    "20000584": "referenda",
+    "20000585": "regional elections",
+    "20000586": "voting",
     "20000587": "fundamental rights",
+    "20000588": "censorship and freedom of speech",
+    "20000120": "civil rights",
+    "20000590": "freedom of religion",
+    "20000591": "freedom of the press",
+    "20000592": "human rights",
+    "20001300": "privacy",
+    "20001326": "women's rights",
     "20000593": "government",
+    "20000594": "civil and public service",
+    "20000597": "constitution (law)",
+    "20000598": "defence",
+    "20000605": "espionage and intelligence",
+    "20000606": "executive (government)",
+    "20000607": "government budget",
+    "20000609": "government department",
+    "20001261": "heads of government",
+    "20000610": "heads of state",
+    "20000611": "impeachment",
+    "20000615": "legislative body",
+    "20000612": "local government and authority",
+    "20000613": "minister and secretary (government)",
+    "20000614": "national government",
+    "20001260": "political committees",
+    "20001259": "political convention",
+    "20001262": "public inquiry",
+    "20000618": "regional government and authority",
+    "20001173": "regulatory authority",
     "20000621": "government policy",
+    "20001132": "cultural policies",
+    "20000345": "economic policy",
+    "20001338": "education policy",
+    "20000423": "environmental policy",
+    "20000479": "healthcare policy",
+    "20000626": "interior policy",
+    "20001265": "local government policy",
+    "20000634": "migration policy",
+    "20000635": "nuclear policy",
+    "20000636": "regulation of industry",
+    "20000619": "safety of citizens",
+    "20001147": "sports policies",
+    "20000620": "taxation",
     "20000638": "international relations",
+    "20001316": "border disputes",
+    "20000639": "diplomacy",
+    "20000642": "economic sanction",
+    "20000643": "foreign aid",
+    "20000644": "international organisation",
+    "20000645": "refugees and internally displaced people",
     "20000646": "non-governmental organisation",
     "20000647": "political crisis",
     "20000648": "political dissent",
     "20000649": "political process",
+    "20000650": "lobbying",
+    "20000652": "political development",
+    "20000651": "political parties and movements",
+    "20000653": "political system",
     "12000000": "religion",
     "20000657": "belief systems",
+    "20000658": "Buddhism",
+    "20000659": "Christianity",
+    "20000673": "Confucianism",
+    "20000675": "Freemasonry",
+    "20000676": "Hinduism",
+    "20000677": "Islam",
+    "20000678": "Jainism",
+    "20000679": "Judaism",
+    "20000682": "Scientology",
+    "20000683": "Shintoism",
+    "20000684": "Sikhism",
+    "20000685": "Taoism",
+    "20000686": "Unificationism",
+    "20000681": "Zoroastrianism",
+    "20001349": "atheism and agnosticism",
+    "20000674": "cult",
+    "20000680": "nature religion",
     "20000687": "interreligious dialogue",
     "20000702": "relations between religion and government",
     "20000688": "religious conflict",
     "20000689": "religious event",
     "20000697": "religious facility",
+    "20000698": "church",
+    "20000699": "mosque",
+    "20000700": "synagogue",
+    "20000701": "temple",
     "20000690": "religious festival and holiday",
+    "20001271": "All Saints Day",
+    "20000691": "Christmas",
+    "20000692": "Easter",
+    "20001350": "Eid al-Adha",
+    "20001352": "Hanukkah",
+    "20000693": "Pentecost",
+    "20000694": "Ramadan",
+    "20001272": "Walpurgis night",
+    "20000695": "Yom Kippur",
     "20000703": "religious leader",
+    "20000704": "pope",
     "20000696": "religious ritual",
+    "20001273": "baptism",
+    "20001345": "bar and bat mitzvah",
+    "20001346": "canonisation",
     "20000705": "religious text",
+    "20000706": "Bible",
+    "20000707": "Qur'an",
+    "20000708": "Torah",
     "13000000": "science and technology",
     "20000710": "biomedical science",
+    "20000711": "biotechnology",
     "20000715": "mathematics",
     "20000717": "natural science",
+    "20000718": "astronomy",
+    "20000719": "biology",
+    "20000725": "chemistry",
+    "20000726": "cosmology",
+    "20000727": "geology",
+    "20000728": "horticulture",
+    "20000729": "marine science",
+    "20000730": "meteorology",
+    "20000731": "physics",
     "20000741": "scientific institution",
     "20000735": "scientific research",
+    "20000737": "medical research",
+    "20000738": "scientific exploration",
+    "20000736": "scientific innovation",
+    "20000740": "scientific publication",
     "20000755": "scientific standards",
     "20000742": "social sciences",
+    "20000743": "anthropology",
+    "20000744": "archaeology",
+    "20000745": "economics",
+    "20000746": "geography",
+    "20000747": "history",
+    "20000748": "information science",
+    "20000750": "linguistics",
+    "20000751": "philosophy",
+    "20000752": "political science",
+    "20000753": "psychology",
+    "20000754": "sociology",
+    "20000749": "study of law",
     "20000756": "technology and engineering",
+    "20000757": "aerospace engineering",
+    "20000759": "agricultural technology",
+    "20000760": "civil engineering",
+    "20000761": "electronic engineering",
+    "20000762": "identification technology",
+    "20000763": "information technology and computer science",
+    "20000764": "materials science",
+    "20000716": "mechanical engineering",
+    "20000765": "micro science",
     "14000000": "society",
     "20000768": "communities",
+    "20001360": "fraternal and community group",
+    "20000769": "social networking",
     "20000770": "demographics",
+    "20000774": "population and census",
     "20000775": "discrimination",
+    "20000776": "ageism",
+    "20000777": "racism",
+    "20000778": "religious discrimination",
+    "20000779": "sexism",
     "20001373": "diversity, equity and inclusion",
     "20000772": "emigration",
     "20000780": "family",
+    "20000782": "Dating and Relationships",
+    "20000781": "adoption",
+    "20000783": "divorce",
+    "20000784": "family planning",
+    "20000786": "marriage",
+    "20000787": "parenting",
+    "20001359": "pregnancy and childbirth",
     "20000771": "immigration",
+    "20000773": "illegal immigration",
     "20000788": "mankind",
+    "20000792": "LGBTQ",
+    "20000789": "adults",
+    "20000790": "children",
+    "20000791": "disabilities",
+    "20000793": "gender",
+    "20001288": "indigenous people",
+    "20000794": "infants",
+    "20001328": "men",
+    "20000795": "national or ethnic minority",
+    "20000796": "nuclear radiation victims",
+    "20000797": "senior citizens",
+    "20000798": "teenagers",
+    "20001327": "women",
     "20000799": "social condition",
+    "20000800": "homelessness",
+    "20000801": "poverty",
     "20000802": "social problem",
+    "20000803": "abusive behaviour",
+    "20000804": "addiction",
+    "20001284": "bullying",
+    "20000805": "juvenile delinquency",
+    "20000806": "prostitution",
+    "20001193": "sexual misconduct",
+    "20000807": "slavery",
     "20000808": "values",
+    "20000809": "corrupt practices",
+    "20000810": "death and dying",
+    "20000814": "ethics",
+    "20000815": "pornography",
+    "20000816": "sexual behaviour",
     "20000817": "welfare",
+    "20000818": "charity",
+    "20001317": "child care",
+    "20001232": "elderly care",
+    "20000819": "long-term care",
+    "20001290": "public housing",
+    "20000820": "social services",
     "15000000": "sport",
     "20000822": "competition discipline",
+    "20001329": "3x3 basketball",
+    "20000823": "American football",
+    "20000846": "Australian rules football",
+    "20000876": "Canadian football",
+    "20000939": "Gaelic football",
+    "20000968": "Jai Alai (Pelota)",
+    "20000824": "archery",
+    "20001286": "arm wrestling",
+    "20001175": "artistic swimming",
+    "20000827": "athletics",
+    "20000847": "badminton",
+    "20000848": "bandy",
+    "20000849": "baseball",
+    "20000851": "basketball",
+    "20000852": "biathlon",
+    "20000853": "billiards",
+    "20000854": "bobsleigh",
+    "20001240": "bodybuilding",
+    "20000855": "boules",
+    "20000856": "boxing",
+    "20000875": "bullfighting",
+    "20001330": "canoe slalom",
+    "20001331": "canoe sprint",
+    "20000877": "canoeing",
+    "20000883": "casting (fishing)",
+    "20001309": "cheerleading",
+    "20001154": "chess",
+    "20000911": "competitive dancing",
+    "20000888": "cricket",
+    "20000889": "croquet",
+    "20000890": "curling",
+    "20000892": "cycling",
+    "20000912": "darts",
+    "20000913": "diving",
+    "20000919": "dog racing",
+    "20000922": "duathlon",
+    "20001183": "eSports",
+    "20000923": "equestrian",
+    "20000929": "fencing",
+    "20000933": "field hockey",
+    "20000934": "figure skating",
+    "20000936": "fist ball",
+    "20000937": "floorball",
+    "20000938": "flying disc",
+    "20001335": "football 5-a-side",
+    "20001336": "goalball",
+    "20000940": "golf",
+    "20000942": "gymnastics",
+    "20000958": "handball (team)",
+    "20000959": "hornuss",
+    "20000960": "horse racing",
+    "20000964": "hurling",
+    "20000965": "ice hockey",
+    "20000967": "inline skating",
+    "20000978": "kabaddi",
+    "20000979": "kayaking",
+    "20001306": "kiting",
+    "20000986": "lacrosse",
+    "20000987": "luge",
+    "20000988": "marathon",
+    "20001157": "martial arts",
+    "20000989": "modern pentathlon",
+    "20000991": "motor car racing",
+    "20000990": "motorboat racing",
+    "20000998": "motorcycling",
+    "20000884": "mountain climbing",
+    "20001010": "netball",
+    "20001011": "orienteering",
+    "20001305": "padel",
+    "20001013": "parachuting",
+    "20001014": "polo",
+    "20001015": "pool",
+    "20001016": "power boating",
+    "20001281": "racquetball",
+    "20001282": "ringette",
+    "20001333": "road cycling",
+    "20001017": "rodeo",
+    "20001155": "roller sports",
+    "20001026": "rowing",
+    "20001176": "rugby",
+    "20001038": "sailing",
+    "20001047": "sepak takraw",
+    "20001048": "shinty",
+    "20001151": "short track speed skating",
+    "20001055": "skeleton",
+    "20001056": "skiing",
+    "20001062": "sky diving",
+    "20001063": "snooker",
+    "20001064": "snowboarding",
+    "20001065": "soccer",
+    "20001066": "softball",
+    "20001067": "speed skating",
+    "20000887": "sport climbing",
+    "20001049": "sport shooting",
+    "20001068": "squash",
+    "20001307": "stand up paddleboarding (SUP)",
+    "20001069": "sumo wrestling",
+    "20001070": "surfing",
+    "20001071": "swimming",
+    "20001083": "table tennis",
+    "20001086": "ten pin bowling",
+    "20001085": "tennis",
+    "20001334": "track cycling",
+    "20001087": "triathlon",
+    "20001088": "tug-of-war",
+    "20000918": "underwater sports",
+    "20001089": "volleyball",
+    "20001091": "water polo",
+    "20001092": "water skiing",
+    "20001093": "weightlifting and powerlifting",
+    "20001097": "windsurfing",
+    "20001098": "wrestling",
     "20001103": "disciplinary action in sport",
     "20001104": "drug use in sport",
+    "20001105": "drug abuse in sport",
+    "20001106": "drug testing in sport",
+    "20001107": "medical drug use in sport",
     "20001301": "sport achievement",
+    "20001304": "sports honour",
+    "20001303": "sports medal and trophy",
+    "20001302": "sports record",
     "20001108": "sport event",
+    "20001177": "Olympic Games",
+    "20001178": "Paralympic Games",
+    "20001109": "continental championship",
+    "20001110": "continental cup",
+    "20001111": "continental games",
+    "20001343": "final game",
+    "20001112": "international championship",
+    "20001113": "international cup",
+    "20001114": "international games",
+    "20001115": "national championship",
+    "20001116": "national cup",
+    "20001117": "national games",
+    "20001342": "playoff championship",
+    "20001118": "regional championship",
+    "20001119": "regional cup",
+    "20001120": "regional games",
+    "20001341": "regular competition",
+    "20001121": "world championship",
+    "20001122": "world cup",
+    "20001123": "world games",
     "20001124": "sport industry",
     "20001125": "sport organisation",
     "20001126": "sport venue",
@@ -4584,36 +5327,167 @@ ID_TO_LEVEL = {
     "00000000": 1,
     "01000000": 2,
     "20000002": 3,
+    "20000003": 4,
+    "20000004": 4,
+    "20000005": 4,
+    "20000007": 4,
+    "20000011": 4,
+    "20001181": 4,
+    "20000013": 4,
+    "20000018": 4,
+    "20001179": 4,
+    "20000029": 4,
+    "20000031": 4,
     "20000038": 3,
+    "20001135": 4,
+    "20000039": 4,
+    "20000040": 4,
+    "20000041": 4,
+    "20000042": 4,
+    "20000043": 4,
+    "20000044": 4,
     "20000045": 3,
+    "20001319": 4,
+    "20000046": 4,
+    "20000047": 4,
+    "20000048": 4,
+    "20000049": 4,
+    "20000050": 4,
+    "20001182": 4,
+    "20000051": 4,
     "16000000": 2,
     "20000053": 3,
+    "20000054": 4,
+    "20000055": 4,
     "20000056": 3,
+    "20000057": 4,
+    "20000058": 4,
+    "20000060": 4,
+    "20000062": 4,
     "20000065": 3,
+    "20000066": 4,
+    "20000067": 4,
+    "20000068": 4,
+    "20000069": 4,
     "20000070": 3,
     "20001361": 3,
     "20000071": 3,
     "20000073": 3,
+    "20000078": 4,
+    "20000074": 4,
+    "20000075": 4,
+    "20000076": 4,
+    "20000059": 4,
     "20000077": 3,
+    "20000079": 4,
     "20001377": 3,
+    "20000061": 4,
+    "20001378": 4,
+    "20000080": 4,
     "02000000": 2,
     "20000082": 3,
+    "20001314": 4,
+    "20000083": 4,
+    "20000084": 4,
+    "20000087": 4,
+    "20000093": 4,
+    "20000086": 4,
+    "20000095": 4,
+    "20000097": 4,
+    "20000072": 4,
+    "20000098": 4,
+    "20000099": 4,
+    "20001283": 4,
+    "20000100": 4,
+    "20000101": 4,
+    "20001196": 4,
+    "20000104": 4,
+    "20001313": 4,
+    "20000103": 4,
+    "20001320": 4,
+    "20001285": 4,
+    "20000105": 4,
     "20000106": 3,
+    "20000107": 4,
+    "20000116": 4,
+    "20000118": 4,
     "20000119": 3,
     "20000121": 3,
+    "20001197": 4,
+    "20000122": 4,
+    "20000125": 4,
+    "20000126": 4,
     "20000129": 3,
+    "20000130": 4,
+    "20000131": 4,
+    "20000133": 4,
+    "20001299": 4,
     "03000000": 2,
     "20000139": 3,
+    "20001321": 4,
+    "20000140": 4,
+    "20000141": 4,
+    "20000161": 4,
+    "20000143": 4,
     "20000148": 3,
+    "20000149": 4,
+    "20000150": 4,
+    "20000151": 4,
     "20000160": 3,
+    "20000162": 4,
     "20000167": 3,
     "20000168": 3,
     "04000000": 2,
     "20000349": 3,
+    "20001278": 4,
+    "20001172": 4,
+    "20001158": 4,
     "20000170": 3,
+    "20000171": 4,
+    "20000183": 4,
+    "20000199": 4,
+    "20001365": 4,
+    "20001366": 4,
+    "20000192": 4,
+    "20000188": 4,
     "20000344": 3,
+    "20000350": 4,
+    "20000355": 4,
+    "20000363": 4,
+    "20000346": 4,
+    "20000364": 4,
+    "20000372": 4,
+    "20000373": 4,
+    "20000379": 4,
+    "20000381": 4,
+    "20001171": 4,
     "20000385": 3,
+    "20000386": 4,
+    "20000390": 4,
+    "20000391": 4,
+    "20000392": 4,
     "20000209": 3,
+    "20000210": 4,
+    "20001371": 4,
+    "20000217": 4,
+    "20000213": 4,
+    "20000225": 4,
+    "20000235": 4,
+    "20000243": 4,
+    "20000256": 4,
+    "20000271": 4,
+    "20001370": 4,
+    "20000214": 4,
+    "20001354": 4,
+    "20000294": 4,
+    "20000304": 4,
+    "20000316": 4,
+    "20000224": 4,
+    "20000322": 4,
+    "20001289": 4,
+    "20000331": 4,
+    "20000337": 4,
+    "20001244": 4,
     "05000000": 2,
     "20000412": 3,
     "20001217": 3,
@@ -4623,6 +5497,17 @@ ID_TO_LEVEL = {
     "20000398": 3,
     "20000399": 3,
     "20000400": 3,
+    "20000403": 4,
+    "20000405": 4,
+    "20000409": 4,
+    "20000402": 4,
+    "20001215": 4,
+    "20000408": 4,
+    "20000401": 4,
+    "20001214": 4,
+    "20001212": 4,
+    "20001213": 4,
+    "20000404": 4,
     "20000410": 3,
     "20000415": 3,
     "20000416": 3,
@@ -4630,19 +5515,65 @@ ID_TO_LEVEL = {
     "20001216": 3,
     "06000000": 2,
     "20000418": 3,
+    "20000419": 4,
     "20000420": 3,
+    "20000421": 4,
+    "20000422": 4,
     "20000424": 3,
+    "20000425": 4,
+    "20000426": 4,
+    "20000427": 4,
+    "20000428": 4,
+    "20000429": 4,
     "20000430": 3,
+    "20000431": 4,
+    "20000432": 4,
+    "20000435": 4,
+    "20000436": 4,
+    "20000437": 4,
     "20000441": 3,
+    "20000500": 4,
+    "20000442": 4,
+    "20000443": 4,
+    "20000507": 4,
+    "20000444": 4,
     "20001374": 3,
     "07000000": 2,
     "20000446": 3,
+    "20000447": 4,
+    "20000448": 4,
+    "20001355": 4,
+    "20000454": 4,
+    "20000455": 4,
+    "20000456": 4,
+    "20000457": 4,
+    "20000458": 4,
+    "20001322": 4,
     "20000480": 3,
+    "20000481": 4,
+    "20000482": 4,
     "20000461": 3,
+    "20001229": 4,
+    "20000462": 4,
     "20000483": 3,
     "20000463": 3,
     "20000464": 3,
+    "20000465": 4,
+    "20001219": 4,
+    "20001221": 4,
+    "20000470": 4,
+    "20000469": 4,
+    "20000467": 4,
+    "20000475": 4,
+    "20000468": 4,
+    "20000476": 4,
+    "20001228": 4,
+    "20000478": 4,
+    "20000477": 4,
     "20000485": 3,
+    "20000486": 4,
+    "20000487": 4,
+    "20000492": 4,
     "20000493": 3,
     "20000484": 3,
     "20001358": 3,
@@ -4653,71 +5584,428 @@ ID_TO_LEVEL = {
     "20001238": 3,
     "20000505": 3,
     "20000501": 3,
+    "20001235": 4,
+    "20001234": 4,
+    "20001233": 4,
+    "20001236": 4,
     "20000504": 3,
+    "20000506": 4,
     "20000503": 3,
     "20000502": 3,
     "20000499": 3,
     "09000000": 2,
     "20000509": 3,
+    "20000510": 4,
+    "20000511": 4,
+    "20000339": 4,
+    "20000512": 4,
+    "20000513": 4,
+    "20000514": 4,
+    "20000517": 4,
+    "20001276": 4,
+    "20001206": 4,
+    "20001277": 4,
+    "20000518": 4,
     "20000521": 3,
+    "20000522": 4,
     "20000523": 3,
+    "20001275": 4,
     "20000524": 3,
+    "20000525": 4,
+    "20000529": 4,
     "20000531": 3,
+    "20000532": 4,
     "20000533": 3,
+    "20000534": 4,
+    "20000535": 4,
     "20000536": 3,
     "10000000": 2,
     "20000538": 3,
+    "20000539": 4,
+    "20000540": 4,
+    "20000549": 4,
+    "20000550": 4,
+    "20000551": 4,
+    "20000553": 4,
+    "20000560": 4,
+    "20000563": 4,
     "20000565": 3,
+    "20000570": 4,
+    "20000569": 4,
+    "20001143": 4,
+    "20000572": 4,
     "20001339": 3,
+    "20001239": 4,
+    "20001340": 4,
     "11000000": 2,
     "20000574": 3,
+    "20001263": 4,
+    "20000575": 4,
+    "20000576": 4,
+    "20000577": 4,
+    "20000578": 4,
+    "20000579": 4,
+    "20000580": 4,
+    "20000582": 4,
+    "20001266": 4,
+    "20000583": 4,
+    "20000584": 4,
+    "20000585": 4,
+    "20000586": 4,
     "20000587": 3,
+    "20000588": 4,
+    "20000120": 4,
+    "20000590": 4,
+    "20000591": 4,
+    "20000592": 4,
+    "20001300": 4,
+    "20001326": 4,
     "20000593": 3,
+    "20000594": 4,
+    "20000597": 4,
+    "20000598": 4,
+    "20000605": 4,
+    "20000606": 4,
+    "20000607": 4,
+    "20000609": 4,
+    "20001261": 4,
+    "20000610": 4,
+    "20000611": 4,
+    "20000615": 4,
+    "20000612": 4,
+    "20000613": 4,
+    "20000614": 4,
+    "20001260": 4,
+    "20001259": 4,
+    "20001262": 4,
+    "20000618": 4,
+    "20001173": 4,
     "20000621": 3,
+    "20001132": 4,
+    "20000345": 4,
+    "20001338": 4,
+    "20000423": 4,
+    "20000479": 4,
+    "20000626": 4,
+    "20001265": 4,
+    "20000634": 4,
+    "20000635": 4,
+    "20000636": 4,
+    "20000619": 4,
+    "20001147": 4,
+    "20000620": 4,
     "20000638": 3,
+    "20001316": 4,
+    "20000639": 4,
+    "20000642": 4,
+    "20000643": 4,
+    "20000644": 4,
+    "20000645": 4,
     "20000646": 3,
     "20000647": 3,
     "20000648": 3,
     "20000649": 3,
+    "20000650": 4,
+    "20000652": 4,
+    "20000651": 4,
+    "20000653": 4,
     "12000000": 2,
     "20000657": 3,
+    "20000658": 4,
+    "20000659": 4,
+    "20000673": 4,
+    "20000675": 4,
+    "20000676": 4,
+    "20000677": 4,
+    "20000678": 4,
+    "20000679": 4,
+    "20000682": 4,
+    "20000683": 4,
+    "20000684": 4,
+    "20000685": 4,
+    "20000686": 4,
+    "20000681": 4,
+    "20001349": 4,
+    "20000674": 4,
+    "20000680": 4,
     "20000687": 3,
     "20000702": 3,
     "20000688": 3,
     "20000689": 3,
     "20000697": 3,
+    "20000698": 4,
+    "20000699": 4,
+    "20000700": 4,
+    "20000701": 4,
     "20000690": 3,
+    "20001271": 4,
+    "20000691": 4,
+    "20000692": 4,
+    "20001350": 4,
+    "20001352": 4,
+    "20000693": 4,
+    "20000694": 4,
+    "20001272": 4,
+    "20000695": 4,
     "20000703": 3,
+    "20000704": 4,
     "20000696": 3,
+    "20001273": 4,
+    "20001345": 4,
+    "20001346": 4,
     "20000705": 3,
+    "20000706": 4,
+    "20000707": 4,
+    "20000708": 4,
     "13000000": 2,
     "20000710": 3,
+    "20000711": 4,
     "20000715": 3,
     "20000717": 3,
+    "20000718": 4,
+    "20000719": 4,
+    "20000725": 4,
+    "20000726": 4,
+    "20000727": 4,
+    "20000728": 4,
+    "20000729": 4,
+    "20000730": 4,
+    "20000731": 4,
     "20000741": 3,
     "20000735": 3,
+    "20000737": 4,
+    "20000738": 4,
+    "20000736": 4,
+    "20000740": 4,
     "20000755": 3,
     "20000742": 3,
+    "20000743": 4,
+    "20000744": 4,
+    "20000745": 4,
+    "20000746": 4,
+    "20000747": 4,
+    "20000748": 4,
+    "20000750": 4,
+    "20000751": 4,
+    "20000752": 4,
+    "20000753": 4,
+    "20000754": 4,
+    "20000749": 4,
     "20000756": 3,
+    "20000757": 4,
+    "20000759": 4,
+    "20000760": 4,
+    "20000761": 4,
+    "20000762": 4,
+    "20000763": 4,
+    "20000764": 4,
+    "20000716": 4,
+    "20000765": 4,
     "14000000": 2,
     "20000768": 3,
+    "20001360": 4,
+    "20000769": 4,
     "20000770": 3,
+    "20000774": 4,
     "20000775": 3,
+    "20000776": 4,
+    "20000777": 4,
+    "20000778": 4,
+    "20000779": 4,
     "20001373": 3,
     "20000772": 3,
     "20000780": 3,
+    "20000782": 4,
+    "20000781": 4,
+    "20000783": 4,
+    "20000784": 4,
+    "20000786": 4,
+    "20000787": 4,
+    "20001359": 4,
     "20000771": 3,
+    "20000773": 4,
     "20000788": 3,
+    "20000792": 4,
+    "20000789": 4,
+    "20000790": 4,
+    "20000791": 4,
+    "20000793": 4,
+    "20001288": 4,
+    "20000794": 4,
+    "20001328": 4,
+    "20000795": 4,
+    "20000796": 4,
+    "20000797": 4,
+    "20000798": 4,
+    "20001327": 4,
     "20000799": 3,
+    "20000800": 4,
+    "20000801": 4,
     "20000802": 3,
+    "20000803": 4,
+    "20000804": 4,
+    "20001284": 4,
+    "20000805": 4,
+    "20000806": 4,
+    "20001193": 4,
+    "20000807": 4,
     "20000808": 3,
+    "20000809": 4,
+    "20000810": 4,
+    "20000814": 4,
+    "20000815": 4,
+    "20000816": 4,
     "20000817": 3,
+    "20000818": 4,
+    "20001317": 4,
+    "20001232": 4,
+    "20000819": 4,
+    "20001290": 4,
+    "20000820": 4,
     "15000000": 2,
     "20000822": 3,
+    "20001329": 4,
+    "20000823": 4,
+    "20000846": 4,
+    "20000876": 4,
+    "20000939": 4,
+    "20000968": 4,
+    "20000824": 4,
+    "20001286": 4,
+    "20001175": 4,
+    "20000827": 4,
+    "20000847": 4,
+    "20000848": 4,
+    "20000849": 4,
+    "20000851": 4,
+    "20000852": 4,
+    "20000853": 4,
+    "20000854": 4,
+    "20001240": 4,
+    "20000855": 4,
+    "20000856": 4,
+    "20000875": 4,
+    "20001330": 4,
+    "20001331": 4,
+    "20000877": 4,
+    "20000883": 4,
+    "20001309": 4,
+    "20001154": 4,
+    "20000911": 4,
+    "20000888": 4,
+    "20000889": 4,
+    "20000890": 4,
+    "20000892": 4,
+    "20000912": 4,
+    "20000913": 4,
+    "20000919": 4,
+    "20000922": 4,
+    "20001183": 4,
+    "20000923": 4,
+    "20000929": 4,
+    "20000933": 4,
+    "20000934": 4,
+    "20000936": 4,
+    "20000937": 4,
+    "20000938": 4,
+    "20001335": 4,
+    "20001336": 4,
+    "20000940": 4,
+    "20000942": 4,
+    "20000958": 4,
+    "20000959": 4,
+    "20000960": 4,
+    "20000964": 4,
+    "20000965": 4,
+    "20000967": 4,
+    "20000978": 4,
+    "20000979": 4,
+    "20001306": 4,
+    "20000986": 4,
+    "20000987": 4,
+    "20000988": 4,
+    "20001157": 4,
+    "20000989": 4,
+    "20000991": 4,
+    "20000990": 4,
+    "20000998": 4,
+    "20000884": 4,
+    "20001010": 4,
+    "20001011": 4,
+    "20001305": 4,
+    "20001013": 4,
+    "20001014": 4,
+    "20001015": 4,
+    "20001016": 4,
+    "20001281": 4,
+    "20001282": 4,
+    "20001333": 4,
+    "20001017": 4,
+    "20001155": 4,
+    "20001026": 4,
+    "20001176": 4,
+    "20001038": 4,
+    "20001047": 4,
+    "20001048": 4,
+    "20001151": 4,
+    "20001055": 4,
+    "20001056": 4,
+    "20001062": 4,
+    "20001063": 4,
+    "20001064": 4,
+    "20001065": 4,
+    "20001066": 4,
+    "20001067": 4,
+    "20000887": 4,
+    "20001049": 4,
+    "20001068": 4,
+    "20001307": 4,
+    "20001069": 4,
+    "20001070": 4,
+    "20001071": 4,
+    "20001083": 4,
+    "20001086": 4,
+    "20001085": 4,
+    "20001334": 4,
+    "20001087": 4,
+    "20001088": 4,
+    "20000918": 4,
+    "20001089": 4,
+    "20001091": 4,
+    "20001092": 4,
+    "20001093": 4,
+    "20001097": 4,
+    "20001098": 4,
     "20001103": 3,
     "20001104": 3,
+    "20001105": 4,
+    "20001106": 4,
+    "20001107": 4,
     "20001301": 3,
+    "20001304": 4,
+    "20001303": 4,
+    "20001302": 4,
     "20001108": 3,
+    "20001177": 4,
+    "20001178": 4,
+    "20001109": 4,
+    "20001110": 4,
+    "20001111": 4,
+    "20001343": 4,
+    "20001112": 4,
+    "20001113": 4,
+    "20001114": 4,
+    "20001115": 4,
+    "20001116": 4,
+    "20001117": 4,
+    "20001342": 4,
+    "20001118": 4,
+    "20001119": 4,
+    "20001120": 4,
+    "20001341": 4,
+    "20001121": 4,
+    "20001122": 4,
+    "20001123": 4,
     "20001124": 3,
     "20001125": 3,
     "20001126": 3,
