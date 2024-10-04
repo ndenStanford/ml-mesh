@@ -1,73 +1,90 @@
 """Upload compiled model."""
 
 # Standard Library
+import os
 from datetime import datetime as dt
+from typing import Dict
 
 # Internal libraries
-from onclusiveml.core.logging import (
-    OnclusiveLogMessageFormat,
-    get_default_logger,
-)
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.base.pydantic import cast
+from onclusiveml.core.logging import OnclusiveLogSettings, get_default_logger
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompiledNERTrackedModelCard,
-    CompiledTrackedModelSpecs,
-    IOSettings,
-    UncompiledTrackedModelSpecs,
+    CompiledTrackedModelSettings,
+    TrackedModelSettings,
+    get_settings,
 )
 
 
-def upload_compiled_model() -> None:
+def upload(settings: OnclusiveBaseSettings) -> None:
     """Upload compiled model."""
-    io_settings = IOSettings()
+    # cast settings
+    tracked_model_settings = cast(settings, TrackedModelSettings)
+    logging_settings = cast(settings, OnclusiveLogSettings)
+    compiled_tracked_model_settings = cast(settings, CompiledTrackedModelSettings)
+
     logger = get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED,
-        level=io_settings.log_level,
+        fmt_level=logging_settings.fmt_level,
+        level=logging_settings.level,
+        json_format=logging_settings.json_format,
     )
     # --- upload compiled model
-    compiled_model_specs = CompiledTrackedModelSpecs()
-    compiled_model_version = TrackedModelVersion(**compiled_model_specs.model_dump())
+    # model directories
+    base_directory: str = "./outputs"
+    source_directory: str = os.path.join(base_directory, "compile")
+    source_model_directory: str = os.path.join(source_directory, "model_artifacts")
 
-    # upload model card - holds all settings
+    compiled_model_version = TrackedModelVersion(
+        project=tracked_model_settings.project,
+        api_token=tracked_model_settings.api_token.get_secret_value(),
+        model=compiled_tracked_model_settings.target_model,
+    )
+    # model cards
+    # pretrained model card
+    base_model_version = TrackedModelVersion(**tracked_model_settings.model_dump())
+    # get base model version assets to local disk
+    base_model_card: Dict = base_model_version.download_config_from_model_version(
+        neptune_attribute_path="model/model_card"
+    )
+    # compiled model card
     compiled_model_card = CompiledNERTrackedModelCard()
     compiled_model_version.upload_config_to_model_version(
         config=compiled_model_card.model_dump(),
         neptune_attribute_path="model/model_card",
     )
-    logger.debug(f"compiled_model_card : {compiled_model_card}")
     # upload compiled ner model artifact
     compiled_model_version.upload_directory_to_model_version(
-        local_directory_path=io_settings.compile.model_directory,
+        local_directory_path=source_model_directory,
         neptune_attribute_path=compiled_model_card.model_artifact_attribute_path,
     )
     # upload test files:
-    # - inputs same as uncompiled model
-    # - inference_params same as uncompiled model
+    # - inputs same as trained model
+    # - inference_params same as trained model
     # - predictions from compiled model, created in test workflow component
-    compiled_model_version.upload_file_to_model_version(
-        neptune_attribute_path=compiled_model_card.model_test_files.inputs,
-        local_file_path=io_settings.download.test_files["inputs"],
-    )
+    # download model test files
+    test_file_references = base_model_card["model_test_files"].keys()
+    # 'inputs', 'inference_params' & 'predictions'
+    for test_file_reference in test_file_references:
+        compiled_model_version.upload_file_to_model_version(
+            neptune_attribute_path=base_model_card["model_test_files"][
+                test_file_reference
+            ],
+            local_file_path=os.path.join(
+                base_directory, "download", test_file_reference
+            ),
+        )
 
-    compiled_model_version.upload_file_to_model_version(
-        neptune_attribute_path=compiled_model_card.model_test_files.inference_params,
-        local_file_path=io_settings.download.test_files["inference_params"],
-    )
-
-    compiled_model_version.upload_file_to_model_version(
-        neptune_attribute_path=compiled_model_card.model_test_files.predictions,
-        local_file_path=io_settings.test.test_files["predictions"],
-    )
-    # --- update uncompiled model
-    # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(
-        **base_model_specs.model_dump(exclude={"mode"})
-    )
-
+        logger.info(
+            "Successfully uploaded test file"
+            f'"{os.path.join(source_directory, test_file_reference)}" into'
+            f'{base_model_card["model_test_files"][test_file_reference]}'
+        )
+    # --- update trained model
     if base_model_version.exists("model/compiled_model_versions"):
         compiled_model_versions = base_model_version.download_config_from_model_version(
             neptune_attribute_path="model/compiled_model_versions"
@@ -77,8 +94,8 @@ def upload_compiled_model() -> None:
 
     compiled_model_versions.append(
         {
-            "project": compiled_model_specs.project,
-            "model": compiled_model_specs.model,
+            "project": tracked_model_settings.project,
+            "model": tracked_model_settings.model,
             "with_id": compiled_model_version._sys_id,
             "time_stamp": dt.now().strftime("%Y-%m-%d %H:%M:%s"),
         }
@@ -91,10 +108,10 @@ def upload_compiled_model() -> None:
 
     logger.info(
         f"Succesfully added new compiled model {compiled_model_version._sys_id} to the "
-        f"list of compiled model versions of the uncompiled model "
-        f"{base_model_specs.with_id}"
+        f"list of compiled model versions of the trained model "
+        f"{tracked_model_settings.with_id}"
     )
 
 
 if __name__ == "__main__":
-    upload_compiled_model()
+    upload(get_settings())
