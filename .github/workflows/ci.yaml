@@ -62,7 +62,7 @@ jobs       :
         id: get-environment-name
         with:
           cond: ${{ github.event_name == 'pull_request' }}
-          if_true: dev
+          if_true: prod
           if_false: prod
 
   # ===============================================
@@ -1430,7 +1430,7 @@ jobs       :
       python-version: ${{ needs.run-get-core-dependencies-versions.outputs.python-version }}
       poetry-version: ${{ needs.run-get-core-dependencies-versions.outputs.poetry-version }}
       release: ${{ needs.get-target-branch-name.outputs.name == 'main' || github.actor == 'dependabot[bot]' }} # if PR to main or dependabot PR
-      pull-request: ${{ !github.event_name == 'pull_request' }}
+      pull-request: ${{ github.event_name == 'pull_request' }}
     secrets:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
