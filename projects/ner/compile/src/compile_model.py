@@ -45,10 +45,10 @@ def compile_model() -> None:
         task=base_model_card["ner_model_params_base"]["huggingface_pipeline_task"],
         model=io_settings.download.model_directory_base,
     )
-    # ner_model_pipeline_kj = pipeline(
-    #     task=base_model_card["ner_model_params_kj"]["huggingface_pipeline_task_kj"],
-    #     model=io_settings.download.model_directory_kj,
-    # )
+    ner_model_pipeline_korean_and_japanese = pipeline(
+        task=base_model_card["ner_model_params_kj"]["huggingface_pipeline_task_kj"],
+        model=io_settings.download.model_directory_kj,
+    )
     # compile base model pipeline for NER
     ner_pipeline_compilation_settings = NERPipelineCompilationSettings()
 
@@ -62,13 +62,14 @@ def compile_model() -> None:
         **ner_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
     )
 
-    # compiled_ner_pipeline_kj = CompiledPipeline.from_pipeline(
-    #     pipeline=ner_model_pipeline_kj,
-    #     **ner_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
-    # )
+    compiled_ner_pipeline_korean_and_japanese = CompiledPipeline.from_pipeline(
+        pipeline=ner_model_pipeline_korean_and_japanese,
+        **ner_pipeline_compilation_settings.model_dump(exclude={"pipeline_name"}),
+    )
 
     compiled_ner = CompiledNER(
-        compiled_ner_pipeline=compiled_ner_pipeline_base,
+        compiled_ner_pipeline_base=compiled_ner_pipeline_base,
+        compiled_ner_pipeline_korean_and_japanese=compiled_ner_pipeline_korean_and_japanese,
     )
     # export compiled ner model for next workflow component: test
     compiled_ner.save_pretrained(io_settings.compile.model_directory)
