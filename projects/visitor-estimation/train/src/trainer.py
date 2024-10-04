@@ -369,7 +369,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
 
         # Initialize pipeline and train the model
         data_pipe = self.make_pipeline(
-            nfm=self.train_data,
             index_features=self.index_features,
             encode_features=self.encode_features,
             interact=self.interact,
