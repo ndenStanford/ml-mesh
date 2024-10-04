@@ -77,11 +77,11 @@ def bind(**kwargs: Dict[str, Any]) -> Callable:
             """Get request."""
             attributes = {
                 field: self.request_kwargs[field]
-                for field in self.request_attributes_schema.__fields__.keys()
+                for field in self.request_attributes_schema.model_fields.keys()
             }
             parameters = {
                 field: self.request_kwargs[field]
-                for field in self.request_parameters_schema.__fields__.keys()
+                for field in self.request_parameters_schema.model_fields.keys()
             }
             # generate API models based on input schemas.
             Request, _ = self.schemas
