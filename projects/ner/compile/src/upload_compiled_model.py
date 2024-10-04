@@ -24,18 +24,20 @@ def upload_compiled_model() -> None:
     io_settings = IOSettings()
     logger = get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED.name,
+        fmt_level=OnclusiveLogMessageFormat.DETAILED,
         level=io_settings.log_level,
     )
     # --- upload compiled model
     compiled_model_specs = CompiledTrackedModelSpecs()
-    compiled_model_version = TrackedModelVersion(**compiled_model_specs.dict())
+    compiled_model_version = TrackedModelVersion(**compiled_model_specs.model_dump())
 
     # upload model card - holds all settings
     compiled_model_card = CompiledNERTrackedModelCard()
     compiled_model_version.upload_config_to_model_version(
-        config=compiled_model_card.dict(), neptune_attribute_path="model/model_card"
+        config=compiled_model_card.model_dump(),
+        neptune_attribute_path="model/model_card",
     )
+    logger.debug(f"compiled_model_card : {compiled_model_card}")
     # upload compiled ner model artifact
     compiled_model_version.upload_directory_to_model_version(
         local_directory_path=io_settings.compile.model_directory,
@@ -62,7 +64,9 @@ def upload_compiled_model() -> None:
     # --- update uncompiled model
     # get read-only base model version
     base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.dict(exclude={"mode"}))
+    base_model_version = TrackedModelVersion(
+        **base_model_specs.model_dump(exclude={"mode"})
+    )
 
     if base_model_version.exists("model/compiled_model_versions"):
         compiled_model_versions = base_model_version.download_config_from_model_version(
