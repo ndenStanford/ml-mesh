@@ -1457,6 +1457,7 @@ jobs       :
       - run-transcript-segmentation-project
       - run-topic-summarization-project
       - run-apps
+      - run-train-pipelines
     steps:
       - name: Check Job Statuses
         uses: re-actors/alls-green@release/v1
