@@ -1284,7 +1284,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
-            push-image: ${{ github.event_name == 'pull_request' }}
+            push-image: ${{ github.event_name != 'pull_request' }}
             base-image: python-base
 
           # train
@@ -1295,7 +1295,7 @@ jobs       :
             load: false
             upload-test-results: false
             runner-kind: ubuntu-22.04
-            push-image: ${{ github.event_name != 'pull_request' }}
+            push-image: ${{ github.event_name == 'pull_request' }}
             base-image: python-base
 
     with:
