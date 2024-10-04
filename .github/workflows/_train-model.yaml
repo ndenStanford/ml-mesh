@@ -55,6 +55,10 @@ on  :
         default: true
         type: boolean
         description: Indicates whether to wait for the job to complete before continuing.
+      parameters:
+        required: false
+        type: string
+        description: Parameters associated with the training.
     secrets:
       AWS_ACCOUNT_ID:
         required: true
@@ -143,5 +147,6 @@ jobs:
             --run-configuration-dotenv ./projects/${{ inputs.project }}/train/config/prod.env \
             --neptune-api-token ${{ secrets.NEPTUNE_API_TOKEN }} \
             --save_artifact ${{ !inputs.pull-request }} \
+            --parameters ${{ inputs.parameters }} \
             --wait ${{ inputs.wait }} \
             python -m src.train_model
