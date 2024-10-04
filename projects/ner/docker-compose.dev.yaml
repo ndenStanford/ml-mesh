@@ -344,6 +344,13 @@ services:
   compile-debug:
     devices:
       - /dev/neuron0:/dev/neuron0
+    volumes:
+      - type: bind
+        source: compile/src
+        target: /projects/ner/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/compile/outputs
     build:
       context: ../../
       dockerfile: projects/ner/compile/Dockerfile
@@ -358,9 +365,7 @@ services:
     command:
       - /bin/sh
       - -c
-      - |
-        python -m src.download_uncompiled_model
-        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.compile_model
+      - python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m src.upload_compiled_model
     ports:
       - 5678:5678
     profiles: [debug]
@@ -423,8 +428,11 @@ services:
       - /dev/neuron0:/dev/neuron0
     volumes:
       - type: bind
-        source: compile
-        target: /projects/ner/compile
+        source: compile/src
+        target: /projects/ner/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, pytest, src/test_compiled_model, -ra, -vvv, --full-trace, --tb=long, --capture=no, -s]
     profiles: [pipeline]
@@ -437,8 +445,11 @@ services:
   compile-upload-model:
     volumes:
       - type: bind
-        source: compile
-        target: /projects/ner/compile
+        source: compile/src
+        target: /projects/ner/compile/src
+      - type: bind
+        source: ${HOME}/data
+        target: /projects/ner/compile/outputs
     image: ${AWS_ACCOUNT_ID:-690763002009}.dkr.ecr.us-east-1.amazonaws.com/ner-compile:${IMAGE_TAG}
     command: [python, -m, src.upload_compiled_model]
     profiles: [pipeline]
@@ -446,6 +457,7 @@ services:
       NEPTUNE_API_TOKEN: ${NEPTUNE_API_TOKEN}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    env_file: compile/config/dev.env
     hostname: onclusive-ml
     networks: [onclusive-net]
 
