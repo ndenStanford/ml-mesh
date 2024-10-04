@@ -1,6 +1,7 @@
 """Compile model."""
 
 # Standard Library
+import os
 from typing import Dict
 
 # ML libs
@@ -8,32 +9,42 @@ from transformers import pipeline
 
 # Internal libraries
 from onclusiveml.compile import CompiledPipeline
-from onclusiveml.core.logging import (
-    OnclusiveLogMessageFormat,
-    get_default_logger,
-)
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.base.pydantic import cast
+from onclusiveml.core.logging import OnclusiveLogSettings, get_default_logger
 from onclusiveml.models.ner import CompiledNER
 from onclusiveml.tracking import TrackedModelVersion
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
-    IOSettings,
     NERPipelineCompilationSettings,
-    UncompiledTrackedModelSpecs,
+    TrackedModelSettings,
+    get_settings,
 )
 
 
-def compile_model() -> None:
+def compile(settings: OnclusiveBaseSettings) -> None:
     """Compile model."""
-    io_settings = IOSettings()
+    # cast settings
+    logging_settings = cast(settings, OnclusiveLogSettings)
+    tracked_model_settings = cast(settings, TrackedModelSettings)
+    ner_pipeline_compilation_settings = cast(settings, NERPipelineCompilationSettings)
+
     logger = get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED,
-        level=io_settings.log_level,
+        fmt_level=logging_settings.fmt_level,
+        level=logging_settings.level,
+        json_format=logging_settings.json_format,
     )
-    # get read-only base model version
-    base_model_specs = UncompiledTrackedModelSpecs()
-    base_model_version = TrackedModelVersion(**base_model_specs.model_dump())
+    # model directories
+    source_model_directory: str = os.path.join(
+        "./outputs", "download", "model_artifacts"
+    )
+    target_model_directory: str = os.path.join(
+        "./outputs", "compile", "model_artifacts"
+    )
+
+    base_model_version = TrackedModelVersion(**tracked_model_settings.model_dump())
     # get base model card
     base_model_card: Dict = base_model_version.download_config_from_model_version(
         "model/model_card"
@@ -43,14 +54,12 @@ def compile_model() -> None:
     # re-load base model pipeline
     ner_model_pipeline_base = pipeline(
         task=base_model_card["ner_model_params_base"]["huggingface_pipeline_task"],
-        model=io_settings.download.model_directory_base,
+        model=os.path.join(source_model_directory, "base_ner"),
     )
     ner_model_pipeline_korean_and_japanese = pipeline(
         task=base_model_card["ner_model_params_kj"]["huggingface_pipeline_task_kj"],
-        model=io_settings.download.model_directory_kj,
+        model=os.path.join(source_model_directory, "korean_japanese_ner"),
     )
-    # compile base model pipeline for NER
-    ner_pipeline_compilation_settings = NERPipelineCompilationSettings()
 
     logger.debug(
         f"Using the following ner pipeline compilation settings: "
@@ -72,12 +81,10 @@ def compile_model() -> None:
         compiled_ner_pipeline_korean_and_japanese=compiled_ner_pipeline_korean_and_japanese,
     )
     # export compiled ner model for next workflow component: test
-    compiled_ner.save_pretrained(io_settings.compile.model_directory)
+    compiled_ner.save_pretrained(target_model_directory)
 
-    logger.info(
-        f"Successfully exported compiled ner model to {io_settings.compile.model_directory}"
-    )
+    logger.info(f"Successfully exported compiled ner model to {target_model_directory}")
 
 
 if __name__ == "__main__":
-    compile_model()
+    compile(get_settings())
