@@ -62,8 +62,8 @@ def deepeval_settings():
 def metric(deepeval_settings):
     """Deepeval metric."""
     metric = SummarizationMetric(
-        threshold=deepeval_settings.threshold,
-        model=deepeval_settings.model,
+        threshold=deepeval_settings["threshold"],
+        model=deepeval_settings["model"],
         verbose_mode=True,
     )
     return metric

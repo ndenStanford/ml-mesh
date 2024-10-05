@@ -254,7 +254,7 @@ def test_prompt_evaluation(
     def enrich_row(row):
         content = row["content"]
         desired_length = len(content) // int(
-            deepeval_settings.summarization_compression_ratio
+            deepeval_settings["summarization_compression_ratio"]
         )
         payload = {
             "data": {
@@ -282,4 +282,4 @@ def test_prompt_evaluation(
 
     result = dataset.evaluate([metric])
     percent_success = sum([r.success for r in result]) / len(result)
-    assert percent_success > float(deepeval_settings.percent_success)
+    assert percent_success > float(deepeval_settings["percent_success"])
