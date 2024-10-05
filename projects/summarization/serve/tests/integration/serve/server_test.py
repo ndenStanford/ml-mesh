@@ -247,13 +247,15 @@ def test_no_input_language(test_client, payload):
 
 
 def test_prompt_evaluation(
-    settings, test_client, test_df, test_df_path_enriched, metric
+    deepeval_settings, test_client, test_df, test_df_path_enriched, metric
 ):
     """Test the prompt performance using LLM."""
 
     def enrich_row(row):
         content = row["content"]
-        desired_length = len(content) // int(settings.SUMMARIZATION_COMPRESSION_RATIO)
+        desired_length = len(content) // int(
+            deepeval_settings.summarization_compression_ratio
+        )
         payload = {
             "data": {
                 "namespace": "summarization",
@@ -280,4 +282,4 @@ def test_prompt_evaluation(
 
     result = dataset.evaluate([metric])
     percent_success = sum([r.success for r in result]) / len(result)
-    assert percent_success > float(settings.PERCENT_SUCCESS)
+    assert percent_success > float(deepeval_settings.percent_success)

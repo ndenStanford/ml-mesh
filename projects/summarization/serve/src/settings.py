@@ -75,10 +75,10 @@ class ApplicationSettings(OnclusiveBaseSettings):
 class RedshiftSettings(OnclusiveBaseSettings):
     """Redshift settings to retrieve data for test."""
 
-    CLUSTER_ID: str
-    DATABASE: str
-    DB_USER: str
-    SQL: str
+    CLUSTER_ID: Optional[str] = None
+    DATABASE: Optional[str] = None
+    DB_USER: Optional[str] = None
+    SQL: Optional[str] = None
     REGION_NAME: Optional[str] = "us-east-2"
 
     class Config:
@@ -87,25 +87,10 @@ class RedshiftSettings(OnclusiveBaseSettings):
         env_file_encoding = "utf-8"
 
 
-class DeepEvalSettings(OnclusiveBaseSettings):
-    """Deepeval settings for integration test."""
-
-    PERCENT_SUCCESS: float
-    THRESHOLD: float
-    MODEL: Optional[str] = "gpt-4"
-    SUMMARIZATION_COMPRESSION_RATIO: Optional[str] = 4
-
-    class Config:
-        env_prefix = "deepeval_"
-        env_file = "config/dev.env"
-        env_file_encoding = "utf-8"
-
-
 class GlobalSettings(
     ServerModelSettings,
     ApplicationSettings,
     RedshiftSettings,
-    DeepEvalSettings,
 ):
     """Global server settings."""
 
