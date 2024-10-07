@@ -129,13 +129,13 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: us-east-2
 
       - name: Run project train component on sagemaker
         run: |
           python bin/sagemaker-run \
             --aws-account-id ${{ secrets.AWS_ACCOUNT_ID }} \
-            --aws-region ${{ secrets.AWS_DEFAULT_REGION }} \
+            --aws-region us-east-2 \
             --aws-environment ${{ inputs.environment }} \
             --instance-type ${{ inputs.sagemaker-runner-type}} \
             --instance-count ${{ inputs.sagemaker-runner-count }} \
