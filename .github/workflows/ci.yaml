@@ -1407,7 +1407,7 @@ jobs       :
 
     strategy:
       fail-fast: ${{ needs.get-target-branch-name.outputs.name == 'develop' }}
-      max-parallel: 10
+      max-parallel: 5
       matrix:
         models:
           - project: visitor-estimation
