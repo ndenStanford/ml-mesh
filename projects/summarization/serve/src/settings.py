@@ -3,7 +3,7 @@
 # Standard Library
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, Union
 
 # Internal libraries
 from onclusiveml.core.base import OnclusiveBaseSettings
@@ -75,11 +75,11 @@ class ApplicationSettings(OnclusiveBaseSettings):
 class RedshiftSettings(OnclusiveBaseSettings):
     """Redshift settings to retrieve data for test."""
 
-    CLUSTER_ID: Optional[str] = None
-    DATABASE: Optional[str] = None
-    DB_USER: Optional[str] = None
-    SQL: Optional[str] = None
-    REGION_NAME: Optional[str] = "us-east-2"
+    CLUSTER_ID: str = "redshift-dev"
+    DATABASE: str = "redshift"
+    DB_USER: str = "admin"
+    SQL: str = """SELECT * FROM "redshift"."dev"."abstractive_summarization" LIMIT 10"""
+    REGION_NAME: str = "us-east-2"
 
     class Config:
         env_prefix = "redshift_"
