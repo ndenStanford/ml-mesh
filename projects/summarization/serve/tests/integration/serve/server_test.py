@@ -2,6 +2,7 @@
 
 # 3rd party libraries
 import pytest
+from deepeval.dataset import EvaluationDataset
 from fastapi import status
 
 
@@ -59,7 +60,6 @@ unsupported_language_content = """
 def test_integration_summarization_model(test_client, payload):
     """Integration test for SummarizationServedModel."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
@@ -207,11 +207,8 @@ def test_unsupported_language(test_client, payload):
 def test_invalid_language(test_client, payload):
     """Test for invalid language xxx."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-    assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-    assert (
-        response.json()["detail"]
-        == "unsupported operand type(s) for 'in': 'NoneType' and 'EnumMeta'"
-    )
+    assert len(response.json()["data"]["attributes"]["summary"]) > 0
+    assert response.json()["data"]["attributes"]["title"] is None
 
 
 @pytest.mark.parametrize(
@@ -244,7 +241,43 @@ def test_invalid_language(test_client, payload):
 def test_no_input_language(test_client, payload):
     """Test when the input_language parameter is not provided."""
     response = test_client.post("/summarization/v2/predict", json=payload)
-
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["attributes"]["summary"]) > 0
     assert response.json()["data"]["attributes"]["title"] is None
+
+
+def test_prompt_evaluation(
+    settings, test_client, test_df, test_df_path_enriched, metric
+):
+    """Test the prompt performance using LLM."""
+
+    def enrich_row(row):
+        content = row["content"]
+        desired_length = len(content) // int(settings.SUMMARIZATION_COMPRESSION_RATIO)
+        payload = {
+            "data": {
+                "namespace": "summarization",
+                "attributes": {"content": content},
+                "parameters": {
+                    "output_language": "en",
+                    "summary_type": "section",
+                    "desired_length": desired_length,
+                },
+            }
+        }
+        response = test_client.post("/summarization/v2/predict", json=payload)
+        return response.json()["data"]["attributes"]["summary"]
+
+    test_df["summary"] = test_df.apply(enrich_row, axis=1)
+    test_df.to_csv(test_df_path_enriched)
+
+    dataset = EvaluationDataset()
+    dataset.add_test_cases_from_csv_file(
+        file_path=test_df_path_enriched,
+        input_col_name="content",
+        actual_output_col_name="summary",
+    )
+
+    result = dataset.evaluate([metric])
+    percent_success = sum([r.success for r in result]) / len(result)
+    assert percent_success > float(settings.PERCENT_SUCCESS)

@@ -6,6 +6,7 @@ import torch
 # Internal libraries
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
     CANDIDATE_DICT_SECOND,
     CANDIDATE_DICT_THIRD,
 )
@@ -33,6 +34,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         selected_text,
         first_level_root=None,
         second_level_root=None,
+        third_level_root=None,
         max_length=128,
         is_on_demand=False,  # New parameter to handle on-demand dataset
     ):
@@ -41,6 +43,7 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
         self.selected_text = selected_text
         self.first_level_root = first_level_root
         self.second_level_root = second_level_root
+        self.third_level_root = third_level_root
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.is_on_demand = is_on_demand  # Initialize is_on_demand
@@ -82,6 +85,11 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                     CANDIDATE_DICT_THIRD[self.second_level_root],
                     self.df.iloc[idx]["topic_3_llm"],
                 )
+            elif self.level == 4:
+                return get_index_from_dict(
+                    CANDIDATE_DICT_FOURTH[self.third_level_root],
+                    self.df.iloc[idx]["topic_4_llm"],
+                )
             else:
                 raise ValueError("undefined level")
         else:  # If not on-demand, use the original labels
@@ -98,6 +106,11 @@ class IPTCDataset(torch.utils.data.Dataset):  # type: ignore[no-untyped-def]
                 return get_index_from_dict(
                     CANDIDATE_DICT_THIRD[self.second_level_root],
                     self.df.iloc[idx]["topic_3"],
+                )
+            elif self.level == 4:
+                return get_index_from_dict(
+                    CANDIDATE_DICT_FOURTH[self.third_level_root],
+                    self.df.iloc[idx]["topic_4"],
                 )
             else:
                 raise ValueError("undefined level")

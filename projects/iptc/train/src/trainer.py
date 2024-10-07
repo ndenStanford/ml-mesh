@@ -20,13 +20,17 @@ from sklearn.model_selection import train_test_split
 # Internal libraries
 from onclusiveml.feature_store import FeatureStoreParams
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
     CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
     ID_TO_LEVEL,
     ID_TO_TOPIC,
 )
 from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
     NAME_MAPPING_DICT_FIRST,
     NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
 )
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
@@ -72,11 +76,13 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         reversed_name_mapping_second = {
             v: k for k, v in NAME_MAPPING_DICT_SECOND.items()
         }
-
+        reversed_name_mapping_third = {v: k for k, v in NAME_MAPPING_DICT_THIRD.items()}
         if self.iptc_label in reversed_name_mapping_first.keys():
             filtered_value = reversed_name_mapping_first[self.iptc_label]
         elif self.iptc_label in reversed_name_mapping_second.keys():
             filtered_value = reversed_name_mapping_second[self.iptc_label]
+        elif self.iptc_label in reversed_name_mapping_third.keys():
+            filtered_value = reversed_name_mapping_third[self.iptc_label]
         else:
             filtered_value = self.iptc_label
         # Access the is_on_demand flag from data_fetch_params
@@ -120,6 +126,20 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                     "topic_2",
                 ],
             },
+            4: {
+                "entity_name": "iptc_fourth_level",
+                "feature_view_name": "iptc_third_level_feature_view",
+                "redshift_table": "iptc_third_level",
+                "filter_columns": ["topic_3"],
+                "filter_values": [filtered_value],
+                "comparison_operators": ["equal"],
+                "non_nullable_columns": [
+                    model_card.model_params.selected_text,
+                    "topic_1",
+                    "topic_2",
+                    "topic_3",
+                ],
+            },
         }
         for key, value in data_fetch_configurations[self.level].items():
             setattr(self.data_fetch_params, key, value)
@@ -130,16 +150,58 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             data_fetch_params=self.data_fetch_params,
         )
 
+    def get_candidate_list(self, level: int) -> list:
+        """Generate a list of candidate names based on the input level.
+
+        Args:
+            level (int): The level of categorization (1, 2, 3, or 4).
+
+        Returns:
+            list: A list of candidate names.
+        """
+        if level == 1:
+            candidate_list = [
+                category["name"] for category in CANDIDATE_DICT_FIRST["root"].values()
+            ]
+        elif level == 2:
+            candidate_list = [
+                category["name"]
+                for category in CANDIDATE_DICT_SECOND[self.iptc_label].values()
+            ]
+        elif level == 3:
+            candidate_list = [
+                category["name"]
+                for category in CANDIDATE_DICT_THIRD[self.iptc_label].values()
+            ]
+        elif level == 4:
+            candidate_list = [
+                category["name"]
+                for category in CANDIDATE_DICT_FOURTH[self.iptc_label].values()
+            ]
+
+        return candidate_list
+
     def initialize_model(self) -> None:
         """Initialize model and tokenizer."""
         if self.level == 1:
             self.first_level_root = None
             self.second_level_root = None
+            self.third_level_root = None
         elif self.level == 2:
             self.first_level_root = self.iptc_label
             self.second_level_root = None
+            self.third_level_root = None
         elif self.level == 3:
+            self.third_level_root = None
             self.second_level_root = self.iptc_label
+            self.first_level_root = find_category_for_subcategory(
+                CANDIDATE_DICT_SECOND, self.second_level_root
+            )
+        elif self.level == 4:
+            self.third_level_root = self.iptc_label
+            self.second_level_root = find_category_for_subcategory(
+                CANDIDATE_DICT_THIRD, self.third_level_root
+            )
             self.first_level_root = find_category_for_subcategory(
                 CANDIDATE_DICT_SECOND, self.second_level_root
             )
@@ -148,6 +210,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.level,
             self.first_level_root,
             self.second_level_root,
+            self.third_level_root,
         )
         self.model = AutoModelForSequenceClassification.from_pretrained(
             self.model_name, num_labels=self.num_labels
@@ -177,6 +240,29 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self.dataset_df: DataFrame = self.dataset_df.dropna(
             subset=self.data_fetch_params.non_nullable_columns
         )  # type: ignore
+        # Filter out rows with invalid labels not in the candidate list
+        self.logger.info("Filtering rows with invalid labels...")
+        valid_labels = self.get_candidate_list(
+            level=self.level
+        )  # Implement this method to return the candidate dictionary
+        initial_row_count = len(self.dataset_df)
+        # Apply the filter
+        self.dataset_df = self.dataset_df[
+            self.dataset_df[f"topic_{self.level}_llm"].isin(valid_labels)
+        ]
+        # Log the size after removing invalid labels
+        filtered_row_count = len(self.dataset_df)
+        removed_rows = initial_row_count - filtered_row_count
+        self.logger.info(
+            f"Removed {removed_rows} rows with invalid labels. Filtered dataset size: {self.dataset_df.shape}"
+        )
+
+        if filtered_row_count == 0:
+            self.logger.warning(
+                "No valid rows remaining after filtering. Please check the input data or candidate list."
+            )
+        # Display the first few rows of the filtered dataset
+        self.logger.info(f"Final preprocessed dataset:\n{self.dataset_df.head()}")
         # fix the topic discrepencies
         self.dataset_df = topic_conversion(self.dataset_df)
         # Log the size and class distribution after dropping nulls
@@ -209,6 +295,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
+            self.third_level_root,
             self.model_card.model_params.max_length,
             is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
@@ -219,6 +306,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
             self.model_card.model_params.selected_text,
             self.first_level_root,
             self.second_level_root,
+            self.third_level_root,
             self.model_card.model_params.max_length,
             is_on_demand=self.is_on_demand,  # Pass the on-demand flag
         )
@@ -276,6 +364,7 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
                 self.model_card.model_params.selected_text,
                 self.first_level_root,
                 self.second_level_root,
+                self.third_level_root,
                 self.model_card.model_params.max_length,
                 is_on_demand=self.is_on_demand,  # Pass the on-demand flag
             )
