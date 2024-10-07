@@ -306,7 +306,9 @@ jobs:
         run: |
           make projects.integration/${{ inputs.project }} COMPONENT=${{ inputs.component }} \
             AWS_ACCOUNT_ID="${{ secrets.AWS_ACCOUNT_ID }}" \
+            REGION_NAME="${{ secrets.AWS_DEFAULT_REGION }}" \
             IMAGE_TAG="${{ inputs.tag }}" \
+            BASE_IMAGE_TAG=${{ steps.get-base-image-tag.outputs.tag }} \
             TARGET_BUILD_STAGE="development" \
             PLATFORM="linux/amd64" \
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \

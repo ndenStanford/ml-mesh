@@ -3,15 +3,16 @@
 
 # Standard Library
 import asyncio
-
-# from src.settings import PromptBackendAPISettings
-from typing import Dict
+import json
+import os
 
 # 3rd party libraries
 import aiohttp
 import pandas as pd
 
+
 # Internal libraries
+from onclusiveml.core.logging import get_default_logger
 from onclusiveml.feature_store.on_demand.iptc.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_SECOND,
@@ -25,17 +26,14 @@ from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
 )
 
 
+logger = get_default_logger(__name__)
+
+
 class PromptBackendAPISettings:  # OnclusiveBaseSettings is not serializable.
     # Placed in this file due to the circular import issue.
     """API configuration."""
 
-    PROMPT_API: str = "http://prompt-backend:4000"
-    INTERNAL_ML_ENDPOINT_API_KEY: str = "1234"
-    CLAUDE_IPTC_ALIAS: str = "ml-iptc-topic-prediction"
-
-    IPTC_RESPONSE_SCHEMA: Dict[str, str] = {
-        "iptc category": "Answer the IPTC category",
-    }
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", default=None)
     DEFAULT_MODEL: str = "gpt-4o-mini"
 
 
@@ -78,28 +76,90 @@ def get_col_name(level):
 
 
 async def generate_label_llm(row, session, level):
-    """Invoke LLM to generate IPTC asynchronously."""
+    """Invoke LLM to generate IPTC asynchronously using OpenAI's API."""
     candidate_list = get_candidate_list(row, level)
 
-    input_dict = {
-        "input": {
-            "title": row["title"],
-            "article": row["content"],
-            "candidates": candidate_list,
-        },
-        "output": settings.IPTC_RESPONSE_SCHEMA,
-    }
-    headers = {"x-api-key": settings.INTERNAL_ML_ENDPOINT_API_KEY}
+    # Construct the prompt with placeholders
+    prompt = (
+        "You are a topic analysis expert.\n"
+        "You will be provided an article, delimited by < and >, and its title, delimited by $ and $. And a list of candidate categories, delimited by * and *.\n"
+        "You need to classify the article into the most proper category, based on the article content and its title.\n\n"
+        "You must do the analysis following the steps below:\n"
+        "1. Read the article and its title to understand the main idea.\n"
+        "2. Go through all the candidate categories which include the category name and its description, and think about the difference between the candidate categories.\n"
+        "3. Classify the article into the most proper category.\n\n"
+        "Output Constraint:\n"
+        "Provide the output as a JSON object with the key 'iptc_category' and the value as the most proper category from the list of candidates.\n\n"
+        "<article>{article}</article>\n"
+        "<Title>{title}</Title>\n"
+        "<Candidates>{candidates}</Candidates>"
+    ).format(
+        article=row["content"],
+        title=row["title"],
+        candidates=candidate_list,
+    )
 
-    async with session.post(
-        "{}/api/v2/prompts/{}/generate/model/{}".format(
-            settings.PROMPT_API, settings.CLAUDE_IPTC_ALIAS, settings.DEFAULT_MODEL
-        ),
-        headers=headers,
-        json=input_dict,
-    ) as response:
-        output_content = await response.json()
-        return output_content["iptc category"]
+    # OpenAI API endpoint and headers
+    api_endpoint = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+    }
+
+    # Request payload
+    payload = {
+        "model": settings.DEFAULT_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7,
+        "response_format": {"type": "json_object"},
+    }
+
+    try:
+        # Call OpenAI's API using aiohttp session
+        async with session.post(
+            api_endpoint, headers=headers, json=payload
+        ) as response:
+            # Parse the response
+            if response.status == 200:
+                response_json = await response.json()
+                generated_content = (
+                    response_json.get("choices", [])[0]
+                    .get("message", {})
+                    .get("content", "")
+                    .strip()
+                )
+
+                try:
+                    # Try parsing the generated content as JSON
+                    output_content = json.loads(generated_content)
+                except json.JSONDecodeError:
+                    logger.info(
+                        f"Failed to parse the response as JSON: {generated_content}"
+                    )
+                    return None
+
+                # Check if 'iptc_category' is in the response
+                if "iptc_category" in output_content:
+                    return output_content["iptc_category"]
+                else:
+                    logger.info(
+                        f"'iptc_category' not found in the generated content: {output_content}"
+                    )
+                    return None
+            else:
+                logger.info(
+                    f"Failed to get a valid response from OpenAI API: {response.status}"
+                )
+                response_text = await response.text()
+                logger.info(f"Response text: {response_text}")
+                return None
+
+    except aiohttp.ClientError as e:
+        logger.info(f"Network error occurred while calling OpenAI API: {e}")
+        return None
+    except Exception as e:
+        logger.info(f"An unexpected error occurred: {e}")
+        return None
 
 
 async def enrich_dataframe(features_df: pd.DataFrame, level) -> pd.DataFrame:

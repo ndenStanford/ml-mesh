@@ -1,7 +1,6 @@
 """Service initialization."""
 
 # Standard Library
-import logging
 from typing import List, Type
 
 # 3rd party libraries
@@ -32,7 +31,7 @@ def init() -> None:
     logger.info("Creating tables...")
     _create_tables([LanguageModel, PromptTemplate, Project])
     _initialize_table(LanguageModel, DEFAULT_MODELS)
-
+    logger.info("Finish tables initialization")
     if SystemInfo.in_docker():
         _syncronize_prompts()
 
@@ -43,7 +42,7 @@ def _create_tables(tables: List[Type[Dyntastic]]) -> None:
         try:
             table.create_table()
         except ClientError:
-            logging.info("Table already exists, skipping creation ...")
+            logger.info("Table already exists, skipping creation ...")
 
 
 def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
@@ -56,6 +55,7 @@ def _initialize_table(table: Type[Dyntastic], values: List[dict]) -> None:
 
 def _syncronize_prompts():
     """Save prompts from registry in dynamoDB if non-exisant."""
+    logger.info("Start prompt syncronization...")
     files = github.ls("")
     for file in files:
         project_alias, *prompt_alias = file.split("/")
@@ -66,3 +66,4 @@ def _syncronize_prompts():
             PromptTemplate(
                 alias=prompt_alias[0], template=github.read(file), project=project_alias
             ).sync()
+    logger.info("Finish prompt syncronization")
