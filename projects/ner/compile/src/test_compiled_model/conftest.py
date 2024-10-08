@@ -2,33 +2,34 @@
 
 # Standard Library
 import json
+import os
 from typing import Any, Dict, List, Union
 
 # 3rd party libraries
 import pytest
 
 # Internal libraries
-from onclusiveml.core.logging import (
-    OnclusiveLogMessageFormat,
-    get_default_logger,
-)
+from onclusiveml.compile.constants import CompileWorkflowTasks
+from onclusiveml.core.base import OnclusiveBaseSettings
+from onclusiveml.core.base.pydantic import cast
+from onclusiveml.core.logging import OnclusiveLogSettings, get_default_logger
 from onclusiveml.models.ner import CompiledNER
 
 # Source
 from src.settings import (  # type: ignore[attr-defined]
     CompilationTestSettings,
-    IOSettings,
+    get_settings,
 )
 
 
 @pytest.fixture
-def io_settings() -> IOSettings:
+def settings() -> OnclusiveBaseSettings:
     """Fixture to provide IOSettings instance.
 
     Returns:
         IOSettings: Instance of IOSettings
     """
-    return IOSettings()
+    return get_settings()
 
 
 @pytest.fixture
@@ -42,7 +43,7 @@ def compilation_test_settings() -> CompilationTestSettings:
 
 
 @pytest.fixture()
-def logger(io_settings: IOSettings) -> Any:
+def logger(settings: OnclusiveBaseSettings) -> Any:
     """Fixture to provide a logger instance.
 
     Args:
@@ -51,15 +52,15 @@ def logger(io_settings: IOSettings) -> Any:
     Returns:
         Any: Logger instance
     """
+    logging_settings = cast(settings, OnclusiveLogSettings)
     return get_default_logger(
         name=__name__,
-        fmt_level=OnclusiveLogMessageFormat.DETAILED,
-        level=io_settings.log_level,
+        fmt_level=logging_settings.fmt_level,
     )
 
 
 @pytest.fixture
-def compiled_ner(io_settings: IOSettings) -> CompiledNER:
+def compiled_ner(settings: OnclusiveBaseSettings) -> CompiledNER:
     """Fixture to provide a compiled NER model instance.
 
     Args:
@@ -68,14 +69,17 @@ def compiled_ner(io_settings: IOSettings) -> CompiledNER:
     Returns:
         CompiledNER: Compiled NER model instance
     """
-    # load compiled NER from previous workflow component
-    compiled_ner = CompiledNER.from_pretrained(io_settings.compile.model_directory)
+    target_model_directory: str = os.path.join(
+        "./outputs", "compile", "model_artifacts"
+    )
+
+    compiled_ner = CompiledNER.from_pretrained(target_model_directory)
 
     return compiled_ner
 
 
 @pytest.fixture
-def test_files(io_settings: IOSettings) -> Dict[str, Any]:
+def test_files(settings: OnclusiveBaseSettings) -> Dict[str, Any]:
     """Fixture to provide test input files loaded into a dictionary.
 
     Args:
@@ -85,11 +89,11 @@ def test_files(io_settings: IOSettings) -> Dict[str, Any]:
         Dict[str, Any]: Dictionary containing test files data
     """
     # get test files & load directly into dict
-    test_files = io_settings.download.test_files.copy()
+    test_files = settings.test_files(CompileWorkflowTasks.DOWNLOAD)
     # 'inputs', 'inference_params' & 'predictions'
     for test_file_reference in test_files:
         with open(
-            io_settings.download.test_files[test_file_reference], "r"
+            settings.test_files(CompileWorkflowTasks.DOWNLOAD)[test_file_reference], "r"
         ) as test_file:
             test_files[test_file_reference] = json.load(test_file)
 
