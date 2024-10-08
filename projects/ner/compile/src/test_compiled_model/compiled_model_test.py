@@ -1,7 +1,6 @@
 """Compiled model tests."""
 
 # Standard Library
-import json
 from typing import List
 
 # 3rd party libraries
@@ -10,7 +9,7 @@ import pytest
 
 
 test_sample_indices = [0, 1, 2, 3]
-languages = ["en"]
+languages = ["en", "ja"]
 # Generate the parameter combinations using a list comprehension
 parametrize_values = [
     (index, language, languages.index(language))
@@ -49,7 +48,7 @@ def to_dataframe(extract_entites: List[dict]) -> pd.DataFrame:
 @pytest.mark.parametrize("test_sample_index, language, lang_index", parametrize_values)
 def test_compiled_model_regression(  # type: ignore[no-untyped-def]
     logger,
-    io_settings,
+    settings,
     compiled_ner,
     test_files,
     test_files_predictions,
@@ -62,7 +61,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
 
     Args:
         logger: Logger instance for logging
-        io_settings: IO settigns for workflow component
+        settings: IO settigns for workflow component
         compiled_ner: Compiled NER model instance
         test_files: Dictionary containing test input
         test_files_predictions: List of expected predictions for test sample
@@ -72,7 +71,7 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         compilation_test_settings: Compilation settings
     """
     compiled_predictions = compiled_ner(
-        [test_files["inputs"][lang_index][test_sample_index]], language=language
+        test_files["inputs"][lang_index][test_sample_index], language=language
     )
     # Converting from pydantic classes to dictionaries to allow conversion to
     # dictionary more simpler
@@ -115,17 +114,17 @@ def test_compiled_model_regression(  # type: ignore[no-untyped-def]
         atol=compilation_test_settings.regression_atol,
     )
     # create new export file or append prediction to existing exported prediction file
-    try:
-        with open(
-            io_settings.test.test_files["predictions"]
-        ) as compiled_predictions_file:
-            all_compiled_predictions = json.load(compiled_predictions_file)
-    except (FileExistsError, FileNotFoundError):
-        all_compiled_predictions = [[], []]
+    # try:
+    #     with open(
+    #         settings.test.test_files["predictions"]
+    #     ) as compiled_predictions_file:
+    #         all_compiled_predictions = json.load(compiled_predictions_file)
+    # except (FileExistsError, FileNotFoundError):
+    #     all_compiled_predictions = [[], []]
 
-    all_compiled_predictions[lang_index].append(compiled_predictions_dict)
+    # all_compiled_predictions[lang_index].append(compiled_predictions_dict)
 
-    with open(
-        io_settings.test.test_files["predictions"], "w"
-    ) as compiled_predictions_file:
-        json.dump(all_compiled_predictions, compiled_predictions_file)
+    # with open(
+    #     settings.test.test_files["predictions"], "w"
+    # ) as compiled_predictions_file:
+    #     json.dump(all_compiled_predictions, compiled_predictions_file)
