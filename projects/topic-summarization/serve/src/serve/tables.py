@@ -48,6 +48,11 @@ class TopicSummaryResponseDB(Dyntastic, PredictResponseSchemaWID):
         __table_host__ (str): The host address for the DynamoDB table.
     """
 
+    __table_name__ = settings.DYNAMODB_DOCUMENT_TABLE_NAME
+    __hash_key__ = "id"
+    __table_region__ = "us-east-2"
+    __table_host__ = settings.DYNAMODB_HOST
+
 
 class TopicSummaryDynamoDB(Dyntastic):
     """Prediction request data."""

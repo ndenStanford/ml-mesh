@@ -136,6 +136,7 @@ class DynamoDBSettings(OnclusiveBaseSettings):
     # table name should be referencing relevant table when deployed
     DYNAMODB_TABLE_NAME: str
     ENVIRONMENT: str = "dev"
+    DYNAMODB_DOCUMENT_TABLE_NAME: str
 
 
 class TrendSummarizationSettings(OnclusiveBaseSettings):

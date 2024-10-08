@@ -4,7 +4,8 @@
 from typing import Any, Callable, List, Optional, Type, Union
 
 # 3rd party libraries
-from fastapi_crudrouter.core._base import NOT_FOUND, CRUDGenerator
+from fastapi import HTTPException
+from fastapi_crudrouter.core._base import CRUDGenerator
 from fastapi_crudrouter.core._types import DEPENDENCIES, PAGINATION
 from fastapi_crudrouter.core._types import PYDANTIC_SCHEMA as SCHEMA
 
@@ -40,7 +41,7 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         update_route: Union[bool, DEPENDENCIES] = True,
         delete_one_route: Union[bool, DEPENDENCIES] = True,
         delete_all_route: Union[bool, DEPENDENCIES] = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         """Initialize the DynamoDBCRUDRouter.
 
@@ -73,7 +74,7 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
             update_route=update_route,
             delete_one_route=delete_one_route,
             delete_all_route=delete_all_route,
-            **kwargs
+            **kwargs,
         )
 
         self.model = model  # Instance of DynamoDBModel
@@ -86,13 +87,18 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         """
 
         def route(pagination: PAGINATION = self.pagination) -> List[SCHEMA]:
-            skip, limit = pagination.get("skip"), pagination.get("limit")
-            skip = skip or 0  # Default to 0 if None
+            try:
+                skip, limit = pagination.get("skip"), pagination.get("limit")
+                skip = skip or 0  # Default to 0 if None
 
-            items = self.model._get_all()
-            items = items[skip:] if limit is None else items[skip : skip + limit]
+                items = self.model._get_all()
+                items = items[skip:] if limit is None else items[skip : skip + limit]
 
-            return [self.schema(**item.__dict__) for item in items]
+                return [self.schema(**item.__dict__) for item in items]
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Internal server error: {str(e)}"
+                )
 
         return route
 
@@ -104,10 +110,19 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         """
 
         def route(item_id: str) -> SCHEMA:
-            item = self.model._get_one(item_id)
-            if item is None:
-                raise NOT_FOUND
-            return self.schema(**item.__dict__)
+            try:
+                item = self.model._get_one(item_id)
+                if item is None:
+                    raise HTTPException(
+                        status_code=404, detail=f"Item with id {item_id} not found"
+                    )
+                return self.schema(**item.__dict__)
+            except HTTPException:
+                raise
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Internal server error: {str(e)}"
+                )
 
         return route
 
@@ -119,8 +134,15 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         """
 
         def route(model_data: self.create_schema) -> SCHEMA:
-            item = self.model._create(model_data.dict())
-            return self.schema(**item.__dict__)
+            try:
+                item = self.model._create(model_data.dict())
+                return self.schema(**item.__dict__)
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail=f"Invalid input: {str(ve)}")
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Internal server error: {str(e)}"
+                )
 
         return route
 
@@ -132,10 +154,21 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         """
 
         def route(item_id: str, model_data: self.update_schema) -> SCHEMA:
-            item = self.model._update(item_id, model_data.dict())
-            if item is None:
-                raise NOT_FOUND
-            return self.schema(**item.__dict__)
+            try:
+                item = self.model._update(item_id, model_data.dict())
+                if item is None:
+                    raise HTTPException(
+                        status_code=404, detail=f"Item with id {item_id} not found"
+                    )
+                return self.schema(**item.__dict__)
+            except HTTPException:
+                raise
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail=f"Invalid input: {str(ve)}")
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Internal server error: {str(e)}"
+                )
 
         return route
 
@@ -147,8 +180,13 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         """
 
         def route() -> List[SCHEMA]:
-            items = self.model._delete_all()
-            return [self.schema(**item.__dict__) for item in items]
+            try:
+                items = self.model._delete_all()
+                return [self.schema(**item.__dict__) for item in items]
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Internal server error: {str(e)}"
+                )
 
         return route
 
@@ -160,9 +198,18 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
         """
 
         def route(item_id: str) -> SCHEMA:
-            item = self.model._delete_one(item_id)
-            if item is None:
-                raise NOT_FOUND
-            return self.schema(**item.__dict__)
+            try:
+                item = self.model._delete_one(item_id)
+                if item is None:
+                    raise HTTPException(
+                        status_code=404, detail=f"Item with id {item_id} not found"
+                    )
+                return self.schema(**item.__dict__)
+            except HTTPException:
+                raise
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Internal server error: {str(e)}"
+                )
 
         return route
