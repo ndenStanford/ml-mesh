@@ -4,6 +4,7 @@
 from typing import Any, Callable, List, Optional, Type, Union
 
 # 3rd party libraries
+from dyntastic.exceptions import DoesNotExist
 from fastapi import HTTPException
 from fastapi_crudrouter.core._base import CRUDGenerator
 from fastapi_crudrouter.core._types import DEPENDENCIES, PAGINATION
@@ -117,8 +118,11 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
                         status_code=404, detail=f"Item with id {item_id} not found"
                     )
                 return self.schema(**item.__dict__)
-            except HTTPException:
-                raise
+            except DoesNotExist as de:  # noqa: F841
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Item with id {item_id} not found in database",
+                )
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
@@ -161,8 +165,11 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
                         status_code=404, detail=f"Item with id {item_id} not found"
                     )
                 return self.schema(**item.__dict__)
-            except HTTPException:
-                raise
+            except DoesNotExist as de:  # noqa: F841
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Item with id {item_id} not found in database",
+                )
             except ValueError as ve:
                 raise HTTPException(status_code=400, detail=f"Invalid input: {str(ve)}")
             except Exception as e:
@@ -205,8 +212,11 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
                         status_code=404, detail=f"Item with id {item_id} not found"
                     )
                 return self.schema(**item.__dict__)
-            except HTTPException:
-                raise
+            except DoesNotExist as de:  # noqa: F841
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Item with id {item_id} not found in database",
+                )
             except Exception as e:
                 raise HTTPException(
                     status_code=500, detail=f"Internal server error: {str(e)}"
