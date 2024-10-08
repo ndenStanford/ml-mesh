@@ -1,13 +1,15 @@
 """Settings."""
 
 # Standard Library
+import os
 from functools import lru_cache
-from typing import List
+from typing import Dict, List
 
 # 3rd party libraries
 from pydantic_settings import SettingsConfigDict
 
 # Internal libraries
+from onclusiveml.compile.constants import CompileWorkflowTasks
 from onclusiveml.core.base import OnclusiveBaseSettings
 from onclusiveml.core.logging import OnclusiveLogSettings
 from onclusiveml.tracking import (
@@ -129,7 +131,7 @@ class CompiledNERTrackedModelCard(TrackedModelCard):
         "base_ner",
         "korean_japanese_ner",
     ]
-    test_files: List[str] = []
+    # test_files: List[str] = []
     # uncompiled model reference
     uncompiled_model: TrackedModelSettings = TrackedModelSettings()
     # model compilation params
@@ -140,7 +142,38 @@ class CompiledNERTrackedModelCard(TrackedModelCard):
     compilation_test_settings: CompilationTestSettings = CompilationTestSettings()
 
 
+class IOSettings(TrackingSettings):
+    """Configuring container file system output locations for all 4 components."""
+
+    base_path: str
+
+    model_config = SettingsConfigDict(env_prefix="io_settings_")
+
+    def output_directory(self, task: CompileWorkflowTasks) -> str:
+        """Output directory for task."""
+        output_directory: str = os.path.join(self.base_path, task)
+        if not os.path.isdir(output_directory):
+            os.makedirs(output_directory)
+        return output_directory
+
+    def model_directory(self, task: CompileWorkflowTasks) -> str:
+        """Returns model directory given task."""
+        return os.path.join(self.output_directory(task), "model_artifacts")
+
+    def test_files(self, task: CompileWorkflowTasks) -> Dict[str, str]:
+        """Test files location."""
+        return {
+            "inputs": os.path.join(self.output_directory(task), "inputs"),
+            "inference_params": os.path.join(
+                self.output_directory(task),
+                "inference_params",
+            ),
+            "predictions": os.path.join(self.output_directory(task), "predictions"),
+        }
+
+
 class GlobalSettings(
+    IOSettings,
     TrackedModelSettings,
     OnclusiveLogSettings,
     CompiledTrackedModelSettings,
