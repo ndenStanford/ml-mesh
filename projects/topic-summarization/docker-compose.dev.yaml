@@ -110,6 +110,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: dev
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
@@ -132,6 +133,7 @@ services:
     hostname: onclusiveml
     environment:
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
       ELASTICSEARCH_KEY: ${ELASTICSEARCH_KEY}
     networks:
       - onclusive-net
@@ -161,6 +163,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: dev
       DYNAMODB_TABLE_NAME: topic-summary-dev-1
+      DYNAMODB_DOCUMENT_TABLE_NAME: topic-summary-document-1
     env_file: serve/config/dev.env
     depends_on:
       prompt-backend:
