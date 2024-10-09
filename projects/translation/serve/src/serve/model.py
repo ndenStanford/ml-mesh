@@ -61,16 +61,28 @@ class TranslationModel(ServedModel):
 
         content = attributes.content
         target_language = parameters.target_language
-        # reference language will serve as the provided language, source_language os the detected language # noqa
+        # reference language will serve as the provided language, source_language is the detected language
         source_language = reference_language = parameters.source_language
         translation = parameters.translation
 
+        # Raise error if the content is an empty string
+        if not content.strip():
+            raise ValueError("Input content cannot be an empty string.")
+
         content = self.pre_process(content)
+
+        # Split content into chunks if longer than 8000 characters, break at sentence boundaries
+        if len(content) > 8000:
+            content_chunks = self._chunk_content(content, max_length=8000)
+        else:
+            content_chunks = [content]
+
         translated_text = None
 
+        # Detect language only from the first chunk
         if reference_language:
-            # getting the iso value of the provided language
             try:
+                # Convert the provided language to ISO value
                 reference_language = constants.LanguageIso.from_locale_and_language_iso(
                     reference_language
                 ).value
@@ -78,8 +90,8 @@ class TranslationModel(ServedModel):
                 reference_language = None
 
         try:
-            # detecting the language of the text
-            iso_language = self._detect_language(content=content, language=None)
+            # Detect the language of the text using only the first chunk
+            iso_language = self._detect_language(content=content_chunks[0], language=None)
             if iso_language:
                 source_language = iso_language.value
             else:
@@ -92,17 +104,22 @@ class TranslationModel(ServedModel):
 
         if translation is True:
             if reference_language != source_language:
-                # display warning if detected language is different from provided language
+                # Log warning if detected language is different from provided language
                 logger.warning(
                     f"Source language does not match detected language: '{source_language}'. Overriding with detected language."  # noqa
                 )
+
             try:
-                # regardless, we are using the detecting language
-                output = self._predict(
-                    content=content,
-                    language=source_language,
-                    target_language=target_language,
-                )
+                # Translate each chunk and concatenate the results
+                translated_chunks = []
+                for chunk in content_chunks:
+                    output = self._predict(
+                        content=chunk,
+                        language=source_language,
+                        target_language=target_language,
+                    )
+                    translated_chunks.append(output)
+                translated_text = " ".join(translated_chunks)  # Join all translated chunks
             except (
                 LanguageDetectionException,
                 LanguageFilterException,
@@ -110,7 +127,6 @@ class TranslationModel(ServedModel):
                 raise OnclusiveHTTPException(
                     status_code=204, detail=language_exception.message
                 )
-            translated_text = output
 
         return PredictResponseSchema.from_data(
             version=int(settings.api_version[1:]),
@@ -121,6 +137,7 @@ class TranslationModel(ServedModel):
                 "translated_text": translated_text,
             },
         )
+
 
     def _detect_language(self, content: str, language: Optional[str]) -> LanguageIso:
         """Language detection."""
