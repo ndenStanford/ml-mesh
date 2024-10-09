@@ -70,7 +70,7 @@ class TranslationModel(ServedModel):
         if current_chunk:
             chunks.append(current_chunk.strip())
 
-        return chunks
+        return [i for i in chunks if len(i)> 0]
 
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction."""
