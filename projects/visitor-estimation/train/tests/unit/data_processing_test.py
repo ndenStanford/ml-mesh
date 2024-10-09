@@ -12,7 +12,12 @@ def setup_mock_data():
     """Sets up mock data for testing the data_preprocess function."""
     dataset_dict = {
         "search_seeds_feature_view": pd.DataFrame(),
-        "eclr_links_feature_view": pd.DataFrame(),
+        "eclr_links_feature_view": pd.DataFrame(
+            {
+                "entity_id": [1, 2],
+                "url": ["https://example.com/link1", "http://example.com/link2"],
+            }
+        ),
         "crawler_items_feature_view": pd.DataFrame(
             {
                 "entity_id": [1, 2],
@@ -51,8 +56,8 @@ def setup_mock_data():
         "entity_connections_feature_view": pd.DataFrame(),
     }
     # Mocking the methods for join and calculation functions
-    min_window = 0
-    max_window = 10
+    min_window = 30
+    max_window = 30
     joinEntityAnalyticsWithLinkMetadata = MagicMock(return_value=pd.DataFrame())
     getRelevancePercentiles = MagicMock(return_value=pd.DataFrame())
     getTotalVisitors = MagicMock(return_value=pd.DataFrame())
@@ -125,9 +130,13 @@ def test_data_processing_step_7_to_9():
     )
     assert "entityURLProtocol" in df_crl.columns
     assert df_crl["entityURLProtocol"].iloc[0] == "https"
-    # Test domain link count processing
-    # domainRegex = r"(https?://[^/]*/).*"
+
+    # Check that the eclr_links_feature_view DataFrame has the expected columns
     df_eclr = dataset_dict["eclr_links_feature_view"]
+    assert not df_eclr.empty, "df_eclr should not be empty."
+    assert "entity_id" in df_eclr.columns, "df_eclr should have an 'entity_id' column."
+
+    # Test domain link count processing
     matchingURLS = df_eclr.assign(
         profileDomainURL=lambda df: df["entity_id"].astype(str)
     )
