@@ -244,10 +244,6 @@
                 {
                     "localRoot": "${workspaceFolder}/projects/ner/compile",
                     "remoteRoot": "."
-                },
-                {
-                    "localRoot": "${workspaceFolder}/libs/tracking/",
-                    "remoteRoot": "/libs/tracking/"
                 }
             ]
         },
