@@ -159,7 +159,8 @@ class DynamoDBCRUDRouter(CRUDGenerator[SCHEMA]):
 
         def route(item_id: str, model_data: self.update_schema) -> SCHEMA:
             try:
-                item = self.model._update(item_id, model_data.dict())
+                update_data = model_data.dict(exclude_unset=True)
+                item = self.model._update(item_id, update_data)
                 if item is None:
                     raise HTTPException(
                         status_code=404, detail=f"Item with id {item_id} not found"

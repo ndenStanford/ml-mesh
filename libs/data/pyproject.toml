@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "data"
 version = "0.1.0"
-description = "Data library for utilities such as CRUD"
+description = "Library to interact with data models e.g. DynamoDB"
 authors = ["Syed Reza <syed.reza@onclusive.com>"]
 packages = [{include = "onclusiveml"}]
 
