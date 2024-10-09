@@ -12,7 +12,7 @@ from pydantic import Field
 
 # Internal libraries
 # Import DynamoDBModel
-from onclusiveml.data.data_model.dynamodb_model.dynamodb_model import (
+from onclusiveml.data.data_model.dynamodb_data_model.dynamodb_model import (
     DynamoDBModel,
 )
 

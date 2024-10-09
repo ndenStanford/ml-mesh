@@ -2,7 +2,7 @@
 """Model server."""
 
 # Internal libraries
-from onclusiveml.data.data_model.dynamodb_model.dynamodb_model import (
+from onclusiveml.data.data_model.dynamodb_data_model.dynamodb_model import (
     DynamoDBModel,
 )
 from onclusiveml.serving.rest.crud.dynamodb_router import DynamoDBCRUDRouter
