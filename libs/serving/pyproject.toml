@@ -28,6 +28,7 @@ data = {path = "../data"}
 pytest = "7.4.2"
 pytest-order = "1.1.0"
 pytest-lazy-fixture = "^0.6.3"
+moto = "^5.0.16"
 
 [build-system]
 requires = ["poetry-core"]
