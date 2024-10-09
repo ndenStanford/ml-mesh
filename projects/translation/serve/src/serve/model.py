@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional, Type, List
 
 # 3rd party libraries
 import boto3
@@ -54,6 +54,26 @@ class TranslationModel(ServedModel):
         text = re.sub("\n+", " ", text)
         return text
 
+    def _chunk_content(self, content: str, max_length: int) -> List[str]:
+        """Split the content into chunks, breaking only at sentence boundaries."""
+
+        sentences = re.split(r'(?<=\.)\s', content)
+        chunks = []
+        current_chunk = ""
+
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) < max_length:
+                current_chunk += sentence + " "
+            else:
+                chunks.append(current_chunk.strip())
+                current_chunk = sentence + " "
+
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+
+        return chunks
+
+    
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction."""
         attributes = payload.data.attributes
@@ -61,7 +81,7 @@ class TranslationModel(ServedModel):
 
         content = attributes.content
         target_language = parameters.target_language
-        # reference language will serve as the provided language, source_language is the detected language
+        # reference language will serve as the provided language, source_language os the detected language # noqa
         source_language = reference_language = parameters.source_language
         translation = parameters.translation
 
@@ -71,7 +91,7 @@ class TranslationModel(ServedModel):
 
         content = self.pre_process(content)
 
-        # Split content into chunks if longer than 8000 characters, break at sentence boundaries
+        # Split content into chunks if longer than 8000 characters, break at sentence boundaries # noqa
         if len(content) > 8000:
             content_chunks = self._chunk_content(content, max_length=8000)
         else:
