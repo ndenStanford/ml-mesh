@@ -2,7 +2,7 @@
 
 # Standard Library
 import re
-from typing import Any, Dict, Optional, Type, List
+from typing import Any, Dict, List, Optional, Type
 
 # 3rd party libraries
 import boto3
@@ -56,8 +56,7 @@ class TranslationModel(ServedModel):
 
     def _chunk_content(self, content: str, max_length: int) -> List[str]:
         """Split the content into chunks, breaking only at sentence boundaries."""
-
-        sentences = re.split(r'(?<=\.)\s', content)
+        sentences = re.split(r"(?<=\.)\s", content)
         chunks = []
         current_chunk = ""
 
@@ -73,7 +72,6 @@ class TranslationModel(ServedModel):
 
         return chunks
 
-    
     def predict(self, payload: PredictRequestSchema) -> PredictResponseSchema:
         """Prediction."""
         attributes = payload.data.attributes
@@ -84,13 +82,11 @@ class TranslationModel(ServedModel):
         # reference language will serve as the provided language, source_language os the detected language # noqa
         source_language = reference_language = parameters.source_language
         translation = parameters.translation
-
         # Raise error if the content is an empty string
         if not content.strip():
             raise ValueError("Input content cannot be an empty string.")
 
         content = self.pre_process(content)
-
         # Split content into chunks if longer than 8000 characters, break at sentence boundaries # noqa
         if len(content) > 8000:
             content_chunks = self._chunk_content(content, max_length=8000)
@@ -98,7 +94,6 @@ class TranslationModel(ServedModel):
             content_chunks = [content]
 
         translated_text = None
-
         # Detect language only from the first chunk
         if reference_language:
             try:
@@ -111,7 +106,9 @@ class TranslationModel(ServedModel):
 
         try:
             # Detect the language of the text using only the first chunk
-            iso_language = self._detect_language(content=content_chunks[0], language=None)
+            iso_language = self._detect_language(
+                content=content_chunks[0], language=None
+            )
             if iso_language:
                 source_language = iso_language.value
             else:
@@ -139,7 +136,9 @@ class TranslationModel(ServedModel):
                         target_language=target_language,
                     )
                     translated_chunks.append(output)
-                translated_text = " ".join(translated_chunks)  # Join all translated chunks
+                translated_text = " ".join(
+                    translated_chunks
+                )  # Join all translated chunks
             except (
                 LanguageDetectionException,
                 LanguageFilterException,
@@ -157,7 +156,6 @@ class TranslationModel(ServedModel):
                 "translated_text": translated_text,
             },
         )
-
 
     def _detect_language(self, content: str, language: Optional[str]) -> LanguageIso:
         """Language detection."""
