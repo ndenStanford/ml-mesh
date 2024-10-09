@@ -3,8 +3,8 @@
 # ML libs
 import torch
 
-# Internal libraries
-from onclusiveml.feature_store.on_demand.iptc.class_dict import (
+# Source
+from src.class_dict import (
     CANDIDATE_DICT_FIRST,
     CANDIDATE_DICT_FOURTH,
     CANDIDATE_DICT_SECOND,

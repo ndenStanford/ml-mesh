@@ -18,20 +18,7 @@ from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
 # Internal libraries
-from onclusiveml.feature_store import FeatureStoreParams
-from onclusiveml.feature_store.on_demand.iptc.class_dict import (
-    CANDIDATE_DICT_FIRST,
-    CANDIDATE_DICT_FOURTH,
-    CANDIDATE_DICT_SECOND,
-    CANDIDATE_DICT_THIRD,
-    ID_TO_LEVEL,
-    ID_TO_TOPIC,
-)
-from onclusiveml.feature_store.on_demand.iptc.name_mapping_dict import (
-    NAME_MAPPING_DICT_FIRST,
-    NAME_MAPPING_DICT_SECOND,
-    NAME_MAPPING_DICT_THIRD,
-)
+from onclusiveml.feature_store.settings import FeastFeatureStoreSettings
 from onclusiveml.tracking import TrackedModelCard, TrackedModelSettings
 from onclusiveml.training.huggingface.trainer import (
     OnclusiveHuggingfaceModelTrainer,
@@ -39,7 +26,20 @@ from onclusiveml.training.huggingface.trainer import (
 from onclusiveml.training.onclusive_model_trainer import OnclusiveModelTrainer
 
 # Source
+from src.class_dict import (
+    CANDIDATE_DICT_FIRST,
+    CANDIDATE_DICT_FOURTH,
+    CANDIDATE_DICT_SECOND,
+    CANDIDATE_DICT_THIRD,
+    ID_TO_LEVEL,
+    ID_TO_TOPIC,
+)
 from src.dataset import IPTCDataset
+from src.name_mapping_dict import (
+    NAME_MAPPING_DICT_FIRST,
+    NAME_MAPPING_DICT_SECOND,
+    NAME_MAPPING_DICT_THIRD,
+)
 from src.utils import (
     compute_metrics,
     extract_model_id,
@@ -57,14 +57,14 @@ class IPTCTrainer(OnclusiveHuggingfaceModelTrainer):
         self,
         tracked_model_specs: TrackedModelSettings,
         model_card: TrackedModelCard,
-        data_fetch_params: FeatureStoreParams,
+        data_fetch_params: FeastFeatureStoreSettings,
     ) -> None:
         """Initialize the OnclusiveModelTrainer.
 
         Args:
             tracked_model_specs (TrackedModelSettings): Specifications for tracked model on neptune.
             model_card (TrackedModelCard): Model card with specifications of the model.
-            data_fetch_params (FeatureStoreParams): Parameters for fetching data from feature store.
+            data_fetch_params (FeastFeatureStoreSettings): Parameters for fetching data from feature store.
 
         Returns: None
         """
