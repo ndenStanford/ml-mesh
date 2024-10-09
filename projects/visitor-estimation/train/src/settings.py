@@ -27,7 +27,7 @@ class DataFetchParams(FeatureStoreParams):
     redshift_table: str = "stg_visitor_estimation"
     feature_view_name: str = "visitor_estimation_feature_view"
     redshift_timestamp_field: str
-    save_artifact: bool = False
+    save_artifact: bool = True
     n_records_sample: int
     n_records_full: int
     filter_columns: List[str] = []
@@ -147,7 +147,7 @@ class ProfileEntityRelationshipsDataFetchParams(OnclusiveBaseSettings):
 
 
 class TrackedVEModelSpecs(TrackedModelSettings):
-    """Tracked iptc model settings."""
+    """Tracked VE model settings."""
 
     project: str = "onclusive/visitor-estimation"
     model: str = "VE-TRAINED"

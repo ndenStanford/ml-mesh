@@ -5,10 +5,13 @@ import os
 import pickle
 
 # 3rd party libraries
+import neptune
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder
 
@@ -45,14 +48,15 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         data_fetch_params: FeatureStoreParams,
     ) -> None:
         """Initialize the VisitorEstimationTrainer."""
-        self.data_fetch_params = data_fetch_params
         self.dataset_dict = {}
+        # Start a new Neptune run
+        self.run = neptune.init_run(project=tracked_model_specs.project)
         self.logger = get_default_logger(__name__)
 
         super().__init__(
             tracked_model_specs=tracked_model_specs,
             model_card=model_card,
-            data_fetch_params=self.data_fetch_params,
+            data_fetch_params=data_fetch_params,
         )
 
     def create_training_argument(self) -> None:
@@ -88,12 +92,10 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         df_ent = self.dataset_dict.get("entity_links_feature_view")
         df_dom = self.dataset_dict.get("domains_feature_view")
         df_connect = self.dataset_dict.get("entity_connections_feature_view")
-
         # adjust column names (need to fix in redshift)
         df_lmd = df_lmd.rename(columns={"link_metadata_timestamp": "timestamp"})
         df_ea = df_ea.rename(columns={"ea_timestamp": "timestamp"})
         df_dom = df_dom.rename(columns={"id": "domain_id"})
-
         # manipulate df_ea and df_crl(temporary fix, needs to be removed)
         # Get the matching entity_id values from df_per by profile_id and replace in order
         df_ea["entity_id"] = df_ea.apply(
@@ -109,7 +111,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
             axis=1,
         )
         df_crl["entity_id"] = df_ent["entity_id"]
-
         # Step 1: Join entity analytics with link metadata
         profileDF = joinEntityAnalyticsWithLinkMetadata(
             df_lmd, df_ea, df_per, self.min_window, self.max_window
@@ -358,15 +359,19 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         # Set time range for data
         self.max_entity_date = profileDF5["entityTimestamp"].max()
         # Clean the data
-        self.train_data = final_data_clean(
+        self.cleaned_data = final_data_clean(
             profileDF5,
             goodProfids,
             self.min_entity_date,
             self.max_entity_date,
             self.remove_zero_visitor,
         )
-        self.logger.info("Cleaned data:", self.train_data)
+        # train test split
+        self.train_data, self.test_data = train_test_split(
+            self.cleaned_data, test_size=0.2, random_state=42
+        )
 
+        self.logger.info("Final training data:", self.train_data)
         # Initialize pipeline and train the model
         data_pipe = self.make_pipeline(
             index_features=self.index_features,
@@ -397,6 +402,28 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         # Step 3: Return the unlogged predictions
         return result["predictedVisitors"]
 
+    def evaluate(self, pipeline, train_data, test_data, reference_col):
+        """Evaluate the trained model with r2 and rmse."""
+        metrics = {
+            "r2_train": r2_score(
+                self.predict(pipeline, train_data), train_data[reference_col]
+            ),
+            "r2_test": r2_score(
+                self.predict(pipeline, test_data), test_data[reference_col]
+            ),
+            "rmse_train": np.sqrt(
+                mean_squared_error(
+                    self.predict(pipeline, train_data), train_data[reference_col]
+                )
+            ),
+            "rmse_test": np.sqrt(
+                mean_squared_error(
+                    self.predict(pipeline, test_data), test_data[reference_col]
+                )
+            ),
+        }
+        return metrics
+
     def save(self) -> None:
         """Save the trained pipeline."""
         # Save the model artifacts and any other required files
@@ -414,7 +441,19 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
         self.initialize_model()
         self.train()
         self.save()
-
+        # Log evaluation metrics to Neptune
+        metrics = self.evaluate(
+            pipeline=self.full_pipeline,
+            train_data=self.train_data,
+            test_data=self.test_data,
+            reference_col="visitors",
+        )
+        self.run["metrics/r2_train"].log(metrics["r2_train"])
+        self.run["metrics/r2_test"].log(metrics["r2_test"])
+        self.run["metrics/rmse_train"].log(metrics["rmse_train"])
+        self.run["metrics/rmse_test"].log(metrics["rmse_test"])
+        # Close the Neptune run after logging
+        self.run.stop()
         # register model to neptune
         if self.data_fetch_params.save_artifact:
             sample_df = self.train_data[:10]
@@ -423,7 +462,6 @@ class VisitorEstimationTrainer(OnclusiveModelTrainer):
                 str
             )
             sample_df["entityTimestamp"] = sample_df["entityTimestamp"].astype(str)
-            self.logger.info(sample_df)
             super(OnclusiveModelTrainer, self).__call__(
                 [
                     sample_df.to_dict(orient="records"),

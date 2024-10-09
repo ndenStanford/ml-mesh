@@ -7,6 +7,7 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "3.9.19"
+neptune-sklearn = "2.1.4"
 tracking = {path = "../../../libs/tracking"}
 feature_store = {path = "../../../libs/feature_store"}
 training = {path = "../../../libs/training"}
