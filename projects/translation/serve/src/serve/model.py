@@ -124,7 +124,7 @@ class TranslationModel(ServedModel):
                 logger.warning(
                     f"Source language does not match detected language: '{source_language}'. Overriding with detected language."  # noqa
                 )
-            # Split content into chunks if longer than 8000 characters, break at sentence boundaries # noqa
+            # Split content into chunks if longer than max_length characters, break at sentence boundaries # noqa
             if len(content) > settings.max_length:
                 content_chunks = self._chunk_content(
                     content, max_length=settings.max_length, language=source_language
