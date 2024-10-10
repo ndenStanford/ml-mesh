@@ -601,20 +601,6 @@ typing-extensions = ">=4.8.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.7)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
-name = "fastapi-crudrouter"
-version = "0.8.6"
-description = "A dynamic FastAPI router that automatically creates CRUD routes for your models"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "fastapi-crudrouter-0.8.6.tar.gz", hash = "sha256:32704a7aa1d0b23bb6437f717599e9c4c01d8e5a91370a0359837a899a809ceb"},
-    {file = "fastapi_crudrouter-0.8.6-py3-none-any.whl", hash = "sha256:4ceb0289cd7b7c687f88581838c032cdb21f24d36971e54b0e594ddcfaf9634e"},
-]
-
-[package.dependencies]
-fastapi = "*"
-
-[[package]]
 name = "flask"
 version = "3.0.3"
 description = "A simple framework for building complex web applications."
@@ -2482,4 +2468,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "3.9.19"
-content-hash = "48bcd221e48cabf35d68f3934e58f90bbb7fab580aa9195ca858ce654eb9283a"
+content-hash = "c2941df069c8444804afce9c2d08dad421e3c8a6767d1bef6b4438648387cd1e"
